@@ -81,7 +81,7 @@
 				OptimizeForWindows98="0"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/jpegls.lib"
+				ImportLibrary="$(OutDir)/CharLS.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -177,7 +177,7 @@
 				OptimizeForWindows98="0"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/jpegls.lib"
+				ImportLibrary="$(OutDir)/CharLS.lib"
 				TargetMachine="1"
 			/>
 			<Tool

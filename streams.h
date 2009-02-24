@@ -40,7 +40,7 @@ public:
 	JLSOutputStream();
 	virtual ~JLSOutputStream();
 
-	void Init(int ccomp, int ccol, int cline, int cbpp);
+	void Init(Size size, int cbpp, int ccomp);
 	void AddScan(const void* pbyteComp, Size size, int cbit, int ccomp, interleavemode ilv, int nearval);
 
 	int GetBytesWritten()

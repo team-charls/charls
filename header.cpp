@@ -46,12 +46,12 @@ void AppendWord(std::vector<BYTE>& vec, USHORT value)
 //
 // CreateMarkerStartOfFrame()
 //
-JpegSegment* CreateMarkerStartOfFrame(int ccol, int cline, int cbpp, int ccomp)
+JpegSegment* CreateMarkerStartOfFrame(Size size, int cbpp, int ccomp)
 {
 	std::vector<BYTE> vec;
 	vec.push_back(static_cast<BYTE>(cbpp));
-	AppendWord(vec, static_cast<USHORT>(cline));
-	AppendWord(vec, static_cast<USHORT>(ccol));
+	AppendWord(vec, static_cast<USHORT>(size.cy));
+	AppendWord(vec, static_cast<USHORT>(size.cx));
 	
 	// components
 	vec.push_back(static_cast<BYTE>(ccomp));
@@ -101,9 +101,9 @@ JLSOutputStream::~JLSOutputStream()
 //
 // Init()
 //
-void JLSOutputStream::Init(int ccomp, int ccol, int cline, int cbpp)
+void JLSOutputStream::Init(Size size, int cbpp, int ccomp)
 {
-		_rgsegment.push_back(CreateMarkerStartOfFrame(ccomp, ccol, cline, cbpp));
+		_rgsegment.push_back(CreateMarkerStartOfFrame(size, cbpp, ccomp));
 }
 //
 // Write()
@@ -280,7 +280,7 @@ void JLSInputStream::ReadStartOfFrame()
 	_info.cbit = ReadByte();
 	int cline = ReadWord();
 	int ccol = ReadWord();
-	_info.size = Size(cline, ccol);
+	_info.size = Size(ccol, cline);
 	_info.ccomp = ReadByte();
 	
 }

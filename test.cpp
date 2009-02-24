@@ -11,12 +11,21 @@
 #include "streams.h"
 #include "defaulttraits.h"
 #include "losslesstraits.h"
+#include <windows.h>
 
 
 #pragma warning (disable: 4996)
 
 
-UINT timeGetTime() { return 0; }
+double getTime() 
+{ 
+	LARGE_INTEGER time;
+	::QueryPerformanceCounter(&time);
+	LARGE_INTEGER freq;
+	::QueryPerformanceFrequency(&freq);
+
+	return double(time.LowPart) * 1000.0/double(freq.LowPart);
+}
 
 int ReadJLSHeader(void* pdata, ScanInfo* pmetadata, int cbyte)
 {
@@ -49,7 +58,7 @@ int Decode(void* pvoid, int cbyte, const BYTE* pbytecompressed, int cbytecompr, 
 int Encode(const void* pbyte, Size size, int cbit, int ccomp, interleavemode ilv, BYTE* pbytecompressed, int cbytecompr, int nearval, const void* pbyteExpected = NULL)
 {
 	JLSOutputStream stream;
-	stream.Init(size.cx, size.cy, cbit, ccomp);
+	stream.Init(size, cbit, ccomp);
 	
 	if (ilv == ILV_NONE)
 	{
@@ -119,9 +128,9 @@ void Test(const char* strName, const BYTE* rgbyteRaw, Size size, int cbit, int c
 	pbyteCompressed.resize(size.cx *size.cy * 4);
 	
 	std::vector<BYTE> rgbyteOut;
-	rgbyteOut.resize(size.cx * size.cy * ((cbit + 7) / 8));
+	rgbyteOut.resize(size.cx * size.cy * ((cbit + 7) / 8) * ccomp);
 	
-	UINT dwstart = timeGetTime();
+	double dblstart = getTime();
 	
 	size_t cbyteCompressed = Encode(rgbyteRaw, size, cbit, ccomp, ccomp == 3 ? ILV_SAMPLE : ILV_NONE, &pbyteCompressed[0], int(pbyteCompressed.size()), 0);
 
@@ -129,14 +138,16 @@ void Test(const char* strName, const BYTE* rgbyteRaw, Size size, int cbit, int c
 	//strDst = strDst + ".jls";
 	//WriteFile(strDst.GetString(), &pbyteCompressed[0], cbyteCompressed);
 
-	UINT dwtimeEncodeComplete = timeGetTime();
+	double dwtimeEncodeComplete = getTime();
 	
-	Decode(&rgbyteOut[0], rgbyteOut.size(), &pbyteCompressed[0], int(cbyteCompressed), rgbyteRaw);
-	
-	UINT dwtimeDecodeComplete = timeGetTime();
 	double dblfactor = 1.0 *  rgbyteOut.size() / cbyteCompressed;
+	printf("Encode: %f Ratio: %f \n\r", dwtimeEncodeComplete - dblstart, dblfactor);
+	
+	Decode(&rgbyteOut[0], rgbyteOut.size(), &pbyteCompressed[0], int(cbyteCompressed));
+	
+	double dwtimeDecodeComplete = getTime();
 	std::cout << "RoundTrip test for: " << strName << "\n\r";
-	printf("Encode: %lu Decode: %lu Ratio: %f \n\r", dwtimeEncodeComplete - dwstart, dwtimeDecodeComplete - dwtimeEncodeComplete, dblfactor);
+	printf("Encode: %f Decode: %f Ratio: %f \n\r", dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, dblfactor);
 
 	BYTE* pbyteOut = &rgbyteOut[0];
 	for (UINT i = 0; i < rgbyteOut.size(); ++i)
@@ -263,6 +274,8 @@ void TestAnnexH3()
 
 void TestConformanceLosslessMode()
 {
+//	DecompressFile("..\\test\\mars\\phoenixmars.jls", "..\\test\\mars\\phoenixmars.ppm",40);
+
 	// Test 1
 	DecompressFile("..\\test\\conformance\\t8c0e0.jls", "..\\test\\conformance\\test8.ppm",15);
 
@@ -332,6 +345,7 @@ void TestPerformance()
 	Size size1024 = Size(1024, 1024);
 	Size size512 = Size(512, 512);
 
+//	TestFile("..\\test\\mars\\phoenixmars.ppm", 40, Size(5300,4300),  8, 3);
 	TestFile("..\\test\\mr2_unc", 1728, size1024,  16, 1);
 	TestFile("..\\test\\0015.raw", 0, size1024,  8, 1);
 	TestFile("..\\test\\lena8b.raw", 0, size512,  8, 1);
