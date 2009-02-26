@@ -12,7 +12,7 @@
 #include "defaulttraits.h"
 #include "losslesstraits.h"
 #include <windows.h>
-
+#include "interface.h"
 
 #pragma warning (disable: 4996)
 
@@ -62,10 +62,10 @@ int Encode(const void* pbyte, Size size, int cbit, int ccomp, interleavemode ilv
 	
 	if (ilv == ILV_NONE)
 	{
-		int cbyteComp = size.cx*size.cy*((cbit +7)/8);
+		int cbytePlane = size.cx*size.cy*((cbit +7)/8);
 		for (int icomp = 0; icomp < ccomp; ++icomp)
 		{
-			const BYTE* pbyteComp = static_cast<const BYTE*>(pbyte) + icomp*cbyteComp;
+			const BYTE* pbyteComp = static_cast<const BYTE*>(pbyte) + icomp*cbytePlane;
 			stream.AddScan(pbyteComp, size, cbit, 1, ILV_NONE, nearval);
 		}
 	}
@@ -226,20 +226,21 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
  	std::vector<BYTE> rgbyteRaw;
 	ReadFile(strNameRaw, &rgbyteRaw, ioffs);
 
-	ScanInfo metadata;
-	int cbyteHeader = ReadJLSHeader(&rgbyteFile[0], &metadata, rgbyteFile.size());
-	if (cbyteHeader == 0)
+	JlsParamaters metadata;
+	if (JpegLsReadHeader(&rgbyteFile[0], rgbyteFile.size(), &metadata) != OK)
 	{
 		ASSERT(false);
 		return;
 	}
 
-	if (metadata.ilv == ILV_NONE && metadata.ccomp == 3)
+	Size size = Size(metadata.width, metadata.height);
+
+	if (metadata.ilv == ILV_NONE && metadata.components == 3)
 	{
-		Triplet2Planar(rgbyteRaw, metadata.size);
+		Triplet2Planar(rgbyteRaw, Size(metadata.width, metadata.height));
 	}
 
-	TestJls(rgbyteRaw,  metadata.size, metadata.cbit, metadata.ccomp, metadata.ilv, &rgbyteFile[0], rgbyteFile.size(), metadata.nnear != 0);
+	TestJls(rgbyteRaw, size, metadata.bitspersample, metadata.components, metadata.ilv, &rgbyteFile[0], rgbyteFile.size(), metadata.allowedlossyerror != 0);
 }
 
 

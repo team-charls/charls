@@ -215,6 +215,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\interface.cpp"
+				>
+			</File>
+			<File
 				RelativePath="jpegls.cpp"
 				>
 				<FileConfiguration
@@ -270,6 +274,10 @@
 			</File>
 			<File
 				RelativePath="header.h"
+				>
+			</File>
+			<File
+				RelativePath=".\interface.h"
 				>
 			</File>
 			<File

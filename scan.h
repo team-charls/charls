@@ -15,6 +15,28 @@ inlinehint int ApplySign(int i, int sign)
 	{ return (sign ^ i) - sign; }									
 
 
+int CLAMP(int i, int j, int MAXVAL)
+{
+	if (i > MAXVAL || i < j)
+		return j;
+
+	return i;
+}
+
+Presets ComputeDefault(int MAXVAL, int NEAR)
+{
+		Presets preset;
+
+		int FACTOR = (min(MAXVAL, 4095) + 128)/256;
+		
+		preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
+		preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
+		preset.T3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7*NEAR, preset.T2, MAXVAL);
+		preset.MAXVAL = MAXVAL;
+		preset.RESET = BASIC_RESET;
+		return preset;
+}
+
 
 /* Two alternatives for GetPredictedValue() (second is slightly faster due to reduced branching)
 
@@ -119,28 +141,18 @@ public:
 
 	void SetPresets(const Presets& presets)
 	{
-		int NEAR = traits.NEAR;
-		int FACTOR = (min(traits.MAXVAL, 4095) + 128)/256;
 		
-		int t1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1);
-		int t2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, t1);
-		int t3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7*NEAR, t2);
+		Presets presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
 
-		InitParams(presets.T1 != 0 ? presets.T1 : t1,
-				   presets.T2 != 0 ? presets.T2 : t2,
-				   presets.T3 != 0 ? presets.T3 : t3, 
-				   presets.RESET != 0 ? presets.RESET : BASIC_RESET);
+		InitParams(presets.T1 != 0 ? presets.T1 : presetDefault.T1,
+				   presets.T2 != 0 ? presets.T2 : presetDefault.T2,
+				   presets.T3 != 0 ? presets.T3 : presetDefault.T3, 
+				   presets.RESET != 0 ? presets.RESET : presetDefault.RESET);
 
 
 	}
 
-	int CLAMP(int i, int j)
-	{
-		if (i > traits.MAXVAL || i < j)
-			return j;
-
-		return i;
-	}
+	
  	
 	signed char QuantizeGratientOrg(int Di);
 	inlinehint int QuantizeGratient(int Di)
@@ -149,10 +161,8 @@ public:
 			return *(_pquant + Di); 
 		}
 
-	void InitTables();
 	void InitQuantizationLUT();
-	inlinehint std::pair<int, UINT> CreateEncodedValue(int k, UINT mappederval, UINT limit);
-
+	
 	inlinehint UINT DecodeValue(int k, UINT limit, int qbpp);
 	inlinehint void EncodeValue(int k, UINT mappederval, UINT limit);
 	
@@ -204,10 +214,11 @@ public:
 protected:
 	TRAITS traits;
 	signed char* _pquant;
+	std::vector<signed char> _rgquant;
 	JlsContext _rgcontext[365];	
 	CContextRunMode _contextRunmode[2];
 	int RUNindex;
-
+	
 	int T3; 
 	int T2;
 	int T1;	
@@ -228,7 +239,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DecodeRegular(int Qs, int pre
 	int Px			= traits.CorrectPrediction(pred + ApplySign(ctx.C, sign));    
 
 	int ErrVal;
-	const Code& code		= rgtable[k].Get(PeekByte());
+	const Code& code		= rgtableShared[k].Get(PeekByte());
 	if (code.GetLength() != 0)
 	{
 		Skip(code.GetLength());
@@ -263,41 +274,41 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::EncodeRegular(int Qs, int x, 
 						   
 
 
-template<class TRAITS, class STRATEGY>
-void JlsCodec<TRAITS,STRATEGY>::InitTables()
+inlinehint std::pair<int, UINT> CreateEncodedValue(int k, UINT mappederval)
+{
+	UINT highbits = mappederval >> k;
+	return std::make_pair(highbits + k + 1, (1 << k) | (mappederval & ((1 << k) - 1)));
+}
+
+
+CTable InitTable(int k)
 {
 	CTable table;
-	for (int itable = 0; itable < 16; ++ itable)
-	{
-		rgtable[itable] = table;
+	for (short nerr = 0; ; nerr++)
+	{		
+		// Q is not used when k != 0
+		UINT merrval = GetMappedErrVal(nerr);//, k, -1);
+		std::pair<int, UINT> paircode = CreateEncodedValue(k, merrval);
+		if (paircode.first > CTable::cbit)
+			break;
+
+		Code code = Code( nerr, short(paircode.first) );
+		table.AddEntry(BYTE(paircode.second), code);
+	}
+	
+	for (short nerr = -1; ; nerr--)
+	{		
+		// Q is not used when k != 0
+		UINT merrval = GetMappedErrVal(nerr);//, k, -1);
+		std::pair<int, UINT> paircode = CreateEncodedValue(k, merrval);
+		if (paircode.first > CTable::cbit)
+			break;
+
+		Code code = Code(nerr, short(paircode.first));
+		table.AddEntry(BYTE(paircode.second), code);
 	}
 
-	for (int k = 0; k < CTable::cbit; k++)
-	{
-		for (short nerr = 0; ; nerr++)
-		{		
-			// Q is not used when k != 0
-			UINT merrval = GetMappedErrVal(nerr);//, k, -1);
-			std::pair<int, UINT> paircode = CreateEncodedValue(k, merrval, traits.LIMIT);
-			if (paircode.first > CTable::cbit)
-				break;
-
-			Code code = Code( nerr, short(paircode.first) );
-			rgtable[k].AddEntry(BYTE(paircode.second), code);
-		}
-		
-		for (short nerr = -1; ; nerr--)
-		{		
-			// Q is not used when k != 0
-			UINT merrval = GetMappedErrVal(nerr);//, k, -1);
-			std::pair<int, UINT> paircode = CreateEncodedValue(k, merrval, traits.LIMIT);
-			if (paircode.first > CTable::cbit)
-				break;
-
-			Code code = Code(nerr, short(paircode.first));
-			rgtable[k].AddEntry(BYTE(paircode.second), code);
-		}
-	}
+	return table;
 }
 
 	
@@ -348,33 +359,49 @@ inlinehint void JlsCodec<TRAITS,STRATEGY>::EncodeValue(int k, UINT mappederval, 
 }
 
 
-template<class TRAITS, class STRATEGY>
-inlinehint std::pair<int, UINT> JlsCodec<TRAITS,STRATEGY>::CreateEncodedValue(int k, UINT mappederval, UINT limit)
-{
-	UINT highbits = mappederval >> k;
-	if (highbits < limit - traits.qbpp - 1)
-	{
-		return std::make_pair(highbits + k + 1, (1 << k) | (mappederval & ((1 << k) - 1)));
-	}
-	else
-	{
-		return std::make_pair(limit, (1 << traits.qbpp) |(mappederval - 1) & ((1 << traits.qbpp) - 1));
-	}
-}
 
 
-
-
+#pragma warning (disable: 4127)
 
 template<class TRAITS, class STRATEGY>
 void JlsCodec<TRAITS,STRATEGY>::InitQuantizationLUT()
 {
-	_pquant = rgquant + 65535;
-
-	signed char* pquant = rgquant + 65535;
-	for (int i = -65535; i < 65535; ++i)
+	if (traits.NEAR == 0 && traits.MAXVAL == (1 << traits.bpp) - 1)
 	{
-		*(pquant + i) = QuantizeGratientOrg(i);
+		Presets presets = ComputeDefault(traits.MAXVAL, traits.NEAR);
+		if (presets.T1 == T1 && presets.T2 == T2 && presets.T3 == T3)
+		{
+			if (traits.bpp == 8) 
+			{
+				_pquant = &rgquant8Ll[rgquant8Ll.size() / 2 ]; 
+				return;
+			}
+			if (traits.bpp == 10) 
+			{
+				_pquant = &rgquant10Ll[rgquant10Ll.size() / 2 ]; 
+				return;
+			}			
+			if (traits.bpp == 12) 
+			{
+				_pquant = &rgquant12Ll[rgquant12Ll.size() / 2 ]; 
+				return;
+			}			
+			if (traits.bpp == 16) 
+			{
+				_pquant = &rgquant16Ll[rgquant16Ll.size() / 2 ]; 
+				return;
+			}			
+		}	
+	}
+
+	int RANGE = 1 << traits.bpp;
+
+	_rgquant.resize(RANGE * 2);
+	
+	_pquant = &_rgquant[RANGE];
+	for (int i = -RANGE; i < RANGE; ++i)
+	{
+		_pquant[i] = QuantizeGratientOrg(i);
 	}
 
 }
@@ -832,12 +859,7 @@ void JlsCodec<TRAITS,STRATEGY>::InitParams(int t1, int t2, int t3, int nReset)
 	T2 = t2;
 	T3 = t3;
 
-	//if (f_bTableMaxVal != traits.MAXVAL)
-	{
-		f_bTableMaxVal = traits.MAXVAL;
-		InitQuantizationLUT();
-		InitTables();
-	}
+	InitQuantizationLUT();
 
 	JlsContext ctxDefault			 = JlsContext(max(2, (traits.RANGE + 32)/64));
 	for (UINT Q = 0; Q < sizeof(_rgcontext) / sizeof(_rgcontext[0]); ++Q)

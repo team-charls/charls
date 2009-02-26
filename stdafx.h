@@ -25,3 +25,4 @@ typedef unsigned short USHORT;
 #define ASSERT(t) ;
 #endif
 
+#define CHARLS_IMEXPORT __declspec(dllexport) 

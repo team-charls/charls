@@ -31,12 +31,47 @@ const int BASIC_T3		= 21;
 #include "losslesstraits.h"
 #include "defaulttraits.h"
 
-CTable rgtable[16];
-
-int f_bTableMaxVal		= -1;
-signed char rgquant[65535 + 1 + 65535];
-
 #include "scan.h"
+
+signed char QuantizeGratientOrg(const Presets& preset, int NEAR, int Di)
+{
+	if (Di <= -preset.T3) return  -4;
+	if (Di <= -preset.T2) return  -3;
+	if (Di <= -preset.T1) return  -2;
+	if (Di < -NEAR)  return  -1;
+	if (Di <=  NEAR) return   0;
+	if (Di < preset.T1)   return   1;
+	if (Di < preset.T2)   return   2;
+	if (Di < preset.T3)   return   3;
+	
+	return  4;
+}
+
+
+std::vector<signed char> CreateQLutLossless(int cbit)
+{
+	Presets preset = ComputeDefault((1 << cbit) - 1, 0);
+	int range = preset.MAXVAL + 1;
+
+	std::vector<signed char> lut;
+	lut.resize(range * 2);
+	
+	for (int diff = -range; diff < range; diff++)
+	{
+		lut[range + diff] = QuantizeGratientOrg(preset, 0,diff);
+	}
+	return lut;
+}
+
+CTable rgtableShared[16] = { InitTable(0), InitTable(1), InitTable(2), InitTable(3), 
+							 InitTable(4), InitTable(5), InitTable(6), InitTable(7), 
+							 InitTable(8), InitTable(9), InitTable(10), InitTable(11), 
+							 InitTable(12), InitTable(13), InitTable(14),InitTable(15) };
+
+std::vector<signed char> rgquant8Ll = CreateQLutLossless(8);
+std::vector<signed char> rgquant10Ll = CreateQLutLossless(10);
+std::vector<signed char> rgquant12Ll = CreateQLutLossless(12);
+std::vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
 template<class STRATEGY>

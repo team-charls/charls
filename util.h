@@ -17,13 +17,6 @@
 #endif
 
 
-enum interleavemode
-{
-	ILV_NONE = 0,
-	ILV_LINE = 1,
-	ILV_SAMPLE = 2,
-};
-
 const int BASIC_RESET	= 64;
 
 inline int log2(UINT n)
@@ -77,6 +70,9 @@ struct Triplet
 
 
 #pragma pack (pop)
+
+
+#include "interface.h"
 
 inline bool operator==(const Triplet& lhs, const Triplet& rhs)
 	{ return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3; }
