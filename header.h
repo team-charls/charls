@@ -39,6 +39,6 @@ protected:
 	JpegSegment() {}
 public:
 	virtual ~JpegSegment() {}
-	virtual void Write(JLSOutputStream* pheader) = 0;
+	virtual void Write(JLSOutputStream* pstream) = 0;
 };
 

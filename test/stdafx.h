@@ -9,4 +9,15 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#ifdef _DEBUG
+#include <assert.h>
+#define ASSERT(t) assert(t)
+#else
+#define ASSERT(t) ;
+#endif
+
+typedef unsigned int UINT;
+typedef unsigned char BYTE;
+typedef unsigned short USHORT;
+
 // TODO: reference additional headers your program requires here

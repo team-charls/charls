@@ -11,7 +11,7 @@
 #undef  NEAR
 
 #ifdef _DEBUG
-#define inlinehint inline
+#define inlinehint 
 #else
 #define inlinehint __forceinline
 #endif
@@ -42,10 +42,10 @@ struct Size
 
 
 
-inlinehint int Sign(int n)
+inline __forceinline int Sign(int n)
 	{ return (n >> 31) | 1;}
 
-inlinehint int BitWiseSign(int i)
+inline __forceinline int BitWiseSign(int i)
 	{ return (i >> 31); }	
 
 

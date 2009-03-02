@@ -1,6 +1,7 @@
 #ifndef JLS_INTERFACE
 #define JLS_INTERFACE
 
+
 enum JLS_ERROR
 {
 	OK = 0,
@@ -18,6 +19,15 @@ enum interleavemode
 	ILV_SAMPLE = 2,
 };
 
+struct JlsCustomParameters
+{
+	int MAXVAL;
+	int T1;
+	int T2;
+	int T3;
+	int RESET;
+};
+
 struct JlsParamaters
 {
 	int width;
@@ -26,17 +36,25 @@ struct JlsParamaters
 	int components;
 	int allowedlossyerror;
 	interleavemode ilv;
+	JlsCustomParameters custom;
 };
+
 
 #ifndef CHARLS_IMEXPORT
 #define CHARLS_IMEXPORT __declspec(dllimport) 
+#pragma comment (lib,"charls.lib")
 #endif
-extern "C"
-{
-  CHARLS_IMEXPORT	JLS_ERROR JpegLsEncode(void* pdataCompressed, int cbyteBuffer, int* pcbyteWritten, const void* pdataUncompressed, int cbyteUncompressed, const JlsParamaters* pparams);
-  CHARLS_IMEXPORT	JLS_ERROR JpegLsDecode(void* pdataUncompressed, int cbyteUncompressed, const void* pdataCompressed, int cbyteCompressed);
-  CHARLS_IMEXPORT	JLS_ERROR JpegLsReadHeader(const void* pdataUncompressed, int cbyteUncompressed, JlsParamaters* pparams);
-  CHARLS_IMEXPORT	JLS_ERROR JpegLsCanEncode(JlsParamaters*);
-  CHARLS_IMEXPORT   JLS_ERROR JpegLsCanDecode(JlsParamaters*);
-}
+
+
+//extern "C"
+//{
+  CHARLS_IMEXPORT JLS_ERROR JpegLsEncode(void* pdataCompressed, int cbyteBuffer, int* pcbyteWritten, const void* pdataUncompressed, int cbyteUncompressed, const JlsParamaters* pparams);
+  CHARLS_IMEXPORT JLS_ERROR JpegLsDecode(void* pdataUncompressed, int cbyteUncompressed, const void* pdataCompressed, int cbyteCompressed);
+  CHARLS_IMEXPORT JLS_ERROR JpegLsReadHeader(const void* pdataUncompressed, int cbyteUncompressed, JlsParamaters* pparams);
+  CHARLS_IMEXPORT JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, int cbyteUncompressed, const void* pdataCompressed, int cbyteCompressed);
+//CHARLS_IMEXPORT	JLS_ERROR JpegLsCanEncode(JlsParamaters*);
+  //CHARLS_IMEXPORT   JLS_ERROR JpegLsCanDecode(JlsParamaters*);
+//}
+
+
 #endif

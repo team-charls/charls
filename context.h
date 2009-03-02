@@ -86,9 +86,8 @@ public:
 		UINT Ntest	= N;
 		UINT Atest	= A;
 		UINT k = 0;
-		for(; Ntest < Atest; k++) 
+		for(; (Ntest << k) < Atest; k++) 
 		{ 
-			Ntest <<= 1;
 			ASSERT(k <= 32); 
 		};
 		return k;

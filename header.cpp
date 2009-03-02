@@ -8,6 +8,27 @@
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
 
+
+bool IsDefault(const JlsCustomParameters* pcustom)
+{
+	if (pcustom->MAXVAL != 0)
+		return false;
+
+	if (pcustom->T1 != 0)
+		return false;
+
+	if (pcustom->T2 != 0)
+		return false;
+
+	if (pcustom->T3 != 0)
+		return false;
+
+	if (pcustom->RESET != 0)
+		return false;
+
+	return true;
+}
+
 //
 // JpegMarkerSegment
 //
@@ -20,12 +41,12 @@ public:
 		std::swap(_vecbyte, vecbyte);
 	}
 
-	virtual void Write(JLSOutputStream* pheader)
+	virtual void Write(JLSOutputStream* pstream)
 	{
-		pheader->WriteByte(0xFF);
-		pheader->WriteByte(_marker);
-		pheader->WriteWord(USHORT(_vecbyte.size() + 2));
-		pheader->WriteBytes(_vecbyte);		
+		pstream->WriteByte(0xFF);
+		pstream->WriteByte(_marker);
+		pstream->WriteWord(USHORT(_vecbyte.size() + 2));
+		pstream->WriteBytes(_vecbyte);		
 	}
 
 	BYTE _marker;
@@ -34,9 +55,9 @@ public:
 
 
 //
-// AppendWord()
+// push_back()
 //
-void AppendWord(std::vector<BYTE>& vec, USHORT value)
+void push_back(std::vector<BYTE>& vec, USHORT value)
 {
 	vec.push_back(BYTE(value / 0x100));
 	vec.push_back(BYTE(value % 0x100));
@@ -50,8 +71,8 @@ JpegSegment* CreateMarkerStartOfFrame(Size size, int cbpp, int ccomp)
 {
 	std::vector<BYTE> vec;
 	vec.push_back(static_cast<BYTE>(cbpp));
-	AppendWord(vec, static_cast<USHORT>(size.cy));
-	AppendWord(vec, static_cast<USHORT>(size.cx));
+	push_back(vec, static_cast<USHORT>(size.cy));
+	push_back(vec, static_cast<USHORT>(size.cx));
 	
 	// components
 	vec.push_back(static_cast<BYTE>(ccomp));
@@ -77,7 +98,8 @@ JLSOutputStream::JLSOutputStream() :
 	_pdata(NULL),
 	_cbyteOffset(0),
 	_cbyteLength(0),
-	_icompLast(0)
+	_icompLast(0),
+	_bCompare(false)
 {
 }
 
@@ -105,10 +127,13 @@ void JLSOutputStream::Init(Size size, int cbpp, int ccomp)
 {
 		_rgsegment.push_back(CreateMarkerStartOfFrame(size, cbpp, ccomp));
 }
+
+
+
 //
 // Write()
 //
-int JLSOutputStream::Write(BYTE* pdata, int cbyteLength, const void* /*pbyteExpected*/)
+int JLSOutputStream::Write(BYTE* pdata, int cbyteLength)
 {
 	_pdata = pdata;
 	_cbyteLength = cbyteLength;
@@ -116,12 +141,13 @@ int JLSOutputStream::Write(BYTE* pdata, int cbyteLength, const void* /*pbyteExpe
 	WriteByte(0xFF);
 	WriteByte(JPEG_SOI);
 	
-//	pbyteExpected += 2;
 
 	for (UINT i = 0; i < _rgsegment.size(); ++i)
 	{
 		_rgsegment[i]->Write(this);
 	}
+
+	//_bCompare = false;
 
 	WriteByte(0xFF);
 	WriteByte(JPEG_EOI);
@@ -143,20 +169,24 @@ JLSInputStream::JLSInputStream(const BYTE* pdata, int cbyteLength) :
 //
 // Read()
 //
-bool JLSInputStream::Read(void* pvoid)
+bool JLSInputStream::Read(void* pvoid, int cbyteAvailable)
 {
 	if (!ReadHeader())
 		return false;
 
-	return ReadPixels(pvoid);
+	return ReadPixels(pvoid, cbyteAvailable);
 }
 
 
 //
 // ReadPixels()
 //
-bool JLSInputStream::ReadPixels(void* pvoid)
+bool JLSInputStream::ReadPixels(void* pvoid, int cbyteAvailable)
 {
+	int cbytePlane = _info.size.cx * _info.size.cy * ((_info.cbit + 7)/8);
+
+	if (cbyteAvailable < cbytePlane * _info.ccomp)
+		return false;
 
  	// line interleave not supported yet
 	if (_info.ilv == ILV_LINE)
@@ -168,7 +198,7 @@ bool JLSInputStream::ReadPixels(void* pvoid)
 		for (int icomp = 0; icomp < _info.ccomp; ++icomp)
 		{
 			ReadScan(pbyte);			
-			pbyte += _info.size.cx * _info.size.cy * ((_info.cbit + 7)/8); 
+			pbyte += cbytePlane; 
 		}	
 	}
 	else
@@ -223,6 +253,50 @@ int JLSInputStream::ReadHeader()
 }
 
 
+JpegMarkerSegment* EncodeStartOfScan(const JlsParamaters* pparams, int icomponent)
+{
+	BYTE itable		= 0;
+	
+	std::vector<BYTE> rgbyte;
+
+	if (icomponent < 0)
+	{
+		rgbyte.push_back((BYTE)pparams->components);
+		for (int icomponent = 0; icomponent < pparams->components; ++icomponent )
+		{
+			rgbyte.push_back(BYTE(icomponent + 1));
+			rgbyte.push_back(itable);
+		}
+	}
+	else
+	{
+		rgbyte.push_back(1);
+		rgbyte.push_back((BYTE)icomponent);
+		rgbyte.push_back(itable);	
+	}
+
+	rgbyte.push_back(BYTE(pparams->allowedlossyerror));
+	rgbyte.push_back(BYTE(pparams->ilv));
+	rgbyte.push_back(0); // transform
+
+	return new JpegMarkerSegment(JPEG_SOS, rgbyte);
+}
+
+
+
+JpegMarkerSegment* CreateLSE(const JlsCustomParameters* pcustom)
+{
+	std::vector<BYTE> rgbyte;
+
+	rgbyte.push_back(1);
+	push_back(rgbyte, (USHORT)pcustom->MAXVAL);
+	push_back(rgbyte, (USHORT)pcustom->T1);
+	push_back(rgbyte, (USHORT)pcustom->T2);
+	push_back(rgbyte, (USHORT)pcustom->T3);
+	push_back(rgbyte, (USHORT)pcustom->RESET);
+	
+	return new JpegMarkerSegment(JPEG_LSE, rgbyte);
+}
 
 //
 // ReadPresetParameters()
@@ -313,21 +387,21 @@ void JLSInputStream::ReadScan(void* pvout)
 class JpegImageDataSegment: public JpegSegment
 {
 public:
-	JpegImageDataSegment(const void* pvoidRaw, Size size, int cbit, int icompStart, int ccompScan, interleavemode ilv, int accuracy)  :
+	JpegImageDataSegment(const void* pvoidRaw, Size size, int cbit, int icompStart, int ccompScan, interleavemode ilv, int accuracy, const JlsCustomParameters& presets)  :
 		_cbit(cbit), 
 		_nnear(accuracy),
 		_size(size),
 		_ccompScan(ccompScan),
 		_ilv(ilv),
 		_icompStart(icompStart),
-		_pvoidRaw(pvoidRaw)
+		_pvoidRaw(pvoidRaw),
+		_presets(presets)
 	{
 	}
 
 
 	void Write(JLSOutputStream* pstream)
 	{		
-		EncodeScanHeader(pstream);
 
 		ScanInfo info;
 		info.cbit = _cbit;
@@ -335,34 +409,15 @@ public:
 		info.ilv = _ilv;
 		info.nnear = _nnear;
 		
+
 		Presets presets;
 
 		std::auto_ptr<EncoderStrategy> qcodec(JlsCodecFactory<EncoderStrategy>().GetCodec(info, presets));
-		int cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, _size, pstream->GetPos(), pstream->GetLength(), NULL); 
+		int cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, _size, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
 
 
-void EncodeScanHeader(JLSOutputStream* pstream) const
-{
-	BYTE ccomponent = BYTE(_ccompScan);
-	BYTE itable		= 0;
-	USHORT cbyteHeader = 0x06 + 2 * ccomponent;
-	pstream->WriteByte(0xFF);
-	pstream->WriteByte(JPEG_SOS);
-	pstream->WriteWord(cbyteHeader);
-	pstream->WriteByte(ccomponent);
-
-	for (int icomponent = 0; icomponent < ccomponent; ++icomponent )
-	{
-		pstream->WriteByte(BYTE(icomponent + _icompStart));
-		pstream->WriteByte(itable);
-	}
-
-	pstream->WriteByte(BYTE(_nnear)); // NEAR
-	pstream->WriteByte(BYTE(_ilv));
-	pstream->WriteByte(0); // transform
-}
 
 	const void* _pvoidRaw;
 	Size _size;
@@ -371,12 +426,25 @@ void EncodeScanHeader(JLSOutputStream* pstream) const
 	interleavemode _ilv;
 	int _icompStart;
 	int _nnear;
+
+	JlsCustomParameters _presets;
 };
 
 
 
-void JLSOutputStream::AddScan(const void* pbyteComp, Size size, int cbit, int ccomp, interleavemode ilv, int nearval)
+void JLSOutputStream::AddScan(const void* pbyteComp, const JlsParamaters* pparams)
 {
+	if (!IsDefault(&pparams->custom))
+	{
+		_rgsegment.push_back(CreateLSE(&pparams->custom));		
+	}
+
 	_icompLast += 1;
-	_rgsegment.push_back(new JpegImageDataSegment(pbyteComp, size, cbit, _icompLast, ccomp, ilv, nearval));
+	_rgsegment.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _icompLast : -1));
+
+	Size size = Size(pparams->width, pparams->height);
+	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
+
+	
+	_rgsegment.push_back(new JpegImageDataSegment(pbyteComp, size, pparams->bitspersample, _icompLast, ccomp, pparams->ilv, pparams->allowedlossyerror, pparams->custom));
 }

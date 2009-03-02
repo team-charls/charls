@@ -17,6 +17,8 @@ public:
 		  _pbyteCompressed(0)
 	  {}
 
+	 enum { IsDecoding = 1};
+
 	  virtual ~DecoderStrategy()
 	  {}
 

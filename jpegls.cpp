@@ -100,41 +100,41 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodec(const ScanInfo& _info, const Prese
 template<class STRATEGY>
 STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const ScanInfo& _info)
 {
-	if (_info.nnear != 0)
+	if (_info.ccomp != 1 && _info.ilv != ILV_NONE)
 	{
-		if (_info.cbit == 8 && _info.ilv == ILV_SAMPLE)
+		if (_info.ilv == ILV_SAMPLE && _info.ccomp == 3 && _info.cbit == 8)
 		{
+			if (_info.nnear == 0)
+				return new JlsCodec<LosslessTraitsT<Triplet,8>, STRATEGY>();
+
 			typename DefaultTraitsT<BYTE,Triplet> traits((1 << _info.cbit) - 1, _info.nnear); 
-			return new JlsCodec<DefaultTraitsT<BYTE,Triplet>, STRATEGY>(traits); 
+			return new JlsCodec<DefaultTraitsT<BYTE,Triplet>, STRATEGY>(traits); 	
 		}
-		if (_info.cbit == 8)
-		{
-			typename DefaultTraitsT<BYTE, BYTE> traits((1 << _info.cbit) - 1, _info.nnear); 
-			return new JlsCodec<DefaultTraitsT<BYTE, BYTE>, STRATEGY>(traits); 
-		}
-		else
-		{
-			typename DefaultTraitsT<USHORT, USHORT> traits((1 << _info.cbit) - 1, _info.nnear); 
-			return new JlsCodec<DefaultTraitsT<USHORT, USHORT>, STRATEGY>(traits); 
-		}
-	}
-	if (_info.ilv == ILV_SAMPLE && _info.ccomp == 3 && _info.cbit == 8)
-		return new JlsCodec<LosslessTraitsT<Triplet,8>, STRATEGY>();
 	
-	switch (_info.cbit)
-	{
-		case  7: return new JlsCodec<LosslessTraitsT<BYTE,   7>, STRATEGY>(); 
-		case  8: return new JlsCodec<LosslessTraitsT<BYTE,   8>, STRATEGY>(); 
-		case  9: return new JlsCodec<LosslessTraitsT<USHORT, 9>, STRATEGY>(); 
-		case 10: return new JlsCodec<LosslessTraitsT<USHORT,10>, STRATEGY>(); 
-		case 11: return new JlsCodec<LosslessTraitsT<USHORT,11>, STRATEGY>(); 
-		case 12: return new JlsCodec<LosslessTraitsT<USHORT,12>, STRATEGY>();
-		case 13: return new JlsCodec<LosslessTraitsT<USHORT,13>, STRATEGY>();
-		case 14: return new JlsCodec<LosslessTraitsT<USHORT,14>, STRATEGY>();
-		case 15: return new JlsCodec<LosslessTraitsT<USHORT,15>, STRATEGY>();
-		case 16: return new JlsCodec<LosslessTraitsT<USHORT,16>, STRATEGY>();
+		return NULL;
 	}
 
+	if (_info.nnear == 0)
+	{		
+		switch (_info.cbit)
+		{
+			case  8: return new JlsCodec<LosslessTraitsT<BYTE,   8>, STRATEGY>(); 
+			case 10: return new JlsCodec<LosslessTraitsT<USHORT,10>, STRATEGY>(); 
+			case 12: return new JlsCodec<LosslessTraitsT<USHORT,12>, STRATEGY>();
+			case 16: return new JlsCodec<LosslessTraitsT<USHORT,16>, STRATEGY>();
+		}
+	}
+	if (_info.cbit <= 8)
+	{
+		typename DefaultTraitsT<BYTE, BYTE> traits((1 << _info.cbit) - 1, _info.nnear); 
+		return new JlsCodec<DefaultTraitsT<BYTE, BYTE>, STRATEGY>(traits); 
+	}
+
+	if (_info.cbit <= 16)
+	{
+		typename DefaultTraitsT<USHORT, USHORT> traits((1 << _info.cbit) - 1, _info.nnear); 
+		return new JlsCodec<DefaultTraitsT<USHORT, USHORT>, STRATEGY>(traits); 
+	}
 	return NULL;
 }
 

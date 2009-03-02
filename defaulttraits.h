@@ -38,7 +38,7 @@ public:
 	{
 		NEAR   = jls_near;
 		MAXVAL = max;
-		RANGE  = (max + 2 * jls_near )/(2 * jls_near + 1) + 1;
+		RANGE  = (MAXVAL + 2 * NEAR )/(2 * NEAR + 1) + 1;
 		bpp = log2(max);	
 		LIMIT = 2 * (bpp + max(8,bpp));
 		qbpp = log2(RANGE);
@@ -48,7 +48,8 @@ public:
 	
 	inlinehint int ComputeErrVal(int e) const
 	{
-		return ModRange(Quantize(e));
+		int q = Quantize(e);
+		return ModRange(q);
 	}
 	
 	inlinehint SAMPLE ComputeReconstructedSample(int Px, int ErrVal)
@@ -81,6 +82,8 @@ public:
 		if (Errval >= ((RANGE + 1) / 2))
 			Errval = Errval - RANGE;
 
+		ASSERT(abs(Errval) <= RANGE/2);
+
 		return Errval;
 	}
 
@@ -104,7 +107,7 @@ private:
 	{ 
 		if (val < -NEAR)
 			val = val + RANGE*(2*NEAR+1);
-		if (val > MAXVAL + NEAR)
+		else if (val > MAXVAL + NEAR)
 			val = val - RANGE*(2*NEAR+1);
 
 		return SAMPLE(CorrectPrediction(val)); 

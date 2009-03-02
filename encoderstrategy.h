@@ -19,6 +19,7 @@ public:
 		 _cbyteWritten(0)
 	{};
 
+		 enum { IsDecoding = 0 };
 
 	virtual ~EncoderStrategy() 
 		 {}
@@ -38,7 +39,7 @@ void Init(BYTE* pbyteCompressed, int cbyte)
 }
 
 
-inlinehint void AppendToBitStream(UINT value, UINT length)
+void AppendToBitStream(UINT value, UINT length)
 {	
 	ASSERT(length < 32 && length >= 0);
 
@@ -74,6 +75,9 @@ void Flush()
 {
 	for (int i = 0; i < 4; ++i)
 	{
+		if (bitpos >= 32)
+			break;
+
 		if (_bFFWritten)
 		{
 			// insert highmost bit

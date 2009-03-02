@@ -41,22 +41,28 @@ public:
 	virtual ~JLSOutputStream();
 
 	void Init(Size size, int cbpp, int ccomp);
-	void AddScan(const void* pbyteComp, Size size, int cbit, int ccomp, interleavemode ilv, int nearval);
-
+	void AddScan(const void* pbyteComp, const JlsParamaters* pparams);
+	void AddLSE(const JlsCustomParameters* pcustom);
 	int GetBytesWritten()
 		{ return _cbyteOffset; }
 
 	int GetLength()
 		{ return _cbyteLength - _cbyteOffset; }
 
-	int Write(BYTE* pdata, int cbyteLength, const void* pbyteExpected);
-
+	int Write(BYTE* pdata, int cbyteLength);
+	
+	void EnableCompare(bool bCompare) 
+	{ _bCompare = bCompare; };
 private:
 	BYTE* GetPos() const
 		{ return _pdata + _cbyteOffset; }
 
 	void WriteByte(BYTE val)
-	{ _pdata[_cbyteOffset++] = val; }
+	{ 
+		ASSERT(!_bCompare || _pdata[_cbyteOffset] == val);
+		
+		_pdata[_cbyteOffset++] = val; 
+	}
 
 	void WriteBytes(const std::vector<BYTE>& rgbyte)
 	{
@@ -76,6 +82,8 @@ private:
     void Seek(int cbyte)
 		{ _cbyteOffset += cbyte; }
 
+	bool _bCompare;
+
 private:
 	BYTE* _pdata;
 	int _cbyteOffset;
@@ -84,22 +92,19 @@ private:
 	std::vector<JpegSegment*> _rgsegment;
 };
 
-struct Presets
+
+
+struct Presets : public JlsCustomParameters
 {
 public:
-	Presets() :
-			MAXVAL(0), 
-			T1(0),
-			T2(0),
-			T3(0),
-			RESET(0)
+	Presets()			
 	{		
-	}
-	int MAXVAL;
-	int T1;
-	int T2;
-	int T3;
-	int RESET;
+		MAXVAL = 0;
+		T1 = 0;
+		T2 = 0;
+		T3 = 0;
+		RESET = 0;
+	};
 };
 
 
@@ -117,13 +122,16 @@ public:
 	const ScanInfo& GetMetadata() const
 		{ return _info; } 
 
-	bool Read(void* pvoid);
+	const Presets& GetCustomPreset() const
+		{ return _presets; } 
+
+	bool Read(void* pvoid, int cbyteAvailable);
 	int ReadHeader();
 	
 	void EnableCompare(bool bCompare)
 		{ _bCompare = bCompare;	}
 private:
-	bool ReadPixels(void* pvoid);
+	bool ReadPixels(void* pvoid, int cbyteAvailable);
 	void ReadScan(void*);	
 	void ReadStartOfScan();
 	void ReadPresetParameters();
