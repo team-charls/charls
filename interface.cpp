@@ -41,8 +41,8 @@ JLS_ERROR CheckInput(const void* pdataCompressed, int cbyteCompressed, const voi
 	}
 }
 
-//extern "C"
-//{
+extern "C"
+{
 
 JLS_ERROR __declspec(dllexport) JpegLsEncode(void* pdataCompressed, int cbyteBuffer, int* pcbyteWritten, const void* pdataUncompressed, int cbyteUncompressed, const JlsParamaters* pparams)
 {
@@ -155,4 +155,4 @@ __declspec(dllexport) JLS_ERROR JpegLsReadHeader(const void* pdataCompressed, in
 	pparams->custom = reader.GetCustomPreset();
 	return OK;
 }
-//}
+}
