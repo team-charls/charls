@@ -75,7 +75,7 @@ std::vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
 template<class STRATEGY>
-STRATEGY* JlsCodecFactory<STRATEGY>::GetCodec(const ScanInfo& _info, const Presets& presets)
+STRATEGY* JlsCodecFactory<STRATEGY>::GetCodec(const ScanInfo& _info, const JlsCustomParameters& presets)
 {
 	STRATEGY* pstrategy = NULL;
 	if (presets.RESET != 0 && presets.RESET != BASIC_RESET)

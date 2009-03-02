@@ -15,8 +15,8 @@
 
 typedef const char* SZC;
 
-
-
+namespace // local helpers
+{
 
 double getTime() 
 { 
@@ -40,6 +40,35 @@ void ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0)
 	
 }
 
+
+
+void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
+{
+	std::vector<BYTE> rgbytePlanar(rgbyte.size());
+	
+	int cbytePlane = size.cx * size.cy;
+	for (int ipixel = 0; ipixel < cbytePlane; ipixel++)
+	{
+		rgbytePlanar[ipixel]				= rgbyte[ipixel * 3 + 0];
+		rgbytePlanar[ipixel + 1*cbytePlane]	= rgbyte[ipixel * 3 + 1];
+		rgbytePlanar[ipixel + 2*cbytePlane] = rgbyte[ipixel * 3 + 2];
+	}
+	std::swap(rgbyte, rgbytePlanar);
+}
+
+
+void SwapBytes(std::vector<BYTE>* rgbyte)
+{
+	 for (UINT i = 0; i < rgbyte->size(); i += 2)
+	 {
+		 std::swap((*rgbyte)[i], (*rgbyte)[i + 1]);
+	 }
+}
+
+
+
+
+}
 
 void TestRoundTrip(const char* strName, const BYTE* rgbyteRaw, Size size, int cbit, int ccomp)
 {	
@@ -104,7 +133,7 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 	if (params.allowedlossyerror == 0)
 	{
 		BYTE* pbyteOut = &rgbyteOut[0];
-		for (UINT i = 0; i < cbyteRaw; ++i)
+		for (int i = 0; i < cbyteRaw; ++i)
 		{
 			if (rgbyteRaw[i] != pbyteOut[i])
 			{
@@ -233,31 +262,6 @@ void TestNoiseImage()
 
 
 
-void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
-{
-	std::vector<BYTE> rgbytePlanar(rgbyte.size());
-	
-	int cbytePlane = size.cx * size.cy;
-	for (int ipixel = 0; ipixel < cbytePlane; ipixel++)
-	{
-		rgbytePlanar[ipixel]				= rgbyte[ipixel * 3 + 0];
-		rgbytePlanar[ipixel + 1*cbytePlane]	= rgbyte[ipixel * 3 + 1];
-		rgbytePlanar[ipixel + 2*cbytePlane] = rgbyte[ipixel * 3 + 2];
-	}
-	std::swap(rgbyte, rgbytePlanar);
-}
-
-
-void SwapBytes(std::vector<BYTE>* rgbyte)
-{
-	 for (UINT i = 0; i < rgbyte->size(); i += 2)
-	 {
-		 std::swap((*rgbyte)[i], (*rgbyte)[i + 1]);
-	 }
-}
-
-
-
 void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
 {
 	std::cout << "Conformance test:" << strNameEncoded << "\n\r";
@@ -291,7 +295,10 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
 
 
 
-	const BYTE rgbyte[] = { 0,   0,  90,  74, 
+
+
+
+   const BYTE rgbyte[] = { 0,   0,  90,  74, 
 							68,  50,  43, 205, 
 							64, 145, 145, 145, 
 							100, 145, 145, 145};
@@ -302,7 +309,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
 
 
 
-void TestAnnexH3()
+void TestSampleAnnexH3()
 {
 	Size size = Size(4,4);	
 	std::vector<BYTE> vecRaw(16);
@@ -310,8 +317,12 @@ void TestAnnexH3()
 //	TestJls(vecRaw, size, 8, 1, ILV_NONE, rgbyteComp, sizeof(rgbyteComp), false);
 }
 
-void TestConformanceLosslessMode()
+void TestConformance()
 {
+	// Test 9
+	DecompressFile("..\\test\\conformance\\t8nde0.jls", "..\\test\\conformance\\test8bs2.pgm",15);	
+
+
 //	DecompressFile("..\\test\\mars\\phoenixmars.jls", "..\\test\\mars\\phoenixmars.ppm",40);
 
 	// Test 1
@@ -335,11 +346,9 @@ void TestConformanceLosslessMode()
 	// Test 7
 	// Test 8
 
-	// Test 9
-//	DecompressFile("..\\test\\conformance\\t8nde0.jls", "..\\test\\conformance\\test8bs2.pgm",15);	
 
 	// Test 10
-//	DecompressFile("..\\test\\conformance\\t8nde3.jls", "..\\test\\conformance\\test8bs2.pgm",15);	
+	DecompressFile("..\\test\\conformance\\t8nde3.jls", "..\\test\\conformance\\test8bs2.pgm",15);	
 
 	// Test 11
 	DecompressFile("..\\test\\conformance\\t16e0.jls", "..\\test\\conformance\\test16.pgm",16);
@@ -361,13 +370,12 @@ void TestConformanceLosslessMode()
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-
-	TestConformanceLosslessMode();
+	TestConformance();
+	TestSampleAnnexH3();
 	TestTraits16bit();		
 	TestTraits8bit();		
 	TestPerformance();
 	TestNoiseImage();
-	TestAnnexH3();
 	char c;
 	std::cin >> c;
 	return 0;

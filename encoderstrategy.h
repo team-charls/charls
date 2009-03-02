@@ -24,7 +24,7 @@ public:
 	virtual ~EncoderStrategy() 
 		 {}
 
-    virtual void SetPresets(const Presets& presets) = 0;
+    virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
 	virtual int EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, int cbyte, void* pvoidCompare) = 0;
 

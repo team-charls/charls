@@ -139,7 +139,7 @@ public:
 	}	
 	
 
-	void SetPresets(const Presets& presets)
+	  void SetPresets(const JlsCustomParameters& presets)
 	{
 		
 		Presets presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
@@ -681,6 +681,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(typename TRAITS::SAMPLE* ptype, const typ
 		
 	while(ipixel < csample)
 	{	
+		
 		int Ra = ptype[ipixel -1];
 		int Rc = Rb;
 		Rb = Rd;

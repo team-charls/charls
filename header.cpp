@@ -409,10 +409,7 @@ public:
 		info.ilv = _ilv;
 		info.nnear = _nnear;
 		
-
-		Presets presets;
-
-		std::auto_ptr<EncoderStrategy> qcodec(JlsCodecFactory<EncoderStrategy>().GetCodec(info, presets));
+		std::auto_ptr<EncoderStrategy> qcodec(JlsCodecFactory<EncoderStrategy>().GetCodec(info, _presets));
 		int cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, _size, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}

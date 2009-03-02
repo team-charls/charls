@@ -22,7 +22,7 @@ public:
 	  virtual ~DecoderStrategy()
 	  {}
 
-	  virtual void SetPresets(const Presets& presets) = 0;
+	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 	  virtual int DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, int cbyte, bool bCheck) = 0;
 
 	  void Init(BYTE* pbyteCompressed, int cbyte)
