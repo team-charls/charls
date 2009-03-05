@@ -23,7 +23,7 @@ public:
 	  {}
 
 	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-	  virtual int DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, int cbyte, bool bCheck) = 0;
+	  virtual int DecodeScan(void* pvoidOut, const Size& size, int cline, const void* pvoidIn, int cbyte, bool bCheck) = 0;
 
 	  void Init(BYTE* pbyteCompressed, int cbyte)
 	  {

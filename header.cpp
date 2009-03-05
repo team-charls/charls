@@ -187,11 +187,7 @@ bool JLSInputStream::ReadPixels(void* pvoid, int cbyteAvailable)
 
 	if (cbyteAvailable < cbytePlane * _info.ccomp)
 		return false;
-
- 	// line interleave not supported yet
-	if (_info.ilv == ILV_LINE)
-		return false; 
-	
+ 	
 	if (_info.ilv == ILV_NONE)
 	{
 		BYTE* pbyte = (BYTE*)pvoid;
@@ -380,7 +376,8 @@ int JLSInputStream::ReadWord()
 void JLSInputStream::ReadScan(void* pvout) 
 {
 	std::auto_ptr<DecoderStrategy> qcodec(JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _presets));
-	_cbyteOffset += qcodec->DecodeScan(pvout, _info.size, _pdata + _cbyteOffset, _cbyteLength - _cbyteOffset, _bCompare); 
+	int cline = _info.ilv == ILV_LINE ? _info.ccomp : 1;
+	_cbyteOffset += qcodec->DecodeScan(pvout, _info.size, cline, _pdata + _cbyteOffset, _cbyteLength - _cbyteOffset, _bCompare); 
 };
 
 
@@ -409,8 +406,10 @@ public:
 		info.ilv = _ilv;
 		info.nnear = _nnear;
 		
+		int ccompInterleaved = _ilv == ILV_LINE ? _ccompScan : 1; 
+
 		std::auto_ptr<EncoderStrategy> qcodec(JlsCodecFactory<EncoderStrategy>().GetCodec(info, _presets));
-		int cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, _size, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
+		int cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, _size, ccompInterleaved, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
 

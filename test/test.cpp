@@ -56,6 +56,27 @@ void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
 	std::swap(rgbyte, rgbytePlanar);
 }
 
+void Triplet2Line(std::vector<BYTE>& rgbyte, Size size)
+{
+	std::vector<BYTE> rgbyteInterleaved(rgbyte.size());
+	
+	int cbyteLine = size.cx;
+
+	for (int line = 0; line < size.cy; ++line)
+	{
+		const BYTE* pbyteLineIn = &rgbyte[line * size.cx * 3];
+		BYTE* pbyteLineOut = &rgbyteInterleaved[line * size.cx * 3];
+
+		for (int ipixel = 0; ipixel < cbyteLine; ipixel++)
+		{
+			pbyteLineOut[ipixel]				= pbyteLineIn[ipixel * 3 + 0];
+			pbyteLineOut[ipixel + 1*cbyteLine]	= pbyteLineIn[ipixel * 3 + 1];
+			pbyteLineOut[ipixel + 2*cbyteLine]  = pbyteLineIn[ipixel * 3 + 2];
+		}
+	}
+	std::swap(rgbyte, rgbyteInterleaved);
+}
+
 
 void SwapBytes(std::vector<BYTE>* rgbyte)
 {
@@ -128,7 +149,8 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(params.height *params.width * ((params.bitspersample + 7) / 8) * params.components);
 	
-	JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), pbyteCompressed, cbyteCompressed);
+	JLS_ERROR result = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), pbyteCompressed, cbyteCompressed);
+	ASSERT(result == OK);
 
 	if (params.allowedlossyerror == 0)
 	{
@@ -289,12 +311,14 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
 	{
 		Triplet2Planar(rgbyteRaw, Size(metadata.width, metadata.height));
 	}
-	
+
+	if (metadata.ilv == ILV_LINE && metadata.components == 3)
+	{
+		Triplet2Line(rgbyteRaw, Size(metadata.width, metadata.height));
+	}
+
 	TestCompliance(&rgbyteFile[0], rgbyteFile.size(), &rgbyteRaw[0], rgbyteRaw.size());
 }
-
-
-
 
 
 
@@ -319,17 +343,12 @@ void TestSampleAnnexH3()
 
 void TestConformance()
 {
-	// Test 9
-	DecompressFile("..\\test\\conformance\\t8nde0.jls", "..\\test\\conformance\\test8bs2.pgm",15);	
-
-
-//	DecompressFile("..\\test\\mars\\phoenixmars.jls", "..\\test\\mars\\phoenixmars.ppm",40);
 
 	// Test 1
 	DecompressFile("..\\test\\conformance\\t8c0e0.jls", "..\\test\\conformance\\test8.ppm",15);
 
 	// Test 2
-
+	DecompressFile("..\\test\\conformance\\t8c1e0.jls", "..\\test\\conformance\\test8.ppm",15);
 
 	// Test 3
 	DecompressFile("..\\test\\conformance\\t8c2e0.jls", "..\\test\\conformance\\test8.ppm", 15);
@@ -338,6 +357,7 @@ void TestConformance()
 	DecompressFile("..\\test\\conformance\\t8c0e3.jls", "..\\test\\conformance\\test8.ppm",15);
 
 	// Test 5
+	DecompressFile("..\\test\\conformance\\t8c1e3.jls", "..\\test\\conformance\\test8.ppm",15);
 
 	// Test 6
 	DecompressFile("..\\test\\conformance\\t8c2e3.jls", "..\\test\\conformance\\test8.ppm",15);
@@ -346,6 +366,8 @@ void TestConformance()
 	// Test 7
 	// Test 8
 
+	// Test 9
+	DecompressFile("..\\test\\conformance\\t8nde0.jls", "..\\test\\conformance\\test8bs2.pgm",15);	
 
 	// Test 10
 	DecompressFile("..\\test\\conformance\\t8nde3.jls", "..\\test\\conformance\\test8bs2.pgm",15);	

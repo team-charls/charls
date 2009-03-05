@@ -26,7 +26,7 @@ public:
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
-	virtual int EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, int cbyte, void* pvoidCompare) = 0;
+	virtual int EncodeScan(const void* pvoid, const Size& size, int ccomp, void* pvoidOut, int cbyte, void* pvoidCompare) = 0;
 
 protected:
 

@@ -100,9 +100,9 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodec(const ScanInfo& _info, const JlsCu
 template<class STRATEGY>
 STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const ScanInfo& _info)
 {
-	if (_info.ccomp != 1 && _info.ilv != ILV_NONE)
+	if (_info.ccomp != 1 && _info.ilv == ILV_SAMPLE)
 	{
-		if (_info.ilv == ILV_SAMPLE && _info.ccomp == 3 && _info.cbit == 8)
+		if (_info.ccomp == 3 && _info.cbit == 8)
 		{
 			if (_info.nnear == 0)
 				return new JlsCodec<LosslessTraitsT<Triplet,8>, STRATEGY>();
@@ -114,6 +114,7 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const ScanInfo& _info)
 		return NULL;
 	}
 
+	// optimized lossless versions common monochrome formats (lossless)
 	if (_info.nnear == 0)
 	{		
 		switch (_info.cbit)
@@ -124,6 +125,8 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const ScanInfo& _info)
 			case 16: return new JlsCodec<LosslessTraitsT<USHORT,16>, STRATEGY>();
 		}
 	}
+
+
 	if (_info.cbit <= 8)
 	{
 		typename DefaultTraitsT<BYTE, BYTE> traits((1 << _info.cbit) - 1, _info.nnear); 

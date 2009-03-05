@@ -67,7 +67,7 @@ public:
 				C--;
 			}
 		} 
-		if (B > 0) 
+		else if (B > 0) 
 		{
 			B = min(B - N, 0);				
 			if (C < MAX_C) 

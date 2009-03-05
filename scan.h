@@ -121,7 +121,8 @@ public:
 	  T2(0),
 	  T3(0),
 	  RUNindex(0),
-	  _pquant(0)
+	  _pquant(0),
+	  _size(0,0)
 	{
 		memset(_rghistogramK, 0, sizeof(_rghistogramK));
 	}	
@@ -133,7 +134,8 @@ public:
 	  T2(0),
 	  T3(0),
 	  RUNindex(0),
-	  _pquant(0)
+	  _pquant(0),
+	  _size(0,0)
 	{
 		memset(_rghistogramK, 0, sizeof(_rghistogramK));
 	}	
@@ -173,16 +175,16 @@ public:
 	Triplet DecodeRIPixel(Triplet Ra, Triplet Rb);
 	PIXEL   DecodeRIPixel(int Ra, int Rb);
 	int		DecodeRunPixels(PIXEL Ra, PIXEL* ptype, int ipixel, int cpixelMac);
-	int		DecodeRunMode(PIXEL Ra, PIXEL* ptype, const PIXEL* ptypePrev, int ipixel, int cpixelMac);
+	int		DoRunMode(PIXEL* ptype, const PIXEL* ptypePrev, int ipixel, int cpixelMac, DecoderStrategy*);
 	
 	void	EncodeRIError(CContextRunMode& ctx, int Errval);
 	SAMPLE	EncodeRIPixel(int x, int Ra, int Rb);
 	Triplet EncodeRIPixel(Triplet x, Triplet Ra, Triplet Rb);
 	void	EncodeRunPixels(int RUNcnt, bool bEndofline);
-	int		EncodeRunMode(PIXEL* ptype, const PIXEL* ptypePrev, int ipixel, int ctypeRem);
+	int		DoRunMode(PIXEL* ptype, const PIXEL* ptypePrev, int ipixel, int ctypeRem, EncoderStrategy*);
 
-	inlinehint SAMPLE DecodeRegular(int Qs, int pred);
-	inlinehint SAMPLE EncodeRegular(int Qs, int x, int pred);
+	inlinehint SAMPLE DoRegular(int Qs, int, int pred, DecoderStrategy*);
+	inlinehint SAMPLE DoRegular(int Qs, int x, int pred, EncoderStrategy*);
 
 	inlinehint void CheckedAssign(SAMPLE& typeDst, SAMPLE type)
 	{
@@ -196,18 +198,16 @@ public:
 		typeDst = type;
 	}
 	
-	void DoLine(SAMPLE* ptype, const SAMPLE* ptypePrev, int csample, DecoderStrategy*);
-	void DoLine(SAMPLE* ptype, const SAMPLE* ptypePrev, int csample, EncoderStrategy*);
-	void DoLine(Triplet* ptype, Triplet* ptypePrev, int csample, DecoderStrategy*);
-	void DoLine(Triplet* ptype, Triplet* ptypePrev, int csample, EncoderStrategy*);
-	void DoScan(PIXEL* ptype, Size size, BYTE* pbyteCompressed, int cbyteCompressed);         
+	void DoLine(SAMPLE* ptype, const SAMPLE* ptypePrev);
+	void DoLine(Triplet* ptype, const Triplet* ptypePrev);
+	void DoScan(PIXEL* ptype, BYTE* pbyteCompressed, int cbyteCompressed);         
 
 public:
 	void InitDefault();
 	void InitParams(int t1, int t2, int t3, int nReset);
 
-	int  EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, int cbyte, void* pvoidCompare);
-	int  DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, int cbyte, bool bCompare);
+	int  EncodeScan(const void* pvoid, const Size& size, int components, void* pvoidOut, int cbyte, void* pvoidCompare);
+	int  DecodeScan(void* pvoidOut, const Size& size, int components, const void* pvoidIn, int cbyte, bool bCompare);
 
 protected:
 	TRAITS traits;
@@ -216,7 +216,9 @@ protected:
 	JlsContext _rgcontext[365];	
 	CContextRunMode _contextRunmode[2];
 	int RUNindex;
-	
+	Size _size;
+	int _components; // for line interleaved mode 
+
 	int T3; 
 	int T2;
 	int T1;	
@@ -229,7 +231,7 @@ protected:
 
 
 template<class TRAITS, class STRATEGY>
-typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DecodeRegular(int Qs, int pred)
+typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int Qs, int, int pred, DecoderStrategy*)
 {		
 	int sign		= BitWiseSign(Qs);
 	JlsContext& ctx	= _rgcontext[ApplySign(Qs, sign)];
@@ -256,7 +258,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DecodeRegular(int Qs, int pre
 
 
 template<class TRAITS, class STRATEGY>
-typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::EncodeRegular(int Qs, int x, int pred)
+typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int Qs, int x, int pred, EncoderStrategy*)
 {
 	int sign		= BitWiseSign(Qs);
 	JlsContext& ctx	= _rgcontext[ApplySign(Qs, sign)];
@@ -446,6 +448,38 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRunPixels(int RUNcnt, bool bEndofline)
 	}
 }
 
+/* 
+template<class TRAITS, class STRATEGY>
+int JlsCodec<TRAITS,STRATEGY>::DecodeRunPixels(PIXEL Ra, PIXEL* ptype, int ipixel, int cpixelMac)
+{
+	int cpixelRun = 0;
+
+	while (ReadBit())
+	{
+		int cpixel = min(1 << J[RUNindex], cpixelMac - ipixel);
+		
+		cpixelRun += cpixel;
+		
+		if (cpixel == (1 << J[RUNindex]))
+		{
+			IncrementRunIndex();
+		}
+
+	}
+	if (ipixel + cpixelRun < cpixelMac)
+	{
+		// incomplete run 	
+		cpixelRun += (J[RUNindex] > 0) ? ReadValue(J[RUNindex]) : 0;
+	}
+	
+	for (int i = 0; i < cpixelRun; ++i)
+	{
+		ptype[ipixel + i] = Ra;
+	}
+
+	return ipixel + cpixelRun;
+}
+*/
 
 
 template<class TRAITS, class STRATEGY>
@@ -591,13 +625,14 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(int x, int Ra, 
 
 
 template<class TRAITS, class STRATEGY>
-int JlsCodec<TRAITS,STRATEGY>::EncodeRunMode(PIXEL* ptype, const PIXEL* ptypePrev, int ipixel, int ctypeRem)
+int JlsCodec<TRAITS,STRATEGY>::DoRunMode(PIXEL* ptype, const PIXEL* ptypePrev, int ipixel, int ctypeRem, EncoderStrategy*)
 {
 	ptype		+= ipixel;
 	ptypePrev	+= ipixel;
 	ctypeRem	-= ipixel;
 
-	PIXEL Ra =  ptype[-1];
+	PIXEL Ra = ptype[-1];
+
 	int RUNcnt = 0;
 	
 	while (traits.IsNear(ptype[RUNcnt],Ra)) 
@@ -612,41 +647,44 @@ int JlsCodec<TRAITS,STRATEGY>::EncodeRunMode(PIXEL* ptype, const PIXEL* ptypePre
 	EncodeRunPixels(RUNcnt, RUNcnt == ctypeRem);
 
 	if (RUNcnt == ctypeRem)
-		return ipixel + RUNcnt;
+		return RUNcnt;
 	
 	ptype[RUNcnt] = EncodeRIPixel(ptype[RUNcnt], Ra, ptypePrev[RUNcnt]);
 	DecrementRunIndex();
-	return ipixel + RUNcnt + 1;
+	return RUNcnt + 1;
 
 }
 
 
 
 template<class TRAITS, class STRATEGY>
-int JlsCodec<TRAITS,STRATEGY>::DecodeRunMode(PIXEL Ra, PIXEL* ptype, const PIXEL* ptypePrev, int ipixel, int cpixelMac)
+int JlsCodec<TRAITS,STRATEGY>::DoRunMode(PIXEL* ptype, const PIXEL* ptypePrev, int ipixel, int cpixelMac, DecoderStrategy*)
 {
+	PIXEL Ra = ptype[ipixel-1];
+	int ipixelStart = ipixel;
+
 	ipixel = DecodeRunPixels(Ra, ptype, ipixel, cpixelMac);
 
 	if (ipixel == cpixelMac)
- 		return ipixel;
+ 		return ipixel - ipixelStart;
 
 	// run interruption
 	PIXEL Rb = ptypePrev[ipixel];
 	ptype[ipixel] =	DecodeRIPixel(Ra, Rb);
 	DecrementRunIndex();
-	return ipixel + 1;
+	return ipixel - ipixelStart + 1 ;
 }
 
 
 
 template<class TRAITS, class STRATEGY>
-void JlsCodec<TRAITS,STRATEGY>::DoLine(typename TRAITS::SAMPLE* ptype, const typename TRAITS::SAMPLE* ptypePrev, int csample, DecoderStrategy*)
+void JlsCodec<TRAITS,STRATEGY>::DoLine(typename TRAITS::SAMPLE* ptype, const typename TRAITS::SAMPLE* ptypePrev)
 {
 	int ipixel = 0;
 	int Rb = ptypePrev[ipixel-1];
 	int Rd = ptypePrev[ipixel];
 		
-	while(ipixel < csample)
+	while(ipixel < _size.cx)
 	{	
 		int Ra = ptype[ipixel -1];
 		int Rc = Rb;
@@ -657,59 +695,25 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(typename TRAITS::SAMPLE* ptype, const typ
 		
 		if (Qs == 0)
 		{
-			ipixel = DecodeRunMode((SAMPLE)Ra, ptype, ptypePrev, ipixel, csample);
+			ipixel += DoRunMode(ptype, ptypePrev, ipixel, _size.cx, (STRATEGY*)(NULL));
 			Rb = ptypePrev[ipixel-1];
 			Rd = ptypePrev[ipixel];	
 		}
 		else
 		{
-			ptype[ipixel] = DecodeRegular(Qs, GetPredictedValue(Ra, Rb, Rc));
+			ptype[ipixel] = DoRegular(Qs, ptype[ipixel], GetPredictedValue(Ra, Rb, Rc), (STRATEGY*)(NULL));
 			ipixel++;
-		}		
-		
+		}				
 	}
 }
 
 
 
 template<class TRAITS, class STRATEGY>
-void JlsCodec<TRAITS,STRATEGY>::DoLine(typename TRAITS::SAMPLE* ptype, const typename TRAITS::SAMPLE* ptypePrev, int csample, EncoderStrategy*)
+void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet* ptype, const Triplet* ptypePrev)
 {
 	int ipixel = 0;
-	int Rb = ptypePrev[ipixel-1];
-	int Rd = ptypePrev[ipixel];
-		
-	while(ipixel < csample)
-	{	
-		
-		int Ra = ptype[ipixel -1];
-		int Rc = Rb;
-		Rb = Rd;
-		Rd = ptypePrev[ipixel + 1];
-		
-		int Qs = ComputeContextID(QuantizeGratient(Rd - Rb), QuantizeGratient(Rb - Rc), QuantizeGratient(Rc - Ra));
-					
-		if (Qs == 0)
-		{
-			ipixel = EncodeRunMode(ptype, ptypePrev, ipixel, csample);	
-			Rb = ptypePrev[ipixel-1];
-			Rd = ptypePrev[ipixel];	
-		}
-		else
-		{
-			ptype[ipixel] = EncodeRegular(Qs, ptype[ipixel], GetPredictedValue(Ra, Rb, Rc));	
-			ipixel++;
-		}		
-	}
-}
-
-
-
-template<class TRAITS, class STRATEGY>
-void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet* ptype, Triplet* ptypePrev, int csample, EncoderStrategy*)
-{
-	int ipixel = 0;
-	while(ipixel < csample)
+	while(ipixel < _size.cx)
 	{		
 		Triplet Ra = ptype[ipixel -1];
 		Triplet Rc = ptypePrev[ipixel-1];
@@ -722,14 +726,14 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet* ptype, Triplet* ptypePrev, int c
 		
 		if (Qs1 == 0 && Qs2 == 0 && Qs3 == 0)
 		{
-			ipixel = EncodeRunMode(ptype, ptypePrev, ipixel, csample);
+			ipixel += DoRunMode(ptype, ptypePrev, ipixel, _size.cx, (STRATEGY*)(NULL));
 		}
 		else
 		{
 			Triplet Rx;
-			Rx.v1 = EncodeRegular(Qs1, ptype[ipixel].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1));
-			Rx.v2 = EncodeRegular(Qs2, ptype[ipixel].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2));
-			Rx.v3 = EncodeRegular(Qs3, ptype[ipixel].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3));
+			Rx.v1 = DoRegular(Qs1, ptype[ipixel].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1), (STRATEGY*)(NULL));
+			Rx.v2 = DoRegular(Qs2, ptype[ipixel].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), (STRATEGY*)(NULL));
+			Rx.v3 = DoRegular(Qs3, ptype[ipixel].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), (STRATEGY*)(NULL));
 			ptype[ipixel] = Rx;
 			ipixel++;
 		}
@@ -739,80 +743,63 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet* ptype, Triplet* ptypePrev, int c
 
 
 
-template<class TRAITS, class STRATEGY>
-void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet* ptype, Triplet* ptypePrev, int csample, DecoderStrategy*)
-{
-	int ipixel = 0;
-	while(ipixel < csample)
-	{		
-		Triplet Ra = ptype[ipixel -1];
-		Triplet Rc = ptypePrev[ipixel-1];
-		Triplet Rb = ptypePrev[ipixel];
-		Triplet Rd = ptypePrev[ipixel + 1];
-		
-		int Qs1 = ComputeContextID(QuantizeGratient(Rd.v1 - Rb.v1), QuantizeGratient(Rb.v1 - Rc.v1), QuantizeGratient(Rc.v1 - Ra.v1));
-		int Qs2 = ComputeContextID(QuantizeGratient(Rd.v2 - Rb.v2), QuantizeGratient(Rb.v2 - Rc.v2), QuantizeGratient(Rc.v2 - Ra.v2));
-		int Qs3 = ComputeContextID(QuantizeGratient(Rd.v3 - Rb.v3), QuantizeGratient(Rb.v3 - Rc.v3), QuantizeGratient(Rc.v3 - Ra.v3));
-		
-		if (Qs1 == 0 && Qs2 == 0 && Qs3 == 0)
-		{
-			ipixel = DecodeRunMode(Ra, ptype, ptypePrev, ipixel, csample);
-		}
-		else
-		{
-			BYTE value1 = DecodeRegular(Qs1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1));
-			BYTE value2 = DecodeRegular(Qs2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2));
-			BYTE value3 = DecodeRegular(Qs3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3));
-
-			ptype[ipixel] = Triplet(value1, value2, value3);
-			ipixel++;
-		}
-		
-	}
-}
-
 
 
 template<class TRAITS, class STRATEGY>
-void JlsCodec<TRAITS,STRATEGY>::DoScan(PIXEL* ptype, Size size, BYTE* pbyteCompressed, int cbyteCompressed)
+void JlsCodec<TRAITS,STRATEGY>::DoScan(PIXEL* ptype, BYTE* pbyteCompressed, int cbyteCompressed)
 {		
 	Init(pbyteCompressed, cbyteCompressed);
 
-	std::vector<PIXEL> vectmp;
-	vectmp.resize(2 * ( size.cx + 4));
-
-	PIXEL* ptypePrev = &vectmp[1];	
-	PIXEL* ptypeCur = &vectmp[size.cx + 4 + 1];	
+	int pixelstride = _size.cx + 4;
 	
-	for (int iline = 0; iline < size.cy; ++iline)
+	std::vector<PIXEL> vectmp;
+	vectmp.resize((1 + _components) * pixelstride);
+	
+	std::vector<int> rgRUNindex;
+	rgRUNindex.resize(3);
+
+	for (int iline = 0; iline < _size.cy * _components; ++iline)
 	{
-		ptypePrev[size.cx]	  = ptypePrev[size.cx - 1];
+		int icomponent = iline % _components;
+		RUNindex = rgRUNindex[icomponent];
+
+		int indexPrev = iline % (_components + 1);
+		int indexCur  = (iline + 3) % (_components + 1);
+
+		PIXEL* ptypePrev = &vectmp[1 + indexPrev * pixelstride];	
+		PIXEL* ptypeCur = &vectmp[1 + indexCur * pixelstride];	
+	
+		ptypePrev[_size.cx]	  = ptypePrev[_size.cx - 1];
 		ptypeCur[-1]		  = ptypePrev[0];
-		PIXEL* ptypeLine = ptype + iline * size.cx;
+		PIXEL* ptypeLine = ptype + iline * _size.cx;
 		if (!STRATEGY::IsDecoding)
 		{
-			for (int i = 0; i < size.cx; ++i)
+			for (int i = 0; i < _size.cx; ++i)
 			{
 				ptypeCur[i] = ptypeLine[i];
 			}
 		}
-		DoLine(ptypeCur, ptypePrev, size.cx, (STRATEGY*)(NULL));
+		DoLine(ptypeCur, ptypePrev);
 		if (STRATEGY::IsDecoding)
 		{
-			for (int i = 0; i < size.cx; ++i)
+			for (int i = 0; i < _size.cx; ++i)
 			{
 				CheckedAssign(ptypeLine[i], ptypeCur[i]);
 			}
 		}
-		std::swap(ptypePrev, ptypeCur);		
+
+		rgRUNindex[icomponent] = RUNindex;
 	}
 }
 
 
 
 template<class TRAITS, class STRATEGY>
-int JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, int cbyte, void* pvoidCompare)
+int JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, int components, void* pvoidOut, int cbyte, void* pvoidCompare)
 {
+	_size = size;
+	_components = components;
+
 	const PIXEL* ptype = static_cast<const PIXEL*>(pvoid);
 	BYTE* pbyteCompressed = static_cast<BYTE*>(pvoidOut);
 	
@@ -824,7 +811,7 @@ int JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, v
 		EncoderStrategy::_qdecoder = pdecoder;
 	}
 
-	DoScan(const_cast<PIXEL*>(ptype), size, pbyteCompressed, cbyte);
+	DoScan(const_cast<PIXEL*>(ptype), pbyteCompressed, cbyte);
 
 	Flush();
 
@@ -835,7 +822,7 @@ int JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, v
 
 
 template<class TRAITS, class STRATEGY>
-int JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, int cbyte, bool bCompare)
+int JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, int components, const void* pvoidIn, int cbyte, bool bCompare)
 {
 	PIXEL* ptypeOut			= static_cast<PIXEL*>(pvoidOut);
 	BYTE* pbyteCompressed	= const_cast<BYTE*>(static_cast<const BYTE*>(pvoidIn));
@@ -852,7 +839,10 @@ int JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, cons
 	::memcpy(rgbyte, pbyteCompressed, cbyteScanheader);
 	cbyteRead += cbyteScanheader;
 
-	DoScan(const_cast<PIXEL*>(ptypeOut), size, pbyteCompressed + cbyteRead, cbyte);
+	_size = size;
+	_components = components;
+
+	DoScan(const_cast<PIXEL*>(ptypeOut), pbyteCompressed + cbyteRead, cbyte);
 
 	return GetCurBytePos() - pbyteCompressed;
 }
