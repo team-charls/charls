@@ -109,13 +109,13 @@ public:
 	const JlsCustomParameters& GetCustomPreset() const
 	{ return _info.custom; } 
 
-	bool Read(void* pvoid, int cbyteAvailable);
-	int ReadHeader();
+	void Read(void* pvoid, int cbyteAvailable);
+	void ReadHeader();
 	
 	void EnableCompare(bool bCompare)
 		{ _bCompare = bCompare;	}
 private:
-	bool ReadPixels(void* pvoid, int cbyteAvailable);
+	void ReadPixels(void* pvoid, int cbyteAvailable);
 	void ReadScan(void*);	
 	void ReadStartOfScan();
 	void ReadPresetParameters();

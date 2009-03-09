@@ -170,19 +170,17 @@ JLSInputStream::JLSInputStream(const BYTE* pdata, int cbyteLength) :
 //
 // Read()
 //
-bool JLSInputStream::Read(void* pvoid, int cbyteAvailable)
+void JLSInputStream::Read(void* pvoid, int cbyteAvailable)
 {
-	if (!ReadHeader())
-		return false;
-
-	return ReadPixels(pvoid, cbyteAvailable);
+	ReadHeader();
+	ReadPixels(pvoid, cbyteAvailable);
 }
 
 
 //
 // ReadPixels()
 //
-bool JLSInputStream::ReadPixels(void* pvoid, int cbyteAvailable)
+void JLSInputStream::ReadPixels(void* pvoid, int cbyteAvailable)
 {
 	int cbytePlane = _info.width * _info.height * ((_info.bitspersample + 7)/8);
 
@@ -195,7 +193,6 @@ bool JLSInputStream::ReadPixels(void* pvoid, int cbyteAvailable)
 		for (int icomp = 0; icomp < _info.components; ++icomp)
 		{
 			ReadScan(pbyte);
-
 			pbyte += cbytePlane; 
 		}	
 	}
@@ -203,26 +200,24 @@ bool JLSInputStream::ReadPixels(void* pvoid, int cbyteAvailable)
 	{
 		ReadScan(pvoid);
 	}
-	return true;
-	
 }
 
 
 //
 // ReadHeader()
 //
-int JLSInputStream::ReadHeader()
+void JLSInputStream::ReadHeader()
 {
 	if (ReadByte() != 0xFF)
-		return 0;
+		throw JlsException(InvalidCompressedData);
 
 	if (ReadByte() != JPEG_SOI)
-		return 0;
+		throw JlsException(InvalidCompressedData);
 	
 	for (;;)
 	{
 		if (ReadByte() != 0xFF)
-			return 0;
+			throw JlsException(InvalidCompressedData);
 
 		BYTE marker = (BYTE)ReadByte();
 
@@ -235,16 +230,15 @@ int JLSInputStream::ReadHeader()
 			case JPEG_SOF: ReadStartOfFrame(); break;
 			case JPEG_COM: ReadComment();	   break;
 			case JPEG_LSE: ReadPresetParameters();	break;
-
+			
 			// Other tags not supported (among which DNL DRI)
-			default:
-			return 0;
+			default: 		throw JlsException(ImageTypeNotSupported);
 		}
 
 		if (marker == JPEG_SOS)
 		{				
 			_cbyteOffset = cbyteStart - 2;
-			return _cbyteOffset;
+			return;
 		}
 		_cbyteOffset = cbyteStart + cbyteMarker;
 	}

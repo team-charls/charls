@@ -332,7 +332,7 @@ void TestSmallBuffer()
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(512 * 511);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
-	ASSERT(error == JLS_ERROR::UncompressedBufferTooSmall);	
+	ASSERT(error == UncompressedBufferTooSmall);	
 }
 
 
@@ -348,7 +348,7 @@ void TestDamagedBitStream()
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(512 * 512);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
-	ASSERT(error == JLS_ERROR::InvalidCompressedData);
+	ASSERT(error == InvalidCompressedData);
 	
 }
 

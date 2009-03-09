@@ -9,7 +9,8 @@ enum JLS_ERROR
 	ParameterValueNotSupported,
 	UncompressedBufferTooSmall,
 	CompressedBufferTooSmall,
-	InvalidCompressedData
+	InvalidCompressedData,
+	ImageTypeNotSupported
 };
 
 class JlsException
