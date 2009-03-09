@@ -111,12 +111,6 @@ void TestRoundTrip(const char* strName, const BYTE* rgbyteRaw, Size size, int cb
 	int cbyteCompressed;
 	JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &cbyteCompressed, rgbyteRaw, rgbyteOut.size(), &params);
 
-	//size_t cbyteCompressed = JpegLsEncode(rgbyteRaw, size, cbit, ccomp, ccomp == 3 ? ILV_SAMPLE : ILV_NONE, &rgbyteCompressed[0], int(rgbyteCompressed.size()), 0);
-
-	//CString strDst = strName;
-	//strDst = strDst + ".jls";
-	//WriteFile(strDst.GetString(), &rgbyteCompressed[0], cbyteCompressed);
-
 	double dwtimeEncodeComplete = getTime();
 	
 	JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(cbyteCompressed));
@@ -169,27 +163,16 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 
 	JLS_ERROR error = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
 	ASSERT(error == OK);
-//	JpegLsEncode(&rgbyteOut[0], rgbyteOut.size(), &cbyteCompressedActual, &rgbyteRaw[0], cbyteRaw, &params);
-
-	//BYTE* pbyteOut = &rgbyteOut[0];
-	//for (UINT i = 0; i < cbyteCompressed; ++i)
-	//{
-	//	if (pbyteCompressed[i] != pbyteOut[i])
-	//	{
-	//		ASSERT(false);
-	//		break;
-	//	}
-	//}						    
 }
 
 
 void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp)
 {
-	std::vector<BYTE> rgbyteNoise;
+	std::vector<BYTE> rgbyteUncompressed;
 	
-	ReadFile(strName, &rgbyteNoise, ioffs);
+	ReadFile(strName, &rgbyteUncompressed, ioffs);
 
-	TestRoundTrip(strName, &rgbyteNoise[0], size2, cbit, ccomp);
+	TestRoundTrip(strName, &rgbyteUncompressed[0], size2, cbit, ccomp);
 
 };
 
@@ -341,6 +324,36 @@ void TestSampleAnnexH3()
 //	TestJls(vecRaw, size, 8, 1, ILV_NONE, rgbyteComp, sizeof(rgbyteComp), false);
 }
 
+void TestSmallBuffer()
+{
+	std::vector<BYTE> rgbyteCompressed;	
+	ReadFile("..\\test\\lena8b.jls", &rgbyteCompressed, 0);
+	
+	std::vector<BYTE> rgbyteOut;
+	rgbyteOut.resize(512 * 511);	
+	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
+	ASSERT(error == JLS_ERROR::UncompressedBufferTooSmall);	
+}
+
+
+void TestDamagedBitStream()
+{
+
+	std::vector<BYTE> rgbyteCompressed;	
+	ReadFile("..\\test\\lena8b.jls", &rgbyteCompressed, 0);
+	
+	rgbyteCompressed.resize(900);
+	rgbyteCompressed.resize(40000,3);
+
+	std::vector<BYTE> rgbyteOut;
+	rgbyteOut.resize(512 * 512);	
+	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
+	ASSERT(error == JLS_ERROR::InvalidCompressedData);
+	
+}
+
+
+
 void TestConformance()
 {
 
@@ -382,9 +395,6 @@ void TestConformance()
 
 	// additional, Lena compressed with other codec (UBC?), vfy with CharLS
 	DecompressFile("..\\test\\lena8b.jls", "..\\test\\lena8b.raw",0);
-
-
-
 }
 
 
@@ -392,6 +402,8 @@ void TestConformance()
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	TestDamagedBitStream();
+	TestSmallBuffer();
 	TestConformance();
 	TestSampleAnnexH3();
 	TestTraits16bit();		

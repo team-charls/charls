@@ -35,13 +35,28 @@ public:
 	  }
 
 
-
 	  inlinehint void Skip(int length)
 	  {
 		  _cbitValid -= length;
 		  _valcurrent = _valcurrent << length; 
 	  }
 
+	
+	  void OnLineBegin(void* /*ptypeCur*/, void* /*ptypeLine*/, int /*cpixel*/) {}
+
+	  template <class T>
+	  void OnLineEnd(T* ptypeCur, T* ptypeLine, int cpixel)
+	  {
+#ifdef _DEBUG
+			for (int i = 0; i < cpixel; ++i)
+			{
+				//CheckedAssign(ptypeLine[i], ptypeCur[i]);
+				ptypeLine[i] = ptypeCur[i];
+			}
+#else
+			memcpy(ptypeLine, ptypeCur, cpixel * sizeof(T));
+#endif
+	  }
 
 
 	  void MakeValid()

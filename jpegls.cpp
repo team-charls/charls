@@ -48,6 +48,7 @@ signed char QuantizeGratientOrg(const Presets& preset, int NEAR, int Di)
 }
 
 
+
 std::vector<signed char> CreateQLutLossless(int cbit)
 {
 	Presets preset = ComputeDefault((1 << cbit) - 1, 0);
@@ -75,12 +76,12 @@ std::vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
 template<class STRATEGY>
-STRATEGY* JlsCodecFactory<STRATEGY>::GetCodec(const ScanInfo& _info, const JlsCustomParameters& presets)
+STRATEGY* JlsCodecFactory<STRATEGY>::GetCodec(const JlsParamaters& _info, const JlsCustomParameters& presets)
 {
 	STRATEGY* pstrategy = NULL;
 	if (presets.RESET != 0 && presets.RESET != BASIC_RESET)
 	{
-		typename DefaultTraitsT<BYTE,BYTE> traits((1 << _info.cbit) - 1, _info.nnear); 
+		typename DefaultTraitsT<BYTE,BYTE> traits((1 << _info.bitspersample) - 1, _info.allowedlossyerror); 
 		traits.MAXVAL = presets.MAXVAL;
 		traits.RESET = presets.RESET;
 		pstrategy = new JlsCodec<DefaultTraitsT<BYTE, BYTE>, STRATEGY>(traits); 
@@ -98,16 +99,16 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodec(const ScanInfo& _info, const JlsCu
 }
 
 template<class STRATEGY>
-STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const ScanInfo& _info)
+STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParamaters& _info)
 {
-	if (_info.ccomp != 1 && _info.ilv == ILV_SAMPLE)
+	if (_info.components != 1 && _info.ilv == ILV_SAMPLE)
 	{
-		if (_info.ccomp == 3 && _info.cbit == 8)
+		if (_info.components == 3 && _info.bitspersample == 8)
 		{
-			if (_info.nnear == 0)
+			if (_info.allowedlossyerror == 0)
 				return new JlsCodec<LosslessTraitsT<Triplet,8>, STRATEGY>();
 
-			typename DefaultTraitsT<BYTE,Triplet> traits((1 << _info.cbit) - 1, _info.nnear); 
+			typename DefaultTraitsT<BYTE,Triplet> traits((1 << _info.bitspersample) - 1, _info.allowedlossyerror); 
 			return new JlsCodec<DefaultTraitsT<BYTE,Triplet>, STRATEGY>(traits); 	
 		}
 	
@@ -115,9 +116,9 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const ScanInfo& _info)
 	}
 
 	// optimized lossless versions common monochrome formats (lossless)
-	if (_info.nnear == 0)
+	if (_info.allowedlossyerror == 0)
 	{		
-		switch (_info.cbit)
+		switch (_info.bitspersample)
 		{
 			case  8: return new JlsCodec<LosslessTraitsT<BYTE,   8>, STRATEGY>(); 
 			case 10: return new JlsCodec<LosslessTraitsT<USHORT,10>, STRATEGY>(); 
@@ -127,15 +128,15 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const ScanInfo& _info)
 	}
 
 
-	if (_info.cbit <= 8)
+	if (_info.bitspersample <= 8)
 	{
-		typename DefaultTraitsT<BYTE, BYTE> traits((1 << _info.cbit) - 1, _info.nnear); 
+		typename DefaultTraitsT<BYTE, BYTE> traits((1 << _info.bitspersample) - 1, _info.allowedlossyerror); 
 		return new JlsCodec<DefaultTraitsT<BYTE, BYTE>, STRATEGY>(traits); 
 	}
 
-	if (_info.cbit <= 16)
+	if (_info.bitspersample <= 16)
 	{
-		typename DefaultTraitsT<USHORT, USHORT> traits((1 << _info.cbit) - 1, _info.nnear); 
+		typename DefaultTraitsT<USHORT, USHORT> traits((1 << _info.bitspersample) - 1, _info.allowedlossyerror); 
 		return new JlsCodec<DefaultTraitsT<USHORT, USHORT>, STRATEGY>(traits); 
 	}
 	return NULL;

@@ -8,22 +8,6 @@
 #include <vector>
 #include "util.h"
 
-struct ScanInfo
-{
-	ScanInfo()   :
-		cbit(0),
-		nnear(0),
-		ccomp(0),
-		ilv(ILV_NONE),
-		size(0,0)
-	{
-	}
-   	int cbit;
-	int nnear;
-	int ccomp;
-	interleavemode ilv;
-	Size size;
-};
 
 class JpegSegment;
 
@@ -89,7 +73,7 @@ private:
 	int _cbyteOffset;
 	int _cbyteLength;
 	int _icompLast;
-	std::vector<JpegSegment*> _rgsegment;
+	std::vector<JpegSegment*> _segments;
 };
 
 
@@ -119,11 +103,11 @@ public:
 	int GetBytesRead()
 		{ return _cbyteOffset; }
 
-	const ScanInfo& GetMetadata() const
+	const JlsParamaters& GetMetadata() const
 		{ return _info; } 
 
-	const Presets& GetCustomPreset() const
-		{ return _presets; } 
+	const JlsCustomParameters& GetCustomPreset() const
+	{ return _info.custom; } 
 
 	bool Read(void* pvoid, int cbyteAvailable);
 	int ReadHeader();
@@ -145,8 +129,7 @@ private:
 	int _cbyteOffset;
 	int _cbyteLength;
 	bool _bCompare;
-	Presets _presets;
-	ScanInfo _info;
+	JlsParamaters _info;
 };
 
 

@@ -87,11 +87,19 @@ __declspec(dllexport) JLS_ERROR JpegLsDecode(void* pdataUncompressed, int cbyteU
 {
 	JLSInputStream reader((BYTE*)pdataCompressed, cbyteCompressed);
 
-	if (!reader.Read(pdataUncompressed, cbyteUncompressed))
-		return InvalidCompressedData;
+	try
+	{
+		if (!reader.Read(pdataUncompressed, cbyteUncompressed))
+			return InvalidCompressedData;
 
-	reader.GetBytesRead();
-	return OK;
+		reader.GetBytesRead();
+		return OK;
+
+	}
+	catch (JlsException e)
+	{
+		return e._error;
+	}
 }
 
 
@@ -145,14 +153,8 @@ __declspec(dllexport) JLS_ERROR JpegLsReadHeader(const void* pdataCompressed, in
 {
 	JLSInputStream reader((BYTE*)pdataCompressed, cbyteCompressed);
 	reader.ReadHeader();	
-	ScanInfo info = reader.GetMetadata();
-	pparams->width = info.size.cx;
-	pparams->height = info.size.cy;
-	pparams->components= info.ccomp;
-	pparams->bitspersample = info.cbit;
-	pparams->allowedlossyerror = info.nnear;
-	pparams->ilv = info.ilv;
-	pparams->custom = reader.GetCustomPreset();
+	JlsParamaters info = reader.GetMetadata();
+	*pparams = info;	
 	return OK;
 }
 }

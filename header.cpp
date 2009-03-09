@@ -110,11 +110,11 @@ JLSOutputStream::JLSOutputStream() :
 //
 JLSOutputStream::~JLSOutputStream()
 {
-	for (UINT i = 0; i < _rgsegment.size(); ++i)
+	for (UINT i = 0; i < _segments.size(); ++i)
 	{
-		delete _rgsegment[i];
+		delete _segments[i];
 	}
-	_rgsegment.empty();
+	_segments.empty();
 }
 
 
@@ -125,7 +125,7 @@ JLSOutputStream::~JLSOutputStream()
 //
 void JLSOutputStream::Init(Size size, int cbpp, int ccomp)
 {
-		_rgsegment.push_back(CreateMarkerStartOfFrame(size, cbpp, ccomp));
+		_segments.push_back(CreateMarkerStartOfFrame(size, cbpp, ccomp));
 }
 
 
@@ -142,9 +142,9 @@ int JLSOutputStream::Write(BYTE* pdata, int cbyteLength)
 	WriteByte(JPEG_SOI);
 	
 
-	for (UINT i = 0; i < _rgsegment.size(); ++i)
+	for (UINT i = 0; i < _segments.size(); ++i)
 	{
-		_rgsegment[i]->Write(this);
+		_segments[i]->Write(this);
 	}
 
 	//_bCompare = false;
@@ -161,7 +161,8 @@ JLSInputStream::JLSInputStream(const BYTE* pdata, int cbyteLength) :
 		_pdata(pdata),
 		_cbyteOffset(0),
 		_cbyteLength(cbyteLength),
-		_bCompare(false)
+		_bCompare(false),
+		_info()
 	{
 	}
 
@@ -183,23 +184,24 @@ bool JLSInputStream::Read(void* pvoid, int cbyteAvailable)
 //
 bool JLSInputStream::ReadPixels(void* pvoid, int cbyteAvailable)
 {
-	int cbytePlane = _info.size.cx * _info.size.cy * ((_info.cbit + 7)/8);
+	int cbytePlane = _info.width * _info.height * ((_info.bitspersample + 7)/8);
 
-	if (cbyteAvailable < cbytePlane * _info.ccomp)
-		return false;
+	if (cbyteAvailable < cbytePlane * _info.components)
+		throw JlsException(UncompressedBufferTooSmall);
  	
 	if (_info.ilv == ILV_NONE)
 	{
 		BYTE* pbyte = (BYTE*)pvoid;
-		for (int icomp = 0; icomp < _info.ccomp; ++icomp)
+		for (int icomp = 0; icomp < _info.components; ++icomp)
 		{
-			ReadScan(pbyte);			
+			ReadScan(pbyte);
+
 			pbyte += cbytePlane; 
 		}	
 	}
 	else
 	{
-		ReadScan(pvoid);			
+		ReadScan(pvoid);
 	}
 	return true;
 	
@@ -306,11 +308,11 @@ void JLSInputStream::ReadPresetParameters()
 	{
 	case 1:
 		{
-			_presets.MAXVAL = ReadWord();
-			_presets.T1 = ReadWord();
-			_presets.T2 = ReadWord();
-			_presets.T3 = ReadWord();
-			_presets.RESET = ReadWord();
+			_info.custom.MAXVAL = ReadWord();
+			_info.custom.T1 = ReadWord();
+			_info.custom.T2 = ReadWord();
+			_info.custom.T3 = ReadWord();
+			_info.custom.RESET = ReadWord();
 			return;
 		}
 	}
@@ -330,7 +332,7 @@ void JLSInputStream::ReadStartOfScan()
 		ReadByte();
 		ReadByte();
 	}
-	_info.nnear = ReadByte();
+	_info.allowedlossyerror = ReadByte();
 	_info.ilv = interleavemode(ReadByte());
 }
 
@@ -347,11 +349,12 @@ void JLSInputStream::ReadComment()
 //
 void JLSInputStream::ReadStartOfFrame()
 {
-	_info.cbit = ReadByte();
+	_info.bitspersample = ReadByte();
 	int cline = ReadWord();
 	int ccol = ReadWord();
-	_info.size = Size(ccol, cline);
-	_info.ccomp = ReadByte();
+	_info.width = ccol;
+	_info.height = cline;
+	_info.components= ReadByte();
 	
 }
 
@@ -375,9 +378,10 @@ int JLSInputStream::ReadWord()
 
 void JLSInputStream::ReadScan(void* pvout) 
 {
-	std::auto_ptr<DecoderStrategy> qcodec(JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _presets));
-	int cline = _info.ilv == ILV_LINE ? _info.ccomp : 1;
-	_cbyteOffset += qcodec->DecodeScan(pvout, _info.size, cline, _pdata + _cbyteOffset, _cbyteLength - _cbyteOffset, _bCompare); 
+	std::auto_ptr<DecoderStrategy> qcodec(JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom));
+	int cline = _info.ilv == ILV_LINE ? _info.components : 1;
+	Size size = Size(_info.width,_info.height);
+	_cbyteOffset += qcodec->DecodeScan(pvout, size, cline, _pdata + _cbyteOffset, _cbyteLength - _cbyteOffset, _bCompare); 
 };
 
 
@@ -400,11 +404,11 @@ public:
 	void Write(JLSOutputStream* pstream)
 	{		
 
-		ScanInfo info;
-		info.cbit = _cbit;
-		info.ccomp = _ccompScan;
+		JlsParamaters info;
+		info.bitspersample = _cbit;
+		info.components = _ccompScan;
 		info.ilv = _ilv;
-		info.nnear = _nnear;
+		info.allowedlossyerror = _nnear;
 		
 		int ccompInterleaved = _ilv == ILV_LINE ? _ccompScan : 1; 
 
@@ -432,15 +436,15 @@ void JLSOutputStream::AddScan(const void* pbyteComp, const JlsParamaters* pparam
 {
 	if (!IsDefault(&pparams->custom))
 	{
-		_rgsegment.push_back(CreateLSE(&pparams->custom));		
+		_segments.push_back(CreateLSE(&pparams->custom));		
 	}
 
 	_icompLast += 1;
-	_rgsegment.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _icompLast : -1));
+	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _icompLast : -1));
 
 	Size size = Size(pparams->width, pparams->height);
 	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
 
 	
-	_rgsegment.push_back(new JpegImageDataSegment(pbyteComp, size, pparams->bitspersample, _icompLast, ccomp, pparams->ilv, pparams->allowedlossyerror, pparams->custom));
+	_segments.push_back(new JpegImageDataSegment(pbyteComp, size, pparams->bitspersample, _icompLast, ccomp, pparams->ilv, pparams->allowedlossyerror, pparams->custom));
 }

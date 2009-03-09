@@ -40,9 +40,6 @@ struct CContextRunMode
 	}
 
 
-
-
-
 	void UpdateVariables(int Errval, UINT EMErrval)
 	{		
 		if (Errval < 0)

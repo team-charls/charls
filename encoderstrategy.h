@@ -24,6 +24,16 @@ public:
 	virtual ~EncoderStrategy() 
 		 {}
 
+
+
+	template <class T>
+	void OnLineBegin(T* ptypeCur, T* ptypeLine, int cpixel)
+	{
+		memcpy(ptypeCur, ptypeLine, cpixel * sizeof(T));
+	}
+
+	void OnLineEnd(void* /*ptypeCur*/, void* /*ptypeLine*/, int /*cpixel*/) {};
+
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
 	virtual int EncodeScan(const void* pvoid, const Size& size, int ccomp, void* pvoidOut, int cbyte, void* pvoidCompare) = 0;

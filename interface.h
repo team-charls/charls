@@ -12,6 +12,15 @@ enum JLS_ERROR
 	InvalidCompressedData
 };
 
+class JlsException
+{
+public:
+	JlsException(JLS_ERROR error) : _error(error)
+		{ }
+
+	JLS_ERROR _error;
+};
+
 enum interleavemode
 {
 	ILV_NONE = 0,

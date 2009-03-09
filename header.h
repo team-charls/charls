@@ -24,9 +24,9 @@ template<class STRATEGY>
 class JlsCodecFactory 
 {
 public:	
-	STRATEGY* GetCodec(const ScanInfo& info, const JlsCustomParameters&);
+	STRATEGY* GetCodec(const JlsParamaters& info, const JlsCustomParameters&);
 private:
-	STRATEGY* GetCodecImpl(const ScanInfo& info);
+	STRATEGY* GetCodecImpl(const JlsParamaters& info);
 };
 
 
