@@ -134,7 +134,7 @@ void JLSOutputStream::Init(Size size, int cbpp, int ccomp)
 //
 // Write()
 //
-int JLSOutputStream::Write(BYTE* pdata, int cbyteLength)
+size_t JLSOutputStream::Write(BYTE* pdata, size_t cbyteLength)
 {
 	_pdata = pdata;
 	_cbyteLength = cbyteLength;
@@ -222,7 +222,7 @@ void JLSInputStream::ReadHeader()
 
 		BYTE marker = (BYTE)ReadByte();
 
-		int cbyteStart = _cbyteOffset;
+		size_t cbyteStart = _cbyteOffset;
 		int cbyteMarker = ReadWord();
 
 		switch (marker)
@@ -408,7 +408,7 @@ public:
 		int ccompInterleaved = _ilv == ILV_LINE ? _ccompScan : 1; 
 
 		std::auto_ptr<EncoderStrategy> qcodec(JlsCodecFactory<EncoderStrategy>().GetCodec(info, _presets));
-		int cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, _size, ccompInterleaved, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
+		size_t cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, _size, ccompInterleaved, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
 

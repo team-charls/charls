@@ -42,7 +42,7 @@ JLS_ERROR CheckInput(const void* pdataCompressed, int cbyteCompressed, const voi
 extern "C"
 {
 
-JLS_ERROR __declspec(dllexport) JpegLsEncode(void* pdataCompressed, int cbyteBuffer, int* pcbyteWritten, const void* pdataUncompressed, int cbyteUncompressed, const JlsParamaters* pparams)
+JLS_ERROR __declspec(dllexport) JpegLsEncode(void* pdataCompressed, int cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, int cbyteUncompressed, const JlsParamaters* pparams)
 {
 
 	JLS_ERROR parameterError = CheckInput(pdataCompressed, cbyteBuffer, pdataUncompressed, cbyteUncompressed, pparams);

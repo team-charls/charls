@@ -38,11 +38,11 @@ public:
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
-	virtual int EncodeScan(const void* pvoid, const Size& size, int ccomp, void* pvoidOut, int cbyte, void* pvoidCompare) = 0;
+	virtual size_t EncodeScan(const void* pvoid, const Size& size, int ccomp, void* pvoidOut, size_t cbyte, void* pvoidCompare) = 0;
 
 protected:
 
-	void Init(BYTE* pbyteCompressed, int cbyte)
+	void Init(BYTE* pbyteCompressed, size_t cbyte)
 	{
 		bitpos = 32;
 		valcurrent = 0;
@@ -114,7 +114,7 @@ protected:
 		
 	}
 
-	int GetLength() 
+	size_t GetLength() 
 	{ 
 		return _cbyteWritten - (bitpos -32)/8; 
 	};
@@ -131,13 +131,13 @@ private:
 
 	UINT valcurrent;
 	// encoding
-	int _cbyteCompressed;
+	size_t _cbyteCompressed;
 	
 	// encoding
 	int bitpos;
 	BYTE* _pbyteCompressed;
 	bool _bFFWritten;
-	int _cbyteWritten;
+	size_t _cbyteWritten;
 };
 
 #endif

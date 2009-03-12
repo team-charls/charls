@@ -23,9 +23,9 @@ public:
 	  {}
 
 	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-	  virtual int DecodeScan(void* pvoidOut, const Size& size, int cline, const void* pvoidIn, int cbyte, bool bCheck) = 0;
+	  virtual size_t DecodeScan(void* pvoidOut, const Size& size, int cline, const void* pvoidIn, size_t cbyte, bool bCheck) = 0;
 
-	  void Init(BYTE* pbyteCompressed, int cbyte)
+	  void Init(BYTE* pbyteCompressed, size_t cbyte)
 	  {
 		  _cbitValid = 0;
 		  _valcurrent = 0;
@@ -59,17 +59,24 @@ public:
 #endif
 	  }
 
+	  typedef size_t bufType;
+
+	  enum { 
+		  bufferbits = sizeof( bufType ) * 8,
+	  };
+
+	 
 
 	  void MakeValid()
 	  {
 		  int  cbitValid = _cbitValid;
 		  BYTE* pbyteCompressed = _pbyteCompressed;
-		  UINT valcurrent = 0;
+		  bufType valcurrent = 0;
 
-		  while (cbitValid <= 24)
+		  while (cbitValid <= bufferbits - 8)
 		  {
-			  UINT valnew		  = *pbyteCompressed;
-			  valcurrent		 |= valnew << (24 - cbitValid);
+			  bufType valnew		  = *pbyteCompressed;
+			  valcurrent		 |= valnew << (bufferbits - 8  - cbitValid);
 			  pbyteCompressed  += 1;				
 			  cbitValid		 += 8; 
 
@@ -113,7 +120,8 @@ public:
 		  }
 
 		  ASSERT(length != 0 && length <= _cbitValid);
-		  UINT result = _valcurrent >> (32 - length);
+		  ASSERT(length < 32);
+		  UINT result = UINT(_valcurrent >> (bufferbits - length));
 		  Skip(length);		
 		  return result;
 	  }
@@ -126,7 +134,7 @@ public:
 			  MakeValid();
 		  }
 
-		  return _valcurrent >> 24; 
+		  return _valcurrent >> (bufferbits - 8); 
 	  }
 
 
@@ -138,7 +146,7 @@ public:
 			  MakeValid();
 		  }
 
-		  bool bSet = (_valcurrent & 0x80000000) != 0;
+		  bool bSet = (_valcurrent & (1LL << (bufferbits - 1))) != 0;
 		  Skip(1);
 		  return bSet;
 	  }
@@ -151,11 +159,11 @@ public:
 		  {
 			  MakeValid();
 		  }
-		  UINT valTest = _valcurrent;
+		  bufType valTest = _valcurrent;
 
 		  for (int cbit = 0; cbit < 16; cbit++)
 		  {
-			  if ((valTest & 0x80000000) != 0)
+			  if ((valTest & (1LL << (bufferbits - 1))) != 0)
 				  return cbit;
 
 			  valTest <<= 1;
@@ -198,9 +206,9 @@ public:
 private:
 	// decoding
 	int _cbitValid;
-	UINT _valcurrent;
+	bufType _valcurrent;
 	BYTE* _pbyteCompressed;
-	int _cbyteCompressed;
+	size_t _cbyteCompressed;
 };
 
 

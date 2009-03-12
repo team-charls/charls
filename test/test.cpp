@@ -108,7 +108,7 @@ void TestRoundTrip(const char* strName, const BYTE* rgbyteRaw, Size size, int cb
 	params.width = size.cx;
 	params.ilv = ccomp == 3 ? ILV_SAMPLE : ILV_NONE;
 
-	int cbyteCompressed;
+	size_t cbyteCompressed;
 	JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &cbyteCompressed, rgbyteRaw, rgbyteOut.size(), &params);
 
 	double dwtimeEncodeComplete = getTime();
@@ -338,7 +338,6 @@ void TestSmallBuffer()
 
 void TestDamagedBitStream()
 {
-
 	std::vector<BYTE> rgbyteCompressed;	
 	ReadFile("..\\test\\lena8b.jls", &rgbyteCompressed, 0);
 	
