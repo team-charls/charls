@@ -3,8 +3,8 @@
 // 
 
 
-#pragma once
-
+#ifndef CHARLS_LOOKUPTABLE
+#define CHARLS_LOOKUPTABLE
 
 
 struct Code
@@ -64,3 +64,5 @@ void CTable::AddEntry(BYTE bvalue, Code c)
 		rgtype[(bvalue << (cbit - length)) + i] = c;					
 	}
 }
+
+#endif

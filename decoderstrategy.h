@@ -3,9 +3,9 @@
 // 
 
 
-#pragma once
+#ifndef CHARLS_DECODERSTRATEGY
+#define CHARLS_DECODERSTRATEGY
 
-#include <ASSERT.h>
 #include "streams.h"
 
 class DecoderStrategy
@@ -34,6 +34,7 @@ public:
 		  MakeValid();
 	  }
 
+		
 
 	  inlinehint void Skip(int length)
 	  {
@@ -203,3 +204,4 @@ private:
 };
 
 
+#endif

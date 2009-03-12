@@ -2,8 +2,9 @@
 // (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-#pragma once
 
+#ifndef CHARLS_CONTEXTRUNMODE
+#define CHARLS_CONTEXTRUNMODE
 
 struct CContextRunMode 
 {
@@ -34,7 +35,7 @@ struct CContextRunMode
 		for(; Ntest < TEMP; k++) 
 		{ 
 			Ntest <<= 1;
-			assert(k <= 32); 
+			ASSERT(k <= 32); 
 		};
 		return k;
 	}
@@ -64,14 +65,13 @@ struct CContextRunMode
 
 		if ((k != 0 || (2 * Nn >= N)) == map)
 		{
-			assert(map == ComputeMap(-int(errvalabs), k));
+			ASSERT(map == ComputeMap(-int(errvalabs), k));
 			return -int(errvalabs);
 		}
 
-		assert(map == ComputeMap(errvalabs, k));	
+		ASSERT(map == ComputeMap(errvalabs, k));	
 		return errvalabs;
 	}
-
 
 
 	bool ComputeMap(int Errval, int k) const
@@ -94,3 +94,5 @@ struct CContextRunMode
 		return  k != 0 || (2 * Nn >= N );
 	}
 };
+
+#endif

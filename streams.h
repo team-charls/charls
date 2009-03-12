@@ -3,7 +3,8 @@
 // 
 
 
-#pragma once
+#ifndef CHARLS_STREAMS
+#define CHARLS_STREAMS
 
 #include <vector>
 #include "util.h"
@@ -135,3 +136,4 @@ private:
 
 
 
+#endif

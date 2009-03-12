@@ -3,7 +3,9 @@
 // 
 
 
-#pragma once
+
+#ifndef CHARLS_LOSSLESSTRAITS
+#define CHARLS_LOSSLESSTRAITS
 
 //
 // optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
@@ -19,7 +21,7 @@ struct LosslessTraitsImplT
 		qbpp  = bitsperpixel,
 		RANGE = (1 << bpp),
 		MAXVAL= (1 << bpp) - 1,
-		LIMIT = 2 * (bitsperpixel + max(8,bitsperpixel)),
+		LIMIT = 2 * (bitsperpixel + MAX(8,bitsperpixel)),
 		RESET = BASIC_RESET,
 	};
 
@@ -68,7 +70,7 @@ struct LosslessTraitsT<BYTE,8> : public LosslessTraitsImplT<BYTE, 8>
 		{ return (signed char)Errval; }
 
 	static inlinehint int ComputeErrVal(int d)
-	{ return signed char(d); }
+	{ return (signed char)(d); }
 
 	static inlinehint BYTE ComputeReconstructedSample(int Px, int ErrVal)
 		{ return BYTE(Px + ErrVal);  }
@@ -115,3 +117,5 @@ struct LosslessTraitsT<Triplet,8> : public LosslessTraitsImplT<BYTE,8>
 
 
 };
+
+#endif

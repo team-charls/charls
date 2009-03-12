@@ -3,7 +3,8 @@
 // 
 
 
-#pragma once
+#ifndef CHARLS_DEFAULTTRAITS
+#define CHARLS_DEFAULTTRAITS
 
 // Default traits that support all JPEG LS paramaters.
 
@@ -39,9 +40,9 @@ public:
 		NEAR   = jls_near;
 		MAXVAL = max;
 		RANGE  = (MAXVAL + 2 * NEAR )/(2 * NEAR + 1) + 1;
-		bpp = log2(max);	
-		LIMIT = 2 * (bpp + max(8,bpp));
-		qbpp = log2(RANGE);
+		bpp = log_2(max);	
+		LIMIT = 2 * (bpp + MAX(8,bpp));
+		qbpp = log_2(RANGE);
 		RESET = BASIC_RESET;
 	}
 
@@ -116,3 +117,4 @@ private:
 };
 
 
+#endif

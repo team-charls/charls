@@ -3,7 +3,9 @@
 // 
 
 
-#pragma once
+#ifndef CHARLS_HEADER
+#define CHARLS_HEADER
+
 #include "streams.h"
 
 #define JPEG_SOI  0xD8
@@ -42,3 +44,4 @@ public:
 	virtual void Write(JLSOutputStream* pstream) = 0;
 };
 
+#endif

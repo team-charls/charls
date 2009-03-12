@@ -2,16 +2,17 @@
 // (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-#pragma once
-
+#ifndef CHARLS_SCAN
+#define CHARLS_SCAN
 
 
 #include "lookuptable.h"
 
-
-
-
-
+extern CTable rgtableShared[16];
+extern std::vector<signed char> rgquant8Ll;
+extern std::vector<signed char> rgquant10Ll;
+extern std::vector<signed char> rgquant12Ll;
+extern std::vector<signed char> rgquant16Ll;
 //
 // Apply 
 //
@@ -31,7 +32,7 @@ Presets ComputeDefault(int MAXVAL, int NEAR)
 {
 		Presets preset;
 
-		int FACTOR = (min(MAXVAL, 4095) + 128)/256;
+		int FACTOR = (MIN(MAXVAL, 4095) + 128)/256;
 		
 		preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
 		preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
@@ -169,9 +170,9 @@ public:
 	inlinehint void EncodeMappedValue(int k, UINT mappederval, UINT limit);
 	
 	void IncrementRunIndex()
-		{ RUNindex = min(31,RUNindex + 1); }
+		{ RUNindex = MIN(31,RUNindex + 1); }
 	void DecrementRunIndex()
-		{ RUNindex = max(0,RUNindex - 1); }
+		{ RUNindex = MAX(0,RUNindex - 1); }
 
 	int		DecodeRIError(CContextRunMode& ctx);
 	Triplet DecodeRIPixel(Triplet Ra, Triplet Rb);
@@ -234,10 +235,10 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int Qs, int, int pr
 	int Px			= traits.CorrectPrediction(pred + ApplySign(ctx.C, sign));    
 
 	int ErrVal;
-	const Code& code		= rgtableShared[k].Get(PeekByte());
+	const Code& code		= rgtableShared[k].Get(STRATEGY::PeekByte());
 	if (code.GetLength() != 0)
 	{
-		Skip(code.GetLength());
+		STRATEGY::Skip(code.GetLength());
 		ErrVal = code.GetValue(); 
 		ASSERT(abs(ErrVal) < 65535);
 	}
@@ -266,7 +267,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int Qs, int x, int 
 	EncodeMappedValue(k, GetMappedErrVal(ctx.GetErrorCorrection(k | traits.NEAR) ^ ErrVal), traits.LIMIT);	
 	ctx.UpdateVariables(ErrVal, traits.NEAR, traits.RESET);
 	ASSERT(traits.IsNear(traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)), x));
-	return static_cast<TRAITS::SAMPLE>(traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)));
+	return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)));
 }
 						   
 
@@ -313,15 +314,15 @@ CTable InitTable(int k)
 template<class TRAITS, class STRATEGY>
  UINT JlsCodec<TRAITS,STRATEGY>::DecodeValue(int k, UINT limit, int qbpp)
 	{
-		UINT highbits = ReadHighbits();
+		UINT highbits = STRATEGY::ReadHighbits();
 		
 		if (highbits >= limit - (qbpp + 1))
-			return ReadValue(qbpp) + 1;
+			return STRATEGY::ReadValue(qbpp) + 1;
 
 	 	if (k == 0)
 			return highbits;
 
-		return (highbits << k) + ReadValue(k);
+		return (highbits << k) + STRATEGY::ReadValue(k);
 	}
 
 
@@ -335,24 +336,24 @@ inlinehint void JlsCodec<TRAITS,STRATEGY>::EncodeMappedValue(int k, UINT mappede
 	{
 		if (highbits + 1 > 31)
 		{
-			AppendToBitStream(0, highbits / 2);
+			STRATEGY::AppendToBitStream(0, highbits / 2);
 			highbits = highbits - highbits / 2;													
 		}
-		AppendToBitStream(1, highbits + 1);
-		AppendToBitStream((mappederval & ((1 << k) - 1)), k);
+		STRATEGY::AppendToBitStream(1, highbits + 1);
+		STRATEGY::AppendToBitStream((mappederval & ((1 << k) - 1)), k);
 		return;
 	}
 
 	if (limit - traits.qbpp > 31)
 	{
-		AppendToBitStream(0, 31);
-		AppendToBitStream(1, limit - traits.qbpp - 31);			
+		STRATEGY::AppendToBitStream(0, 31);
+		STRATEGY::AppendToBitStream(1, limit - traits.qbpp - 31);			
 	}
 	else
 	{
-		AppendToBitStream(1, limit - traits.qbpp);			
+		STRATEGY::AppendToBitStream(1, limit - traits.qbpp);			
 	}
-	AppendToBitStream((mappederval - 1) & ((1 << traits.qbpp) - 1), traits.qbpp);
+	STRATEGY::AppendToBitStream((mappederval - 1) & ((1 << traits.qbpp) - 1), traits.qbpp);
 }
 
 
@@ -428,7 +429,7 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRunPixels(int runLength, bool bEndofline)
 {
 	while (runLength >= (1 << J[RUNindex])) 
 	{
-		AppendOnesToBitStream(1);
+		STRATEGY::AppendOnesToBitStream(1);
 		runLength = runLength - (1 << J[RUNindex]);
 		IncrementRunIndex();
 	}
@@ -437,12 +438,12 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRunPixels(int runLength, bool bEndofline)
 	{
 		if (runLength != 0) 
 		{
-			AppendOnesToBitStream(1);	
+			STRATEGY::AppendOnesToBitStream(1);	
 		}
 	}
 	else
 	{
-		AppendToBitStream(runLength, J[RUNindex] + 1);	// leading 0 + actual remaining length
+		STRATEGY::AppendToBitStream(runLength, J[RUNindex] + 1);	// leading 0 + actual remaining length
 	}
 }
 
@@ -452,9 +453,9 @@ template<class TRAITS, class STRATEGY>
 int JlsCodec<TRAITS,STRATEGY>::DecodeRunPixels(PIXEL Ra, PIXEL* ptype, int cpixelMac)
 {
 	int ipixel = 0;
-	while (ReadBit())
+	while (STRATEGY::ReadBit())
 	{
-		int cpixel = min(1 << J[RUNindex], cpixelMac - ipixel);
+		int cpixel = MIN(1 << J[RUNindex], cpixelMac - ipixel);
 		ipixel += cpixel;
 		ASSERT(ipixel <= cpixelMac);
 
@@ -471,7 +472,7 @@ int JlsCodec<TRAITS,STRATEGY>::DecodeRunPixels(PIXEL Ra, PIXEL* ptype, int cpixe
 	if (ipixel != cpixelMac)
 	{
 		// incomplete run 	
-		ipixel += (J[RUNindex] > 0) ? ReadValue(J[RUNindex]) : 0;
+		ipixel += (J[RUNindex] > 0) ? STRATEGY::ReadValue(J[RUNindex]) : 0;
 	}
 
 	for (int i = 0; i < ipixel; ++i)
@@ -569,13 +570,13 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(int x, int Ra, 
 	{
 		int ErrVal	= traits.ComputeErrVal(x - Ra);
 		EncodeRIError(_contextRunmode[1], ErrVal);
-		return static_cast<TRAITS::SAMPLE>(traits.ComputeReconstructedSample(Ra, ErrVal));
+		return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Ra, ErrVal));
 	}
 	else
 	{
 		int ErrVal	= traits.ComputeErrVal((x - Rb) * Sign(Rb - Ra));
 		EncodeRIError(_contextRunmode[0], ErrVal);
-		return static_cast<TRAITS::SAMPLE>(traits.ComputeReconstructedSample(Rb, ErrVal * Sign(Rb - Ra)));
+		return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Rb, ErrVal * Sign(Rb - Ra)));
 	}
 }
 
@@ -705,7 +706,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet*)
 template<class TRAITS, class STRATEGY>
 void JlsCodec<TRAITS,STRATEGY>::DoScan(PIXEL* ptype, BYTE* pbyteCompressed, int cbyteCompressed)
 {		
-	Init(pbyteCompressed, cbyteCompressed);
+	STRATEGY::Init(pbyteCompressed, cbyteCompressed);
 
 	int pixelstride = _size.cx + 4;
 	
@@ -731,9 +732,9 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan(PIXEL* ptype, BYTE* pbyteCompressed, int 
 		ptypePrev[_size.cx]	= ptypePrev[_size.cx - 1];
 		ptypeCur[-1]		= ptypePrev[0];
 		
-		OnLineBegin(ptypeCur, ptypeLine, _size.cx);
+		STRATEGY::OnLineBegin(ptypeCur, ptypeLine, _size.cx);
 		DoLine((PIXEL*) NULL); // dummy arg for overload resolution
-		OnLineEnd(ptypeCur, ptypeLine, _size.cx);
+		STRATEGY::OnLineEnd(ptypeCur, ptypeLine, _size.cx);
 
 		rgRUNindex[icomponent] = RUNindex;
 	}
@@ -755,14 +756,14 @@ int JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, i
 		DecoderStrategy* pdecoder = new JlsCodec<TRAITS,DecoderStrategy>(traits);
 		BYTE* pbyteCompare = (BYTE*)pvoidCompare;
 		pdecoder->Init(pbyteCompare, cbyte); 
-		EncoderStrategy::_qdecoder = pdecoder;
+		STRATEGY::_qdecoder = pdecoder;
 	}
 
 	DoScan(const_cast<PIXEL*>(ptype), pbyteCompressed, cbyte);
 
-	Flush();
+	STRATEGY::Flush();
 
-	return	GetLength();
+	return	STRATEGY::GetLength();
 
 }
 
@@ -791,7 +792,7 @@ int JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, int 
 
 	DoScan(const_cast<PIXEL*>(ptypeOut), pbyteCompressed + cbyteRead, cbyte);
 
-	return GetCurBytePos() - pbyteCompressed;
+	return STRATEGY::GetCurBytePos() - pbyteCompressed;
 }
 
 
@@ -808,13 +809,15 @@ void JlsCodec<TRAITS,STRATEGY>::InitParams(int t1, int t2, int t3, int nReset)
 
 	InitQuantizationLUT();
 
-	int A = max(2, (traits.RANGE + 32)/64);
+	int A = MAX(2, (traits.RANGE + 32)/64);
 	for (UINT Q = 0; Q < sizeof(_contexts) / sizeof(_contexts[0]); ++Q)
 	{
 		_contexts[Q] = JlsContext(A);
 	}
 
-	_contextRunmode[0] = CContextRunMode(max(2, (traits.RANGE + 32)/64), 0, nReset);
-	_contextRunmode[1] = CContextRunMode(max(2, (traits.RANGE + 32)/64), 1, nReset);
+	_contextRunmode[0] = CContextRunMode(MAX(2, (traits.RANGE + 32)/64), 0, nReset);
+	_contextRunmode[1] = CContextRunMode(MAX(2, (traits.RANGE + 32)/64), 1, nReset);
 	RUNindex = 0;
 }
+
+#endif

@@ -3,23 +3,38 @@
 // 
 
 
-#pragma once
+#ifndef CHARLS_UTIL
+#define CHARLS_UTIL
 
-#pragma pack (push)
-#pragma pack (1)
+
 
 #undef  NEAR
 
+#ifdef _USRDLL
 #ifdef _DEBUG
 #define inlinehint 
 #else
 #define inlinehint __forceinline
 #endif
+#else
+#define inlinehint __inline
+#endif
+
+
+
+
+#ifndef MAX
+#define MAX(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef MIN
+#define MIN(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 
 const int BASIC_RESET	= 64;
 
-inline int log2(UINT n)
+inline int log_2(UINT n)
 {
 	int x = 0;
 	while (n > (1U << x))
@@ -42,12 +57,14 @@ struct Size
 
 
 
-inline __forceinline int Sign(int n)
+inline int Sign(int n)
 	{ return (n >> 31) | 1;}
 
-inline __forceinline int BitWiseSign(int i)
+inline int BitWiseSign(int i)
 	{ return (i >> 31); }	
 
+
+#pragma pack(push, 1)
 
 struct Triplet 
 { 
@@ -69,7 +86,7 @@ struct Triplet
 };
 
 
-#pragma pack (pop)
+#pragma pack(pop)
 
 
 #include "interface.h"
@@ -79,3 +96,5 @@ inline bool operator==(const Triplet& lhs, const Triplet& rhs)
 
 inline bool  operator!=(const Triplet& lhs, const Triplet& rhs)
 	{ return !(lhs == rhs); }
+
+#endif

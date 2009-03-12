@@ -3,7 +3,8 @@
 // 
 
 
-#pragma once
+#ifndef CHARLS_CONTEXT
+#define CHARLS_CONTEXT
 
 
 #define MIN_C -128
@@ -61,7 +62,7 @@ public:
 
 		if (B <= - N) 
 		{
-			B = max(-N + 1, B + N);
+			B = MAX(-N + 1, B + N);
 			if (C > MIN_C)
 			{
 				C--;
@@ -69,7 +70,7 @@ public:
 		} 
 		else if (B > 0) 
 		{
-			B = min(B - N, 0);				
+			B = MIN(B - N, 0);				
 			if (C < MAX_C) 
 			{
 				C++;
@@ -94,3 +95,5 @@ public:
 	}
 
 };
+
+#endif

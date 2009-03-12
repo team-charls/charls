@@ -4,8 +4,6 @@
 #include "header.h"
 
 
-
-
 JLS_ERROR CheckInput(const void* pdataCompressed, int cbyteCompressed, const void* pdataUncompressed, int cbyteUncompressed, const JlsParamaters* pparams)
 {
 	if (pparams == NULL)
@@ -161,4 +159,5 @@ __declspec(dllexport) JLS_ERROR JpegLsReadHeader(const void* pdataCompressed, in
 	}
 
 }
+
 }
