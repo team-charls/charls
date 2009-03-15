@@ -19,4 +19,6 @@ typedef unsigned short USHORT;
 
 #define CHARLS_IMEXPORT __declspec(dllexport) 
 
+#include "util.h"
+
 #endif

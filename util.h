@@ -7,6 +7,7 @@
 #define CHARLS_UTIL
 
 
+#include <string.h>
 
 #undef  NEAR
 
