@@ -39,12 +39,12 @@ JLS_ERROR CheckInput(const void* pdataCompressed, int cbyteCompressed, const voi
 	}
 }
 
+
 extern "C"
 {
 
-JLS_ERROR __declspec(dllexport) JpegLsEncode(void* pdataCompressed, int cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, int cbyteUncompressed, const JlsParamaters* pparams)
+CHARLS_IMEXPORT JLS_ERROR JpegLsEncode(void* pdataCompressed, int cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, int cbyteUncompressed, const JlsParamaters* pparams)
 {
-
 	JLS_ERROR parameterError = CheckInput(pdataCompressed, cbyteBuffer, pdataUncompressed, cbyteUncompressed, pparams);
 
 	if (parameterError != OK)
@@ -81,7 +81,7 @@ JLS_ERROR __declspec(dllexport) JpegLsEncode(void* pdataCompressed, int cbyteBuf
 	return OK;
 }
 
-__declspec(dllexport) JLS_ERROR JpegLsDecode(void* pdataUncompressed, int cbyteUncompressed, const void* pdataCompressed, int cbyteCompressed)
+CHARLS_IMEXPORT JLS_ERROR JpegLsDecode(void* pdataUncompressed, int cbyteUncompressed, const void* pdataCompressed, int cbyteCompressed)
 {
 	JLSInputStream reader((BYTE*)pdataCompressed, cbyteCompressed);
 
@@ -97,7 +97,7 @@ __declspec(dllexport) JLS_ERROR JpegLsDecode(void* pdataUncompressed, int cbyteU
 }
 
 
-__declspec(dllexport) JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, int cbyteUncompressed, const void* pdataCompressed, int cbyteBuffer)
+CHARLS_IMEXPORT JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, int cbyteUncompressed, const void* pdataCompressed, int cbyteBuffer)
 {
 	JlsParamaters params = {0};
 
@@ -143,7 +143,7 @@ __declspec(dllexport) JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed
 }
 
 
-__declspec(dllexport) JLS_ERROR JpegLsReadHeader(const void* pdataCompressed, int cbyteCompressed, JlsParamaters* pparams)
+CHARLS_IMEXPORT JLS_ERROR JpegLsReadHeader(const void* pdataCompressed, int cbyteCompressed, JlsParamaters* pparams)
 {
 	try
 	{

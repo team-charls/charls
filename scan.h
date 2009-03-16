@@ -5,8 +5,12 @@
 #ifndef CHARLS_SCAN
 #define CHARLS_SCAN
 
-
 #include "lookuptable.h"
+
+#ifdef _MSC_VER
+#pragma warning (disable: 4127)
+#endif
+
 
 extern CTable rgtableShared[16];
 extern std::vector<signed char> rgquant8Ll;
@@ -356,10 +360,6 @@ inlinehint void JlsCodec<TRAITS,STRATEGY>::EncodeMappedValue(int k, UINT mappede
 	STRATEGY::AppendToBitStream((mappederval - 1) & ((1 << traits.qbpp) - 1), traits.qbpp);
 }
 
-
-
-
-#pragma warning (disable: 4127)
 
 template<class TRAITS, class STRATEGY>
 void JlsCodec<TRAITS,STRATEGY>::InitQuantizationLUT()
