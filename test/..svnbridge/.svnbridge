@@ -5,4 +5,9 @@ Release
 mars
 Release
 *.user
+</Value></Property><Property><Name>svn:ignore</Name><Value>Debug
+mars
+Release
+*.user
+CMakeFiles
 </Value></Property></Properties></ItemProperties>

@@ -1,3 +1,2 @@
-project(charls)
-
-add_library(test.cpp)
+# test for charlls
+add_executable(charlstest test.cpp)

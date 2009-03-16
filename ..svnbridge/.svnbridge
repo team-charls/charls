@@ -6,4 +6,7 @@ release
 *.user
 CharLS.suo
 CharLS.ncb
+bin
+CMakeFiles
+xx
 </Value></Property></Properties></ItemProperties>

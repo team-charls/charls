@@ -17,7 +17,9 @@ typedef unsigned short USHORT;
 #define ASSERT(t) ;
 #endif
 
+#if defined(WIN32)
 #define CHARLS_IMEXPORT __declspec(dllexport) 
+#endif
 
 #include "util.h"
 
