@@ -9,4 +9,16 @@ CharLS.ncb
 bin
 CMakeFiles
 xx
+</Value></Property><Property><Name>svn:ignore</Name><Value>debug
+jpeg_ls_v2.2
+jpegls_0.04.981012
+junk
+release
+*.user
+CharLS.suo
+CharLS.ncb
+bin
+CMakeFiles
+xx
+Debug
 </Value></Property></Properties></ItemProperties>
