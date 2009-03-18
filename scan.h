@@ -6,6 +6,7 @@
 #define CHARLS_SCAN
 
 #include "lookuptable.h"
+#include <stdlib.h> /* abs */
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4127)

@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #ifndef JLS_INTERFACE
 #define JLS_INTERFACE
 
