@@ -12,7 +12,6 @@
 #endif
 
 #include <stdio.h>
-#endif
 
 #include <assert.h>
 #define ASSERT(t) assert(t)
