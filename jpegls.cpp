@@ -10,7 +10,7 @@
 #include <math.h>
 #include <limits>
 #include <vector>
-#include <STDIO.H>
+#include <stdio.h>
 #include <iostream>
 
 #include "util.h"

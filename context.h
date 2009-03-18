@@ -29,8 +29,8 @@ public:
 
 	UINT A;
 	int B;
-	int N;
 	int C;
+	int N;
 
 	inlinehint int GetErrorCorrection(int k) const
 	{

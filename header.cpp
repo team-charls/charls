@@ -96,11 +96,11 @@ JpegSegment* CreateMarkerStartOfFrame(Size size, int cbpp, int ccomp)
 // ctor()
 //
 JLSOutputStream::JLSOutputStream() :
+	_bCompare(false),
 	_pdata(NULL),
 	_cbyteOffset(0),
 	_cbyteLength(0),
-	_icompLast(0),
-	_bCompare(false)
+	_icompLast(0)
 {
 }
 
@@ -414,14 +414,13 @@ public:
 
 
 
-	const void* _pvoidRaw;
-	Size _size;
 	int _cbit;
+	int _nnear;
+	Size _size;
 	int _ccompScan;
 	interleavemode _ilv;
 	int _icompStart;
-	int _nnear;
-
+	const void* _pvoidRaw;
 	JlsCustomParameters _presets;
 };
 

@@ -19,9 +19,9 @@ public:
 	int MAXVAL;
 	int RANGE;
 	int NEAR;
-	int LIMIT;
 	int qbpp;
 	int bpp;
+	int LIMIT;
 	int RESET;
 
 	DefaultTraitsT(const DefaultTraitsT& src) :

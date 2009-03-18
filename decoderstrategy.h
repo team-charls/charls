@@ -205,8 +205,8 @@ public:
 
 private:
 	// decoding
-	int _cbitValid;
 	bufType _valcurrent;
+	int _cbitValid;
 	BYTE* _pbyteCompressed;
 	size_t _cbyteCompressed;
 };

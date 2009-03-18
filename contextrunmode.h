@@ -18,9 +18,9 @@ struct CContextRunMode
 	}
 
 	int A;
-	int _nRItype;
 	BYTE N;
 	BYTE Nn;
+	int _nRItype;
 	BYTE _nReset;
 
 	CContextRunMode()

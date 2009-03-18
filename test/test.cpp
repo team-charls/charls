@@ -3,20 +3,20 @@
 
 
 #include "stdafx.h"
-#include <windows.h>
 #include <iostream>
 #include <vector>
+#include <time.h>
 
 #include "../interface.h"
 #include "../util.h"
 #include "../defaulttraits.h"
 #include "../losslesstraits.h"
-#pragma warning (disable: 4996)
-
 typedef const char* SZC;
 
 namespace // local helpers
 {
+
+#if defined(WIN32)
 
 double getTime() 
 { 
@@ -27,6 +27,14 @@ double getTime()
 
 	return double(time.LowPart) * 1000.0/double(freq.LowPart);
 }
+
+#else
+
+double getTime() 
+{ 	
+	return clock() * 1000.0 /CLOCKS_PER_SEC;	
+}
+#endif
 
 void ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0)
 {
@@ -159,7 +167,7 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 		}						    
 	}
 
-	int cbyteCompressedActual = 0;
+//	int cbyteCompressedActual = 0;
 
 	JLS_ERROR error = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
 	ASSERT(error == OK);
@@ -236,10 +244,10 @@ void TestPerformance()
 	Size size1024 = Size(1024, 1024);
 	Size size512 = Size(512, 512);
 
-//	TestFile("..\\test\\mars\\phoenixmars.ppm", 40, Size(5300,4300),  8, 3);
-	TestFile("..\\test\\mr2_unc", 1728, size1024,  16, 1);
-	TestFile("..\\test\\0015.raw", 0, size1024,  8, 1);
-	TestFile("..\\test\\lena8b.raw", 0, size512,  8, 1);
+//	TestFile("../test/mars/phoenixmars.ppm", 40, Size(5300,4300),  8, 3);
+	TestFile("../test/mr2_unc", 1728, size1024,  16, 1);
+	TestFile("../test/0015.raw", 0, size1024,  8, 1);
+	TestFile("../test/lena8b.raw", 0, size512,  8, 1);
 
 }
 
@@ -327,7 +335,7 @@ void TestSampleAnnexH3()
 void TestSmallBuffer()
 {
 	std::vector<BYTE> rgbyteCompressed;	
-	ReadFile("..\\test\\lena8b.jls", &rgbyteCompressed, 0);
+	ReadFile("../test/lena8b.jls", &rgbyteCompressed, 0);
 	
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(512 * 511);	
@@ -339,7 +347,7 @@ void TestSmallBuffer()
 void TestDamagedBitStream()
 {
 	std::vector<BYTE> rgbyteCompressed;	
-	ReadFile("..\\test\\lena8b.jls", &rgbyteCompressed, 0);
+	ReadFile("../test/lena8b.jls", &rgbyteCompressed, 0);
 	
 	rgbyteCompressed.resize(900);
 	rgbyteCompressed.resize(40000,3);
@@ -357,56 +365,69 @@ void TestConformance()
 {
 
 	// Test 1
-	DecompressFile("..\\test\\conformance\\t8c0e0.jls", "..\\test\\conformance\\test8.ppm",15);
+	DecompressFile("../test/conformance/t8c0e0.jls", "../test/conformance/test8.ppm",15);
 
 	// Test 2
-	DecompressFile("..\\test\\conformance\\t8c1e0.jls", "..\\test\\conformance\\test8.ppm",15);
+	DecompressFile("../test/conformance/t8c1e0.jls", "../test/conformance/test8.ppm",15);
 
 	// Test 3
-	DecompressFile("..\\test\\conformance\\t8c2e0.jls", "..\\test\\conformance\\test8.ppm", 15);
+	DecompressFile("../test/conformance/t8c2e0.jls", "../test/conformance/test8.ppm", 15);
 
 	// Test 4
-	DecompressFile("..\\test\\conformance\\t8c0e3.jls", "..\\test\\conformance\\test8.ppm",15);
+	DecompressFile("../test/conformance/t8c0e3.jls", "../test/conformance/test8.ppm",15);
 
 	// Test 5
-	DecompressFile("..\\test\\conformance\\t8c1e3.jls", "..\\test\\conformance\\test8.ppm",15);
+	DecompressFile("../test/conformance/t8c1e3.jls", "../test/conformance/test8.ppm",15);
 
 	// Test 6
-	DecompressFile("..\\test\\conformance\\t8c2e3.jls", "..\\test\\conformance\\test8.ppm",15);
+	DecompressFile("../test/conformance/t8c2e3.jls", "../test/conformance/test8.ppm",15);
 
 
 	// Test 7
 	// Test 8
 
 	// Test 9
-	DecompressFile("..\\test\\conformance\\t8nde0.jls", "..\\test\\conformance\\test8bs2.pgm",15);	
+	DecompressFile("../test/conformance/t8nde0.jls", "../test/conformance/test8bs2.pgm",15);	
 
 	// Test 10
-	DecompressFile("..\\test\\conformance\\t8nde3.jls", "..\\test\\conformance\\test8bs2.pgm",15);	
+	DecompressFile("../test/conformance/t8nde3.jls", "../test/conformance/test8bs2.pgm",15);	
 
 	// Test 11
-	DecompressFile("..\\test\\conformance\\t16e0.jls", "..\\test\\conformance\\test16.pgm",16);
+	DecompressFile("../test/conformance/t16e0.jls", "../test/conformance/test16.pgm",16);
 	
 	// Test 12
-	DecompressFile("..\\test\\conformance\\t16e3.jls", "..\\test\\conformance\\test16.pgm",16);
+	DecompressFile("../test/conformance/t16e3.jls", "../test/conformance/test16.pgm",16);
 
 	
 
 	// additional, Lena compressed with other codec (UBC?), vfy with CharLS
-	DecompressFile("..\\test\\lena8b.jls", "..\\test\\lena8b.raw",0);
+	DecompressFile("../test/lena8b.jls", "../test/lena8b.raw",0);
 }
 
 
 
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
-	TestDamagedBitStream();
-	TestSmallBuffer();
-	TestConformance();
+
+	printf("Test Annex H3\r\n");
 	TestSampleAnnexH3();
+
+	printf("Test Traits\r\n");
 	TestTraits16bit();		
 	TestTraits8bit();		
+
+	printf("Test Damaged bitstream\r\n");
+	TestDamagedBitStream();
+
+	printf("Test Small buffer\r\n");
+	TestSmallBuffer();
+
+	printf("Test Conformance\r\n");
+	TestConformance();
+
+	printf("Test Perf\r\n");
+
 	TestPerformance();
 	TestNoiseImage();
 	char c;

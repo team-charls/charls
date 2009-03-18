@@ -3,6 +3,9 @@
 // 
 
 
+
+
+
 #ifndef CHARLS_ENCODERSTRATEGY
 #define CHARLS_ENCODERSTRATEGY
 
@@ -13,9 +16,9 @@ class EncoderStrategy
 
 public:
 	EncoderStrategy() :
+		 _qdecoder(0),
 		 valcurrent(0),
 		 bitpos(0),
-		 _qdecoder(0),
 		 _bFFWritten(false),
 		 _cbyteWritten(0)
 	{};
@@ -57,11 +60,13 @@ protected:
 
 		ASSERT((_qdecoder == NULL) || (length == 0 && value == 0) ||( _qdecoder->ReadLongValue(length) == value));
 
+#ifdef _DEBUG
 		if (length < 32)
 		{
 			UINT mask = (1 << (length)) - 1;
 			ASSERT((value | mask) == mask);
 		}
+#endif
 
 		bitpos -= length;
 		if (bitpos >= 0)
@@ -125,19 +130,21 @@ protected:
 		AppendToBitStream((1 << length) - 1, length);	
 	}
 
+
 	DecoderStrategy* _qdecoder; 
 
 private:
 
 	UINT valcurrent;
-	// encoding
+	int bitpos;
 	size_t _cbyteCompressed;
 	
 	// encoding
-	int bitpos;
 	BYTE* _pbyteCompressed;
 	bool _bFFWritten;
 	size_t _cbyteWritten;
+
+
 };
 
 #endif

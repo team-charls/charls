@@ -11,8 +11,11 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 OPTION(charls_BUILD_SHARED_LIBS "Build CharLS with shared libraries." OFF)
 SET(BUILD_SHARED_LIBS ${charls_BUILD_SHARED_LIBS})
 
-ADD_SUBDIRECTORY(test)
-
 add_library(CharLS header.cpp  interface.cpp  jpegls.cpp  
   stdafx.cpp
   )
+
+
+add_executable(charlstest test/test.cpp)
+
+target_link_libraries (charlstest CharLS)

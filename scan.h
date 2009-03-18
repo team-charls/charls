@@ -125,25 +125,25 @@ public:
 
 public:
 	JlsCodec() :
-	  _bCompare(0),
+	  _size(0,0),
 	  T1(0),
 	  T2(0),
 	  T3(0),
 	  RUNindex(0),
 	  _pquant(0),
-	  _size(0,0)
+	  _bCompare(0)
 	{
 	}	
 
 	JlsCodec(const TRAITS& inTraits) :
 	  traits(inTraits),
-	  _bCompare(0),
+	  _size(0,0),
 	  T1(0),
 	  T2(0),
 	  T3(0),
 	  RUNindex(0),
 	  _pquant(0),
-	  _size(0,0)
+	  _bCompare(0)
 	{
 	}	
 	
@@ -205,6 +205,14 @@ public:
 	size_t  DecodeScan(void* pvoidOut, const Size& size, int components, const void* pvoidIn, size_t cbyte, bool bCompare);
 
 protected:
+	// codec parameters 
+	TRAITS traits;
+	Size _size;
+	int T1;	
+	int T2;
+	int T3; 
+	int _components; // only set for line interleaved mode 
+
 	// compression context
 	JlsContext _contexts[365];	
 	CContextRunMode _contextRunmode[2];
@@ -212,13 +220,6 @@ protected:
 	PIXEL* ptypePrev; // previous line ptr
 	PIXEL* ptypeCur; // current line ptr
 
-	// codec parameters 
-	TRAITS traits;
-	Size _size;
-	int _components; // only set for line interleaved mode 
-	int T3; 
-	int T2;
-	int T1;	
 
 	// quantization lookup table
 	signed char* _pquant;

@@ -3,21 +3,22 @@
 // are changed infrequently
 //
 
-#pragma once
+#ifndef STDAFX
+#define STDAFX
 
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#if defined(WIN32)
+#include <windows.h>
+#pragma warning (disable: 4996)
+#endif
+
 #include <stdio.h>
-#include <tchar.h>
 
-#ifdef _DEBUG
 #include <assert.h>
 #define ASSERT(t) assert(t)
-#else
-#define ASSERT(t) ;
-#endif
+
 
 typedef unsigned int UINT;
 typedef unsigned char BYTE;
 typedef unsigned short USHORT;
 
-// TODO: reference additional headers your program requires here
+#endif
