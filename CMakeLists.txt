@@ -1,4 +1,6 @@
 project(charls)
+cmake_minimum_required(VERSION 2.6)
+
 
 # When user specify build type do not override settings:
 IF(NOT CMAKE_BUILD_TYPE)
@@ -17,5 +19,7 @@ add_library(CharLS header.cpp  interface.cpp  jpegls.cpp
 
 
 add_executable(charlstest test/test.cpp)
-
 target_link_libraries (charlstest CharLS)
+
+include(CTest)
+add_test(charlstest charlstest)

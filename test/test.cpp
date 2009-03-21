@@ -39,6 +39,11 @@ double getTime()
 void ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0)
 {
 	FILE* pfile = fopen(strName, "rb");
+  if( !pfile ) 
+    {
+    fprintf( stderr, "Could not open %s\n", strName );
+    return;
+    }
 	fseek(pfile, 0, SEEK_END);	
 	int cbyteFile = ftell(pfile);
 	fseek(pfile, ioffs, SEEK_SET);	
