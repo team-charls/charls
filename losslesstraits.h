@@ -11,7 +11,7 @@
 // optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
 // 
 
-template <class sample, int bitsperpixel>
+template <class sample, LONG bitsperpixel>
 struct LosslessTraitsImplT 
 {
 	typedef sample SAMPLE;
@@ -25,33 +25,33 @@ struct LosslessTraitsImplT
 		RESET = BASIC_RESET,
 	};
 
-	static inlinehint int ComputeErrVal(int d)
+	static inlinehint LONG ComputeErrVal(LONG d)
 	{ return ModRange(d); }
 		
-	static inlinehint bool IsNear(int lhs, int rhs) 
+	static inlinehint bool IsNear(LONG lhs, LONG rhs) 
 		{ return lhs == rhs; }
 
-	static inlinehint int ModRange(int Errval) 
+	static inlinehint LONG ModRange(LONG Errval) 
 	{
-		return int(Errval << ((sizeof(int) * 8)  - bpp)) >> ((sizeof(int) * 8)  - bpp); 
+		return LONG(Errval << (LONG_BITCOUNT  - bpp)) >> (LONG_BITCOUNT  - bpp); 
 	}
 	
-	static inlinehint SAMPLE ComputeReconstructedSample(int Px, int ErrVal)
+	static inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)
 	{
 		return SAMPLE(MAXVAL & (Px + ErrVal)); 
 	}
 
-	static inlinehint int CorrectPrediction(int Pxc) 
+	static inlinehint LONG CorrectPrediction(LONG Pxc) 
 	{
 		if ((Pxc & MAXVAL) == Pxc)
 			return Pxc;
 		
-		return (~(Pxc >> 31)) & MAXVAL;		
+		return (~(Pxc >> (LONG_BITCOUNT-1))) & MAXVAL;		
 	}
 
 };
 
-template <class SAMPLE, int bpp>
+template <class SAMPLE, LONG bpp>
 struct LosslessTraitsT : public LosslessTraitsImplT<SAMPLE, bpp> 
 {
 //	enum { ccomponent = 1};
@@ -66,13 +66,13 @@ struct LosslessTraitsT<BYTE,8> : public LosslessTraitsImplT<BYTE, 8>
 //	enum { ccomponent = 1};
 	typedef SAMPLE PIXEL;
 
-	static inlinehint signed char ModRange(int Errval) 
+	static inlinehint signed char ModRange(LONG Errval) 
 		{ return (signed char)Errval; }
 
-	static inlinehint int ComputeErrVal(int d)
+	static inlinehint LONG ComputeErrVal(LONG d)
 	{ return (signed char)(d); }
 
-	static inlinehint BYTE ComputeReconstructedSample(int Px, int ErrVal)
+	static inlinehint BYTE ComputeReconstructedSample(LONG Px, LONG ErrVal)
 		{ return BYTE(Px + ErrVal);  }
 	
 };
@@ -85,13 +85,13 @@ struct LosslessTraitsT<USHORT,16> : public LosslessTraitsImplT<USHORT,16>
 //	enum { ccomponent = 1};
 	typedef SAMPLE PIXEL;
 
-	static inlinehint short ModRange(int Errval) 
+	static inlinehint short ModRange(LONG Errval) 
 		{ return short(Errval); }
 
-	static inlinehint int ComputeErrVal(int d)
+	static inlinehint LONG ComputeErrVal(LONG d)
 	{ return short(d); }
 
-	static inlinehint SAMPLE ComputeReconstructedSample(int Px, int ErrVal)
+	static inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)
 		{ return SAMPLE(Px + ErrVal);  }
 
 };
@@ -105,14 +105,14 @@ struct LosslessTraitsT<Triplet,8> : public LosslessTraitsImplT<BYTE,8>
 //	enum { 		ccomponent = 3 };
 	typedef Triplet PIXEL;
 
-	static inlinehint bool IsNear(int lhs, int rhs) 
+	static inlinehint bool IsNear(LONG lhs, LONG rhs) 
 		{ return lhs == rhs; }
 
 	static inlinehint bool IsNear(PIXEL lhs, PIXEL rhs) 
 		{ return lhs == rhs; }
 
 
-	static inlinehint SAMPLE ComputeReconstructedSample(int Px, int ErrVal)
+	static inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)
 		{ return SAMPLE(Px + ErrVal);  }
 
 

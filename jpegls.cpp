@@ -22,18 +22,18 @@
 #include "lookuptable.h"
 
 // used to determine how large runs should be encoded at a time. 
-const int J[32]			= {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+const LONG J[32]			= {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-const int BASIC_T1		= 3;
-const int BASIC_T2		= 7;
-const int BASIC_T3		= 21;
+const LONG BASIC_T1		= 3;
+const LONG BASIC_T2		= 7;
+const LONG BASIC_T3		= 21;
 
 #include "losslesstraits.h"
 #include "defaulttraits.h"
 
 #include "scan.h"
 
-signed char QuantizeGratientOrg(const Presets& preset, int NEAR, int Di)
+signed char QuantizeGratientOrg(const Presets& preset, LONG NEAR, LONG Di)
 {
 	if (Di <= -preset.T3) return  -4;
 	if (Di <= -preset.T2) return  -3;
@@ -49,15 +49,15 @@ signed char QuantizeGratientOrg(const Presets& preset, int NEAR, int Di)
 
 
 
-std::vector<signed char> CreateQLutLossless(int cbit)
+std::vector<signed char> CreateQLutLossless(LONG cbit)
 {
 	Presets preset = ComputeDefault((1 << cbit) - 1, 0);
-	int range = preset.MAXVAL + 1;
+	LONG range = preset.MAXVAL + 1;
 
 	std::vector<signed char> lut;
 	lut.resize(range * 2);
 	
-	for (int diff = -range; diff < range; diff++)
+	for (LONG diff = -range; diff < range; diff++)
 	{
 		lut[range + diff] = QuantizeGratientOrg(preset, 0,diff);
 	}

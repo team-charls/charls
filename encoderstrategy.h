@@ -28,24 +28,24 @@ public:
 	virtual ~EncoderStrategy() 
 		 {}
 
-	int PeekByte();
+	LONG PeekByte();
 	
 
 	template <class T>
-	void OnLineBegin(T* ptypeCur, T* ptypeLine, int cpixel)
+	void OnLineBegin(T* ptypeCur, T* ptypeLine, LONG cpixel)
 	{
 		memcpy(ptypeCur, ptypeLine, cpixel * sizeof(T));
 	}
 
-	void OnLineEnd(void* /*ptypeCur*/, void* /*ptypeLine*/, int /*cpixel*/) {};
+	void OnLineEnd(void* /*ptypeCur*/, void* /*ptypeLine*/, LONG /*cpixel*/) {};
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
-	virtual size_t EncodeScan(const void* pvoid, const Size& size, int ccomp, void* pvoidOut, size_t cbyte, void* pvoidCompare) = 0;
+	virtual ULONG EncodeScan(const void* pvoid, const Size& size, LONG ccomp, void* pvoidOut, ULONG cbyte, void* pvoidCompare) = 0;
 
 protected:
 
-	void Init(BYTE* pbyteCompressed, size_t cbyte)
+	void Init(BYTE* pbyteCompressed, ULONG cbyte)
 	{
 		bitpos = 32;
 		valcurrent = 0;
@@ -54,7 +54,7 @@ protected:
 	}
 
 
-	void AppendToBitStream(UINT value, UINT length)
+	void AppendToBitStream(ULONG value, ULONG length)
 	{	
 		ASSERT(length < 32 && length >= 0);
 
@@ -63,7 +63,7 @@ protected:
 #ifdef _DEBUG
 		if (length < 32)
 		{
-			UINT mask = (1 << (length)) - 1;
+			ULONG mask = (1 << (length)) - 1;
 			ASSERT((value | mask) == mask);
 		}
 #endif
@@ -83,14 +83,14 @@ protected:
 
 	}
 
-	inline bool hasbit(UINT i, int ibit)
+	inline bool hasbit(ULONG i, LONG ibit)
 	{
 		return (i & (1 << ibit)) != 0;
 	}
 
 	void Flush()
 	{
-		for (int i = 0; i < 4; ++i)
+		for (LONG i = 0; i < 4; ++i)
 		{
 			if (bitpos >= 32)
 				break;
@@ -119,13 +119,13 @@ protected:
 		
 	}
 
-	size_t GetLength() 
+	ULONG GetLength() 
 	{ 
 		return _cbyteWritten - (bitpos -32)/8; 
 	};
 
 
-	inlinehint void AppendOnesToBitStream(UINT length)
+	inlinehint void AppendOnesToBitStream(ULONG length)
 	{
 		AppendToBitStream((1 << length) - 1, length);	
 	}
@@ -135,14 +135,14 @@ protected:
 
 private:
 
-	UINT valcurrent;
-	int bitpos;
-	size_t _cbyteCompressed;
+	ULONG valcurrent;
+	LONG bitpos;
+	ULONG _cbyteCompressed;
 	
 	// encoding
 	BYTE* _pbyteCompressed;
 	bool _bFFWritten;
-	size_t _cbyteWritten;
+	ULONG _cbyteWritten;
 
 
 };

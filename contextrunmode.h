@@ -8,7 +8,7 @@
 
 struct CContextRunMode 
 {
-	CContextRunMode(int a, int nRItype, int nReset) :
+	CContextRunMode(LONG a, LONG nRItype, LONG nReset) :
 		A(a),
 		N(1),	
 		Nn(0),
@@ -17,21 +17,21 @@ struct CContextRunMode
 	{
 	}
 
-	int A;
+	LONG A;
 	BYTE N;
 	BYTE Nn;
-	int _nRItype;
+	LONG _nRItype;
 	BYTE _nReset;
 
 	CContextRunMode()
 	{}
 
 
-	inlinehint int GetGolomb() const
+	inlinehint LONG GetGolomb() const
 	{
-		UINT Ntest	= N;
-		UINT TEMP	= A + (N >> 1) * _nRItype;
-		UINT k = 0;
+		ULONG Ntest	= N;
+		ULONG TEMP	= A + (N >> 1) * _nRItype;
+		ULONG k = 0;
 		for(; Ntest < TEMP; k++) 
 		{ 
 			Ntest <<= 1;
@@ -41,7 +41,7 @@ struct CContextRunMode
 	}
 
 
-	void UpdateVariables(int Errval, UINT EMErrval)
+	void UpdateVariables(LONG Errval, ULONG EMErrval)
 	{		
 		if (Errval < 0)
 		{
@@ -57,16 +57,16 @@ struct CContextRunMode
 		N = N + 1;
 	}
 
-	inlinehint int ComputeErrVal(UINT temp, int k)
+	inlinehint LONG ComputeErrVal(ULONG temp, LONG k)
 	{
 		bool map = temp & 1;
 
-		UINT errvalabs = (temp + map) / 2;
+		ULONG errvalabs = (temp + map) / 2;
 
 		if ((k != 0 || (2 * Nn >= N)) == map)
 		{
-			ASSERT(map == ComputeMap(-int(errvalabs), k));
-			return -int(errvalabs);
+			ASSERT(map == ComputeMap(-LONG(errvalabs), k));
+			return -LONG(errvalabs);
 		}
 
 		ASSERT(map == ComputeMap(errvalabs, k));	
@@ -74,7 +74,7 @@ struct CContextRunMode
 	}
 
 
-	bool ComputeMap(int Errval, int k) const
+	bool ComputeMap(LONG Errval, LONG k) const
 	{
 		if ((k == 0) && (Errval > 0) && (2 * Nn < N))
 			return 1;
@@ -89,7 +89,7 @@ struct CContextRunMode
 	}
 
 
-	inlinehint int ComputeMapNegativeE(int k) const
+	inlinehint LONG ComputeMapNegativeE(LONG k) const
 	{
 		return  k != 0 || (2 * Nn >= N );
 	}

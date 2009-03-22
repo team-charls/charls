@@ -25,16 +25,16 @@ public:
 	JLSOutputStream();
 	virtual ~JLSOutputStream();
 
-	void Init(Size size, int cbpp, int ccomp);
+	void Init(Size size, LONG cbpp, LONG ccomp);
 	void AddScan(const void* pbyteComp, const JlsParamaters* pparams);
 	void AddLSE(const JlsCustomParameters* pcustom);
-	size_t GetBytesWritten()
+	ULONG GetBytesWritten()
 		{ return _cbyteOffset; }
 
-	size_t GetLength()
+	ULONG GetLength()
 		{ return _cbyteLength - _cbyteOffset; }
 
-	size_t Write(BYTE* pdata, size_t cbyteLength);
+	ULONG Write(BYTE* pdata, ULONG cbyteLength);
 	
 	void EnableCompare(bool bCompare) 
 	{ _bCompare = bCompare; };
@@ -51,7 +51,7 @@ private:
 
 	void WriteBytes(const std::vector<BYTE>& rgbyte)
 	{
-		for (UINT i = 0; i < rgbyte.size(); ++i)
+		for (ULONG i = 0; i < rgbyte.size(); ++i)
 		{
 			WriteByte(rgbyte[i]);
 		}		
@@ -64,16 +64,16 @@ private:
 	}
 
 
-    void Seek(size_t cbyte)
+    void Seek(ULONG cbyte)
 		{ _cbyteOffset += cbyte; }
 
 	bool _bCompare;
 
 private:
 	BYTE* _pdata;
-	size_t _cbyteOffset;
-	size_t _cbyteLength;
-	int _icompLast;
+	ULONG _cbyteOffset;
+	ULONG _cbyteLength;
+	LONG _icompLast;
 	std::vector<JpegSegment*> _segments;
 };
 
@@ -99,9 +99,9 @@ public:
 class JLSInputStream
 {
 public:
-	JLSInputStream(const BYTE* pdata, int cbyteLength);
+	JLSInputStream(const BYTE* pdata, LONG cbyteLength);
 
-	size_t GetBytesRead()
+	ULONG GetBytesRead()
 		{ return _cbyteOffset; }
 
 	const JlsParamaters& GetMetadata() const
@@ -110,25 +110,25 @@ public:
 	const JlsCustomParameters& GetCustomPreset() const
 	{ return _info.custom; } 
 
-	void Read(void* pvoid, int cbyteAvailable);
+	void Read(void* pvoid, LONG cbyteAvailable);
 	void ReadHeader();
 	
 	void EnableCompare(bool bCompare)
 		{ _bCompare = bCompare;	}
 private:
-	void ReadPixels(void* pvoid, int cbyteAvailable);
+	void ReadPixels(void* pvoid, LONG cbyteAvailable);
 	void ReadScan(void*);	
 	void ReadStartOfScan();
 	void ReadPresetParameters();
 	void ReadComment();
 	void ReadStartOfFrame();
-	int ReadByte();
-	int ReadWord();
+	LONG ReadByte();
+	LONG ReadWord();
 
 private:
 	const BYTE* _pdata;
-	size_t _cbyteOffset;
-	size_t _cbyteLength;
+	ULONG _cbyteOffset;
+	ULONG _cbyteLength;
 	bool _bCompare;
 	JlsParamaters _info;
 };

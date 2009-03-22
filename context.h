@@ -20,7 +20,7 @@ public:
 	JlsContext() 
 	{}
 
- 	JlsContext(int a) :
+ 	JlsContext(LONG a) :
 		A(a),
 		B(0),
 		C(0),
@@ -28,12 +28,12 @@ public:
 	{
 	}
 
-	UINT A;
-	int B;
-	int C;
-	int N;
+	ULONG A;
+	LONG B;
+	LONG C;
+	LONG N;
 
-	inlinehint int GetErrorCorrection(int k) const
+	inlinehint LONG GetErrorCorrection(LONG k) const
 	{
 		if (k != 0)
 			return 0;
@@ -42,7 +42,7 @@ public:
 	}
 
 
-	inlinehint void UpdateVariables(int Errval, int NEAR, int NRESET)
+	inlinehint void UpdateVariables(LONG Errval, LONG NEAR, LONG NRESET)
 	{
 		ASSERT(N != 0);
 
@@ -83,11 +83,11 @@ public:
 
 
 
-	inlinehint int GetGolomb() const
+	inlinehint LONG GetGolomb() const
 	{
-		UINT Ntest	= N;
-		UINT Atest	= A;
-		UINT k = 0;
+		ULONG Ntest	= N;
+		ULONG Atest	= A;
+		ULONG k = 0;
 		for(; (Ntest << k) < Atest; k++) 
 		{ 
 			ASSERT(k <= 32); 

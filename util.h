@@ -7,14 +7,50 @@
 #define CHARLS_UTIL
 
 
+#ifdef _DEBUG
+#include <assert.h>
+#define ASSERT(t) assert(t)
+#else
+#define ASSERT(t) ;
+#endif
+
+#if defined(WIN32)
+#define CHARLS_IMEXPORT __declspec(dllexport) 
+
+// default signed int types (32 or 64 bit)
+#ifdef  _WIN64
+#define LONG __int64
+#else
+#define LONG int
+#endif
+
+#define ULONG size_t
+
+#else
+#include <stdint.h>
+
+// default signed int types (32 or 64 bit)
+typedef intptr_t LONG;
+typedef uintptr_t ULONG;
+#endif
+
+enum constants
+{
+  LONG_BITCOUNT = sizeof(LONG)*8
+};
+
+typedef unsigned char BYTE;
+typedef unsigned short USHORT;
+
+
 #include <string.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 
 #undef  NEAR
 
-#ifdef _USRDLL
+#ifdef _MSC_VER
 #ifdef _DEBUG
-#define inlinehint 
+#define inlinehint
 #else
 #define inlinehint __forceinline
 #endif
@@ -34,12 +70,12 @@
 #endif
 
 
-const int BASIC_RESET	= 64;
+const LONG BASIC_RESET	= 64;
 
-inline int log_2(UINT n)
+inline LONG log_2(ULONG n)
 {
-	int x = 0;
-	while (n > (1U << x))
+	LONG x = 0;
+	while (n > (1LL << x))
 	{
 		++x;
 	}
@@ -49,21 +85,21 @@ inline int log_2(UINT n)
 
 struct Size
 {
-	Size(int width, int height) :
+	Size(LONG width, LONG height) :
 		cx(width),
 		cy(height)
 	{}
-	int cx;
-	int cy;
+	LONG cx;
+	LONG cy;
 };
 
 
 
-inline int Sign(int n)
-	{ return (n >> 31) | 1;}
+inline LONG Sign(LONG n)
+	{ return (n >> (LONG_BITCOUNT-1)) | 1;}
 
-inline int BitWiseSign(int i)
-	{ return (i >> 31); }	
+inline LONG BitWiseSign(LONG i)
+	{ return i >> (LONG_BITCOUNT-1); }	
 
 
 #pragma pack(push, 1)
@@ -76,7 +112,7 @@ struct Triplet
 		v3(0)
 	{};
 
-	Triplet(int x1, int x2, int x3) :
+	Triplet(LONG x1, LONG x2, LONG x3) :
 		v1((BYTE)x1),
 		v2((BYTE)x2),
 		v3((BYTE)x3)

@@ -23,9 +23,9 @@ public:
 	  {}
 
 	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-	  virtual size_t DecodeScan(void* pvoidOut, const Size& size, int cline, const void* pvoidIn, size_t cbyte, bool bCheck) = 0;
+	  virtual ULONG DecodeScan(void* pvoidOut, const Size& size, LONG cline, const void* pvoidIn, ULONG cbyte, bool bCheck) = 0;
 
-	  void Init(BYTE* pbyteCompressed, size_t cbyte)
+	  void Init(BYTE* pbyteCompressed, ULONG cbyte)
 	  {
 		  _cbitValid = 0;
 		  _valcurrent = 0;
@@ -36,20 +36,20 @@ public:
 
 		
 
-	  inlinehint void Skip(int length)
+	  inlinehint void Skip(LONG length)
 	  {
 		  _cbitValid -= length;
 		  _valcurrent = _valcurrent << length; 
 	  }
 
 	
-	  void OnLineBegin(void* /*ptypeCur*/, void* /*ptypeLine*/, int /*cpixel*/) {}
+	  void OnLineBegin(void* /*ptypeCur*/, void* /*ptypeLine*/, LONG /*cpixel*/) {}
 
 	  template <class T>
-	  void OnLineEnd(T* ptypeCur, T* ptypeLine, int cpixel)
+	  void OnLineEnd(T* ptypeCur, T* ptypeLine, LONG cpixel)
 	  {
 #ifdef _DEBUG
-			for (int i = 0; i < cpixel; ++i)
+			for (LONG i = 0; i < cpixel; ++i)
 			{
 				//CheckedAssign(ptypeLine[i], ptypeCur[i]);
 				ptypeLine[i] = ptypeCur[i];
@@ -59,7 +59,7 @@ public:
 #endif
 	  }
 
-	  typedef size_t bufType;
+	  typedef ULONG bufType;
 
 	  enum { 
 		  bufferbits = sizeof( bufType ) * 8,
@@ -69,7 +69,7 @@ public:
 
 	  void MakeValid()
 	  {
-		  int  cbitValid = _cbitValid;
+		  LONG  cbitValid = _cbitValid;
 		  BYTE* pbyteCompressed = _pbyteCompressed;
 		  bufType valcurrent = 0;
 
@@ -95,12 +95,12 @@ public:
 
 	  BYTE* GetCurBytePos() const
 	  {
-		  int  cbitValid = _cbitValid;
+		  LONG  cbitValid = _cbitValid;
 		  BYTE* pbyteCompressed = _pbyteCompressed;
 
 		  for (;;)
 		  {
-			  int cbitLast = pbyteCompressed[-1] == 0xFF ? 7 : 8;
+			  LONG cbitLast = pbyteCompressed[-1] == 0xFF ? 7 : 8;
 
 			  if (cbitValid < cbitLast )
 				  return pbyteCompressed;
@@ -112,7 +112,7 @@ public:
 
 
 
-	  inlinehint UINT ReadValue(int length)
+	  inlinehint ULONG ReadValue(LONG length)
 	  {
 		  if (_cbitValid < length)
 		  {
@@ -121,13 +121,13 @@ public:
 
 		  ASSERT(length != 0 && length <= _cbitValid);
 		  ASSERT(length < 32);
-		  UINT result = UINT(_valcurrent >> (bufferbits - length));
+		  ULONG result = ULONG(_valcurrent >> (bufferbits - length));
 		  Skip(length);		
 		  return result;
 	  }
 
 
-	  inlinehint int PeekByte()
+	  inlinehint LONG PeekByte()
 	  { 
 		  if (_cbitValid < 8)
 		  {
@@ -153,7 +153,7 @@ public:
 
 
 
-	  inlinehint int Peek0Bits()
+	  inlinehint LONG Peek0Bits()
 	  {
 		  if (_cbitValid < 16)
 		  {
@@ -161,7 +161,7 @@ public:
 		  }
 		  bufType valTest = _valcurrent;
 
-		  for (int cbit = 0; cbit < 16; cbit++)
+		  for (LONG cbit = 0; cbit < 16; cbit++)
 		  {
 			  if ((valTest & (1LL << (bufferbits - 1))) != 0)
 				  return cbit;
@@ -173,9 +173,9 @@ public:
 
 
 
-	  inlinehint UINT ReadHighbits()
+	  inlinehint ULONG ReadHighbits()
 	  {
-		  int cbit = Peek0Bits();
+		  LONG cbit = Peek0Bits();
 		  if (cbit >= 0)
 		  {
 			  Skip(cbit + 1);
@@ -183,7 +183,7 @@ public:
 		  }
 		  Skip(15);
 
-		  for (UINT highbits = 15; ; highbits++)
+		  for (ULONG highbits = 15; ; highbits++)
 		  { 
 			  if (ReadBit())
 				  return highbits;
@@ -192,7 +192,7 @@ public:
 
 
 
-	  inlinehint UINT ReadLongValue(int length)
+	  inlinehint ULONG ReadLongValue(LONG length)
 	  {
 		  if (length <= 24)
 		  {
@@ -206,9 +206,9 @@ public:
 private:
 	// decoding
 	bufType _valcurrent;
-	int _cbitValid;
+	LONG _cbitValid;
 	BYTE* _pbyteCompressed;
-	size_t _cbyteCompressed;
+	ULONG _cbyteCompressed;
 };
 
 

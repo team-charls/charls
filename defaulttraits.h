@@ -17,13 +17,13 @@ public:
 	typedef sample SAMPLE;
 	typedef pixel PIXEL;
 	
-	int MAXVAL;
-	int RANGE;
-	int NEAR;
-	int qbpp;
-	int bpp;
-	int LIMIT;
-	int RESET;
+	LONG MAXVAL;
+	LONG RANGE;
+	LONG NEAR;
+	LONG qbpp;
+	LONG bpp;
+	LONG LIMIT;
+	LONG RESET;
 
 	DefaultTraitsT(const DefaultTraitsT& src) :
 		MAXVAL(src.MAXVAL),
@@ -36,7 +36,7 @@ public:
 	{
 	}
 
-	DefaultTraitsT(int max, int jls_near)
+	DefaultTraitsT(LONG max, LONG jls_near)
 	{
 		NEAR   = jls_near;
 		MAXVAL = max;
@@ -48,18 +48,18 @@ public:
 	}
 
 	
-	inlinehint int ComputeErrVal(int e) const
+	inlinehint LONG ComputeErrVal(LONG e) const
 	{
-		int q = Quantize(e);
+		LONG q = Quantize(e);
 		return ModRange(q);
 	}
 	
-	inlinehint SAMPLE ComputeReconstructedSample(int Px, int ErrVal)
+	inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)
 	{
 		return FixReconstructedValue(Px + DeQuantize(ErrVal)); 
 	}
 
-	inlinehint bool IsNear(int lhs, int rhs) const
+	inlinehint bool IsNear(LONG lhs, LONG rhs) const
 		{ return abs(lhs-rhs) <=NEAR; }
 
 	bool IsNear(Triplet lhs, Triplet rhs) const
@@ -67,15 +67,15 @@ public:
 		return abs(lhs.v1-rhs.v1) <=NEAR && abs(lhs.v2-rhs.v2) <=NEAR && abs(lhs.v3-rhs.v3) <=NEAR; 
 	}
 
-	inlinehint int CorrectPrediction(int Pxc) const
+	inlinehint LONG CorrectPrediction(LONG Pxc) const
 	{
 		if ((Pxc & MAXVAL) == Pxc)
 			return Pxc;
 		
-		return (~(Pxc >> 31)) & MAXVAL;		
+		return (~(Pxc >> (LONG_BITCOUNT-1))) & MAXVAL;		
 	}
 
-	inlinehint int ModRange(int Errval) const
+	inlinehint LONG ModRange(LONG Errval) const
 	{
 		ASSERT(abs(Errval) <= RANGE);
 		if (Errval < 0)
@@ -91,7 +91,7 @@ public:
 
 
 private:
-	int Quantize(int Errval) const
+	LONG Quantize(LONG Errval) const
 	{
 		if (Errval > 0)
 			return  (Errval + NEAR) / (2 * NEAR + 1);
@@ -100,12 +100,12 @@ private:
 	}
 
 
-	inlinehint int DeQuantize(int Errval) const
+	inlinehint LONG DeQuantize(LONG Errval) const
 	{
 		return Errval * (2 * NEAR + 1);
 	}
 
-	inlinehint SAMPLE FixReconstructedValue(int val) const
+	inlinehint SAMPLE FixReconstructedValue(LONG val) const
 	{ 
 		if (val < -NEAR)
 			val = val + RANGE*(2*NEAR+1);

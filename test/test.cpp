@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include <iostream>
 #include <vector>
-#include <time.h>
+
 
 #include "../interface.h"
 #include "../util.h"
@@ -29,10 +29,14 @@ double getTime()
 }
 
 #else
-
+#include <sys/time.h>
 double getTime() 
 { 	
-	return clock() * 1000.0 /CLOCKS_PER_SEC;	
+
+	timeval t;
+	gettimeofday(&t, 0);
+	
+	return (t.tv_sec * 1000000.0 + t.tv_usec) / 1000.0;	
 }
 #endif
 
@@ -250,8 +254,8 @@ void TestPerformance()
 	Size size512 = Size(512, 512);
 
 //	TestFile("../test/mars/phoenixmars.ppm", 40, Size(5300,4300),  8, 3);
-	TestFile("../test/mr2_unc", 1728, size1024,  16, 1);
-	TestFile("../test/0015.raw", 0, size1024,  8, 1);
+	TestFile("../test/MR2_UNC", 1728, size1024,  16, 1);
+	TestFile("../test/0015.RAW", 0, size1024,  8, 1);
 	TestFile("../test/lena8b.raw", 0, size512,  8, 1);
 
 }
@@ -370,38 +374,38 @@ void TestConformance()
 {
 
 	// Test 1
-	DecompressFile("../test/conformance/t8c0e0.jls", "../test/conformance/test8.ppm",15);
+	DecompressFile("../test/conformance/T8C0E0.JLS", "../test/conformance/TEST8.PPM",15);
 
 	// Test 2
-	DecompressFile("../test/conformance/t8c1e0.jls", "../test/conformance/test8.ppm",15);
+	DecompressFile("../test/conformance/T8C1E0.JLS", "../test/conformance/TEST8.PPM",15);
 
 	// Test 3
-	DecompressFile("../test/conformance/t8c2e0.jls", "../test/conformance/test8.ppm", 15);
+	DecompressFile("../test/conformance/T8C2E0.JLS", "../test/conformance/TEST8.PPM", 15);
 
 	// Test 4
-	DecompressFile("../test/conformance/t8c0e3.jls", "../test/conformance/test8.ppm",15);
+	DecompressFile("../test/conformance/T8C0E3.JLS", "../test/conformance/TEST8.PPM",15);
 
 	// Test 5
-	DecompressFile("../test/conformance/t8c1e3.jls", "../test/conformance/test8.ppm",15);
+	DecompressFile("../test/conformance/T8C1E3.JLS", "../test/conformance/TEST8.PPM",15);
 
 	// Test 6
-	DecompressFile("../test/conformance/t8c2e3.jls", "../test/conformance/test8.ppm",15);
+	DecompressFile("../test/conformance/T8C2E3.JLS", "../test/conformance/TEST8.PPM",15);
 
 
 	// Test 7
 	// Test 8
 
 	// Test 9
-	DecompressFile("../test/conformance/t8nde0.jls", "../test/conformance/test8bs2.pgm",15);	
+	DecompressFile("../test/conformance/T8NDE0.JLS", "../test/conformance/TEST8BS2.PGM",15);	
 
 	// Test 10
-	DecompressFile("../test/conformance/t8nde3.jls", "../test/conformance/test8bs2.pgm",15);	
+	DecompressFile("../test/conformance/T8NDE3.JLS", "../test/conformance/TEST8BS2.PGM",15);	
 
 	// Test 11
-	DecompressFile("../test/conformance/t16e0.jls", "../test/conformance/test16.pgm",16);
+	DecompressFile("../test/conformance/T16E0.JLS", "../test/conformance/TEST16.PGM",16);
 	
 	// Test 12
-	DecompressFile("../test/conformance/t16e3.jls", "../test/conformance/test16.pgm",16);
+	DecompressFile("../test/conformance/T16E3.JLS", "../test/conformance/TEST16.PGM",16);
 
 	
 

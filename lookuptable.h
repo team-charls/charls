@@ -13,19 +13,19 @@ struct Code
 	{
 	}
 
-	Code(int value, int length)	:
+	Code(LONG value, LONG length)	:
 		_value(value),
 		_length(length)
 	{
 	}
 
-	int GetValue() const 
+	LONG GetValue() const 
 		{ return _value; }
-	int GetLength() const 
+	LONG GetLength() const 
 		{ return _length; }
 
-	int _value;
-	int _length;
+	LONG _value;
+	LONG _length;
 };
 
 
@@ -43,7 +43,7 @@ public:
 
 	void AddEntry(BYTE bvalue, Code c);
 	
-	inlinehint const Code& Get(int value)
+	inlinehint const Code& Get(LONG value)
 		{ return rgtype[value]; }
 private:
 	Code rgtype[1 << cbit];
@@ -55,10 +55,10 @@ private:
 //
 void CTable::AddEntry(BYTE bvalue, Code c)
 {
-	int length = c.GetLength();
+	LONG length = c.GetLength();
 	ASSERT(length <= cbit);
 	
-	for (int i = 0; i < 1 << (cbit - length); ++i)
+	for (LONG i = 0; i < 1 << (cbit - length); ++i)
 	{
 		ASSERT(rgtype[(bvalue << (cbit - length)) + i].GetLength() == 0);
 		rgtype[(bvalue << (cbit - length)) + i] = c;					

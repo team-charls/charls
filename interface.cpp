@@ -4,7 +4,7 @@
 #include "header.h"
 
 
-JLS_ERROR CheckInput(const void* pdataCompressed, int cbyteCompressed, const void* pdataUncompressed, int cbyteUncompressed, const JlsParamaters* pparams)
+JLS_ERROR CheckInput(const void* pdataCompressed, size_t cbyteCompressed, const void* pdataUncompressed, size_t cbyteUncompressed, const JlsParamaters* pparams)
 {
 	if (pparams == NULL)
 		return InvalidJlsParameters;
@@ -27,7 +27,7 @@ JLS_ERROR CheckInput(const void* pdataCompressed, int cbyteCompressed, const voi
 	if (pparams->height < 1 || pparams->height > 65535)
 		return ParameterValueNotSupported;
 
-	if (cbyteUncompressed < (pparams->width * pparams->height * pparams->components * ((pparams->bitspersample + 7)/8)))
+	if (cbyteUncompressed < ULONG(pparams->width * pparams->height * pparams->components * ((pparams->bitspersample + 7)/8)))
 		return InvalidJlsParameters;
 
 	switch (pparams->components)
@@ -43,7 +43,7 @@ JLS_ERROR CheckInput(const void* pdataCompressed, int cbyteCompressed, const voi
 extern "C"
 {
 
-CHARLS_IMEXPORT JLS_ERROR JpegLsEncode(void* pdataCompressed, int cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, int cbyteUncompressed, const JlsParamaters* pparams)
+CHARLS_IMEXPORT JLS_ERROR JpegLsEncode(void* pdataCompressed, size_t cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, size_t cbyteUncompressed, const JlsParamaters* pparams)
 {
 	JLS_ERROR parameterError = CheckInput(pdataCompressed, cbyteBuffer, pdataUncompressed, cbyteUncompressed, pparams);
 
@@ -54,7 +54,7 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsEncode(void* pdataCompressed, int cbyteBuffer, s
 		return InvalidJlsParameters;
 
 	Size size = Size(pparams->width, pparams->height);
-	int cbit = pparams->bitspersample;
+	LONG cbit = pparams->bitspersample;
 	
 	JLSOutputStream stream;
 	
@@ -62,8 +62,8 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsEncode(void* pdataCompressed, int cbyteBuffer, s
 
 	if (pparams->ilv == ILV_NONE)
 	{
-		int cbyteComp = size.cx*size.cy*((cbit +7)/8);
-		for (int icomp = 0; icomp < pparams->components; ++icomp)
+		LONG cbyteComp = size.cx*size.cy*((cbit +7)/8);
+		for (LONG icomp = 0; icomp < pparams->components; ++icomp)
 		{
 			const BYTE* pbyteComp = static_cast<const BYTE*>(pdataUncompressed) + icomp*cbyteComp;
 			stream.AddScan(pbyteComp, pparams);
@@ -81,7 +81,7 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsEncode(void* pdataCompressed, int cbyteBuffer, s
 	return OK;
 }
 
-CHARLS_IMEXPORT JLS_ERROR JpegLsDecode(void* pdataUncompressed, int cbyteUncompressed, const void* pdataCompressed, int cbyteCompressed)
+CHARLS_IMEXPORT JLS_ERROR JpegLsDecode(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed)
 {
 	JLSInputStream reader((BYTE*)pdataCompressed, cbyteCompressed);
 
@@ -97,7 +97,7 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsDecode(void* pdataUncompressed, int cbyteUncompr
 }
 
 
-CHARLS_IMEXPORT JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, int cbyteUncompressed, const void* pdataCompressed, int cbyteBuffer)
+CHARLS_IMEXPORT JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteBuffer)
 {
 	JlsParamaters params = {0};
 
@@ -111,7 +111,7 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, int 
 		return error;
 	
 	Size size = Size(params.width, params.height);
-	int cbit = params.bitspersample;
+	LONG cbit = params.bitspersample;
 	
 	JLSOutputStream stream;
 	
@@ -119,8 +119,8 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, int 
 
 	if (params.ilv == ILV_NONE)
 	{
-		int cbyteComp = size.cx*size.cy*((cbit +7)/8);
-		for (int icomp = 0; icomp < params.components; ++icomp)
+		LONG cbyteComp = size.cx*size.cy*((cbit +7)/8);
+		for (LONG icomp = 0; icomp < params.components; ++icomp)
 		{
 			const BYTE* pbyteComp = static_cast<const BYTE*>(pdataUncompressed) + icomp*cbyteComp;
 			stream.AddScan(pbyteComp, &params);
@@ -143,7 +143,7 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, int 
 }
 
 
-CHARLS_IMEXPORT JLS_ERROR JpegLsReadHeader(const void* pdataCompressed, int cbyteCompressed, JlsParamaters* pparams)
+CHARLS_IMEXPORT JLS_ERROR JpegLsReadHeader(const void* pdataCompressed, size_t cbyteCompressed, JlsParamaters* pparams)
 {
 	try
 	{
