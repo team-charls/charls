@@ -82,11 +82,7 @@ protected:
 		valcurrent |= value << bitpos;	
 
 	}
-
-	inline bool hasbit(ULONG i, LONG ibit)
-	{
-		return (i & (1 << ibit)) != 0;
-	}
+	
 
 	void Flush()
 	{
@@ -135,7 +131,7 @@ protected:
 
 private:
 
-	ULONG valcurrent;
+	unsigned int valcurrent;
 	LONG bitpos;
 	ULONG _cbyteCompressed;
 	

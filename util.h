@@ -19,12 +19,20 @@
 
 // default signed int types (32 or 64 bit)
 #ifdef  _WIN64
-#define LONG __int64
+typedef __int64 LONG;
 #else
-#define LONG int
+typedef int LONG;
 #endif
 
-#define ULONG size_t
+typedef size_t ULONG;
+
+// for debugging
+inline __int64 abs(__int64 value)
+{
+	return value >= 0 ? value : - value;
+}
+
+
 
 #else
 #include <stdint.h>
@@ -33,6 +41,8 @@
 typedef intptr_t LONG;
 typedef uintptr_t ULONG;
 #endif
+
+
 
 enum constants
 {
@@ -45,6 +55,7 @@ typedef unsigned short USHORT;
 
 #include <string.h>
 #include <stdlib.h>
+
 
 #undef  NEAR
 
@@ -75,7 +86,7 @@ const LONG BASIC_RESET	= 64;
 inline LONG log_2(ULONG n)
 {
 	LONG x = 0;
-	while (n > (1LL << x))
+	while (n > (ULONG(1) << x))
 	{
 		++x;
 	}

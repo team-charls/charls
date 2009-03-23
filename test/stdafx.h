@@ -1,13 +1,11 @@
-// stdafx.h : include file for standard system include files,
-// or project specific include files that are used frequently, but
-// are changed infrequently
-//
+// 
+// (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// 
 
 #ifndef STDAFX
 #define STDAFX
 
 #if defined(WIN32)
-#include <windows.h>
 #pragma warning (disable: 4996)
 #endif
 

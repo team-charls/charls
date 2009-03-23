@@ -1,6 +1,6 @@
-// test.cpp : Defines the entry point for the console application.
-//
-
+// 
+// (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// 
 
 #include "stdafx.h"
 #include <iostream>
@@ -11,34 +11,14 @@
 #include "../util.h"
 #include "../defaulttraits.h"
 #include "../losslesstraits.h"
+
+#include "time.h"
+
 typedef const char* SZC;
 
 namespace // local helpers
 {
 
-#if defined(WIN32)
-
-double getTime() 
-{ 
-	LARGE_INTEGER time;
-	::QueryPerformanceCounter(&time);
-	LARGE_INTEGER freq;
-	::QueryPerformanceFrequency(&freq);
-
-	return double(time.LowPart) * 1000.0/double(freq.LowPart);
-}
-
-#else
-#include <sys/time.h>
-double getTime() 
-{ 	
-
-	timeval t;
-	gettimeofday(&t, 0);
-	
-	return (t.tv_sec * 1000000.0 + t.tv_usec) / 1000.0;	
-}
-#endif
 
 void ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0)
 {
@@ -255,7 +235,7 @@ void TestPerformance()
 
 //	TestFile("../test/mars/phoenixmars.ppm", 40, Size(5300,4300),  8, 3);
 	TestFile("../test/MR2_UNC", 1728, size1024,  16, 1);
-	TestFile("../test/0015.RAW", 0, size1024,  8, 1);
+	TestFile("../test/0015.raw", 0, size1024,  8, 1);
 	TestFile("../test/lena8b.raw", 0, size512,  8, 1);
 
 }
