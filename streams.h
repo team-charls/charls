@@ -122,8 +122,8 @@ private:
 	void ReadPresetParameters();
 	void ReadComment();
 	void ReadStartOfFrame();
-	LONG ReadByte();
-	LONG ReadWord();
+	int ReadByte();
+	int ReadWord();
 
 private:
 	const BYTE* _pdata;

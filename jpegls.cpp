@@ -22,11 +22,11 @@
 #include "lookuptable.h"
 
 // used to determine how large runs should be encoded at a time. 
-const LONG J[32]			= {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+const int J[32]			= {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-const LONG BASIC_T1		= 3;
-const LONG BASIC_T2		= 7;
-const LONG BASIC_T3		= 21;
+const int BASIC_T1		= 3;
+const int BASIC_T2		= 7;
+const int BASIC_T3		= 21;
 
 #include "losslesstraits.h"
 #include "defaulttraits.h"

@@ -345,8 +345,8 @@ void JLSInputStream::ReadComment()
 void JLSInputStream::ReadStartOfFrame()
 {
 	_info.bitspersample = ReadByte();
-	LONG cline = ReadWord();
-	LONG ccol = ReadWord();
+	int cline = ReadWord();
+	int ccol = ReadWord();
 	_info.width = ccol;
 	_info.height = cline;
 	_info.components= ReadByte();
@@ -357,16 +357,16 @@ void JLSInputStream::ReadStartOfFrame()
 //
 // ReadByte()
 //
-LONG JLSInputStream::ReadByte()
+int JLSInputStream::ReadByte()
 { return _pdata[_cbyteOffset++]; }
 
 
 //
 // ReadWord()
 //
-LONG JLSInputStream::ReadWord()
+int JLSInputStream::ReadWord()
 {
-	LONG i = ReadByte() * 256;
+	int i = ReadByte() * 256;
 	return i + ReadByte();
 }
 
@@ -383,7 +383,7 @@ void JLSInputStream::ReadScan(void* pvout)
 class JpegImageDataSegment: public JpegSegment
 {
 public:
-	JpegImageDataSegment(const void* pvoidRaw, Size size, LONG cbit, LONG icompStart, LONG ccompScan, interleavemode ilv, LONG accuracy, const JlsCustomParameters& presets)  :
+	JpegImageDataSegment(const void* pvoidRaw, Size size, int cbit, LONG icompStart, int ccompScan, interleavemode ilv, int accuracy, const JlsCustomParameters& presets)  :
 		_cbit(cbit), 
 		_nnear(accuracy),
 		_size(size),
@@ -414,10 +414,10 @@ public:
 
 
 
-	LONG _cbit;
-	LONG _nnear;
+	int _cbit;
+	int _nnear;
 	Size _size;
-	LONG _ccompScan;
+	int _ccompScan;
 	interleavemode _ilv;
 	LONG _icompStart;
 	const void* _pvoidRaw;
@@ -437,7 +437,7 @@ void JLSOutputStream::AddScan(const void* pbyteComp, const JlsParamaters* pparam
 	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _icompLast : -1));
 
 	Size size = Size(pparams->width, pparams->height);
-	LONG ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
+	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
 
 	
 	_segments.push_back(new JpegImageDataSegment(pbyteComp, size, pparams->bitspersample, _icompLast, ccomp, pparams->ilv, pparams->allowedlossyerror, pparams->custom));

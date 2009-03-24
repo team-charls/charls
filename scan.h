@@ -39,11 +39,11 @@ Presets ComputeDefault(LONG MAXVAL, LONG NEAR)
 
 		LONG FACTOR = (MIN(MAXVAL, 4095) + 128)/256;
 		
-		preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
-		preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
-		preset.T3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7*NEAR, preset.T2, MAXVAL);
-		preset.MAXVAL = MAXVAL;
-		preset.RESET = BASIC_RESET;
+		preset.T1 = (int)CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
+		preset.T2 = (int)CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
+		preset.T3 = (int)CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7*NEAR, preset.T2, MAXVAL);
+		preset.MAXVAL = (int)MAXVAL;
+		preset.RESET = (int)BASIC_RESET;
 		return preset;
 }
 
@@ -281,7 +281,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, LONG x, LO
 inlinehint std::pair<LONG, ULONG> CreateEncodedValue(LONG k, ULONG mappederval)
 {
 	ULONG highbits = mappederval >> k;
-	return std::make_pair(highbits + k + 1, (1 << k) | (mappederval & ((1 << k) - 1)));
+	return std::make_pair(highbits + k + 1, (ULONG(1) << k) | (mappederval & ((ULONG(1) << k) - 1)));
 }
 
 
@@ -429,10 +429,10 @@ signed char JlsCodec<TRAITS,STRATEGY>::QuantizeGratientOrg(LONG Di)
 template<class TRAITS, class STRATEGY>
 void JlsCodec<TRAITS,STRATEGY>::EncodeRunPixels(LONG runLength, bool bEndofline)
 {
-	while (runLength >= (1 << J[RUNindex])) 
+	while (runLength >= LONG(1 << J[RUNindex])) 
 	{
 		STRATEGY::AppendOnesToBitStream(1);
-		runLength = runLength - (1 << J[RUNindex]);
+		runLength = runLength - LONG(1 << J[RUNindex]);
 		IncrementRunIndex();
 	}
 	
@@ -457,7 +457,7 @@ LONG JlsCodec<TRAITS,STRATEGY>::DecodeRunPixels(PIXEL Ra, PIXEL* ptype, LONG cpi
 	LONG ipixel = 0;
 	while (STRATEGY::ReadBit())
 	{
-		LONG cpixel = MIN(1 << J[RUNindex], cpixelMac - ipixel);
+		int cpixel = MIN(1 << J[RUNindex], int(cpixelMac - ipixel));
 		ipixel += cpixel;
 		ASSERT(ipixel <= cpixelMac);
 

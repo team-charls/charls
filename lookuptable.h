@@ -58,7 +58,7 @@ void CTable::AddEntry(BYTE bvalue, Code c)
 	LONG length = c.GetLength();
 	ASSERT(length <= cbit);
 	
-	for (LONG i = 0; i < 1 << (cbit - length); ++i)
+	for (LONG i = 0; i < LONG(1) << (cbit - length); ++i)
 	{
 		ASSERT(rgtype[(bvalue << (cbit - length)) + i].GetLength() == 0);
 		rgtype[(bvalue << (cbit - length)) + i] = c;					

@@ -71,7 +71,7 @@ protected:
 		bitpos -= length;
 		if (bitpos >= 0)
 		{
-			valcurrent = valcurrent | (value << bitpos);
+			valcurrent = valcurrent | (((unsigned int)value) << bitpos);
 			return;
 		}
 		valcurrent |= value >> -bitpos;
