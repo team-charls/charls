@@ -41,11 +41,11 @@ public:
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
-	virtual ULONG EncodeScan(const void* pvoid, const Size& size, LONG ccomp, void* pvoidOut, ULONG cbyte, void* pvoidCompare) = 0;
+	virtual size_t EncodeScan(const void* pvoid, const Size& size, LONG ccomp, void* pvoidOut, size_t cbyte, void* pvoidCompare) = 0;
 
 protected:
 
-	void Init(BYTE* pbyteCompressed, ULONG cbyte)
+	void Init(BYTE* pbyteCompressed, size_t cbyte)
 	{
 		bitpos = 32;
 		valcurrent = 0;
@@ -54,7 +54,7 @@ protected:
 	}
 
 
-	void AppendToBitStream(ULONG value, ULONG length)
+	void AppendToBitStream(LONG value, LONG length)
 	{	
 		ASSERT(length < 32 && length >= 0);
 
@@ -63,7 +63,7 @@ protected:
 #ifdef _DEBUG
 		if (length < 32)
 		{
-			ULONG mask = (1 << (length)) - 1;
+			int mask = (1 << (length)) - 1;
 			ASSERT((value | mask) == mask);
 		}
 #endif
@@ -71,7 +71,7 @@ protected:
 		bitpos -= length;
 		if (bitpos >= 0)
 		{
-			valcurrent = valcurrent | (((unsigned int)value) << bitpos);
+			valcurrent = valcurrent | (value << bitpos);
 			return;
 		}
 		valcurrent |= value >> -bitpos;
@@ -115,13 +115,13 @@ protected:
 		
 	}
 
-	ULONG GetLength() 
+	size_t GetLength() 
 	{ 
 		return _cbyteWritten - (bitpos -32)/8; 
 	};
 
 
-	inlinehint void AppendOnesToBitStream(ULONG length)
+	inlinehint void AppendOnesToBitStream(LONG length)
 	{
 		AppendToBitStream((1 << length) - 1, length);	
 	}
@@ -133,12 +133,12 @@ private:
 
 	unsigned int valcurrent;
 	LONG bitpos;
-	ULONG _cbyteCompressed;
+	size_t _cbyteCompressed;
 	
 	// encoding
 	BYTE* _pbyteCompressed;
 	bool _bFFWritten;
-	ULONG _cbyteWritten;
+	size_t _cbyteWritten;
 
 
 };
