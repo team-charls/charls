@@ -28,7 +28,7 @@ public:
 	{
 	}
 
-	ULONG A;
+	LONG A;
 	LONG B;
 	LONG C;
 	LONG N;
@@ -85,9 +85,9 @@ public:
 
 	inlinehint LONG GetGolomb() const
 	{
-		ULONG Ntest	= N;
-		ULONG Atest	= A;
-		ULONG k = 0;
+		LONG Ntest	= N;
+		LONG Atest	= A;
+		LONG k = 0;
 		for(; (Ntest << k) < Atest; k++) 
 		{ 
 			ASSERT(k <= 32); 

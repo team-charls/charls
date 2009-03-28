@@ -111,7 +111,7 @@ JLSOutputStream::JLSOutputStream() :
 //
 JLSOutputStream::~JLSOutputStream()
 {
-	for (ULONG i = 0; i < _segments.size(); ++i)
+	for (size_t i = 0; i < _segments.size(); ++i)
 	{
 		delete _segments[i];
 	}
@@ -134,7 +134,7 @@ void JLSOutputStream::Init(Size size, LONG cbpp, LONG ccomp)
 //
 // Write()
 //
-ULONG JLSOutputStream::Write(BYTE* pdata, ULONG cbyteLength)
+size_t JLSOutputStream::Write(BYTE* pdata, size_t cbyteLength)
 {
 	_pdata = pdata;
 	_cbyteLength = cbyteLength;
@@ -143,7 +143,7 @@ ULONG JLSOutputStream::Write(BYTE* pdata, ULONG cbyteLength)
 	WriteByte(JPEG_SOI);
 	
 
-	for (ULONG i = 0; i < _segments.size(); ++i)
+	for (size_t i = 0; i < _segments.size(); ++i)
 	{
 		_segments[i]->Write(this);
 	}
@@ -222,7 +222,7 @@ void JLSInputStream::ReadHeader()
 
 		BYTE marker = (BYTE)ReadByte();
 
-		ULONG cbyteStart = _cbyteOffset;
+		size_t cbyteStart = _cbyteOffset;
 		LONG cbyteMarker = ReadWord();
 
 		switch (marker)
@@ -408,7 +408,7 @@ public:
 		LONG ccompInterleaved = _ilv == ILV_LINE ? _ccompScan : 1; 
 
 		std::auto_ptr<EncoderStrategy> qcodec(JlsCodecFactory<EncoderStrategy>().GetCodec(info, _presets));
-		ULONG cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, _size, ccompInterleaved, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
+		size_t cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, _size, ccompInterleaved, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
 

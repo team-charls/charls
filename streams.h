@@ -28,13 +28,13 @@ public:
 	void Init(Size size, LONG cbpp, LONG ccomp);
 	void AddScan(const void* pbyteComp, const JlsParamaters* pparams);
 	void AddLSE(const JlsCustomParameters* pcustom);
-	ULONG GetBytesWritten()
+	size_t GetBytesWritten()
 		{ return _cbyteOffset; }
 
-	ULONG GetLength()
+	size_t GetLength()
 		{ return _cbyteLength - _cbyteOffset; }
 
-	ULONG Write(BYTE* pdata, ULONG cbyteLength);
+	size_t Write(BYTE* pdata, size_t cbyteLength);
 	
 	void EnableCompare(bool bCompare) 
 	{ _bCompare = bCompare; };
@@ -51,7 +51,7 @@ private:
 
 	void WriteBytes(const std::vector<BYTE>& rgbyte)
 	{
-		for (ULONG i = 0; i < rgbyte.size(); ++i)
+		for (size_t i = 0; i < rgbyte.size(); ++i)
 		{
 			WriteByte(rgbyte[i]);
 		}		
@@ -64,15 +64,15 @@ private:
 	}
 
 
-    void Seek(ULONG cbyte)
+    void Seek(size_t cbyte)
 		{ _cbyteOffset += cbyte; }
 
 	bool _bCompare;
 
 private:
 	BYTE* _pdata;
-	ULONG _cbyteOffset;
-	ULONG _cbyteLength;
+	size_t _cbyteOffset;
+	size_t _cbyteLength;
 	LONG _icompLast;
 	std::vector<JpegSegment*> _segments;
 };
@@ -101,7 +101,7 @@ class JLSInputStream
 public:
 	JLSInputStream(const BYTE* pdata, LONG cbyteLength);
 
-	ULONG GetBytesRead()
+	size_t GetBytesRead()
 		{ return _cbyteOffset; }
 
 	const JlsParamaters& GetMetadata() const
@@ -127,8 +127,8 @@ private:
 
 private:
 	const BYTE* _pdata;
-	ULONG _cbyteOffset;
-	ULONG _cbyteLength;
+	size_t _cbyteOffset;
+	size_t _cbyteLength;
 	bool _bCompare;
 	JlsParamaters _info;
 };

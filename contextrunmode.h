@@ -29,9 +29,9 @@ struct CContextRunMode
 
 	inlinehint LONG GetGolomb() const
 	{
-		ULONG Ntest	= N;
-		ULONG TEMP	= A + (N >> 1) * _nRItype;
-		ULONG k = 0;
+		LONG Ntest	= N;
+		LONG TEMP	= A + (N >> 1) * _nRItype;
+		LONG k = 0;
 		for(; Ntest < TEMP; k++) 
 		{ 
 			Ntest <<= 1;
@@ -41,7 +41,7 @@ struct CContextRunMode
 	}
 
 
-	void UpdateVariables(LONG Errval, ULONG EMErrval)
+	void UpdateVariables(LONG Errval, LONG EMErrval)
 	{		
 		if (Errval < 0)
 		{
@@ -57,16 +57,16 @@ struct CContextRunMode
 		N = N + 1;
 	}
 
-	inlinehint LONG ComputeErrVal(ULONG temp, LONG k)
+	inlinehint LONG ComputeErrVal(LONG temp, LONG k)
 	{
 		bool map = temp & 1;
 
-		ULONG errvalabs = (temp + map) / 2;
+		LONG errvalabs = (temp + map) / 2;
 
 		if ((k != 0 || (2 * Nn >= N)) == map)
 		{
-			ASSERT(map == ComputeMap(-LONG(errvalabs), k));
-			return -LONG(errvalabs);
+			ASSERT(map == ComputeMap(-errvalabs, k));
+			return -errvalabs;
 		}
 
 		ASSERT(map == ComputeMap(errvalabs, k));	

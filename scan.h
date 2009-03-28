@@ -22,7 +22,7 @@ extern std::vector<signed char> rgquant16Ll;
 // Apply 
 //
 inlinehint LONG ApplySign(LONG i, LONG sign)
-	{ return (sign ^ i) - sign; }									
+{ return (sign ^ i) - sign; }									
 
 
 LONG CLAMP(LONG i, LONG j, LONG MAXVAL)
@@ -35,16 +35,16 @@ LONG CLAMP(LONG i, LONG j, LONG MAXVAL)
 
 Presets ComputeDefault(LONG MAXVAL, LONG NEAR)
 {
-		Presets preset;
+	Presets preset;
 
-		LONG FACTOR = (MIN(MAXVAL, 4095) + 128)/256;
-		
-		preset.T1 = (int)CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
-		preset.T2 = (int)CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
-		preset.T3 = (int)CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7*NEAR, preset.T2, MAXVAL);
-		preset.MAXVAL = (int)MAXVAL;
-		preset.RESET = (int)BASIC_RESET;
-		return preset;
+	LONG FACTOR = (MIN(MAXVAL, 4095) + 128)/256;
+
+	preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
+	preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
+	preset.T3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7*NEAR, preset.T2, MAXVAL);
+	preset.MAXVAL = MAXVAL;
+	preset.RESET = BASIC_RESET;
+	return preset;
 }
 
 
@@ -52,24 +52,24 @@ Presets ComputeDefault(LONG MAXVAL, LONG NEAR)
 
 inlinehint LONG GetPredictedValue(LONG Ra, LONG Rb, LONG Rc)
 {
-	if (Ra < Rb)
-	{
-		if (Rc < Ra)
-			return Rb;
+if (Ra < Rb)
+{
+if (Rc < Ra)
+return Rb;
 
-		if (Rc > Rb)
-			return Ra;
-	}
-	else
-	{
-		if (Rc < Rb)
-			return Ra;
+if (Rc > Rb)
+return Ra;
+}
+else
+{
+if (Rc < Rb)
+return Ra;
 
-		if (Rc > Ra)
-			return Rb;
-	}
+if (Rc > Ra)
+return Rb;
+}
 
-	return Ra + Rb - Rc;
+return Ra + Rb - Rc;
 }
 
 /*/
@@ -78,13 +78,13 @@ inlinehint LONG GetPredictedValue(LONG Ra, LONG Rb, LONG Rc)
 {
 	// sign trick reduces the number of if statements (branches) 
 	LONG sgn = BitWiseSign(Rb - Ra);
-	
+
 	// is Ra between Rc and Rb? 
 	if ((sgn ^ (Rc - Ra)) < 0)
 		return Rb;
-	
+
 	// is Rb between Rc and Ra?
- 	if ((sgn ^ (Rb - Rc)) < 0)
+	if ((sgn ^ (Rb - Rc)) < 0)
 		return Ra;
 
 	// default case, valid if Rc element of [Ra,Rb] 
@@ -111,7 +111,7 @@ inlinehint LONG GetMappedErrVal(LONG Errval)
 
 
 inlinehint  LONG ComputeContextID(LONG Q1, LONG Q2, LONG Q3)
-	{ return (Q1*9 + Q2)*9 + Q3; }
+{ return (Q1*9 + Q2)*9 + Q3; }
 
 
 //
@@ -127,83 +127,83 @@ public:
 public:
 	JlsCodec() :
 	  _size(0,0),
-	  T1(0),
-	  T2(0),
-	  T3(0),
-	  RUNindex(0),
-	  _pquant(0),
-	  _bCompare(0)
-	{
-	}	
+		  T1(0),
+		  T2(0),
+		  T3(0),
+		  RUNindex(0),
+		  _pquant(0),
+		  _bCompare(0)
+	  {
+	  }	
 
-	JlsCodec(const TRAITS& inTraits) :
+	  JlsCodec(const TRAITS& inTraits) :
 	  traits(inTraits),
-	  _size(0,0),
-	  T1(0),
-	  T2(0),
-	  T3(0),
-	  RUNindex(0),
-	  _pquant(0),
-	  _bCompare(0)
-	{
-	}	
-	
+		  _size(0,0),
+		  T1(0),
+		  T2(0),
+		  T3(0),
+		  RUNindex(0),
+		  _pquant(0),
+		  _bCompare(0)
+	  {
+	  }	
+
 
 	  void SetPresets(const JlsCustomParameters& presets)
-	{
-		
-		Presets presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
+	  {
 
-		InitParams(presets.T1 != 0 ? presets.T1 : presetDefault.T1,
-				   presets.T2 != 0 ? presets.T2 : presetDefault.T2,
-				   presets.T3 != 0 ? presets.T3 : presetDefault.T3, 
-				   presets.RESET != 0 ? presets.RESET : presetDefault.RESET);
-	}
+		  Presets presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
 
-	
- 	
-	signed char QuantizeGratientOrg(LONG Di);
-	inlinehint LONG QuantizeGratient(LONG Di)
-		{ 
-			ASSERT(QuantizeGratientOrg(Di) == *(_pquant + Di));
-			return *(_pquant + Di); 
-		}
+		  InitParams(presets.T1 != 0 ? presets.T1 : presetDefault.T1,
+			  presets.T2 != 0 ? presets.T2 : presetDefault.T2,
+			  presets.T3 != 0 ? presets.T3 : presetDefault.T3, 
+			  presets.RESET != 0 ? presets.RESET : presetDefault.RESET);
+	  }
 
-	void InitQuantizationLUT();
-	
-	ULONG DecodeValue(LONG k, ULONG limit, LONG qbpp);
-	inlinehint void EncodeMappedValue(LONG k, ULONG mappederval, ULONG limit);
-	
-	void IncrementRunIndex()
-		{ RUNindex = MIN(31,RUNindex + 1); }
-	void DecrementRunIndex()
-		{ RUNindex = MAX(0,RUNindex - 1); }
 
-	LONG		DecodeRIError(CContextRunMode& ctx);
-	Triplet DecodeRIPixel(Triplet Ra, Triplet Rb);
-	PIXEL   DecodeRIPixel(LONG Ra, LONG Rb);
-	LONG		DecodeRunPixels(PIXEL Ra, PIXEL* ptype, LONG cpixelMac);
-	LONG		DoRunMode(LONG ipixel, DecoderStrategy*);
-	
-	void	EncodeRIError(CContextRunMode& ctx, LONG Errval);
-	SAMPLE	EncodeRIPixel(LONG x, LONG Ra, LONG Rb);
-	Triplet EncodeRIPixel(Triplet x, Triplet Ra, Triplet Rb);
-	void	EncodeRunPixels(LONG runLength, bool bEndofline);
-	LONG		DoRunMode(LONG ipixel, EncoderStrategy*);
 
-	inlinehint SAMPLE DoRegular(LONG Qs, LONG, LONG pred, DecoderStrategy*);
-	inlinehint SAMPLE DoRegular(LONG Qs, LONG x, LONG pred, EncoderStrategy*);
+	  signed char QuantizeGratientOrg(LONG Di);
+	  inlinehint LONG QuantizeGratient(LONG Di)
+	  { 
+		  ASSERT(QuantizeGratientOrg(Di) == *(_pquant + Di));
+		  return *(_pquant + Di); 
+	  }
 
-	void DoLine(SAMPLE* pdummy);
-	void DoLine(Triplet* pdummy);
-	void DoScan(PIXEL* ptype, BYTE* pbyteCompressed, ULONG cbyteCompressed);         
+	  void InitQuantizationLUT();
+
+	  LONG DecodeValue(LONG k, LONG limit, LONG qbpp);
+	  inlinehint void EncodeMappedValue(LONG k, LONG mappederval, LONG limit);
+
+	  void IncrementRunIndex()
+	  { RUNindex = MIN(31,RUNindex + 1); }
+	  void DecrementRunIndex()
+	  { RUNindex = MAX(0,RUNindex - 1); }
+
+	  LONG		DecodeRIError(CContextRunMode& ctx);
+	  Triplet DecodeRIPixel(Triplet Ra, Triplet Rb);
+	  PIXEL   DecodeRIPixel(LONG Ra, LONG Rb);
+	  LONG		DecodeRunPixels(PIXEL Ra, PIXEL* ptype, LONG cpixelMac);
+	  LONG		DoRunMode(LONG ipixel, DecoderStrategy*);
+
+	  void	EncodeRIError(CContextRunMode& ctx, LONG Errval);
+	  SAMPLE	EncodeRIPixel(LONG x, LONG Ra, LONG Rb);
+	  Triplet EncodeRIPixel(Triplet x, Triplet Ra, Triplet Rb);
+	  void	EncodeRunPixels(LONG runLength, bool bEndofline);
+	  LONG		DoRunMode(LONG ipixel, EncoderStrategy*);
+
+	  inlinehint SAMPLE DoRegular(LONG Qs, LONG, LONG pred, DecoderStrategy*);
+	  inlinehint SAMPLE DoRegular(LONG Qs, LONG x, LONG pred, EncoderStrategy*);
+
+	  void DoLine(SAMPLE* pdummy);
+	  void DoLine(Triplet* pdummy);
+	  void DoScan(PIXEL* ptype, BYTE* pbyteCompressed, size_t cbyteCompressed);         
 
 public:
 	void InitDefault();
 	void InitParams(LONG t1, LONG t2, LONG t3, LONG nReset);
 
-	ULONG  EncodeScan(const void* pvoid, const Size& size, LONG components, void* pvoidOut, ULONG cbyte, void* pvoidCompare);
-	ULONG  DecodeScan(void* pvoidOut, const Size& size, LONG components, const void* pvoidIn, ULONG cbyte, bool bCompare);
+	size_t  EncodeScan(const void* pvoid, const Size& size, LONG components, void* pvoidOut, size_t cbyte, void* pvoidCompare);
+	size_t  DecodeScan(void* pvoidOut, const Size& size, LONG components, const void* pvoidIn, size_t cbyte, bool bCompare);
 
 protected:
 	// codec parameters 
@@ -225,7 +225,7 @@ protected:
 	// quantization lookup table
 	signed char* _pquant;
 	std::vector<signed char> _rgquant;
-	
+
 	// debugging
 	bool _bCompare;
 };
@@ -270,17 +270,17 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, LONG x, LO
 
 	LONG ErrVal		= traits.ComputeErrVal(ApplySign(x - Px, sign));
 
-	EncodeMappedValue(k, GetMappedErrVal(ctx.GetErrorCorrection(k | traits.NEAR) ^ ErrVal), traits.LIMIT);	
+	EncodeMappedValue(k, GetMappedErrVal(ctx.GetErrorCorrection(k | traits.NEAR) ^ ErrVal), traits.LIMIT);
 	ctx.UpdateVariables(ErrVal, traits.NEAR, traits.RESET);
 	ASSERT(traits.IsNear(traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)), x));
 	return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)));
 }
-						   
 
 
-inlinehint std::pair<LONG, ULONG> CreateEncodedValue(LONG k, ULONG mappederval)
+
+inlinehint std::pair<LONG, LONG> CreateEncodedValue(LONG k, LONG mappederval)
 {
-	ULONG highbits = mappederval >> k;
+	LONG highbits = mappederval >> k;
 	return std::make_pair(highbits + k + 1, (ULONG(1) << k) | (mappederval & ((ULONG(1) << k) - 1)));
 }
 
@@ -291,20 +291,20 @@ CTable InitTable(LONG k)
 	for (short nerr = 0; ; nerr++)
 	{		
 		// Q is not used when k != 0
-		ULONG merrval = GetMappedErrVal(nerr);//, k, -1);
-		std::pair<LONG, ULONG> paircode = CreateEncodedValue(k, merrval);
+		LONG merrval = GetMappedErrVal(nerr);//, k, -1);
+		std::pair<LONG, LONG> paircode = CreateEncodedValue(k, merrval);
 		if (paircode.first > CTable::cbit)
 			break;
 
 		Code code = Code( nerr, short(paircode.first) );
 		table.AddEntry(BYTE(paircode.second), code);
 	}
-	
+
 	for (short nerr = -1; ; nerr--)
 	{		
 		// Q is not used when k != 0
-		ULONG merrval = GetMappedErrVal(nerr);//, k, -1);
-		std::pair<LONG, ULONG> paircode = CreateEncodedValue(k, merrval);
+		LONG merrval = GetMappedErrVal(nerr);//, k, -1);
+		std::pair<LONG, LONG> paircode = CreateEncodedValue(k, merrval);
 		if (paircode.first > CTable::cbit)
 			break;
 
@@ -315,28 +315,28 @@ CTable InitTable(LONG k)
 	return table;
 }
 
-	
-		
+
+
 template<class TRAITS, class STRATEGY>
- ULONG JlsCodec<TRAITS,STRATEGY>::DecodeValue(LONG k, ULONG limit, LONG qbpp)
-	{
-		ULONG highbits = STRATEGY::ReadHighbits();
-		
-		if (highbits >= limit - (qbpp + 1))
-			return STRATEGY::ReadValue(qbpp) + 1;
-
-	 	if (k == 0)
-			return highbits;
-
-		return (highbits << k) + STRATEGY::ReadValue(k);
-	}
-
-
-	
-template<class TRAITS, class STRATEGY>
-inlinehint void JlsCodec<TRAITS,STRATEGY>::EncodeMappedValue(LONG k, ULONG mappederval, ULONG limit)
+LONG JlsCodec<TRAITS,STRATEGY>::DecodeValue(LONG k, LONG limit, LONG qbpp)
 {
-	ULONG highbits = mappederval >> k;
+	LONG highbits = STRATEGY::ReadHighbits();
+
+	if (highbits >= limit - (qbpp + 1))
+		return STRATEGY::ReadValue(qbpp) + 1;
+
+	if (k == 0)
+		return highbits;
+
+	return (highbits << k) + STRATEGY::ReadValue(k);
+}
+
+
+
+template<class TRAITS, class STRATEGY>
+inlinehint void JlsCodec<TRAITS,STRATEGY>::EncodeMappedValue(LONG k, LONG mappederval, LONG limit)
+{
+	LONG highbits = mappederval >> k;
 
 	if (highbits < limit - traits.qbpp - 1)
 	{
@@ -398,7 +398,7 @@ void JlsCodec<TRAITS,STRATEGY>::InitQuantizationLUT()
 	LONG RANGE = 1 << traits.bpp;
 
 	_rgquant.resize(RANGE * 2);
-	
+
 	_pquant = &_rgquant[RANGE];
 	for (LONG i = -RANGE; i < RANGE; ++i)
 	{
@@ -420,7 +420,7 @@ signed char JlsCodec<TRAITS,STRATEGY>::QuantizeGratientOrg(LONG Di)
 	if (Di < T1)   return   1;
 	if (Di < T2)   return   2;
 	if (Di < T3)   return   3;
-	
+
 	return  4;
 }
 
@@ -435,7 +435,7 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRunPixels(LONG runLength, bool bEndofline)
 		runLength = runLength - LONG(1 << J[RUNindex]);
 		IncrementRunIndex();
 	}
-	
+
 	if (bEndofline) 
 	{
 		if (runLength != 0) 
@@ -490,7 +490,7 @@ template<class TRAITS, class STRATEGY>
 LONG JlsCodec<TRAITS,STRATEGY>::DecodeRIError(CContextRunMode& ctx)
 {
 	LONG k = ctx.GetGolomb();
-	ULONG EMErrval = DecodeValue(k, traits.LIMIT - J[RUNindex]-1, traits.qbpp);	
+	LONG EMErrval = DecodeValue(k, traits.LIMIT - J[RUNindex]-1, traits.qbpp);	
 	LONG Errval = ctx.ComputeErrVal(EMErrval + ctx._nRItype, k);
 	ctx.UpdateVariables(Errval, EMErrval);
 	return Errval;
@@ -503,7 +503,7 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRIError(CContextRunMode& ctx, LONG Errval)
 {
 	LONG k			= ctx.GetGolomb();
 	bool map		= ctx.ComputeMap(Errval, k);
-	ULONG EMErrval	= 2 * abs(Errval) - ctx._nRItype - map;	
+	LONG EMErrval	= 2 * abs(Errval) - ctx._nRItype - map;	
 
 	ASSERT(Errval == ctx.ComputeErrVal(EMErrval + ctx._nRItype, k));
 	EncodeMappedValue(k, EMErrval, traits.LIMIT-J[RUNindex]-1);
@@ -520,8 +520,8 @@ Triplet JlsCodec<TRAITS,STRATEGY>::DecodeRIPixel(Triplet Ra, Triplet Rb)
 	LONG Errval3 = DecodeRIError(_contextRunmode[0]);
 
 	return Triplet(traits.ComputeReconstructedSample(Rb.v1, Errval1 * Sign(Rb.v1  - Ra.v1)),
-				   traits.ComputeReconstructedSample(Rb.v2, Errval2 * Sign(Rb.v2  - Ra.v2)),
-				   traits.ComputeReconstructedSample(Rb.v3, Errval3 * Sign(Rb.v3  - Ra.v3)));
+		traits.ComputeReconstructedSample(Rb.v2, Errval2 * Sign(Rb.v2  - Ra.v2)),
+		traits.ComputeReconstructedSample(Rb.v3, Errval3 * Sign(Rb.v3  - Ra.v3)));
 }
 
 
@@ -540,10 +540,10 @@ Triplet JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(Triplet x, Triplet Ra, Triplet 
 	LONG errval3	= traits.ComputeErrVal(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
 	EncodeRIError(_contextRunmode[RItype], errval3);
 
-	
+
 	return Triplet(traits.ComputeReconstructedSample(Rb.v1, errval1 * Sign(Rb.v1  - Ra.v1)),
-				   traits.ComputeReconstructedSample(Rb.v2, errval2 * Sign(Rb.v2  - Ra.v2)),
-				   traits.ComputeReconstructedSample(Rb.v3, errval3 * Sign(Rb.v3  - Ra.v3)));
+		traits.ComputeReconstructedSample(Rb.v2, errval2 * Sign(Rb.v2  - Ra.v2)),
+		traits.ComputeReconstructedSample(Rb.v3, errval3 * Sign(Rb.v3  - Ra.v3)));
 }
 
 
@@ -558,7 +558,7 @@ typename TRAITS::PIXEL JlsCodec<TRAITS,STRATEGY>::DecodeRIPixel(LONG Ra, LONG Rb
 	}
 	else
 	{
-	 	LONG ErrVal		= DecodeRIError(_contextRunmode[0]);
+		LONG ErrVal		= DecodeRIError(_contextRunmode[0]);
 		return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Rb, ErrVal * Sign(Rb - Ra)));
 	}
 }
@@ -595,12 +595,12 @@ LONG JlsCodec<TRAITS,STRATEGY>::DoRunMode(LONG ipixel, EncoderStrategy*)
 	PIXEL Ra = ptypeCurX[-1];
 
 	LONG runLength = 0;
-	
+
 	while (traits.IsNear(ptypeCurX[runLength],Ra)) 
 	{
 		ptypeCurX[runLength] = Ra;
 		runLength++;
-		
+
 		if (runLength == ctypeRem)
 			break;
 	}
@@ -609,7 +609,7 @@ LONG JlsCodec<TRAITS,STRATEGY>::DoRunMode(LONG ipixel, EncoderStrategy*)
 
 	if (runLength == ctypeRem)
 		return runLength;
-	
+
 	ptypeCurX[runLength] = EncodeRIPixel(ptypeCurX[runLength], Ra, ptypePrevX[runLength]);
 	DecrementRunIndex();
 	return runLength + 1;
@@ -622,13 +622,13 @@ template<class TRAITS, class STRATEGY>
 LONG JlsCodec<TRAITS,STRATEGY>::DoRunMode(LONG ipixelStart, DecoderStrategy*)
 {
 	PIXEL Ra = ptypeCur[ipixelStart-1];
-	
+
 	LONG cpixelRun = DecodeRunPixels(Ra, ptypeCur + ipixelStart, _size.cx - ipixelStart);
-	
+
 	LONG ipixelEnd = ipixelStart + cpixelRun;
 
 	if (ipixelEnd == _size.cx)
- 		return ipixelEnd - ipixelStart;
+		return ipixelEnd - ipixelStart;
 
 	// run interruption
 	PIXEL Rb = ptypePrev[ipixelEnd];
@@ -645,7 +645,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(SAMPLE*)
 	LONG ipixel = 0;
 	LONG Rb = ptypePrev[ipixel-1];
 	LONG Rd = ptypePrev[ipixel];
-		
+
 	while(ipixel < _size.cx)
 	{	
 		LONG Ra = ptypeCur[ipixel -1];
@@ -654,7 +654,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(SAMPLE*)
 		Rd = ptypePrev[ipixel + 1];
 
 		LONG Qs = ComputeContextID(QuantizeGratient(Rd - Rb), QuantizeGratient(Rb - Rc), QuantizeGratient(Rc - Ra));
-		
+
 		if (Qs == 0)
 		{
 			ipixel += DoRunMode(ipixel, (STRATEGY*)(NULL));
@@ -681,11 +681,11 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet*)
 		Triplet Rc = ptypePrev[ipixel-1];
 		Triplet Rb = ptypePrev[ipixel];
 		Triplet Rd = ptypePrev[ipixel + 1];
-		
+
 		LONG Qs1 = ComputeContextID(QuantizeGratient(Rd.v1 - Rb.v1), QuantizeGratient(Rb.v1 - Rc.v1), QuantizeGratient(Rc.v1 - Ra.v1));
 		LONG Qs2 = ComputeContextID(QuantizeGratient(Rd.v2 - Rb.v2), QuantizeGratient(Rb.v2 - Rc.v2), QuantizeGratient(Rc.v2 - Ra.v2));
 		LONG Qs3 = ComputeContextID(QuantizeGratient(Rd.v3 - Rb.v3), QuantizeGratient(Rb.v3 - Rc.v3), QuantizeGratient(Rc.v3 - Ra.v3));
-		
+
 		if (Qs1 == 0 && Qs2 == 0 && Qs3 == 0)
 		{
 			ipixel += DoRunMode(ipixel, (STRATEGY*)(NULL));
@@ -699,22 +699,22 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet*)
 			ptypeCur[ipixel] = Rx;
 			ipixel++;
 		}
-		
+
 	}
 };
 
 
 
 template<class TRAITS, class STRATEGY>
-void JlsCodec<TRAITS,STRATEGY>::DoScan(PIXEL* ptype, BYTE* pbyteCompressed, ULONG cbyteCompressed)
+void JlsCodec<TRAITS,STRATEGY>::DoScan(PIXEL* ptype, BYTE* pbyteCompressed, size_t cbyteCompressed)
 {		
 	STRATEGY::Init(pbyteCompressed, cbyteCompressed);
 
 	LONG pixelstride = _size.cx + 4;
-	
+
 	std::vector<PIXEL> vectmp;
 	vectmp.resize((1 + _components) * pixelstride);
-	
+
 	std::vector<LONG> rgRUNindex;
 	rgRUNindex.resize(_components);
 
@@ -733,7 +733,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan(PIXEL* ptype, BYTE* pbyteCompressed, ULON
 		// initialize edge pixels used for prediction
 		ptypePrev[_size.cx]	= ptypePrev[_size.cx - 1];
 		ptypeCur[-1]		= ptypePrev[0];
-		
+
 		STRATEGY::OnLineBegin(ptypeCur, ptypeLine, _size.cx);
 		DoLine((PIXEL*) NULL); // dummy arg for overload resolution
 		STRATEGY::OnLineEnd(ptypeCur, ptypeLine, _size.cx);
@@ -745,14 +745,14 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan(PIXEL* ptype, BYTE* pbyteCompressed, ULON
 
 
 template<class TRAITS, class STRATEGY>
-ULONG JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, LONG components, void* pvoidOut, ULONG cbyte, void* pvoidCompare)
+size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, LONG components, void* pvoidOut, size_t cbyte, void* pvoidCompare)
 {
 	_size = size;
 	_components = components;
 
 	const PIXEL* ptype = static_cast<const PIXEL*>(pvoid);
 	BYTE* pbyteCompressed = static_cast<BYTE*>(pvoidOut);
-	
+
 	if (pvoidCompare != NULL)
 	{
 		DecoderStrategy* pdecoder = new JlsCodec<TRAITS,DecoderStrategy>(traits);
@@ -772,7 +772,7 @@ ULONG JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size,
 
 
 template<class TRAITS, class STRATEGY>
-ULONG JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, LONG components, const void* pvoidIn, ULONG cbyte, bool bCompare)
+size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, LONG components, const void* pvoidIn, size_t cbyte, bool bCompare)
 {
 	PIXEL* ptypeOut			= static_cast<PIXEL*>(pvoidOut);
 	BYTE* pbyteCompressed	= const_cast<BYTE*>(static_cast<const BYTE*>(pvoidIn));
@@ -812,7 +812,7 @@ void JlsCodec<TRAITS,STRATEGY>::InitParams(LONG t1, LONG t2, LONG t3, LONG nRese
 	InitQuantizationLUT();
 
 	LONG A = MAX(2, (traits.RANGE + 32)/64);
-	for (ULONG Q = 0; Q < sizeof(_contexts) / sizeof(_contexts[0]); ++Q)
+	for (LONG Q = 0; Q < sizeof(_contexts) / sizeof(_contexts[0]); ++Q)
 	{
 		_contexts[Q] = JlsContext(A);
 	}

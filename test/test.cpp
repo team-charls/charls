@@ -234,6 +234,7 @@ void TestPerformance()
 	Size size512 = Size(512, 512);
 
 //	TestFile("../test/mars/phoenixmars.ppm", 40, Size(5300,4300),  8, 3);
+	TestFile("../test/desktop.ppm", 40, Size(1280,1024),  8, 3);
 	TestFile("../test/MR2_UNC", 1728, size1024,  16, 1);
 	TestFile("../test/0015.raw", 0, size1024,  8, 1);
 	TestFile("../test/lena8b.raw", 0, size512,  8, 1);
@@ -406,14 +407,15 @@ int main(int argc, char* argv[])
 	TestTraits16bit();		
 	TestTraits8bit();		
 
+	printf("Test Conformance\r\n");
+	TestConformance();
+
 	printf("Test Damaged bitstream\r\n");
 	TestDamagedBitStream();
 
 	printf("Test Small buffer\r\n");
 	TestSmallBuffer();
 
-	printf("Test Conformance\r\n");
-	TestConformance();
 
 	printf("Test Perf\r\n");
 

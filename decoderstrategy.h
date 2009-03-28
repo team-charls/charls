@@ -12,8 +12,8 @@ class DecoderStrategy
 {
 public:
 	DecoderStrategy() :
-	  _valcurrent(0),
-		  _cbitValid(0),
+	  _readCache(0),
+		  _validBits(0),
 		  _pbyteCompressed(0)
 	  {}
 
@@ -23,14 +23,15 @@ public:
 	  {}
 
 	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-	  virtual ULONG DecodeScan(void* pvoidOut, const Size& size, LONG cline, const void* pvoidIn, ULONG cbyte, bool bCheck) = 0;
+	  virtual size_t DecodeScan(void* pvoidOut, const Size& size, LONG cline, const void* pvoidIn, size_t cbyte, bool bCheck) = 0;
 
-	  void Init(BYTE* pbyteCompressed, ULONG cbyte)
+	  void Init(BYTE* pbyteCompressed, size_t cbyte)
 	  {
-		  _cbitValid = 0;
-		  _valcurrent = 0;
+		  _validBits = 0;
+		  _readCache = 0;
 		  _pbyteCompressed = pbyteCompressed;
-		  _cbyteCompressed = cbyte;
+		  _pbyteCompressedEnd = pbyteCompressed + cbyte;
+		  _pbyteNextFF = FindNextFF();
 		  MakeValid();
 	  }
 
@@ -38,8 +39,8 @@ public:
 
 	  inlinehint void Skip(LONG length)
 	  {
-		  _cbitValid -= length;
-		  _valcurrent = _valcurrent << length; 
+		  _validBits -= length;
+		  _readCache = _readCache << length; 
 	  }
 
 	
@@ -64,38 +65,65 @@ public:
 	  enum { 
 		  bufferbits = sizeof( bufType ) * 8,
 	  };
-
-	 
-
+		
 	  void MakeValid()
 	  {
-		  LONG  cbitValid = _cbitValid;
-		  BYTE* pbyteCompressed = _pbyteCompressed;
-		  bufType valcurrent = 0;
+		  ASSERT(_validBits <=bufferbits - 8);
 
-		  while (cbitValid <= bufferbits - 8)
+		  if (_pbyteCompressed < _pbyteNextFF)
 		  {
-			  bufType valnew		  = *pbyteCompressed;
-			  valcurrent		 |= valnew << (bufferbits - 8  - cbitValid);
-			  pbyteCompressed  += 1;				
-			  cbitValid		 += 8; 
+			  while (_validBits <= bufferbits - 8)
+			  {
+				  _readCache		 |= _pbyteCompressed[0] << (bufferbits - 8  - _validBits);
+				  _validBits		 += 8; 				  
+				  _pbyteCompressed  += 1;				
+			  }
+
+			  ASSERT(_validBits >= bufferbits - 8);
+			  return;
+		  }
+
+		  while (_validBits < bufferbits - 8)
+		  {
+			  if (_pbyteCompressed >= _pbyteCompressedEnd)
+			  {
+				  if (_validBits <= 0)
+					  throw JlsException(InvalidCompressedData);
+
+				  return;
+			  }
+
+			  bufType valnew	  = *_pbyteCompressed;
+			  _readCache		 |= valnew << (bufferbits - 8  - _validBits);
+			  _pbyteCompressed  += 1;				
+			  _validBits		 += 8; 
 
 			  if (valnew == 0xFF)		
 			  {
-				  cbitValid--;		
+				  _validBits--;		
 			  }
 		  }
 
-		  _valcurrent			= _valcurrent | valcurrent;
-		  _cbitValid			= cbitValid;
-		  _pbyteCompressed	= pbyteCompressed;
+		  _pbyteNextFF = FindNextFF();
+
 	  }
 
 
+	  BYTE* FindNextFF()
+	  {
+		  BYTE* pbyteNextFF =_pbyteCompressed;
+
+		  while (pbyteNextFF < _pbyteCompressedEnd && *pbyteNextFF != 0xFF)
+	      {
+			   pbyteNextFF++;
+		  }
+		  
+		  return pbyteNextFF - 3;
+	  }
 
 	  BYTE* GetCurBytePos() const
 	  {
-		  LONG  cbitValid = _cbitValid;
+		  LONG  cbitValid = _validBits;
 		  BYTE* pbyteCompressed = _pbyteCompressed;
 
 		  for (;;)
@@ -111,17 +139,16 @@ public:
 	  }
 
 
-
-	  inlinehint ULONG ReadValue(LONG length)
+	  inlinehint LONG ReadValue(LONG length)
 	  {
-		  if (_cbitValid < length)
+		  if (_validBits < length)
 		  {
 			  MakeValid();
 		  }
 
-		  ASSERT(length != 0 && length <= _cbitValid);
+		  ASSERT(length != 0 && length <= _validBits);
 		  ASSERT(length < 32);
-		  ULONG result = ULONG(_valcurrent >> (bufferbits - length));
+		  LONG result = LONG(_readCache >> (bufferbits - length));
 		  Skip(length);		
 		  return result;
 	  }
@@ -129,24 +156,24 @@ public:
 
 	  inlinehint LONG PeekByte()
 	  { 
-		  if (_cbitValid < 8)
+		  if (_validBits < 8)
 		  {
 			  MakeValid();
 		  }
 
-		  return _valcurrent >> (bufferbits - 8); 
+		  return _readCache >> (bufferbits - 8); 
 	  }
 
 
 
 	  inlinehint bool ReadBit()
 	  {
-		  if (_cbitValid == 0)
+		  if (_validBits == 0)
 		  {
 			  MakeValid();
 		  }
 
-		  bool bSet = (_valcurrent & (1LL << (bufferbits - 1))) != 0;
+		  bool bSet = (_readCache & (bufType(1) << (bufferbits - 1))) != 0;
 		  Skip(1);
 		  return bSet;
 	  }
@@ -155,15 +182,15 @@ public:
 
 	  inlinehint LONG Peek0Bits()
 	  {
-		  if (_cbitValid < 16)
+		  if (_validBits < 16)
 		  {
 			  MakeValid();
 		  }
-		  bufType valTest = _valcurrent;
+		  bufType valTest = _readCache;
 
 		  for (LONG cbit = 0; cbit < 16; cbit++)
 		  {
-			  if ((valTest & (1LL << (bufferbits - 1))) != 0)
+			  if ((valTest & (bufType(1) << (bufferbits - 1))) != 0)
 				  return cbit;
 
 			  valTest <<= 1;
@@ -173,7 +200,7 @@ public:
 
 
 
-	  inlinehint ULONG ReadHighbits()
+	  inlinehint LONG ReadHighbits()
 	  {
 		  LONG cbit = Peek0Bits();
 		  if (cbit >= 0)
@@ -183,7 +210,7 @@ public:
 		  }
 		  Skip(15);
 
-		  for (ULONG highbits = 15; ; highbits++)
+		  for (LONG highbits = 15; ; highbits++)
 		  { 
 			  if (ReadBit())
 				  return highbits;
@@ -191,13 +218,10 @@ public:
 	  }
 
 
-
-	  inlinehint ULONG ReadLongValue(LONG length)
+	  LONG ReadLongValue(LONG length)
 	  {
 		  if (length <= 24)
-		  {
 			  return ReadValue(length);
-		  }
 
 		  return (ReadValue(length - 24) << 24) + ReadValue(24);
 	  }
@@ -205,10 +229,11 @@ public:
 
 private:
 	// decoding
-	bufType _valcurrent;
-	LONG _cbitValid;
+	bufType _readCache;
+	LONG _validBits;
 	BYTE* _pbyteCompressed;
-	ULONG _cbyteCompressed;
+	BYTE* _pbyteNextFF;
+	BYTE* _pbyteCompressedEnd;
 };
 
 

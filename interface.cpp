@@ -27,7 +27,7 @@ JLS_ERROR CheckInput(const void* pdataCompressed, size_t cbyteCompressed, const 
 	if (pparams->height < 1 || pparams->height > 65535)
 		return ParameterValueNotSupported;
 
-	if (cbyteUncompressed < ULONG(pparams->width * pparams->height * pparams->components * ((pparams->bitspersample + 7)/8)))
+	if (cbyteUncompressed < size_t(pparams->width * pparams->height * pparams->components * ((pparams->bitspersample + 7)/8)))
 		return InvalidJlsParameters;
 
 	switch (pparams->components)
@@ -90,7 +90,7 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsDecode(void* pdataUncompressed, size_t cbyteUnco
 		reader.Read(pdataUncompressed, cbyteUncompressed);
 		return OK;
 	}
-	catch (JlsException e)
+	catch (JlsException& e)
 	{
 		return e._error;
 	}
@@ -133,7 +133,7 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, size
 
 	std::vector<BYTE> rgbyteCompressed;
 	rgbyteCompressed.resize(cbyteBuffer + 16);
-	memcpy(&rgbyteCompressed[0], pdataCompressed, cbyteBuffer + 16);
+	memcpy(&rgbyteCompressed[0], pdataCompressed, cbyteBuffer);
 	
 
 	stream.EnableCompare(true);
@@ -153,7 +153,7 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsReadHeader(const void* pdataCompressed, size_t c
 		*pparams = info;	
 		return OK;
 	}
-	catch (JlsException e)
+	catch (JlsException& e)
 	{
 		return e._error;
 	}
