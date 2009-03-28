@@ -281,7 +281,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, LONG x, LO
 inlinehint std::pair<LONG, LONG> CreateEncodedValue(LONG k, LONG mappederval)
 {
 	LONG highbits = mappederval >> k;
-	return std::make_pair(highbits + k + 1, (ULONG(1) << k) | (mappederval & ((ULONG(1) << k) - 1)));
+	return std::make_pair(highbits + k + 1, (LONG(1) << k) | (mappederval & ((LONG(1) << k) - 1)));
 }
 
 

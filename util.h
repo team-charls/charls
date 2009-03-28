@@ -24,7 +24,6 @@ typedef __int64 LONG;
 typedef int LONG;
 #endif
 
-typedef size_t ULONG;
 
 // for debugging
 inline __int64 abs(__int64 value)
@@ -33,13 +32,11 @@ inline __int64 abs(__int64 value)
 }
 
 
-
 #else
 #include <stdint.h>
 
 // default signed int types (32 or 64 bit)
 typedef intptr_t LONG;
-typedef uintptr_t ULONG;
 #endif
 
 
@@ -83,10 +80,10 @@ typedef unsigned short USHORT;
 
 const LONG BASIC_RESET	= 64;
 
-inline LONG log_2(ULONG n)
+inline LONG log_2(LONG n)
 {
 	LONG x = 0;
-	while (n > (ULONG(1) << x))
+	while (n > (LONG(1) << x))
 	{
 		++x;
 	}

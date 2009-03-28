@@ -119,7 +119,7 @@ void TestRoundTrip(const char* strName, const BYTE* rgbyteRaw, Size size, int cb
 // disabled for Linux, causes valgrind errors
 #if defined(WIN32)
  
-	printf("Encode: %f Decode: %f Ratio: %f \n\r", , dwtimeDecodeComplete - dwtimeEncodeComplete, dblfactor);
+	printf("Encode: %f Decode: %f Ratio: %f \n\r", dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, dblfactor);
 	BYTE* pbyteOut = &rgbyteOut[0];
 	for (UINT i = 0; i < rgbyteOut.size(); ++i)
 	{

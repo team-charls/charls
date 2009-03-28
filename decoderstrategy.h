@@ -35,8 +35,6 @@ public:
 		  MakeValid();
 	  }
 
-		
-
 	  inlinehint void Skip(LONG length)
 	  {
 		  _validBits -= length;
@@ -60,7 +58,7 @@ public:
 #endif
 	  }
 
-	  typedef ULONG bufType;
+	  typedef unsigned int bufType;
 
 	  enum { 
 		  bufferbits = sizeof( bufType ) * 8,
@@ -72,18 +70,19 @@ public:
 
 		  if (_pbyteCompressed < _pbyteNextFF)
 		  {
-			  while (_validBits <= bufferbits - 8)
+			  do
 			  {
 				  _readCache		 |= _pbyteCompressed[0] << (bufferbits - 8  - _validBits);
 				  _validBits		 += 8; 				  
-				  _pbyteCompressed  += 1;				
+				  _pbyteCompressed   += 1;				
 			  }
-
+			  while (_validBits <= bufferbits - 8)
+			  
 			  ASSERT(_validBits >= bufferbits - 8);
 			  return;
 		  }
 
-		  while (_validBits < bufferbits - 8)
+		  do
 		  {
 			  if (_pbyteCompressed >= _pbyteCompressedEnd)
 			  {
@@ -95,7 +94,7 @@ public:
 
 			  bufType valnew	  = *_pbyteCompressed;
 			  _readCache		 |= valnew << (bufferbits - 8  - _validBits);
-			  _pbyteCompressed  += 1;				
+			  _pbyteCompressed   += 1;				
 			  _validBits		 += 8; 
 
 			  if (valnew == 0xFF)		
@@ -103,6 +102,7 @@ public:
 				  _validBits--;		
 			  }
 		  }
+		  while (_validBits < bufferbits - 8);
 
 		  _pbyteNextFF = FindNextFF();
 
