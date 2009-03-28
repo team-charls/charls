@@ -18,7 +18,7 @@ add_library(CharLS header.cpp  interface.cpp  jpegls.cpp
   )
 
 
-add_executable(charlstest test/test.cpp)
+add_executable(charlstest test/test.cpp test/time.cpp)
 target_link_libraries (charlstest CharLS)
 
 include(CTest)

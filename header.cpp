@@ -358,7 +358,12 @@ void JLSInputStream::ReadStartOfFrame()
 // ReadByte()
 //
 int JLSInputStream::ReadByte()
-{ return _pdata[_cbyteOffset++]; }
+{  
+    if (_cbyteOffset >= _cbyteLength)
+	throw JlsException(InvalidCompressedData);
+
+    return _pdata[_cbyteOffset++]; 
+}
 
 
 //
