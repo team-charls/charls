@@ -31,7 +31,7 @@ void ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0)
 	fseek(pfile, 0, SEEK_END);	
 	int cbyteFile = ftell(pfile);
 	fseek(pfile, ioffs, SEEK_SET);	
-	pvec->resize(cbyteFile + 1 -ioffs);
+	pvec->resize(cbyteFile  -ioffs);
 	fread(&(*pvec)[0],1, pvec->size(), pfile);
 	fclose(pfile);
 	
@@ -76,8 +76,8 @@ void Triplet2Line(std::vector<BYTE>& rgbyte, Size size)
 
 
 void SwapBytes(std::vector<BYTE>* rgbyte)
-{
-	 for (UINT i = 0; i < rgbyte->size(); i += 2)
+{ 
+	 for (size_t i = 0; i < rgbyte->size()-1; i += 2)
 	 {
 		 std::swap((*rgbyte)[i], (*rgbyte)[i + 1]);
 	 }
@@ -121,7 +121,7 @@ void TestRoundTrip(const char* strName, const BYTE* rgbyteRaw, Size size, int cb
  
 	printf("Encode: %f Decode: %f Ratio: %f \n\r", dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, dblfactor);
 	BYTE* pbyteOut = &rgbyteOut[0];
-	for (UINT i = 0; i < rgbyteOut.size(); ++i)
+	for (size_t i = 0; i < rgbyteOut.size(); ++i)
 	{
 		if (rgbyteRaw[i] != pbyteOut[i])
 		{
@@ -413,7 +413,7 @@ int main(int argc, char* argv[])
 	TestTraits8bit();		
 
 	printf("Test Conformance\r\n");
-	//TestConformance();
+	TestConformance();
 
 	printf("Test Damaged bitstream\r\n");
 	TestDamagedBitStream();

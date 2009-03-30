@@ -11,7 +11,7 @@
 #include <assert.h>
 #define ASSERT(t) assert(t)
 #else
-#define ASSERT(t) ;
+#define ASSERT(t) {}
 #endif
 
 #if defined(WIN32)

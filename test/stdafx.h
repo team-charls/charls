@@ -11,11 +11,6 @@
 
 #include <stdio.h>
 
-#include <assert.h>
-#define ASSERT(t) assert(t)
-
-
-typedef unsigned int UINT;
 typedef unsigned char BYTE;
 typedef unsigned short USHORT;
 

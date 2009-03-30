@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="CharLS"
 	ProjectGUID="{524BE26D-FC60-4BC4-9100-128A0502FFF7}"
 	RootNamespace="jpegls"

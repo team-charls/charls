@@ -58,7 +58,7 @@ public:
 #endif
 	  }
 
-	  typedef unsigned int bufType;
+	  typedef size_t bufType;
 
 	  enum { 
 		  bufferbits = sizeof( bufType ) * 8,
@@ -72,11 +72,11 @@ public:
 		  {
 			  do
 			  {
-				  _readCache		 |= _pbyteCompressed[0] << (bufferbits - 8  - _validBits);
+				  _readCache		 |= bufType(_pbyteCompressed[0]) << (bufferbits - 8  - _validBits);
 				  _validBits		 += 8; 				  
 				  _pbyteCompressed   += 1;				
 			  }
-			  while (_validBits <= bufferbits - 8)
+			  while (_validBits < bufferbits - 8);
 			  
 			  ASSERT(_validBits >= bufferbits - 8);
 			  return;
@@ -93,7 +93,7 @@ public:
 			  }
 
 			  bufType valnew	  = *_pbyteCompressed;
-			  _readCache		 |= valnew << (bufferbits - 8  - _validBits);
+			  _readCache		 |= bufType(_pbyteCompressed[0]) << (bufferbits - 8  - _validBits);
 			  _pbyteCompressed   += 1;				
 			  _validBits		 += 8; 
 
@@ -118,7 +118,7 @@ public:
 			   pbyteNextFF++;
 		  }
 		  
-		  return pbyteNextFF - 3;
+		  return pbyteNextFF - (sizeof(bufType)-1);
 	  }
 
 	  BYTE* GetCurBytePos() const
