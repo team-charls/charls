@@ -28,6 +28,8 @@ void ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0)
     fprintf( stderr, "Could not open %s\n", strName );
     return;
     }
+
+
 	fseek(pfile, 0, SEEK_END);	
 	int cbyteFile = ftell(pfile);
 	fseek(pfile, ioffs, SEEK_SET);	
@@ -88,7 +90,7 @@ void SwapBytes(std::vector<BYTE>* rgbyte)
 
 }
 
-void TestRoundTrip(const char* strName, const BYTE* rgbyteRaw, Size size, int cbit, int ccomp)
+void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size, int cbit, int ccomp)
 {	
 	std::vector<BYTE> rgbyteCompressed;
 	rgbyteCompressed.resize(size.cx *size.cy * 4);
@@ -106,7 +108,7 @@ void TestRoundTrip(const char* strName, const BYTE* rgbyteRaw, Size size, int cb
 	params.ilv = ccomp == 3 ? ILV_SAMPLE : ILV_NONE;
 
 	size_t cbyteCompressed;
-	JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &cbyteCompressed, rgbyteRaw, rgbyteOut.size(), &params);
+	JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &cbyteCompressed, &rgbyteRaw[0], rgbyteOut.size(), &params);
 
 	double dwtimeEncodeComplete = getTime();
 	
@@ -174,7 +176,8 @@ void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp)
 	
 	ReadFile(strName, &rgbyteUncompressed, ioffs);
 
-	TestRoundTrip(strName, &rgbyteUncompressed[0], size2, cbit, ccomp);
+
+	TestRoundTrip(strName, rgbyteUncompressed, size2, cbit, ccomp);
 
 };
 
@@ -238,7 +241,11 @@ void TestPerformance()
 	Size size1024 = Size(1024, 1024);
 	Size size512 = Size(512, 512);
 
-//	TestFile("test/mars/phoenixmars.ppm", 40, Size(5300,4300),  8, 3);
+
+//	TestFile("test/rgb8bit/artificial.ppm", 17, Size(3072,2048),  8, 3);
+//	TestFile("test/rgb8bit/bridge.ppm", 17, Size(2749,4049),  8, 3);
+//	TestFile("test/rgb8bit/big_building.ppm", 17, Size(7216,5412),  8, 3);
+
 	TestFile("test/desktop.ppm", 40, Size(1280,1024),  8, 3);
 	TestFile("test/MR2_UNC", 1728, size1024,  16, 1);
 	TestFile("test/0015.raw", 0, size1024,  8, 1);
@@ -263,7 +270,7 @@ void TestNoiseImage()
 		}	
 	}
 
-	TestRoundTrip("noise", &rgbyteNoise[0], size2, 7, 1);
+	TestRoundTrip("noise", rgbyteNoise, size2, 7, 1);
 }
 
 
@@ -305,6 +312,47 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
 
 	TestCompliance(&rgbyteFile[0], rgbyteFile.size(), &rgbyteRaw[0], rgbyteRaw.size());
 }
+
+
+BYTE palettisedDataH10[] = {
+  0xFF, 0xD8, //Start of image (SOI) marker 
+  0xFF, 0xF7, //Start of JPEG-LS frame (SOF 55) marker – marker segment follows 
+  0x00, 0x0B, //Length of marker segment = 11 bytes including the length field 
+  0x02, //P = Precision = 2 bits per sample 
+  0x00, 0x04, //Y = Number of lines = 4 
+  0x00, 0x03, //X = Number of columns = 3 
+  0x01, //Nf = Number of components in the frame = 1 
+  0x01, //C1  = Component ID = 1 (first and only component) 
+  0x11, //Sub-sampling: H1 = 1, V1 = 1 
+  0x00, //Tq1 = 0 (this field is always 0) 
+ 
+  0xFF, 0xF8, //LSE – JPEG-LS preset parameters marker 
+  0x00, 0x11, //Length of marker segment = 17 bytes including the length field 
+  0x02, //ID = 2, mapping table  
+  0x05, //TID = 5 Table identifier (arbitrary) 
+  0x03, //Wt = 3 Width of table entry 
+  0xFF, 0xFF, 0xFF, //Entry for index 0 
+  0xFF, 0x00, 0x00, //Entry for index 1 
+  0x00, 0xFF, 0x00, //Entry for index 2 
+  0x00, 0x00, 0xFF, //Entry for index 3 
+ 
+  0xFF, 0xDA, //Start of scan (SOS) marker 
+  0x00, 0x08, //Length of marker segment = 8 bytes including the length field 
+  0x01, //Ns = Number of components for this scan = 1 
+  0x01, //C1 = Component ID = 1  
+  0x05, //Tm 1  = Mapping table identifier = 5 
+  0x00, //NEAR = 0 (near-lossless max error) 
+  0x00, //ILV = 0 (interleave mode = non-interleaved) 
+  0x00, //Al = 0, Ah = 0 (no point transform) 
+  0xDB, 0x95, 0xF0, //3 bytes of compressed image data 
+  0xFF, 0xD9 //End of image (EOI) marker 
+};
+
+
+
+
+
+
 
 
 

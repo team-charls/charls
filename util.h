@@ -19,18 +19,10 @@
 
 // default signed int types (32 or 64 bit)
 #ifdef  _WIN64
-typedef __int64 LONG;
+typedef  int LONG;
 #else
 typedef int LONG;
 #endif
-
-
-// for debugging
-inline __int64 abs(__int64 value)
-{
-	return value >= 0 ? value : - value;
-}
-
 
 #else
 #include <stdint.h>

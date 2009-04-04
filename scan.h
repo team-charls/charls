@@ -190,8 +190,8 @@ public:
 	  void	EncodeRunPixels(LONG runLength, bool bEndofline);
 	  LONG		DoRunMode(LONG ipixel, EncoderStrategy*);
 
-	  inlinehint void DoRegular(LONG Qs, SAMPLE&, LONG pred, DecoderStrategy*);
-	  inlinehint void DoRegular(LONG Qs, SAMPLE& x, LONG pred, EncoderStrategy*);
+	  inlinehint SAMPLE DoRegular(LONG Qs, LONG, LONG pred, DecoderStrategy*);
+	  inlinehint SAMPLE DoRegular(LONG Qs, LONG x, LONG pred, EncoderStrategy*);
 
 	  void DoLine(SAMPLE* pdummy);
 	  void DoLine(Triplet* pdummy);
@@ -232,7 +232,7 @@ protected:
 
 
 template<class TRAITS, class STRATEGY>
-typename void JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, SAMPLE& x, LONG pred, DecoderStrategy*)
+typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, LONG, LONG pred, DecoderStrategy*)
 {		
 	LONG sign		= BitWiseSign(Qs);
 	JlsContext& ctx	= _contexts[ApplySign(Qs, sign)];
@@ -255,12 +255,12 @@ typename void JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, SAMPLE& x, LONG pred
 	}	
 	ErrVal = ErrVal ^ ((traits.NEAR == 0) ? ctx.GetErrorCorrection(k) : 0);
 	ctx.UpdateVariables(ErrVal, traits.NEAR, traits.RESET);			
-	x = traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)); 	
+	return traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)); 
 }
 
 
 template<class TRAITS, class STRATEGY>
-typename void JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, SAMPLE& x, LONG pred, EncoderStrategy*)
+typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, LONG x, LONG pred, EncoderStrategy*)
 {
 	LONG sign		= BitWiseSign(Qs);
 	JlsContext& ctx	= _contexts[ApplySign(Qs, sign)];
@@ -272,7 +272,7 @@ typename void JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, SAMPLE& x, LONG pred
 	EncodeMappedValue(k, GetMappedErrVal(ctx.GetErrorCorrection(k | traits.NEAR) ^ ErrVal), traits.LIMIT);
 	ctx.UpdateVariables(ErrVal, traits.NEAR, traits.RESET);
 	ASSERT(traits.IsNear(traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)), x));
-	x = static_cast<SAMPLE>(traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)));
+	return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)));
 }
 
 
@@ -662,7 +662,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(SAMPLE*)
 		}
 		else
 		{
-			DoRegular(Qs, ptypeCur[ipixel], GetPredictedValue(Ra, Rb, Rc), (STRATEGY*)(NULL));
+			ptypeCur[ipixel] = DoRegular(Qs, ptypeCur[ipixel], GetPredictedValue(Ra, Rb, Rc), (STRATEGY*)(NULL));
 			ipixel++;
 		}				
 	}
@@ -692,9 +692,10 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet*)
 		else
 		{
 			Triplet Rx;
-			DoRegular(Qs1, ptypeCur[ipixel].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1), (STRATEGY*)(NULL));
-			DoRegular(Qs2, ptypeCur[ipixel].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), (STRATEGY*)(NULL));
-			DoRegular(Qs3, ptypeCur[ipixel].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), (STRATEGY*)(NULL));
+			Rx.v1 = DoRegular(Qs1, ptypeCur[ipixel].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1), (STRATEGY*)(NULL));
+			Rx.v2 = DoRegular(Qs2, ptypeCur[ipixel].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), (STRATEGY*)(NULL));
+			Rx.v3 = DoRegular(Qs3, ptypeCur[ipixel].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), (STRATEGY*)(NULL));
+			ptypeCur[ipixel] = Rx;
 			ipixel++;
 		}
 

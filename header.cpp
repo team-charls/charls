@@ -9,6 +9,19 @@
 #include "encoderstrategy.h"
 #include <memory>
 
+//
+//DRI: Define Restart Interval:
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+//  - $ff, $dd (DRI)
+//  - length (high byte, low byte), must be = 4
+//  - restart interval (high byte, low byte) in units of MCU blocks,
+//    meaning that every n MCU blocks a RSTn marker can be found.
+//    The first marker will be RST0, then RST1 etc, after RST7
+//    repeating from RST0.
+
+
+
 
 bool IsDefault(const JlsCustomParameters* pcustom)
 {
