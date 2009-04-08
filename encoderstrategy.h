@@ -3,8 +3,65 @@
 // 
 
 
+struct TransformRgbToHp1
+{
+	static Triplet Apply(int R, int G, int B)
+	{
+		Triplet hp1;
+		hp1.v2 = BYTE(G);
+		hp1.v1 = BYTE(R - G + 0x80);
+		hp1.v3 = BYTE(B - G + 0x80);
+		return hp1;
+	}
+};
+
+struct TransformRgbToHp2
+{
+	static Triplet Apply(int R, int G, int B)
+	{
+		Triplet hp1;
+		hp1.v2 = BYTE(G);
+		hp1.v1 = BYTE(R - G + 0x80);
+		hp1.v3 = BYTE(B - ((R+G )>>1) - 0x80);
+		return hp1;
+	}
+};
 
 
+struct TransformRgbToHp3
+{
+	static Triplet Apply(int R, int G, int B)
+	{
+		Triplet hp1;		
+		hp1.v2 = BYTE(B - G + 0x80);
+		hp1.v3 = BYTE(R - G + 0x80);
+
+		hp1.v1 = BYTE(G + ((hp1.v2 + hp1.v3 )>>2) - 0x40);
+		return hp1;
+	}
+};
+
+template<class TRANSFORM> 
+void TransformLine(Triplet* pDest, Triplet* pSrc, int pixelCount, const TRANSFORM&)
+{	
+	for (int i = 0; i < pixelCount; ++i)
+	{
+		pDest[i] = TRANSFORM::Apply(pSrc[i]);
+	}
+}
+
+
+template<class TRANSFORM> 
+void TransformLine(BYTE* ptypeInput, LONG cpixel, BYTE* ptypeBuffer, LONG pixelStride, const TRANSFORM&)
+{
+	for (int x = 0; x < cpixel; ++x)
+	{
+		Triplet colorTranformed = TRANSFORM::Apply(ptypeInput[x], ptypeInput[x + cpixel], ptypeInput[x + 2*cpixel]);
+		ptypeBuffer[x] = colorTranformed.v1;
+		ptypeBuffer[x + pixelStride] = colorTranformed.v2;
+		ptypeBuffer[x + 2 *pixelStride] = colorTranformed.v3;
+	}
+}
 
 #ifndef CHARLS_ENCODERSTRATEGY
 #define CHARLS_ENCODERSTRATEGY
@@ -15,26 +72,52 @@ class EncoderStrategy
 {
 
 public:
-	EncoderStrategy() :
+	explicit EncoderStrategy(const JlsParamaters& info) :
 		 _qdecoder(0),
 		 valcurrent(0),
 		 bitpos(0),
 		 _bFFWritten(false),
-		 _cbyteWritten(0)
+		 _cbyteWritten(0),
+		 _info(info)
 	{};
-
-		 enum { IsDecoding = 0 };
 
 	virtual ~EncoderStrategy() 
 		 {}
 
 	LONG PeekByte();
 	
+	
 
-	template <class T>
-	void OnLineBegin(T* ptypeCur, T* ptypeLine, LONG cpixel)
+	void OnLineBegin(Triplet* ptypeInput, int iline, LONG cpixel, Triplet* ptypeBuffer, LONG /*pixelStride*/)
 	{
-		memcpy(ptypeCur, ptypeLine, cpixel * sizeof(T));
+		memcpy(ptypeBuffer, ptypeInput + cpixel*iline, cpixel * sizeof(Triplet));
+	}
+
+	void OnLineBegin(USHORT* ptypeInput, int iline, LONG cpixel, USHORT* ptypeBuffer, LONG /*pixelStride*/)
+	{
+		memcpy(ptypeBuffer, ptypeInput + cpixel*iline, cpixel * sizeof(USHORT));
+	}
+	
+	void OnLineBegin(BYTE* ptypeInput, int iline, LONG cpixel, BYTE* ptypeBuffer, LONG pixelStride)
+	{
+		if (_info.colorTransform == 0)
+		{
+			for (int i = 0; i < _info.components; ++i)
+			{
+				memcpy(ptypeBuffer + pixelStride * i, ptypeInput + cpixel * (iline * _info.components + i), 
+					cpixel * sizeof(BYTE));
+			}
+			return;
+		}
+
+		ptypeInput += iline * _info.components * cpixel;
+		
+		switch(_info.colorTransform)
+		{
+			case COLORXFORM_HP1 : return TransformLine(ptypeInput, cpixel, ptypeBuffer, pixelStride, TransformRgbToHp1());
+			case COLORXFORM_HP2 : return TransformLine(ptypeInput, cpixel, ptypeBuffer, pixelStride, TransformRgbToHp2());
+			case COLORXFORM_HP3 : return TransformLine(ptypeInput, cpixel, ptypeBuffer, pixelStride, TransformRgbToHp3());
+		}
 	}
 
 	void OnLineEnd(void* /*ptypeCur*/, void* /*ptypeLine*/, LONG /*cpixel*/) {};
@@ -129,6 +212,9 @@ protected:
 
 	DecoderStrategy* _qdecoder; 
 
+protected:
+	JlsParamaters _info;
+
 private:
 
 	unsigned int valcurrent;
@@ -139,7 +225,6 @@ private:
 	BYTE* _pbyteCompressed;
 	bool _bFFWritten;
 	size_t _cbyteWritten;
-
 
 };
 

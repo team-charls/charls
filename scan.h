@@ -124,18 +124,8 @@ public:
 	typedef typename TRAITS::SAMPLE SAMPLE;
 
 public:
-	JlsCodec() :
-	  _size(0,0),
-		  T1(0),
-		  T2(0),
-		  T3(0),
-		  RUNindex(0),
-		  _pquant(0),
-		  _bCompare(0)
-	  {
-	  }	
 
-	  JlsCodec(const TRAITS& inTraits) :
+	  JlsCodec(const TRAITS& inTraits, const JlsParamaters& info) : STRATEGY(info), 
 	  traits(inTraits),
 		  _size(0,0),
 		  T1(0),
@@ -144,6 +134,7 @@ public:
 		  RUNindex(0),
 		  _pquant(0),
 		  _bCompare(0)
+		  
 	  {
 	  }	
 
@@ -712,32 +703,38 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan(PIXEL* ptype, BYTE* pbyteCompressed, size
 	LONG pixelstride = _size.cx + 4;
 
 	std::vector<PIXEL> vectmp;
-	vectmp.resize((1 + _components) * pixelstride);
+	vectmp.resize((_components*2) * pixelstride);
 
 	std::vector<LONG> rgRUNindex;
 	rgRUNindex.resize(_components);
 
-	for (LONG iline = 0; iline < _size.cy * _components; ++iline)
+	for (LONG iline = 0; iline < _size.cy; ++iline)
 	{
-		LONG icomponent = iline % _components;
-		RUNindex = rgRUNindex[icomponent];
+		ptypePrev			= &vectmp[1];	
+		ptypeCur			= &vectmp[1 + _components* pixelstride];	
+		if ((iline & 1) == 1)
+		{
+			std::swap(ptypePrev, ptypeCur);
+		}
 
-		LONG indexPrev = iline % (_components + 1);
-		LONG indexCur  = (iline + _components) % (_components + 1);
+		STRATEGY::OnLineBegin(ptype, iline, _size.cx, ptypeCur, pixelstride);
+		for (int component = 0; component < _components; ++component)
+		{
+			RUNindex = rgRUNindex[component];
+		
+			PIXEL* ptypeLine	= ptype + (iline * _components + component) * _size.cx;
 
-		ptypePrev			= &vectmp[1 + indexPrev * pixelstride];	
-		ptypeCur			= &vectmp[1 + indexCur * pixelstride];	
-		PIXEL* ptypeLine	= ptype + iline * _size.cx;
+			// initialize edge pixels used for prediction
+			ptypePrev[_size.cx]	= ptypePrev[_size.cx - 1];
+			ptypeCur[-1]		= ptypePrev[0];
+			DoLine((PIXEL*) NULL); // dummy arg for overload resolution
 
-		// initialize edge pixels used for prediction
-		ptypePrev[_size.cx]	= ptypePrev[_size.cx - 1];
-		ptypeCur[-1]		= ptypePrev[0];
-
-		STRATEGY::OnLineBegin(ptypeCur, ptypeLine, _size.cx);
-		DoLine((PIXEL*) NULL); // dummy arg for overload resolution
-		STRATEGY::OnLineEnd(ptypeCur, ptypeLine, _size.cx);
-
-		rgRUNindex[icomponent] = RUNindex;
+			STRATEGY::OnLineEnd(ptypeCur, ptypeLine, _size.cx);
+	
+			rgRUNindex[component] = RUNindex;
+			ptypePrev += pixelstride;
+			ptypeCur += pixelstride;
+		}
 	}
 }
 
@@ -754,7 +751,7 @@ size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size
 
 	if (pvoidCompare != NULL)
 	{
-		DecoderStrategy* pdecoder = new JlsCodec<TRAITS,DecoderStrategy>(traits);
+		DecoderStrategy* pdecoder = new JlsCodec<TRAITS,DecoderStrategy>(traits, STRATEGY::_info);
 		BYTE* pbyteCompare = (BYTE*)pvoidCompare;
 		pdecoder->Init(pbyteCompare, cbyte); 
 		STRATEGY::_qdecoder = pdecoder;

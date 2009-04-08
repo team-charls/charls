@@ -62,6 +62,11 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsEncode(void* pdataCompressed, size_t cbyteBuffer
 	JLSOutputStream stream;
 	
 	stream.Init(size, pparams->bitspersample, pparams->components);
+	
+	if (pparams->colorTransform != 0)
+	{
+		stream.AddColorTransform(pparams->colorTransform);
+	}
 
 	if (pparams->ilv == ILV_NONE)
 	{

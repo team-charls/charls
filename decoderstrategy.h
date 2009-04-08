@@ -11,7 +11,7 @@
 class DecoderStrategy
 {
 public:
-	DecoderStrategy() :
+	DecoderStrategy(const JlsParamaters&) :
 	  _readCache(0),
 		  _validBits(0),
 		  _pbyteCompressed(0)
@@ -42,7 +42,7 @@ public:
 	  }
 
 	
-	  void OnLineBegin(void* /*ptypeCur*/, void* /*ptypeLine*/, LONG /*cpixel*/) {}
+	  void OnLineBegin(void* /*ptypeInput*/, int /*iline*/, LONG /*cpixel*/, void* /*ptypeBuffer*/, LONG /*pixelStride*/) {}
 
 	  template <class T>
 	  void OnLineEnd(T* ptypeCur, T* ptypeLine, LONG cpixel)

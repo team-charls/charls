@@ -13,6 +13,21 @@
 class JpegSegment;
 
 
+enum JPEGLS_ColorXForm
+{
+	// default (RGB)
+	COLORXFORM_NONE = 0,	
+
+	// Color transforms as defined by HP
+	COLORXFORM_HP1,
+	COLORXFORM_HP2,
+	COLORXFORM_HP3,
+
+	// Defined by HP but not supported by CharLS
+	COLORXFORM_RGB_AS_YUV_LOSSY,
+	COLORXFORM_MATRIX
+};
+	
 //
 // JLSOutputStream: minimal implementation to write JPEG header streams
 //
@@ -28,6 +43,7 @@ public:
 	void Init(Size size, LONG cbpp, LONG ccomp);
 	void AddScan(const void* pbyteComp, const JlsParamaters* pparams);
 	void AddLSE(const JlsCustomParameters* pcustom);
+	void AddColorTransform(int i);
 	size_t GetBytesWritten()
 		{ return _cbyteOffset; }
 
@@ -122,8 +138,14 @@ private:
 	void ReadPresetParameters();
 	void ReadComment();
 	void ReadStartOfFrame();
-	int ReadByte();
+	BYTE ReadByte();
 	int ReadWord();
+	void ReadNBytes(std::vector<char>& dst, int byteCount);
+
+	// Color Transform Application Markers & Code Stream (HP extension)
+	void ReadColorSpace();
+	void ReadColorXForm();
+	void DoColorXForm(void* pvoid);
 
 private:
 	const BYTE* _pdata;

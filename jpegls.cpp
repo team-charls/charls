@@ -84,7 +84,7 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodec(const JlsParamaters& _info, const 
 		DefaultTraitsT<BYTE,BYTE> traits((1 << _info.bitspersample) - 1, _info.allowedlossyerror); 
 		traits.MAXVAL = presets.MAXVAL;
 		traits.RESET = presets.RESET;
-		pstrategy = new JlsCodec<DefaultTraitsT<BYTE, BYTE>, STRATEGY>(traits); 
+		pstrategy = new JlsCodec<DefaultTraitsT<BYTE, BYTE>, STRATEGY>(traits, _info); 
 	}
 	else
 	{
@@ -106,10 +106,10 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParamaters& _info)
 		if (_info.components == 3 && _info.bitspersample == 8)
 		{
 			if (_info.allowedlossyerror == 0)
-				return new JlsCodec<LosslessTraitsT<Triplet,8>, STRATEGY>();
+				return new JlsCodec<LosslessTraitsT<Triplet,8>, STRATEGY>(LosslessTraitsT<Triplet,8>(), _info);
 
 			DefaultTraitsT<BYTE,Triplet> traits((1 << _info.bitspersample) - 1, _info.allowedlossyerror); 
-			return new JlsCodec<DefaultTraitsT<BYTE,Triplet>, STRATEGY>(traits); 	
+			return new JlsCodec<DefaultTraitsT<BYTE,Triplet>, STRATEGY>(traits, _info); 	
 		}
 	
 		return NULL;
@@ -120,10 +120,10 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParamaters& _info)
 	{		
 		switch (_info.bitspersample)
 		{
-			case  8: return new JlsCodec<LosslessTraitsT<BYTE,   8>, STRATEGY>(); 
-			case 10: return new JlsCodec<LosslessTraitsT<USHORT,10>, STRATEGY>(); 
-			case 12: return new JlsCodec<LosslessTraitsT<USHORT,12>, STRATEGY>();
-			case 16: return new JlsCodec<LosslessTraitsT<USHORT,16>, STRATEGY>();
+			case  8: return new JlsCodec<LosslessTraitsT<BYTE,   8>, STRATEGY>(LosslessTraitsT<BYTE,   8>(), _info); 
+			case 10: return new JlsCodec<LosslessTraitsT<USHORT,10>, STRATEGY>(LosslessTraitsT<USHORT,  10>(), _info); 
+			case 12: return new JlsCodec<LosslessTraitsT<USHORT,12>, STRATEGY>(LosslessTraitsT<USHORT,  12>(), _info);
+			case 16: return new JlsCodec<LosslessTraitsT<USHORT,16>, STRATEGY>(LosslessTraitsT<USHORT,  16>(), _info);
 		}
 	}
 
@@ -131,13 +131,13 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParamaters& _info)
 	if (_info.bitspersample <= 8)
 	{
 		DefaultTraitsT<BYTE, BYTE> traits((1 << _info.bitspersample) - 1, _info.allowedlossyerror); 
-		return new JlsCodec<DefaultTraitsT<BYTE, BYTE>, STRATEGY>(traits); 
+		return new JlsCodec<DefaultTraitsT<BYTE, BYTE>, STRATEGY>(traits, _info); 
 	}
 
 	if (_info.bitspersample <= 16)
 	{
 		DefaultTraitsT<USHORT, USHORT> traits((1 << _info.bitspersample) - 1, _info.allowedlossyerror); 
-		return new JlsCodec<DefaultTraitsT<USHORT, USHORT>, STRATEGY>(traits); 
+		return new JlsCodec<DefaultTraitsT<USHORT, USHORT>, STRATEGY>(traits, _info); 
 	}
 	return NULL;
 }

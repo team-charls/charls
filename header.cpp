@@ -143,6 +143,18 @@ void JLSOutputStream::Init(Size size, LONG cbpp, LONG ccomp)
 }
 
 
+void JLSOutputStream::AddColorTransform(int i)
+{
+	std::vector<BYTE> rgbyteXform;
+	rgbyteXform.push_back('m');
+	rgbyteXform.push_back('r');
+	rgbyteXform.push_back('f');
+	rgbyteXform.push_back('x');
+	rgbyteXform.push_back((BYTE)i);
+			
+	_segments.push_back(new JpegMarkerSegment(JPEG_APP8, rgbyteXform));	
+}
+
 
 //
 // Write()
@@ -177,8 +189,8 @@ JLSInputStream::JLSInputStream(const BYTE* pdata, LONG cbyteLength) :
 		_cbyteLength(cbyteLength),
 		_bCompare(false),
 		_info()
-	{
-	}
+{
+}
 
 
 //
@@ -189,6 +201,9 @@ void JLSInputStream::Read(void* pvoid, LONG cbyteAvailable)
 	ReadHeader();
 	ReadPixels(pvoid, cbyteAvailable);
 }
+
+
+
 
 
 //
@@ -213,6 +228,17 @@ void JLSInputStream::ReadPixels(void* pvoid, LONG cbyteAvailable)
 	else
 	{
 		ReadScan(pvoid);
+	}
+	DoColorXForm(pvoid);
+}
+
+// ReadNBytes()
+//
+void JLSInputStream::ReadNBytes(std::vector<char>& dst, int byteCount)
+{
+	for (int i = 0; i < byteCount; ++i)
+	{
+		dst.push_back((char)ReadByte());
 	}
 }
 
@@ -244,7 +270,8 @@ void JLSInputStream::ReadHeader()
 			case JPEG_SOF: ReadStartOfFrame(); break;
 			case JPEG_COM: ReadComment();	   break;
 			case JPEG_LSE: ReadPresetParameters();	break;
-			
+			case JPEG_APP7: ReadColorSpace(); break;
+			case JPEG_APP8: ReadColorXForm(); break;			
 			// Other tags not supported (among which DNL DRI)
 			default: 		throw JlsException(ImageTypeNotSupported);
 		}
@@ -370,7 +397,7 @@ void JLSInputStream::ReadStartOfFrame()
 //
 // ReadByte()
 //
-int JLSInputStream::ReadByte()
+BYTE JLSInputStream::ReadByte()
 {  
     if (_cbyteOffset >= _cbyteLength)
 	throw JlsException(InvalidCompressedData);
@@ -401,46 +428,35 @@ void JLSInputStream::ReadScan(void* pvout)
 class JpegImageDataSegment: public JpegSegment
 {
 public:
-	JpegImageDataSegment(const void* pvoidRaw, Size size, int cbit, LONG icompStart, int ccompScan, interleavemode ilv, int accuracy, const JlsCustomParameters& presets)  :
-		_cbit(cbit), 
-		_nnear(accuracy),
-		_size(size),
+	JpegImageDataSegment(const void* pvoidRaw, const JlsParamaters& info, LONG icompStart, int ccompScan)  :
 		_ccompScan(ccompScan),
-		_ilv(ilv),
 		_icompStart(icompStart),
 		_pvoidRaw(pvoidRaw),
-		_presets(presets)
+		_info(info)
 	{
 	}
 
 
 	void Write(JLSOutputStream* pstream)
 	{		
-
-		JlsParamaters info;
-		info.bitspersample = _cbit;
+		JlsParamaters info = _info;
 		info.components = _ccompScan;
-		info.ilv = _ilv;
-		info.allowedlossyerror = _nnear;
 		
-		LONG ccompInterleaved = _ilv == ILV_LINE ? _ccompScan : 1; 
+		LONG ccompInterleaved = _info.ilv == ILV_LINE ? _ccompScan : 1; 
 
-		std::auto_ptr<EncoderStrategy> qcodec(JlsCodecFactory<EncoderStrategy>().GetCodec(info, _presets));
-		size_t cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, _size, ccompInterleaved, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
+		std::auto_ptr<EncoderStrategy> qcodec(JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom));
+		size_t cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, Size(_info.width, _info.height), ccompInterleaved, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
 
 
 
-	int _cbit;
-	int _nnear;
-	Size _size;
 	int _ccompScan;
-	interleavemode _ilv;
 	LONG _icompStart;
 	const void* _pvoidRaw;
-	JlsCustomParameters _presets;
+	JlsParamaters _info;
 };
+
 
 
 
@@ -458,5 +474,116 @@ void JLSOutputStream::AddScan(const void* pbyteComp, const JlsParamaters* pparam
 	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
 
 	
-	_segments.push_back(new JpegImageDataSegment(pbyteComp, size, pparams->bitspersample, _icompLast, ccomp, pparams->ilv, pparams->allowedlossyerror, pparams->custom));
+	_segments.push_back(new JpegImageDataSegment(pbyteComp, *pparams, _icompLast, ccomp));
+}
+
+
+//
+// ReadColorSpace()
+//
+void JLSInputStream::ReadColorSpace()
+{}
+
+
+
+//
+// ReadColorXForm()
+//
+void JLSInputStream::ReadColorXForm()
+{
+	std::vector<char> sourceTag;
+	ReadNBytes(sourceTag, 4);
+
+	if(strncmp(&sourceTag[0],"mrfx", 4) != 0)
+		return;
+	
+	int xform = ReadByte();
+	switch(xform) 
+	{
+		case COLORXFORM_NONE:
+		case COLORXFORM_HP1:
+		case COLORXFORM_HP2:
+		case COLORXFORM_HP3:
+			_info.colorTransform = xform;
+			return;
+		case COLORXFORM_RGB_AS_YUV_LOSSY:
+		case COLORXFORM_MATRIX:
+			throw JlsException(ImageTypeNotSupported);
+		default:
+			throw JlsException(InvalidCompressedData);
+	}
+}
+
+//
+// DoColorXForm()
+//
+void JLSInputStream::DoColorXForm(void* pvoid)
+{
+	if (_info.colorTransform == COLORXFORM_NONE)
+		return;
+
+	if (_info.ilv != ILV_LINE)
+		return;
+
+	if (_info.components != 3)
+		return;
+
+	if (_info.bitspersample != 8)
+		return;
+
+	// colorXForm
+	int lwidth = _info.width*_info.components*((_info.bitspersample + 7)/8);
+	int w = _info.width;
+	switch(_info.colorTransform) 
+	{
+	case COLORXFORM_HP1:
+		for(int y = 0; y < _info.height; y++) 
+		{
+			BYTE* pix = (BYTE*)pvoid + y*lwidth;
+			for(int x = 0; x < _info.width; x++) 
+			{
+				BYTE r = pix[x];	// R
+				BYTE g = pix[x+w];	// G
+				BYTE b = pix[x+w*2];// B
+				pix[x]     = r + g - 0x80; // new R
+				pix[x+w]   = g;            // new G
+				pix[x+w*2] = b + g - 0x80; // new B
+			}
+		}
+		break;
+	case COLORXFORM_HP2:
+		for(int y = 0; y < _info.height; y++) 
+		{
+			BYTE* pix = (BYTE*)pvoid + y*lwidth;
+			for(int x = 0; x < _info.width; x++) 
+			{
+				int v1 = pix[x];	// R
+				int v2 = pix[x+w];	// G
+				int v3 = pix[x+w*2];// B
+				pix[x]     = BYTE(v1 + v2 - 0x80);          // new R
+				pix[x+w]   = BYTE(v2);                     // new G				
+				pix[x+w*2] = BYTE(v3 + ((pix[x] + pix[x+w]) >> 1) - 0x80); // new B
+			}
+		}
+		break;
+	case COLORXFORM_HP3:
+		for(int y = 0; y < _info.height; y++) 
+		{
+			BYTE* pix = (BYTE*)pvoid + y*lwidth;
+			for(int x = 0; x < _info.width; x++) 
+			{
+				int v1 = pix[x];	// R
+				int v2 = pix[x+w];	// G
+				int v3 = pix[x+w*2];// B
+				int G = v1 - ((v3 + v2)>>2)+0x40;
+				pix[x]     = BYTE(v3 + G - 0x80); // new R
+				pix[x+w]   = BYTE(G);            // new G
+				pix[x+w*2] = BYTE(v2 + G - 0x80); // new B
+			}
+		}
+		break;
+	case COLORXFORM_NONE:
+	default:
+		break;
+	}
 }

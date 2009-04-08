@@ -23,10 +23,10 @@ namespace // local helpers
 void ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0)
 {
 	FILE* pfile = fopen(strName, "rb");
-  if( !pfile ) 
+	if( !pfile ) 
     {
-    fprintf( stderr, "Could not open %s\n", strName );
-    return;
+		fprintf( stderr, "Could not open %s\n", strName );
+		return;
     }
 
 
@@ -85,9 +85,6 @@ void SwapBytes(std::vector<BYTE>* rgbyte)
 	 }
 }
 
-
-
-
 }
 
 void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size, int cbit, int ccomp)
@@ -105,7 +102,13 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	params.bitspersample = cbit;
 	params.height = size.cy;
 	params.width = size.cx;
-	params.ilv = ccomp == 3 ? ILV_SAMPLE : ILV_NONE;
+
+	if (ccomp == 3)
+	{
+		params.ilv = ILV_LINE;
+		params.colorTransform = 1;
+		Triplet2Line(rgbyteRaw,size);
+	}
 
 	size_t cbyteCompressed;
 	JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &cbyteCompressed, &rgbyteRaw[0], rgbyteOut.size(), &params);
@@ -405,8 +408,7 @@ void TestDamagedBitStream()
 
 
 void TestConformance()
-{
-
+{	
 	// Test 1
 	DecompressFile("test/conformance/T8C0E0.JLS", "test/conformance/TEST8.PPM",15);
 

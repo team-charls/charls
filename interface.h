@@ -52,6 +52,7 @@ struct JlsParamaters
 	int components;
 	int allowedlossyerror;
 	interleavemode ilv;
+	int colorTransform;
 	JlsCustomParameters custom;
 };
 
