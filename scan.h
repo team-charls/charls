@@ -788,7 +788,7 @@ size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, L
 	_size = size;
 	_components = components;
 
-	DoScan(const_cast<PIXEL*>(ptypeOut), pbyteCompressed + cbyteRead, (LONG)cbyte);
+	DoScan(const_cast<PIXEL*>(ptypeOut), pbyteCompressed + cbyteRead, cbyte - cbyteRead);
 
 	return STRATEGY::GetCurBytePos() - pbyteCompressed;
 }
