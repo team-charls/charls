@@ -186,14 +186,14 @@ public:
 
 	  void DoLine(SAMPLE* pdummy);
 	  void DoLine(Triplet* pdummy);
-	  void DoScan(PIXEL* ptype, BYTE* pbyteCompressed, size_t cbyteCompressed);         
+	  void DoScan(BYTE* pbyteCompressed, size_t cbyteCompressed);         
 
 public:
 	void InitDefault();
 	void InitParams(LONG t1, LONG t2, LONG t3, LONG nReset);
 
-	size_t  EncodeScan(const void* pvoid, const Size& size, LONG components, void* pvoidOut, size_t cbyte, void* pvoidCompare);
-	size_t  DecodeScan(void* pvoidOut, const Size& size, LONG components, const void* pvoidIn, size_t cbyte, bool bCompare);
+	size_t  EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, size_t cbyte, void* pvoidCompare);
+	size_t  DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, size_t cbyte, bool bCompare);
 
 protected:
 	// codec parameters 
@@ -202,7 +202,6 @@ protected:
 	LONG T1;	
 	LONG T2;
 	LONG T3; 
-	LONG _components; // only set for line interleaved mode 
 
 	// compression context
 	JlsContext _contexts[365];	
@@ -696,57 +695,56 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet*)
 
 
 template<class TRAITS, class STRATEGY>
-void JlsCodec<TRAITS,STRATEGY>::DoScan(PIXEL* ptype, BYTE* pbyteCompressed, size_t cbyteCompressed)
+void JlsCodec<TRAITS,STRATEGY>::DoScan(BYTE* pbyteCompressed, size_t cbyteCompressed)
 {		
 	STRATEGY::Init(pbyteCompressed, cbyteCompressed);
 
 	LONG pixelstride = _size.cx + 4;
 
+	int components = STRATEGY::_info.components;
 	std::vector<PIXEL> vectmp;
-	vectmp.resize((_components*2) * pixelstride);
+	vectmp.resize((components*2) * pixelstride);
 
 	std::vector<LONG> rgRUNindex;
-	rgRUNindex.resize(_components);
+	rgRUNindex.resize(components);
 
 	for (LONG iline = 0; iline < _size.cy; ++iline)
 	{
 		ptypePrev			= &vectmp[1];	
-		ptypeCur			= &vectmp[1 + _components* pixelstride];	
+		ptypeCur			= &vectmp[1 + components* pixelstride];	
 		if ((iline & 1) == 1)
 		{
 			std::swap(ptypePrev, ptypeCur);
 		}
 
-		STRATEGY::OnLineBegin(ptype, iline, _size.cx, ptypeCur, pixelstride);
-		for (int component = 0; component < _components; ++component)
+		STRATEGY::OnLineBegin(iline, _size.cx, ptypeCur, pixelstride);
+
+		for (int component = 0; component < components; ++component)
 		{
 			RUNindex = rgRUNindex[component];
 		
-			PIXEL* ptypeLine	= ptype + (iline * _components + component) * _size.cx;
-
 			// initialize edge pixels used for prediction
 			ptypePrev[_size.cx]	= ptypePrev[_size.cx - 1];
 			ptypeCur[-1]		= ptypePrev[0];
 			DoLine((PIXEL*) NULL); // dummy arg for overload resolution
 
-			STRATEGY::OnLineEnd(ptypeCur, ptypeLine, _size.cx);
 	
 			rgRUNindex[component] = RUNindex;
 			ptypePrev += pixelstride;
 			ptypeCur += pixelstride;
 		}
+
+		STRATEGY::OnLineEnd(iline, _size.cx, ptypeCur - (components * pixelstride), pixelstride);
 	}
 }
 
 
 
 template<class TRAITS, class STRATEGY>
-size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, LONG components, void* pvoidOut, size_t cbyte, void* pvoidCompare)
+size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, size_t cbyte, void* pvoidCompare)
 {
 	_size = size;
-	_components = components;
 
-	const PIXEL* ptype = static_cast<const PIXEL*>(pvoid);
 	BYTE* pbyteCompressed = static_cast<BYTE*>(pvoidOut);
 
 	if (pvoidCompare != NULL)
@@ -757,7 +755,9 @@ size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size
 		STRATEGY::_qdecoder = pdecoder;
 	}
 
-	DoScan(const_cast<PIXEL*>(ptype), pbyteCompressed, cbyte);
+	STRATEGY::_ptypeUncompressed = pvoid;
+
+	DoScan(pbyteCompressed, cbyte);
 
 	STRATEGY::Flush();
 
@@ -768,7 +768,7 @@ size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size
 
 
 template<class TRAITS, class STRATEGY>
-size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, LONG components, const void* pvoidIn, size_t cbyte, bool bCompare)
+size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, size_t cbyte, bool bCompare)
 {
 	PIXEL* ptypeOut			= static_cast<PIXEL*>(pvoidOut);
 	BYTE* pbyteCompressed	= const_cast<BYTE*>(static_cast<const BYTE*>(pvoidIn));
@@ -786,9 +786,9 @@ size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, L
 	cbyteRead += cbyteScanheader;
 
 	_size = size;
-	_components = components;
 
-	DoScan(const_cast<PIXEL*>(ptypeOut), pbyteCompressed + cbyteRead, cbyte - cbyteRead);
+	STRATEGY::_ptypeUncompressed = ptypeOut;
+	DoScan(pbyteCompressed + cbyteRead, cbyte - cbyteRead);
 
 	return STRATEGY::GetCurBytePos() - pbyteCompressed;
 }

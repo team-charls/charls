@@ -118,9 +118,21 @@ struct Triplet
 		v3((BYTE)x3)
 	{};
 
-	BYTE v1;
-	BYTE v2;
-	BYTE v3;
+		union 
+		{
+			BYTE v1;
+			BYTE R;
+		};
+		union 
+		{ 
+			BYTE v2;
+			BYTE G;
+		};
+		union 
+		{
+			BYTE v3;
+			BYTE B;
+		};
 };
 
 

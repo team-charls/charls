@@ -8,8 +8,8 @@
 
 #if defined(WIN32)
 #define CHARLS_IMEXPORT __declspec(dllexport) 
+#pragma warning (disable:4100)
 #endif
-
 
 #include "util.h"
 

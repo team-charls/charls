@@ -167,7 +167,6 @@ size_t JLSOutputStream::Write(BYTE* pdata, size_t cbyteLength)
 	WriteByte(0xFF);
 	WriteByte(JPEG_SOI);
 	
-
 	for (size_t i = 0; i < _segments.size(); ++i)
 	{
 		_segments[i]->Write(this);
@@ -229,7 +228,6 @@ void JLSInputStream::ReadPixels(void* pvoid, LONG cbyteAvailable)
 	{
 		ReadScan(pvoid);
 	}
-	DoColorXForm(pvoid);
 }
 
 // ReadNBytes()
@@ -419,9 +417,8 @@ int JLSInputStream::ReadWord()
 void JLSInputStream::ReadScan(void* pvout) 
 {
 	std::auto_ptr<DecoderStrategy> qcodec(JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom));
-	LONG cline = _info.ilv == ILV_LINE ? _info.components : 1;
 	Size size = Size(_info.width,_info.height);
-	_cbyteOffset += qcodec->DecodeScan(pvout, size, cline, _pdata + _cbyteOffset, _cbyteLength - _cbyteOffset, _bCompare); 
+	_cbyteOffset += qcodec->DecodeScan(pvout, size, _pdata + _cbyteOffset, _cbyteLength - _cbyteOffset, _bCompare); 
 };
 
 
@@ -440,12 +437,9 @@ public:
 	void Write(JLSOutputStream* pstream)
 	{		
 		JlsParamaters info = _info;
-		info.components = _ccompScan;
-		
-		LONG ccompInterleaved = _info.ilv == ILV_LINE ? _ccompScan : 1; 
-
+		info.components = _ccompScan;	
 		std::auto_ptr<EncoderStrategy> qcodec(JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom));
-		size_t cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, Size(_info.width, _info.height), ccompInterleaved, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
+		size_t cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, Size(_info.width, _info.height), pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
 
@@ -514,76 +508,3 @@ void JLSInputStream::ReadColorXForm()
 	}
 }
 
-//
-// DoColorXForm()
-//
-void JLSInputStream::DoColorXForm(void* pvoid)
-{
-	if (_info.colorTransform == COLORXFORM_NONE)
-		return;
-
-	if (_info.ilv != ILV_LINE)
-		return;
-
-	if (_info.components != 3)
-		return;
-
-	if (_info.bitspersample != 8)
-		return;
-
-	// colorXForm
-	int lwidth = _info.width*_info.components*((_info.bitspersample + 7)/8);
-	int w = _info.width;
-	switch(_info.colorTransform) 
-	{
-	case COLORXFORM_HP1:
-		for(int y = 0; y < _info.height; y++) 
-		{
-			BYTE* pix = (BYTE*)pvoid + y*lwidth;
-			for(int x = 0; x < _info.width; x++) 
-			{
-				BYTE r = pix[x];	// R
-				BYTE g = pix[x+w];	// G
-				BYTE b = pix[x+w*2];// B
-				pix[x]     = r + g - 0x80; // new R
-				pix[x+w]   = g;            // new G
-				pix[x+w*2] = b + g - 0x80; // new B
-			}
-		}
-		break;
-	case COLORXFORM_HP2:
-		for(int y = 0; y < _info.height; y++) 
-		{
-			BYTE* pix = (BYTE*)pvoid + y*lwidth;
-			for(int x = 0; x < _info.width; x++) 
-			{
-				int v1 = pix[x];	// R
-				int v2 = pix[x+w];	// G
-				int v3 = pix[x+w*2];// B
-				pix[x]     = BYTE(v1 + v2 - 0x80);          // new R
-				pix[x+w]   = BYTE(v2);                     // new G				
-				pix[x+w*2] = BYTE(v3 + ((pix[x] + pix[x+w]) >> 1) - 0x80); // new B
-			}
-		}
-		break;
-	case COLORXFORM_HP3:
-		for(int y = 0; y < _info.height; y++) 
-		{
-			BYTE* pix = (BYTE*)pvoid + y*lwidth;
-			for(int x = 0; x < _info.width; x++) 
-			{
-				int v1 = pix[x];	// R
-				int v2 = pix[x+w];	// G
-				int v3 = pix[x+w*2];// B
-				int G = v1 - ((v3 + v2)>>2)+0x40;
-				pix[x]     = BYTE(v3 + G - 0x80); // new R
-				pix[x+w]   = BYTE(G);            // new G
-				pix[x+w*2] = BYTE(v2 + G - 0x80); // new B
-			}
-		}
-		break;
-	case COLORXFORM_NONE:
-	default:
-		break;
-	}
-}

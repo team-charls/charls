@@ -7,15 +7,22 @@
 #define CHARLS_DECODERSTRATEGY
 
 #include "streams.h"
+#include "colortransform.h"
 
 class DecoderStrategy
 {
 public:
-	DecoderStrategy(const JlsParamaters&) :
+	DecoderStrategy(const JlsParamaters& info) :
 	  _readCache(0),
 		  _validBits(0),
-		  _pbyteCompressed(0)
-	  {}
+		  _pbyteCompressed(0),
+		  _info(info)
+	  {
+		  if (_info.ilv != ILV_LINE)
+		  {
+				_info.components  = 1;
+		  }
+	  }
 
 	 enum { IsDecoding = 1};
 
@@ -23,7 +30,7 @@ public:
 	  {}
 
 	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-	  virtual size_t DecodeScan(void* pvoidOut, const Size& size, LONG cline, const void* pvoidIn, size_t cbyte, bool bCheck) = 0;
+	  virtual size_t DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, size_t cbyte, bool bCheck) = 0;
 
 	  void Init(BYTE* pbyteCompressed, size_t cbyte)
 	  {
@@ -42,20 +49,63 @@ public:
 	  }
 
 	
-	  void OnLineBegin(void* /*ptypeInput*/, int /*iline*/, LONG /*cpixel*/, void* /*ptypeBuffer*/, LONG /*pixelStride*/) {}
+	  void OnLineBegin(int iline, LONG cpixel, void* ptypeBuffer, LONG pixelStride) 
+	  {}
+
+
+
+	  void OnLineEnd(int iline, LONG cpixel, const Triplet* ptypeBuffer, LONG pixelStride)
+	  {
+		  Triplet* ptypeUnc = ((Triplet*)_ptypeUncompressed) + iline * cpixel;				
+	
+	  		switch(_info.colorTransform)
+			{
+				case COLORXFORM_NONE : return TransformLine(ptypeUnc, ptypeBuffer, cpixel, TransformNone());
+				case COLORXFORM_HP1 :  return TransformLine(ptypeUnc, ptypeBuffer, cpixel, TransformHp1ToRgb());
+				case COLORXFORM_HP2 :  return TransformLine(ptypeUnc, ptypeBuffer, cpixel, TransformHp2ToRgb());
+				case COLORXFORM_HP3 :  return TransformLine(ptypeUnc, ptypeBuffer, cpixel, TransformHp3ToRgb());
+			}
+	  }
 
 	  template <class T>
-	  void OnLineEnd(T* ptypeCur, T* ptypeLine, LONG cpixel)
+	  void OnLineEnd(int iline, LONG cpixel, const T* ptypeBuffer, LONG pixelStride)
 	  {
-#ifdef _DEBUG
-			for (LONG i = 0; i < cpixel; ++i)
+
+		  
+		  for (int icomponent = 0; icomponent < _info.components; ++icomponent)
 			{
-				//CheckedAssign(ptypeLine[i], ptypeCur[i]);
-				ptypeLine[i] = ptypeCur[i];
-			}
+				T* ptypeUnc = ((T*)_ptypeUncompressed) + (iline *_info.components + icomponent)* cpixel;				
+#ifdef _DEBUG			
+				for (LONG i = 0; i < cpixel; ++i)
+				{
+					//CheckedAssign(ptypeLine[i], ptypeCur[i]);
+					ptypeUnc[i] = ptypeBuffer[i + icomponent*pixelStride];
+				}
 #else
-			memcpy(ptypeLine, ptypeCur, cpixel * sizeof(T));
+				memcpy(ptypeUnc, ptypeBuffer+ icomponent*pixelStride, cpixel * sizeof(T) );
 #endif
+			}
+	  }
+	 
+	  void OnLineEnd(int iline, LONG cpixel, const BYTE* ptypeBuffer, LONG pixelStride)
+	  {
+		BYTE* ptypeUnc = ((BYTE*)(_ptypeUncompressed));
+		if (_info.components == 1)
+		{
+			memcpy(ptypeUnc + cpixel * iline,  ptypeBuffer, cpixel * sizeof(BYTE));
+			return;
+		}
+
+		ptypeUnc += iline * _info.components * cpixel;
+		
+		switch(_info.colorTransform)
+		{
+			case COLORXFORM_NONE : return TransformLineToTriplet(ptypeBuffer, pixelStride, ptypeUnc, cpixel, TransformNone());			
+			case COLORXFORM_HP1 : return TransformLineToTriplet(ptypeBuffer, pixelStride, ptypeUnc, cpixel, TransformHp1ToRgb());
+			case COLORXFORM_HP2 : return TransformLineToTriplet(ptypeBuffer, pixelStride, ptypeUnc, cpixel, TransformHp2ToRgb());
+			case COLORXFORM_HP3 : return TransformLineToTriplet(ptypeBuffer, pixelStride, ptypeUnc, cpixel, TransformHp3ToRgb());			
+		}
+
 	  }
 
 	  typedef size_t bufType;
@@ -226,6 +276,9 @@ public:
 		  return (ReadValue(length - 24) << 24) + ReadValue(24);
 	  }
 
+protected:
+	JlsParamaters _info;
+	void* _ptypeUncompressed;
 
 private:
 	// decoding

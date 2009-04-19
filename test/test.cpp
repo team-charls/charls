@@ -11,6 +11,7 @@
 #include "../util.h"
 #include "../defaulttraits.h"
 #include "../losslesstraits.h"
+#include "../colortransform.h"
 
 #include "time.h"
 
@@ -107,7 +108,6 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	{
 		params.ilv = ILV_LINE;
 		params.colorTransform = 1;
-		Triplet2Line(rgbyteRaw,size);
 	}
 
 	size_t cbyteCompressed;
@@ -171,6 +171,8 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 	JLS_ERROR error = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
 	ASSERT(error == OK);
 }
+
+
 
 
 void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp)
@@ -277,9 +279,6 @@ void TestNoiseImage()
 }
 
 
-
-
-
 void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
 {
 	std::cout << "Conformance test:" << strNameEncoded << "\n\r";
@@ -306,11 +305,6 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
 	if (metadata.ilv == ILV_NONE && metadata.components == 3)
 	{
 		Triplet2Planar(rgbyteRaw, Size(metadata.width, metadata.height));
-	}
-
-	if (metadata.ilv == ILV_LINE && metadata.components == 3)
-	{
-		Triplet2Line(rgbyteRaw, Size(metadata.width, metadata.height));
 	}
 
 	TestCompliance(&rgbyteFile[0], rgbyteFile.size(), &rgbyteRaw[0], rgbyteRaw.size());
@@ -418,6 +412,7 @@ void TestConformance()
 	// Test 3
 	DecompressFile("test/conformance/T8C2E0.JLS", "test/conformance/TEST8.PPM", 15);
 
+	
 	// Test 4
 	DecompressFile("test/conformance/T8C0E3.JLS", "test/conformance/TEST8.PPM",15);
 
@@ -436,7 +431,7 @@ void TestConformance()
 
 	// Test 10
 	DecompressFile("test/conformance/T8NDE3.JLS", "test/conformance/TEST8BS2.PGM",15);	
-
+	
 	// Test 11
 	DecompressFile("test/conformance/T16E0.JLS", "test/conformance/TEST16.PGM",16);
 	

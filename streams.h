@@ -145,8 +145,7 @@ private:
 	// Color Transform Application Markers & Code Stream (HP extension)
 	void ReadColorSpace();
 	void ReadColorXForm();
-	void DoColorXForm(void* pvoid);
-
+	
 private:
 	const BYTE* _pdata;
 	size_t _cbyteOffset;
