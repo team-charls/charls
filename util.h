@@ -104,7 +104,8 @@ inline LONG BitWiseSign(LONG i)
 
 #pragma pack(push, 1)
 
-struct Triplet 
+template<class SAMPLE>
+struct Triplet
 { 
 	Triplet() :
 		v1(0),
@@ -113,9 +114,9 @@ struct Triplet
 	{};
 
 	Triplet(LONG x1, LONG x2, LONG x3) :
-		v1((BYTE)x1),
-		v2((BYTE)x2),
-		v3((BYTE)x3)
+		v1((SAMPLE)x1),
+		v2((SAMPLE)x2),
+		v3((SAMPLE)x3)
 	{};
 
 		union 
@@ -141,10 +142,10 @@ struct Triplet
 
 #include "interface.h"
 
-inline bool operator==(const Triplet& lhs, const Triplet& rhs)
+inline bool operator==(const Triplet<BYTE>& lhs, const Triplet<BYTE>& rhs)
 	{ return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3; }
 
-inline bool  operator!=(const Triplet& lhs, const Triplet& rhs)
+inline bool  operator!=(const Triplet<BYTE>& lhs, const Triplet<BYTE>& rhs)
 	{ return !(lhs == rhs); }
 
 #endif

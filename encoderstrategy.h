@@ -18,61 +18,28 @@ public:
 		 bitpos(0),
 		 _bFFWritten(false),
 		 _cbyteWritten(0),
-		 _info(info)
+		 _info(info),
+		 _postProcessLine(0)
 	{
 		  if (_info.ilv != ILV_LINE)
 		  {
 				_info.components  = 1;
 		  }
-		};
+	};
 
 	virtual ~EncoderStrategy() 
-		 {}
+	{
+	    delete _postProcessLine;
+	}
 
 	LONG PeekByte();
 	
-	
-
-	void OnLineBegin(int iline, LONG cpixel, Triplet* ptypeBuffer, LONG /*pixelStride*/)
+	void OnLineBegin(LONG cpixel, void* ptypeBuffer, LONG pixelStride)
 	{
-		Triplet* ptypeInput = ((Triplet*)(_ptypeUncompressed));
-
-		switch(_info.colorTransform)
-		{
-			case COLORXFORM_NONE : return TransformLine(ptypeBuffer, ptypeInput + cpixel*iline, cpixel, TransformNone());
-			case COLORXFORM_HP1 : return TransformLine(ptypeBuffer, ptypeInput + cpixel*iline, cpixel, TransformRgbToHp1());
-			case COLORXFORM_HP2 : return TransformLine(ptypeBuffer, ptypeInput + cpixel*iline, cpixel, TransformRgbToHp2());
-			case COLORXFORM_HP3 : return TransformLine(ptypeBuffer, ptypeInput + cpixel*iline, cpixel, TransformRgbToHp3());
-		}
+		_postProcessLine->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
 	}
 
-	void OnLineBegin(int iline, LONG cpixel, USHORT* ptypeBuffer, LONG /*pixelStride*/)
-	{
-		USHORT* ptypeInput = ((USHORT*)(_ptypeUncompressed));
-		memcpy(ptypeBuffer, ptypeInput + cpixel*iline, cpixel * sizeof(USHORT));
-	}
-	
-	void OnLineBegin(int iline, LONG cpixel, BYTE* ptypeBuffer, LONG pixelStride)
-	{
-		BYTE* ptypeUnc = ((BYTE*)(_ptypeUncompressed));
-		if (_info.components == 1)
-		{
-			memcpy(ptypeBuffer, ptypeUnc + cpixel * iline,  cpixel * sizeof(BYTE));
-			return;
-		}
-		
-		ptypeUnc += iline * _info.components * cpixel;
-		
-		switch(_info.colorTransform)
-		{
-			case COLORXFORM_NONE : return TransformTripletToLine(ptypeUnc, cpixel, ptypeBuffer, pixelStride, TransformNone());
-			case COLORXFORM_HP1 : return TransformTripletToLine(ptypeUnc, cpixel, ptypeBuffer, pixelStride, TransformRgbToHp1());
-			case COLORXFORM_HP2 : return TransformTripletToLine(ptypeUnc, cpixel, ptypeBuffer, pixelStride, TransformRgbToHp2());
-			case COLORXFORM_HP3 : return TransformTripletToLine(ptypeUnc, cpixel, ptypeBuffer, pixelStride, TransformRgbToHp3());
-		}
-	}
-
-	void OnLineEnd(int iline, LONG cpixel, void* ptypeBuffer, LONG pixelStride) {};
+	void OnLineEnd(LONG cpixel, void* ptypeBuffer, LONG pixelStride) {};
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
@@ -167,7 +134,7 @@ protected:
 protected:
 	JlsParamaters _info;
 	const void* _ptypeUncompressed;
-
+	PostProcessLine* _postProcessLine;
 private:
 
 	unsigned int valcurrent;

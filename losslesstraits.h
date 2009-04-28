@@ -100,10 +100,10 @@ struct LosslessTraitsT<USHORT,16> : public LosslessTraitsImplT<USHORT,16>
 
 
 template<>
-struct LosslessTraitsT<Triplet,8> : public LosslessTraitsImplT<BYTE,8>
+struct LosslessTraitsT<Triplet<BYTE>,8> : public LosslessTraitsImplT<BYTE,8>
 {
 //	enum { 		ccomponent = 3 };
-	typedef Triplet PIXEL;
+	typedef Triplet<BYTE> PIXEL;
 
 	static inlinehint bool IsNear(LONG lhs, LONG rhs) 
 		{ return lhs == rhs; }
