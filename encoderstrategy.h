@@ -5,7 +5,7 @@
 #ifndef CHARLS_ENCODERSTRATEGY
 #define CHARLS_ENCODERSTRATEGY
 
-#include "colortransform.h"
+#include "processline.h"
 #include "decoderstrategy.h"
 
 class EncoderStrategy
@@ -19,7 +19,7 @@ public:
 		 _bFFWritten(false),
 		 _cbyteWritten(0),
 		 _info(info),
-		 _postProcessLine(0)
+		 _processLine(0)
 	{
 		  if (_info.ilv != ILV_LINE)
 		  {
@@ -29,14 +29,14 @@ public:
 
 	virtual ~EncoderStrategy() 
 	{
-	    delete _postProcessLine;
+	    delete _processLine;
 	}
 
 	LONG PeekByte();
 	
 	void OnLineBegin(LONG cpixel, void* ptypeBuffer, LONG pixelStride)
 	{
-		_postProcessLine->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
+		_processLine->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
 	}
 
 	void OnLineEnd(LONG cpixel, void* ptypeBuffer, LONG pixelStride) {};
@@ -134,7 +134,7 @@ protected:
 protected:
 	JlsParamaters _info;
 	const void* _ptypeUncompressed;
-	PostProcessLine* _postProcessLine;
+	ProcessLine* _processLine;
 private:
 
 	unsigned int valcurrent;

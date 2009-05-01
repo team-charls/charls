@@ -30,7 +30,6 @@ void ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0)
 		return;
     }
 
-
 	fseek(pfile, 0, SEEK_END);	
 	int cbyteFile = ftell(pfile);
 	fseek(pfile, ioffs, SEEK_SET);	
@@ -39,6 +38,23 @@ void ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0)
 	fclose(pfile);
 	
 }
+
+
+void WriteFile(SZC strName, std::vector<BYTE>& vec)
+{
+	FILE* pfile = fopen(strName, "wb");
+	if( !pfile ) 
+    {
+		fprintf( stderr, "Could not open %s\n", strName );
+		return;
+    }
+	
+	fwrite(&vec[0],1, vec.size(), pfile);
+
+	fclose(pfile);
+	
+}
+
 
 
 
@@ -168,8 +184,8 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 
 //	int cbyteCompressedActual = 0;
 
-	JLS_ERROR error = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
-	ASSERT(error == OK);
+//	JLS_ERROR error = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
+//	ASSERT(error == OK);
 }
 
 
@@ -380,11 +396,26 @@ void TestSmallBuffer()
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(512 * 511);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
+	
 	ASSERT(error == UncompressedBufferTooSmall);	
 }
 
 
-void TestDamagedBitStream()
+void TestDamagedBitStream1()
+{
+	std::vector<BYTE> rgbyteCompressed;	
+	ReadFile("test/incorrect_images/InfiniteLoopFFMPEG_working.jls", &rgbyteCompressed, 0);
+	
+	std::vector<BYTE> rgbyteOut;
+	rgbyteOut.resize(256 * 256 * 2);	
+	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
+	WriteFile("test/incorrect_images/InfinixteLoopFFMPEG.RAW", rgbyteOut);
+	//ASSERT(error == InvalidCompressedData);
+	
+}
+
+
+void TestDamagedBitStream2()
 {
 	std::vector<BYTE> rgbyteCompressed;	
 	ReadFile("test/lena8b.jls", &rgbyteCompressed, 0);
@@ -403,6 +434,10 @@ void TestDamagedBitStream()
 
 void TestConformance()
 {	
+	DecompressFile("test/jlsimage/banny_normal.jls", "test/jlsimage/banny.ppm",38);
+	DecompressFile("test/jlsimage/banny_Hp1.jls", "test/jlsimage/banny.ppm",38);
+	DecompressFile("test/jlsimage/banny_Hp2.jls", "test/jlsimage/banny.ppm",38);
+	DecompressFile("test/jlsimage/banny_Hp3.jls", "test/jlsimage/banny.ppm",38);
 	// Test 1
 	DecompressFile("test/conformance/T8C0E0.JLS", "test/conformance/TEST8.PPM",15);
 
@@ -447,9 +482,12 @@ void TestConformance()
 
 
 
-int main(int argc, char* argv[])
+void unittest()
 {
-
+	printf("Test Damaged bitstream\r\n");
+	//TestDamagedBitStream1();
+	//TestDamagedBitStream2();
+	
 	printf("Test Annex H3\r\n");
 	TestSampleAnnexH3();
 
@@ -460,19 +498,28 @@ int main(int argc, char* argv[])
 	printf("Test Conformance\r\n");
 	TestConformance();
 
-	printf("Test Damaged bitstream\r\n");
-	TestDamagedBitStream();
 
 	printf("Test Small buffer\r\n");
 	TestSmallBuffer();
 
 
 	printf("Test Perf\r\n");
-
 	TestPerformance();
+
 	TestNoiseImage();
-	char c;
-	std::cin >> c;
-	return 0;
 }
 
+int main(int argc, char* argv[])
+{
+	if (argc >= 2)
+	{
+		std::string str = argv[1];
+		if (str.compare("-unittest") == 0)
+		{
+			unittest();
+			char c;
+			std::cin >> c;
+			return 0;
+		}
+	}
+}

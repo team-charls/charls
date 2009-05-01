@@ -189,7 +189,7 @@ public:
 	  void DoScan(BYTE* pbyteCompressed, size_t cbyteCompressed);         
 
 public:
-	void InitPostProcess(void* pvoidOut);
+	void InitProcess(void* pvoidOut);
     void InitDefault();
 	void InitParams(LONG t1, LONG t2, LONG t3, LONG nReset);
 
@@ -743,7 +743,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan(BYTE* pbyteCompressed, size_t cbyteCompre
 template<class TRAITS, class STRATEGY>
 size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, size_t cbyte, void* pvoidCompare)
 {
-	InitPostProcess(const_cast<void*>(pvoid)); 
+	InitProcess(const_cast<void*>(pvoid)); 
 	_size = size;
 
 	BYTE* pbyteCompressed = static_cast<BYTE*>(pvoidOut);
@@ -766,21 +766,23 @@ size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size
 
 }
 
+
+
 template<class TRAITS, class STRATEGY>
-void JlsCodec<TRAITS,STRATEGY>::InitPostProcess(void* pvoidOut)
+void JlsCodec<TRAITS,STRATEGY>::InitProcess(void* pvoidOut)
 {
 	if (STRATEGY::_info.components == 1)
 	{
-		STRATEGY::_postProcessLine = new PostProcesSingleComponent(pvoidOut, STRATEGY::_info, sizeof(TRAITS::PIXEL));
+		STRATEGY::_processLine = new PostProcesSingleComponent(pvoidOut, STRATEGY::_info, sizeof(TRAITS::PIXEL));
 	}
 	else
 	{
 		switch(STRATEGY::_info.colorTransform)
 		{
-			case COLORXFORM_NONE: STRATEGY::_postProcessLine = new PostProcessTransformed<TransformNone>(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP1 : STRATEGY::_postProcessLine = new PostProcessTransformed<TransformHp1>(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP2 : STRATEGY::_postProcessLine = new PostProcessTransformed<TransformHp2>(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP3 : STRATEGY::_postProcessLine = new PostProcessTransformed<TransformHp3>(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_NONE: STRATEGY::_processLine = new ProcessTransformed<TransformNone>(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP1 : STRATEGY::_processLine = new ProcessTransformed<TransformHp1>(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP2 : STRATEGY::_processLine = new ProcessTransformed<TransformHp2>(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP3 : STRATEGY::_processLine = new ProcessTransformed<TransformHp3>(pvoidOut, STRATEGY::_info); break;
 		}
 	}
 }
@@ -789,7 +791,7 @@ void JlsCodec<TRAITS,STRATEGY>::InitPostProcess(void* pvoidOut)
 template<class TRAITS, class STRATEGY>
 size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, size_t cbyte, bool bCompare)
 {
-	InitPostProcess(pvoidOut);
+	InitProcess(pvoidOut);
 
 	PIXEL* ptypeOut			= static_cast<PIXEL*>(pvoidOut);
 	BYTE* pbyteCompressed	= const_cast<BYTE*>(static_cast<const BYTE*>(pvoidIn));

@@ -7,7 +7,7 @@
 #define CHARLS_DECODERSTRATEGY
 
 #include "streams.h"
-#include "colortransform.h"
+#include "processline.h"
 
 class DecoderStrategy
 {
@@ -17,20 +17,17 @@ public:
 		  _validBits(0),
 		  _pbyteCompressed(0),
 		  _info(info),
-		  _postProcessLine(0)
+		  _processLine(0)
 	  {
 		  if (_info.ilv != ILV_LINE)
 		  {
 				_info.components  = 1;
-		  }
-		 		
+		  }		 		
 	  }
-
-	 enum { IsDecoding = 1};
 
 	  virtual ~DecoderStrategy()
 	  {
-		  delete _postProcessLine;
+		  delete _processLine;
 	  }
 
 	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
@@ -59,7 +56,7 @@ public:
 
 	  void OnLineEnd(LONG cpixel, const void* ptypeBuffer, LONG pixelStride)
 	  {
-	  		_postProcessLine->NewLineDecoded(ptypeBuffer, cpixel, pixelStride);
+	  		_processLine->NewLineDecoded(ptypeBuffer, cpixel, pixelStride);
 	  }
 
 	  typedef size_t bufType;
@@ -128,6 +125,7 @@ public:
 		  
 		  return pbyteNextFF - (sizeof(bufType)-1);
 	  }
+
 
 	  BYTE* GetCurBytePos() const
 	  {
@@ -237,7 +235,7 @@ public:
 protected:
 	JlsParamaters _info;
 	void* _ptypeUncompressed;
-	PostProcessLine* _postProcessLine;
+	ProcessLine* _processLine;
 
 private:
 	// decoding

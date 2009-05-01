@@ -498,6 +498,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\processline.h"
+				>
+			</File>
+			<File
 				RelativePath="scan.h"
 				>
 			</File>
