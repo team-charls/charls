@@ -14,12 +14,13 @@ class EncoderStrategy
 public:
 	explicit EncoderStrategy(const JlsParamaters& info) :
 		 _qdecoder(0),
-		 valcurrent(0),
+		 _info(info),
+		 _processLine(0),
+ 		 valcurrent(0),
 		 bitpos(0),
 		 _bFFWritten(false),
-		 _cbyteWritten(0),
-		 _info(info),
-		 _processLine(0)
+		 _cbyteWritten(0)
+		
 	{
 		  if (_info.ilv != ILV_LINE)
 		  {

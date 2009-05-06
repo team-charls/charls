@@ -831,7 +831,7 @@ void JlsCodec<TRAITS,STRATEGY>::InitParams(LONG t1, LONG t2, LONG t3, LONG nRese
 	InitQuantizationLUT();
 
 	LONG A = MAX(2, (traits.RANGE + 32)/64);
-	for (LONG Q = 0; Q < sizeof(_contexts) / sizeof(_contexts[0]); ++Q)
+	for (unsigned int Q = 0; Q < sizeof(_contexts) / sizeof(_contexts[0]); ++Q)
 	{
 		_contexts[Q] = JlsContext(A);
 	}

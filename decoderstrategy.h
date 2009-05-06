@@ -13,11 +13,11 @@ class DecoderStrategy
 {
 public:
 	DecoderStrategy(const JlsParamaters& info) :
-	  _readCache(0),
-		  _validBits(0),
-		  _pbyteCompressed(0),
 		  _info(info),
-		  _processLine(0)
+	          _processLine(0),
+		  _readCache(0),
+		  _validBits(0),
+		  _pbyteCompressed(0)
 	  {
 		  if (_info.ilv != ILV_LINE)
 		  {
