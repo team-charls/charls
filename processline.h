@@ -118,11 +118,11 @@ public:
 	{
 		if (_info.ilv == ILV_SAMPLE)
 		{
-			TransformLine((Triplet<BYTE>*)_pbyteOutput, (const Triplet<BYTE>*)pSrc, pixelCount, TRANSFORM::INVERSE());
+			TransformLine((Triplet<BYTE>*)_pbyteOutput, (const Triplet<BYTE>*)pSrc, pixelCount, typename TRANSFORM::INVERSE());
 		}
 		else
 		{
-			TransformLineToTriplet((const BYTE*)pSrc, byteStride, _pbyteOutput, pixelCount, TRANSFORM::INVERSE());
+			TransformLineToTriplet((const BYTE*)pSrc, byteStride, _pbyteOutput, pixelCount, typename TRANSFORM::INVERSE());
 		}
 		_pbyteOutput += 3* pixelCount;
 	}

@@ -773,7 +773,7 @@ void JlsCodec<TRAITS,STRATEGY>::InitProcess(void* pvoidOut)
 {
 	if (STRATEGY::_info.components == 1)
 	{
-		STRATEGY::_processLine = new PostProcesSingleComponent(pvoidOut, STRATEGY::_info, sizeof(TRAITS::PIXEL));
+		STRATEGY::_processLine = new PostProcesSingleComponent(pvoidOut, STRATEGY::_info, sizeof(typename TRAITS::PIXEL));
 	}
 	else
 	{
