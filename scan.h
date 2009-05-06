@@ -760,8 +760,8 @@ size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size
 
 	DoScan(pbyteCompressed, cbyte);
 
-	STRATEGY::Flush();
-
+	STRATEGY::FlushStreamEnd();
+	
 	return	STRATEGY::GetLength();
 
 }

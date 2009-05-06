@@ -84,7 +84,15 @@ protected:
 		valcurrent |= value << bitpos;	
 
 	}
-	
+
+	void FlushStreamEnd()
+	{
+		Flush();
+		AppendToBitStream(0,bitpos % 8);
+		ASSERT(bitpos % 8 == 0);
+		Flush();
+		ASSERT(bitpos == 0x20);
+	}
 
 	void Flush()
 	{
