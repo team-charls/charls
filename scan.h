@@ -136,6 +136,10 @@ public:
 		  _bCompare(0)
 		  
 	  {
+		  if (STRATEGY::_info.ilv == ILV_NONE)
+		  {
+			  STRATEGY::_info.components = 1;
+		  }
 	  }	
 
 
@@ -701,7 +705,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan(BYTE* pbyteCompressed, size_t cbyteCompre
 
 	LONG pixelstride = _size.cx + 4;
 
-	int components = STRATEGY::_info.components;
+	int components = STRATEGY::_info.ilv == ILV_LINE ? STRATEGY::_info.components : 1;
 	std::vector<PIXEL> vectmp;
 	vectmp.resize((components*2) * pixelstride);
 
@@ -779,10 +783,10 @@ void JlsCodec<TRAITS,STRATEGY>::InitProcess(void* pvoidOut)
 	{
 		switch(STRATEGY::_info.colorTransform)
 		{
-			case COLORXFORM_NONE: STRATEGY::_processLine = new ProcessTransformed<TransformNone>(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP1 : STRATEGY::_processLine = new ProcessTransformed<TransformHp1>(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP2 : STRATEGY::_processLine = new ProcessTransformed<TransformHp2>(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP3 : STRATEGY::_processLine = new ProcessTransformed<TransformHp3>(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_NONE: STRATEGY::_processLine = new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP1 : STRATEGY::_processLine = new ProcessTransformed<TransformHp1<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP2 : STRATEGY::_processLine = new ProcessTransformed<TransformHp2<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP3 : STRATEGY::_processLine = new ProcessTransformed<TransformHp3<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
 		}
 	}
 }

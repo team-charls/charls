@@ -121,18 +121,18 @@ struct Triplet
 
 		union 
 		{
-			BYTE v1;
-			BYTE R;
+			SAMPLE v1;
+			SAMPLE R;
 		};
 		union 
 		{ 
-			BYTE v2;
-			BYTE G;
+			SAMPLE v2;
+			SAMPLE G;
 		};
 		union 
 		{
-			BYTE v3;
-			BYTE B;
+			SAMPLE v3;
+			SAMPLE B;
 		};
 };
 

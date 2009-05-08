@@ -48,8 +48,8 @@ private:
 
 
 
-template<class TRANSFORM> 
-void TransformLine(Triplet<BYTE>* pDest, const Triplet<BYTE>* pSrc, int pixelCount, const TRANSFORM&)
+template<class TRANSFORM, class SAMPLE> 
+void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixelCount, const TRANSFORM&)
 {	
 	for (int i = 0; i < pixelCount; ++i)
 	{
@@ -58,11 +58,11 @@ void TransformLine(Triplet<BYTE>* pDest, const Triplet<BYTE>* pSrc, int pixelCou
 };
 
 
-template<class TRANSFORM> 
-void TransformLineToTriplet(const BYTE* ptypeInput, LONG pixelStrideIn, BYTE* pbyteBuffer, LONG pixelStride, const TRANSFORM&)
+template<class TRANSFORM, class SAMPLE> 
+void TransformLineToTriplet(const SAMPLE* ptypeInput, LONG pixelStrideIn, Triplet<SAMPLE>* pbyteBuffer, LONG pixelStride, const TRANSFORM&)
 {
 	int cpixel = MIN(pixelStride, pixelStrideIn);
-	Triplet<BYTE>* ptypeBuffer = (Triplet<BYTE>*)pbyteBuffer;
+	Triplet<SAMPLE>* ptypeBuffer = (Triplet<SAMPLE>*)pbyteBuffer;
 
 	for (int x = 0; x < cpixel; ++x)
 	{
@@ -70,16 +70,16 @@ void TransformLineToTriplet(const BYTE* ptypeInput, LONG pixelStrideIn, BYTE* pb
 	}
 }
 
-template<class TRANSFORM> 
-void TransformTripletToLine(const BYTE* pbyteInput, LONG pixelStrideIn, BYTE* ptypeBuffer, LONG pixelStride, const TRANSFORM&)
+template<class TRANSFORM, class SAMPLE> 
+void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAMPLE* ptypeBuffer, LONG pixelStride, const TRANSFORM&)
 {
 	int cpixel = MIN(pixelStride, pixelStrideIn);
-	const Triplet<BYTE>* ptypeBufferIn = (Triplet<BYTE>*)pbyteInput;
+	const Triplet<SAMPLE>* ptypeBufferIn = (Triplet<SAMPLE>*)pbyteInput;
 
 	for (int x = 0; x < cpixel; ++x)
 	{
-		Triplet<BYTE> color = ptypeBufferIn[x];
-		Triplet<BYTE> colorTranformed = TRANSFORM::Apply(color.v1, color.v2, color.v3);
+		Triplet<SAMPLE> color = ptypeBufferIn[x];
+		Triplet<SAMPLE> colorTranformed = TRANSFORM::Apply(color.v1, color.v2, color.v3);
 
 		ptypeBuffer[x] = colorTranformed.v1;
 		ptypeBuffer[x + pixelStride] = colorTranformed.v2;
@@ -92,6 +92,7 @@ void TransformTripletToLine(const BYTE* pbyteInput, LONG pixelStrideIn, BYTE* pt
 template<class TRANSFORM> 
 class ProcessTransformed : public ProcessLine
 {
+	typedef typename TRANSFORM::SAMPLE SAMPLE;
 	ProcessTransformed(const ProcessTransformed&) {}
 public:
 	ProcessTransformed(void* pbyteOutput, const JlsParamaters& info) :
@@ -105,26 +106,26 @@ public:
 	{
 		if (_info.ilv == ILV_SAMPLE)
 		{
-			TransformLine((Triplet<BYTE>*)pDst, (const Triplet<BYTE>*)_pbyteOutput, pixelCount, TRANSFORM());
+			TransformLine((Triplet<SAMPLE>*)pDst, (const Triplet<SAMPLE>*)_pbyteOutput, pixelCount, TRANSFORM());
 		}
 		else
 		{
-			TransformTripletToLine((const BYTE*)_pbyteOutput, pixelCount, (BYTE*)pDst, byteStride, TRANSFORM());
+			TransformTripletToLine((const Triplet<SAMPLE>*)_pbyteOutput, pixelCount, (SAMPLE*)pDst, byteStride, TRANSFORM());
 		}
-		_pbyteOutput += 3*pixelCount;
+		_pbyteOutput += sizeof(Triplet<SAMPLE>)*pixelCount;
 	}
 
 	void NewLineDecoded(const void* pSrc, int pixelCount, int byteStride)
 	{
 		if (_info.ilv == ILV_SAMPLE)
 		{
-			TransformLine((Triplet<BYTE>*)_pbyteOutput, (const Triplet<BYTE>*)pSrc, pixelCount, typename TRANSFORM::INVERSE());
+			TransformLine((Triplet<SAMPLE>*)_pbyteOutput, (const Triplet<SAMPLE>*)pSrc, pixelCount, typename TRANSFORM::INVERSE());
 		}
 		else
 		{
-			TransformLineToTriplet((const BYTE*)pSrc, byteStride, _pbyteOutput, pixelCount, typename TRANSFORM::INVERSE());
+			TransformLineToTriplet((const SAMPLE*)pSrc, byteStride, (Triplet<SAMPLE>*)_pbyteOutput, pixelCount, typename TRANSFORM::INVERSE());
 		}
-		_pbyteOutput += 3* pixelCount;
+		_pbyteOutput += sizeof(Triplet<SAMPLE>)*pixelCount;
 	}
 
 private:

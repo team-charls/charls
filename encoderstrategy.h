@@ -22,10 +22,6 @@ public:
 		 _cbyteWritten(0)
 		
 	{
-		  if (_info.ilv != ILV_LINE)
-		  {
-				_info.components  = 1;
-		  }
 	};
 
 	virtual ~EncoderStrategy() 

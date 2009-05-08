@@ -19,10 +19,6 @@ public:
 		  _validBits(0),
 		  _pbyteCompressed(0)
 	  {
-		  if (_info.ilv != ILV_LINE)
-		  {
-				_info.components  = 1;
-		  }		 		
 	  }
 
 	  virtual ~DecoderStrategy()
