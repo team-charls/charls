@@ -107,7 +107,7 @@ void SwapBytes(std::vector<BYTE>* rgbyte)
 void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size, int cbit, int ccomp)
 {	
 	std::vector<BYTE> rgbyteCompressed;
-	rgbyteCompressed.resize(size.cx *size.cy * 4);
+	rgbyteCompressed.resize(size.cx *size.cy * ccomp * cbit / 4);
 	
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(size.cx * size.cy * ((cbit + 7) / 8) * ccomp);
@@ -123,7 +123,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	if (ccomp == 3)
 	{
 		params.ilv = ILV_LINE;
-		params.colorTransform = 1;
+		params.colorTransform = 0;
 	}
 
 	size_t cbyteCompressed;
@@ -134,13 +134,14 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(cbyteCompressed));
 	
 	double dblfactor = 1.0 *  rgbyteOut.size() / cbyteCompressed;
+	double bitspersample = cbyteCompressed  * 8  * 1.0 /  (ccomp *size.cy * size.cx);
 	double dwtimeDecodeComplete = getTime();
 	std::cout << "RoundTrip test for: " << strName << "\n\r";
 
 // disabled for Linux, causes valgrind errors
 #if defined(WIN32)
  
-	printf("Encode: %f Decode: %f Ratio: %f \n\r", dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, dblfactor);
+	printf("Encode: %f Decode: %f Ratio: %f Bps: %f \n\r", dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, dblfactor, bitspersample);
 	BYTE* pbyteOut = &rgbyteOut[0];
 	for (size_t i = 0; i < rgbyteOut.size(); ++i)
 	{
@@ -191,12 +192,16 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 
 
 
-void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp)
+void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool swap = false)
 {
 	std::vector<BYTE> rgbyteUncompressed;
 	
 	ReadFile(strName, &rgbyteUncompressed, ioffs);
 
+	if (swap)
+	{
+		SwapBytes(&rgbyteUncompressed);		
+	}
 
 	TestRoundTrip(strName, rgbyteUncompressed, size2, cbit, ccomp);
 
@@ -262,18 +267,24 @@ void TestPerformance()
 	Size size1024 = Size(1024, 1024);
 	Size size512 = Size(512, 512);
 
-
-//	TestFile("test/rgb8bit/artificial.ppm", 17, Size(3072,2048),  8, 3);
-//	TestFile("test/rgb8bit/bridge.ppm", 17, Size(2749,4049),  8, 3);
-//	TestFile("test/rgb8bit/big_building.ppm", 17, Size(7216,5412),  8, 3);
-
+	
 	TestFile("test/desktop.ppm", 40, Size(1280,1024),  8, 3);
 	TestFile("test/MR2_UNC", 1728, size1024,  16, 1);
 	TestFile("test/0015.raw", 0, size1024,  8, 1);
 	TestFile("test/lena8b.raw", 0, size512,  8, 1);
+    TestFile("test/DSC_5455.raw", 142949, Size(300,200),  16, 3);
 
 }
 
+
+void TestLargeImagePerformance()
+{
+
+    //TestFile("test/rgb8bit/artificial.ppm", 17, Size(3072,2048),  8, 3);
+	//TestFile("test/rgb8bit/bridge.ppm", 17, Size(2749,4049),  8, 3);
+//	TestFile("test/rgb8bit/big_building.ppm", 17, Size(7216,5412),  8, 3);
+//	TestFile("test/rgb16bit/bridge.ppm", 19, Size(2749,4049),  16, 3, true);
+}
 
 void TestNoiseImage()
 {
@@ -484,9 +495,10 @@ void TestConformance()
 
 void unittest()
 {
+	
 	printf("Test Damaged bitstream\r\n");
-	//TestDamagedBitStream1();
-	//TestDamagedBitStream2();
+	TestDamagedBitStream1();
+	TestDamagedBitStream2();
 	
 	printf("Test Annex H3\r\n");
 	TestSampleAnnexH3();
@@ -497,14 +509,13 @@ void unittest()
 
 	printf("Test Conformance\r\n");
 	TestConformance();
-
+	
+	printf("Test Perf\r\n");
+	TestPerformance();
+	TestLargeImagePerformance();
 
 	printf("Test Small buffer\r\n");
 	TestSmallBuffer();
-
-
-	printf("Test Perf\r\n");
-	TestPerformance();
 
 	TestNoiseImage();
 }

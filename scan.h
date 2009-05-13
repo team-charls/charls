@@ -155,6 +155,17 @@ public:
 	  }
 
 
+	  bool IsInterleaved()
+	  {
+		  if (STRATEGY::_info.ilv == ILV_NONE)
+			  return false;
+
+		  if (STRATEGY::_info.components == 1)
+			  return false;
+
+		  return true;
+	  }
+
 
 	  signed char QuantizeGratientOrg(LONG Di);
 	  inlinehint LONG QuantizeGratient(LONG Di)
@@ -193,7 +204,7 @@ public:
 	  void DoScan(BYTE* pbyteCompressed, size_t cbyteCompressed);         
 
 public:
-	void InitProcess(void* pvoidOut);
+	ProcessLine* InitProcess(void* pvoidOut);
     void InitDefault();
 	void InitParams(LONG t1, LONG t2, LONG t3, LONG nReset);
 
@@ -747,7 +758,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan(BYTE* pbyteCompressed, size_t cbyteCompre
 template<class TRAITS, class STRATEGY>
 size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, size_t cbyte, void* pvoidCompare)
 {
-	InitProcess(const_cast<void*>(pvoid)); 
+	STRATEGY::_processLine = InitProcess(const_cast<void*>(pvoid)); 
 	_size = size;
 
 	BYTE* pbyteCompressed = static_cast<BYTE*>(pvoidOut);
@@ -773,29 +784,42 @@ size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size
 
 
 template<class TRAITS, class STRATEGY>
-void JlsCodec<TRAITS,STRATEGY>::InitProcess(void* pvoidOut)
+ProcessLine* JlsCodec<TRAITS,STRATEGY>::InitProcess(void* pvoidOut)
 {
-	if (STRATEGY::_info.components == 1)
-	{
-		STRATEGY::_processLine = new PostProcesSingleComponent(pvoidOut, STRATEGY::_info, sizeof(typename TRAITS::PIXEL));
-	}
-	else
+	if (!IsInterleaved())
+		return new PostProcesSingleComponent(pvoidOut, STRATEGY::_info, sizeof(typename TRAITS::PIXEL));
+
+	if (STRATEGY::_info.colorTransform == 0)
+		return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(pvoidOut, STRATEGY::_info); 
+
+	if (STRATEGY::_info.bitspersample == 12)
 	{
 		switch(STRATEGY::_info.colorTransform)
 		{
-			case COLORXFORM_NONE: STRATEGY::_processLine = new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP1 : STRATEGY::_processLine = new ProcessTransformed<TransformHp1<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP2 : STRATEGY::_processLine = new ProcessTransformed<TransformHp2<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP3 : STRATEGY::_processLine = new ProcessTransformed<TransformHp3<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<USHORT,12> >(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<USHORT,12> >(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<USHORT,12> >(pvoidOut, STRATEGY::_info); break;
+			default: throw JlsException(UnsupportedColorTransform);
 		}
 	}
+	else if ((STRATEGY::_info.bitspersample == sizeof(SAMPLE)*8))
+	{
+		switch(STRATEGY::_info.colorTransform)
+		{
+			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
+			default: throw JlsException(UnsupportedColorTransform);
+		}
+	}	
+	throw JlsException(UnsupportedBitDepthForTransform);
 }
 
 
 template<class TRAITS, class STRATEGY>
 size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, size_t cbyte, bool bCompare)
 {
-	InitProcess(pvoidOut);
+	STRATEGY::_processLine = InitProcess(pvoidOut);
 
 	PIXEL* ptypeOut			= static_cast<PIXEL*>(pvoidOut);
 	BYTE* pbyteCompressed	= const_cast<BYTE*>(static_cast<const BYTE*>(pvoidIn));

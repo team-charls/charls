@@ -13,12 +13,13 @@ struct TransformNoneImpl
 	{ return Triplet<SAMPLE>(v1, v2, v3); }
 };
 
+
 template<class sample>
 struct TransformNone : public TransformNoneImpl<sample>
 {
-
 	typedef struct TransformNoneImpl<sample> INVERSE;
 };
+
 
 template<class sample, int RANGE>
 struct TransformHp1ToRgb

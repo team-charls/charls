@@ -16,7 +16,9 @@ enum JLS_ERROR
 	UncompressedBufferTooSmall,
 	CompressedBufferTooSmall,
 	InvalidCompressedData,
-	ImageTypeNotSupported
+	ImageTypeNotSupported,
+	UnsupportedBitDepthForTransform,
+	UnsupportedColorTransform
 };
 
 class JlsException
