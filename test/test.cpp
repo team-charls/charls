@@ -21,22 +21,32 @@ namespace // local helpers
 {
 
 
-void ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0)
+bool ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0, int bytes = 0)
 {
 	FILE* pfile = fopen(strName, "rb");
 	if( !pfile ) 
     {
 		fprintf( stderr, "Could not open %s\n", strName );
-		return;
+		return false;
     }
-
+	
 	fseek(pfile, 0, SEEK_END);	
 	int cbyteFile = ftell(pfile);
+	if (ioffs < 0)
+	{
+		ASSERT(bytes != 0);
+		ioffs = cbyteFile - bytes;
+	}
+	if (bytes == 0)
+	{
+		bytes = cbyteFile  -ioffs;
+	}
+
 	fseek(pfile, ioffs, SEEK_SET);	
-	pvec->resize(cbyteFile  -ioffs);
+	pvec->resize(bytes);
 	fread(&(*pvec)[0],1, pvec->size(), pfile);
 	fclose(pfile);
-	
+	return true;
 }
 
 
@@ -194,9 +204,12 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 
 void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool swap = false)
 {
+	int cbyte = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
+
 	std::vector<BYTE> rgbyteUncompressed;
 	
-	ReadFile(strName, &rgbyteUncompressed, ioffs);
+	if (!ReadFile(strName, &rgbyteUncompressed, ioffs, cbyte))
+		return;
 
 	if (swap)
 	{
@@ -204,6 +217,25 @@ void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool swap
 	}
 
 	TestRoundTrip(strName, rgbyteUncompressed, size2, cbit, ccomp);
+
+};
+
+
+
+void TestFile16BitAs12(SZC strName, int ioffs, Size size2, int ccomp)
+{
+	std::vector<BYTE> rgbyteUncompressed;
+	
+	ReadFile(strName, &rgbyteUncompressed, ioffs);
+
+	USHORT* pushort = (USHORT*)&rgbyteUncompressed[0];
+
+	for (int i = 0; i < rgbyteUncompressed.size()/2; ++i)
+	{
+		pushort[i] = pushort[i] >> 4;
+	}
+
+	TestRoundTrip(strName, rgbyteUncompressed, size2, 12, ccomp);
 
 };
 
@@ -266,14 +298,23 @@ void TestPerformance()
 {
 	Size size1024 = Size(1024, 1024);
 	Size size512 = Size(512, 512);
-
-	
-	TestFile("test/desktop.ppm", 40, Size(1280,1024),  8, 3);
+		
+	// 16 bit mono
 	TestFile("test/MR2_UNC", 1728, size1024,  16, 1);
+	
+	// 8 bit mono
 	TestFile("test/0015.raw", 0, size1024,  8, 1);
 	TestFile("test/lena8b.raw", 0, size512,  8, 1);
-    TestFile("test/DSC_5455.raw", 142949, Size(300,200),  16, 3);
 
+	// 8 bit color
+	TestFile("test/desktop.ppm", 40, Size(1280,1024),  8, 3);
+
+	// 12 bit RGB
+    TestFile("test/SIEMENS-MR-RGB-16Bits.dcm", -1, Size(192,256),  12, 3);
+    TestFile16BitAs12("test/DSC_5455.raw", 142949, Size(300,200), 3);
+
+	// 16 bit RGB
+    TestFile("test/DSC_5455.raw", 142949, Size(300,200),  16, 3);
 }
 
 
