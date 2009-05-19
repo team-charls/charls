@@ -130,6 +130,8 @@ public:
 	
 	void EnableCompare(bool bCompare)
 		{ _bCompare = bCompare;	}
+
+	void SetInfo(JlsParamaters* info) { _info = *info; }
 private:
 	void ReadPixels(void* pvoid, LONG cbyteAvailable);
 	void ReadScan(void*);	
@@ -141,6 +143,8 @@ private:
 	int ReadWord();
 	void ReadNBytes(std::vector<char>& dst, int byteCount);
 
+	// JFIF
+	void ReadJfif();
 	// Color Transform Application Markers & Code Stream (HP extension)
 	void ReadColorSpace();
 	void ReadColorXForm();

@@ -16,7 +16,6 @@ public:
 };
 
 
-
 class PostProcesSingleComponent : public ProcessLine
 {
 public:
@@ -46,7 +45,14 @@ private:
 };
 
 
-
+template<class SAMPLE> 
+void TransformRgbToBgr(Triplet<SAMPLE>* pDest, int pixelCount)
+{
+	for (int i = 0; i < pixelCount; ++i)
+	{
+		pDest[i] =  Triplet<SAMPLE>(pDest[i].B, pDest[i].G, pDest[i].R);
+	}
+}
 
 template<class TRANSFORM, class SAMPLE> 
 void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixelCount, const TRANSFORM&)
@@ -124,6 +130,10 @@ public:
 		else
 		{
 			TransformLineToTriplet((const SAMPLE*)pSrc, byteStride, (Triplet<SAMPLE>*)_pbyteOutput, pixelCount, typename TRANSFORM::INVERSE());
+		}
+		if (_info.outputBgr)
+		{
+			TransformRgbToBgr((Triplet<SAMPLE>*)_pbyteOutput, pixelCount);
 		}
 		_pbyteOutput += sizeof(Triplet<SAMPLE>)*pixelCount;
 	}

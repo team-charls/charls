@@ -224,19 +224,18 @@ void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool swap
 
 void TestFile16BitAs12(SZC strName, int ioffs, Size size2, int ccomp)
 {
-	std::vector<BYTE> rgbyteUncompressed;
-	
-	ReadFile(strName, &rgbyteUncompressed, ioffs);
+	std::vector<BYTE> rgbyteUncompressed;	
+	if (!ReadFile(strName, &rgbyteUncompressed, ioffs))
+		return;
 
 	USHORT* pushort = (USHORT*)&rgbyteUncompressed[0];
 
-	for (int i = 0; i < rgbyteUncompressed.size()/2; ++i)
+	for (int i = 0; i < (int)rgbyteUncompressed.size()/2; ++i)
 	{
 		pushort[i] = pushort[i] >> 4;
 	}
 
 	TestRoundTrip(strName, rgbyteUncompressed, size2, 12, ccomp);
-
 };
 
 
@@ -347,11 +346,20 @@ void TestNoiseImage()
 }
 
 
+bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParamaters* info)
+{
+	if (!ReadFile(strNameEncoded, rgbyteFile))
+		return false;
+
+	return JpegLsReadHeader(&((*rgbyteFile)[0]), rgbyteFile->size(), info) == OK;
+}
+
 void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
 {
 	std::cout << "Conformance test:" << strNameEncoded << "\n\r";
 	std::vector<BYTE> rgbyteFile;
-	ReadFile(strNameEncoded, &rgbyteFile);
+	if (!ReadFile(strNameEncoded, &rgbyteFile))
+		return;
 
 	JlsParamaters metadata;
 	if (JpegLsReadHeader(&rgbyteFile[0], rgbyteFile.size(), &metadata) != OK)
@@ -361,7 +369,8 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
 	}
 
  	std::vector<BYTE> rgbyteRaw;
-	ReadFile(strNameRaw, &rgbyteRaw, ioffs);
+	if (!ReadFile(strNameRaw, &rgbyteRaw, ioffs))
+		return;
 
 	if (metadata.bitspersample > 8)
 	{
@@ -440,10 +449,28 @@ void TestSampleAnnexH3()
 //	TestJls(vecRaw, size, 8, 1, ILV_NONE, rgbyteComp, sizeof(rgbyteComp), false);
 }
 
+void TestBgr()
+{
+	JlsParamaters info;
+	std::vector<BYTE> rgbyteEncoded;	
+	ScanFile("test/conformance/T8C2E3.JLS", &rgbyteEncoded, &info);
+	std::vector<BYTE> rgbyteDecoded;	
+
+	info.outputBgr = true;
+
+	rgbyteDecoded.resize(info.width * info.height * info.components);
+	JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &info);
+
+	ASSERT(rgbyteDecoded[0] == 0x69);
+	ASSERT(rgbyteDecoded[1] == 0x77);
+	ASSERT(rgbyteDecoded[2] == 0xa1);	
+}
+
 void TestSmallBuffer()
 {
 	std::vector<BYTE> rgbyteCompressed;	
-	ReadFile("test/lena8b.jls", &rgbyteCompressed, 0);
+	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
+		return;
 	
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(512 * 511);	
@@ -536,9 +563,9 @@ void TestConformance()
 
 void unittest()
 {
-	
+	TestBgr();
+
 	printf("Test Damaged bitstream\r\n");
-	TestDamagedBitStream1();
 	TestDamagedBitStream2();
 	
 	printf("Test Annex H3\r\n");

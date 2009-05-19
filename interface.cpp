@@ -89,9 +89,14 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsEncode(void* pdataCompressed, size_t cbyteBuffer
 	return OK;
 }
 
-CHARLS_IMEXPORT JLS_ERROR JpegLsDecode(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed)
+CHARLS_IMEXPORT JLS_ERROR JpegLsDecode(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsParamaters* info)
 {
 	JLSInputStream reader((BYTE*)pdataCompressed, cbyteCompressed);
+
+	if(info != NULL)
+	{
+	 	reader.SetInfo(info);
+	}
 
 	try
 	{

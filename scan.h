@@ -152,7 +152,7 @@ public:
 			  presets.T2 != 0 ? presets.T2 : presetDefault.T2,
 			  presets.T3 != 0 ? presets.T3 : presetDefault.T3, 
 			  presets.RESET != 0 ? presets.RESET : presetDefault.RESET);
-	  }
+	  }	
 
 
 	  bool IsInterleaved()
@@ -205,7 +205,7 @@ public:
 
 public:
 	ProcessLine* InitProcess(void* pvoidOut);
-    void InitDefault();
+	void InitDefault();
 	void InitParams(LONG t1, LONG t2, LONG t3, LONG nReset);
 
 	size_t  EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, size_t cbyte, void* pvoidCompare);
@@ -636,7 +636,7 @@ LONG JlsCodec<TRAITS,STRATEGY>::DoRunMode(LONG ipixelStart, DecoderStrategy*)
 
 	// run interruption
 	PIXEL Rb = ptypePrev[ipixelEnd];
-	ptypeCur[ipixelEnd] = DecodeRIPixel(Ra, Rb);
+	ptypeCur[ipixelEnd] =	DecodeRIPixel(Ra, Rb);
 	DecrementRunIndex();
 	return ipixelEnd - ipixelStart + 1;
 }

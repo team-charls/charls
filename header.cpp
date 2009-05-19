@@ -191,7 +191,6 @@ JLSInputStream::JLSInputStream(const BYTE* pdata, LONG cbyteLength) :
 {
 }
 
-
 //
 // Read()
 //
@@ -228,6 +227,7 @@ void JLSInputStream::ReadPixels(void* pvoid, LONG cbyteAvailable)
 	{
 		ReadScan(pvoid);
 	}
+	//DoColorXForm(pvoid);
 }
 
 // ReadNBytes()
@@ -268,6 +268,7 @@ void JLSInputStream::ReadHeader()
 			case JPEG_SOF: ReadStartOfFrame(); break;
 			case JPEG_COM: ReadComment();	   break;
 			case JPEG_LSE: ReadPresetParameters();	break;
+			case JPEG_APP0: ReadJfif(); break;
 			case JPEG_APP7: ReadColorSpace(); break;
 			case JPEG_APP8: ReadColorXForm(); break;			
 			// Other tags not supported (among which DNL DRI)
@@ -376,6 +377,66 @@ void JLSInputStream::ReadStartOfScan()
 void JLSInputStream::ReadComment()
 {}
 
+static BYTE jfifID[] = {'J','F','I','F','\0'};// JFIF\0
+//
+// ReadJfif()
+//
+void JLSInputStream::ReadJfif()
+{
+	for(int i = 0; i < (int)sizeof(jfifID); i++)
+	{
+		if(jfifID[i] != ReadByte())
+			return;
+	}
+	_info.jfif.Ver   = ReadWord();
+
+	// DPI or DPcm
+	_info.jfif.units = ReadByte();
+	_info.jfif.XDensity = ReadWord();
+	_info.jfif.YDensity = ReadWord();
+	
+	// thumbnail
+	_info.jfif.Xthumb = ReadByte();
+	_info.jfif.Ythumb = ReadByte();
+	if(_info.jfif.Xthumb > 0 && _info.jfif.pdataThumbnail) 
+	{
+		std::vector<char> tempbuff((char*)_info.jfif.pdataThumbnail, (char*)_info.jfif.pdataThumbnail+3*_info.jfif.Xthumb*_info.jfif.Ythumb);
+		ReadNBytes(tempbuff, 3*_info.jfif.Xthumb*_info.jfif.Ythumb);
+	}
+}
+
+//
+// CreateJFIF()
+//
+JpegMarkerSegment* CreateJFIF(const JfifParamaters* jfif)
+{
+	std::vector<BYTE> rgbyte;
+	for(int i = 0; i < (int)sizeof(jfifID); i++)
+	{
+		rgbyte.push_back(jfifID[i]);
+	}
+
+	push_back(rgbyte, (USHORT)jfif->Ver);
+
+	rgbyte.push_back(jfif->units);	
+	push_back(rgbyte, (USHORT)jfif->XDensity);
+	push_back(rgbyte, (USHORT)jfif->YDensity);
+
+	// thumbnail
+	rgbyte.push_back((BYTE)jfif->Xthumb);
+	rgbyte.push_back((BYTE)jfif->Ythumb);
+	if(jfif->Xthumb > 0) {
+		if(jfif->pdataThumbnail)
+			throw JlsException(InvalidJlsParameters);
+		rgbyte.insert(rgbyte.end(), 
+			(BYTE*)jfif->pdataThumbnail, 
+			(BYTE*)jfif->pdataThumbnail+3*jfif->Xthumb*jfif->Ythumb
+		);
+	}
+	
+	return new JpegMarkerSegment(JPEG_APP0, rgbyte);
+}
+
 
 //
 // ReadStartOfFrame()
@@ -456,6 +517,10 @@ public:
 
 void JLSOutputStream::AddScan(const void* pbyteComp, const JlsParamaters* pparams)
 {
+	if (pparams->jfif.Ver)
+	{
+		_segments.push_back(CreateJFIF(&pparams->jfif));
+	}
 	if (!IsDefault(&pparams->custom))
 	{
 		_segments.push_back(CreateLSE(&pparams->custom));		
