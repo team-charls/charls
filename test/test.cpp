@@ -12,6 +12,7 @@
 #include "../defaulttraits.h"
 #include "../losslesstraits.h"
 #include "../colortransform.h"
+#include "../streams.h"
 
 #include "time.h"
 
@@ -133,7 +134,10 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	if (ccomp == 3)
 	{
 		params.ilv = ILV_LINE;
-		params.colorTransform = 0;
+		if (cbit == 8 || cbit == 16)
+		{
+			params.colorTransform = COLORXFORM_HP1;
+		}
 	}
 
 	size_t cbyteCompressed;
