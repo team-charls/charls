@@ -790,28 +790,28 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::InitProcess(void* pvoidOut)
 		return new PostProcesSingleComponent(pvoidOut, STRATEGY::_info, sizeof(typename TRAITS::PIXEL));
 
 	if (STRATEGY::_info.colorTransform == 0)
-		return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(pvoidOut, STRATEGY::_info); 
+		return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(pvoidOut, STRATEGY::_info, TransformNone<SAMPLE>()); 
 
-	if (STRATEGY::_info.bitspersample == 12)
+	if ((STRATEGY::_info.bitspersample == sizeof(SAMPLE)*8))
 	{
 		switch(STRATEGY::_info.colorTransform)
 		{
-			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<USHORT,12> >(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<USHORT,12> >(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<USHORT,12> >(pvoidOut, STRATEGY::_info); break;
+			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<SAMPLE> >(pvoidOut, STRATEGY::_info, TransformHp1<SAMPLE>()); break;
+			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<SAMPLE> >(pvoidOut, STRATEGY::_info, TransformHp2<SAMPLE>()); break;
+			case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<SAMPLE> >(pvoidOut, STRATEGY::_info, TransformHp3<SAMPLE>()); break;
+			default: throw JlsException(UnsupportedColorTransform);
+		}
+	} else if (STRATEGY::_info.bitspersample > 8)
+	{
+		int shift = 16 - STRATEGY::_info.bitspersample;
+		switch(STRATEGY::_info.colorTransform)
+		{
+			case COLORXFORM_HP1 : return new ProcessTransformed<TransformShifted<TransformHp1<USHORT> > >(pvoidOut, STRATEGY::_info, TransformShifted<TransformHp1<USHORT> >(shift)); break;
+			case COLORXFORM_HP2 : return new ProcessTransformed<TransformShifted<TransformHp2<USHORT> > >(pvoidOut, STRATEGY::_info, TransformShifted<TransformHp2<USHORT> >(shift)); break;
+			case COLORXFORM_HP3 : return new ProcessTransformed<TransformShifted<TransformHp3<USHORT> > >(pvoidOut, STRATEGY::_info, TransformShifted<TransformHp3<USHORT> >(shift)); break;
 			default: throw JlsException(UnsupportedColorTransform);
 		}
 	}
-	else if ((STRATEGY::_info.bitspersample == sizeof(SAMPLE)*8))
-	{
-		switch(STRATEGY::_info.colorTransform)
-		{
-			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
-			case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<SAMPLE,1 << sizeof(SAMPLE)*8> >(pvoidOut, STRATEGY::_info); break;
-			default: throw JlsException(UnsupportedColorTransform);
-		}
-	}	
 	throw JlsException(UnsupportedBitDepthForTransform);
 }
 

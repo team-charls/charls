@@ -48,17 +48,21 @@ typedef unsigned short USHORT;
 
 #undef  NEAR
 
-#ifdef _MSC_VER
-#ifdef _DEBUG
-#define inlinehint
-#else
-#define inlinehint __forceinline
-#endif
-#else
-#define inlinehint __inline
+#ifndef inlinehint
+#  ifdef _MSC_VER
+#    ifdef _DEBUG
+#      define inlinehint
+#    else
+#      define inlinehint __forceinline
+#    endif
+#  elif defined(__GNUC__) && (__GNUC__ > 3 || __GNUC__ == 3 && __GNUC_MINOR__ > 0)
+#    define inlinehint inline
+#  else 
+#    define inlinehint inline
+#  endif
 #endif
 
-
+// must try __attribute__((always_inline)) for GCC!
 
 
 #ifndef MAX

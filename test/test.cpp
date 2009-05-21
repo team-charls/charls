@@ -134,10 +134,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	if (ccomp == 3)
 	{
 		params.ilv = ILV_LINE;
-		if (cbit == 8 || cbit == 16)
-		{
-			params.colorTransform = COLORXFORM_HP1;
-		}
+		params.colorTransform = COLORXFORM_HP1;
 	}
 
 	size_t cbyteCompressed;

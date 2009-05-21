@@ -55,29 +55,29 @@ void TransformRgbToBgr(Triplet<SAMPLE>* pDest, int pixelCount)
 }
 
 template<class TRANSFORM, class SAMPLE> 
-void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixelCount, const TRANSFORM&)
+void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixelCount, TRANSFORM& transform) 
 {	
 	for (int i = 0; i < pixelCount; ++i)
 	{
-		pDest[i] = TRANSFORM::Apply(pSrc[i].v1, pSrc[i].v2, pSrc[i].v3);
+		pDest[i] = transform(pSrc[i].v1, pSrc[i].v2, pSrc[i].v3);
 	}
 };
 
 
 template<class TRANSFORM, class SAMPLE> 
-void TransformLineToTriplet(const SAMPLE* ptypeInput, LONG pixelStrideIn, Triplet<SAMPLE>* pbyteBuffer, LONG pixelStride, const TRANSFORM&)
+void TransformLineToTriplet(const SAMPLE* ptypeInput, LONG pixelStrideIn, Triplet<SAMPLE>* pbyteBuffer, LONG pixelStride, TRANSFORM& transform)
 {
 	int cpixel = MIN(pixelStride, pixelStrideIn);
 	Triplet<SAMPLE>* ptypeBuffer = (Triplet<SAMPLE>*)pbyteBuffer;
 
 	for (int x = 0; x < cpixel; ++x)
 	{
-		ptypeBuffer[x] = TRANSFORM::Apply(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]);
+		ptypeBuffer[x] = transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]);
 	}
 }
 
 template<class TRANSFORM, class SAMPLE> 
-void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAMPLE* ptypeBuffer, LONG pixelStride, const TRANSFORM&)
+void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAMPLE* ptypeBuffer, LONG pixelStride, TRANSFORM& transform)
 {
 	int cpixel = MIN(pixelStride, pixelStrideIn);
 	const Triplet<SAMPLE>* ptypeBufferIn = (Triplet<SAMPLE>*)pbyteInput;
@@ -85,7 +85,7 @@ void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, LONG pixelStrideI
 	for (int x = 0; x < cpixel; ++x)
 	{
 		Triplet<SAMPLE> color = ptypeBufferIn[x];
-		Triplet<SAMPLE> colorTranformed = TRANSFORM::Apply(color.v1, color.v2, color.v3);
+		Triplet<SAMPLE> colorTranformed = transform(color.v1, color.v2, color.v3);
 
 		ptypeBuffer[x] = colorTranformed.v1;
 		ptypeBuffer[x + pixelStride] = colorTranformed.v2;
@@ -99,11 +99,14 @@ template<class TRANSFORM>
 class ProcessTransformed : public ProcessLine
 {
 	typedef typename TRANSFORM::SAMPLE SAMPLE;
+
 	ProcessTransformed(const ProcessTransformed&) {}
 public:
-	ProcessTransformed(void* pbyteOutput, const JlsParamaters& info) :
+	ProcessTransformed(void* pbyteOutput, const JlsParamaters& info, TRANSFORM transform) :
 		_pbyteOutput((BYTE*)pbyteOutput),
-		_info(info)
+		_info(info),
+		_transform(transform),
+		_inverseTransform(transform)
 	{
 		ASSERT(_info.components == 3);
 	}
@@ -112,11 +115,11 @@ public:
 	{
 		if (_info.ilv == ILV_SAMPLE)
 		{
-			TransformLine((Triplet<SAMPLE>*)pDst, (const Triplet<SAMPLE>*)_pbyteOutput, pixelCount, TRANSFORM());
+			TransformLine((Triplet<SAMPLE>*)pDst, (const Triplet<SAMPLE>*)_pbyteOutput, pixelCount, _transform);
 		}
 		else
 		{
-			TransformTripletToLine((const Triplet<SAMPLE>*)_pbyteOutput, pixelCount, (SAMPLE*)pDst, byteStride, TRANSFORM());
+			TransformTripletToLine((const Triplet<SAMPLE>*)_pbyteOutput, pixelCount, (SAMPLE*)pDst, byteStride, _transform);
 		}
 		_pbyteOutput += sizeof(Triplet<SAMPLE>)*pixelCount;
 	}
@@ -125,11 +128,11 @@ public:
 	{
 		if (_info.ilv == ILV_SAMPLE)
 		{
-			TransformLine((Triplet<SAMPLE>*)_pbyteOutput, (const Triplet<SAMPLE>*)pSrc, pixelCount, typename TRANSFORM::INVERSE());
+			TransformLine((Triplet<SAMPLE>*)_pbyteOutput, (const Triplet<SAMPLE>*)pSrc, pixelCount, _inverseTransform);
 		}
 		else
 		{
-			TransformLineToTriplet((const SAMPLE*)pSrc, byteStride, (Triplet<SAMPLE>*)_pbyteOutput, pixelCount, typename TRANSFORM::INVERSE());
+			TransformLineToTriplet((const SAMPLE*)pSrc, byteStride, (Triplet<SAMPLE>*)_pbyteOutput, pixelCount, _inverseTransform);
 		}
 		if (_info.outputBgr)
 		{
@@ -141,8 +144,9 @@ public:
 private:
 	BYTE* _pbyteOutput;
 	const JlsParamaters& _info;	
+	TRANSFORM _transform;
+	typename TRANSFORM::INVERSE _inverseTransform;
 };
-
 
 
 
