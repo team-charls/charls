@@ -64,6 +64,7 @@ struct JlsParamaters
 	int width;
 	int height;
 	int bitspersample;
+	int bytesperline;	// for [source (at encoding)][decoded (at decoding)] pixel image in user buffer
 	int components;
 	int allowedlossyerror;
 	interleavemode ilv;

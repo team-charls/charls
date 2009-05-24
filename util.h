@@ -11,17 +11,23 @@
 #include <assert.h>
 #define ASSERT(t) assert(t)
 #else
-#define ASSERT(t) {}
+#  ifndef ASSERT
+#    define ASSERT(t) {}
+#  endif
 #endif
 
 #if defined(WIN32)
-#define CHARLS_IMEXPORT __declspec(dllexport) 
-
+#ifndef CHARLS_IMEXPORT
+#  define CHARLS_IMEXPORT __declspec(dllexport) 
+#endif
 // default signed int types (32 or 64 bit)
-#ifdef  _WIN64
-typedef  int LONG;
-#else
+
+#ifndef VOID
+#  ifdef  _WIN64
 typedef int LONG;
+#  else
+typedef int LONG;
+#  endif
 #endif
 
 #else
@@ -140,6 +146,23 @@ struct Triplet
 		};
 };
 
+
+template<class sample>
+struct Quad : public Triplet<sample>
+{
+	Quad() : 
+		v4(0)
+		{}
+
+	Quad(Triplet<sample> triplet, LONG alpha) : Triplet<sample>(triplet), A((sample)alpha)
+		{}
+		
+	union 
+	{
+		sample v4;
+		sample A;
+	};
+};
 
 #pragma pack(pop)
 

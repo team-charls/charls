@@ -802,6 +802,7 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::InitProcess(void* pvoidOut)
 			default: throw JlsException(UnsupportedColorTransform);
 		}
 	} else if (STRATEGY::_info.bitspersample > 8)
+
 	{
 		int shift = 16 - STRATEGY::_info.bitspersample;
 		switch(STRATEGY::_info.colorTransform)

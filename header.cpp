@@ -368,6 +368,12 @@ void JLSInputStream::ReadStartOfScan()
 	}
 	_info.allowedlossyerror = ReadByte();
 	_info.ilv = interleavemode(ReadByte());
+	if(_info.bytesperline == 0)
+	{
+		int components = _info.ilv == ILV_NONE ? 1 : _info.components;
+		_info.bytesperline = components*_info.width * ((_info.bitspersample+7)/8);
+	}
+
 }
 
 
@@ -449,7 +455,6 @@ void JLSInputStream::ReadStartOfFrame()
 	_info.width = ccol;
 	_info.height = cline;
 	_info.components= ReadByte();
-	
 }
 
 
@@ -531,9 +536,7 @@ void JLSOutputStream::AddScan(const void* pbyteComp, const JlsParamaters* pparam
 
 	Size size = Size(pparams->width, pparams->height);
 	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
-
-	
-	_segments.push_back(new JpegImageDataSegment(pbyteComp, *pparams, _icompLast, ccomp));
+		_segments.push_back(new JpegImageDataSegment(pbyteComp, *pparams, _icompLast, ccomp));
 }
 
 

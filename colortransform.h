@@ -129,12 +129,17 @@ struct TransformShifted
 		inlinehint Triplet<SAMPLE> operator() (int v1, int v2, int v3)
 		{
 			Triplet<SAMPLE> result = _inverseTransform(v1 << _shift, v2 << _shift, v3 << _shift);
-			result.R = result.R >> _shift;
-			result.G = result.G >> _shift;
-			result.B = result.B >> _shift;
-			return result;
+			
+			return Triplet<SAMPLE>(result.R >> _shift, result.G >> _shift, result.B >> _shift);
 		}
-	
+
+		inlinehint Quad<SAMPLE> operator() (int v1, int v2, int v3, int v4)
+		{
+			Triplet<SAMPLE> result = _inverseTransform(v1 << _shift, v2 << _shift, v3 << _shift);
+			
+			return Quad<SAMPLE>(result.R >> _shift, result.G >> _shift, result.B >> _shift, v4);
+		}
+
 		int _shift;
 		typename TRANSFORM::INVERSE _inverseTransform;
 	};
@@ -155,6 +160,13 @@ struct TransformShifted
 		Triplet<SAMPLE> result = _colortransform(R << _shift, G << _shift, B << _shift);
 
 		return Triplet<SAMPLE>(result.R >> _shift, result.G >> _shift, result.B >> _shift);
+	}
+
+	inlinehint Quad<SAMPLE> operator() (int R, int G, int B, int A)
+	{
+		Triplet<SAMPLE> result = _colortransform(R << _shift, G << _shift, B << _shift);
+
+		return Quad<SAMPLE>(result.R >> _shift, result.G >> _shift, result.B >> _shift, A);
 	}
 
 	int _shift;
