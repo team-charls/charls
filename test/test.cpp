@@ -13,6 +13,7 @@
 #include "../losslesstraits.h"
 #include "../colortransform.h"
 #include "../streams.h"
+#include "../processline.h"
 
 #include "time.h"
 
@@ -450,6 +451,16 @@ void TestSampleAnnexH3()
 //	TestJls(vecRaw, size, 8, 1, ILV_NONE, rgbyteComp, sizeof(rgbyteComp), false);
 }
 
+
+void TestBgra()
+{
+	char rgbyteTest[] = "RGBARGBARGBARGBA1234";
+	char rgbyteComp[] = "BGRABGRABGRABGRA1234";
+	TransformRgbToBgr(rgbyteTest, 4, 4);
+	ASSERT(strcmp(rgbyteTest, rgbyteComp) == 0);
+}
+
+
 void TestBgr()
 {
 	JlsParamaters info;
@@ -465,6 +476,10 @@ void TestBgr()
 	ASSERT(rgbyteDecoded[0] == 0x69);
 	ASSERT(rgbyteDecoded[1] == 0x77);
 	ASSERT(rgbyteDecoded[2] == 0xa1);	
+	ASSERT(rgbyteDecoded[info.width * 6 + 3] == 0x2d);
+	ASSERT(rgbyteDecoded[info.width * 6 + 4] == 0x43);
+	ASSERT(rgbyteDecoded[info.width * 6 + 5] == 0x4d);	
+
 }
 
 void TestSmallBuffer()
@@ -564,6 +579,7 @@ void TestConformance()
 
 void unittest()
 {
+	TestBgra();
 	TestBgr();
 
 	printf("Test Damaged bitstream\r\n");
