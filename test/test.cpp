@@ -132,7 +132,11 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	params.height = size.cy;
 	params.width = size.cx;
 
-	if (ccomp == 3)
+	if (ccomp == 4)
+	{
+		params.ilv = ILV_LINE;
+	}
+	else if (ccomp == 3)
 	{
 		params.ilv = ILV_LINE;
 		params.colorTransform = COLORXFORM_HP1;
@@ -297,6 +301,9 @@ void TestTraits8bit()
 
 void TestPerformance()
 {
+	// RGBA image (This is a common PNG sample)
+	TestFile("test/alphatest.raw", 0, Size(380, 287),  8, 4);
+
 	Size size1024 = Size(1024, 1024);
 	Size size512 = Size(512, 512);
 		
@@ -306,6 +313,7 @@ void TestPerformance()
 	// 8 bit mono
 	TestFile("test/0015.raw", 0, size1024,  8, 1);
 	TestFile("test/lena8b.raw", 0, size512,  8, 1);
+
 
 	// 8 bit color
 	TestFile("test/desktop.ppm", 40, Size(1280,1024),  8, 3);
@@ -579,8 +587,12 @@ void TestConformance()
 
 void unittest()
 {
-	TestBgra();
+	printf("Test Perf\r\n");
+	TestPerformance();
+	TestLargeImagePerformance();
+
 	TestBgr();
+	TestBgra();
 
 	printf("Test Damaged bitstream\r\n");
 	TestDamagedBitStream2();
@@ -595,9 +607,6 @@ void unittest()
 	printf("Test Conformance\r\n");
 	TestConformance();
 	
-	printf("Test Perf\r\n");
-	TestPerformance();
-	TestLargeImagePerformance();
 
 	printf("Test Small buffer\r\n");
 	TestSmallBuffer();
