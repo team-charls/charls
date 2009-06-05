@@ -153,11 +153,8 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	double bitspersample = cbyteCompressed  * 8  * 1.0 /  (ccomp *size.cy * size.cx);
 	double dwtimeDecodeComplete = getTime();
 	std::cout << "RoundTrip test for: " << strName << "\n\r";
-
-// disabled for Linux, causes valgrind errors
-#if defined(WIN32)
  
-	printf("Encode: %f Decode: %f Ratio: %f Bps: %f \n\r", dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, dblfactor, bitspersample);
+	printf("Encode:%7.2f Decode:%7.2f Ratio: %5.2f Bps: %5.2f \n\r", dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, dblfactor, bitspersample);
 	BYTE* pbyteOut = &rgbyteOut[0];
 	for (size_t i = 0; i < rgbyteOut.size(); ++i)
 	{
@@ -167,12 +164,10 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 			break;
 		}
 	}	
-
-#endif 
 					    
 }
 
-void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE* rgbyteRaw, int cbyteRaw)
+void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE* rgbyteRaw, int cbyteRaw, bool bcheckEncode)
 {	
 	JlsParamaters params = {0};
 	JpegLsReadHeader(pbyteCompressed, cbyteCompressed, &params);
@@ -199,10 +194,12 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 		}						    
 	}
 
-//	int cbyteCompressedActual = 0;
-
-//	JLS_ERROR error = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
-//	ASSERT(error == OK);
+	if (bcheckEncode)
+	{
+		int cbyteCompressedActual = 0;
+		JLS_ERROR error = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
+		ASSERT(error == OK);
+	}
 }
 
 
@@ -330,9 +327,10 @@ void TestPerformance()
 void TestLargeImagePerformance()
 {
 
-    //TestFile("test/rgb8bit/artificial.ppm", 17, Size(3072,2048),  8, 3);
-	//TestFile("test/rgb8bit/bridge.ppm", 17, Size(2749,4049),  8, 3);
-//	TestFile("test/rgb8bit/big_building.ppm", 17, Size(7216,5412),  8, 3);
+    TestFile("test/rgb8bit/artificial.ppm", 17, Size(3072,2048),  8, 3);
+	TestFile("test/rgb8bit/bridge.ppm", 17, Size(2749,4049),  8, 3);
+	TestFile("test/rgb8bit/flower_foveon.ppm", 17, Size(2268,1512),  8, 3);
+	//TestFile("test/rgb8bit/big_building.ppm", 17, Size(7216,5412),  8, 3);
 //	TestFile("test/rgb16bit/bridge.ppm", 19, Size(2749,4049),  16, 3, true);
 }
 
@@ -364,7 +362,7 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParamaters* 
 	return JpegLsReadHeader(&((*rgbyteFile)[0]), rgbyteFile->size(), info) == OK;
 }
 
-void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
+void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEncode = true)
 {
 	std::cout << "Conformance test:" << strNameEncoded << "\n\r";
 	std::vector<BYTE> rgbyteFile;
@@ -394,7 +392,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs)
 		Triplet2Planar(rgbyteRaw, Size(metadata.width, metadata.height));
 	}
 
-	TestCompliance(&rgbyteFile[0], rgbyteFile.size(), &rgbyteRaw[0], rgbyteRaw.size());
+	TestCompliance(&rgbyteFile[0], rgbyteFile.size(), &rgbyteRaw[0], rgbyteRaw.size(), bcheckEncode);
 }
 
 
@@ -490,7 +488,7 @@ void TestBgr()
 
 }
 
-void TestSmallBuffer()
+void TestTooSmallOutputBuffer()
 {
 	std::vector<BYTE> rgbyteCompressed;	
 	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
@@ -507,13 +505,13 @@ void TestSmallBuffer()
 void TestDamagedBitStream1()
 {
 	std::vector<BYTE> rgbyteCompressed;	
-	ReadFile("test/incorrect_images/InfiniteLoopFFMPEG_working.jls", &rgbyteCompressed, 0);
+	if (!ReadFile("test/incorrect_images/InfiniteLoopFFMPEG.jls", &rgbyteCompressed, 0))
+		return;
 	
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(256 * 256 * 2);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
-	WriteFile("test/incorrect_images/InfinixteLoopFFMPEG.RAW", rgbyteOut);
-	//ASSERT(error == InvalidCompressedData);
+	ASSERT(error == InvalidCompressedData);
 	
 }
 
@@ -521,7 +519,8 @@ void TestDamagedBitStream1()
 void TestDamagedBitStream2()
 {
 	std::vector<BYTE> rgbyteCompressed;	
-	ReadFile("test/lena8b.jls", &rgbyteCompressed, 0);
+	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
+		return;
 	
 	rgbyteCompressed.resize(900);
 	rgbyteCompressed.resize(40000,3);
@@ -535,12 +534,34 @@ void TestDamagedBitStream2()
 
 
 
+void TestDamagedBitStream3()
+{
+	std::vector<BYTE> rgbyteCompressed;	
+	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
+		return;	
+
+	rgbyteCompressed[300] = 0xFF;
+	rgbyteCompressed[301] = 0xFF;
+	
+	std::vector<BYTE> rgbyteOut;
+	rgbyteOut.resize(512 * 512);	
+	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
+	ASSERT(error == InvalidCompressedData);
+	
+}
+
+
+void TestColorTransforms_HpImages()
+{	
+	DecompressFile("test/jlsimage/banny_normal.jls", "test/jlsimage/banny.ppm",38, false);
+	DecompressFile("test/jlsimage/banny_Hp1.jls", "test/jlsimage/banny.ppm",38, false);
+	DecompressFile("test/jlsimage/banny_Hp2.jls", "test/jlsimage/banny.ppm",38, false);
+	DecompressFile("test/jlsimage/banny_Hp3.jls", "test/jlsimage/banny.ppm",38, false);
+}
+
 void TestConformance()
 {	
-	DecompressFile("test/jlsimage/banny_normal.jls", "test/jlsimage/banny.ppm",38);
-	DecompressFile("test/jlsimage/banny_Hp1.jls", "test/jlsimage/banny.ppm",38);
-	DecompressFile("test/jlsimage/banny_Hp2.jls", "test/jlsimage/banny.ppm",38);
-	DecompressFile("test/jlsimage/banny_Hp3.jls", "test/jlsimage/banny.ppm",38);
+
 	// Test 1
 	DecompressFile("test/conformance/T8C0E0.JLS", "test/conformance/TEST8.PPM",15);
 
@@ -587,15 +608,15 @@ void TestConformance()
 
 void unittest()
 {
-	printf("Test Perf\r\n");
-	TestPerformance();
-	TestLargeImagePerformance();
-
+	
+	printf("Windows bitmap BGR/BGRA output\r\n");
 	TestBgr();
 	TestBgra();
 
 	printf("Test Damaged bitstream\r\n");
+	TestDamagedBitStream1();
 	TestDamagedBitStream2();
+	TestDamagedBitStream3();
 	
 	printf("Test Annex H3\r\n");
 	TestSampleAnnexH3();
@@ -607,9 +628,19 @@ void unittest()
 	printf("Test Conformance\r\n");
 	TestConformance();
 	
+	printf("Test Color transform equivalence on HP images\r\n");
+	TestColorTransforms_HpImages();
+
+	printf("Test Perf\r\n");
+	TestPerformance();
+
+#ifndef _DEBUG
+	printf("Test Large Images Performance\r\n");
+	TestLargeImagePerformance();
+#endif
 
 	printf("Test Small buffer\r\n");
-	TestSmallBuffer();
+	TestTooSmallOutputBuffer();
 
 	TestNoiseImage();
 }

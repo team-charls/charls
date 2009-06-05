@@ -2,12 +2,42 @@
 // (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
+#ifndef CHARLS_DECODERSTATEGY
+#define CHARLS_DECODERSTATEGY
 
-#ifndef CHARLS_DECODERSTRATEGY
-#define CHARLS_DECODERSTRATEGY
 
 #include "streams.h"
 #include "processline.h"
+
+
+#ifdef _MSC_VER
+#include <intrin.h>
+
+inline unsigned int byteswap(unsigned int x)
+{
+	return _byteswap_ulong(x);
+}
+
+inline unsigned long long byteswap(unsigned long long x)
+{	
+	return _byteswap_uint64(x);
+}
+#else
+
+inline unsigned int byteswap(unsigned int x)
+{
+	asm("bswap %0" : "=r" (x) : "0" (x));
+	return x;
+}
+
+inline unsigned long long byteswap(unsigned long long x)
+{
+	asm("bswap %0" : "=r" (x) : "0" (x));
+	return x;
+}
+
+#endif 
+
 
 class DecoderStrategy
 {
@@ -65,16 +95,14 @@ public:
 	  {
 		  ASSERT(_validBits <=bufferbits - 8);
 
+		  // Easy & fast: if there is no 0xFF byte in sight, we can read without bitstuffing
 		  if (_pbyteCompressed < _pbyteNextFF)
 		  {
-			  do
-			  {
-				  _readCache		 |= bufType(_pbyteCompressed[0]) << (bufferbits - 8  - _validBits);
-				  _validBits		 += 8; 				  
-				  _pbyteCompressed   += 1;				
-			  }
-			  while (_validBits < bufferbits - 8);
-			  
+			  _readCache		 |= byteswap(*((bufType*)(_pbyteCompressed))) >> _validBits;
+
+			  int bytesToRead = (bufferbits - _validBits) >> 3; 			  
+			  _pbyteCompressed += bytesToRead;
+			  _validBits += bytesToRead * 8;
 			  ASSERT(_validBits >= bufferbits - 8);
 			  return;
 		  }
@@ -90,6 +118,19 @@ public:
 			  }
 
 			  bufType valnew	  = _pbyteCompressed[0];
+			  
+			  if (valnew == 0xFF)		
+			  {
+				  // JPEG bitstream rule: no FF may be followed by 0x80 or higher	    			 
+				 if (_pbyteCompressed == _pbyteCompressedEnd - 1 || (_pbyteCompressed[1] & 0x80) != 0)
+				 {
+					 if (_validBits <= 0)
+					 	throw JlsException(InvalidCompressedData);
+					 
+					 return;
+			     }
+			  }
+
 			  _readCache		 |= valnew << (bufferbits - 8  - _validBits);
 			  _pbyteCompressed   += 1;				
 			  _validBits		 += 8; 
@@ -114,11 +155,13 @@ public:
 		  while (pbyteNextFF < _pbyteCompressedEnd)
 	      {
 			  if (*pbyteNextFF == 0xFF) 
+			  {				  
 				  break;
-
+			  }
     		  pbyteNextFF++;
 		  }
 		  
+
 		  return pbyteNextFF - (sizeof(bufType)-1);
 	  }
 
@@ -170,7 +213,7 @@ public:
 
 	  inlinehint bool ReadBit()
 	  {
-		  if (_validBits == 0)
+		  if (_validBits <= 0)
 		  {
 			  MakeValid();
 		  }
