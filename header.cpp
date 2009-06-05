@@ -227,7 +227,6 @@ void JLSInputStream::ReadPixels(void* pvoid, LONG cbyteAvailable)
 	{
 		ReadScan(pvoid);
 	}
-	//DoColorXForm(pvoid);
 }
 
 // ReadNBytes()

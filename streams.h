@@ -1,16 +1,19 @@
 // 
 // (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
-
-
 #ifndef CHARLS_STREAMS
 #define CHARLS_STREAMS
 
 #include <vector>
 #include "util.h"
 
-class JpegSegment;
 
+
+// This file defines JPEG-LS streams: The header and the actual pixel data. Header markers have fixed length, the pixeldata not. 
+
+
+
+class JpegSegment;
 
 enum JPEGLS_ColorXForm
 {
