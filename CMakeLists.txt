@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 2.6)
 IF(NOT CMAKE_BUILD_TYPE)
 # The following compiler option are only meant for GCC:
 IF(CMAKE_COMPILER_IS_GNUCC)
-SET(CMAKE_CXX_FLAGS "-Wall -O3 -g" )
+SET(CMAKE_CXX_FLAGS " -O3 -g" )
 ENDIF(CMAKE_COMPILER_IS_GNUCC)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
