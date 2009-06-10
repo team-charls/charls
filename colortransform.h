@@ -4,6 +4,12 @@
 #ifndef CHARLS_COLORTRANSFORM
 #define CHARLS_COLORTRANSFORM
 
+//
+// This file defines simple classes that define (lossless) color transforms.
+// They are invoked in processline.h to convert between decoded values and the internal line buffers. 
+// Color transforms work best for computer generated images. 
+//
+
 template<class sample>
 struct TransformNoneImpl
 {
@@ -19,8 +25,6 @@ struct TransformNone : public TransformNoneImpl<sample>
 {
 	typedef struct TransformNoneImpl<sample> INVERSE;
 };
-
-
 
 
 

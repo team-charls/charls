@@ -54,24 +54,24 @@ Presets ComputeDefault(LONG MAXVAL, LONG NEAR)
 
 inlinehint LONG GetPredictedValue(LONG Ra, LONG Rb, LONG Rc)
 {
-if (Ra < Rb)
-{
-if (Rc < Ra)
-return Rb;
+	if (Ra < Rb)
+	{
+		if (Rc < Ra)
+			return Rb;
 
-if (Rc > Rb)
-return Ra;
-}
-else
-{
-if (Rc < Rb)
-return Ra;
+		if (Rc > Rb)
+			return Ra;
+	}
+	else
+	{
+		if (Rc < Rb)
+			return Ra;
 
-if (Rc > Ra)
-return Rb;
-}
+		if (Rc > Ra)
+			return Rb;
+	}
 
-return Ra + Rb - Rc;
+	return Ra + Rb - Rc;
 }
 
 /*/
@@ -83,11 +83,13 @@ inlinehint LONG GetPredictedValue(LONG Ra, LONG Rb, LONG Rc)
 
 	// is Ra between Rc and Rb? 
 	if ((sgn ^ (Rc - Ra)) < 0)
+	{
 		return Rb;
-
-	// is Rb between Rc and Ra?
-	if ((sgn ^ (Rb - Rc)) < 0)
+	} 
+	else if ((sgn ^ (Rb - Rc)) < 0)
+	{
 		return Ra;
+	}
 
 	// default case, valid if Rc element of [Ra,Rb] 
 	return Ra + Rb - Rc;
@@ -263,8 +265,9 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, LONG, LONG
 			throw JlsException(InvalidCompressedData);
 	}	
 	ErrVal = ErrVal ^ ((traits.NEAR == 0) ? ctx.GetErrorCorrection(k) : 0);
-	ctx.UpdateVariables(ErrVal, traits.NEAR, traits.RESET);			
-	return traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)); 
+	ctx.UpdateVariables(ErrVal, traits.NEAR, traits.RESET);	
+	ErrVal = ApplySign(ErrVal, sign);
+	return traits.ComputeReconstructedSample(Px, ErrVal); 
 }
 
 
@@ -536,16 +539,14 @@ Triplet<typename TRAITS::SAMPLE> JlsCodec<TRAITS,STRATEGY>::DecodeRIPixel(Triple
 template<class TRAITS, class STRATEGY>
 Triplet<typename TRAITS::SAMPLE> JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(Triplet<SAMPLE> x, Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb)
 {
-	const LONG RItype		= 0;
-
 	LONG errval1	= traits.ComputeErrVal(Sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
-	EncodeRIError(_contextRunmode[RItype], errval1);
+	EncodeRIError(_contextRunmode[0], errval1);
 
 	LONG errval2	= traits.ComputeErrVal(Sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
-	EncodeRIError(_contextRunmode[RItype], errval2);
+	EncodeRIError(_contextRunmode[0], errval2);
 
 	LONG errval3	= traits.ComputeErrVal(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
-	EncodeRIError(_contextRunmode[RItype], errval3);
+	EncodeRIError(_contextRunmode[0], errval3);
 
 
 	return Triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errval1 * Sign(Rb.v1  - Ra.v1)),
@@ -620,7 +621,6 @@ LONG JlsCodec<TRAITS,STRATEGY>::DoRunMode(LONG ipixel, EncoderStrategy*)
 	ptypeCurX[runLength] = EncodeRIPixel(ptypeCurX[runLength], Ra, ptypePrevX[runLength]);
 	DecrementRunIndex();
 	return runLength + 1;
-
 }
 
 
@@ -662,16 +662,16 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(SAMPLE*)
 
 		LONG Qs = ComputeContextID(QuantizeGratient(Rd - Rb), QuantizeGratient(Rb - Rc), QuantizeGratient(Rc - Ra));
 
-		if (Qs == 0)
+		if (Qs != 0)
+		{
+			ptypeCur[ipixel] = DoRegular(Qs, ptypeCur[ipixel], GetPredictedValue(Ra, Rb, Rc), (STRATEGY*)(NULL));
+			ipixel++;
+		}
+		else
 		{
 			ipixel += DoRunMode(ipixel, (STRATEGY*)(NULL));
 			Rb = ptypePrev[ipixel-1];
 			Rd = ptypePrev[ipixel];	
-		}
-		else
-		{
-			ptypeCur[ipixel] = DoRegular(Qs, ptypeCur[ipixel], GetPredictedValue(Ra, Rb, Rc), (STRATEGY*)(NULL));
-			ipixel++;
 		}				
 	}
 }
@@ -693,19 +693,19 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet<SAMPLE>*)
 		LONG Qs2 = ComputeContextID(QuantizeGratient(Rd.v2 - Rb.v2), QuantizeGratient(Rb.v2 - Rc.v2), QuantizeGratient(Rc.v2 - Ra.v2));
 		LONG Qs3 = ComputeContextID(QuantizeGratient(Rd.v3 - Rb.v3), QuantizeGratient(Rb.v3 - Rc.v3), QuantizeGratient(Rc.v3 - Ra.v3));
 
-		if (Qs1 == 0 && Qs2 == 0 && Qs3 == 0)
+		if (Qs1 != 0 || Qs2 != 0 || Qs3 != 0)
 		{
-			ipixel += DoRunMode(ipixel, (STRATEGY*)(NULL));
+			ptypeCur[ipixel] = Triplet<SAMPLE>(
+				DoRegular(Qs1, ptypeCur[ipixel].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1), (STRATEGY*)(NULL)),
+				DoRegular(Qs2, ptypeCur[ipixel].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), (STRATEGY*)(NULL)),
+				DoRegular(Qs3, ptypeCur[ipixel].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), (STRATEGY*)(NULL)));
+
+			ipixel++;
 		}
 		else
 		{
-			Triplet<SAMPLE> Rx;
-			Rx.v1 = DoRegular(Qs1, ptypeCur[ipixel].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1), (STRATEGY*)(NULL));
-			Rx.v2 = DoRegular(Qs2, ptypeCur[ipixel].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), (STRATEGY*)(NULL));
-			Rx.v3 = DoRegular(Qs3, ptypeCur[ipixel].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), (STRATEGY*)(NULL));
-			ptypeCur[ipixel] = Rx;
-			ipixel++;
-		}
+			ipixel += DoRunMode(ipixel, (STRATEGY*)(NULL));
+		}		
 
 	}
 };
