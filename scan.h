@@ -693,20 +693,20 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet<SAMPLE>*)
 		LONG Qs2 = ComputeContextID(QuantizeGratient(Rd.v2 - Rb.v2), QuantizeGratient(Rb.v2 - Rc.v2), QuantizeGratient(Rc.v2 - Ra.v2));
 		LONG Qs3 = ComputeContextID(QuantizeGratient(Rd.v3 - Rb.v3), QuantizeGratient(Rb.v3 - Rc.v3), QuantizeGratient(Rc.v3 - Ra.v3));
 
-		if (Qs1 != 0 || Qs2 != 0 || Qs3 != 0)
+		
+		if (Qs1 == 0 && Qs2 == 0 && Qs3 == 0)
 		{
-			ptypeCur[ipixel] = Triplet<SAMPLE>(
-				DoRegular(Qs1, ptypeCur[ipixel].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1), (STRATEGY*)(NULL)),
-				DoRegular(Qs2, ptypeCur[ipixel].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), (STRATEGY*)(NULL)),
-				DoRegular(Qs3, ptypeCur[ipixel].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), (STRATEGY*)(NULL)));
-
-			ipixel++;
+			ipixel += DoRunMode(ipixel, (STRATEGY*)(NULL));
 		}
 		else
 		{
-			ipixel += DoRunMode(ipixel, (STRATEGY*)(NULL));
-		}		
-
+			Triplet<SAMPLE> Rx;
+			Rx.v1 = DoRegular(Qs1, ptypeCur[ipixel].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1), (STRATEGY*)(NULL));
+			Rx.v2 = DoRegular(Qs2, ptypeCur[ipixel].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), (STRATEGY*)(NULL));
+			Rx.v3 = DoRegular(Qs3, ptypeCur[ipixel].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), (STRATEGY*)(NULL));
+			ptypeCur[ipixel] = Rx;
+			ipixel++;
+		}	
 	}
 };
 
