@@ -2,10 +2,14 @@
 // (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
+// Without this, ASSERT() doesn't work and we won't notice test failures!
+#ifndef _DEBUG
+#define _DEBUG
+#endif
+
 #include "stdafx.h"
 #include <iostream>
 #include <vector>
-
 
 #include "../interface.h"
 #include "../util.h"
@@ -143,11 +147,13 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	}
 
 	size_t cbyteCompressed;
-	JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &cbyteCompressed, &rgbyteRaw[0], rgbyteOut.size(), &params);
+	JLS_ERROR err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &cbyteCompressed, &rgbyteRaw[0], rgbyteOut.size(), &params);
+	ASSERT(err == OK);
 
 	double dwtimeEncodeComplete = getTime();
 	
-	JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(cbyteCompressed));
+	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(cbyteCompressed));
+	ASSERT(err == OK);
 	
 	double dblfactor = 1.0 *  rgbyteOut.size() / cbyteCompressed;
 	double bitspersample = cbyteCompressed  * 8  * 1.0 /  (ccomp *size.cy * size.cx);
@@ -170,7 +176,8 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE* rgbyteRaw, int cbyteRaw, bool bcheckEncode)
 {	
 	JlsParamaters params = {0};
-	JpegLsReadHeader(pbyteCompressed, cbyteCompressed, &params);
+	JLS_ERROR err = JpegLsReadHeader(pbyteCompressed, cbyteCompressed, &params);
+	ASSERT(err == OK);
 
 	std::vector<BYTE> rgbyteCompressed;
 	rgbyteCompressed.resize(params.height *params.width* 4);
@@ -178,8 +185,8 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(params.height *params.width * ((params.bitspersample + 7) / 8) * params.components);
 	
-	JLS_ERROR result = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), pbyteCompressed, cbyteCompressed);
-	ASSERT(result == OK);
+	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), pbyteCompressed, cbyteCompressed);
+	ASSERT(err == OK);
 
 	if (params.allowedlossyerror == 0)
 	{
@@ -196,9 +203,8 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 
 	if (bcheckEncode)
 	{
-		int cbyteCompressedActual = 0;
-		JLS_ERROR error = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
-		ASSERT(error == OK);
+		err = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
+		ASSERT(err == OK);
 	}
 }
 
@@ -357,9 +363,14 @@ void TestNoiseImage()
 bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParamaters* info)
 {
 	if (!ReadFile(strNameEncoded, rgbyteFile))
+	{
+		ASSERT(false);
 		return false;
+	}
 
-	return JpegLsReadHeader(&((*rgbyteFile)[0]), rgbyteFile->size(), info) == OK;
+	JLS_ERROR err = JpegLsReadHeader(&((*rgbyteFile)[0]), rgbyteFile->size(), info);
+	ASSERT(err == OK);
+	return err == OK;
 }
 
 void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEncode = true)
@@ -477,7 +488,8 @@ void TestBgr()
 	info.outputBgr = true;
 
 	rgbyteDecoded.resize(info.width * info.height * info.components);
-	JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &info);
+	JLS_ERROR err = JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &info);
+	ASSERT(err == OK);
 
 	ASSERT(rgbyteDecoded[0] == 0x69);
 	ASSERT(rgbyteDecoded[1] == 0x77);
