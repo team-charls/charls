@@ -85,7 +85,11 @@ protected:
 	void FlushStreamEnd()
 	{
 		Flush();
-		AppendToBitStream(0,bitpos % 8);
+		// if a 0xff was written, Flush() will force one unset bit anyway
+		if (_bFFWritten)
+			AppendToBitStream(0, (bitpos - 1) % 8);
+		else
+			AppendToBitStream(0, bitpos % 8);
 		ASSERT(bitpos % 8 == 0);
 		Flush();
 		ASSERT(bitpos == 0x20);
