@@ -54,7 +54,11 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsEncode(void* pdataCompressed, size_t cbyteBuffer
 	JlsParamaters info = *pparams;
 	if(info.bytesperline == 0)
 	{
-		info.bytesperline = info.width * ((info.bitspersample + 7)/8) * info.components;
+		info.bytesperline = info.width * ((info.bitspersample + 7)/8);
+		if (info.ilv != ILV_NONE)
+		{
+			info.bytesperline *= info.components;
+		}
 	}
 	
 	JLS_ERROR parameterError = CheckInput(pdataCompressed, cbyteBuffer, pdataUncompressed, cbyteUncompressed, &info);
