@@ -5,10 +5,13 @@
 #ifndef CHARLS_DECODERSTATEGY
 #define CHARLS_DECODERSTATEGY
 
-
 #include "streams.h"
 #include "processline.h"
 
+#if defined(i386) || defined(__i386__) || defined(_M_IX86) || defined(__amd64__) || defined(_M_X64)
+#define ARCH_HAS_UNALIGNED_MEM_ACCESS /* TODO define this symbol for more architectures */
+#define USE_X86_ASSEMBLY
+#endif
 
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -22,22 +25,65 @@ inline unsigned long long byteswap(unsigned long long x)
 {	
 	return _byteswap_uint64(x);
 }
+#elif defined(USE_X86_ASSEMBLY)
+// We can use x86 inline assembly!
+inline size_t byteswap(size_t x)
+{
+	asm("bswap %0" : "=r" (x) : "0" (x));
+	return x;
+}
 #else
-
-inline unsigned int byteswap(unsigned int x)
+// This function byteswaps a 4-byte unsigned integer
+inline unsigned int byteswap4(unsigned int x)
 {
-	asm("bswap %0" : "=r" (x) : "0" (x));
-	return x;
+	return (((x & 0x000000ff) << 24) |
+		((x & 0x0000ff00) <<  8) |
+		((x & 0x00ff0000) >>  8) | 
+		((x & 0xff000000) >> 24));
 }
 
-inline unsigned long long byteswap(unsigned long long x)
+inline size_t byteswap(size_t x)
 {
-	asm("bswap %0" : "=r" (x) : "0" (x));
-	return x;
-}
+	// The compiler should be able to optimize these ifs away
+	if (sizeof(size_t) == 4)
+		return byteswap4(x);
+	if (sizeof(size_t) != 8)
+		// This is not yet implemented!
+		assert(false);
 
+	// This variable should always be 32. The problem is that the following
+	// code would cause a warning on 32-bit arches, even though it is never
+	// executed. This is why we have to use this hack.
+	const unsigned int shift = sizeof(size_t) * 8 / 2;
+
+	unsigned int high = x >> shift;
+	unsigned int low = x & 0xffffffff;
+
+	size_t res = ((size_t) byteswap4(low)) << shift;
+	res |= byteswap4(high);
+
+	return res;
+}
 #endif 
 
+inline int is_big_endian()
+{
+	int i = 1;
+	char *p = (char *) &i;
+
+	// Little endian stores the least significant byte first in memory
+	// (0x01 in our case), big endian stores it last.
+	return (*p == 0);
+}
+
+inline size_t big_to_native_endian(size_t x)
+{
+	if (is_big_endian())
+		// x already is in our current endian (=big)
+		return x;
+	// We are on little endian, we need to swap some bytes
+	return byteswap(x);
+}
 
 class DecoderStrategy
 {
@@ -96,11 +142,19 @@ public:
 		  ASSERT(_validBits <=bufferbits - 8);
 
 		  // Easy & fast: if there is no 0xFF byte in sight, we can read without bitstuffing
-		  if (_pbyteCompressed < _pbyteNextFF)
+#ifndef ARCH_HAS_UNALIGNED_MEM_ACCESS
+		  // We can only dereference properly aligned pointers. This
+		  // checks if the pointer is properly aligned, if not we have
+		  // to take the slow path.
+		  const bufType needed_alignment_mask = sizeof(bufType) - 1;
+#else
+		  const bufType needed_alignment_mask = 0;
+#endif
+		  if (_pbyteCompressed < _pbyteNextFF && (((intptr_t)_pbyteCompressed) & needed_alignment_mask) == 0)
 		  {
-			  _readCache		 |= byteswap(*((bufType*)(_pbyteCompressed))) >> _validBits;
+			  _readCache		 |= big_to_native_endian(*((bufType*)_pbyteCompressed)) >> _validBits;
 
-			  int bytesToRead = (bufferbits - _validBits) >> 3; 			  
+			  int bytesToRead = (bufferbits - _validBits) >> 3;
 			  _pbyteCompressed += bytesToRead;
 			  _validBits += bytesToRead * 8;
 			  ASSERT(_validBits >= bufferbits - 8);
