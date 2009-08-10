@@ -101,7 +101,7 @@ public:
 		  // Easy & fast: if there is no 0xFF byte in sight, we can read without bitstuffing
 		  if (_pbyteCompressed < _pbyteNextFF)
 		  {
-#ifndef ARCH_HAS_UNALIGNED_MEM_ACCESS
+#ifdef ARCH_HAS_UNALIGNED_MEM_ACCESS
 			  _readCache		 |= byteswap(*((bufType*)_pbyteCompressed)) >> _validBits;
 #else
 			  _readCache		 |= FromBigEndian<bufType>::Read(_pbyteCompressed) >> _validBits;
