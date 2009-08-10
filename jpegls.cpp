@@ -22,7 +22,6 @@
 #include "lookuptable.h"
 
 
-
 signed char* JlsContext::_tableC = CreateTableC();
 
 
