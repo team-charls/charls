@@ -9,6 +9,13 @@
 #pragma warning (disable: 4996)
 #endif
 
+// enable ASSERT() on linux 
+#ifndef WIN32
+#ifndef _DEBUG
+#define _DEBUG
+#endif
+#endif
+
 #include <stdio.h>
 
 typedef unsigned char BYTE;

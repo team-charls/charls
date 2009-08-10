@@ -2,10 +2,7 @@
 // (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-// Without this, ASSERT() doesn't work and we won't notice test failures!
-#ifndef _DEBUG
-#define _DEBUG
-#endif
+
 
 #include "stdafx.h"
 #include <iostream>
