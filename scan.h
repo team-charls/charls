@@ -50,7 +50,9 @@ Presets ComputeDefault(LONG MAXVAL, LONG NEAR)
 }
 
 
-/* Two alternatives for GetPredictedValue() (second is slightly faster due to reduced branching)
+// Two alternatives for GetPredictedValue() (second is slightly faster due to reduced branching)
+
+#if 0
 
 inlinehint LONG GetPredictedValue(LONG Ra, LONG Rb, LONG Rc)
 {
@@ -74,7 +76,7 @@ inlinehint LONG GetPredictedValue(LONG Ra, LONG Rb, LONG Rc)
 	return Ra + Rb - Rc;
 }
 
-/*/
+#else
 
 inlinehint LONG GetPredictedValue(LONG Ra, LONG Rb, LONG Rc)
 {
@@ -95,7 +97,7 @@ inlinehint LONG GetPredictedValue(LONG Ra, LONG Rb, LONG Rc)
 	return Ra + Rb - Rc;
 }
 
-//*/
+#endif
 
 inlinehint LONG UnMapErrVal(LONG mappedError)
 {
