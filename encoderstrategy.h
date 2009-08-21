@@ -26,6 +26,7 @@ public:
 
 	virtual ~EncoderStrategy() 
 	{
+		delete _qdecoder;
 	    delete _processLine;
 	}
 
