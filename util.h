@@ -8,10 +8,8 @@
 
 
 #include <stdlib.h>
-#include "config.h"
-
-// must try __attribute__((always_inline)) for GCC!
 #include <string.h>
+#include "config.h"
 
 
 #ifndef MAX
@@ -55,8 +53,6 @@ inline LONG BitWiseSign(LONG i)
 	{ return i >> (LONG_BITCOUNT-1); }	
 
 
-#pragma pack(push, 1)
-
 template<class SAMPLE>
 struct Triplet
 { 
@@ -64,13 +60,13 @@ struct Triplet
 		v1(0),
 		v2(0),
 		v3(0)
-	{};
+	{}
 
 	Triplet(LONG x1, LONG x2, LONG x3) :
 		v1((SAMPLE)x1),
 		v2((SAMPLE)x2),
 		v3((SAMPLE)x3)
-	{};
+	{}
 
 		union 
 		{
@@ -106,8 +102,6 @@ struct Quad : public Triplet<sample>
 		sample A;
 	};
 };
-
-#pragma pack(pop)
 
 
 #include "interface.h"

@@ -10,31 +10,24 @@
 #include "config.h"
 
 
-template <class T>
+template <int size>
 struct FromBigEndian
 {	
 };
 
 template <>
-struct FromBigEndian<unsigned int>
+struct FromBigEndian<4>
 {
-	inlinehint static unsigned long Read(BYTE* pbyte)
+	inlinehint static unsigned int Read(BYTE* pbyte)
 	{
 		return  (pbyte[0] << 24) + (pbyte[1] << 16) + (pbyte[2] << 8) + (pbyte[3] << 0);
 	}
 };
 
-template <>
-struct FromBigEndian<unsigned long>
-{
-	inlinehint static unsigned long Read(BYTE* pbyte)
-	{
-		return  (pbyte[0] << 24) + (pbyte[1] << 16) + (pbyte[2] << 8) + (pbyte[3] << 0);
-	}
-};
+
 
 template <>
-struct FromBigEndian<unsigned long long>
+struct FromBigEndian<8>
 {
 	typedef unsigned long long UINT64;
 
@@ -101,11 +94,7 @@ public:
 		  // Easy & fast: if there is no 0xFF byte in sight, we can read without bitstuffing
 		  if (_pbyteCompressed < _pbyteNextFF)
 		  {
-#ifdef ARCH_HAS_UNALIGNED_MEM_ACCESS
-			  _readCache		 |= byteswap(*((bufType*)_pbyteCompressed)) >> _validBits;
-#else
-			  _readCache		 |= FromBigEndian<bufType>::Read(_pbyteCompressed) >> _validBits;
-#endif
+			  _readCache		 |= FromBigEndian<sizeof(bufType)>::Read(_pbyteCompressed) >> _validBits;
 			  int bytesToRead = (bufferbits - _validBits) >> 3;
 			  _pbyteCompressed += bytesToRead;
 			  _validBits += bytesToRead * 8;
@@ -118,7 +107,7 @@ public:
 	  typedef size_t bufType;
 
 	  enum { 
-		  bufferbits = sizeof( bufType ) * 8,
+		  bufferbits = sizeof( bufType ) * 8
 	  };
 		
 	  void MakeValid()

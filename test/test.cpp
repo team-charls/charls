@@ -224,7 +224,7 @@ void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool swap
 
 	TestRoundTrip(strName, rgbyteUncompressed, size2, cbit, ccomp);
 
-};
+}
 
 
 
@@ -242,7 +242,7 @@ void TestFile16BitAs12(SZC strName, int ioffs, Size size2, int ccomp)
 	}
 
 	TestRoundTrip(strName, rgbyteUncompressed, size2, 12, ccomp);
-};
+}
 
 
 
