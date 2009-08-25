@@ -87,8 +87,6 @@ public:
 	  }
 
 
-
-	  // optimized for intel compilers
 	  inlinehint bool OptimizedRead()
 	  {
 		  // Easy & fast: if there is no 0xFF byte in sight, we can read without bitstuffing
