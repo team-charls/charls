@@ -3,7 +3,6 @@
 // 
 
 
-
 #include "stdafx.h"
 #include <iostream>
 #include <vector>
@@ -37,7 +36,7 @@ bool ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs = 0, int bytes = 0
 	int cbyteFile = ftell(pfile);
 	if (ioffs < 0)
 	{
-		ASSERT(bytes != 0);
+		assert(bytes != 0);
 		ioffs = cbyteFile - bytes;
 	}
 	if (bytes == 0)
@@ -127,7 +126,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	
 	double dblstart = getTime();
 	
-	JlsParamaters params = {0};
+	JlsParamaters params = JlsParamaters();
 	params.components = ccomp;
 	params.bitspersample = cbit;
 	params.height = size.cy;
@@ -145,25 +144,24 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 
 	size_t cbyteCompressed;
 	JLS_ERROR err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &cbyteCompressed, &rgbyteRaw[0], rgbyteOut.size(), &params);
-	ASSERT(err == OK);
+	assert(err == OK);
 
 	double dwtimeEncodeComplete = getTime();
 	
 	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(cbyteCompressed));
-	ASSERT(err == OK);
+	assert(err == OK);
 	
-	double dblfactor = 1.0 *  rgbyteOut.size() / cbyteCompressed;
 	double bitspersample = cbyteCompressed  * 8  * 1.0 /  (ccomp *size.cy * size.cx);
 	double dwtimeDecodeComplete = getTime();
 	std::cout << "RoundTrip test for: " << strName << "\n\r";
  
-	printf("Size:%dx%d Encode:%7.2f Decode:%7.2f Bps: %5.2f \n\r", size.cx, size.cy, dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, bitspersample);
+	printf("Size:%ldx%ld Encode:%7.2f Decode:%7.2f Bps: %5.2f \n\r", size.cx, size.cy, dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, bitspersample);
 	BYTE* pbyteOut = &rgbyteOut[0];
 	for (size_t i = 0; i < rgbyteOut.size(); ++i)
 	{
 		if (rgbyteRaw[i] != pbyteOut[i])
 		{
-			ASSERT(false);
+			assert(false);
 			break;
 		}
 	}	
@@ -172,9 +170,9 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 
 void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE* rgbyteRaw, int cbyteRaw, bool bcheckEncode)
 {	
-	JlsParamaters params = {0};
+	JlsParamaters params = JlsParamaters();
 	JLS_ERROR err = JpegLsReadHeader(pbyteCompressed, cbyteCompressed, &params);
-	ASSERT(err == OK);
+	assert(err == OK);
 
 	std::vector<BYTE> rgbyteCompressed;
 	rgbyteCompressed.resize(params.height *params.width* 4);
@@ -183,7 +181,7 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 	rgbyteOut.resize(params.height *params.width * ((params.bitspersample + 7) / 8) * params.components);
 	
 	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), pbyteCompressed, cbyteCompressed);
-	ASSERT(err == OK);
+	assert(err == OK);
 
 	if (params.allowedlossyerror == 0)
 	{
@@ -192,7 +190,7 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 		{
 			if (rgbyteRaw[i] != pbyteOut[i])
 			{
-				ASSERT(false);
+				assert(false);
 				break;
 			}
 		}						    
@@ -201,7 +199,7 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 	if (bcheckEncode)
 	{
 		err = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
-		ASSERT(err == OK);
+		assert(err == OK);
 	}
 }
 
@@ -253,22 +251,22 @@ void TestTraits16bit()
 	DefaultTraitsT<USHORT,USHORT> traits1 = DefaultTraitsT<USHORT,USHORT>(4095,0);
 	LosslessTraitsT<USHORT,12> traits2 = LosslessTraitsT<USHORT,12>();
 
-	ASSERT(traits1.LIMIT == traits2.LIMIT);
-	ASSERT(traits1.MAXVAL == traits2.MAXVAL);
-	ASSERT(traits1.RESET == traits2.RESET);
-	ASSERT(traits1.bpp == traits2.bpp);
-	ASSERT(traits1.qbpp == traits2.qbpp);
+	assert(traits1.LIMIT == traits2.LIMIT);
+	assert(traits1.MAXVAL == traits2.MAXVAL);
+	assert(traits1.RESET == traits2.RESET);
+	assert(traits1.bpp == traits2.bpp);
+	assert(traits1.qbpp == traits2.qbpp);
 
 	for (int i = -4096; i < 4096; ++i)
 	{
-		ASSERT(traits1.ModRange(i) == traits2.ModRange(i));
-		ASSERT(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
+		assert(traits1.ModRange(i) == traits2.ModRange(i));
+		assert(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
 	}
 
 	for (int i = -8095; i < 8095; ++i)
 	{
-		ASSERT(traits1.CorrectPrediction(i) == traits2.CorrectPrediction(i));
-		ASSERT(traits1.IsNear(i,2) == traits2.IsNear(i,2));	
+		assert(traits1.CorrectPrediction(i) == traits2.CorrectPrediction(i));
+		assert(traits1.IsNear(i,2) == traits2.IsNear(i,2));	
 	}	
 }
 
@@ -277,22 +275,22 @@ void TestTraits8bit()
 	DefaultTraitsT<BYTE,BYTE> traits1 = DefaultTraitsT<BYTE,BYTE>(255,0);
 	LosslessTraitsT<BYTE,8> traits2 = LosslessTraitsT<BYTE,8>();
 
-	ASSERT(traits1.LIMIT == traits2.LIMIT);
-	ASSERT(traits1.MAXVAL == traits2.MAXVAL);
-	ASSERT(traits1.RESET == traits2.RESET);
-	ASSERT(traits1.bpp == traits2.bpp);
-	ASSERT(traits1.qbpp == traits2.qbpp);	
+	assert(traits1.LIMIT == traits2.LIMIT);
+	assert(traits1.MAXVAL == traits2.MAXVAL);
+	assert(traits1.RESET == traits2.RESET);
+	assert(traits1.bpp == traits2.bpp);
+	assert(traits1.qbpp == traits2.qbpp);	
 
 	for (int i = -255; i < 255; ++i)
 	{
-		ASSERT(traits1.ModRange(i) == traits2.ModRange(i));
-		ASSERT(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
+		assert(traits1.ModRange(i) == traits2.ModRange(i));
+		assert(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
 	}
 
 	for (int i = -255; i < 512; ++i)
 	{
-		ASSERT(traits1.CorrectPrediction(i) == traits2.CorrectPrediction(i));
-		ASSERT(traits1.IsNear(i,2) == traits2.IsNear(i,2));	
+		assert(traits1.CorrectPrediction(i) == traits2.CorrectPrediction(i));
+		assert(traits1.IsNear(i,2) == traits2.IsNear(i,2));	
 	}
 }
 
@@ -361,12 +359,12 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParamaters* 
 {
 	if (!ReadFile(strNameEncoded, rgbyteFile))
 	{
-		ASSERT(false);
+		assert(false);
 		return false;
 	}
 
 	JLS_ERROR err = JpegLsReadHeader(&((*rgbyteFile)[0]), rgbyteFile->size(), info);
-	ASSERT(err == OK);
+	assert(err == OK);
 	return err == OK;
 }
 
@@ -380,7 +378,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 	JlsParamaters metadata;
 	if (JpegLsReadHeader(&rgbyteFile[0], rgbyteFile.size(), &metadata) != OK)
 	{
-		ASSERT(false);
+		assert(false);
 		return;
 	}
 
@@ -471,7 +469,7 @@ void TestBgra()
 	char rgbyteTest[] = "RGBARGBARGBARGBA1234";
 	char rgbyteComp[] = "BGRABGRABGRABGRA1234";
 	TransformRgbToBgr(rgbyteTest, 4, 4);
-	ASSERT(strcmp(rgbyteTest, rgbyteComp) == 0);
+	assert(strcmp(rgbyteTest, rgbyteComp) == 0);
 }
 
 
@@ -486,14 +484,14 @@ void TestBgr()
 
 	rgbyteDecoded.resize(info.width * info.height * info.components);
 	JLS_ERROR err = JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &info);
-	ASSERT(err == OK);
+	assert(err == OK);
 
-	ASSERT(rgbyteDecoded[0] == 0x69);
-	ASSERT(rgbyteDecoded[1] == 0x77);
-	ASSERT(rgbyteDecoded[2] == 0xa1);	
-	ASSERT(rgbyteDecoded[info.width * 6 + 3] == 0x2d);
-	ASSERT(rgbyteDecoded[info.width * 6 + 4] == 0x43);
-	ASSERT(rgbyteDecoded[info.width * 6 + 5] == 0x4d);	
+	assert(rgbyteDecoded[0] == 0x69);
+	assert(rgbyteDecoded[1] == 0x77);
+	assert(rgbyteDecoded[2] == 0xa1);	
+	assert(rgbyteDecoded[info.width * 6 + 3] == 0x2d);
+	assert(rgbyteDecoded[info.width * 6 + 4] == 0x43);
+	assert(rgbyteDecoded[info.width * 6 + 5] == 0x4d);	
 
 }
 
@@ -507,7 +505,7 @@ void TestTooSmallOutputBuffer()
 	rgbyteOut.resize(512 * 511);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
 	
-	ASSERT(error == UncompressedBufferTooSmall);	
+	assert(error == UncompressedBufferTooSmall);	
 }
 
 
@@ -520,7 +518,7 @@ void TestDamagedBitStream1()
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(256 * 256 * 2);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
-	ASSERT(error == InvalidCompressedData);
+	assert(error == InvalidCompressedData);
 	
 }
 
@@ -537,7 +535,7 @@ void TestDamagedBitStream2()
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(512 * 512);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
-	ASSERT(error == InvalidCompressedData);
+	assert(error == InvalidCompressedData);
 	
 }
 
@@ -555,7 +553,7 @@ void TestDamagedBitStream3()
 	std::vector<BYTE> rgbyteOut;
 	rgbyteOut.resize(512 * 512);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
-	ASSERT(error == InvalidCompressedData);
+	assert(error == InvalidCompressedData);
 	
 }
 

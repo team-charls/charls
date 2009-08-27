@@ -9,17 +9,16 @@
 #define ASSERT(t) assert(t)
 #else
 #  ifndef ASSERT
-#    define ASSERT(t) {}
+#    define ASSERT(t) { }
 #  endif
 #endif
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #ifndef CHARLS_IMEXPORT
 #  define CHARLS_IMEXPORT __declspec(dllexport) 
 #endif
 
 #ifdef _MSC_VER
-#pragma warning (disable:4100)
 #pragma warning (disable:4512)
 #endif
 

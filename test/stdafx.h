@@ -5,12 +5,12 @@
 #ifndef STDAFX
 #define STDAFX
 
-#if defined(WIN32)
+#if defined(_MSC_VER)
 #pragma warning (disable: 4996)
 #endif
 
 // enable ASSERT() on linux 
-#ifndef WIN32
+#ifndef _WIN32
 #ifndef _DEBUG
 #define _DEBUG
 #endif

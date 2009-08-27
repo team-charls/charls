@@ -124,7 +124,7 @@ CHARLS_IMEXPORT JLS_ERROR JpegLsDecode(void* pdataUncompressed, size_t cbyteUnco
 
 CHARLS_IMEXPORT JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteBuffer)
 {
-	JlsParamaters params = {0};
+	JlsParamaters params = JlsParamaters();
 
 	JLS_ERROR error = JpegLsReadHeader(pdataCompressed, cbyteBuffer, &params);
 	if (error != OK)

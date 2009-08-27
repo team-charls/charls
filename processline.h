@@ -34,13 +34,13 @@ public:
 	{
 	}
 
-	void NewLineRequested(void* pDst, int pixelCount, int byteStride)
+	void NewLineRequested(void* pDst, int pixelCount, int /*byteStride*/)
 	{
 		::memcpy(pDst, _pbyteOutput, pixelCount * _bytesPerPixel);
 		_pbyteOutput += _info.bytesperline;
 	}
 
-	void NewLineDecoded(const void* pSrc, int pixelCount, int byteStride)
+	void NewLineDecoded(const void* pSrc, int pixelCount, int /*byteStride*/)
 	{
 		::memcpy(_pbyteOutput, pSrc, pixelCount * _bytesPerPixel);
 		_pbyteOutput += _info.bytesperline;

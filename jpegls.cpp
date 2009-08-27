@@ -73,6 +73,7 @@ CTable rgtableShared[16] = { InitTable(0), InitTable(1), InitTable(2), InitTable
 							 InitTable(8), InitTable(9), InitTable(10), InitTable(11), 
 							 InitTable(12), InitTable(13), InitTable(14),InitTable(15) };
 
+
 std::vector<signed char> rgquant8Ll = CreateQLutLossless(8);
 std::vector<signed char> rgquant10Ll = CreateQLutLossless(10);
 std::vector<signed char> rgquant12Ll = CreateQLutLossless(12);

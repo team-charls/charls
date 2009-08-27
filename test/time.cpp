@@ -2,7 +2,7 @@
 // (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-#if defined(WIN32)
+#if defined(_WIN32)
 
 #include <windows.h>
 

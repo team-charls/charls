@@ -77,7 +77,7 @@ public:
 	  }
 
 	
-	  void OnLineBegin(LONG cpixel, void* ptypeBuffer, LONG pixelStride) 
+	  void OnLineBegin(LONG /*cpixel*/, void* /*ptypeBuffer*/, LONG /*pixelStride*/) 
 	  {}
 
 

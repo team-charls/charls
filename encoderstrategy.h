@@ -37,7 +37,7 @@ public:
 		_processLine->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
 	}
 
-	void OnLineEnd(LONG cpixel, void* ptypeBuffer, LONG pixelStride) {}
+	void OnLineEnd(LONG /*cpixel*/, void* /*ptypeBuffer*/, LONG /*pixelStride*/) {}
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
