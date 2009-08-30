@@ -14,6 +14,10 @@
 #ifndef _DEBUG
 #define _DEBUG
 #endif
+
+#else
+#include <assert.h>
+
 #endif
 
 #include <stdio.h>

@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "config.h"
+#include "interface.h"
 
 
 #ifndef MAX
@@ -104,7 +105,16 @@ struct Quad : public Triplet<sample>
 };
 
 
-#include "interface.h"
+
+
+class JlsException
+{
+public:
+	JlsException(JLS_ERROR error) : _error(error)
+		{ }
+
+	JLS_ERROR _error;
+};
 
 inline bool operator==(const Triplet<BYTE>& lhs, const Triplet<BYTE>& rhs)
 	{ return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3; }
