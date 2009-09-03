@@ -39,8 +39,9 @@ JLS_ERROR CheckInput(const void* pdataCompressed, size_t cbyteCompressed, const 
 	{
 		case 4: return pparams->ilv == ILV_SAMPLE ? ParameterValueNotSupported : OK; 
 		case 3: return OK;
-		case 1: return OK;
+		case 1: return pparams->ilv != ILV_NONE ? ParameterValueNotSupported : OK;
 		case 0: return InvalidJlsParameters;
+
 		default: return pparams->ilv != ILV_NONE ? ParameterValueNotSupported : OK; 
 	}
 }
