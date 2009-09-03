@@ -154,8 +154,9 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	double bitspersample = cbyteCompressed  * 8  * 1.0 /  (ccomp *size.cy * size.cx);
 	double dwtimeDecodeComplete = getTime();
 	std::cout << "RoundTrip test for: " << strName << "\n\r";
- 
-	printf("Size:%ldx%ld Encode:%7.2f Decode:%7.2f Bps: %5.2f \n\r", size.cx, size.cy, dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, bitspersample);
+	double decodeTime = dwtimeDecodeComplete - dwtimeEncodeComplete;
+	double symbolRate = (ccomp *size.cy * size.cx)/(1000.0 * decodeTime);
+	printf("Size:%4ldx%4ld Encode:%7.2f Decode:%7.2f Bps:%5.2f Sample rate:%5.1f M/s \n\r", size.cx, size.cy, dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, bitspersample, symbolRate);
 	BYTE* pbyteOut = &rgbyteOut[0];
 	for (size_t i = 0; i < rgbyteOut.size(); ++i)
 	{

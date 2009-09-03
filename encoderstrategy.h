@@ -8,6 +8,8 @@
 #include "processline.h"
 #include "decoderstrategy.h"
 
+// Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
+
 class EncoderStrategy
 {
 

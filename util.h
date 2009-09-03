@@ -6,7 +6,6 @@
 #ifndef CHARLS_UTIL
 #define CHARLS_UTIL
 
-
 #include <stdlib.h>
 #include <string.h>
 #include "config.h"
@@ -86,6 +85,12 @@ struct Triplet
 		};
 };
 
+inline bool operator==(const Triplet<BYTE>& lhs, const Triplet<BYTE>& rhs)
+	{ return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3; }
+
+inline bool  operator!=(const Triplet<BYTE>& lhs, const Triplet<BYTE>& rhs)
+	{ return !(lhs == rhs); }
+
 
 template<class sample>
 struct Quad : public Triplet<sample>
@@ -106,6 +111,34 @@ struct Quad : public Triplet<sample>
 
 
 
+template <int size>
+struct FromBigEndian
+{	
+};
+
+template <>
+struct FromBigEndian<4>
+{
+	inlinehint static unsigned int Read(BYTE* pbyte)
+	{
+		return  (pbyte[0] << 24) + (pbyte[1] << 16) + (pbyte[2] << 8) + (pbyte[3] << 0);
+	}
+};
+
+
+
+template <>
+struct FromBigEndian<8>
+{
+	typedef unsigned long long UINT64;
+
+	inlinehint static UINT64 Read(BYTE* pbyte)
+	{
+		return  (UINT64(pbyte[0]) << 56) + (UINT64(pbyte[1]) << 48) + (UINT64(pbyte[2]) << 40) + (UINT64(pbyte[3]) << 32) + 
+		  		(UINT64(pbyte[4]) << 24) + (UINT64(pbyte[5]) << 16) + (UINT64(pbyte[6]) <<  8) + (UINT64(pbyte[7]) << 0);
+	}
+};
+
 
 class JlsException
 {
@@ -116,10 +149,5 @@ public:
 	JLS_ERROR _error;
 };
 
-inline bool operator==(const Triplet<BYTE>& lhs, const Triplet<BYTE>& rhs)
-	{ return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3; }
-
-inline bool  operator!=(const Triplet<BYTE>& lhs, const Triplet<BYTE>& rhs)
-	{ return !(lhs == rhs); }
 
 #endif
