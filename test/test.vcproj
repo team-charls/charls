@@ -125,7 +125,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="2"
 				OmitFramePointers="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;_CONSOLE"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"

@@ -147,7 +147,7 @@
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="0"
 				StructMemberAlignment="0"
-				BufferSecurityCheck="false"
+				BufferSecurityCheck="true"
 				EnableFunctionLevelLinking="false"
 				DisableLanguageExtensions="true"
 				ForceConformanceInForLoopScope="true"

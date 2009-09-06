@@ -83,8 +83,6 @@ extern "C"
   CHARLS_IMEXPORT JLS_ERROR JpegLsDecode(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsParamaters* info = NULL);
   CHARLS_IMEXPORT JLS_ERROR JpegLsReadHeader(const void* pdataUncompressed, size_t cbyteUncompressed, JlsParamaters* pparams);
   CHARLS_IMEXPORT JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed);
-//CHARLS_IMEXPORT	JLS_ERROR JpegLsCanEncode(JlsParamaters*);
-  //CHARLS_IMEXPORT   JLS_ERROR JpegLsCanDecode(JlsParamaters*);
 }
 
 
