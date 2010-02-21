@@ -187,6 +187,12 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 	JLS_ERROR err = JpegLsReadHeader(pbyteCompressed, cbyteCompressed, &params);
 	assert(err == OK);
 
+	if (bcheckEncode)
+	{
+		err = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
+		assert(err == OK);
+	}
+
 	std::vector<BYTE> rgbyteCompressed;
 	rgbyteCompressed.resize(params.height *params.width* 4);
 
@@ -209,11 +215,6 @@ void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE
 		}						    
 	}
 
-	if (bcheckEncode)
-	{
-		err = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
-		assert(err == OK);
-	}
 }
 
 
@@ -560,7 +561,6 @@ void TestDamagedBitStream3()
 	std::vector<BYTE> rgbyteCompressed;	
 	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
 		return;	
-
 	rgbyteCompressed[300] = 0xFF;
 	rgbyteCompressed[301] = 0xFF;
 
@@ -569,6 +569,59 @@ void TestDamagedBitStream3()
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
 	assert(error == InvalidCompressedData);
 
+}
+
+
+void TestFileWithRandomHeaderDamage(SZC filename)
+{
+	std::vector<BYTE> rgbyteCompressedOrg;	
+	if (!ReadFile(filename, &rgbyteCompressedOrg, 0))
+		return;	
+
+	srand(102347325);
+
+	std::vector<BYTE> rgbyteOut;
+	rgbyteOut.resize(512 * 512);	
+
+	for (int i = 0; i < 40; ++i)
+	{
+		std::vector<BYTE> rgbyteCompressedTest(rgbyteCompressedOrg);
+		std::vector<int> errors(10,0);
+
+		for (int j = 0; j < 20; ++j)
+		{
+			rgbyteCompressedTest[i] = rand();
+			rgbyteCompressedTest[i+1] = rand();				
+			rgbyteCompressedTest[i+2] = rand();		
+			rgbyteCompressedTest[i+3] = rand();		
+			
+			JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressedTest[0], int(rgbyteCompressedTest.size()));
+			errors[error] = errors[error] + 1;
+		}
+
+		std::cout << "With garbage input at index " << i << ": ";
+		for(int error = 0; error < errors.size(); ++error)
+		{
+			if (errors[error] == 0)
+				continue;
+
+			std::cout <<  errors[error] << "x error (" << error << "); ";
+	
+		}
+		std::cout << "\r\n";
+		
+	}
+	
+
+}
+
+
+
+void TestRandomMalformedHeader()
+{
+	TestFileWithRandomHeaderDamage("test/conformance/T8C0E0.JLS");
+	TestFileWithRandomHeaderDamage("test/conformance/T8C1E0.JLS");
+	TestFileWithRandomHeaderDamage("test/conformance/T8C2E0.JLS");
 }
 
 
@@ -582,6 +635,8 @@ void TestColorTransforms_HpImages()
 
 void TestConformance()
 {	
+
+
 
 	// Test 1
 	DecompressFile("test/conformance/T8C0E0.JLS", "test/conformance/TEST8.PPM",15);
@@ -629,6 +684,12 @@ void TestConformance()
 
 void unittest()
 {
+	printf("Begin random malformed bitstream tests: \r\n");
+	TestRandomMalformedHeader();
+	printf("End randommalformed bitstream tests: \r\n");
+
+	printf("Test Conformance\r\n");
+	TestConformance();
 
 	printf("Windows bitmap BGR/BGRA output\r\n");
 	TestBgr();
@@ -646,8 +707,6 @@ void unittest()
 	TestTraits16bit();		
 	TestTraits8bit();		
 
-	printf("Test Conformance\r\n");
-	TestConformance();
 
 	printf("Test Color transform equivalence on HP images\r\n");
 	TestColorTransforms_HpImages();

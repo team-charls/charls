@@ -15,6 +15,7 @@ enum JLS_ERROR
 	UncompressedBufferTooSmall,
 	CompressedBufferTooSmall,
 	InvalidCompressedData,
+	TooMuchCompressedData,
 	ImageTypeNotSupported,
 	UnsupportedBitDepthForTransform,
 	UnsupportedColorTransform
@@ -38,7 +39,7 @@ struct JlsCustomParameters
 	int RESET;
 };
 
-struct JfifParamaters
+struct JfifParameters
 {
 	int   Ver;
 	char  units;
@@ -61,7 +62,7 @@ struct JlsParamaters
 	int colorTransform;
 	bool outputBgr;
 	JlsCustomParameters custom;
-	JfifParamaters jfif;
+	JfifParameters jfif;
 };
 
 
@@ -71,18 +72,18 @@ struct JlsParamaters
 #pragma comment (lib,"charls.lib")
 #endif
 #else
-#ifndef CHARLS_IMEXPORT
-#define CHARLS_IMEXPORT
+#ifndef CHARLS_IMEXPORT 
+#define CHARLS_IMEXPORT 
 #endif
 #endif /* _WIN32 */
 
 
-extern "C"
+extern "C" 
 {
-  CHARLS_IMEXPORT JLS_ERROR JpegLsEncode(void* pdataCompressed, size_t cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, size_t cbyteUncompressed, const JlsParamaters* pparams);
-  CHARLS_IMEXPORT JLS_ERROR JpegLsDecode(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsParamaters* info = NULL);
-  CHARLS_IMEXPORT JLS_ERROR JpegLsReadHeader(const void* pdataUncompressed, size_t cbyteUncompressed, JlsParamaters* pparams);
-  CHARLS_IMEXPORT JLS_ERROR JpegLsVerifyEncode(const void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed);
+  CHARLS_IMEXPORT JLS_ERROR __stdcall JpegLsEncode(void* pdataCompressed, size_t cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, size_t cbyteUncompressed, const JlsParamaters* pparams);
+  CHARLS_IMEXPORT JLS_ERROR __stdcall JpegLsDecode(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsParamaters* info = NULL);
+  CHARLS_IMEXPORT JLS_ERROR __stdcall JpegLsReadHeader(const void* pdataUncompressed, size_t cbyteUncompressed, JlsParamaters* pparams);
+  CHARLS_IMEXPORT JLS_ERROR __stdcall JpegLsVerifyEncode(const void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed);
 }
 
 
