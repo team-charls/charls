@@ -68,22 +68,22 @@ struct JlsParamaters
 
 #if defined(_WIN32)
 #ifndef CHARLS_IMEXPORT
-#define CHARLS_IMEXPORT __declspec(dllimport) 
+#define CHARLS_IMEXPORT(returntype) __declspec(dllimport) returntype __stdcall
 #pragma comment (lib,"charls.lib")
 #endif
 #else
 #ifndef CHARLS_IMEXPORT 
-#define CHARLS_IMEXPORT 
+#define CHARLS_IMEXPORT(returntype) returntype
 #endif
 #endif /* _WIN32 */
 
 
 extern "C" 
 {
-  CHARLS_IMEXPORT JLS_ERROR __stdcall JpegLsEncode(void* pdataCompressed, size_t cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, size_t cbyteUncompressed, const JlsParamaters* pparams);
-  CHARLS_IMEXPORT JLS_ERROR __stdcall JpegLsDecode(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsParamaters* info = NULL);
-  CHARLS_IMEXPORT JLS_ERROR __stdcall JpegLsReadHeader(const void* pdataUncompressed, size_t cbyteUncompressed, JlsParamaters* pparams);
-  CHARLS_IMEXPORT JLS_ERROR __stdcall JpegLsVerifyEncode(const void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed);
+  CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* pdataCompressed, size_t cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, size_t cbyteUncompressed, const JlsParamaters* pparams);
+  CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsParamaters* info = NULL);
+  CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeader(const void* pdataUncompressed, size_t cbyteUncompressed, JlsParamaters* pparams);
+  CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed);
 }
 
 
