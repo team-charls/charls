@@ -76,6 +76,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/charls.dll"
 				LinkIncremental="2"
+				ModuleDefinitionFile="charls.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/jpegls.pdb"
 				SubSystem="2"
@@ -149,6 +150,7 @@
 				StructMemberAlignment="0"
 				BufferSecurityCheck="true"
 				EnableFunctionLevelLinking="false"
+				EnableEnhancedInstructionSet="0"
 				DisableLanguageExtensions="true"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
@@ -171,6 +173,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/charls.dll"
 				LinkIncremental="1"
+				ModuleDefinitionFile="charls.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -262,6 +265,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/charls.dll"
 				LinkIncremental="2"
+				ModuleDefinitionFile="charls.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/jpegls.pdb"
 				SubSystem="2"
@@ -358,6 +362,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/charls.dll"
 				LinkIncremental="1"
+				ModuleDefinitionFile="charls.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -398,6 +403,10 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
+			<File
+				RelativePath=".\charls.def"
+				>
+			</File>
 			<File
 				RelativePath="header.cpp"
 				>
@@ -522,6 +531,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\CMakeLists.txt"
+			>
+		</File>
 		<File
 			RelativePath=".\License.txt"
 			>

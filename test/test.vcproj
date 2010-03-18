@@ -348,11 +348,27 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath="test.cpp"
+				RelativePath=".\bitstreamdamage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\compliance.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\performance.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\time.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\util.cpp"
 				>
 			</File>
 		</Filter>
@@ -368,7 +384,15 @@
 				RelativePath=".\time.h"
 				>
 			</File>
+			<File
+				RelativePath=".\util.h"
+				>
+			</File>
 		</Filter>
+		<File
+			RelativePath=".\CMakeLists.txt"
+			>
+		</File>
 		<File
 			RelativePath="lena8b.jls"
 			>
