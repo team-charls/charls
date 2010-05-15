@@ -19,7 +19,7 @@ class DecoderStrategy
 public:
 	DecoderStrategy(const JlsParamaters& info) :
 		  _info(info),
-	          _processLine(0),
+	      _processLine(0),
 		  _readCache(0),
 		  _validBits(0),
 		  _pbyteCompressed(0)
@@ -32,7 +32,7 @@ public:
 	  }
 
 	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-	  virtual size_t DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, size_t cbyte, bool bCheck) = 0;
+	  virtual size_t DecodeScan(void* pvoidOut, const JlsRect& size, const void* pvoidIn, size_t cbyte, bool bCheck) = 0;
 
 	  void Init(BYTE* pbyteCompressed, size_t cbyte)
 	  {

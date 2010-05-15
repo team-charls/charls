@@ -21,13 +21,13 @@ enum JLS_ERROR
 	UnsupportedColorTransform
 };
 
+
 enum interleavemode
 {
 	ILV_NONE = 0,
 	ILV_LINE = 1,
 	ILV_SAMPLE = 2
 };
-
 
 
 struct JlsCustomParameters
@@ -39,6 +39,14 @@ struct JlsCustomParameters
 	int RESET;
 };
 
+
+struct JlsRect
+{
+	int X, Y;
+	int Width, Height;
+};
+
+
 struct JfifParameters
 {
 	int   Ver;
@@ -49,6 +57,7 @@ struct JfifParameters
 	short Ythumb;
 	void* pdataThumbnail; // user must set buffer which size is Xthumb*Ythumb*3(RGB) before JpegLsDecode()
 };
+
 
 struct JlsParamaters
 {
@@ -82,6 +91,7 @@ extern "C"
 {
   CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* pdataCompressed, size_t cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, size_t cbyteUncompressed, const JlsParamaters* pparams);
   CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsParamaters* info = NULL);
+  CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsRect rect, JlsParamaters* info = NULL);
   CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeader(const void* pdataUncompressed, size_t cbyteUncompressed, JlsParamaters* pparams);
   CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed);
 }

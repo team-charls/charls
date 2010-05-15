@@ -114,6 +114,29 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* pdataUncompressed, size_t cbyteUnc
 }
 
 
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsRect roi, JlsParamaters* info)
+{
+	JLSInputStream reader((BYTE*)pdataCompressed, cbyteCompressed);
+
+	if(info != NULL)
+	{
+	 	reader.SetInfo(info);
+	}
+
+	reader.SetRect(roi);
+
+	try
+	{
+		reader.Read(pdataUncompressed, cbyteUncompressed);
+		return OK;
+	}
+	catch (JlsException& e)
+	{
+		return e._error;
+	}
+}
+
+
 CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteBuffer)
 {
 	JlsParamaters params = JlsParamaters();

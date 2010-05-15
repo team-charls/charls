@@ -201,7 +201,8 @@ JLSInputStream::JLSInputStream(const BYTE* pdata, LONG cbyteLength) :
 		_cbyteOffset(0),
 		_cbyteLength(cbyteLength),
 		_bCompare(false),
-		_info()
+		_info(),
+		_rect()
 {
 }
 
@@ -228,24 +229,26 @@ void JLSInputStream::Read(void* pvoid, LONG cbyteAvailable)
 //
 void JLSInputStream::ReadPixels(void* pvoid, LONG cbyteAvailable)
 {
-	long long cbytePlane = (long long)(_info.width) * _info.height * ((_info.bitspersample + 7)/8);
+
+	if (_rect.Width <= 0)
+	{
+		_rect.Width = _info.width;
+		_rect.Height = _info.height;
+	}
+
+	long long cbytePlane = (long long)(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
 
 	if (cbyteAvailable < cbytePlane * _info.components)
 		throw JlsException(UncompressedBufferTooSmall);
  	
-	if (_info.ilv == ILV_NONE)
+	int scancount = _info.ilv == ILV_NONE ? _info.components : 1;
+
+	BYTE* pbyte = (BYTE*)pvoid;
+	for (LONG scan = 0; scan < scancount; ++scan)
 	{
-		BYTE* pbyte = (BYTE*)pvoid;
-		for (LONG icomp = 0; icomp < _info.components; ++icomp)
-		{
-			ReadScan(pbyte);
-			pbyte += cbytePlane; 
-		}	
-	}
-	else
-	{
-		ReadScan(pvoid);
-	}
+		ReadScan(pbyte);
+		pbyte += cbytePlane;
+	}	
 }
 
 // ReadNBytes()
@@ -386,14 +389,13 @@ void JLSInputStream::ReadStartOfScan()
 	}
 	_info.allowedlossyerror = ReadByte();
 	_info.ilv = interleavemode(ReadByte());
-
 	
 	if(_info.bytesperline == 0)
 	{
+		int width = _rect.Width != 0 ? _rect.Width : _info.width;
 		int components = _info.ilv == ILV_NONE ? 1 : _info.components;
-		_info.bytesperline = components*_info.width * ((_info.bitspersample+7)/8);
+		_info.bytesperline = components * width * ((_info.bitspersample + 7)/8);
 	}
-
 }
 
 
@@ -451,12 +453,12 @@ JpegMarkerSegment* CreateJFIF(const JfifParameters* jfif)
 	// thumbnail
 	rgbyte.push_back((BYTE)jfif->Xthumb);
 	rgbyte.push_back((BYTE)jfif->Ythumb);
-	if(jfif->Xthumb > 0) {
+	if(jfif->Xthumb > 0) 
+	{
 		if(jfif->pdataThumbnail)
 			throw JlsException(InvalidJlsParameters);
-		rgbyte.insert(rgbyte.end(), 
-			(BYTE*)jfif->pdataThumbnail, 
-			(BYTE*)jfif->pdataThumbnail+3*jfif->Xthumb*jfif->Ythumb
+
+		rgbyte.insert(rgbyte.end(), (BYTE*)jfif->pdataThumbnail, (BYTE*)jfif->pdataThumbnail+3*jfif->Xthumb*jfif->Ythumb
 		);
 	}
 	
@@ -503,8 +505,8 @@ int JLSInputStream::ReadWord()
 void JLSInputStream::ReadScan(void* pvout) 
 {
 	std::auto_ptr<DecoderStrategy> qcodec(JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom));
-	Size size = Size(_info.width,_info.height);
-	_cbyteOffset += qcodec->DecodeScan(pvout, size, _pdata + _cbyteOffset, _cbyteLength - _cbyteOffset, _bCompare); 
+	
+	_cbyteOffset += qcodec->DecodeScan(pvout, _rect, _pdata + _cbyteOffset, _cbyteLength - _cbyteOffset, _bCompare); 
 }
 
 
@@ -519,16 +521,14 @@ public:
 	{
 	}
 
-
 	void Write(JLSOutputStream* pstream)
 	{		
 		JlsParamaters info = _info;
 		info.components = _ccompScan;	
 		std::auto_ptr<EncoderStrategy> qcodec(JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom));
-		size_t cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, Size(_info.width, _info.height), pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
+		size_t cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
-
 
 
 	int _ccompScan;
@@ -536,8 +536,6 @@ public:
 	const void* _pvoidRaw;
 	JlsParamaters _info;
 };
-
-
 
 
 void JLSOutputStream::AddScan(const void* pbyteComp, const JlsParamaters* pparams)

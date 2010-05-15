@@ -135,6 +135,7 @@ public:
 	  JlsCodec(const TRAITS& inTraits, const JlsParamaters& info) : STRATEGY(info), 
 	  traits(inTraits),
 		  _size(0,0),
+		  _rect(),
 		  T1(0),
 		  T2(0),
 		  T3(0),
@@ -143,9 +144,9 @@ public:
 		  _bCompare(0)
 		  
 	  {
-		  if (STRATEGY::_info.ilv == ILV_NONE)
+		  if (Info().ilv == ILV_NONE)
 		  {
-			  STRATEGY::_info.components = 1;
+			  Info().components = 1;
 		  }
 	  }	
 
@@ -164,15 +165,16 @@ public:
 
 	  bool IsInterleaved()
 	  {
-		  if (STRATEGY::_info.ilv == ILV_NONE)
+		  if (Info().ilv == ILV_NONE)
 			  return false;
 
-		  if (STRATEGY::_info.components == 1)
+		  if (Info().components == 1)
 			  return false;
 
 		  return true;
 	  }
 
+	  JlsParamaters& Info() { return STRATEGY::_info; }
 
 	  signed char QuantizeGratientOrg(LONG Di);
 	  inlinehint LONG QuantizeGratient(LONG Di)
@@ -211,16 +213,17 @@ public:
 	  void DoScan(BYTE* pbyteCompressed, size_t cbyteCompressed);         
 
 public:
-	ProcessLine* InitProcess(void* pvoidOut);
+	ProcessLine* CreateProcess(void* pvoidOut);
 	void InitDefault();
 	void InitParams(LONG t1, LONG t2, LONG t3, LONG nReset);
 
-	size_t  EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, size_t cbyte, void* pvoidCompare);
-	size_t  DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, size_t cbyte, bool bCompare);
+	size_t  EncodeScan(const void* pvoid, void* pvoidOut, size_t cbyte, void* pvoidCompare);
+	size_t  DecodeScan(void* pvoidOut, const JlsRect& size, const void* pvoidIn, size_t cbyte, bool bCompare);
 
 protected:
 	// codec parameters 
 	TRAITS traits;
+	JlsRect _rect;
 	Size _size;
 	LONG T1;	
 	LONG T2;
@@ -733,14 +736,14 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan(BYTE* pbyteCompressed, size_t cbyteCompre
 
 	LONG pixelstride = _size.cx + 4;
 
-	int components = STRATEGY::_info.ilv == ILV_LINE ? STRATEGY::_info.components : 1;
+	int components = Info().ilv == ILV_LINE ? Info().components : 1;
 
 	std::vector<PIXEL> vectmp;
 	vectmp.resize((components*2) * pixelstride);
 
 	std::vector<LONG> rgRUNindex;
 	rgRUNindex.resize(components);
-
+ 
 	for (LONG iline = 0; iline < _size.cy; ++iline)
 	{
 		ptypePrev			= &vectmp[1];	
@@ -765,8 +768,11 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan(BYTE* pbyteCompressed, size_t cbyteCompre
 			ptypePrev += pixelstride;
 			ptypeCur += pixelstride;
 		}
-
-		STRATEGY::OnLineEnd(_size.cx, ptypeCur - (components * pixelstride), pixelstride);		
+		
+		if (_rect.Y <= iline && iline < _rect.Y + _rect.Height)
+		{
+			STRATEGY::OnLineEnd(_rect.Width, ptypeCur + _rect.X - (components * pixelstride), pixelstride);
+		}
 	}
 }
 
@@ -774,16 +780,16 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan(BYTE* pbyteCompressed, size_t cbyteCompre
 // Setup codec for encoding and calls DoScan
 
 template<class TRAITS, class STRATEGY>
-size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, size_t cbyte, void* pvoidCompare)
+size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, void* pvoidOut, size_t cbyte, void* pvoidCompare)
 {
-	STRATEGY::_processLine = InitProcess(const_cast<void*>(pvoid)); 
-	_size = size;
+	STRATEGY::_processLine = CreateProcess(const_cast<void*>(pvoid)); 
+	_size = Size(Info().width, Info().height);
 
 	BYTE* pbyteCompressed = static_cast<BYTE*>(pvoidOut);
 
 	if (pvoidCompare != NULL)
 	{
-		DecoderStrategy* pdecoder = new JlsCodec<TRAITS,DecoderStrategy>(traits, STRATEGY::_info);
+		DecoderStrategy* pdecoder = new JlsCodec<TRAITS,DecoderStrategy>(traits, Info());
 		BYTE* pbyteCompare = (BYTE*)pvoidCompare;
 		pdecoder->Init(pbyteCompare, cbyte); 
 		STRATEGY::_qdecoder = pdecoder;
@@ -802,32 +808,32 @@ size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* pvoid, const Size& size
 // Factory function for ProcessLine objects to copy/transform unencoded pixels to/from our scanline buffers.
 
 template<class TRAITS, class STRATEGY>
-ProcessLine* JlsCodec<TRAITS,STRATEGY>::InitProcess(void* pvoidOut)
+ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(void* pvoidOut)
 {
 	if (!IsInterleaved())
-		return new PostProcesSingleComponent(pvoidOut, STRATEGY::_info, sizeof(typename TRAITS::PIXEL));
+		return new PostProcesSingleComponent(pvoidOut, Info(), sizeof(typename TRAITS::PIXEL));
 
-	if (STRATEGY::_info.colorTransform == 0)
-		return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(pvoidOut, STRATEGY::_info, TransformNone<SAMPLE>()); 
+	if (Info().colorTransform == 0)
+		return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(pvoidOut, Info(), TransformNone<SAMPLE>()); 
 
-	if ((STRATEGY::_info.bitspersample == sizeof(SAMPLE)*8))
+	if ((Info().bitspersample == sizeof(SAMPLE)*8))
 	{
-		switch(STRATEGY::_info.colorTransform)
+		switch(Info().colorTransform)
 		{
-			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<SAMPLE> >(pvoidOut, STRATEGY::_info, TransformHp1<SAMPLE>()); break;
-			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<SAMPLE> >(pvoidOut, STRATEGY::_info, TransformHp2<SAMPLE>()); break;
-			case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<SAMPLE> >(pvoidOut, STRATEGY::_info, TransformHp3<SAMPLE>()); break;
+			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<SAMPLE> >(pvoidOut, Info(), TransformHp1<SAMPLE>()); break;
+			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<SAMPLE> >(pvoidOut, Info(), TransformHp2<SAMPLE>()); break;
+			case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<SAMPLE> >(pvoidOut, Info(), TransformHp3<SAMPLE>()); break;
 			default: throw JlsException(UnsupportedColorTransform);
 		}
-	} else if (STRATEGY::_info.bitspersample > 8)
+	} else if (Info().bitspersample > 8)
 
 	{
-		int shift = 16 - STRATEGY::_info.bitspersample;
-		switch(STRATEGY::_info.colorTransform)
+		int shift = 16 - Info().bitspersample;
+		switch(Info().colorTransform)
 		{
-			case COLORXFORM_HP1 : return new ProcessTransformed<TransformShifted<TransformHp1<USHORT> > >(pvoidOut, STRATEGY::_info, TransformShifted<TransformHp1<USHORT> >(shift)); break;
-			case COLORXFORM_HP2 : return new ProcessTransformed<TransformShifted<TransformHp2<USHORT> > >(pvoidOut, STRATEGY::_info, TransformShifted<TransformHp2<USHORT> >(shift)); break;
-			case COLORXFORM_HP3 : return new ProcessTransformed<TransformShifted<TransformHp3<USHORT> > >(pvoidOut, STRATEGY::_info, TransformShifted<TransformHp3<USHORT> >(shift)); break;
+			case COLORXFORM_HP1 : return new ProcessTransformed<TransformShifted<TransformHp1<USHORT> > >(pvoidOut, Info(), TransformShifted<TransformHp1<USHORT> >(shift)); break;
+			case COLORXFORM_HP2 : return new ProcessTransformed<TransformShifted<TransformHp2<USHORT> > >(pvoidOut, Info(), TransformShifted<TransformHp2<USHORT> >(shift)); break;
+			case COLORXFORM_HP3 : return new ProcessTransformed<TransformShifted<TransformHp3<USHORT> > >(pvoidOut, Info(), TransformShifted<TransformHp3<USHORT> >(shift)); break;
 			default: throw JlsException(UnsupportedColorTransform);
 		}
 	}
@@ -838,9 +844,9 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::InitProcess(void* pvoidOut)
 // Setup codec for decoding and calls DoScan
 
 template<class TRAITS, class STRATEGY>
-size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, const void* pvoidIn, size_t cbyte, bool bCompare)
+size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const JlsRect& rect, const void* pvoidIn, size_t cbyte, bool bCompare)
 {
-	STRATEGY::_processLine = InitProcess(pvoidOut);
+	STRATEGY::_processLine = CreateProcess(pvoidOut);
 
 	PIXEL* ptypeOut			= static_cast<PIXEL*>(pvoidOut);
 	BYTE* pbyteCompressed	= const_cast<BYTE*>(static_cast<const BYTE*>(pvoidIn));
@@ -860,7 +866,8 @@ size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* pvoidOut, const Size& size, c
 	::memcpy(rgbyte, pbyteCompressed, cbyteScanheader);
 	cbyteRead += cbyteScanheader;
 
-	_size = size;
+	_size = Size(Info().width, Info().height);
+	_rect = rect;
 
 	STRATEGY::_ptypeUncompressed = ptypeOut;
 	DoScan(pbyteCompressed + cbyteRead, cbyte - cbyteRead);

@@ -30,27 +30,28 @@ public:
 	PostProcesSingleComponent(void* pbyteOutput, const JlsParamaters& info, int bytesPerPixel) :
 		_pbyteOutput((BYTE*)pbyteOutput), 
 		_bytesPerPixel(bytesPerPixel),
-		_info(info)
+		_bytesPerLine(info.bytesperline)
 	{
 	}
 
 	void NewLineRequested(void* pDst, int pixelCount, int /*byteStride*/)
 	{
 		::memcpy(pDst, _pbyteOutput, pixelCount * _bytesPerPixel);
-		_pbyteOutput += _info.bytesperline;
+		_pbyteOutput += _bytesPerLine;
 	}
 
 	void NewLineDecoded(const void* pSrc, int pixelCount, int /*byteStride*/)
 	{
 		::memcpy(_pbyteOutput, pSrc, pixelCount * _bytesPerPixel);
-		_pbyteOutput += _info.bytesperline;
+		_pbyteOutput += _bytesPerLine;		
 	}
 
 private:
 	BYTE* _pbyteOutput;
 	int _bytesPerPixel;
-	const JlsParamaters& _info;	
+	int _bytesPerLine;
 };
+
 
 template<class TRANSFORM, class SAMPLE> 
 void TransformLineToQuad(const SAMPLE* ptypeInput, LONG pixelStrideIn, Quad<SAMPLE>* pbyteBuffer, LONG pixelStride, TRANSFORM& transform)
@@ -65,6 +66,7 @@ void TransformLineToQuad(const SAMPLE* ptypeInput, LONG pixelStrideIn, Quad<SAMP
 		ptypeBuffer[x] = pixel;
 	}
 }
+
 
 template<class TRANSFORM, class SAMPLE> 
 void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAMPLE* ptypeBuffer, LONG pixelStride, TRANSFORM& transform)
@@ -95,6 +97,7 @@ void TransformRgbToBgr(SAMPLE* pDest, int samplesPerPixel, int pixelCount)
 	}
 }
 
+
 template<class TRANSFORM, class SAMPLE> 
 void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixelCount, TRANSFORM& transform) 
 {	
@@ -116,6 +119,7 @@ void TransformLineToTriplet(const SAMPLE* ptypeInput, LONG pixelStrideIn, Triple
 		ptypeBuffer[x] = transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]);
 	}
 }
+
 
 template<class TRANSFORM, class SAMPLE> 
 void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAMPLE* ptypeBuffer, LONG pixelStride, TRANSFORM& transform)
@@ -152,6 +156,7 @@ public:
 //		ASSERT(_info.components == sizeof(TRIPLET)/sizeof(TRIPLET::SAMPLE));
 	}
 
+
 	void NewLineRequested(void* pDst, int pixelCount, int byteStride)
 	{
 		SAMPLE* pLine = (SAMPLE*)_pbyteOutput;
@@ -180,6 +185,7 @@ public:
 		_pbyteOutput += _info.bytesperline;
 	}
 
+
 	void NewLineDecoded(const void* pSrc, int pixelCount, int byteStride)
 	{
 		if (_info.components == 3)
@@ -192,19 +198,19 @@ public:
 			{
 				TransformLineToTriplet((const SAMPLE*)pSrc, byteStride, (Triplet<SAMPLE>*)_pbyteOutput, pixelCount, _inverseTransform);
 			}
-
 		}
 		else if (_info.components == 4 && _info.ilv == ILV_LINE)
 		{
 			TransformLineToQuad((const SAMPLE*)pSrc, byteStride, (Quad<SAMPLE>*)_pbyteOutput, pixelCount, _inverseTransform);
-		}			
+		}
 
 		if (_info.outputBgr)
 		{
 			TransformRgbToBgr(_pbyteOutput, _info.components, pixelCount);
 		}
-		_pbyteOutput += _info.bytesperline;
+		_pbyteOutput += _info.bytesperline;		
 	}
+
 
 private:
 	BYTE* _pbyteOutput;

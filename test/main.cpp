@@ -152,6 +152,21 @@ void TestTooSmallOutputBuffer()
 }
 
 
+void TestDecodeRect()
+{
+	std::vector<BYTE> rgbyteCompressed;	
+	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
+		return;
+
+	std::vector<BYTE> rgbyteOut;
+	rgbyteOut.resize(256 * 2);	
+	JlsRect rect = { 128, 128, 256, 2 };
+	JLS_ERROR error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), rect);
+
+	assert(error == OK);	
+}
+
+
 void TestColorTransforms_HpImages();
 void TestConformance();
 void TestSampleAnnexH3();
@@ -160,6 +175,8 @@ void DamagedBitstreamTests();
 
 void UnitTest()
 {
+	TestDecodeRect();
+
 	printf("Test Traits\r\n");
 	TestTraits16bit();		
 	TestTraits8bit();		

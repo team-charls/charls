@@ -135,6 +135,9 @@ public:
 		{ _bCompare = bCompare;	}
 
 	void SetInfo(JlsParamaters* info) { _info = *info; }
+
+	void SetRect(JlsRect rect) { _rect = rect; }
+
 private:
 	void ReadPixels(void* pvoid, LONG cbyteAvailable);
 	void ReadScan(void*);	
@@ -158,6 +161,7 @@ private:
 	size_t _cbyteLength;
 	bool _bCompare;
 	JlsParamaters _info;
+	JlsRect _rect;
 };
 
 

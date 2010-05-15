@@ -39,11 +39,11 @@ public:
 		_processLine->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
 	}
 
-	void OnLineEnd(LONG /*cpixel*/, void* /*ptypeBuffer*/, LONG /*pixelStride*/) {}
+	void OnLineEnd(LONG /*cpixel*/, void* /*ptypeBuffer*/, LONG /*pixelStride*/) { }
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
-	virtual size_t EncodeScan(const void* pvoid, const Size& size, void* pvoidOut, size_t cbyte, void* pvoidCompare) = 0;
+	virtual size_t EncodeScan(const void* pvoid, void* pvoidOut, size_t cbyte, void* pvoidCompare) = 0;
 
 protected:
 
