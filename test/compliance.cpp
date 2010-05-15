@@ -19,11 +19,11 @@ void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
 	std::vector<BYTE> rgbytePlanar(rgbyte.size());
 
 	int cbytePlane = size.cx * size.cy;
-	for (int ipixel = 0; ipixel < cbytePlane; ipixel++)
+	for (int index = 0; index < cbytePlane; index++)
 	{
-		rgbytePlanar[ipixel]				= rgbyte[ipixel * 3 + 0];
-		rgbytePlanar[ipixel + 1*cbytePlane]	= rgbyte[ipixel * 3 + 1];
-		rgbytePlanar[ipixel + 2*cbytePlane] = rgbyte[ipixel * 3 + 2];
+		rgbytePlanar[index]					= rgbyte[index * 3 + 0];
+		rgbytePlanar[index + 1*cbytePlane]	= rgbyte[index * 3 + 1];
+		rgbytePlanar[index + 2*cbytePlane]	= rgbyte[index * 3 + 2];
 	}
 	std::swap(rgbyte, rgbytePlanar);
 }
@@ -39,11 +39,11 @@ void Triplet2Line(std::vector<BYTE>& rgbyte, Size size)
 		const BYTE* pbyteLineIn = &rgbyte[line * size.cx * 3];
 		BYTE* pbyteLineOut = &rgbyteInterleaved[line * size.cx * 3];
 
-		for (int ipixel = 0; ipixel < cbyteLine; ipixel++)
+		for (int index = 0; index < cbyteLine; index++)
 		{
-			pbyteLineOut[ipixel]				= pbyteLineIn[ipixel * 3 + 0];
-			pbyteLineOut[ipixel + 1*cbyteLine]	= pbyteLineIn[ipixel * 3 + 1];
-			pbyteLineOut[ipixel + 2*cbyteLine]  = pbyteLineIn[ipixel * 3 + 2];
+			pbyteLineOut[index]					= pbyteLineIn[index * 3 + 0];
+			pbyteLineOut[index + 1*cbyteLine]	= pbyteLineIn[index * 3 + 1];
+			pbyteLineOut[index + 2*cbyteLine]	= pbyteLineIn[index * 3 + 2];
 		}
 	}
 	std::swap(rgbyte, rgbyteInterleaved);
@@ -53,28 +53,28 @@ void Triplet2Line(std::vector<BYTE>& rgbyte, Size size)
 
 
 
-void TestCompliance(const BYTE* pbyteCompressed, int cbyteCompressed, const BYTE* rgbyteRaw, int cbyteRaw, bool bcheckEncode)
+void TestCompliance(const BYTE* compressedBytes, int compressedLength, const BYTE* rgbyteRaw, int cbyteRaw, bool bcheckEncode)
 {	
-	JlsParamaters params = JlsParamaters();
-	JLS_ERROR err = JpegLsReadHeader(pbyteCompressed, cbyteCompressed, &params);
+	JlsParamaters info = JlsParamaters();
+	JLS_ERROR err = JpegLsReadHeader(compressedBytes, compressedLength, &info);
 	assert(err == OK);
 
 	if (bcheckEncode)
 	{
-		err = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, pbyteCompressed, cbyteCompressed);
+		err = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, compressedBytes, compressedLength);
 		assert(err == OK);
 	}
 
 	std::vector<BYTE> rgbyteCompressed;
-	rgbyteCompressed.resize(params.height *params.width* 4);
+	rgbyteCompressed.resize(info.height *info.width* 4);
 
 	std::vector<BYTE> rgbyteOut;
-	rgbyteOut.resize(params.height *params.width * ((params.bitspersample + 7) / 8) * params.components);
+	rgbyteOut.resize(info.height *info.width * ((info.bitspersample + 7) / 8) * info.components);
 
-	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), pbyteCompressed, cbyteCompressed);
+	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), compressedBytes, compressedLength);
 	assert(err == OK);
 
-	if (params.allowedlossyerror == 0)
+	if (info.allowedlossyerror == 0)
 	{
 		BYTE* pbyteOut = &rgbyteOut[0];
 		for (int i = 0; i < cbyteRaw; ++i)

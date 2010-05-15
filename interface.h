@@ -89,11 +89,11 @@ struct JlsParamaters
 
 extern "C" 
 {
-  CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* pdataCompressed, size_t cbyteBuffer, size_t* pcbyteWritten, const void* pdataUncompressed, size_t cbyteUncompressed, const JlsParamaters* pparams);
-  CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsParamaters* info = NULL);
-  CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed, JlsRect rect, JlsParamaters* info = NULL);
-  CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeader(const void* pdataUncompressed, size_t cbyteUncompressed, JlsParamaters* pparams);
-  CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* pdataUncompressed, size_t cbyteUncompressed, const void* pdataCompressed, size_t cbyteCompressed);
+  CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, const void* uncompressedData, size_t uncompressedLength, const JlsParamaters* pparams);
+  CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsParamaters* info = NULL);
+  CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsRect rect, JlsParamaters* info = NULL);
+  CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeader(const void* uncompressedData, size_t uncompressedLength, JlsParamaters* pparams);
+  CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength);
 }
 
 

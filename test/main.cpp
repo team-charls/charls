@@ -92,12 +92,12 @@ void TestNoiseImage()
 	std::vector<BYTE> rgbyteNoise;
 	rgbyteNoise.resize(	size2.cx * size2.cy);
 
-	for (int iline = 0; iline<size2.cy; ++iline)
+	for (int line = 0; line<size2.cy; ++line)
 	{
 		for (int icol= 0; icol<size2.cx; ++icol)
 		{
 			BYTE val = BYTE(rand());
-			rgbyteNoise[iline*size2.cx + icol] = BYTE(val & 0x7F);// < iline ? val : 0;
+			rgbyteNoise[line*size2.cx + icol] = BYTE(val & 0x7F);// < line ? val : 0;
 		}	
 	}
 
@@ -158,12 +158,20 @@ void TestDecodeRect()
 	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
 		return;
 
-	std::vector<BYTE> rgbyteOut;
-	rgbyteOut.resize(256 * 2);	
-	JlsRect rect = { 128, 128, 256, 2 };
-	JLS_ERROR error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), rect);
-
+	std::vector<BYTE> rgbyteOutFull;
+	rgbyteOutFull.resize(512*512);		
+	JLS_ERROR error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));	
 	assert(error == OK);	
+	
+	JlsRect rect = { 128, 128, 256, 1 };
+	std::vector<BYTE> rgbyteOut;
+	rgbyteOut.resize(rect.Width * rect.Height);	
+	rgbyteOut.push_back(0x1f);
+	error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), rect);	
+	assert(error == OK);	
+
+	assert(memcmp(&rgbyteOutFull[rect.X + rect.Y*512], &rgbyteOut[0], rect.Width * rect.Height) == 0);
+	assert(rgbyteOut[rect.Width * rect.Height] == 0x1f);
 }
 
 

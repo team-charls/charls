@@ -75,7 +75,7 @@ std::vector<signed char> CreateQLutLossless(LONG cbit)
 
 
 // Lookup table: decode symbols that are smaller or equal to 8 bit (16 tables for each value of k)
-CTable rgtableShared[16] = { InitTable(0), InitTable(1), InitTable(2), InitTable(3), 
+CTable decodingTables[16] = { InitTable(0), InitTable(1), InitTable(2), InitTable(3), 
 							 InitTable(4), InitTable(5), InitTable(6), InitTable(7), 
 							 InitTable(8), InitTable(9), InitTable(10), InitTable(11), 
 							 InitTable(12), InitTable(13), InitTable(14),InitTable(15) };

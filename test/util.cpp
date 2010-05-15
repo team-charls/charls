@@ -89,32 +89,32 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 
 	double dblstart = getTime();
 
-	JlsParamaters params = JlsParamaters();
-	params.components = ccomp;
-	params.bitspersample = cbit;
-	params.height = size.cy;
-	params.width = size.cx;
+	JlsParamaters info = JlsParamaters();
+	info.components = ccomp;
+	info.bitspersample = cbit;
+	info.height = size.cy;
+	info.width = size.cx;
 
 	if (ccomp == 4)
 	{
-		params.ilv = ILV_LINE;
+		info.ilv = ILV_LINE;
 	}
 	else if (ccomp == 3)
 	{
-		params.ilv = ILV_LINE;
-		params.colorTransform = COLORXFORM_HP1;
+		info.ilv = ILV_LINE;
+		info.colorTransform = COLORXFORM_HP1;
 	}
 
-	size_t cbyteCompressed;
-	JLS_ERROR err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &cbyteCompressed, &rgbyteRaw[0], rgbyteOut.size(), &params);
+	size_t compressedLength;
+	JLS_ERROR err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &info);
 	assert(err == OK);
 
 	double dwtimeEncodeComplete = getTime();
 
-	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(cbyteCompressed));
+	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(compressedLength));
 	assert(err == OK);
 
-	double bitspersample = cbyteCompressed  * 8  * 1.0 /  (ccomp *size.cy * size.cx);
+	double bitspersample = compressedLength  * 8  * 1.0 /  (ccomp *size.cy * size.cx);
 	double dwtimeDecodeComplete = getTime();
 	std::cout << "RoundTrip test for: " << strName << "\n\r";
 	double decodeTime = dwtimeDecodeComplete - dwtimeEncodeComplete;
@@ -134,10 +134,10 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 
 void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile)
 {
-	int cbyte = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
+	int byteCount = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
 	std::vector<BYTE> rgbyteUncompressed;
 
-	if (!ReadFile(strName, &rgbyteUncompressed, ioffs, cbyte))
+	if (!ReadFile(strName, &rgbyteUncompressed, ioffs, byteCount))
 		return;
 
 	if (cbit > 8)

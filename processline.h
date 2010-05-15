@@ -157,7 +157,7 @@ public:
 	}
 
 
-	void NewLineRequested(void* pDst, int pixelCount, int byteStride)
+	void NewLineRequested(void* pDst, int pixelCount, int stride)
 	{
 		SAMPLE* pLine = (SAMPLE*)_pbyteOutput;
 		if (_info.outputBgr)
@@ -175,12 +175,12 @@ public:
 			}
 			else
 			{
-				TransformTripletToLine((const Triplet<SAMPLE>*)pLine, pixelCount, (SAMPLE*)pDst, byteStride, _transform);
+				TransformTripletToLine((const Triplet<SAMPLE>*)pLine, pixelCount, (SAMPLE*)pDst, stride, _transform);
 			}
 		}
 		else if (_info.components == 4 && _info.ilv == ILV_LINE)
 		{
-			TransformQuadToLine((const Quad<SAMPLE>*)pLine, pixelCount, (SAMPLE*)pDst, byteStride, _transform);
+			TransformQuadToLine((const Quad<SAMPLE>*)pLine, pixelCount, (SAMPLE*)pDst, stride, _transform);
 		}
 		_pbyteOutput += _info.bytesperline;
 	}

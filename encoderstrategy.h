@@ -20,8 +20,8 @@ public:
 		 _processLine(0),
  		 valcurrent(0),
 		 bitpos(0),
-		 _bFFWritten(false),
-		 _cbyteWritten(0)
+		 _isFFWritten(false),
+		 _bytesWritten(0)
 		
 	{
 	}
@@ -43,16 +43,16 @@ public:
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
-	virtual size_t EncodeScan(const void* pvoid, void* pvoidOut, size_t cbyte, void* pvoidCompare) = 0;
+	virtual size_t EncodeScan(const void* pvoid, void* pvoidOut, size_t byteCount, void* pvoidCompare) = 0;
 
 protected:
 
-	void Init(BYTE* pbyteCompressed, size_t cbyte)
+	void Init(BYTE* compressedBytes, size_t byteCount)
 	{
 		bitpos = 32;
 		valcurrent = 0;
-		_pbyteCompressed = pbyteCompressed;
-   		_cbyteCompressed = cbyte;
+		_position = compressedBytes;
+   		_compressedLength = byteCount;
 	}
 
 
@@ -90,7 +90,7 @@ protected:
 		Flush();
 
 		// if a 0xff was written, Flush() will force one unset bit anyway
-		if (_bFFWritten)
+		if (_isFFWritten)
 			AppendToBitStream(0, (bitpos - 1) % 8);
 		else
 			AppendToBitStream(0, bitpos % 8);
@@ -106,25 +106,25 @@ protected:
 			if (bitpos >= 32)
 				break;
 
-			if (_bFFWritten)
+			if (_isFFWritten)
 			{
 				// insert highmost bit
-				*_pbyteCompressed = BYTE(valcurrent >> 25);
+				*_position = BYTE(valcurrent >> 25);
 				valcurrent = valcurrent << 7;			
 				bitpos += 7;	
-				_bFFWritten = false;
+				_isFFWritten = false;
 			}
 			else
 			{
-				*_pbyteCompressed = BYTE(valcurrent >> 24);
+				*_position = BYTE(valcurrent >> 24);
 				valcurrent = valcurrent << 8;			
 				bitpos += 8;			
-				_bFFWritten = *_pbyteCompressed == 0xFF;			
+				_isFFWritten = *_position == 0xFF;			
 			}
 			
-			_pbyteCompressed++;
-			_cbyteCompressed--;
-			_cbyteWritten++;
+			_position++;
+			_compressedLength--;
+			_bytesWritten++;
 
 		}
 		
@@ -132,7 +132,7 @@ protected:
 
 	size_t GetLength() 
 	{ 
-		return _cbyteWritten - (bitpos -32)/8; 
+		return _bytesWritten - (bitpos -32)/8; 
 	}
 
 
@@ -146,18 +146,17 @@ protected:
 
 protected:
 	JlsParamaters _info;
-	const void* _ptypeUncompressed;
 	ProcessLine* _processLine;
 private:
 
 	unsigned int valcurrent;
 	LONG bitpos;
-	size_t _cbyteCompressed;
+	size_t _compressedLength;
 	
 	// encoding
-	BYTE* _pbyteCompressed;
-	bool _bFFWritten;
-	size_t _cbyteWritten;
+	BYTE* _position;
+	bool _isFFWritten;
+	size_t _bytesWritten;
 
 };
 

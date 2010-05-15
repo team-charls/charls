@@ -95,19 +95,19 @@ void push_back(std::vector<BYTE>& vec, USHORT value)
 //
 // CreateMarkerStartOfFrame()
 //
-JpegSegment* CreateMarkerStartOfFrame(Size size, LONG cbpp, LONG ccomp)
+JpegSegment* CreateMarkerStartOfFrame(Size size, LONG bitsPerSample, LONG ccomp)
 {
 	std::vector<BYTE> vec;
-	vec.push_back(static_cast<BYTE>(cbpp));
+	vec.push_back(static_cast<BYTE>(bitsPerSample));
 	push_back(vec, static_cast<USHORT>(size.cy));
 	push_back(vec, static_cast<USHORT>(size.cx));
 	
 	// components
 	vec.push_back(static_cast<BYTE>(ccomp));
-	for (BYTE icomp = 0; icomp < ccomp; icomp++)
+	for (BYTE component = 0; component < ccomp; component++)
 	{
 		// rescaling
-		vec.push_back(icomp + 1);
+		vec.push_back(component + 1);
 		vec.push_back(0x11); 
 		//"Tq1" reserved, 0
 		vec.push_back(0);		
@@ -151,9 +151,9 @@ JLSOutputStream::~JLSOutputStream()
 //
 // Init()
 //
-void JLSOutputStream::Init(Size size, LONG cbpp, LONG ccomp)
+void JLSOutputStream::Init(Size size, LONG bitsPerSample, LONG ccomp)
 {
-		_segments.push_back(CreateMarkerStartOfFrame(size, cbpp, ccomp));
+		_segments.push_back(CreateMarkerStartOfFrame(size, bitsPerSample, ccomp));
 }
 
 
@@ -538,7 +538,7 @@ public:
 };
 
 
-void JLSOutputStream::AddScan(const void* pbyteComp, const JlsParamaters* pparams)
+void JLSOutputStream::AddScan(const void* compareData, const JlsParamaters* pparams)
 {
 	if (pparams->jfif.Ver)
 	{
@@ -554,7 +554,7 @@ void JLSOutputStream::AddScan(const void* pbyteComp, const JlsParamaters* pparam
 
 	Size size = Size(pparams->width, pparams->height);
 	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
-		_segments.push_back(new JpegImageDataSegment(pbyteComp, *pparams, _icompLast, ccomp));
+		_segments.push_back(new JpegImageDataSegment(compareData, *pparams, _icompLast, ccomp));
 }
 
 
