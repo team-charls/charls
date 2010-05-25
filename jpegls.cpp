@@ -60,8 +60,7 @@ std::vector<signed char> CreateQLutLossless(LONG cbit)
 	Presets preset = ComputeDefault((1 << cbit) - 1, 0);
 	LONG range = preset.MAXVAL + 1;
 
-	std::vector<signed char> lut;
-	lut.resize(range * 2);
+	std::vector<signed char> lut(range * 2);
 	
 	for (LONG diff = -range; diff < range; diff++)
 	{
@@ -91,7 +90,7 @@ std::vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
 template<class STRATEGY>
-STRATEGY* JlsCodecFactory<STRATEGY>::GetCodec(const JlsParamaters& info, const JlsCustomParameters& presets)
+std::auto_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParamaters& info, const JlsCustomParameters& presets)
 {
 	STRATEGY* pstrategy = NULL;
 	if (presets.RESET != 0 && presets.RESET != BASIC_RESET)
@@ -106,11 +105,11 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodec(const JlsParamaters& info, const J
 		pstrategy = GetCodecImpl(info);
 	}
 
-	if (pstrategy == NULL)
-		return NULL;
-
-	pstrategy->SetPresets(presets);
-	return pstrategy;
+	if (pstrategy != NULL)
+	{
+		pstrategy->SetPresets(presets);
+	}
+	return std::auto_ptr<STRATEGY>(pstrategy);
 }
 
 

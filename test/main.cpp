@@ -89,8 +89,7 @@ void TestNoiseImage()
 {
 	srand(21344); 
 	Size size2 = Size(1024, 1024);
-	std::vector<BYTE> rgbyteNoise;
-	rgbyteNoise.resize(	size2.cx * size2.cy);
+	std::vector<BYTE> rgbyteNoise(size2.cx * size2.cy);
 
 	for (int line = 0; line<size2.cy; ++line)
 	{
@@ -120,11 +119,10 @@ void TestBgr()
 	JlsParamaters info;
 	std::vector<BYTE> rgbyteEncoded;	
 	ScanFile("test/conformance/T8C2E3.JLS", &rgbyteEncoded, &info);
-	std::vector<BYTE> rgbyteDecoded;	
+	std::vector<BYTE> rgbyteDecoded(info.width * info.height * info.components);	
 
 	info.outputBgr = true;
-
-	rgbyteDecoded.resize(info.width * info.height * info.components);
+	
 	JLS_ERROR err = JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &info);
 	assert(err == OK);
 
@@ -144,8 +142,7 @@ void TestTooSmallOutputBuffer()
 	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
 		return;
 
-	std::vector<BYTE> rgbyteOut;
-	rgbyteOut.resize(512 * 511);	
+	std::vector<BYTE> rgbyteOut(512 * 511);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
 
 	assert(error == UncompressedBufferTooSmall);	
@@ -158,14 +155,12 @@ void TestDecodeRect()
 	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
 		return;
 
-	std::vector<BYTE> rgbyteOutFull;
-	rgbyteOutFull.resize(512*512);		
+	std::vector<BYTE> rgbyteOutFull(512*512);		
 	JLS_ERROR error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));	
 	assert(error == OK);	
 	
 	JlsRect rect = { 128, 128, 256, 1 };
-	std::vector<BYTE> rgbyteOut;
-	rgbyteOut.resize(rect.Width * rect.Height);	
+	std::vector<BYTE> rgbyteOut(rect.Width * rect.Height);	
 	rgbyteOut.push_back(0x1f);
 	error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), rect);	
 	assert(error == OK);	

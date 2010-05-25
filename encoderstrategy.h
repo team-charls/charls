@@ -28,8 +28,6 @@ public:
 
 	virtual ~EncoderStrategy() 
 	{
-		delete _qdecoder;
-	    delete _processLine;
 	}
 
 	LONG PeekByte();
@@ -60,7 +58,7 @@ protected:
 	{	
 		ASSERT(length < 32 && length >= 0);
 
-		ASSERT((_qdecoder == NULL) || (length == 0 && value == 0) ||( _qdecoder->ReadLongValue(length) == value));
+		ASSERT((_qdecoder.get() == NULL) || (length == 0 && value == 0) ||( _qdecoder->ReadLongValue(length) == value));
 
 #ifdef _DEBUG
 		if (length < 32)
@@ -85,7 +83,7 @@ protected:
 
 	}
 
-	void FlushStreamEnd()
+	void EndScan()
 	{
 		Flush();
 
@@ -142,11 +140,11 @@ protected:
 	}
 
 
-	DecoderStrategy* _qdecoder; 
+	std::auto_ptr<DecoderStrategy> _qdecoder; 
 
 protected:
 	JlsParamaters _info;
-	ProcessLine* _processLine;
+	std::auto_ptr<ProcessLine> _processLine;
 private:
 
 	unsigned int valcurrent;

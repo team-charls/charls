@@ -23,8 +23,7 @@ void TestDamagedBitStream1()
 	if (!ReadFile("test/incorrect_images/InfiniteLoopFFMPEG.jls", &rgbyteCompressed, 0))
 		return;
 
-	std::vector<BYTE> rgbyteOut;
-	rgbyteOut.resize(256 * 256 * 2);	
+	std::vector<BYTE> rgbyteOut(256 * 256 * 2);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
 	assert(error == InvalidCompressedData);
 
@@ -40,8 +39,7 @@ void TestDamagedBitStream2()
 	rgbyteCompressed.resize(900);
 	rgbyteCompressed.resize(40000,3);
 
-	std::vector<BYTE> rgbyteOut;
-	rgbyteOut.resize(512 * 512);	
+	std::vector<BYTE> rgbyteOut(512 * 512);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
 	assert(error == InvalidCompressedData);
 
@@ -57,8 +55,7 @@ void TestDamagedBitStream3()
 	rgbyteCompressed[300] = 0xFF;
 	rgbyteCompressed[301] = 0xFF;
 
-	std::vector<BYTE> rgbyteOut;
-	rgbyteOut.resize(512 * 512);	
+	std::vector<BYTE> rgbyteOut(512 * 512);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
 	assert(error == InvalidCompressedData);
 
@@ -73,8 +70,7 @@ void TestFileWithRandomHeaderDamage(SZC filename)
 
 	srand(102347325);
 
-	std::vector<BYTE> rgbyteOut;
-	rgbyteOut.resize(512 * 512);	
+	std::vector<BYTE> rgbyteOut(512 * 512);	
 
 	for (int i = 0; i < 40; ++i)
 	{

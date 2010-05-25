@@ -30,7 +30,7 @@ template<class STRATEGY>
 class JlsCodecFactory 
 {
 public:	
-	STRATEGY* GetCodec(const JlsParamaters& info, const JlsCustomParameters&);
+	std::auto_ptr<STRATEGY> GetCodec(const JlsParamaters& info, const JlsCustomParameters&);
 private:
 	STRATEGY* GetCodecImpl(const JlsParamaters& info);
 };

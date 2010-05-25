@@ -37,7 +37,7 @@ public:
 
 	enum { cbit = 8 } ;
 
-	CTable()
+	CTable() 
 	{
 		::memset(rgtype, 0, sizeof(rgtype));
 	}

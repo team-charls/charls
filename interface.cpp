@@ -62,7 +62,6 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedL
 		return InvalidJlsParameters;
 
 	Size size = Size(info.width, info.height);
-	LONG cbit = info.bitspersample;
 	JLSOutputStream stream;
 	
 	stream.Init(size, info.bitspersample, info.components);
@@ -74,7 +73,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedL
 
 	if (info.ilv == ILV_NONE)
 	{
-		LONG cbyteComp = size.cx*size.cy*((cbit +7)/8);
+		LONG cbyteComp = size.cx*size.cy*((info.bitspersample +7)/8);
 		for (LONG component = 0; component < info.components; ++component)
 		{
 			const BYTE* compareData = static_cast<const BYTE*>(uncompressedData) + component*cbyteComp;
@@ -151,7 +150,6 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size
 		return error;
 	
 	Size size = Size(info.width, info.height);
-	LONG cbit = info.bitspersample;
 	
 	JLSOutputStream stream;
 	
@@ -159,7 +157,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size
 
 	if (info.ilv == ILV_NONE)
 	{
-		LONG cbyteComp = size.cx*size.cy*((cbit +7)/8);
+		LONG cbyteComp = size.cx*size.cy*((info.bitspersample +7)/8);
 		for (LONG component = 0; component < info.components; ++component)
 		{
 			const BYTE* compareData = static_cast<const BYTE*>(uncompressedData) + component*cbyteComp;
@@ -171,11 +169,10 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size
 		stream.AddScan(uncompressedData, &info);
 	}
 
-	std::vector<BYTE> rgbyteCompressed;
-	rgbyteCompressed.resize(compressedLength + 16);
+	std::vector<BYTE> rgbyteCompressed(compressedLength + 16);
+	
 	memcpy(&rgbyteCompressed[0], compressedData, compressedLength);
 	
-
 	stream.EnableCompare(true);
 	stream.Write(&rgbyteCompressed[0], compressedLength);
 	

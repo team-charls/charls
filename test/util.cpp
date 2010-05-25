@@ -81,11 +81,9 @@ void WriteFile(SZC strName, std::vector<BYTE>& vec)
 
 void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size, int cbit, int ccomp)
 {	
-	std::vector<BYTE> rgbyteCompressed;
-	rgbyteCompressed.resize(size.cx *size.cy * ccomp * cbit / 4);
+	std::vector<BYTE> rgbyteCompressed(size.cx *size.cy * ccomp * cbit / 4);
 
-	std::vector<BYTE> rgbyteOut;
-	rgbyteOut.resize(size.cx * size.cy * ((cbit + 7) / 8) * ccomp);
+	std::vector<BYTE> rgbyteOut(size.cx * size.cy * ((cbit + 7) / 8) * ccomp);
 
 	double dblstart = getTime();
 

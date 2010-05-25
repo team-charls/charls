@@ -28,7 +28,6 @@ public:
 
 	  virtual ~DecoderStrategy()
 	  {
-		  delete _processLine;
 	  }
 
 	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
@@ -60,7 +59,7 @@ public:
 	  		_processLine->NewLineDecoded(ptypeBuffer, pixelCount, pixelStride);
 	  }
 
-	  void CheckEndOfStream()
+	  void EndScan()
 	  {
 		  if ((*_position) != 0xFF)
 			throw JlsException(TooMuchCompressedData);
@@ -159,17 +158,17 @@ public:
 
 	  BYTE* GetCurBytePos() const
 	  {
-		  LONG  cbitValid = _validBits;
+		  LONG  validBits = _validBits;
 		  BYTE* compressedBytes = _position;
 
 		  for (;;)
 		  {
 			  LONG cbitLast = compressedBytes[-1] == 0xFF ? 7 : 8;
 
-			  if (cbitValid < cbitLast )
+			  if (validBits < cbitLast )
 				  return compressedBytes;
 
-			  cbitValid -= cbitLast; 
+			  validBits -= cbitLast; 
 			  compressedBytes--;
 		  }	
 	  }
@@ -226,10 +225,10 @@ public:
 		  }
 		  bufType valTest = _readCache;
 
-		  for (LONG cbit = 0; cbit < 16; cbit++)
+		  for (LONG count = 0; count < 16; count++)
 		  {
 			  if ((valTest & (bufType(1) << (bufferbits - 1))) != 0)
-				  return cbit;
+				  return count;
 
 			  valTest <<= 1;
 		  }
@@ -240,11 +239,11 @@ public:
 
 	  inlinehint LONG ReadHighbits()
 	  {
-		  LONG cbit = Peek0Bits();
-		  if (cbit >= 0)
+		  LONG count = Peek0Bits();
+		  if (count >= 0)
 		  {
-			  Skip(cbit + 1);
-			  return cbit;
+			  Skip(count + 1);
+			  return count;
 		  }
 		  Skip(15);
 
@@ -266,7 +265,7 @@ public:
 
 protected:
 	JlsParamaters _info;
-	ProcessLine* _processLine;
+	std::auto_ptr<ProcessLine> _processLine;
 
 private:
 	// decoding

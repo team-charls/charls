@@ -65,11 +65,9 @@ void TestCompliance(const BYTE* compressedBytes, int compressedLength, const BYT
 		assert(err == OK);
 	}
 
-	std::vector<BYTE> rgbyteCompressed;
-	rgbyteCompressed.resize(info.height *info.width* 4);
+	std::vector<BYTE> rgbyteCompressed(info.height *info.width* 4);
 
-	std::vector<BYTE> rgbyteOut;
-	rgbyteOut.resize(info.height *info.width * ((info.bitspersample + 7) / 8) * info.components);
+	std::vector<BYTE> rgbyteOut(info.height *info.width * ((info.bitspersample + 7) / 8) * info.components);
 
 	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), compressedBytes, compressedLength);
 	assert(err == OK);
