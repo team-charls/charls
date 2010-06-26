@@ -41,7 +41,7 @@ JLS_ERROR CheckInput(const void* compressedData, size_t compressedLength, const 
 extern "C"
 {
 
-CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, const void* uncompressedData, size_t uncompressedLength, const JlsParamaters* pparams)
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, const void* uncompressedData, size_t uncompressedLength, struct JlsParamaters* pparams)
 {
 	JlsParamaters info = *pparams;
 	if(info.bytesperline == 0)

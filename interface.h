@@ -67,11 +67,11 @@ struct JlsParamaters
 	int bytesperline;	// for [source (at encoding)][decoded (at decoding)] pixel image in user buffer
 	int components;
 	int allowedlossyerror;
-	interleavemode ilv;
+	enum interleavemode ilv;
 	int colorTransform;
-	bool outputBgr;
-	JlsCustomParameters custom;
-	JfifParameters jfif;
+	char outputBgr;
+	struct JlsCustomParameters custom;
+	struct JfifParameters jfif;
 };
 
 
@@ -87,14 +87,29 @@ struct JlsParamaters
 #endif /* _WIN32 */
 
 
+#ifdef __cplusplus
 extern "C" 
 {
-  CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, const void* uncompressedData, size_t uncompressedLength, const JlsParamaters* pparams);
-  CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsParamaters* info = NULL);
-  CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsRect rect, JlsParamaters* info = NULL);
-  CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeader(const void* uncompressedData, size_t uncompressedLength, JlsParamaters* pparams);
-  CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength);
-}
+#endif
+  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, 
+	    const void* uncompressedData, size_t uncompressedLength, struct JlsParamaters* pparams);
 
+  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompressedLength, 
+		const void* compressedData, size_t compressedLength, 
+		struct JlsParamaters* info);
+
+  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, 
+		const void* compressedData, size_t compressedLength, 
+		struct JlsRect rect, struct JlsParamaters* info);
+
+  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsReadHeader(const void* uncompressedData, size_t uncompressedLength, 
+		struct JlsParamaters* pparams);
+
+  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, 
+		const void* compressedData, size_t compressedLength);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
