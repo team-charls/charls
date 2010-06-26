@@ -143,7 +143,7 @@ void TestTooSmallOutputBuffer()
 		return;
 
 	std::vector<BYTE> rgbyteOut(512 * 511);	
-	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));
+	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
 
 	assert(error == UncompressedBufferTooSmall);	
 }
@@ -152,17 +152,18 @@ void TestTooSmallOutputBuffer()
 void TestDecodeRect()
 {
 	std::vector<BYTE> rgbyteCompressed;	
-	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
+	JlsParamaters info;
+	if (!ScanFile("test/t8c1e0.jls", &rgbyteCompressed, &info))
 		return;
 
-	std::vector<BYTE> rgbyteOutFull(512*512);		
-	JLS_ERROR error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()));	
+	std::vector<BYTE> rgbyteOutFull(info.width*info.height*info.components);		
+	JLS_ERROR error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);	
 	assert(error == OK);	
-	
+
 	JlsRect rect = { 128, 128, 256, 1 };
 	std::vector<BYTE> rgbyteOut(rect.Width * rect.Height);	
 	rgbyteOut.push_back(0x1f);
-	error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), rect);	
+	error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), rect, NULL);	
 	assert(error == OK);	
 
 	assert(memcmp(&rgbyteOutFull[rect.X + rect.Y*512], &rgbyteOut[0], rect.Width * rect.Height) == 0);
