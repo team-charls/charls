@@ -2,7 +2,8 @@
 // (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-#include "stdafx.h"
+#include "config.h"
+#include "util.h"
 #include "header.h"
 #include "streams.h"
 #include "decoderstrategy.h"
@@ -35,7 +36,7 @@ bool IsDefault(const JlsCustomParameters* pcustom)
 }
 
 
-JLS_ERROR CheckParameterCoherent(const JlsParamaters* pparams)
+JLS_ERROR CheckParameterCoherent(const JlsParameters* pparams)
 {
 	if (pparams->bitspersample < 6 || pparams->bitspersample > 16)
 		return ParameterValueNotSupported;
@@ -306,7 +307,7 @@ void JLSInputStream::ReadHeader()
 }
 
 
-JpegMarkerSegment* EncodeStartOfScan(const JlsParamaters* pparams, LONG icomponent)
+JpegMarkerSegment* EncodeStartOfScan(const JlsParameters* pparams, LONG icomponent)
 {
 	BYTE itable		= 0;
 	
@@ -513,7 +514,7 @@ void JLSInputStream::ReadScan(void* pvout)
 class JpegImageDataSegment: public JpegSegment
 {
 public:
-	JpegImageDataSegment(const void* pvoidRaw, const JlsParamaters& info, LONG icompStart, int ccompScan)  :
+	JpegImageDataSegment(const void* pvoidRaw, const JlsParameters& info, LONG icompStart, int ccompScan)  :
 		_ccompScan(ccompScan),
 		_icompStart(icompStart),
 		_pvoidRaw(pvoidRaw),
@@ -523,7 +524,7 @@ public:
 
 	void Write(JLSOutputStream* pstream)
 	{		
-		JlsParamaters info = _info;
+		JlsParameters info = _info;
 		info.components = _ccompScan;	
 		std::auto_ptr<EncoderStrategy> qcodec =JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
 		size_t cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
@@ -534,11 +535,11 @@ public:
 	int _ccompScan;
 	LONG _icompStart;
 	const void* _pvoidRaw;
-	JlsParamaters _info;
+	JlsParameters _info;
 };
 
 
-void JLSOutputStream::AddScan(const void* compareData, const JlsParamaters* pparams)
+void JLSOutputStream::AddScan(const void* compareData, const JlsParameters* pparams)
 {
 	if (pparams->jfif.Ver)
 	{

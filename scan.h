@@ -132,7 +132,7 @@ public:
 
 public:
 
-	  JlsCodec(const TRAITS& inTraits, const JlsParamaters& info) : STRATEGY(info), 
+	  JlsCodec(const TRAITS& inTraits, const JlsParameters& info) : STRATEGY(info), 
 	  traits(inTraits),
 		  _width(0),
 		  _rect(),
@@ -174,7 +174,7 @@ public:
 		  return true;
 	  }
 
-	  JlsParamaters& Info() { return STRATEGY::_info; }
+	  JlsParameters& Info() { return STRATEGY::_info; }
 
 	  signed char QuantizeGratientOrg(LONG Di);
 	  inlinehint LONG QuantizeGratient(LONG Di)

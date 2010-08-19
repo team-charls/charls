@@ -27,7 +27,7 @@ public:
 class PostProcesSingleComponent : public ProcessLine
 {
 public:
-	PostProcesSingleComponent(void* pbyteOutput, const JlsParamaters& info, int bytesPerPixel) :
+	PostProcesSingleComponent(void* pbyteOutput, const JlsParameters& info, int bytesPerPixel) :
 		_pbyteOutput((BYTE*)pbyteOutput), 
 		_bytesPerPixel(bytesPerPixel),
 		_bytesPerLine(info.bytesperline)
@@ -146,7 +146,7 @@ class ProcessTransformed : public ProcessLine
 
 	ProcessTransformed(const ProcessTransformed&) {}
 public:
-	ProcessTransformed(void* pbyteOutput, const JlsParamaters& info, TRANSFORM transform) :
+	ProcessTransformed(void* pbyteOutput, const JlsParameters& info, TRANSFORM transform) :
 		_pbyteOutput((BYTE*)pbyteOutput),
 		_info(info),
 		_templine(info.width *  info.components),
@@ -214,7 +214,7 @@ public:
 
 private:
 	BYTE* _pbyteOutput;
-	const JlsParamaters& _info;	
+	const JlsParameters& _info;	
 	std::vector<SAMPLE> _templine;
 	TRANSFORM _transform;	
 	typename TRANSFORM::INVERSE _inverseTransform;

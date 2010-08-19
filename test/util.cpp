@@ -3,7 +3,7 @@
 // 
 
 
-#include "stdafx.h"
+#include "config.h"
 #include <iostream>
 #include <vector>
 
@@ -87,7 +87,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 
 	double dblstart = getTime();
 
-	JlsParamaters info = JlsParamaters();
+	JlsParameters info = JlsParameters();
 	info.components = ccomp;
 	info.bitspersample = cbit;
 	info.height = size.cy;
@@ -109,7 +109,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 
 	double dwtimeEncodeComplete = getTime();
 
-	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(compressedLength));
+	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(compressedLength), NULL);
 	assert(err == OK);
 
 	double bitspersample = compressedLength  * 8  * 1.0 /  (ccomp *size.cy * size.cx);

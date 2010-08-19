@@ -14,9 +14,8 @@
 #endif
 
 #if defined(_WIN32)
-#ifndef CHARLS_IMEXPORT
-#  define CHARLS_IMEXPORT __declspec(dllexport) 
-#endif
+
+
 
 #ifdef _MSC_VER
 #pragma warning (disable:4512)
@@ -57,6 +56,7 @@ typedef unsigned short USHORT;
 #if defined(i386) || defined(__i386__) || defined(_M_IX86) || defined(__amd64__) || defined(_M_X64)
 #define ARCH_HAS_UNALIGNED_MEM_ACCESS /* TODO define this symbol for more architectures */
 #endif
+
 
 
 #endif

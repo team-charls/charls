@@ -2,8 +2,8 @@
 // (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-#ifndef STDAFX
-#define STDAFX
+#ifndef TEST_CONFIG
+#define TEST_CONFIG
 
 #if defined(_MSC_VER)
 #pragma warning (disable: 4996)

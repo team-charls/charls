@@ -2,13 +2,18 @@
 // (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-#include "stdafx.h"
+
+//implement correct linkage for win32 dlls
+#define CHARLS_IMEXPORT(returntype) __declspec(dllexport) returntype __stdcall
+
+
+#include "config.h"
 #include "interface.h"
+#include "util.h"
 #include "header.h"
 
 
-
-JLS_ERROR CheckInput(const void* compressedData, size_t compressedLength, const void* uncompressedData, size_t uncompressedLength, const JlsParamaters* pparams)
+JLS_ERROR CheckInput(const void* compressedData, size_t compressedLength, const void* uncompressedData, size_t uncompressedLength, const JlsParameters* pparams)
 {
 	if (pparams == NULL)
 		return InvalidJlsParameters;
@@ -41,9 +46,9 @@ JLS_ERROR CheckInput(const void* compressedData, size_t compressedLength, const 
 extern "C"
 {
 
-CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, const void* uncompressedData, size_t uncompressedLength, struct JlsParamaters* pparams)
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, const void* uncompressedData, size_t uncompressedLength, struct JlsParameters* pparams)
 {
-	JlsParamaters info = *pparams;
+	JlsParameters info = *pparams;
 	if(info.bytesperline == 0)
 	{
 		info.bytesperline = info.width * ((info.bitspersample + 7)/8);
@@ -92,7 +97,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedL
 	return OK;
 }
 
-CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsParamaters* info)
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsParameters* info)
 {
 	JLSInputStream reader((BYTE*)compressedData, compressedLength);
 
@@ -113,7 +118,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompres
 }
 
 
-CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsRect roi, JlsParamaters* info)
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsRect roi, JlsParameters* info)
 {
 	JLSInputStream reader((BYTE*)compressedData, compressedLength);
 
@@ -138,7 +143,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncom
 
 CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength)
 {
-	JlsParamaters info = JlsParamaters();
+	JlsParameters info = JlsParameters();
 
 	JLS_ERROR error = JpegLsReadHeader(compressedData, compressedLength, &info);
 	if (error != OK)
@@ -180,13 +185,13 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size
 }
 
  
-CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParamaters* pparams)
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* pparams)
 {
 	try
 	{
 		JLSInputStream reader((BYTE*)compressedData, compressedLength);
 		reader.ReadHeader();	
-		JlsParamaters info = reader.GetMetadata();
+		JlsParameters info = reader.GetMetadata();
 		*pparams = info;	
 		return OK;
 	}

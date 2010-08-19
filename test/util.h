@@ -1,4 +1,9 @@
+// 
+// (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// 
 
+#ifndef TEST_UTIL
+#define TEST_UTIL
 
 typedef const char* SZC;
 
@@ -8,3 +13,4 @@ void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool litt
 void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size, int cbit, int ccomp);
 
 
+#endif

@@ -3,7 +3,7 @@
 // 
 
 
-#include "stdafx.h"
+#include "config.h"
 #include <iostream>
 #include <vector>
 
@@ -55,7 +55,7 @@ void Triplet2Line(std::vector<BYTE>& rgbyte, Size size)
 
 void TestCompliance(const BYTE* compressedBytes, int compressedLength, const BYTE* rgbyteRaw, int cbyteRaw, bool bcheckEncode)
 {	
-	JlsParamaters info = JlsParamaters();
+	JlsParameters info = JlsParameters();
 	JLS_ERROR err = JpegLsReadHeader(compressedBytes, compressedLength, &info);
 	assert(err == OK);
 
@@ -69,7 +69,7 @@ void TestCompliance(const BYTE* compressedBytes, int compressedLength, const BYT
 
 	std::vector<BYTE> rgbyteOut(info.height *info.width * ((info.bitspersample + 7) / 8) * info.components);
 
-	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), compressedBytes, compressedLength);
+	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), compressedBytes, compressedLength, NULL);
 	assert(err == OK);
 
 	if (info.allowedlossyerror == 0)
@@ -96,7 +96,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 	if (!ReadFile(strNameEncoded, &rgbyteFile))
 		return;
 
-	JlsParamaters metadata;
+	JlsParameters metadata;
 	if (JpegLsReadHeader(&rgbyteFile[0], rgbyteFile.size(), &metadata) != OK)
 	{
 		assert(false);

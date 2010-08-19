@@ -3,7 +3,7 @@
 // 
 
 
-#include "stdafx.h"
+#include "config.h"
 #include <iostream>
 #include <vector>
 
@@ -20,7 +20,7 @@
 typedef const char* SZC;
 
 
-bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParamaters* info)
+bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* info)
 {
 	if (!ReadFile(strNameEncoded, rgbyteFile))
 	{
@@ -116,7 +116,7 @@ void TestBgra()
 
 void TestBgr()
 {
-	JlsParamaters info;
+	JlsParameters info;
 	std::vector<BYTE> rgbyteEncoded;	
 	ScanFile("test/conformance/T8C2E3.JLS", &rgbyteEncoded, &info);
 	std::vector<BYTE> rgbyteDecoded(info.width * info.height * info.components);	
@@ -152,8 +152,8 @@ void TestTooSmallOutputBuffer()
 void TestDecodeRect()
 {
 	std::vector<BYTE> rgbyteCompressed;	
-	JlsParamaters info;
-	if (!ScanFile("test/t8c1e0.jls", &rgbyteCompressed, &info))
+	JlsParameters info;
+	if (!ScanFile("test/lena8b.jls", &rgbyteCompressed, &info))
 		return;
 
 	std::vector<BYTE> rgbyteOutFull(info.width*info.height*info.components);		

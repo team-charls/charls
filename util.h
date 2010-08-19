@@ -8,8 +8,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "config.h"
-#include "interface.h"
+#include "publictypes.h"
 
 
 #ifndef MAX

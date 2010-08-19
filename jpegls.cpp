@@ -2,7 +2,8 @@
 // (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-#include "stdafx.h"
+#include "config.h"
+#include "util.h"
 #include "streams.h"
 #include "header.h"
                
@@ -13,8 +14,6 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "util.h"
- 
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
 #include "context.h"
@@ -90,7 +89,7 @@ std::vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
 template<class STRATEGY>
-std::auto_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParamaters& info, const JlsCustomParameters& presets)
+std::auto_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& info, const JlsCustomParameters& presets)
 {
 	STRATEGY* pstrategy = NULL;
 	if (presets.RESET != 0 && presets.RESET != BASIC_RESET)
@@ -115,14 +114,14 @@ std::auto_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParamaters&
 
 
 template<class TRAITS, class STRATEGY>
-STRATEGY* CreateCodec(const TRAITS& t, const STRATEGY*,const JlsParamaters& info)
+STRATEGY* CreateCodec(const TRAITS& t, const STRATEGY*,const JlsParameters& info)
 {
 	return new JlsCodec<TRAITS, STRATEGY>(t, info);
 }
 
 
 template<class STRATEGY>
-STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParamaters& info)
+STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters& info)
 {	
 	STRATEGY* s = 0;
 

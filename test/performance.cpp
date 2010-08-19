@@ -3,7 +3,7 @@
 // 
 
 
-#include "stdafx.h"
+#include "config.h"
 #include <iostream>
 #include <vector>
 

@@ -30,12 +30,12 @@ template<class STRATEGY>
 class JlsCodecFactory 
 {
 public:	
-	std::auto_ptr<STRATEGY> GetCodec(const JlsParamaters& info, const JlsCustomParameters&);
+	std::auto_ptr<STRATEGY> GetCodec(const JlsParameters& info, const JlsCustomParameters&);
 private:
-	STRATEGY* GetCodecImpl(const JlsParamaters& info);
+	STRATEGY* GetCodecImpl(const JlsParameters& info);
 };
 
-JLS_ERROR CheckParameterCoherent(const JlsParamaters* pparams);
+JLS_ERROR CheckParameterCoherent(const JlsParameters* pparams);
 
 
 //

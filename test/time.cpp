@@ -6,6 +6,9 @@
 // for best accuracy, getTime is implemented platform dependent.
 // to avoid a global include of windows.h, this is a separete file. 
 
+
+#include "config.h"
+
 #if defined(_WIN32)
 
 #include <windows.h>

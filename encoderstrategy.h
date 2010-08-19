@@ -14,7 +14,7 @@ class EncoderStrategy
 {
 
 public:
-	explicit EncoderStrategy(const JlsParamaters& info) :
+	explicit EncoderStrategy(const JlsParameters& info) :
 		 _qdecoder(0),
 		 _info(info),
 		 _processLine(0),
@@ -143,7 +143,7 @@ protected:
 	std::auto_ptr<DecoderStrategy> _qdecoder; 
 
 protected:
-	JlsParamaters _info;
+	JlsParameters _info;
 	std::auto_ptr<ProcessLine> _processLine;
 private:
 

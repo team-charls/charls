@@ -43,7 +43,7 @@ public:
 	virtual ~JLSOutputStream();
 
 	void Init(Size size, LONG bitsPerSample, LONG ccomp);
-	void AddScan(const void* compareData, const JlsParamaters* pparams);
+	void AddScan(const void* compareData, const JlsParameters* pparams);
 	void AddLSE(const JlsCustomParameters* pcustom);
 	void AddColorTransform(int i);
 	size_t GetBytesWritten()
@@ -122,7 +122,7 @@ public:
 	size_t GetBytesRead()
 		{ return _cbyteOffset; }
 
-	const JlsParamaters& GetMetadata() const
+	const JlsParameters& GetMetadata() const
 		{ return _info; } 
 
 	const JlsCustomParameters& GetCustomPreset() const
@@ -134,7 +134,7 @@ public:
 	void EnableCompare(bool bCompare)
 		{ _bCompare = bCompare;	}
 
-	void SetInfo(JlsParamaters* info) { _info = *info; }
+	void SetInfo(JlsParameters* info) { _info = *info; }
 
 	void SetRect(JlsRect rect) { _rect = rect; }
 
@@ -160,7 +160,7 @@ private:
 	size_t _cbyteOffset;
 	size_t _cbyteLength;
 	bool _bCompare;
-	JlsParamaters _info;
+	JlsParameters _info;
 	JlsRect _rect;
 };
 
