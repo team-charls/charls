@@ -1,5 +1,5 @@
 // 
-// (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
 #ifndef CHARLS_SCAN
@@ -134,8 +134,8 @@ public:
 
 	  JlsCodec(const TRAITS& inTraits, const JlsParameters& info) : STRATEGY(info), 
 	  traits(inTraits),
-		  _width(0),
 		  _rect(),
+		  _width(0),
 		  T1(0),
 		  T2(0),
 		  T3(0),

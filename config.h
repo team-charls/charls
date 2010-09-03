@@ -1,3 +1,7 @@
+// 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// 
+
 
 #ifndef CHARLS_CONFIG
 #define CHARLS_CONFIG
