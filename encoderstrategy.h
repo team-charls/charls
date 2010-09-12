@@ -60,7 +60,7 @@ protected:
 
 		ASSERT((_qdecoder.get() == NULL) || (length == 0 && value == 0) ||( _qdecoder->ReadLongValue(length) == value));
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 		if (length < 32)
 		{
 			int mask = (1 << (length)) - 1;
