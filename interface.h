@@ -36,7 +36,7 @@ extern "C"
 		const void* compressedData, size_t compressedLength, 
 		struct JlsRect rect, struct JlsParameters* info);
 
-  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsReadHeader(const void* uncompressedData, size_t uncompressedLength, 
+  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsReadHeader(const void* compressedData, size_t compressedLength, 
 		struct JlsParameters* pparams);
 
   CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, 
