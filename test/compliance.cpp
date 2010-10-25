@@ -89,7 +89,7 @@ void TestCompliance(const BYTE* compressedBytes, int compressedLength, const BYT
 
 
 
-void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEncode = true)
+void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEncode)
 {
 	std::cout << "Conformance test:" << strNameEncoded << "\n\r";
 	std::vector<BYTE> rgbyteFile;

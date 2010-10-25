@@ -129,12 +129,10 @@ struct FromBigEndian<4>
 template <>
 struct FromBigEndian<8>
 {
-	typedef unsigned long long UINT64;
-
-	inlinehint static UINT64 Read(BYTE* pbyte)
+	inlinehint static uint64_t Read(BYTE* pbyte)
 	{
-		return  (UINT64(pbyte[0]) << 56) + (UINT64(pbyte[1]) << 48) + (UINT64(pbyte[2]) << 40) + (UINT64(pbyte[3]) << 32) + 
-		  		(UINT64(pbyte[4]) << 24) + (UINT64(pbyte[5]) << 16) + (UINT64(pbyte[6]) <<  8) + (UINT64(pbyte[7]) << 0);
+		return  (uint64_t(pbyte[0]) << 56) + (uint64_t(pbyte[1]) << 48) + (uint64_t(pbyte[2]) << 40) + (uint64_t(pbyte[3]) << 32) + 
+		  		(uint64_t(pbyte[4]) << 24) + (uint64_t(pbyte[5]) << 16) + (uint64_t(pbyte[6]) <<  8) + (uint64_t(pbyte[7]) << 0);
 	}
 };
 

@@ -356,6 +356,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\dicomsamples.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>

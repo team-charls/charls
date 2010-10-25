@@ -176,6 +176,7 @@ void TestConformance();
 void TestSampleAnnexH3();
 void PerformanceTests();
 void DamagedBitstreamTests();
+void TestDicomWG4Images();
 
 void UnitTest()
 {
@@ -232,6 +233,12 @@ int main(int argc, char* argv[])
 		if (str.compare("-performance") == 0)
 		{
 			PerformanceTests();		
+			continue;
+		}
+
+		if (str.compare("-dicom") == 0)
+		{
+			TestDicomWG4Images();		
 			continue;
 		}
 
