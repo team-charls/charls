@@ -12,9 +12,6 @@
 #ifndef CHARLS_IMEXPORT
 #define CHARLS_IMEXPORT(returntype) __declspec(dllimport) returntype __stdcall
 #endif
-#if defined(_MSC_VER)
-#pragma comment (lib,"charls.lib")
-#endif
 #else
 #ifndef CHARLS_IMEXPORT 
 #define CHARLS_IMEXPORT(returntype) returntype
