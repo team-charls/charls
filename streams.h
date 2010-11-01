@@ -118,7 +118,7 @@ public:
 class JLSInputStream
 {
 public:
-	JLSInputStream(const BYTE* pdata, LONG cbyteLength);
+	JLSInputStream(const BYTE* pdata, size_t cbyteLength);
 
 	size_t GetBytesRead()
 		{ return _cbyteOffset; }
@@ -129,7 +129,7 @@ public:
 	const JlsCustomParameters& GetCustomPreset() const
 	{ return _info.custom; } 
 
-	void Read(void* pvoid, LONG cbyteAvailable);
+	void Read(void* pvoid, size_t cbyteAvailable);
 	void ReadHeader();
 	
 	void EnableCompare(bool bCompare)
@@ -140,7 +140,7 @@ public:
 	void SetRect(JlsRect rect) { _rect = rect; }
 
 private:
-	void ReadPixels(void* pvoid, LONG cbyteAvailable);
+	void ReadPixels(void* pvoid, size_t cbyteAvailable);
 	void ReadScan(void*);	
 	void ReadStartOfScan();
 	void ReadPresetParameters();

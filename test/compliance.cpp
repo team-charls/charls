@@ -4,12 +4,13 @@
 
 
 #include "config.h"
-#include <iostream>
-#include <vector>
 
 #include "../interface.h"
 #include "../util.h"
 #include "../streams.h"
+
+#include <iostream>
+#include <vector>
 
 #include "util.h"
 

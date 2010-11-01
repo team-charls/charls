@@ -844,7 +844,7 @@ size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(void* rawData, const JlsRect& rect,
 
 	BYTE rgbyte[20];
 
-	LONG readBytes = 0;
+	size_t readBytes = 0;
 	::memcpy(rgbyte, compressedBytes, 4);
 	readBytes += 4;
 

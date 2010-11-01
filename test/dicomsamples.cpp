@@ -28,14 +28,14 @@ int findstring(std::vector<BYTE>& container, BYTE* bytesToFind, unsigned int byt
 #define COUNT(x) (sizeof(x)/sizeof(x[0]))
 
 
-void TestDicomSampleImage(char* name)
+void TestDicomSampleImage(const char* name)
 {
 	std::vector<BYTE> data;
 	bool success = ReadFile(name, &data, 9);
 
 	ASSERT(success);
 	
-    BYTE pixeldataStart[] =  { 0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7 };
+        BYTE pixeldataStart[] =  { 0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7 };
 
 	int offset = findstring(data, pixeldataStart, COUNT(pixeldataStart));
 

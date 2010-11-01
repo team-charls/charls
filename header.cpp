@@ -98,6 +98,7 @@ void push_back(std::vector<BYTE>& vec, USHORT value)
 //
 JpegSegment* CreateMarkerStartOfFrame(Size size, LONG bitsPerSample, LONG ccomp)
 {
+
 	std::vector<BYTE> vec;
 	vec.push_back(static_cast<BYTE>(bitsPerSample));
 	push_back(vec, static_cast<USHORT>(size.cy));
@@ -197,7 +198,7 @@ size_t JLSOutputStream::Write(BYTE* pdata, size_t cbyteLength)
 
 
 
-JLSInputStream::JLSInputStream(const BYTE* pdata, LONG cbyteLength) :
+JLSInputStream::JLSInputStream(const BYTE* pdata, size_t cbyteLength) :
 		_pdata(pdata),
 		_cbyteOffset(0),
 		_cbyteLength(cbyteLength),
@@ -210,7 +211,7 @@ JLSInputStream::JLSInputStream(const BYTE* pdata, LONG cbyteLength) :
 //
 // Read()
 //
-void JLSInputStream::Read(void* pvoid, LONG cbyteAvailable)
+void JLSInputStream::Read(void* pvoid, size_t cbyteAvailable)
 {
 	ReadHeader();
 
@@ -228,7 +229,7 @@ void JLSInputStream::Read(void* pvoid, LONG cbyteAvailable)
 //
 // ReadPixels()
 //
-void JLSInputStream::ReadPixels(void* pvoid, LONG cbyteAvailable)
+void JLSInputStream::ReadPixels(void* pvoid, size_t cbyteAvailable)
 {
 
 	if (_rect.Width <= 0)
@@ -239,7 +240,7 @@ void JLSInputStream::ReadPixels(void* pvoid, LONG cbyteAvailable)
 
 	int64_t cbytePlane = (int64_t)(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
 
-	if (cbyteAvailable < cbytePlane * _info.components)
+	if (int64_t(cbyteAvailable) < cbytePlane * _info.components)
 		throw JlsException(UncompressedBufferTooSmall);
  	
 	int scancount = _info.ilv == ILV_NONE ? _info.components : 1;

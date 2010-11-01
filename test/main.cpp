@@ -248,9 +248,7 @@ int main(int argc, char* argv[])
 			continue;
 		}
 
-		printf("Option not understood: ");
-		printf(argv[i]);
-		printf("\r\n");
+		printf("Option not understood: %s\r\n", argv[i]);
 		break;
 
 	}

@@ -59,9 +59,9 @@ bool ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs, int bytes)
 
 	fseek(pfile, ioffs, SEEK_SET);	
 	pvec->resize(bytes);
-	fread(&(*pvec)[0],1, pvec->size(), pfile);
+	size_t bytesRead = fread(&(*pvec)[0],1, pvec->size(), pfile);
 	fclose(pfile);
-	return true;
+	return bytesRead == pvec->size();
 }
 
 
