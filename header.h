@@ -23,6 +23,14 @@
 #define JPEG_APP8 0xE8 // colorXForm
 
 
+
+// Default bin sizes for JPEG-LS statistical modeling. Can be overriden at compression time, however this is rarely done.
+const int BASIC_T1		= 3;
+const int BASIC_T2		= 7;
+const int BASIC_T3		= 21;
+
+const LONG BASIC_RESET	= 64;
+
 class JLSOutputStream;
 
 
@@ -37,6 +45,7 @@ private:
 
 JLS_ERROR CheckParameterCoherent(const JlsParameters* pparams);
 
+JlsCustomParameters ComputeDefault(LONG MAXVAL, LONG NEAR);
 
 //
 // JpegSegment

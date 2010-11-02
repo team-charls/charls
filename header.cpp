@@ -36,6 +36,30 @@ bool IsDefault(const JlsCustomParameters* pcustom)
 }
 
 
+LONG CLAMP(LONG i, LONG j, LONG MAXVAL)
+{
+	if (i > MAXVAL || i < j)
+		return j;
+
+	return i;
+}
+
+
+JlsCustomParameters ComputeDefault(LONG MAXVAL, LONG NEAR)
+{
+	JlsCustomParameters preset = JlsCustomParameters();
+
+	LONG FACTOR = (MIN(MAXVAL, 4095) + 128)/256;
+
+	preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
+	preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
+	preset.T3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7*NEAR, preset.T2, MAXVAL);
+	preset.MAXVAL = MAXVAL;
+	preset.RESET = BASIC_RESET;
+	return preset;
+}
+
+
 JLS_ERROR CheckParameterCoherent(const JlsParameters* pparams)
 {
 	if (pparams->bitspersample < 6 || pparams->bitspersample > 16)
@@ -549,6 +573,11 @@ void JLSOutputStream::AddScan(const void* compareData, const JlsParameters* ppar
 	if (!IsDefault(&pparams->custom))
 	{
 		_segments.push_back(CreateLSE(&pparams->custom));		
+	}
+	else if (pparams->bitspersample > 12)
+	{
+		JlsCustomParameters preset = ComputeDefault((1 << pparams->bitspersample) - 1, pparams->allowedlossyerror);
+        _segments.push_back(CreateLSE(&preset));
 	}
 
 	_icompLast += 1;

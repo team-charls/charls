@@ -20,8 +20,6 @@
 #endif
 
 
-const LONG BASIC_RESET	= 64;
-
 inline LONG log_2(LONG n)
 {
 	LONG x = 0;

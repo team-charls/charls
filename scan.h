@@ -27,28 +27,6 @@ inlinehint LONG ApplySign(LONG i, LONG sign)
 { return (sign ^ i) - sign; }									
 
 
-LONG CLAMP(LONG i, LONG j, LONG MAXVAL)
-{
-	if (i > MAXVAL || i < j)
-		return j;
-
-	return i;
-}
-
-Presets ComputeDefault(LONG MAXVAL, LONG NEAR)
-{
-	Presets preset;
-
-	LONG FACTOR = (MIN(MAXVAL, 4095) + 128)/256;
-
-	preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
-	preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
-	preset.T3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7*NEAR, preset.T2, MAXVAL);
-	preset.MAXVAL = MAXVAL;
-	preset.RESET = BASIC_RESET;
-	return preset;
-}
-
 
 // Two alternatives for GetPredictedValue() (second is slightly faster due to reduced branching)
 
@@ -153,8 +131,7 @@ public:
 
 	  void SetPresets(const JlsCustomParameters& presets)
 	  {
-
-		  Presets presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
+		  JlsCustomParameters presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
 
 		  InitParams(presets.T1 != 0 ? presets.T1 : presetDefault.T1,
 			  presets.T2 != 0 ? presets.T2 : presetDefault.T2,
@@ -390,7 +367,7 @@ void JlsCodec<TRAITS,STRATEGY>::InitQuantizationLUT()
 	// for lossless mode with default parameters, we have precomputed te luts for bitcounts 8,10,12 and 16 
 	if (traits.NEAR == 0 && traits.MAXVAL == (1 << traits.bpp) - 1)
 	{
-		Presets presets = ComputeDefault(traits.MAXVAL, traits.NEAR);
+		JlsCustomParameters presets = ComputeDefault(traits.MAXVAL, traits.NEAR);
 		if (presets.T1 == T1 && presets.T2 == T2 && presets.T3 == T3)
 		{
 			if (traits.bpp == 8) 

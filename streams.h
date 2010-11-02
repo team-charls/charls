@@ -97,21 +97,6 @@ private:
 };
 
 
-
-struct Presets : public JlsCustomParameters
-{
-public:
-	Presets()			
-	{		
-		MAXVAL = 0;
-		T1 = 0;
-		T2 = 0;
-		T3 = 0;
-		RESET = 0;
-	}
-};
-
-
 //
 // JLSInputStream: minimal implementation to read JPEG header streams
 //
