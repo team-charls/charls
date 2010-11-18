@@ -44,7 +44,9 @@ public:
 	virtual ~JLSOutputStream();
 
 	void Init(Size size, LONG bitsPerSample, LONG ccomp);
+	void AddScan(byteStream* rawData, const JlsParameters* pparams);
 	void AddScan(const void* compareData, const JlsParameters* pparams);
+	
 	void AddLSE(const JlsCustomParameters* pcustom);
 	void AddColorTransform(int i);
 	size_t GetBytesWritten()
@@ -58,6 +60,7 @@ public:
 	void EnableCompare(bool bCompare) 
 	{ _bCompare = bCompare; }
 private:
+	
 	BYTE* GetPos() const
 		{ return _pdata + _cbyteOffset; }
 

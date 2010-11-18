@@ -4,11 +4,13 @@
 
 
 #include "config.h"
-#include <iostream>
+#include <fstream>
+
 #include <vector>
 
 #include "../interface.h"
 #include "../util.h"
+#include "../header.h"
 #include "../defaulttraits.h"
 #include "../losslesstraits.h"
 #include "../colortransform.h"
@@ -170,6 +172,41 @@ void TestDecodeRect()
 	assert(rgbyteOut[rect.Width * rect.Height] == 0x1f);
 }
 
+using namespace std;
+
+
+
+void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp, int ccomponent, int ilv, int expectedLength)
+{
+	std::basic_filebuf<char> myFile; // On the stack
+	myFile.open(file, std::ios_base::in | ios::binary);
+	myFile.pubseekoff(offset, std::ios_base::cur); 
+	
+	BYTE* compressed = new BYTE[width * height * ccomponent * 2];
+	JlsParameters params = JlsParameters();
+	params.height = height;
+    params.width = width;
+	params.components = ccomponent;
+	params.bitspersample= bpp;
+	params.ilv = (interleavemode) ilv;
+	size_t bytesWritten = 0;
+	JpegLsEncodeStream(compressed, width * height * ccomponent * 2, &bytesWritten, &myFile, &params);
+	ASSERT(bytesWritten == expectedLength);
+
+	delete[] compressed;
+	myFile.close();
+}
+
+
+
+void TestEncodeFromStream()
+{
+	TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1,0,    0x3D3ee);
+	TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
+	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,2, 99734);
+	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,1, 100615);
+}
+
 
 void TestColorTransforms_HpImages();
 void TestConformance();
@@ -180,6 +217,13 @@ void TestDicomWG4Images();
 
 void UnitTest()
 {
+	
+	printf("Test Conformance\r\n");
+	TestEncodeFromStream();
+	TestConformance();
+
+    return;
+
 	TestDecodeRect();
 
 	printf("Test Traits\r\n");
@@ -193,9 +237,7 @@ void UnitTest()
 	printf("Test Small buffer\r\n");
 	TestTooSmallOutputBuffer();
 
-	printf("Test Conformance\r\n");
-	TestConformance();
-
+	
 	printf("Test Color transform equivalence on HP images\r\n");
 	TestColorTransforms_HpImages();
 

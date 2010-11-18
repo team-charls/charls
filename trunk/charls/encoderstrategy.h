@@ -41,8 +41,10 @@ public:
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
-	virtual size_t EncodeScan(const void* pvoid, void* pvoidOut, size_t byteCount, void* pvoidCompare) = 0;
-
+	virtual size_t EncodeScan(ProcessLine* rawData, void* pvoidOut, size_t byteCount, void* pvoidCompare) = 0;
+    virtual ProcessLine* CreateProcess(void* pvoidOut) = 0;
+	virtual ProcessLine* CreateProcess(byteStream* rawStream) = 0;
+	
 protected:
 
 	void Init(BYTE* compressedBytes, size_t byteCount)

@@ -20,6 +20,9 @@
 
 
 #ifdef __cplusplus
+
+#include <iostream>
+
 extern "C" 
 {
 #endif
@@ -42,6 +45,9 @@ extern "C"
 		const void* compressedData, size_t compressedLength);
 
 #ifdef __cplusplus
+
+	CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncodeStream(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, byteStream* inputStream, struct JlsParameters* pparams);
+
 }
 #endif
 

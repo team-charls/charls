@@ -539,11 +539,21 @@ void JLSInputStream::ReadScan(void* pvout)
 class JpegImageDataSegment: public JpegSegment
 {
 public:
-	JpegImageDataSegment(const void* pvoidRaw, const JlsParameters& info, LONG icompStart, int ccompScan)  :
+	JpegImageDataSegment(const void* rawData, const JlsParameters& info, LONG icompStart, int ccompScan)  :
 		_ccompScan(ccompScan),
 		_icompStart(icompStart),
-		_pvoidRaw(pvoidRaw),
-		_info(info)
+		_rawData(rawData),
+		_info(info),
+		_rawStream(0)
+	{
+	}
+
+	JpegImageDataSegment(byteStream* rawStream, const JlsParameters& info, LONG icompStart, int ccompScan)  :
+		_ccompScan(ccompScan),
+		_icompStart(icompStart),
+		_rawData(0),
+		_info(info),
+		_rawStream(rawStream)
 	{
 	}
 
@@ -552,19 +562,29 @@ public:
 		JlsParameters info = _info;
 		info.components = _ccompScan;	
 		std::auto_ptr<EncoderStrategy> qcodec =JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
-		size_t cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
+		ProcessLine* rawData = NULL;
+		if (_rawStream != NULL)
+		{
+			rawData = qcodec->CreateProcess(_rawStream);
+		}
+		else
+		{
+			rawData = qcodec->CreateProcess(const_cast<void*>(_rawData));
+		}
+		size_t cbyteWritten = qcodec->EncodeScan(rawData, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
 
 
 	int _ccompScan;
 	LONG _icompStart;
-	const void* _pvoidRaw;
+	const void* _rawData;
 	JlsParameters _info;
+	byteStream* _rawStream;
 };
 
 
-void JLSOutputStream::AddScan(const void* compareData, const JlsParameters* pparams)
+void JLSOutputStream::AddScan(const void* rawData, const JlsParameters* pparams)
 {
 	if (pparams->jfif.Ver)
 	{
@@ -585,9 +605,34 @@ void JLSOutputStream::AddScan(const void* compareData, const JlsParameters* ppar
 
 	Size size = Size(pparams->width, pparams->height);
 	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
-		_segments.push_back(new JpegImageDataSegment(compareData, *pparams, _icompLast, ccomp));
+		_segments.push_back(new JpegImageDataSegment(rawData, *pparams, _icompLast, ccomp));
 }
 
+
+
+void JLSOutputStream::AddScan(byteStream* rawData, const JlsParameters* pparams)
+{
+	if (pparams->jfif.Ver)
+	{
+		_segments.push_back(CreateJFIF(&pparams->jfif));
+	}
+	if (!IsDefault(&pparams->custom))
+	{
+		_segments.push_back(CreateLSE(&pparams->custom));		
+	}
+	else if (pparams->bitspersample > 12)
+	{
+		JlsCustomParameters preset = ComputeDefault((1 << pparams->bitspersample) - 1, pparams->allowedlossyerror);
+        _segments.push_back(CreateLSE(&preset));
+	}
+
+	_icompLast += 1;
+	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _icompLast : -1));
+
+	Size size = Size(pparams->width, pparams->height);
+	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
+		_segments.push_back(new JpegImageDataSegment(rawData, *pparams, _icompLast, ccomp));
+}
 
 //
 // ReadColorSpace()

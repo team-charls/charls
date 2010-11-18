@@ -113,7 +113,7 @@ public:
 	  JlsCodec(const TRAITS& inTraits, const JlsParameters& info) : STRATEGY(info), 
 	  traits(inTraits),
 		  _rect(),
-		  _width(0),
+		  _width(info.width),
 		  T1(0),
 		  T2(0),
 		  T3(0),
@@ -190,11 +190,13 @@ public:
 	  void DoScan(BYTE* compressedBytes, size_t compressedLength);         
 
 public:
+	ProcessLine* CreateProcess(byteStream* rawStream);
 	ProcessLine* CreateProcess(void* pvoidOut);
+	ProcessLine* CreateProcess(void* pvoidOut, byteStream* rawStream);
 	void InitDefault();
 	void InitParams(LONG t1, LONG t2, LONG t3, LONG nReset);
 
-	size_t  EncodeScan(const void* rawData, void* pvoidOut, size_t compressedLength, void* pvoidCompare);
+	size_t  EncodeScan(ProcessLine* rawData, void* pvoidOut, size_t compressedLength, void* pvoidCompare);
 	size_t  DecodeScan(void* rawData, const JlsRect& size, const void* compressedData, size_t compressedLength, bool bCompare);
 
 protected:
@@ -706,8 +708,6 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet<SAMPLE>*)
 template<class TRAITS, class STRATEGY>
 void JlsCodec<TRAITS,STRATEGY>::DoScan(BYTE* compressedBytes, size_t compressedLength)
 {		
-	_width = Info().width;
-
 	STRATEGY::Init(compressedBytes, compressedLength);
 
 	LONG pixelstride = _width + 4;
@@ -753,22 +753,41 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan(BYTE* compressedBytes, size_t compressedL
 
 // Factory function for ProcessLine objects to copy/transform unencoded pixels to/from our scanline buffers.
 
+
+template<class TRAITS, class STRATEGY>
+ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(byteStream* rawStream)
+{
+	if (!IsInterleaved())
+		return new PostProcesSingleStream(rawStream, Info(), sizeof(typename TRAITS::PIXEL));
+
+	return CreateProcess(NULL, rawStream);
+}
+
+
 template<class TRAITS, class STRATEGY>
 ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(void* pvoidOut)
 {
 	if (!IsInterleaved())
 		return new PostProcesSingleComponent(pvoidOut, Info(), sizeof(typename TRAITS::PIXEL));
 
+	return CreateProcess(pvoidOut,NULL);
+}
+
+
+
+template<class TRAITS, class STRATEGY>
+ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(void* pvoidOut, byteStream* rawStream)
+{
 	if (Info().colorTransform == 0)
-		return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(pvoidOut, Info(), TransformNone<SAMPLE>()); 
+		return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(pvoidOut, rawStream, Info(), TransformNone<SAMPLE>()); 
 
 	if ((Info().bitspersample == sizeof(SAMPLE)*8))
 	{
 		switch(Info().colorTransform)
 		{
-			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<SAMPLE> >(pvoidOut, Info(), TransformHp1<SAMPLE>()); break;
-			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<SAMPLE> >(pvoidOut, Info(), TransformHp2<SAMPLE>()); break;
-			case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<SAMPLE> >(pvoidOut, Info(), TransformHp3<SAMPLE>()); break;
+			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<SAMPLE> >(pvoidOut, rawStream, Info(), TransformHp1<SAMPLE>()); break;
+			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<SAMPLE> >(pvoidOut, rawStream, Info(), TransformHp2<SAMPLE>()); break;
+			case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<SAMPLE> >(pvoidOut, rawStream, Info(), TransformHp3<SAMPLE>()); break;
 			default: throw JlsException(UnsupportedColorTransform);
 		}
 	} 
@@ -777,9 +796,9 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(void* pvoidOut)
 		int shift = 16 - Info().bitspersample;
 		switch(Info().colorTransform)
 		{
-			case COLORXFORM_HP1 : return new ProcessTransformed<TransformShifted<TransformHp1<USHORT> > >(pvoidOut, Info(), TransformShifted<TransformHp1<USHORT> >(shift)); break;
-			case COLORXFORM_HP2 : return new ProcessTransformed<TransformShifted<TransformHp2<USHORT> > >(pvoidOut, Info(), TransformShifted<TransformHp2<USHORT> >(shift)); break;
-			case COLORXFORM_HP3 : return new ProcessTransformed<TransformShifted<TransformHp3<USHORT> > >(pvoidOut, Info(), TransformShifted<TransformHp3<USHORT> >(shift)); break;
+			case COLORXFORM_HP1 : return new ProcessTransformed<TransformShifted<TransformHp1<USHORT> > >(pvoidOut, rawStream, Info(), TransformShifted<TransformHp1<USHORT> >(shift)); break;
+			case COLORXFORM_HP2 : return new ProcessTransformed<TransformShifted<TransformHp2<USHORT> > >(pvoidOut, rawStream, Info(), TransformShifted<TransformHp2<USHORT> >(shift)); break;
+			case COLORXFORM_HP3 : return new ProcessTransformed<TransformShifted<TransformHp3<USHORT> > >(pvoidOut, rawStream, Info(), TransformShifted<TransformHp3<USHORT> >(shift)); break;
 			default: throw JlsException(UnsupportedColorTransform);
 		}
 	}
@@ -791,9 +810,9 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(void* pvoidOut)
 // Setup codec for encoding and calls DoScan
 
 template<class TRAITS, class STRATEGY>
-size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(const void* rawData, void* compressedData, size_t compressedLength, void* pvoidCompare)
+size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(ProcessLine* rawData, void* compressedData, size_t compressedLength, void* pvoidCompare)
 {
-	STRATEGY::_processLine = std::auto_ptr<ProcessLine>(CreateProcess(const_cast<void*>(rawData)));
+	STRATEGY::_processLine = std::auto_ptr<ProcessLine>(rawData);
 	
 	BYTE* compressedBytes = static_cast<BYTE*>(compressedData);
 

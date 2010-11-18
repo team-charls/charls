@@ -5,6 +5,9 @@
 #define CHARLS_PUBLICTYPES
 
 #include "config.h"
+#include <iostream>
+
+typedef std::basic_streambuf<char> byteStream;
 
 enum JLS_ERROR
 {
@@ -27,6 +30,7 @@ enum interleavemode
 	ILV_LINE = 1,
 	ILV_SAMPLE = 2
 };
+
 
 
 struct JlsCustomParameters

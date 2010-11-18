@@ -9,9 +9,6 @@
 
 #include "../interface.h"
 #include "../util.h"
-#include "../defaulttraits.h"
-#include "../losslesstraits.h"
-#include "../colortransform.h"
 #include "../streams.h"
 #include "../processline.h"
 
