@@ -49,6 +49,7 @@ void TestDamagedBitStream3()
 	std::vector<BYTE> rgbyteCompressed;	
 	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
 		return;	
+
 	rgbyteCompressed[300] = 0xFF;
 	rgbyteCompressed[301] = 0xFF;
 

@@ -30,6 +30,12 @@ enum JPEGLS_ColorXForm
 	COLORXFORM_RGB_AS_YUV_LOSSY,
 	COLORXFORM_MATRIX
 };
+
+struct ByteStreamInfo
+{
+	BYTE* rawData;
+	byteStream* rawStream;
+};
 	
 //
 // JLSOutputStream: minimal implementation to write JPEG header streams
@@ -95,7 +101,7 @@ private:
 	BYTE* _pdata;
 	size_t _cbyteOffset;
 	size_t _cbyteLength;
-	LONG _icompLast;
+	LONG _lastCompenentIndex;
 	std::vector<JpegSegment*> _segments;
 };
 
@@ -117,7 +123,7 @@ public:
 	const JlsCustomParameters& GetCustomPreset() const
 	{ return _info.custom; } 
 
-	void Read(void* pvoid, size_t cbyteAvailable);
+	void Read(ByteStreamInfo info, size_t cbyteAvailable);
 	void ReadHeader();
 	
 	void EnableCompare(bool bCompare)
@@ -128,8 +134,7 @@ public:
 	void SetRect(JlsRect rect) { _rect = rect; }
 
 private:
-	void ReadPixels(void* pvoid, size_t cbyteAvailable);
-	void ReadScan(void*);	
+	void ReadScan(ByteStreamInfo rawPixels);	
 	void ReadStartOfScan();
 	void ReadPresetParameters();
 	void ReadComment();

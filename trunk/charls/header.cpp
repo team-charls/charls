@@ -150,11 +150,11 @@ JpegSegment* CreateMarkerStartOfFrame(Size size, LONG bitsPerSample, LONG ccomp)
 //
 JLSOutputStream::JLSOutputStream() :
 	_bCompare(false),
-	_pdata(NULL),
+	_pdata(NULL),	
 	_cbyteOffset(0),
 	_cbyteLength(0),
-	_icompLast(0)
-{
+	_lastCompenentIndex(0)
+{	
 }
 
 
@@ -179,7 +179,7 @@ JLSOutputStream::~JLSOutputStream()
 //
 void JLSOutputStream::Init(Size size, LONG bitsPerSample, LONG ccomp)
 {
-		_segments.push_back(CreateMarkerStartOfFrame(size, bitsPerSample, ccomp));
+	_segments.push_back(CreateMarkerStartOfFrame(size, bitsPerSample, ccomp));
 }
 
 
@@ -235,45 +235,35 @@ JLSInputStream::JLSInputStream(const BYTE* pdata, size_t cbyteLength) :
 //
 // Read()
 //
-void JLSInputStream::Read(void* pvoid, size_t cbyteAvailable)
+void JLSInputStream::Read(ByteStreamInfo rawPixels, size_t rawBufferLength)
 {
 	ReadHeader();
 
 	JLS_ERROR error = CheckParameterCoherent(&_info);
 	if (error != OK)
 		throw JlsException(error);
-
-	ReadPixels(pvoid, cbyteAvailable);
-}
-
-
-
-
-
-//
-// ReadPixels()
-//
-void JLSInputStream::ReadPixels(void* pvoid, size_t cbyteAvailable)
-{
-
+	
 	if (_rect.Width <= 0)
 	{
 		_rect.Width = _info.width;
 		_rect.Height = _info.height;
 	}
 
-	int64_t cbytePlane = (int64_t)(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
+	int64_t bytesPerPlane = (int64_t)(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
 
-	if (int64_t(cbyteAvailable) < cbytePlane * _info.components)
+	if (rawPixels.rawData != NULL && int64_t(rawBufferLength) < bytesPerPlane * _info.components)
 		throw JlsException(UncompressedBufferTooSmall);
- 	
-	int scancount = _info.ilv == ILV_NONE ? _info.components : 1;
 
-	BYTE* pbyte = (BYTE*)pvoid;
+	int scancount = _info.ilv == ILV_NONE ? _info.components : 1;
+			
 	for (LONG scan = 0; scan < scancount; ++scan)
 	{
-		ReadScan(pbyte);
-		pbyte += cbytePlane;
+		ReadScan(rawPixels);
+
+		if (rawPixels.rawData != NULL)
+		{
+			rawPixels.rawData += bytesPerPlane;
+		}
 	}	
 }
 
@@ -528,33 +518,25 @@ int JLSInputStream::ReadWord()
 }
 
 
-void JLSInputStream::ReadScan(void* pvout) 
-{
-	std::auto_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);
-	
-	_cbyteOffset += qcodec->DecodeScan(pvout, _rect, _pdata + _cbyteOffset, _cbyteLength - _cbyteOffset, _bCompare); 
+void JLSInputStream::ReadScan(ByteStreamInfo info) 
+{		
+	std::auto_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);	
+	ProcessLine* processLine = qcodec->CreateProcess(info);
+	_cbyteOffset += qcodec->DecodeScan(processLine, _rect, _pdata + _cbyteOffset, _cbyteLength - _cbyteOffset, _bCompare); 
 }
 
 
 class JpegImageDataSegment: public JpegSegment
 {
 public:
-	JpegImageDataSegment(const void* rawData, const JlsParameters& info, LONG icompStart, int ccompScan)  :
-		_ccompScan(ccompScan),
-		_icompStart(icompStart),
-		_rawData(rawData),
-		_info(info),
-		_rawStream(0)
-	{
-	}
 
-	JpegImageDataSegment(byteStream* rawStream, const JlsParameters& info, LONG icompStart, int ccompScan)  :
+	JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& info, LONG icompStart, int ccompScan)  :
 		_ccompScan(ccompScan),
 		_icompStart(icompStart),
-		_rawData(0),
 		_info(info),
-		_rawStream(rawStream)
+		_rawStreamInfo(rawStream)	
 	{
+		
 	}
 
 	void Write(JLSOutputStream* pstream)
@@ -562,25 +544,16 @@ public:
 		JlsParameters info = _info;
 		info.components = _ccompScan;	
 		std::auto_ptr<EncoderStrategy> qcodec =JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
-		ProcessLine* rawData = NULL;
-		if (_rawStream != NULL)
-		{
-			rawData = qcodec->CreateProcess(_rawStream);
-		}
-		else
-		{
-			rawData = qcodec->CreateProcess(const_cast<void*>(_rawData));
-		}
-		size_t cbyteWritten = qcodec->EncodeScan(rawData, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
+		ProcessLine* processLine = qcodec->CreateProcess(_rawStreamInfo);
+		size_t cbyteWritten = qcodec->EncodeScan(processLine, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
 
 
 	int _ccompScan;
 	LONG _icompStart;
-	const void* _rawData;
-	JlsParameters _info;
-	byteStream* _rawStream;
+	ByteStreamInfo _rawStreamInfo;
+	JlsParameters _info;	
 };
 
 
@@ -600,12 +573,14 @@ void JLSOutputStream::AddScan(const void* rawData, const JlsParameters* pparams)
         _segments.push_back(CreateLSE(&preset));
 	}
 
-	_icompLast += 1;
-	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _icompLast : -1));
+	_lastCompenentIndex += 1;
+	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _lastCompenentIndex : -1));
+
+	ByteStreamInfo info = {(BYTE*)rawData, NULL};
 
 	Size size = Size(pparams->width, pparams->height);
-	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
-		_segments.push_back(new JpegImageDataSegment(rawData, *pparams, _icompLast, ccomp));
+	int componentCount = pparams->ilv == ILV_NONE ? 1 : pparams->components;
+		_segments.push_back(new JpegImageDataSegment(info, *pparams, _lastCompenentIndex, componentCount));
 }
 
 
@@ -626,12 +601,14 @@ void JLSOutputStream::AddScan(byteStream* rawData, const JlsParameters* pparams)
         _segments.push_back(CreateLSE(&preset));
 	}
 
-	_icompLast += 1;
-	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _icompLast : -1));
+	_lastCompenentIndex += 1;
+	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _lastCompenentIndex : -1));
+
+	ByteStreamInfo info = {NULL, rawData};
 
 	Size size = Size(pparams->width, pparams->height);
 	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
-		_segments.push_back(new JpegImageDataSegment(rawData, *pparams, _icompLast, ccomp));
+		_segments.push_back(new JpegImageDataSegment(info, *pparams, _lastCompenentIndex, ccomp));
 }
 
 //

@@ -20,8 +20,8 @@ class ProcessLine
 {
 public:
 	virtual ~ProcessLine() {}
-	virtual void NewLineDecoded(const void* pSrc, int pixelCount, int bytesperline) = 0;
-	virtual void NewLineRequested(void* pDest, int pixelCount, int bytesperline) = 0;
+	virtual void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride) = 0;
+	virtual void NewLineRequested(void* pDest, int pixelCount, int destStride) = 0;
 };
 
 
@@ -41,7 +41,7 @@ public:
 		_rawData += _bytesPerLine;
 	}
 
-	void NewLineDecoded(const void* pSrc, int pixelCount, int /*byteStride*/)
+	void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/)
 	{
 		::memcpy(_rawData, pSrc, pixelCount * _bytesPerPixel);
 		_rawData += _bytesPerLine;		
@@ -64,23 +64,26 @@ public:
 	{
 	}
 
-	void NewLineRequested(void* dest, int pixelCount, int /*byteStride*/)
+	void NewLineRequested(void* dest, int pixelCount, int /*destStride*/)
 	{
 		int bytesToRead = pixelCount * _bytesPerPixel;
-		while(bytesToRead != 0)
-		{
-			int read = _rawData->sgetn((char*)dest, bytesToRead);
-			if (read == 0)
-				throw new JlsException(UncompressedBufferTooSmall);
+		int bytesRead = _rawData->sgetn((char*)dest, bytesToRead);
+		
+		if (bytesRead != bytesToRead)
+			throw new JlsException(UncompressedBufferTooSmall);
 
-			bytesToRead -= read;
-		}
-		//_rawData->pubseekoff(_bytesPerLine - bytesToRead, std::ios_base::cur);
+		if (_bytesPerLine - bytesToRead > 0)
+		{
+			_rawData->pubseekoff(_bytesPerLine - bytesToRead, std::ios_base::cur);
+		}		
 	}
 
-	void NewLineDecoded(const void* /*pSrc*/, int /*pixelCount*/, int /*byteStride*/)
+	void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/)
 	{
-		 	
+		int bytesToWrite = pixelCount * _bytesPerPixel;
+		int bytesWritten = _rawData->sputn((const char*)pSrc, bytesToWrite); 	
+		if (bytesWritten != bytesToWrite)
+			throw new JlsException(UncompressedBufferTooSmall);
 	}
 
 private:
@@ -183,41 +186,44 @@ class ProcessTransformed : public ProcessLine
 
 	ProcessTransformed(const ProcessTransformed&) {}
 public:
-	ProcessTransformed(void* rawData, byteStream* rawStream, const JlsParameters& info, TRANSFORM transform) :
-		_rawData((BYTE*)rawData),
+	ProcessTransformed(ByteStreamInfo rawStream, const JlsParameters& info, TRANSFORM transform) :
 		_info(info),
-		_templine(info.width *  info.components),
+		_templine(info.width * info.components),
+		_buffer(info.width * info.components * sizeof(SAMPLE)),
 		_transform(transform),
 		_inverseTransform(transform),
-		_rawStream(rawStream)
+		_rawPixels(rawStream)
 	{
-//		ASSERT(_info.components == sizeof(TRIPLET)/sizeof(TRIPLET::SAMPLE));
 	}
 		
 
-	void NewLineRequested(void* dest, int pixelCount, int stride)
+	void NewLineRequested(void* dest, int pixelCount, int destStride)
 	{		
-		if (_rawStream != NULL)
+		if (_rawPixels.rawStream == NULL)
 		{
-			int bytesToRead = pixelCount * _info.components * sizeof(SAMPLE);	
-			std::vector<BYTE> buffer(bytesToRead);
-			while(bytesToRead != 0)
-			{
-				int read = _rawStream->sgetn((char*)&buffer[0], bytesToRead);
-				if (read == 0)
-					throw new JlsException(UncompressedBufferTooSmall);
-
-				bytesToRead -= read;
-			}
-			Transform(&buffer[0], dest, pixelCount, stride);		
+			Transform(_rawPixels.rawData, dest, pixelCount, destStride);
+			_rawPixels.rawData += _info.bytesperline;
 			return;
 		}
 
-		Transform(_rawData, dest, pixelCount, stride);
-		_rawData += _info.bytesperline;
+		Transform(_rawPixels.rawStream, dest, pixelCount, destStride);
 	}
 
-	void Transform(const void* source, void* dest, int pixelCount, int stride)
+	void Transform(byteStream* rawStream, void* dest, int pixelCount, int destStride)
+	{			
+		int bytesToRead = pixelCount * _info.components * sizeof(SAMPLE);					
+		while(bytesToRead != 0)
+		{
+			int read = rawStream->sgetn((char*)&_buffer[0], bytesToRead);
+			if (read == 0)
+				throw new JlsException(UncompressedBufferTooSmall);
+
+			bytesToRead -= read;
+		}
+		Transform(&_buffer[0], dest, pixelCount, destStride);		
+	}
+
+	void Transform(const void* source, void* dest, int pixelCount, int destStride)
 	{
 		if (_info.outputBgr)
 		{
@@ -234,12 +240,12 @@ public:
 			}
 			else
 			{
-				TransformTripletToLine((const Triplet<SAMPLE>*)source, pixelCount, (SAMPLE*)dest, stride, _transform);
+				TransformTripletToLine((const Triplet<SAMPLE>*)source, pixelCount, (SAMPLE*)dest, destStride, _transform);
 			}
 		}
 		else if (_info.components == 4 && _info.ilv == ILV_LINE)
 		{
-			TransformQuadToLine((const Quad<SAMPLE>*)source, pixelCount, (SAMPLE*)dest, stride, _transform);
+			TransformQuadToLine((const Quad<SAMPLE>*)source, pixelCount, (SAMPLE*)dest, destStride, _transform);
 		}
 	}
 
@@ -268,21 +274,34 @@ public:
 		}
 	}
 
-	void NewLineDecoded(const void* pSrc, int pixelCount, int byteStride)
+	void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride)
 	{
-		DecodeTransform(pSrc, _rawData, pixelCount, byteStride);
 		
-		_rawData += _info.bytesperline;		
+		if (_rawPixels.rawStream != NULL)
+		{
+			int bytesToWrite = pixelCount * _info.components * sizeof(SAMPLE);		
+			std::vector<char> buffer(bytesToWrite);
+			DecodeTransform(pSrc, &buffer[0], pixelCount, sourceStride);
+		
+			int bytesWritten = _rawPixels.rawStream->sputn(&buffer[0], bytesToWrite); 	
+			if (bytesWritten != bytesToWrite)
+				throw new JlsException(UncompressedBufferTooSmall);
+		}
+		else
+		{			
+			DecodeTransform(pSrc, _rawPixels.rawData, pixelCount, sourceStride);
+			_rawPixels.rawData += _info.bytesperline;		
+		}
 	}
 
 
 private:
-	BYTE* _rawData;
 	const JlsParameters& _info;	
 	std::vector<SAMPLE> _templine;
+	std::vector<BYTE> _buffer;			
 	TRANSFORM _transform;	
 	typename TRANSFORM::INVERSE _inverseTransform;
-	byteStream* _rawStream;
+	ByteStreamInfo _rawPixels;
 };
 
 

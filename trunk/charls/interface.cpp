@@ -168,7 +168,8 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompres
 
 	try
 	{
-		reader.Read(uncompressedData, uncompressedLength);
+		ByteStreamInfo rawPixels = { (BYTE*)uncompressedData, NULL };
+		reader.Read(rawPixels, uncompressedLength);
 		return OK;
 	}
 	catch (JlsException& e)
@@ -177,6 +178,27 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompres
 	}
 }
 
+
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeStream(byteStream* uncompressedData, const void* compressedData, size_t compressedLength, JlsParameters* info)
+{
+	JLSInputStream reader((BYTE*)compressedData, compressedLength);
+
+	if(info != NULL)
+	{
+	 	reader.SetInfo(info);
+	}
+
+	try
+	{
+		ByteStreamInfo rawPixels = { NULL, uncompressedData };
+		reader.Read(rawPixels, 0);
+		return OK;
+	}
+	catch (JlsException& e)
+	{
+		return e._error;
+	}
+}
 
 CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsRect roi, JlsParameters* info)
 {
@@ -191,7 +213,8 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncom
 
 	try
 	{
-		reader.Read(uncompressedData, uncompressedLength);
+		ByteStreamInfo rawPixels = { (BYTE*)uncompressedData, NULL };
+		reader.Read(rawPixels, uncompressedLength);
 		return OK;
 	}
 	catch (JlsException& e)
@@ -239,7 +262,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size
 	memcpy(&rgbyteCompressed[0], compressedData, compressedLength);
 	
 	stream.EnableCompare(true);
-	stream.Write(&rgbyteCompressed[0], compressedLength);
+	stream.Write(&rgbyteCompressed[0], rgbyteCompressed.size());
 	
 	return OK;
 }

@@ -47,6 +47,7 @@ extern "C"
 #ifdef __cplusplus
 
 	CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncodeStream(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, byteStream* inputStream, struct JlsParameters* pparams);
+	CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecodeStream(byteStream* output, const void* compressedData, size_t compressedLength, struct JlsParameters* info);
 
 }
 #endif

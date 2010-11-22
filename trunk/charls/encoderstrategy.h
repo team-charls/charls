@@ -42,9 +42,9 @@ public:
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
 	virtual size_t EncodeScan(ProcessLine* rawData, void* pvoidOut, size_t byteCount, void* pvoidCompare) = 0;
-    virtual ProcessLine* CreateProcess(void* pvoidOut) = 0;
-	virtual ProcessLine* CreateProcess(byteStream* rawStream) = 0;
-	
+
+	virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
+
 protected:
 
 	void Init(BYTE* compressedBytes, size_t byteCount)
@@ -101,6 +101,9 @@ protected:
 
 	void Flush()
 	{
+		if (_compressedLength < 4)
+			throw new JlsException(CompressedBufferTooSmall);
+
 		for (LONG i = 0; i < 4; ++i)
 		{
 			if (bitpos >= 32)
@@ -112,16 +115,15 @@ protected:
 				*_position = BYTE(valcurrent >> 25);
 				valcurrent = valcurrent << 7;			
 				bitpos += 7;	
-				_isFFWritten = false;
 			}
 			else
 			{
 				*_position = BYTE(valcurrent >> 24);
 				valcurrent = valcurrent << 8;			
 				bitpos += 8;			
-				_isFFWritten = *_position == 0xFF;			
 			}
-			
+
+			_isFFWritten = *_position == 0xFF;					
 			_position++;
 			_compressedLength--;
 			_bytesWritten++;
@@ -147,8 +149,8 @@ protected:
 protected:
 	JlsParameters _info;
 	std::auto_ptr<ProcessLine> _processLine;
-private:
 
+private:
 	unsigned int valcurrent;
 	LONG bitpos;
 	size_t _compressedLength;

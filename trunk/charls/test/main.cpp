@@ -4,6 +4,7 @@
 
 
 #include "config.h"
+#include <sstream>
 #include <fstream>
 
 #include <vector>
@@ -151,6 +152,20 @@ void TestTooSmallOutputBuffer()
 }
 
 
+void TestBadImage()
+{
+	std::vector<BYTE> rgbyteCompressed;	
+	if (!ReadFile("test/BadCompressedStream.jls", &rgbyteCompressed, 0))
+		return;
+ 
+	std::vector<BYTE> rgbyteOut(2500 * 3000 * 2);	
+	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
+
+	assert(error == UncompressedBufferTooSmall);	
+}
+
+
+
 void TestDecodeRect()
 {
 	std::vector<BYTE> rgbyteCompressed;	
@@ -176,7 +191,7 @@ using namespace std;
 
 
 
-void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp, int ccomponent, int ilv, int expectedLength)
+void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp, int ccomponent, int ilv, size_t expectedLength)
 {
 	std::basic_filebuf<char> myFile; // On the stack
 	myFile.open(file, std::ios_base::in | ios::binary);
@@ -198,13 +213,33 @@ void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp
 }
 
 
+void TestDecodeFromStream(char* strNameEncoded)
+{
+	std::vector<BYTE> rgbyteCompressed;	
+	
+	if (!ReadFile(strNameEncoded, &rgbyteCompressed))
+	{
+		assert(false);
+		return;
+	}
+	
+	std::basic_stringbuf<char> buf;
+	
+	JLS_ERROR err = JpegLsDecodeStream(&buf, &((rgbyteCompressed)[0]), rgbyteCompressed.size(), NULL);
+	int i = buf.str().size();
+	
+}
+ 
 
 void TestEncodeFromStream()
 {
+	TestDecodeFromStream("test/lena8b.jls");
+
 	TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1,0,    0x3D3ee);
 	TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
 	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,2, 99734);
 	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,1, 100615);
+	
 }
 
 
@@ -217,7 +252,8 @@ void TestDicomWG4Images();
 
 void UnitTest()
 {
-	
+//	TestBadImage();
+
 	printf("Test Conformance\r\n");
 	TestEncodeFromStream();
 	TestConformance();
