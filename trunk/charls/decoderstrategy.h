@@ -29,9 +29,11 @@ public:
 	  virtual ~DecoderStrategy()
 	  {
 	  }
-
+	  
+	  virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
+	  
 	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-	  virtual size_t DecodeScan(void* outputData, const JlsRect& size, const void* compressedData, size_t byteCount, bool bCheck) = 0;
+	  virtual size_t DecodeScan(ProcessLine* outputData, const JlsRect& size, const void* compressedData, size_t byteCount, bool bCheck) = 0;
 
 	  void Init(BYTE* compressedBytes, size_t byteCount)
 	  {
@@ -126,7 +128,7 @@ public:
 			     }
 			  }
 
-			  _readCache		 |= valnew << (bufferbits - 8  - _validBits);
+			  _readCache		 |= valnew << (bufferbits - 8 - _validBits);
 			  _position   += 1;				
 			  _validBits		 += 8; 
 
