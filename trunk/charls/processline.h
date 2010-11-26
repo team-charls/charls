@@ -57,7 +57,7 @@ private:
 class PostProcesSingleStream : public ProcessLine
 {
 public:
-	PostProcesSingleStream(byteStream* rawData, const JlsParameters& info, int bytesPerPixel) :
+	PostProcesSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& info, int bytesPerPixel) :
 		_rawData(rawData), 
 		_bytesPerPixel(bytesPerPixel),
 		_bytesPerLine(info.bytesperline)
@@ -87,7 +87,7 @@ public:
 	}
 
 private:
-	byteStream* _rawData;
+	std::basic_streambuf<char>* _rawData;
 	int _bytesPerPixel;
 	int _bytesPerLine;
 	
@@ -209,7 +209,7 @@ public:
 		Transform(_rawPixels.rawStream, dest, pixelCount, destStride);
 	}
 
-	void Transform(byteStream* rawStream, void* dest, int pixelCount, int destStride)
+	void Transform(std::basic_streambuf<char>* rawStream, void* dest, int pixelCount, int destStride)
 	{			
 		int bytesToRead = pixelCount * _info.components * sizeof(SAMPLE);					
 		while(bytesToRead != 0)

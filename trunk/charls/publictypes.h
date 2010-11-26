@@ -7,8 +7,7 @@
 #include "config.h"
 #include <iostream>
 
-typedef std::basic_streambuf<char> byteStream;
-
+ 
 enum JLS_ERROR
 {
 	OK = 0,
@@ -75,6 +74,14 @@ struct JlsParameters
 	char outputBgr;
 	struct JlsCustomParameters custom;
 	struct JfifParameters jfif;
+};
+
+
+struct ByteStreamInfo
+{
+	std::basic_streambuf<char>* rawStream;
+	BYTE* rawData;
+	size_t count;
 };
 
 #endif

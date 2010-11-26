@@ -30,8 +30,12 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* 
 		assert(false);
 		return false;
 	}
+	std::basic_filebuf<char> myFile; // On the stack
+	myFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
+ 	ByteStreamInfo rawStreamInfo = {&myFile};
 
-	JLS_ERROR err = JpegLsReadHeader(&((*rgbyteFile)[0]), rgbyteFile->size(), info);
+
+	JLS_ERROR err = JpegLsReadHeaderStream(rawStreamInfo, info);
 	assert(err == OK);
 	return err == OK;
 }
@@ -187,15 +191,15 @@ void TestDecodeRect()
 	assert(rgbyteOut[rect.Width * rect.Height] == 0x1f);
 }
 
-using namespace std;
 
 
 
 void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp, int ccomponent, int ilv, size_t expectedLength)
 {
 	std::basic_filebuf<char> myFile; // On the stack
-	myFile.open(file, std::ios_base::in | ios::binary);
+	myFile.open(file, std::ios_base::in | std::ios::binary);
 	myFile.pubseekoff(offset, std::ios_base::cur); 
+	ByteStreamInfo rawStreamInfo = {&myFile};
 	
 	BYTE* compressed = new BYTE[width * height * ccomponent * 2];
 	JlsParameters params = JlsParameters();
@@ -205,7 +209,8 @@ void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp
 	params.bitspersample= bpp;
 	params.ilv = (interleavemode) ilv;
 	size_t bytesWritten = 0;
-	JpegLsEncodeStream(compressed, width * height * ccomponent * 2, &bytesWritten, &myFile, &params);
+	
+	JpegLsEncodeStream(compressed, width * height * ccomponent * 2, &bytesWritten, rawStreamInfo, &params);
 	ASSERT(bytesWritten == expectedLength);
 
 	delete[] compressed;
@@ -224,9 +229,14 @@ void TestDecodeFromStream(char* strNameEncoded)
 	}
 	
 	std::basic_stringbuf<char> buf;
-	
-	JLS_ERROR err = JpegLsDecodeStream(&buf, &((rgbyteCompressed)[0]), rgbyteCompressed.size(), NULL);
-	int i = buf.str().size();
+	ByteStreamInfo rawStreamInfo = { &buf };
+	ByteStreamInfo compressedByteStream = { NULL, &((rgbyteCompressed)[0]), rgbyteCompressed.size() };
+	JLS_ERROR err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, NULL);
+	int outputCount = buf.str().size();
+
+	ASSERT(err == OK);
+	ASSERT(outputCount == 512 * 512);
+
 	
 }
  

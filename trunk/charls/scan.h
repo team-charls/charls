@@ -793,8 +793,7 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
 template<class TRAITS, class STRATEGY>
 size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(ProcessLine* processLine, void* compressedData, size_t compressedLength, void* pvoidCompare)
 {
-	STRATEGY::_processLine = std::auto_ptr<ProcessLine>(processLine);
-	
+	STRATEGY::_processLine = std::auto_ptr<ProcessLine>(processLine);	
 	BYTE* compressedBytes = static_cast<BYTE*>(compressedData);
 
 	if (pvoidCompare != NULL)
@@ -813,31 +812,17 @@ size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(ProcessLine* processLine, void* com
 
 // Setup codec for decoding and calls DoScan
 
+
 template<class TRAITS, class STRATEGY>
 size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(ProcessLine* processLine, const JlsRect& rect, const void* compressedData, size_t compressedLength, bool bCompare)
 {
 	STRATEGY::_processLine = std::auto_ptr<ProcessLine>(processLine);	
 
 	BYTE* compressedBytes	= const_cast<BYTE*>(static_cast<const BYTE*>(compressedData));
-	_bCompare = bCompare;
-
-	BYTE rgbyte[20];
-
-	size_t readBytes = 0;
-	::memcpy(rgbyte, compressedBytes, 4);
-	readBytes += 4;
-
-	size_t cbyteScanheader = rgbyte[3] - 2;
-
-	if (cbyteScanheader > sizeof(rgbyte))
-		throw JlsException(InvalidCompressedData);
-
-	::memcpy(rgbyte, compressedBytes, cbyteScanheader);
-	readBytes += cbyteScanheader;
-
+	_bCompare = bCompare;	
 	_rect = rect;
 
-	STRATEGY::Init(compressedBytes + readBytes, compressedLength - readBytes);
+	STRATEGY::Init(compressedBytes, compressedLength);
 	DoScan();	
 	return STRATEGY::GetCurBytePos() - compressedBytes;
 }

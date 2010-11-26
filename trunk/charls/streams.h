@@ -31,12 +31,11 @@ enum JPEGLS_ColorXForm
 	COLORXFORM_MATRIX
 };
 
-struct ByteStreamInfo
-{
-	BYTE* rawData;
-	byteStream* rawStream;
-};
-	
+
+ByteStreamInfo FromByteArray(const void* bytes, size_t count);
+ByteStreamInfo FromStream(std::basic_streambuf<char>* stream);
+void Skip(ByteStreamInfo* streamInfo, size_t count);
+
 //
 // JLSOutputStream: minimal implementation to write JPEG header streams
 //
@@ -50,8 +49,7 @@ public:
 	virtual ~JLSOutputStream();
 
 	void Init(Size size, LONG bitsPerSample, LONG ccomp);
-	void AddScan(byteStream* rawData, const JlsParameters* pparams);
-	void AddScan(const void* compareData, const JlsParameters* pparams);
+	void AddScan(ByteStreamInfo info, const JlsParameters* pparams);
 	
 	void AddLSE(const JlsCustomParameters* pcustom);
 	void AddColorTransform(int i);
@@ -112,10 +110,10 @@ private:
 class JLSInputStream
 {
 public:
-	JLSInputStream(const BYTE* pdata, size_t cbyteLength);
+	JLSInputStream(ByteStreamInfo byteStreamInfo);
 
 	size_t GetBytesRead()
-		{ return _cbyteOffset; }
+		{ return _cbyteOffsetA; }
 
 	const JlsParameters& GetMetadata() const
 		{ return _info; } 
@@ -123,7 +121,7 @@ public:
 	const JlsCustomParameters& GetCustomPreset() const
 	{ return _info.custom; } 
 
-	void Read(ByteStreamInfo info, size_t cbyteAvailable);
+	void Read(ByteStreamInfo info);
 	void ReadHeader();
 	
 	void EnableCompare(bool bCompare)
@@ -133,13 +131,14 @@ public:
 
 	void SetRect(JlsRect rect) { _rect = rect; }
 
+	void ReadStartOfScan();
+	BYTE ReadByte();
+
 private:
 	void ReadScan(ByteStreamInfo rawPixels);	
-	void ReadStartOfScan();
 	void ReadPresetParameters();
 	void ReadComment();
 	void ReadStartOfFrame();
-	BYTE ReadByte();
 	int ReadWord();
 	void ReadNBytes(std::vector<char>& dst, int byteCount);
 
@@ -150,9 +149,8 @@ private:
 	void ReadColorXForm();
 	
 private:
-	const BYTE* _pdata;
-	size_t _cbyteOffset;
-	size_t _cbyteLength;
+	ByteStreamInfo _byteStream;
+	size_t _cbyteOffsetA;
 	bool _bCompare;
 	JlsParameters _info;
 	JlsRect _rect;
