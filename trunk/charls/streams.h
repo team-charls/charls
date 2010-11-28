@@ -111,10 +111,7 @@ class JLSInputStream
 {
 public:
 	JLSInputStream(ByteStreamInfo byteStreamInfo);
-
-	size_t GetBytesRead()
-		{ return _cbyteOffsetA; }
-
+	
 	const JlsParameters& GetMetadata() const
 		{ return _info; } 
 
@@ -131,8 +128,10 @@ public:
 
 	void SetRect(JlsRect rect) { _rect = rect; }
 
-	void ReadStartOfScan();
+	void ReadStartOfScan(bool firstComponent);
 	BYTE ReadByte();
+
+	size_t SeekPos();
 
 private:
 	void ReadScan(ByteStreamInfo rawPixels);	
@@ -150,7 +149,7 @@ private:
 	
 private:
 	ByteStreamInfo _byteStream;
-	size_t _cbyteOffsetA;
+	BYTE* _byteStreamStart;
 	bool _bCompare;
 	JlsParameters _info;
 	JlsRect _rect;

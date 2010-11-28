@@ -217,7 +217,7 @@ extern "C"
 		{
 			JLSInputStream reader(rawStreamInfo);
 			reader.ReadHeader();			
-			reader.ReadStartOfScan();
+			reader.ReadStartOfScan(true);
 			JlsParameters info = reader.GetMetadata();
 			*pparams = info;	
 			return OK;

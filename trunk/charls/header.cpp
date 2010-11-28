@@ -224,11 +224,19 @@ size_t JLSOutputStream::Write(BYTE* pdata, size_t cbyteLength)
 
 JLSInputStream::JLSInputStream(ByteStreamInfo byteStreamInfo) :
 		_byteStream(byteStreamInfo),
-		_cbyteOffsetA(0),
+		_byteStreamStart(byteStreamInfo.rawData),
 		_bCompare(false),
 		_info(),
 		_rect()
 {
+}
+
+size_t JLSInputStream::SeekPos()
+{
+	if (_byteStream.rawStream != NULL)
+		return _byteStream.rawStream->pubseekpos(std::ios::beg);
+
+	return _byteStream.rawData - _byteStreamStart;
 }
 
 int ReadScanHeader(BYTE* compressedBytes)
@@ -274,12 +282,12 @@ void JLSInputStream::Read(ByteStreamInfo rawPixels)
 	
 	while (componentsSeen < _info.components)
 	{
-		ReadStartOfScan();
+		ReadStartOfScan(componentsSeen == 0);
 
 		std::auto_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);	
 		ProcessLine* processLine = qcodec->CreateProcess(rawPixels);
-		_cbyteOffsetA += qcodec->DecodeScan(processLine, _rect, _byteStream.rawData + _cbyteOffsetA, _byteStream.count - _cbyteOffsetA, _bCompare); 
-		//Skip(&_byteStream, byteCount);
+		int byteCount = qcodec->DecodeScan(processLine, _rect, _byteStream.rawData, _byteStream.count, _bCompare); 
+		Skip(&_byteStream, byteCount);
 		Skip(&rawPixels, (size_t)bytesPerPlane);		
 
 		if (_info.ilv != ILV_NONE)
@@ -319,12 +327,9 @@ void JLSInputStream::ReadHeader()
 		BYTE marker = (BYTE)ReadByte();
 
 		if (marker == JPEG_SOS)
-		{
-			_cbyteOffsetA -= 2;
 			return;
-		}
 
-		size_t cbyteStart = _cbyteOffsetA;
+		size_t seekPos = SeekPos();
 		LONG cbyteMarker = ReadWord();
 
 		switch (marker)
@@ -338,9 +343,16 @@ void JLSInputStream::ReadHeader()
 			// Other tags not supported (among which DNL DRI)
 			default: 		throw JlsException(ImageTypeNotSupported);
 		}
-
 		
-		_cbyteOffsetA = cbyteStart + cbyteMarker;
+		int paddingToRead = seekPos + cbyteMarker - SeekPos();
+
+		if (paddingToRead < 0)
+			throw JlsException(InvalidCompressedData);
+
+		for (int i = 0; i < paddingToRead; ++i)
+		{
+			ReadByte();
+		}
 	}
 }
 
@@ -423,10 +435,13 @@ void Assert(bool valid)
 //
 // ReadStartOfScan()
 //
-void JLSInputStream::ReadStartOfScan()
+void JLSInputStream::ReadStartOfScan(bool firstComponent)
 {
-	Assert(ReadByte() == 0xFF);
-	Assert(ReadByte() == JPEG_SOS);
+	if (!firstComponent)
+	{
+		Assert(ReadByte() == 0xFF);
+		Assert(ReadByte() == JPEG_SOS);
+	}
 	int length = ReadByte(); //length
 	length = length * 256 + ReadByte();
 	
@@ -542,10 +557,14 @@ BYTE JLSInputStream::ReadByte()
 	if (_byteStream.rawStream != NULL)
 		return (BYTE)_byteStream.rawStream->sgetc();
 
-    if (_cbyteOffsetA >= _byteStream.count)
+	if (_byteStream.count <= 0)
 		throw JlsException(InvalidCompressedData);
 
-	return _byteStream.rawData[_cbyteOffsetA++]; 
+	BYTE value = _byteStream.rawData[0]; 
+	
+	Skip(&_byteStream, 1);
+
+	return value;
 }
 
 
@@ -567,8 +586,8 @@ public:
 	JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& info, LONG icompStart, int ccompScan)  :
 		_ccompScan(ccompScan),
 		_icompStart(icompStart),
-		_info(info),
-		_rawStreamInfo(rawStream)	
+		_rawStreamInfo(rawStream),
+		_info(info)
 	{		
 	}
 
