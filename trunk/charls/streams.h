@@ -131,21 +131,20 @@ public:
 	void ReadStartOfScan(bool firstComponent);
 	BYTE ReadByte();
 
-	size_t SeekPos();
-
 private:
 	void ReadScan(ByteStreamInfo rawPixels);	
-	void ReadPresetParameters();
-	void ReadComment();
-	void ReadStartOfFrame();
+	int ReadPresetParameters();
+	int ReadComment();
+	int ReadStartOfFrame();
 	int ReadWord();
 	void ReadNBytes(std::vector<char>& dst, int byteCount);
+	int ReadMarker(BYTE marker);
 
 	// JFIF
 	void ReadJfif();
 	// Color Transform Application Markers & Code Stream (HP extension)
-	void ReadColorSpace();
-	void ReadColorXForm();
+	int ReadColorSpace();
+	int ReadColorXForm();
 	
 private:
 	ByteStreamInfo _byteStream;

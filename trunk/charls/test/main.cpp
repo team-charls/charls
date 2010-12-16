@@ -30,7 +30,7 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* 
 		assert(false);
 		return false;
 	}
-	std::basic_filebuf<char> myFile; // On the stack
+	std::basic_filebuf<char> myFile; 
 	myFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
  	ByteStreamInfo rawStreamInfo = {&myFile};
 
@@ -220,18 +220,19 @@ void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp
 
 void TestDecodeFromStream(char* strNameEncoded)
 {
-	std::vector<BYTE> rgbyteCompressed;	
+	std::basic_filebuf<char> myFile; 
+	bool success = myFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
+	ByteStreamInfo compressedByteStream = {&myFile};
+
+	JlsParameters info = JlsParameters();
+	JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
 	
-	if (!ReadFile(strNameEncoded, &rgbyteCompressed))
-	{
-		assert(false);
-		return;
-	}
-	
+	myFile.pubseekpos(std::ios::beg, 0);
+
 	std::basic_stringbuf<char> buf;
 	ByteStreamInfo rawStreamInfo = { &buf };
-	ByteStreamInfo compressedByteStream = { NULL, &((rgbyteCompressed)[0]), rgbyteCompressed.size() };
-	JLS_ERROR err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, NULL);
+	
+	err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, NULL);
 	int outputCount = buf.str().size();
 
 	ASSERT(err == OK);
@@ -245,10 +246,10 @@ void TestEncodeFromStream()
 {
 	TestDecodeFromStream("test/lena8b.jls");
 
-	TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1,0,    0x3D3ee);
+	/*TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1,0,    0x3D3ee);
 	TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
 	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,2, 99734);
-	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,1, 100615);
+	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,1, 100615);*/
 	
 }
 
