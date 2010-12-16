@@ -97,9 +97,7 @@ extern "C"
 			stream.AddScan(rawStreamInfo, &info);
 		}
 
-
 		stream.Write((BYTE*)compressedData, compressedLength);
-
 		*pcbyteWritten = stream.GetBytesWritten();	
 		return OK;
 	}
@@ -166,7 +164,7 @@ extern "C"
 	}
 
 
-	CHARLS_IMEXPORT(JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength)
+	CHARLS_IMEXPORT(JLS_ERROR) JpegLsVrifyEncode(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength)
 	{
 		JlsParameters info = JlsParameters();
 

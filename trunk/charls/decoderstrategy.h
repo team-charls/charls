@@ -33,16 +33,56 @@ public:
 	  virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 	  
 	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-	  virtual size_t DecodeScan(ProcessLine* outputData, const JlsRect& size, const void* compressedData, size_t byteCount, bool bCheck) = 0;
+	  virtual void DecodeScan(std::auto_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCheck) = 0;
 
-	  void Init(BYTE* compressedBytes, size_t byteCount)
+	  std::vector<BYTE> _buffer;
+	  std::basic_streambuf<char>* _byteStream;
+
+	  void Init(ByteStreamInfo* compressedStream)
 	  {
 		  _validBits = 0;
 		  _readCache = 0;
-		  _position = compressedBytes;
-		  _endPosition = compressedBytes + byteCount;
+
+		  if (compressedStream->rawStream != NULL)
+		  {
+			  _buffer.resize(40000);
+			  _position = (BYTE*)&_buffer[0];
+			  _endPosition = _position;
+			  _byteStream = compressedStream->rawStream;
+			  AddBytesFromStream();
+		  }
+		  else
+		  {
+			  _position = compressedStream->rawData;
+			  _endPosition = _position + compressedStream->count;
+		  }		  
+		  
 		  _nextFFPosition = FindNextFF();
 		  MakeValid();
+	  }
+
+	  void AddBytesFromStream()
+	  {
+		  if (_byteStream == NULL || _byteStream->sgetc() == std::char_traits<char>::eof())
+				return;
+
+		    int count = _endPosition - _position; 
+			
+			if (count > 64)
+				return;
+
+			for (int i = 0; i < count; ++i)
+			{
+				_buffer[i] = _position[i];
+			}
+			int offset = &_buffer[0] - _position;
+
+			_position += offset;
+			_endPosition += offset;
+			_nextFFPosition += offset;
+
+			int readbytes = _byteStream->sgetn((char*)_endPosition, _buffer.size() - count);
+			_endPosition += readbytes;
 	  }
 
 	  inlinehint void Skip(LONG length)
@@ -104,6 +144,8 @@ public:
 		  if (OptimizedRead())
 			  return;
 
+		  AddBytesFromStream();
+		  
 		  do
 		  {
 			  if (_position >= _endPosition)
@@ -128,9 +170,9 @@ public:
 			     }
 			  }
 
-			  _readCache		 |= valnew << (bufferbits - 8 - _validBits);
-			  _position   += 1;				
-			  _validBits		 += 8; 
+			  _readCache	|= valnew << (bufferbits - 8 - _validBits);
+			  _position		+= 1;				
+			  _validBits	+= 8; 
 
 			  if (valnew == 0xFF)		
 			  {
@@ -152,10 +194,9 @@ public:
 		  while (pbyteNextFF < _endPosition)
 	      {
 			  if (*pbyteNextFF == 0xFF) 
-			  {				  
 				  break;
-			  }
-    		  pbyteNextFF++;
+
+			  pbyteNextFF++;
 		  }
 		  
 

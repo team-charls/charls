@@ -41,18 +41,29 @@ public:
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 		
-	virtual size_t EncodeScan(ProcessLine* rawData, void* pvoidOut, size_t byteCount, void* pvoidCompare) = 0;
+	virtual size_t EncodeScan(std::auto_ptr<ProcessLine> rawData, ByteStreamInfo* compressedData, void* pvoidCompare) = 0;
 
 	virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 
 protected:
 
-	void Init(BYTE* compressedBytes, size_t byteCount)
+	void Init(ByteStreamInfo* compressedStream)
 	{
 		bitpos = 32;
 		valcurrent = 0;
-		_position = compressedBytes;
-   		_compressedLength = byteCount;
+		
+		if (compressedStream->rawStream != NULL)
+		{
+			_position = compressedStream->rawData;
+			_compressedLength = compressedStream->count;
+		}
+		else
+		{
+			_compressedStream = compressedStream->rawStream;
+			_buffer.resize(4000);
+			_position = (BYTE*)&_buffer[0];
+			_compressedLength = _buffer.size();
+		}
 	}
 
 
@@ -97,12 +108,36 @@ protected:
 		
 		Flush();
 		ASSERT(bitpos == 0x20);
+
+		if (_compressedStream != NULL)
+		{
+			OverFlow();
+		}
+	}
+
+	void OverFlow()
+	{
+		if (_compressedStream == NULL)	
+			throw new JlsException(CompressedBufferTooSmall);
+		
+		int bytesCount = _position-(BYTE*)&_buffer[0];
+		int bytesWritten = _compressedStream->sputn((char*)&_buffer[0], _position - (BYTE*)&_buffer[0]);
+
+		if (bytesWritten != bytesCount)
+			throw new JlsException(CompressedBufferTooSmall);
+
+		_position = (BYTE*)&_buffer[0];
+		_compressedLength = _buffer.size();
+
 	}
 
 	void Flush()
 	{
-		if (_compressedLength < 4)
-			throw new JlsException(CompressedBufferTooSmall);
+		if (_compressedLength < 4 && _compressedStream != NULL)
+		{
+			OverFlow();
+		}
+
 
 		for (LONG i = 0; i < 4; ++i)
 		{
@@ -154,6 +189,9 @@ private:
 	unsigned int valcurrent;
 	LONG bitpos;
 	size_t _compressedLength;
+
+	std::vector<BYTE> _buffer;
+	std::basic_streambuf<char>* _compressedStream;
 	
 	// encoding
 	BYTE* _position;

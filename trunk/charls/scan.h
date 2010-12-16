@@ -194,8 +194,8 @@ public:
 	void InitDefault();
 	void InitParams(LONG t1, LONG t2, LONG t3, LONG nReset);
 
-	size_t  EncodeScan(ProcessLine* rawData, void* pvoidOut, size_t compressedLength, void* pvoidCompare);
-	size_t  DecodeScan(ProcessLine* rawData, const JlsRect& size, const void* compressedData, size_t compressedLength, bool bCompare);
+	size_t  EncodeScan(std::auto_ptr<ProcessLine> rawData, ByteStreamInfo* compressedData, void* pvoidCompare);
+	void DecodeScan(std::auto_ptr<ProcessLine> rawData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCompare);
 
 protected:
 	// codec parameters 
@@ -791,18 +791,18 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
 // Setup codec for encoding and calls DoScan
 
 template<class TRAITS, class STRATEGY>
-size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(ProcessLine* processLine, void* compressedData, size_t compressedLength, void* pvoidCompare)
+size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(std::auto_ptr<ProcessLine> processLine, ByteStreamInfo* compressedData, void* pvoidCompare)
 {
-	STRATEGY::_processLine = std::auto_ptr<ProcessLine>(processLine);	
-	BYTE* compressedBytes = static_cast<BYTE*>(compressedData);
+	STRATEGY::_processLine = processLine;	
 
+	ByteStreamInfo info = { NULL, (BYTE*)pvoidCompare, compressedData->count };		
 	if (pvoidCompare != NULL)
 	{
 		STRATEGY::_qdecoder = std::auto_ptr<DecoderStrategy>(new JlsCodec<TRAITS,DecoderStrategy>(traits, Info()));		
-		STRATEGY::_qdecoder->Init((BYTE*)pvoidCompare, compressedLength); 
+		STRATEGY::_qdecoder->Init(&info); 
 	}
 
-	STRATEGY::Init(compressedBytes, compressedLength);
+	STRATEGY::Init(compressedData);
 	
 	DoScan();
 	
@@ -814,21 +814,21 @@ size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(ProcessLine* processLine, void* com
 
 
 template<class TRAITS, class STRATEGY>
-size_t JlsCodec<TRAITS,STRATEGY>::DecodeScan(ProcessLine* processLine, const JlsRect& rect, const void* compressedData, size_t compressedLength, bool bCompare)
+void JlsCodec<TRAITS,STRATEGY>::DecodeScan(std::auto_ptr<ProcessLine> processLine, const JlsRect& rect, ByteStreamInfo* compressedData, bool bCompare)
 {
-	STRATEGY::_processLine = std::auto_ptr<ProcessLine>(processLine);	
+	STRATEGY::_processLine = processLine;	
 
-	BYTE* compressedBytes	= const_cast<BYTE*>(static_cast<const BYTE*>(compressedData));
+	BYTE* compressedBytes	= const_cast<BYTE*>(static_cast<const BYTE*>(compressedData->rawData));
 	_bCompare = bCompare;	
 	_rect = rect;
 
-	STRATEGY::Init(compressedBytes, compressedLength);
-	DoScan();	
-	return STRATEGY::GetCurBytePos() - compressedBytes;
+	STRATEGY::Init(compressedData);
+	DoScan();
+	Skip(compressedData, STRATEGY::GetCurBytePos() - compressedBytes);
 }
 
-// Initialize the codec data structures. Depends on JPEG-LS parameters like T1-T3.
 
+// Initialize the codec data structures. Depends on JPEG-LS parameters like T1-T3.
 template<class TRAITS, class STRATEGY>
 void JlsCodec<TRAITS,STRATEGY>::InitParams(LONG t1, LONG t2, LONG t3, LONG nReset)
 {

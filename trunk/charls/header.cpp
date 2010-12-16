@@ -231,13 +231,6 @@ JLSInputStream::JLSInputStream(ByteStreamInfo byteStreamInfo) :
 {
 }
 
-size_t JLSInputStream::SeekPos()
-{
-	if (_byteStream.rawStream != NULL)
-		return _byteStream.rawStream->pubseekpos(std::ios::beg);
-
-	return _byteStream.rawData - _byteStreamStart;
-}
 
 int ReadScanHeader(BYTE* compressedBytes)
 {
@@ -286,8 +279,7 @@ void JLSInputStream::Read(ByteStreamInfo rawPixels)
 
 		std::auto_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);	
 		ProcessLine* processLine = qcodec->CreateProcess(rawPixels);
-		int byteCount = qcodec->DecodeScan(processLine, _rect, _byteStream.rawData, _byteStream.count, _bCompare); 
-		Skip(&_byteStream, byteCount);
+		qcodec->DecodeScan(std::auto_ptr<ProcessLine>(processLine), _rect, &_byteStream, _bCompare); 
 		Skip(&rawPixels, (size_t)bytesPerPlane);		
 
 		if (_info.ilv != ILV_NONE)
@@ -329,22 +321,11 @@ void JLSInputStream::ReadHeader()
 		if (marker == JPEG_SOS)
 			return;
 
-		size_t seekPos = SeekPos();
 		LONG cbyteMarker = ReadWord();
 
-		switch (marker)
-		{
-			case JPEG_SOF: ReadStartOfFrame(); break;
-			case JPEG_COM: ReadComment();	   break;
-			case JPEG_LSE: ReadPresetParameters();	break;
-			case JPEG_APP0: ReadJfif(); break;
-			case JPEG_APP7: ReadColorSpace(); break;
-			case JPEG_APP8: ReadColorXForm(); break;			
-			// Other tags not supported (among which DNL DRI)
-			default: 		throw JlsException(ImageTypeNotSupported);
-		}
+		int bytesRead = ReadMarker(marker) + 2;
 		
-		int paddingToRead = seekPos + cbyteMarker - SeekPos();
+		int paddingToRead = cbyteMarker - bytesRead;
 
 		if (paddingToRead < 0)
 			throw JlsException(InvalidCompressedData);
@@ -354,6 +335,21 @@ void JLSInputStream::ReadHeader()
 			ReadByte();
 		}
 	}
+}
+
+int JLSInputStream::ReadMarker(BYTE marker)
+{
+		switch (marker)
+		{
+			case JPEG_SOF: return ReadStartOfFrame(); 
+			case JPEG_COM: return ReadComment();	   
+			case JPEG_LSE: return ReadPresetParameters();
+			case JPEG_APP0: return 0; 
+			case JPEG_APP7: return ReadColorSpace(); 
+			case JPEG_APP8: return ReadColorXForm(); 
+			// Other tags not supported (among which DNL DRI)
+			default: 		throw JlsException(ImageTypeNotSupported);
+		}
 }
 
 
@@ -405,7 +401,7 @@ JpegMarkerSegment* CreateLSE(const JlsCustomParameters* pcustom)
 //
 // ReadPresetParameters()
 //
-void JLSInputStream::ReadPresetParameters()
+int JLSInputStream::ReadPresetParameters()
 {
 	LONG type = ReadByte();
 
@@ -418,11 +414,11 @@ void JLSInputStream::ReadPresetParameters()
 			_info.custom.T2 = ReadWord();
 			_info.custom.T3 = ReadWord();
 			_info.custom.RESET = ReadWord();
-			return;
+			return 11;
 		}
 	}
 
-	
+	return 1;
 }
 
 void Assert(bool valid)
@@ -471,8 +467,10 @@ void JLSInputStream::ReadStartOfScan(bool firstComponent)
 //
 // ReadComment()
 //
-void JLSInputStream::ReadComment()
-{}
+int JLSInputStream::ReadComment()
+{
+	return 0;
+}
 
 
 //
@@ -538,7 +536,7 @@ JpegMarkerSegment* CreateJFIF(const JfifParameters* jfif)
 //
 // ReadStartOfFrame()
 //
-void JLSInputStream::ReadStartOfFrame()
+int JLSInputStream::ReadStartOfFrame()
 {
 	_info.bitspersample = ReadByte();
 	int cline = ReadWord();
@@ -546,6 +544,7 @@ void JLSInputStream::ReadStartOfFrame()
 	_info.width = ccol;
 	_info.height = cline;
 	_info.components= ReadByte();
+	return 6;
 }
 
 
@@ -555,8 +554,8 @@ void JLSInputStream::ReadStartOfFrame()
 BYTE JLSInputStream::ReadByte()
 {  
 	if (_byteStream.rawStream != NULL)
-		return (BYTE)_byteStream.rawStream->sgetc();
-
+		return (BYTE)_byteStream.rawStream->sbumpc();
+	
 	if (_byteStream.count <= 0)
 		throw JlsException(InvalidCompressedData);
 
@@ -597,7 +596,8 @@ public:
 		info.components = _ccompScan;	
 		std::auto_ptr<EncoderStrategy> qcodec =JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
 		ProcessLine* processLine = qcodec->CreateProcess(_rawStreamInfo);
-		size_t cbyteWritten = qcodec->EncodeScan(processLine, pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
+		ByteStreamInfo compressedData = {NULL, pstream->GetPos(), pstream->GetLength()};
+		size_t cbyteWritten = qcodec->EncodeScan(std::auto_ptr<ProcessLine>(processLine), &compressedData, pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
 
@@ -639,21 +639,23 @@ void JLSOutputStream::AddScan(ByteStreamInfo info, const JlsParameters* pparams)
 //
 // ReadColorSpace()
 //
-void JLSInputStream::ReadColorSpace()
-{}
+int JLSInputStream::ReadColorSpace()
+{
+	return 0;
+}
 
 
 
 //
 // ReadColorXForm()
 //
-void JLSInputStream::ReadColorXForm()
+int JLSInputStream::ReadColorXForm()
 {
 	std::vector<char> sourceTag;
 	ReadNBytes(sourceTag, 4);
 
 	if(strncmp(&sourceTag[0],"mrfx", 4) != 0)
-		return;
+		return 4;
 	
 	int xform = ReadByte();
 	switch(xform) 
@@ -663,7 +665,7 @@ void JLSInputStream::ReadColorXForm()
 		case COLORXFORM_HP2:
 		case COLORXFORM_HP3:
 			_info.colorTransform = xform;
-			return;
+			return 5;
 		case COLORXFORM_RGB_AS_YUV_LOSSY:
 		case COLORXFORM_MATRIX:
 			throw JlsException(ImageTypeNotSupported);
