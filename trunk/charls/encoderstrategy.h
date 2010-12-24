@@ -21,7 +21,8 @@ public:
  		 valcurrent(0),
 		 bitpos(0),
 		 _isFFWritten(false),
-		 _bytesWritten(0)
+		 _bytesWritten(0),
+		 _compressedStream(NULL)
 		
 	{
 	}
@@ -52,7 +53,7 @@ protected:
 		bitpos = 32;
 		valcurrent = 0;
 		
-		if (compressedStream->rawStream != NULL)
+		if (compressedStream->rawStream == NULL)
 		{
 			_position = compressedStream->rawData;
 			_compressedLength = compressedStream->count;

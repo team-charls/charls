@@ -221,7 +221,7 @@ void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp
 void TestDecodeFromStream(char* strNameEncoded)
 {
 	std::basic_filebuf<char> myFile; 
-	bool success = myFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
+	bool success = myFile.open(strNameEncoded, std::ios_base::in | std::ios::binary) != NULL;
 	ByteStreamInfo compressedByteStream = {&myFile};
 
 	JlsParameters info = JlsParameters();
@@ -246,10 +246,10 @@ void TestEncodeFromStream()
 {
 	TestDecodeFromStream("test/lena8b.jls");
 
-	/*TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1,0,    0x3D3ee);
+	TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1,0,    0x3D3ee);
 	TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
 	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,2, 99734);
-	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,1, 100615);*/
+	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,1, 100615);
 	
 }
 
