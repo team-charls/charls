@@ -6,7 +6,9 @@
 
 #include "colortransform.h"
 #include <iostream>
+#ifdef _MSC_VER 
 #pragma warning(disable: 4996)
+#endif
 //
 // This file defines the ProcessLine base class, its derivitives and helper functions.
 // During coding/decoding, CharLS process one line at a time. The different Processline implementations
@@ -74,7 +76,7 @@ public:
 
 		if (_bytesPerLine - bytesToRead > 0)
 		{
-			_rawData->pubseekoff(_bytesPerLine - bytesToRead, std::ios_base::cur);
+			_rawData->pubseekoff(std::ios_base::streamoff(_bytesPerLine - bytesToRead), std::ios_base::cur);
 		}		
 	}
 

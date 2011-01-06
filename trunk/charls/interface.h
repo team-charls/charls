@@ -9,13 +9,11 @@
 #include "publictypes.h"
 
 #if defined(_WIN32)
-#ifndef CHARLS_IMEXPORT
-#define CHARLS_IMEXPORT(returntype) __declspec(dllimport) returntype __stdcall
-#endif
+#  ifndef CHARLS_IMEXPORT
+#    define CHARLS_IMEXPORT(returntype) __declspec(dllimport) returntype __stdcall
+#  endif
 #else
-#ifndef CHARLS_IMEXPORT 
-#define CHARLS_IMEXPORT(returntype) returntype
-#endif
+#  define CHARLS_IMEXPORT(returntype) returntype
 #endif /* _WIN32 */
 
 

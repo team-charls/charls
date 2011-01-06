@@ -15,15 +15,15 @@ class EncoderStrategy
 
 public:
 	explicit EncoderStrategy(const JlsParameters& info) :
-		 _qdecoder(0),
 		 _info(info),
-		 _processLine(0),
  		 valcurrent(0),
 		 bitpos(0),
+		 _compressedLength(0),		 
+		 _position(0),	
 		 _isFFWritten(false),
 		 _bytesWritten(0),
 		 _compressedStream(NULL)
-		
+	
 	{
 	}
 
@@ -191,14 +191,14 @@ private:
 	LONG bitpos;
 	size_t _compressedLength;
 
-	std::vector<BYTE> _buffer;
-	std::basic_streambuf<char>* _compressedStream;
 	
 	// encoding
 	BYTE* _position;
 	bool _isFFWritten;
 	size_t _bytesWritten;
 
+	std::vector<BYTE> _buffer;
+	std::basic_streambuf<char>* _compressedStream;
 };
 
 #endif

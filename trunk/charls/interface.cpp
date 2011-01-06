@@ -4,7 +4,7 @@
 
 
 //implement correct linkage for win32 dlls
-#if defined(_WIN32)
+#if defined(_WINDLL)
 #define CHARLS_IMEXPORT(returntype) __declspec(dllexport) returntype __stdcall
 #endif
 
@@ -89,7 +89,7 @@ extern "C"
 			for (LONG component = 0; component < info.components; ++component)
 			{
 				stream.AddScan(rawStreamInfo, &info);
-				Skip(&rawStreamInfo, cbyteComp);
+				SkipBytes(&rawStreamInfo, cbyteComp);
 			}
 		}
 		else 
@@ -190,7 +190,7 @@ extern "C"
 			for (LONG component = 0; component < info.components; ++component)
 			{					
 				stream.AddScan(rawStreamInfo, &info);
-				Skip(&rawStreamInfo, fieldLength);
+				SkipBytes(&rawStreamInfo, fieldLength);
 			}
 		}
 		else 

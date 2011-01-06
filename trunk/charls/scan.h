@@ -824,7 +824,7 @@ void JlsCodec<TRAITS,STRATEGY>::DecodeScan(std::auto_ptr<ProcessLine> processLin
 
 	STRATEGY::Init(compressedData);
 	DoScan();
-	Skip(compressedData, STRATEGY::GetCurBytePos() - compressedBytes);
+	SkipBytes(compressedData, STRATEGY::GetCurBytePos() - compressedBytes);
 }
 
 

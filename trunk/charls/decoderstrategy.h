@@ -18,12 +18,12 @@ class DecoderStrategy
 {
 public:
 	DecoderStrategy(const JlsParameters& info) :
-		  _info(info),
-	      _processLine(0),
+		  _info(info),	      
+		  _byteStream(NULL),
 		  _readCache(0),
 		  _validBits(0),
-		  _position(0),
-		  _byteStream(0)
+		  _position(0)
+		  
 	  {
 	  }
 
@@ -36,7 +36,7 @@ public:
 	  virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 	  virtual void DecodeScan(std::auto_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCheck) = 0;
 
-
+	  
 	  void Init(ByteStreamInfo* compressedStream)
 	  {
 		  _validBits = 0;
@@ -52,6 +52,7 @@ public:
 		  }
 		  else
 		  {
+			  _byteStream = NULL;
 			  _position = compressedStream->rawData;
 			  _endPosition = _position + compressedStream->count;
 		  }		  
@@ -315,10 +316,10 @@ protected:
 	std::auto_ptr<ProcessLine> _processLine;
 
 private:
-	// decoding
 	std::vector<BYTE> _buffer;
 	std::basic_streambuf<char>* _byteStream;
 
+	// decoding
 	bufType _readCache;
 	LONG _validBits;
 	BYTE* _position;

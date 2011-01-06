@@ -34,7 +34,7 @@ enum JPEGLS_ColorXForm
 
 ByteStreamInfo FromByteArray(const void* bytes, size_t count);
 ByteStreamInfo FromStream(std::basic_streambuf<char>* stream);
-void Skip(ByteStreamInfo* streamInfo, size_t count);
+void SkipBytes(ByteStreamInfo* streamInfo, size_t count);
 
 //
 // JLSOutputStream: minimal implementation to write JPEG header streams

@@ -280,7 +280,7 @@ void JLSInputStream::Read(ByteStreamInfo rawPixels)
 		std::auto_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);	
 		ProcessLine* processLine = qcodec->CreateProcess(rawPixels);
 		qcodec->DecodeScan(std::auto_ptr<ProcessLine>(processLine), _rect, &_byteStream, _bCompare); 
-		Skip(&rawPixels, (size_t)bytesPerPlane);		
+		SkipBytes(&rawPixels, (size_t)bytesPerPlane);		
 
 		if (_info.ilv != ILV_NONE)
 			return;
@@ -561,7 +561,7 @@ BYTE JLSInputStream::ReadByte()
 
 	BYTE value = _byteStream.rawData[0]; 
 	
-	Skip(&_byteStream, 1);
+	SkipBytes(&_byteStream, 1);
 
 	return value;
 }
@@ -630,7 +630,6 @@ void JLSOutputStream::AddScan(ByteStreamInfo info, const JlsParameters* pparams)
 	_lastCompenentIndex += 1;
 	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _lastCompenentIndex : -1));
 	
-	Size size = Size(pparams->width, pparams->height);
 	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
 	
 	_segments.push_back(new JpegImageDataSegment(info, *pparams, _lastCompenentIndex, ccomp));
@@ -691,7 +690,7 @@ ByteStreamInfo FromStream(std::basic_streambuf<char>* stream)
 	return info;
 }
 
-void Skip(ByteStreamInfo* streamInfo, size_t count)
+void SkipBytes(ByteStreamInfo* streamInfo, size_t count)
 {
 	if (streamInfo->rawData == NULL)
 		return;
