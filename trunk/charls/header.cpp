@@ -246,7 +246,7 @@ int ReadScanHeader(BYTE* compressedBytes)
 
 	::memcpy(rgbyte, compressedBytes, cbyteScanheader);
 	readBytes += cbyteScanheader;
-    return readBytes;
+    return (int)readBytes;
 }
 
 //

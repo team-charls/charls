@@ -66,7 +66,7 @@ public:
 		  if (_byteStream == NULL || _byteStream->sgetc() == std::char_traits<char>::eof())
 				return;
 
-		    int count = _endPosition - _position; 
+		    size_t count = _endPosition - _position; 
 			
 			if (count > 64)
 				return;
@@ -75,13 +75,13 @@ public:
 			{
 				_buffer[i] = _position[i];
 			}
-			int offset = &_buffer[0] - _position;
+			size_t offset = &_buffer[0] - _position;
 
 			_position += offset;
 			_endPosition += offset;
 			_nextFFPosition += offset;
 
-			int readbytes = _byteStream->sgetn((char*)_endPosition, _buffer.size() - count);
+			std::streamsize readbytes = _byteStream->sgetn((char*)_endPosition, _buffer.size() - count);
 			_endPosition += readbytes;
 	  }
 

@@ -69,7 +69,7 @@ public:
 	void NewLineRequested(void* dest, int pixelCount, int /*destStride*/)
 	{
 		int bytesToRead = pixelCount * _bytesPerPixel;
-		int bytesRead = _rawData->sgetn((char*)dest, bytesToRead);
+		std::streamsize bytesRead = _rawData->sgetn((char*)dest, bytesToRead);
 		
 		if (bytesRead != bytesToRead)
 			throw new JlsException(UncompressedBufferTooSmall);
@@ -83,7 +83,7 @@ public:
 	void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/)
 	{
 		int bytesToWrite = pixelCount * _bytesPerPixel;
-		int bytesWritten = _rawData->sputn((const char*)pSrc, bytesToWrite); 	
+		std::streamsize bytesWritten = _rawData->sputn((const char*)pSrc, bytesToWrite); 	
 		if (bytesWritten != bytesToWrite)
 			throw new JlsException(UncompressedBufferTooSmall);
 	}
@@ -213,10 +213,10 @@ public:
 
 	void Transform(std::basic_streambuf<char>* rawStream, void* dest, int pixelCount, int destStride)
 	{			
-		int bytesToRead = pixelCount * _info.components * sizeof(SAMPLE);					
+		std::streamsize bytesToRead = pixelCount * _info.components * sizeof(SAMPLE);					
 		while(bytesToRead != 0)
 		{
-			int read = rawStream->sgetn((char*)&_buffer[0], bytesToRead);
+			std::streamsize read = rawStream->sgetn((char*)&_buffer[0], bytesToRead);
 			if (read == 0)
 				throw new JlsException(UncompressedBufferTooSmall);
 
@@ -281,11 +281,11 @@ public:
 		
 		if (_rawPixels.rawStream != NULL)
 		{
-			int bytesToWrite = pixelCount * _info.components * sizeof(SAMPLE);		
+			std::streamsize bytesToWrite = pixelCount * _info.components * sizeof(SAMPLE);		
 			std::vector<char> buffer(bytesToWrite);
 			DecodeTransform(pSrc, &buffer[0], pixelCount, sourceStride);
 		
-			int bytesWritten = _rawPixels.rawStream->sputn(&buffer[0], bytesToWrite); 	
+			std::streamsize bytesWritten = _rawPixels.rawStream->sputn(&buffer[0], bytesToWrite); 	
 			if (bytesWritten != bytesToWrite)
 				throw new JlsException(UncompressedBufferTooSmall);
 		}

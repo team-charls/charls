@@ -121,8 +121,8 @@ protected:
 		if (_compressedStream == NULL)	
 			throw new JlsException(CompressedBufferTooSmall);
 		
-		int bytesCount = _position-(BYTE*)&_buffer[0];
-		int bytesWritten = _compressedStream->sputn((char*)&_buffer[0], _position - (BYTE*)&_buffer[0]);
+		size_t bytesCount = _position-(BYTE*)&_buffer[0];
+		size_t bytesWritten = _compressedStream->sputn((char*)&_buffer[0], _position - (BYTE*)&_buffer[0]);
 
 		if (bytesWritten != bytesCount)
 			throw new JlsException(CompressedBufferTooSmall);
