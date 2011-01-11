@@ -17,7 +17,7 @@
 
 #else
 #include <assert.h>
-
+#define CHARLS_DLL
 #endif
 
 #include <stdio.h>

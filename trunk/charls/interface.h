@@ -8,13 +8,24 @@
 
 #include "publictypes.h"
 
-#if defined(_WIN32)
-#  ifndef CHARLS_IMEXPORT
-#    define CHARLS_IMEXPORT(returntype) __declspec(dllimport) returntype __stdcall
-#  endif
-#else
+// non-windows (static linking)
+#if !defined(CHARLS_IMEXPORT) && !defined(_WIN32)
 #  define CHARLS_IMEXPORT(returntype) returntype
-#endif /* _WIN32 */
+#endif
+
+// windows static linking
+#if !defined(CHARLS_IMEXPORT) && defined(CHARLS_STATIC)
+#  define CHARLS_IMEXPORT(returntype) returntype
+#endif
+
+// windows dll
+#if !defined(CHARLS_IMEXPORT) && defined(CHARLS_DLL)
+#  define CHARLS_IMEXPORT(returntype) __declspec(dllimport) returntype __stdcall
+#endif
+
+#if !defined(CHARLS_IMEXPORT)
+#error Please #define CHARLS_STATIC or CHARLS_DLL before including "interface.h" to indicate if CharLS is built as a static library or as a dll. 
+#endif
 
 
 #ifdef __cplusplus
