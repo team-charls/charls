@@ -227,7 +227,7 @@ void TestDecodeFromStream(char* strNameEncoded)
 	JlsParameters info = JlsParameters();
 	JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
 	
-	myFile.pubseekpos(std::ios::beg, 0);
+	myFile.pubseekpos(std::ios_base::streampos(0), std::ios_base::in);
 
 	std::basic_stringbuf<char> buf;
 	ByteStreamInfo rawStreamInfo = { &buf };
