@@ -76,7 +76,7 @@ public:
 
 		if (_bytesPerLine - bytesToRead > 0)
 		{
-			_rawData->pubseekoff(std::ios_base::streamoff(_bytesPerLine - bytesToRead), std::ios_base::cur);
+			_rawData->pubseekoff(std::streamoff(_bytesPerLine - bytesToRead), std::ios_base::cur);
 		}		
 	}
 

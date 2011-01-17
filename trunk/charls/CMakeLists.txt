@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 2.6)
 IF(NOT CMAKE_BUILD_TYPE)
 # The following compiler option are only meant for GCC:
 IF(CMAKE_COMPILER_IS_GNUCC)
-# the following is optimization micrmanagement that made better code for x86
+# the following is optimization micromanagement that made better code for x86
 # SET(CMAKE_CXX_FLAGS "-D NDEBUG -O3 -Wall -Wextra -pedantic -fvisibility=hidden -fomit-frame-pointer -momit-leaf-frame-pointer -fweb  -ftracer" )
 SET(CMAKE_CXX_FLAGS "-D NDEBUG -O3" )
 ENDIF(CMAKE_COMPILER_IS_GNUCC)
@@ -14,6 +14,14 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 
 OPTION(charls_BUILD_SHARED_LIBS "Build CharLS with shared libraries." OFF)
 SET(BUILD_SHARED_LIBS ${charls_BUILD_SHARED_LIBS})
+
+if(WIN32)
+   if(BUILD_SHARED_LIBS)
+     add_definitions(-D CHARLS_DLL)
+   else(BUILD_SHARED_LIBS)
+     add_definitions(-D CHARLS_STATIC)
+   endif(BUILD_SHARED_LIBS)
+endif(WIN32)
 
 add_library(CharLS header.cpp  interface.cpp  jpegls.cpp  )
 

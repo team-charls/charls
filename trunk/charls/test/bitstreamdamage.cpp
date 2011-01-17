@@ -22,7 +22,7 @@ void TestDamagedBitStream1()
 
 	std::vector<BYTE> rgbyteOut(256 * 256 * 2);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
-	assert(error == InvalidCompressedData);
+	ASSERT(error == InvalidCompressedData);
 
 }
 
@@ -38,7 +38,7 @@ void TestDamagedBitStream2()
 
 	std::vector<BYTE> rgbyteOut(512 * 512);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
-	assert(error == InvalidCompressedData);
+	ASSERT(error == InvalidCompressedData);
 
 }
 
@@ -55,7 +55,7 @@ void TestDamagedBitStream3()
 
 	std::vector<BYTE> rgbyteOut(512 * 512);	
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
-	assert(error == InvalidCompressedData);
+	ASSERT(error == InvalidCompressedData);
 
 }
 

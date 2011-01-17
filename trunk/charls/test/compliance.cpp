@@ -58,12 +58,12 @@ void TestCompliance(const BYTE* compressedBytes, int compressedLength, const BYT
 {	
 	JlsParameters info = JlsParameters();
 	JLS_ERROR err = JpegLsReadHeader(compressedBytes, compressedLength, &info);
-	assert(err == OK);
+	ASSERT(err == OK);
 
 	if (bcheckEncode)
 	{
 		err = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, compressedBytes, compressedLength);
-		assert(err == OK);
+		ASSERT(err == OK);
 	}
 
 	std::vector<BYTE> rgbyteCompressed(info.height *info.width* 4);
@@ -71,7 +71,7 @@ void TestCompliance(const BYTE* compressedBytes, int compressedLength, const BYT
 	std::vector<BYTE> rgbyteOut(info.height *info.width * ((info.bitspersample + 7) / 8) * info.components);
 
 	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), compressedBytes, compressedLength, NULL);
-	assert(err == OK);
+	ASSERT(err == OK);
 
 	if (info.allowedlossyerror == 0)
 	{
@@ -80,7 +80,7 @@ void TestCompliance(const BYTE* compressedBytes, int compressedLength, const BYT
 		{
 			if (rgbyteRaw[i] != pbyteOut[i])
 			{
-				assert(false);
+				ASSERT(false);
 				break;
 			}
 		}						    
@@ -100,7 +100,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 	JlsParameters metadata;
 	if (JpegLsReadHeader(&rgbyteFile[0], rgbyteFile.size(), &metadata) != OK)
 	{
-		assert(false);
+		ASSERT(false);
 		return;
 	}
 
