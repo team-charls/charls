@@ -4,4 +4,11 @@
 *.ncb
 *.suo
 Release
+</Value></Property><Property><Name>svn:ignore</Name><Value>Debug
+*.user
+*.filters
+*.ncb
+*.suo
+Release
+_ReSharper.CharLS
 </Value></Property></Properties></ItemProperties>
