@@ -238,10 +238,25 @@ void TestDecodeFromStream(char* strNameEncoded)
 	ASSERT(err == OK);
 	ASSERT(outputCount == 512 * 512);
 }
+
+
+JLS_ERROR DecodeRaw(char* strNameEncoded, char* strNameOutput)
+{
+	std::basic_filebuf<char> myFile; 
+	myFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
+	ByteStreamInfo compressedByteStream = {&myFile};
+ 
+	std::basic_filebuf<char> rawFile;
+	rawFile.open(strNameOutput, std::ios_base::out | std::ios::binary);
+	
+	ByteStreamInfo rawStream = {&rawFile};
+
+	return JpegLsDecodeStream(rawStream, compressedByteStream, NULL);
+}
  
 void TestEncodeFromStream()
 {
-	TestDecodeFromStream("test/test.acr.jls");
+	//TestDecodeFromStream("test/test.acr.jls");
 
 	TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1,0,    0x3D3ee);
 	TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
@@ -294,7 +309,7 @@ int main(int argc, char* argv[])
 {
 	if (argc == 1)
 	{
-		printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance, -dontwait\r\n");		
+		printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance, -dontwait -decoderaw \r\n");		
 		return 0;
 	}
 
@@ -305,6 +320,18 @@ int main(int argc, char* argv[])
 		if (str.compare("-unittest") == 0)
 		{
 			UnitTest();		
+			continue;
+		}
+
+		if (str.compare("-decoderaw") == 0)
+		{
+			if (i != 1 || argc != 4)
+			{
+				printf("Syntax: -decoderaw inputfile outputfile \r\n");		
+				return 0;
+			}
+			int error = DecodeRaw(argv[2],argv[3]);		
+			return error;
 			continue;
 		}
 
