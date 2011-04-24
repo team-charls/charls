@@ -21,7 +21,6 @@
 #include "lookuptable.h"
 
 
-signed char* JlsContext::_tableC = CreateTableC();
 
 // As defined in the JPEG-LS standard 
 

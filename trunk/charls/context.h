@@ -66,7 +66,7 @@ public:
 			{
 				b = -n + 1;
 			}
-			C = _tableC[C - 1];
+			C = C - (C > -128);
 		} 
 		else  if (b > 0) 
 		{
@@ -75,7 +75,7 @@ public:
 			{
 				b = 0;
 			}
-			C = _tableC[C + 1];
+			C = C + (C <= 127);
 		}
 		A = a;
 		B = b;
@@ -97,26 +97,7 @@ public:
 		return k;
 	}
 
-	static signed char* CreateTableC()
-	{
-		static std::vector<signed char> rgtableC;
-		
-		rgtableC.reserve(256 + 2);
-
-		rgtableC.push_back(-128);	
-		for (int i = -128; i < 128; i++)
-		{
-			rgtableC.push_back(char(i));	
-		}
-		rgtableC.push_back(127);	
-		
-		signed char* pZero = &rgtableC[128 + 1];	
-		ASSERT(pZero[0] == 0);
-		return pZero;
-	}
-private:
-
-	static signed char* _tableC;
+	
 };
 
 #endif
