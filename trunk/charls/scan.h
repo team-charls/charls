@@ -247,7 +247,10 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, LONG, LONG
 		if (abs(ErrVal) > 65535)
 			throw JlsException(InvalidCompressedData);
 	}	
-	ErrVal = ErrVal ^ ((traits.NEAR == 0) ? ctx.GetErrorCorrection(k) : 0);
+	if (k == 0)
+	{
+		ErrVal = ErrVal ^ ctx.GetErrorCorrection(traits.NEAR);
+	}
 	ctx.UpdateVariables(ErrVal, traits.NEAR, traits.RESET);	
 	ErrVal = ApplySign(ErrVal, sign);
 	return traits.ComputeReconstructedSample(Px, ErrVal); 
