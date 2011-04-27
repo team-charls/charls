@@ -6,3 +6,4 @@ EXPORTS
     JpegLsReadHeader  
     JpegLsVerifyEncode
     JpegLsEncodeStream
+    JpegLsDecodeStream
