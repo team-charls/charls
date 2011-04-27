@@ -210,11 +210,79 @@ void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp
 	params.ilv = (interleavemode) ilv;
 	size_t bytesWritten = 0;
 	
-	JpegLsEncodeStream(compressed, width * height * ccomponent * 2, &bytesWritten, rawStreamInfo, &params);
+	JpegLsEncodeStream(FromByteArray(compressed, width * height * ccomponent * 2), &bytesWritten, rawStreamInfo, &params);
 	ASSERT(bytesWritten == expectedLength);
 
 	delete[] compressed;
 	myFile.close();
+}
+
+
+bool TestEncodeFromPgm(char* fileIn, char* fileOut)
+{
+	FILE* cfile = fopen(fileIn, "rb");
+	
+	char marker[3];
+		
+	fgets(marker,3, cfile);
+	
+	int componentCount = 0;
+	if (strncmp(marker,"P5", 2) == 0)
+	{
+		componentCount = 3;
+	}
+	else if (strncmp(marker,"P6", 2) == 0)	
+	{
+		componentCount = 1;
+	}
+	else 
+		return false;
+
+	std::vector<int> readValues;
+	while (readValues.size() < 3)
+	{
+		std::string bytes(1000, 0);		
+		fgets(&bytes[0], 1000, cfile);
+		fpos_t pos;
+		fgetpos(cfile, &pos);
+		std::stringstream line(bytes);
+
+		while (readValues.size() < 3)
+		{
+			int value = -1;
+			line >> value;
+			if (value <= 0)
+				break;
+			
+			readValues.push_back(value);			
+		}
+	}
+	int width = readValues[0];
+	int height = readValues[1];
+	int bitspersample = log_2(readValues[2]+1);
+
+	std::basic_filebuf<char> rawFile(cfile);  
+
+	std::basic_filebuf<char> jlsFile;  	
+	jlsFile.open(fileOut, std::ios_base::out | std::ios::binary);
+	
+	ByteStreamInfo rawStreamInfo = {&rawFile};
+	ByteStreamInfo jlsStreamInfo = {&jlsFile};
+	
+	JlsParameters params = JlsParameters();
+	params.height = height;
+    params.width = width;
+	params.components = componentCount;
+	params.bitspersample= bitspersample;
+	params.ilv = componentCount == 3 ? ILV_LINE : ILV_NONE;
+	size_t bytesWritten = 0;
+	
+	JpegLsEncodeStream(jlsStreamInfo, &bytesWritten, rawStreamInfo, &params);
+	
+ 	rawFile.close();
+	jlsFile.close();
+
+	return true;
 }
 
 
@@ -257,6 +325,8 @@ JLS_ERROR DecodeRaw(char* strNameEncoded, char* strNameOutput)
 void TestEncodeFromStream()
 {
 	//TestDecodeFromStream("test/test.acr.jls");
+
+	TestEncodeFromPgm("test/conformance/TEST8.PPM", "test/conformance/TEST8_out.JLS");
 
 	TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1,0,    0x3D3ee);
 	TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);

@@ -84,4 +84,13 @@ struct ByteStreamInfo
 	size_t count;
 };
 
+
+inline ByteStreamInfo FromByteArray(const void* bytes, size_t count)
+{
+	ByteStreamInfo info = ByteStreamInfo();
+	info.rawData = (BYTE*)bytes;
+	info.count = count;
+	return info;
+}
+
 #endif

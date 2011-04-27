@@ -150,10 +150,9 @@ JpegSegment* CreateMarkerStartOfFrame(Size size, LONG bitsPerSample, LONG ccomp)
 //
 JLSOutputStream::JLSOutputStream() :
 	_bCompare(false),
-	_pdata(NULL),	
 	_cbyteOffset(0),
-	_cbyteLength(0),
-	_lastCompenentIndex(0)
+	_lastCompenentIndex(0),
+	_data()
 {	
 }
 
@@ -199,10 +198,9 @@ void JLSOutputStream::AddColorTransform(int i)
 //
 // Write()
 //
-size_t JLSOutputStream::Write(BYTE* pdata, size_t cbyteLength)
+size_t JLSOutputStream::Write(ByteStreamInfo info)
 {
-	_pdata = pdata;
-	_cbyteLength = cbyteLength;
+	_data = info;
 
 	WriteByte(0xFF);
 	WriteByte(JPEG_SOI);
@@ -596,7 +594,7 @@ public:
 		info.components = _ccompScan;	
 		std::auto_ptr<EncoderStrategy> qcodec =JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
 		ProcessLine* processLine = qcodec->CreateProcess(_rawStreamInfo);
-		ByteStreamInfo compressedData = {NULL, pstream->GetPos(), pstream->GetLength()};
+		ByteStreamInfo compressedData = pstream->OutputStream();
 		size_t cbyteWritten = qcodec->EncodeScan(std::auto_ptr<ProcessLine>(processLine), &compressedData, pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
@@ -675,13 +673,6 @@ int JLSInputStream::ReadColorXForm()
 
 
 
-ByteStreamInfo FromByteArray(const void* bytes, size_t count)
-{
-	ByteStreamInfo info = ByteStreamInfo();
-	info.rawData = (BYTE*)bytes;
-	info.count = count;
-	return info;
-}
 
 ByteStreamInfo FromStream(std::basic_streambuf<char>* stream)
 {

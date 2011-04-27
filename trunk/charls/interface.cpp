@@ -18,15 +18,12 @@
 
 
 
-JLS_ERROR CheckInput(const void* compressedData, size_t compressedLength, ByteStreamInfo uncompressedStream, const JlsParameters* pparams)
+JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParameters* pparams)
 {
 	if (pparams == NULL)
 		return InvalidJlsParameters;
 
-	if (compressedLength == 0)
-		return InvalidJlsParameters;
-
-	if (compressedData == NULL)
+	if (uncompressedStream.rawStream == NULL && uncompressedStream.rawData == NULL)
 		return InvalidJlsParameters;
 
 	if (pparams->width < 1 || pparams->width > 65535)
@@ -53,8 +50,7 @@ JLS_ERROR CheckInput(const void* compressedData, size_t compressedLength, ByteSt
 
 extern "C"
 {
-
-	CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, ByteStreamInfo rawStreamInfo, struct JlsParameters* pparams)
+	CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t* pcbyteWritten, ByteStreamInfo rawStreamInfo, struct JlsParameters* pparams)
 	{
 		JlsParameters info = *pparams;
 		if(info.bytesperline == 0)
@@ -66,7 +62,7 @@ extern "C"
 			}
 		}
 
-		JLS_ERROR parameterError = CheckInput(compressedData, compressedLength, rawStreamInfo, &info);
+		JLS_ERROR parameterError = CheckInput(rawStreamInfo, &info);
 
 		if (parameterError != OK)
 			return parameterError;
@@ -84,7 +80,6 @@ extern "C"
 			stream.AddColorTransform(info.colorTransform);
 		}
 
-
 		if (info.ilv == ILV_NONE)
 		{
 			LONG cbyteComp = size.cx*size.cy*((info.bitspersample +7)/8);
@@ -99,7 +94,7 @@ extern "C"
 			stream.AddScan(rawStreamInfo, &info);
 		}
 
-		stream.Write((BYTE*)compressedData, compressedLength);
+		stream.Write(compressedStreamInfo);
 		*pcbyteWritten = stream.GetBytesWritten();	
 		return OK;
 	}
@@ -107,7 +102,8 @@ extern "C"
 	CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, const void* uncompressedData, size_t uncompressedLength, struct JlsParameters* pparams)
 	{
 		ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
-		return JpegLsEncodeStream(compressedData, compressedLength, pcbyteWritten, rawStreamInfo, pparams);
+		ByteStreamInfo compressedStreamInfo = FromByteArray(compressedData, compressedLength);
+		return JpegLsEncodeStream(compressedStreamInfo, pcbyteWritten, rawStreamInfo, pparams);
 	}
 
 	CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, JlsParameters* info)
@@ -176,7 +172,7 @@ extern "C"
 
 		ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
 
-		error = CheckInput(compressedData, compressedLength, rawStreamInfo, &info);
+		error = CheckInput(rawStreamInfo, &info);
 
 		if (error != OK)
 			return error;
@@ -205,7 +201,7 @@ extern "C"
 		memcpy(&rgbyteCompressed[0], compressedData, compressedLength);
 
 		stream.EnableCompare(true);
-		stream.Write(&rgbyteCompressed[0], rgbyteCompressed.size());
+		stream.Write(FromByteArray(&rgbyteCompressed[0], rgbyteCompressed.size()));
 
 		return OK;
 	}

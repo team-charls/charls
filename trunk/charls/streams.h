@@ -57,22 +57,39 @@ public:
 		{ return _cbyteOffset; }
 
 	size_t GetLength()
-		{ return _cbyteLength - _cbyteOffset; }
+	{ return _data.count - _cbyteOffset; }
 
-	size_t Write(BYTE* pdata, size_t cbyteLength);
+ 
+	size_t Write(ByteStreamInfo info);
 	
 	void EnableCompare(bool bCompare) 
 	{ _bCompare = bCompare; }
 private:
 	
 	BYTE* GetPos() const
-		{ return _pdata + _cbyteOffset; }
+	{ return _data.rawData + _cbyteOffset; }
+
+	ByteStreamInfo OutputStream() const
+	{ 
+		ByteStreamInfo data = _data;
+		data.count -= _cbyteOffset;
+		data.rawData += _cbyteOffset;
+		return data; 
+	}
+
 
 	void WriteByte(BYTE val)
 	{ 
-		ASSERT(!_bCompare || _pdata[_cbyteOffset] == val);
+		ASSERT(!_bCompare || _data.rawData[_cbyteOffset] == val);
 		
-		_pdata[_cbyteOffset++] = val; 
+		if (_data.rawStream != NULL)
+		{
+			_data.rawStream->sputc(val);
+		}
+		else
+		{
+			_data.rawData[_cbyteOffset++] = val; 
+		}
 	}
 
 	void WriteBytes(const std::vector<BYTE>& rgbyte)
@@ -91,16 +108,20 @@ private:
 
 
     void Seek(size_t byteCount)
-		{ _cbyteOffset += byteCount; }
+	{ 
+		if (_data.rawStream != NULL)
+			return;
 
-	bool _bCompare;
+	    _cbyteOffset += byteCount;
+	}
+
 
 private:
-	BYTE* _pdata;
+	bool _bCompare;
+	ByteStreamInfo _data;
 	size_t _cbyteOffset;
-	size_t _cbyteLength;
 	LONG _lastCompenentIndex;
-	std::vector<JpegSegment*> _segments;
+	std::vector<JpegSegment*> _segments;	
 };
 
 

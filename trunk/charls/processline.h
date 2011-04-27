@@ -69,12 +69,16 @@ public:
 	void NewLineRequested(void* dest, int pixelCount, int /*destStride*/)
 	{
 		int bytesToRead = pixelCount * _bytesPerPixel;
-		std::streamsize bytesRead = _rawData->sgetn((char*)dest, bytesToRead);
-		
-		if (bytesRead != bytesToRead)
-			throw new JlsException(UncompressedBufferTooSmall);
+		while (bytesToRead != 0)
+		{
+			std::streamsize bytesRead = _rawData->sgetn((char*)dest, bytesToRead);
+			if (bytesRead == 0)
+				throw new JlsException(UncompressedBufferTooSmall);
 
-		if (_bytesPerLine - bytesToRead > 0)
+			bytesToRead -= bytesRead;
+		}
+
+		if (_bytesPerLine - pixelCount * _bytesPerPixel > 0)
 		{
 			_rawData->pubseekoff(std::streamoff(_bytesPerLine - bytesToRead), std::ios_base::cur);
 		}		
