@@ -109,7 +109,10 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 
 	double dwtimeEncodeComplete = getTime();
 
-	err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(compressedLength), NULL);
+//	for (int i = 0; i < 10; ++i)
+	{
+		err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(compressedLength), NULL);
+	}
 	assert(err == OK);
 
 	double bitspersample = compressedLength  * 8  * 1.0 /  (ccomp *size.cy * size.cx);

@@ -30,9 +30,9 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* 
 		ASSERT(false);
 		return false;
 	}
-	std::basic_filebuf<char> myFile; 
-	myFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
- 	ByteStreamInfo rawStreamInfo = {&myFile};
+	std::basic_filebuf<char> jlsFile; 
+	jlsFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
+ 	ByteStreamInfo rawStreamInfo = {&jlsFile};
 
 
 	JLS_ERROR err = JpegLsReadHeaderStream(rawStreamInfo, info);
@@ -217,8 +217,34 @@ void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp
 	myFile.close();
 }
 
+bool DecodeToPnm(char* fileIn, char* fileOut)
+{
+	std::basic_filebuf<char> jlsFile; 
+	jlsFile.open(fileIn, std::ios_base::in | std::ios::binary);
+	ByteStreamInfo compressedByteStream = {&jlsFile};
 
-bool TestEncodeFromPgm(char* fileIn, char* fileOut)
+	JlsParameters info = JlsParameters();
+	JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
+	
+	int maxval = (1 << info.bitspersample) - 1;	
+	int id = info.components == 3 ? 6 : 5;
+	info.colorTransform = XFORM_BIGENDIAN;
+
+	FILE* cfile = fopen(fileOut, "wb");
+	fprintf(cfile, "P%d %d %d %d\n", id, info.width, info.height, maxval);
+	std::basic_filebuf<char> pnmFile(cfile); 
+	ByteStreamInfo pnmStream = {&pnmFile};
+	
+	jlsFile.pubseekpos(std::ios::beg, std::ios_base::in);
+	JpegLsDecodeStream(pnmStream, compressedByteStream, &info);
+
+	jlsFile.close();
+	pnmFile.close();
+	return true;
+}
+
+
+bool EncodePnm(char* fileIn, char* fileOut)
 {
 	FILE* cfile = fopen(fileIn, "rb");
 	
@@ -229,11 +255,11 @@ bool TestEncodeFromPgm(char* fileIn, char* fileOut)
 	int componentCount = 0;
 	if (strncmp(marker,"P5", 2) == 0)
 	{
-		componentCount = 3;
+		componentCount = 1;
 	}
 	else if (strncmp(marker,"P6", 2) == 0)	
 	{
-		componentCount = 1;
+		componentCount = 3;
 	}
 	else 
 		return false;
@@ -257,10 +283,7 @@ bool TestEncodeFromPgm(char* fileIn, char* fileOut)
 			readValues.push_back(value);			
 		}
 	}
-	int width = readValues[0];
-	int height = readValues[1];
-	int bitspersample = log_2(readValues[2]+1);
-
+	
 	std::basic_filebuf<char> rawFile(cfile);  
 
 	std::basic_filebuf<char> jlsFile;  	
@@ -270,11 +293,13 @@ bool TestEncodeFromPgm(char* fileIn, char* fileOut)
 	ByteStreamInfo jlsStreamInfo = {&jlsFile};
 	
 	JlsParameters params = JlsParameters();
-	params.height = height;
-    params.width = width;
-	params.components = componentCount;
-	params.bitspersample= bitspersample;
+ 
+	params.width = readValues[0];
+	params.height = readValues[1];
+    params.components = componentCount;
+	params.bitspersample= log_2(readValues[2]+1);
 	params.ilv = componentCount == 3 ? ILV_LINE : ILV_NONE;
+	params.colorTransform = XFORM_BIGENDIAN;
 	size_t bytesWritten = 0;
 	
 	JpegLsEncodeStream(jlsStreamInfo, &bytesWritten, rawStreamInfo, &params);
@@ -288,31 +313,31 @@ bool TestEncodeFromPgm(char* fileIn, char* fileOut)
 
 void TestDecodeFromStream(char* strNameEncoded)
 {
-	std::basic_filebuf<char> myFile; 
-	myFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
-	ByteStreamInfo compressedByteStream = {&myFile};
+	std::basic_filebuf<char> jlsFile; 
+	jlsFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
+	ByteStreamInfo compressedByteStream = {&jlsFile};
 
 	JlsParameters info = JlsParameters();
 	JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
 	
-	myFile.pubseekpos(std::ios::beg, std::ios_base::in);
+	jlsFile.pubseekpos(std::ios::beg, std::ios_base::in);
 
 	std::basic_stringbuf<char> buf;
 	ByteStreamInfo rawStreamInfo = { &buf };
 	
 	err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, NULL);
-	int outputCount = buf.str().size();
+	size_t outputCount = buf.str().size();
 
 	ASSERT(err == OK);
-	ASSERT(outputCount == 512 * 512);
+	//ASSERT(outputCount == 512 * 512);
 }
 
 
 JLS_ERROR DecodeRaw(char* strNameEncoded, char* strNameOutput)
 {
-	std::basic_filebuf<char> myFile; 
-	myFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
-	ByteStreamInfo compressedByteStream = {&myFile};
+	std::basic_filebuf<char> jlsFile; 
+	jlsFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
+	ByteStreamInfo compressedByteStream = {&jlsFile};
  
 	std::basic_filebuf<char> rawFile;
 	rawFile.open(strNameOutput, std::ios_base::out | std::ios::binary);
@@ -324,10 +349,8 @@ JLS_ERROR DecodeRaw(char* strNameEncoded, char* strNameOutput)
  
 void TestEncodeFromStream()
 {
-	//TestDecodeFromStream("test/test.acr.jls");
-
-	TestEncodeFromPgm("test/conformance/TEST8.PPM", "test/conformance/TEST8_out.JLS");
-
+	TestDecodeFromStream("test/user_supplied/output.jls");
+ 
 	TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1,0,    0x3D3ee);
 	TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
 	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,2, 99734);
@@ -379,7 +402,7 @@ int main(int argc, char* argv[])
 {
 	if (argc == 1)
 	{
-		printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance, -dontwait -decoderaw \r\n");		
+		printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance, -dontwait -decoderaw -encodepnm -decodetopnm \r\n");		
 		return 0;
 	}
 
@@ -404,6 +427,31 @@ int main(int argc, char* argv[])
 			return error;
 			continue;
 		}
+
+		if (str.compare("-decodetopnm") == 0)
+		{
+			if (i != 1 || argc != 4)
+			{
+				printf("Syntax: -decodetopnm inputfile outputfile \r\n");		
+				return 0;
+			}
+			int error = DecodeToPnm(argv[2],argv[3]);		
+			return error;
+			continue;
+		}
+
+		if (str.compare("-encodepnm") == 0)
+		{
+			if (i != 1 || argc != 4)
+			{
+				printf("Syntax: -encodepnm inputfile outputfile \r\n");		
+				return 0;
+			}
+			int error = EncodePnm(argv[2],argv[3]);		
+			return error;
+			continue;
+		}
+
 
 		if (str.compare("-bitstreamdamage") == 0)
 		{

@@ -56,6 +56,24 @@ private:
 };
 
 
+inline void ByteSwap(unsigned char* data, int count)
+{
+	if (count & 1)
+		throw new JlsException(InvalidJlsParameters);
+
+	unsigned int* data32 = (unsigned int*)data;
+	for(int i = 0; i < count/4; i++)
+	{
+		unsigned int value = data32[i];
+		data32[i] = (value >> 8) & 0x00FF00FF | ((value & 0x00FF00FF) << 8);
+	}
+
+	if ((count % 4) != 0)
+	{
+		std::swap(data[count-2], data[count-1]);
+	}
+}
+
 class PostProcesSingleStream : public ProcessLine
 {
 public:
@@ -68,7 +86,7 @@ public:
 
 	void NewLineRequested(void* dest, int pixelCount, int /*destStride*/)
 	{
-		int bytesToRead = pixelCount * _bytesPerPixel;
+		size_t bytesToRead = pixelCount * _bytesPerPixel;
 		while (bytesToRead != 0)
 		{
 			std::streamsize bytesRead = _rawData->sgetn((char*)dest, bytesToRead);
@@ -76,6 +94,11 @@ public:
 				throw new JlsException(UncompressedBufferTooSmall);
 
 			bytesToRead -= bytesRead;
+		}
+		
+		if (_bytesPerPixel == 2 )
+		{
+			ByteSwap((unsigned char*)dest, 2 * pixelCount);
 		}
 
 		if (_bytesPerLine - pixelCount * _bytesPerPixel > 0)
@@ -98,6 +121,7 @@ private:
 	int _bytesPerLine;
 	
 };
+
 
 template<class TRANSFORM, class SAMPLE> 
 void TransformLineToQuad(const SAMPLE* ptypeInput, LONG pixelStrideIn, Quad<SAMPLE>* pbyteBuffer, LONG pixelStride, TRANSFORM& transform)
@@ -226,6 +250,10 @@ public:
 
 			bytesToRead -= read;
 		}
+		if (sizeof(SAMPLE) == 2 && _info.colorTransform == XFORM_BIGENDIAN)
+		{
+			ByteSwap(&_buffer[0], _info.components * sizeof(SAMPLE) * pixelCount);
+		}
 		Transform(&_buffer[0], dest, pixelCount, destStride);		
 	}
 
@@ -286,10 +314,14 @@ public:
 		if (_rawPixels.rawStream != NULL)
 		{
 			std::streamsize bytesToWrite = pixelCount * _info.components * sizeof(SAMPLE);		
-			std::vector<char> buffer(bytesToWrite);
-			DecodeTransform(pSrc, &buffer[0], pixelCount, sourceStride);
-		
-			std::streamsize bytesWritten = _rawPixels.rawStream->sputn(&buffer[0], bytesToWrite); 	
+			DecodeTransform(pSrc, &_buffer[0], pixelCount, sourceStride);
+
+			if (sizeof(SAMPLE) == 2 && _info.colorTransform == XFORM_BIGENDIAN)
+			{
+				ByteSwap(&_buffer[0], _info.components * sizeof(SAMPLE) * pixelCount);
+			}
+
+			std::streamsize bytesWritten = _rawPixels.rawStream->sputn((char*)&_buffer[0], bytesToWrite); 	
 			if (bytesWritten != bytesToWrite)
 				throw new JlsException(UncompressedBufferTooSmall);
 		}

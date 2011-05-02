@@ -28,7 +28,10 @@ enum JPEGLS_ColorXForm
 
 	// Defined by HP but not supported by CharLS
 	COLORXFORM_RGB_AS_YUV_LOSSY,
-	COLORXFORM_MATRIX
+	COLORXFORM_MATRIX,
+
+	XFORM_BIGENDIAN = 1 << 29,
+	XFORM_LITTLEENDIAN = 1 << 30,
 };
 
 
