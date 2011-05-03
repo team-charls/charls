@@ -762,12 +762,14 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
 			(ProcessLine*)new PostProcesSingleStream(info.rawStream, Info(), sizeof(typename TRAITS::PIXEL));
 	}
 
-	if (Info().colorTransform == 0)
+	int transform = Info().colorTransform & 0xFF;
+
+	if (transform == 0)
 		return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(info, Info(), TransformNone<SAMPLE>()); 
 
 	if ((Info().bitspersample == sizeof(SAMPLE)*8))
 	{
-		switch(Info().colorTransform)
+		switch(transform)
 		{
 			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<SAMPLE> >(info, Info(), TransformHp1<SAMPLE>()); break;
 			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<SAMPLE> >(info, Info(), TransformHp2<SAMPLE>()); break;
@@ -778,7 +780,7 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
 	else if (Info().bitspersample > 8)
 	{
 		int shift = 16 - Info().bitspersample;
-		switch(Info().colorTransform)
+		switch(transform)
 		{
 			case COLORXFORM_HP1 : return new ProcessTransformed<TransformShifted<TransformHp1<USHORT> > >(info, Info(), TransformShifted<TransformHp1<USHORT> >(shift)); break;
 			case COLORXFORM_HP2 : return new ProcessTransformed<TransformShifted<TransformHp2<USHORT> > >(info, Info(), TransformShifted<TransformHp2<USHORT> >(shift)); break;
