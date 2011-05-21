@@ -49,7 +49,7 @@ bool ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs, int bytes)
 	int cbyteFile = ftell(pfile);
 	if (ioffs < 0)
 	{
-		assert(bytes != 0);
+		ASSERT(bytes != 0);
 		ioffs = cbyteFile - bytes;
 	}
 	if (bytes == 0)
@@ -105,15 +105,12 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 
 	size_t compressedLength;
 	JLS_ERROR err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &info);
-	assert(err == OK);
+	ASSERT(err == OK);
 
 	double dwtimeEncodeComplete = getTime();
 
-//	for (int i = 0; i < 10; ++i)
-	{
-		err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(compressedLength), NULL);
-	}
-	assert(err == OK);
+    err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(compressedLength), NULL);
+	ASSERT(err == OK);
 
 	double bitspersample = compressedLength  * 8  * 1.0 /  (ccomp *size.cy * size.cx);
 	double dwtimeDecodeComplete = getTime();
@@ -126,7 +123,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	{
 		if (rgbyteRaw[i] != pbyteOut[i])
 		{
-			assert(false);
+			ASSERT(false);
 			break;
 		}
 	}	

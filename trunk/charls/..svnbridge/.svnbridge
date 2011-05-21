@@ -11,4 +11,12 @@ Release
 *.suo
 Release
 _ReSharper.CharLS
+</Value></Property><Property><Name>svn:ignore</Name><Value>Debug
+*.user
+*.filters
+*.ncb
+*.suo
+Release
+_ReSharper.CharLS
+CMakeFiles
 </Value></Property></Properties></ItemProperties>
