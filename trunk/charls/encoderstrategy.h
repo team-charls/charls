@@ -16,14 +16,13 @@ class EncoderStrategy
 public:
 	explicit EncoderStrategy(const JlsParameters& info) :
 		 _info(info),
- 		 valcurrent(0),
+		 valcurrent(0),
 		 bitpos(0),
-		 _compressedLength(0),		 
-		 _position(0),	
+		 _compressedLength(0),
+		 _position(0),
 		 _isFFWritten(false),
 		 _bytesWritten(0),
 		 _compressedStream(NULL)
-	
 	{
 	}
 
@@ -32,7 +31,7 @@ public:
 	}
 
 	LONG PeekByte();
-	
+
 	void OnLineBegin(LONG cpixel, void* ptypeBuffer, LONG pixelStride)
 	{
 		_processLine->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
@@ -40,8 +39,8 @@ public:
 
 	void OnLineEnd(LONG /*cpixel*/, void* /*ptypeBuffer*/, LONG /*pixelStride*/) { }
 
-    virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-		
+	virtual void SetPresets(const JlsCustomParameters& presets) = 0;
+
 	virtual size_t EncodeScan(std::auto_ptr<ProcessLine> rawData, ByteStreamInfo* compressedData, void* pvoidCompare) = 0;
 
 	virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
@@ -52,7 +51,7 @@ protected:
 	{
 		bitpos = 32;
 		valcurrent = 0;
-		
+
 		if (compressedStream->rawStream == NULL)
 		{
 			_position = compressedStream->rawData;
@@ -69,7 +68,7 @@ protected:
 
 
 	void AppendToBitStream(LONG value, LONG length)
-	{	
+	{
 		ASSERT(length < 32 && length >= 0);
 
 		ASSERT((_qdecoder.get() == NULL) || (length == 0 && value == 0) ||( _qdecoder->ReadLongValue(length) == value));
@@ -91,10 +90,9 @@ protected:
 		valcurrent |= value >> -bitpos;
 
 		Flush();
-	        
-		ASSERT(bitpos >=0);
-		valcurrent |= value << bitpos;	
 
+		ASSERT(bitpos >=0);
+		valcurrent |= value << bitpos;
 	}
 
 	void EndScan()
@@ -106,7 +104,7 @@ protected:
 			AppendToBitStream(0, (bitpos - 1) % 8);
 		else
 			AppendToBitStream(0, bitpos % 8);
-		
+
 		Flush();
 		ASSERT(bitpos == 0x20);
 
@@ -120,16 +118,15 @@ protected:
 	{
 		if (_compressedStream == NULL)	
 			throw new JlsException(CompressedBufferTooSmall);
-		
+
 		size_t bytesCount = _position-(BYTE*)&_buffer[0];
-		size_t bytesWritten = _compressedStream->sputn((char*)&_buffer[0], _position - (BYTE*)&_buffer[0]);
+		size_t bytesWritten = (size_t)_compressedStream->sputn((char*)&_buffer[0], _position - (BYTE*)&_buffer[0]);
 
 		if (bytesWritten != bytesCount)
 			throw new JlsException(CompressedBufferTooSmall);
 
 		_position = (BYTE*)&_buffer[0];
 		_compressedLength = _buffer.size();
-
 	}
 
 	void Flush()
@@ -138,7 +135,6 @@ protected:
 		{
 			OverFlow();
 		}
-
 
 		for (LONG i = 0; i < 4; ++i)
 		{
@@ -149,30 +145,27 @@ protected:
 			{
 				// insert highmost bit
 				*_position = BYTE(valcurrent >> 25);
-				valcurrent = valcurrent << 7;			
-				bitpos += 7;	
+				valcurrent = valcurrent << 7;
+				bitpos += 7;
 			}
 			else
 			{
 				*_position = BYTE(valcurrent >> 24);
-				valcurrent = valcurrent << 8;			
-				bitpos += 8;			
+				valcurrent = valcurrent << 8;
+				bitpos += 8;
 			}
 
-			_isFFWritten = *_position == 0xFF;					
+			_isFFWritten = *_position == 0xFF;
 			_position++;
 			_compressedLength--;
 			_bytesWritten++;
-
 		}
-		
 	}
 
 	size_t GetLength() 
-	{ 
+	{
 		return _bytesWritten - (bitpos -32)/8; 
 	}
-
 
 	inlinehint void AppendOnesToBitStream(LONG length)
 	{
@@ -191,7 +184,7 @@ private:
 	LONG bitpos;
 	size_t _compressedLength;
 
-	
+
 	// encoding
 	BYTE* _position;
 	bool _isFFWritten;

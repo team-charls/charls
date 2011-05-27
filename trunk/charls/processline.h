@@ -93,7 +93,7 @@ public:
 			if (bytesRead == 0)
 				throw new JlsException(UncompressedBufferTooSmall);
 
-			bytesToRead -= bytesRead;
+			bytesToRead = (size_t)(bytesToRead - bytesRead);
 		}
 		
 		if (_bytesPerPixel == 2 )
