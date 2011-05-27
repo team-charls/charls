@@ -353,16 +353,16 @@ int JLSInputStream::ReadMarker(BYTE marker)
 
 JpegMarkerSegment* EncodeStartOfScan(const JlsParameters* pparams, LONG icomponent)
 {
-	BYTE itable		= 0;
-	
+	BYTE itable = 0;
+
 	std::vector<BYTE> rgbyte;
 
 	if (icomponent < 0)
 	{
 		rgbyte.push_back((BYTE)pparams->components);
-		for (LONG icomponent = 0; icomponent < pparams->components; ++icomponent )
+		for (LONG i = 0; i < pparams->components; ++i)
 		{
-			rgbyte.push_back(BYTE(icomponent + 1));
+			rgbyte.push_back(BYTE(i + 1));
 			rgbyte.push_back(itable);
 		}
 	}
@@ -370,7 +370,7 @@ JpegMarkerSegment* EncodeStartOfScan(const JlsParameters* pparams, LONG icompone
 	{
 		rgbyte.push_back(1);
 		rgbyte.push_back((BYTE)icomponent);
-		rgbyte.push_back(itable);	
+		rgbyte.push_back(itable);
 	}
 
 	rgbyte.push_back(BYTE(pparams->allowedlossyerror));
