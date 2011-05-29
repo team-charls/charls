@@ -10,7 +10,7 @@
 
 
 
-// This file defines JPEG-LS streams: The header and the actual pixel data. Header markers have fixed length, the pixeldata not. 
+// This file defines JPEG-LS markers: The header and the actual pixel data. Header markers have fixed length, the pixeldata not. 
 
 
 
@@ -40,16 +40,16 @@ ByteStreamInfo FromStream(std::basic_streambuf<char>* stream);
 void SkipBytes(ByteStreamInfo* streamInfo, size_t count);
 
 //
-// JLSOutputStream: minimal implementation to write JPEG header streams
+// JpegMarkerWriter: minimal implementation to write JPEG markers
 //
-class JLSOutputStream
+class JpegMarkerWriter
 {
 	friend class JpegMarkerSegment;
 	friend class JpegImageDataSegment;
 
 public:
-	JLSOutputStream();
-	virtual ~JLSOutputStream();
+	JpegMarkerWriter();
+	virtual ~JpegMarkerWriter();
 
 	void Init(Size size, LONG bitsPerSample, LONG ccomp);
 	void AddScan(ByteStreamInfo info, const JlsParameters* pparams);
@@ -57,10 +57,10 @@ public:
 	void AddLSE(const JlsCustomParameters* pcustom);
 	void AddColorTransform(int i);
 	size_t GetBytesWritten()
-		{ return _cbyteOffset; }
+		{ return _byteOffset; }
 
 	size_t GetLength()
-	{ return _data.count - _cbyteOffset; }
+	{ return _data.count - _byteOffset; }
 
  
 	size_t Write(ByteStreamInfo info);
@@ -70,20 +70,20 @@ public:
 private:
 	
 	BYTE* GetPos() const
-	{ return _data.rawData + _cbyteOffset; }
+	{ return _data.rawData + _byteOffset; }
 
 	ByteStreamInfo OutputStream() const
 	{ 
 		ByteStreamInfo data = _data;
-		data.count -= _cbyteOffset;
-		data.rawData += _cbyteOffset;
+		data.count -= _byteOffset;
+		data.rawData += _byteOffset;
 		return data; 
 	}
 
 
 	void WriteByte(BYTE val)
 	{ 
-		ASSERT(!_bCompare || _data.rawData[_cbyteOffset] == val);
+		ASSERT(!_bCompare || _data.rawData[_byteOffset] == val);
 		
 		if (_data.rawStream != NULL)
 		{
@@ -91,7 +91,7 @@ private:
 		}
 		else
 		{
-			_data.rawData[_cbyteOffset++] = val; 
+			_data.rawData[_byteOffset++] = val; 
 		}
 	}
 
@@ -115,26 +115,26 @@ private:
 		if (_data.rawStream != NULL)
 			return;
 
-	    _cbyteOffset += byteCount;
+	    _byteOffset += byteCount;
 	}
 
 
 private:
 	bool _bCompare;
 	ByteStreamInfo _data;
-	size_t _cbyteOffset;
+	size_t _byteOffset;
 	LONG _lastCompenentIndex;
 	std::vector<JpegSegment*> _segments;	
 };
 
 
 //
-// JLSInputStream: minimal implementation to read JPEG header streams
+// JpegMarkerReader: minimal implementation to read JPEG markers
 //
-class JLSInputStream
+class JpegMarkerReader
 {
 public:
-	JLSInputStream(ByteStreamInfo byteStreamInfo);
+	JpegMarkerReader(ByteStreamInfo byteStreamInfo);
 	
 	const JlsParameters& GetMetadata() const
 		{ return _info; } 
@@ -172,7 +172,6 @@ private:
 	
 private:
 	ByteStreamInfo _byteStream;
-	BYTE* _byteStreamStart;
 	bool _bCompare;
 	JlsParameters _info;
 	JlsRect _rect;

@@ -4,7 +4,7 @@
 
 #include "config.h"
 #include "util.h"
-#include "streams.h"
+#include "jpegmarker.h"
 #include "header.h"
                
 

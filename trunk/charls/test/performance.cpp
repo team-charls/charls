@@ -10,7 +10,7 @@
 #include "../interface.h"
 #include "../util.h"
 #include "../colortransform.h"
-#include "../streams.h"
+#include "../jpegmarker.h"
 #include "../processline.h"
 
 #include "util.h"

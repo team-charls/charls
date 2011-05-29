@@ -5,7 +5,7 @@
 #ifndef CHARLS_DECODERSTATEGY
 #define CHARLS_DECODERSTATEGY
 
-#include "streams.h"
+#include "jpegmarker.h"
 #include "processline.h"
 #include "config.h"
 #include "util.h"

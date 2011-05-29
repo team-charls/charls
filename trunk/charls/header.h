@@ -6,7 +6,7 @@
 #ifndef CHARLS_HEADER
 #define CHARLS_HEADER
 
-#include "streams.h"
+#include "jpegmarker.h"
 
 #define JPEG_SOI  0xD8
 #define JPEG_EOI  0xD9
@@ -31,7 +31,7 @@ const int BASIC_T3		= 21;
 
 const LONG BASIC_RESET	= 64;
 
-class JLSOutputStream;
+class JpegMarkerWriter;
 
 
 template<class STRATEGY>
@@ -56,7 +56,7 @@ protected:
 	JpegSegment() {}
 public:
 	virtual ~JpegSegment() {}
-	virtual void Write(JLSOutputStream* pstream) = 0;
+	virtual void Write(JpegMarkerWriter* pstream) = 0;
 };
 
 #endif

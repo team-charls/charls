@@ -17,7 +17,6 @@
 #include <sstream>
 
 
-
 JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParameters* pparams)
 {
 	if (pparams == NULL)
@@ -48,83 +47,104 @@ JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParameters* ppa
 
 
 
-extern "C"
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t* pcbyteWritten, ByteStreamInfo rawStreamInfo, struct JlsParameters* pparams)
 {
-	CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t* pcbyteWritten, ByteStreamInfo rawStreamInfo, struct JlsParameters* pparams)
+	JlsParameters info = *pparams;
+	if(info.bytesperline == 0)
 	{
-		JlsParameters info = *pparams;
-		if(info.bytesperline == 0)
+		info.bytesperline = info.width * ((info.bitspersample + 7)/8);
+		if (info.ilv != ILV_NONE)
 		{
-			info.bytesperline = info.width * ((info.bitspersample + 7)/8);
-			if (info.ilv != ILV_NONE)
-			{
-				info.bytesperline *= info.components;
-			}
+			info.bytesperline *= info.components;
 		}
-
-		JLS_ERROR parameterError = CheckInput(rawStreamInfo, &info);
-
-		if (parameterError != OK)
-			return parameterError;
-
-		if (pcbyteWritten == NULL)
-			return InvalidJlsParameters;
-
-		Size size = Size(info.width, info.height);
-		JLSOutputStream stream;
-
-		stream.Init(size, info.bitspersample, info.components);
-
-		if (info.colorTransform != 0)
-		{
-			stream.AddColorTransform(info.colorTransform);
-		}
-
-		if (info.ilv == ILV_NONE)
-		{
-			LONG cbyteComp = size.cx*size.cy*((info.bitspersample +7)/8);
-			for (LONG component = 0; component < info.components; ++component)
-			{
-				stream.AddScan(rawStreamInfo, &info);
-				SkipBytes(&rawStreamInfo, cbyteComp);
-			}
-		}
-		else 
-		{
-			stream.AddScan(rawStreamInfo, &info);
-		}
-
-		stream.Write(compressedStreamInfo);
-		*pcbyteWritten = stream.GetBytesWritten();	
-		return OK;
 	}
 
+	JLS_ERROR parameterError = CheckInput(rawStreamInfo, &info);
+
+	if (parameterError != OK)
+		return parameterError;
+
+	if (pcbyteWritten == NULL)
+		return InvalidJlsParameters;
+
+	Size size = Size(info.width, info.height);
+	JpegMarkerWriter stream;
+
+	stream.Init(size, info.bitspersample, info.components);
+
+	if (info.colorTransform != 0)
+	{
+		stream.AddColorTransform(info.colorTransform);
+	}
+
+	if (info.ilv == ILV_NONE)
+	{
+		LONG cbyteComp = size.cx*size.cy*((info.bitspersample +7)/8);
+		for (LONG component = 0; component < info.components; ++component)
+		{
+			stream.AddScan(rawStreamInfo, &info);
+			SkipBytes(&rawStreamInfo, cbyteComp);
+		}
+	}
+	else 
+	{
+		stream.AddScan(rawStreamInfo, &info);
+	}
+
+	stream.Write(compressedStreamInfo);
+	*pcbyteWritten = stream.GetBytesWritten();	
+	return OK;
+}
+
+
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, JlsParameters* info)
+{
+	JpegMarkerReader reader(compressedStream);
+
+	if(info != NULL)
+	{
+		reader.SetInfo(info);
+	}
+
+	try
+	{
+		reader.Read(rawStream);
+		return OK;
+	}
+	catch (JlsException& e)
+	{
+		return e._error;
+	}
+}
+
+
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* pparams)
+{
+	try
+	{
+		JpegMarkerReader reader(rawStreamInfo);
+		reader.ReadHeader();			
+		reader.ReadStartOfScan(true);
+		JlsParameters info = reader.GetMetadata();
+		*pparams = info;	
+		return OK;
+	}
+	catch (JlsException& e)
+	{
+		return e._error;
+	}
+}
+
+extern "C"
+{
 	CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, const void* uncompressedData, size_t uncompressedLength, struct JlsParameters* pparams)
 	{
 		ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
 		ByteStreamInfo compressedStreamInfo = FromByteArray(compressedData, compressedLength);
+
 		return JpegLsEncodeStream(compressedStreamInfo, pcbyteWritten, rawStreamInfo, pparams);
 	}
 
-	CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, JlsParameters* info)
-	{
-		JLSInputStream reader(compressedStream);
-
-		if(info != NULL)
-		{
-			reader.SetInfo(info);
-		}
-
-		try
-		{
-			reader.Read(rawStream);
-			return OK;
-		}
-		catch (JlsException& e)
-		{
-			return e._error;
-		}
-	}
 
 	CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsParameters* info)
 	{
@@ -134,31 +154,10 @@ extern "C"
 		return JpegLsDecodeStream(rawStreamInfo, compressedStream, info);		
 	}
 
-
-
-	CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsRect roi, JlsParameters* info)
+	
+	CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* pparams)
 	{
-		ByteStreamInfo compressedStream = FromByteArray(compressedData, compressedLength);
-		JLSInputStream reader(compressedStream);
-
-		ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
-
-		if(info != NULL)
-		{
-			reader.SetInfo(info);
-		}
-
-		reader.SetRect(roi);
-
-		try
-		{
-			reader.Read(rawStreamInfo);
-			return OK;
-		}
-		catch (JlsException& e)
-		{
-			return e._error;
-		}
+		return JpegLsReadHeaderStream(FromByteArray(compressedData, compressedLength), pparams);
 	}
 
 
@@ -179,7 +178,7 @@ extern "C"
 
 		Size size = Size(info.width, info.height);
 
-		JLSOutputStream stream;	
+		JpegMarkerWriter stream;	
 		stream.Init(size, info.bitspersample, info.components);
 
 		if (info.ilv == ILV_NONE)
@@ -207,28 +206,31 @@ extern "C"
 	}
 
 
-	CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* pparams)
+	CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsRect roi, JlsParameters* info)
 	{
+		ByteStreamInfo compressedStream = FromByteArray(compressedData, compressedLength);
+		JpegMarkerReader reader(compressedStream);
+
+		ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
+
+		if(info != NULL)
+		{
+			reader.SetInfo(info);
+		}
+
+		reader.SetRect(roi);
+
 		try
 		{
-			JLSInputStream reader(rawStreamInfo);
-			reader.ReadHeader();			
-			reader.ReadStartOfScan(true);
-			JlsParameters info = reader.GetMetadata();
-			*pparams = info;	
+			reader.Read(rawStreamInfo);
 			return OK;
 		}
 		catch (JlsException& e)
 		{
 			return e._error;
 		}
-
 	}
 
 
-	CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* pparams)
-	{
-		return JpegLsReadHeaderStream(FromByteArray(compressedData, compressedLength), pparams);
-	}
 
 }

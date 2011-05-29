@@ -5,7 +5,7 @@
 #include "config.h"
 #include "util.h"
 #include "header.h"
-#include "streams.h"
+#include "jpegmarker.h"
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
 #include <memory>
@@ -94,7 +94,7 @@ public:
 		std::swap(_vecbyte, vecbyte);
 	}
 
-	virtual void Write(JLSOutputStream* pstream)
+	virtual void Write(JpegMarkerWriter* pstream)
 	{
 		pstream->WriteByte(0xFF);
 		pstream->WriteByte(_marker);
@@ -148,9 +148,9 @@ JpegSegment* CreateMarkerStartOfFrame(Size size, LONG bitsPerSample, LONG ccomp)
 //
 // ctor()
 //
-JLSOutputStream::JLSOutputStream() :
+JpegMarkerWriter::JpegMarkerWriter() :
 	_bCompare(false),
-	_cbyteOffset(0),
+	_byteOffset(0),
 	_lastCompenentIndex(0),
 	_data()
 {	
@@ -161,7 +161,7 @@ JLSOutputStream::JLSOutputStream() :
 //
 // dtor()
 //
-JLSOutputStream::~JLSOutputStream()
+JpegMarkerWriter::~JpegMarkerWriter()
 {
 	for (size_t i = 0; i < _segments.size(); ++i)
 	{
@@ -176,13 +176,13 @@ JLSOutputStream::~JLSOutputStream()
 //
 // Init()
 //
-void JLSOutputStream::Init(Size size, LONG bitsPerSample, LONG ccomp)
+void JpegMarkerWriter::Init(Size size, LONG bitsPerSample, LONG ccomp)
 {
 	_segments.push_back(CreateMarkerStartOfFrame(size, bitsPerSample, ccomp));
 }
 
 
-void JLSOutputStream::AddColorTransform(int i)
+void JpegMarkerWriter::AddColorTransform(int i)
 {
 	std::vector<BYTE> rgbyteXform;
 	rgbyteXform.push_back('m');
@@ -198,7 +198,7 @@ void JLSOutputStream::AddColorTransform(int i)
 //
 // Write()
 //
-size_t JLSOutputStream::Write(ByteStreamInfo info)
+size_t JpegMarkerWriter::Write(ByteStreamInfo info)
 {
 	_data = info;
 
@@ -215,14 +215,13 @@ size_t JLSOutputStream::Write(ByteStreamInfo info)
 	WriteByte(0xFF);
 	WriteByte(JPEG_EOI);
 
-	return _cbyteOffset;
+	return _byteOffset;
 }
 
 
 
-JLSInputStream::JLSInputStream(ByteStreamInfo byteStreamInfo) :
+JpegMarkerReader::JpegMarkerReader(ByteStreamInfo byteStreamInfo) :
 		_byteStream(byteStreamInfo),
-		_byteStreamStart(byteStreamInfo.rawData),
 		_bCompare(false),
 		_info(),
 		_rect()
@@ -250,7 +249,7 @@ int ReadScanHeader(BYTE* compressedBytes)
 //
 // Read()
 //
-void JLSInputStream::Read(ByteStreamInfo rawPixels)
+void JpegMarkerReader::Read(ByteStreamInfo rawPixels)
 {
 	ReadHeader();
 
@@ -269,11 +268,11 @@ void JLSInputStream::Read(ByteStreamInfo rawPixels)
 	if (rawPixels.rawData != NULL && int64_t(rawPixels.count) < bytesPerPlane * _info.components)
 		throw JlsException(UncompressedBufferTooSmall);
 
-	int componentsSeen = 0;
+	int componentIndex = 0;
 	
-	while (componentsSeen < _info.components)
+	while (componentIndex < _info.components)
 	{
-		ReadStartOfScan(componentsSeen == 0);
+		ReadStartOfScan(componentIndex == 0);
 
 		std::auto_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);	
 		ProcessLine* processLine = qcodec->CreateProcess(rawPixels);
@@ -283,13 +282,13 @@ void JLSInputStream::Read(ByteStreamInfo rawPixels)
 		if (_info.ilv != ILV_NONE)
 			return;
 
-		componentsSeen += 1;
+		componentIndex += 1;
 	}	
 }
 
 // ReadNBytes()
 //
-void JLSInputStream::ReadNBytes(std::vector<char>& dst, int byteCount)
+void JpegMarkerReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 {
 	for (int i = 0; i < byteCount; ++i)
 	{
@@ -301,7 +300,7 @@ void JLSInputStream::ReadNBytes(std::vector<char>& dst, int byteCount)
 //
 // ReadHeader()
 //
-void JLSInputStream::ReadHeader()
+void JpegMarkerReader::ReadHeader()
 {
 	if (ReadByte() != 0xFF)
 		throw JlsException(InvalidCompressedData);
@@ -335,7 +334,7 @@ void JLSInputStream::ReadHeader()
 	}
 }
 
-int JLSInputStream::ReadMarker(BYTE marker)
+int JpegMarkerReader::ReadMarker(BYTE marker)
 {
 		switch (marker)
 		{
@@ -399,7 +398,7 @@ JpegMarkerSegment* CreateLSE(const JlsCustomParameters* pcustom)
 //
 // ReadPresetParameters()
 //
-int JLSInputStream::ReadPresetParameters()
+int JpegMarkerReader::ReadPresetParameters()
 {
 	LONG type = ReadByte();
 
@@ -429,7 +428,7 @@ void Assert(bool valid)
 //
 // ReadStartOfScan()
 //
-void JLSInputStream::ReadStartOfScan(bool firstComponent)
+void JpegMarkerReader::ReadStartOfScan(bool firstComponent)
 {
 	if (!firstComponent)
 	{
@@ -465,7 +464,7 @@ void JLSInputStream::ReadStartOfScan(bool firstComponent)
 //
 // ReadComment()
 //
-int JLSInputStream::ReadComment()
+int JpegMarkerReader::ReadComment()
 {
 	return 0;
 }
@@ -474,7 +473,7 @@ int JLSInputStream::ReadComment()
 //
 // ReadJfif()
 //
-void JLSInputStream::ReadJfif()
+void JpegMarkerReader::ReadJfif()
 {
 	for(int i = 0; i < (int)sizeof(jfifID); i++)
 	{
@@ -534,7 +533,7 @@ JpegMarkerSegment* CreateJFIF(const JfifParameters* jfif)
 //
 // ReadStartOfFrame()
 //
-int JLSInputStream::ReadStartOfFrame()
+int JpegMarkerReader::ReadStartOfFrame()
 {
 	_info.bitspersample = ReadByte();
 	int cline = ReadWord();
@@ -549,7 +548,7 @@ int JLSInputStream::ReadStartOfFrame()
 //
 // ReadByte()
 //
-BYTE JLSInputStream::ReadByte()
+BYTE JpegMarkerReader::ReadByte()
 {  
 	if (_byteStream.rawStream != NULL)
 		return (BYTE)_byteStream.rawStream->sbumpc();
@@ -568,7 +567,7 @@ BYTE JLSInputStream::ReadByte()
 //
 // ReadWord()
 //
-int JLSInputStream::ReadWord()
+int JpegMarkerReader::ReadWord()
 {
 	int i = ReadByte() * 256;
 	return i + ReadByte();
@@ -588,7 +587,7 @@ public:
 	{		
 	}
 
-	void Write(JLSOutputStream* pstream)
+	void Write(JpegMarkerWriter* pstream)
 	{		
 		JlsParameters info = _info;
 		info.components = _ccompScan;	
@@ -609,7 +608,7 @@ public:
 
  
 
-void JLSOutputStream::AddScan(ByteStreamInfo info, const JlsParameters* pparams)
+void JpegMarkerWriter::AddScan(ByteStreamInfo info, const JlsParameters* pparams)
 {
 	if (pparams->jfif.Ver)
 	{
@@ -636,7 +635,7 @@ void JLSOutputStream::AddScan(ByteStreamInfo info, const JlsParameters* pparams)
 //
 // ReadColorSpace()
 //
-int JLSInputStream::ReadColorSpace()
+int JpegMarkerReader::ReadColorSpace()
 {
 	return 0;
 }
@@ -646,7 +645,7 @@ int JLSInputStream::ReadColorSpace()
 //
 // ReadColorXForm()
 //
-int JLSInputStream::ReadColorXForm()
+int JpegMarkerReader::ReadColorXForm()
 {
 	std::vector<char> sourceTag;
 	ReadNBytes(sourceTag, 4);
