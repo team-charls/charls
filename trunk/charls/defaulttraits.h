@@ -53,8 +53,7 @@ public:
 	
 	inlinehint LONG ComputeErrVal(LONG e) const
 	{
-		LONG q = Quantize(e);
-		return ModRange(q);
+	 	return ModRange(Quantize(e));
 	}
 	
 	inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)

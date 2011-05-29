@@ -444,7 +444,7 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRIError(CContextRunMode& ctx, LONG Errval)
 {
 	LONG k			= ctx.GetGolomb();
 	bool map		= ctx.ComputeMap(Errval, k);
-	LONG EMErrval	= 2 * abs(Errval) - ctx._nRItype - map;	
+	LONG EMErrval	= 2 * abs(Errval) - ctx._nRItype - LONG(map);	
 
 	ASSERT(Errval == ctx.ComputeErrVal(EMErrval + ctx._nRItype, k));
 	EncodeMappedValue(k, EMErrval, traits.LIMIT-J[_RUNindex]-1);

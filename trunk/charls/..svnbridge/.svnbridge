@@ -19,4 +19,12 @@ _ReSharper.CharLS
 Release
 _ReSharper.CharLS
 CMakeFiles
+</Value></Property><Property><Name>svn:ignore</Name><Value>Debug
+*.user
+*.filters
+*.ncb
+*.suo
+Release
+_ReSharper.CharLS
+x64
 </Value></Property></Properties></ItemProperties>
