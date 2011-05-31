@@ -5,7 +5,10 @@
 #define CHARLS_PUBLICTYPES
 
 #include "config.h"
+
+#ifdef __cplusplus
 #include <iostream>
+#endif
 
  
 enum JLS_ERROR
@@ -77,6 +80,8 @@ struct JlsParameters
 };
 
 
+#ifdef __cplusplus
+
 // 
 // ByteStreamInfo & FromByteArray helper function
 //
@@ -103,5 +108,7 @@ inline ByteStreamInfo FromByteArray(const void* bytes, size_t count)
 	info.count = count;
 	return info;
 }
+
+#endif
 
 #endif

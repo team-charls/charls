@@ -52,10 +52,8 @@ extern "C"
   CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, 
 		const void* compressedData, size_t compressedLength);
 
-  
-}
-
 #ifdef __cplusplus
+}
 
 	CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo rawStream, size_t* bytesWritten, ByteStreamInfo inputStream, struct JlsParameters* info);
 	CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo output, ByteStreamInfo input, struct JlsParameters* info);
