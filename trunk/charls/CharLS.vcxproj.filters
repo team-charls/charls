@@ -11,9 +11,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="charls.def">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="CMakeLists.txt" />
     <None Include="License.txt" />
   </ItemGroup>
