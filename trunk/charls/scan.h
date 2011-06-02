@@ -7,7 +7,7 @@
 
 #include "lookuptable.h"
 
-// This file contains the code for handling a "scan". Usually an image is encoded as a single scan. 
+// This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
 
 
 #ifdef _MSC_VER
@@ -24,7 +24,7 @@ extern std::vector<signed char> rgquant16Ll;
 // Apply 
 //
 inlinehint LONG ApplySign(LONG i, LONG sign)
-{ return (sign ^ i) - sign; }									
+{ return (sign ^ i) - sign; }
 
 
 
@@ -342,7 +342,7 @@ inlinehint void JlsCodec<TRAITS,STRATEGY>::EncodeMappedValue(LONG k, LONG mapped
 		if (highbits + 1 > 31)
 		{
 			STRATEGY::AppendToBitStream(0, highbits / 2);
-			highbits = highbits - highbits / 2;													
+			highbits = highbits - highbits / 2;
 		}
 		STRATEGY::AppendToBitStream(1, highbits + 1);
 		STRATEGY::AppendToBitStream((mappedError & ((1 << k) - 1)), k);
@@ -352,48 +352,54 @@ inlinehint void JlsCodec<TRAITS,STRATEGY>::EncodeMappedValue(LONG k, LONG mapped
 	if (limit - traits.qbpp > 31)
 	{
 		STRATEGY::AppendToBitStream(0, 31);
-		STRATEGY::AppendToBitStream(1, limit - traits.qbpp - 31);			
+		STRATEGY::AppendToBitStream(1, limit - traits.qbpp - 31);
 	}
 	else
 	{
-		STRATEGY::AppendToBitStream(1, limit - traits.qbpp);			
+		STRATEGY::AppendToBitStream(1, limit - traits.qbpp);
 	}
 	STRATEGY::AppendToBitStream((mappedError - 1) & ((1 << traits.qbpp) - 1), traits.qbpp);
 }
 
+
+// Disable the Microsoft Static Analyzer warning: Potential comparison of a constant with another constant. (false warning, triggered by template construction)
+#ifdef _PREFAST_
+#pragma warning(push)
+#pragma warning(disable:6326)
+#endif
 
 // Sets up a lookup table to "Quantize" sample difference.
 
 template<class TRAITS, class STRATEGY>
 void JlsCodec<TRAITS,STRATEGY>::InitQuantizationLUT()
 {
-	// for lossless mode with default parameters, we have precomputed te luts for bitcounts 8,10,12 and 16 
+	// for lossless mode with default parameters, we have precomputed the luts for bitcounts 8,10,12 and 16.
 	if (traits.NEAR == 0 && traits.MAXVAL == (1 << traits.bpp) - 1)
 	{
 		JlsCustomParameters presets = ComputeDefault(traits.MAXVAL, traits.NEAR);
 		if (presets.T1 == T1 && presets.T2 == T2 && presets.T3 == T3)
 		{
-			if (traits.bpp == 8) 
+			if (traits.bpp == 8)
 			{
-				_pquant = &rgquant8Ll[rgquant8Ll.size() / 2 ]; 
+				_pquant = &rgquant8Ll[rgquant8Ll.size() / 2 ];
 				return;
 			}
-			if (traits.bpp == 10) 
+			if (traits.bpp == 10)
 			{
-				_pquant = &rgquant10Ll[rgquant10Ll.size() / 2 ]; 
+				_pquant = &rgquant10Ll[rgquant10Ll.size() / 2 ];
 				return;
-			}			
-			if (traits.bpp == 12) 
+			}
+			if (traits.bpp == 12)
 			{
-				_pquant = &rgquant12Ll[rgquant12Ll.size() / 2 ]; 
+				_pquant = &rgquant12Ll[rgquant12Ll.size() / 2 ];
 				return;
-			}			
-			if (traits.bpp == 16) 
+			}
+			if (traits.bpp == 16)
 			{
-				_pquant = &rgquant16Ll[rgquant16Ll.size() / 2 ]; 
+				_pquant = &rgquant16Ll[rgquant16Ll.size() / 2 ];
 				return;
-			}			
-		}	
+			}
+		}
 	}
 
 	LONG RANGE = 1 << traits.bpp;
@@ -407,6 +413,9 @@ void JlsCodec<TRAITS,STRATEGY>::InitQuantizationLUT()
 	}
 }
 
+#ifdef _PREFAST_
+#pragma warning(pop)
+#endif
 
 template<class TRAITS, class STRATEGY>
 signed char JlsCodec<TRAITS,STRATEGY>::QuantizeGratientOrg(LONG Di)
@@ -431,7 +440,7 @@ template<class TRAITS, class STRATEGY>
 LONG JlsCodec<TRAITS,STRATEGY>::DecodeRIError(CContextRunMode& ctx)
 {
 	LONG k = ctx.GetGolomb();
-	LONG EMErrval = DecodeValue(k, traits.LIMIT - J[_RUNindex]-1, traits.qbpp);	
+	LONG EMErrval = DecodeValue(k, traits.LIMIT - J[_RUNindex]-1, traits.qbpp);
 	LONG Errval = ctx.ComputeErrVal(EMErrval + ctx._nRItype, k);
 	ctx.UpdateVariables(Errval, EMErrval);
 	return Errval;
@@ -444,7 +453,7 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRIError(CContextRunMode& ctx, LONG Errval)
 {
 	LONG k			= ctx.GetGolomb();
 	bool map		= ctx.ComputeMap(Errval, k);
-	LONG EMErrval	= 2 * abs(Errval) - ctx._nRItype - LONG(map);	
+	LONG EMErrval	= 2 * abs(Errval) - ctx._nRItype - LONG(map);
 
 	ASSERT(Errval == ctx.ComputeErrVal(EMErrval + ctx._nRItype, k));
 	EncodeMappedValue(k, EMErrval, traits.LIMIT-J[_RUNindex]-1);
@@ -643,7 +652,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(SAMPLE*)
 	LONG Rd = _previousLine[index];
 
 	while(index < _width)
-	{	
+	{
 		LONG Ra = _currentLine[index -1];
 		LONG Rc = Rb;
 		Rb = Rd;
@@ -660,8 +669,8 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(SAMPLE*)
 		{
 			index += DoRunMode(index, (STRATEGY*)(NULL));
 			Rb = _previousLine[index-1];
-			Rd = _previousLine[index];	
-		}				
+			Rd = _previousLine[index];
+		}
 	}
 }
 
@@ -696,7 +705,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoLine(Triplet<SAMPLE>*)
 			Rx.v3 = DoRegular(Qs3, _currentLine[index].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), (STRATEGY*)(NULL));
 			_currentLine[index] = Rx;
 			index++;
-		}	
+		}
 	}
 }
 
