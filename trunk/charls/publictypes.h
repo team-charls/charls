@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+/* 
+  (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
+*/ 
 #ifndef CHARLS_PUBLICTYPES
 #define CHARLS_PUBLICTYPES
 
@@ -10,7 +10,6 @@
 #include <iostream>
 #endif
 
- 
 enum JLS_ERROR
 {
 	OK = 0,
@@ -60,7 +59,7 @@ struct JfifParameters
 	int   YDensity;
 	short Xthumb;
 	short Ythumb;
-	void* pdataThumbnail; // user must set buffer which size is Xthumb*Ythumb*3(RGB) before JpegLsDecode()
+	void* pdataThumbnail; /* user must set buffer which size is Xthumb*Ythumb*3(RGB) before JpegLsDecode() */
 };
 
 
@@ -69,7 +68,7 @@ struct JlsParameters
 	int width;
 	int height;
 	int bitspersample;
-	int bytesperline;	// for [source (at encoding)][decoded (at decoding)] pixel image in user buffer
+	int bytesperline;	/* for [source (at encoding)][decoded (at decoding)] pixel image in user buffer */
 	int components;
 	int allowedlossyerror;
 	enum interleavemode ilv;
