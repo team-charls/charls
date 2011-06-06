@@ -5,84 +5,50 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.IO;
-using System.Runtime.InteropServices;
 
 namespace CharLS
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    internal struct JlsCustomParameters
-    {
-        int MAXVAL;
-        private int T1;
-        private int T2;
-        private int T3;
-        private int RESET;
-
-        public int Threshold1
-        {
-            get { return T1; }
-            set { T1 = value; }
-        }
-
-        public int Threshold2
-        {
-            get { return T2; }
-            set { T2 = value; }
-        }
-
-        public int Threshold3
-        {
-            get { return T3; }
-            set { T3 = value; }
-        }
-    }
-
-    struct JfifParameters
-    {
-        int   Ver;
-        byte  units;
-        int   XDensity;
-        int   YDensity;
-        short Xthumb;
-        short Ythumb;
-        IntPtr pdataThumbnail; // user must set buffer which size is Xthumb*Ythumb*3(RGB) before JpegLsDecode()
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    internal struct JlsParameters
-    {
-        public int width;
-        public int height;
-        public int bitspersample;
-        public int bytesperline;  // for [source (at encoding)][decoded (at decoding)] pixel image in user buffer
-        public int components;
-        public int allowedlossyerror;
-        public JpegLSInterleaveMode ilv;
-        public int colorTransform;
-        public char outputBgr;
-        public JlsCustomParameters custom;
-        public JfifParameters jfif;
-    }
-
-
+    /// <summary>
+    /// Provides methods and for compressing and decompressing arrays using the JPEG-LS algorithm.
+    /// </summary>
+    /// <remarks>
+    /// This class represents the JPEG-LS algorithm, an industry standard algorithm for lossless and near-lossless
+    /// image data compression and decompression.
+    /// </remarks>
     public static class JpegLSCodec
     {
+        // Design notes:
+        // - The words compress/decompress are used as these are the terms used by the .NET BCLs (System.IO.Compression namespace)
+        // - The input/output buffers parameters are using the common .NET order, which is different the the CharLS C API.
         public static byte[] Compress(byte[] source, long index, long length)
         {
             return null;
         }
 
+        /// <summary>
+        /// Gets the metadata info as stored in a JPEG-LS compressed byte array.
+        /// </summary>
+        /// <param name="source">The JPEG-LS compressed source.</param>
+        /// <returns>An JpegLSMetadataInfo instance.</returns>
         public static JpegLSMetadataInfo GetMetadataInfo(byte[] source)
         {
             Contract.Requires<ArgumentNullException>(source != null);
+            Contract.Ensures(Contract.Result<JpegLSMetadataInfo>() != null);
 
             return GetMetadataInfo(source, source.Length);
         }
 
+        /// <summary>
+        /// Gets the metadata info as stored in a JPEG-LS compressed byte array.
+        /// </summary>
+        /// <param name="source">The JPEG-LS compressed source.</param>
+        /// <param name="count">The count of bytes that are valid in the array.</param>
+        /// <returns>An JpegLSMetadataInfo instance.</returns>
         public static JpegLSMetadataInfo GetMetadataInfo(byte[] source, int count)
         {
             Contract.Requires<ArgumentNullException>(source != null);
             Contract.Requires<ArgumentException>(count >= 0 && count <= source.Length);
+            Contract.Ensures(Contract.Result<JpegLSMetadataInfo>() != null);
 
             JlsParameters info;
             JpegLsReadHeaderThrowWhenError(source, count, out info);
@@ -97,6 +63,7 @@ namespace CharLS
         public static byte[] Decompress(byte[] source)
         {
             Contract.Requires<ArgumentNullException>(source != null);
+            Contract.Ensures(Contract.Result<byte[]>() != null);
 
             return Decompress(source, source.Length);
         }
@@ -111,6 +78,7 @@ namespace CharLS
         {
             Contract.Requires<ArgumentNullException>(source != null);
             Contract.Requires<ArgumentException>(count >= 0 && count <= source.Length);
+            Contract.Ensures(Contract.Result<byte[]>() != null);
 
             JlsParameters info;
             JpegLsReadHeaderThrowWhenError(source, count, out info);
@@ -148,7 +116,7 @@ namespace CharLS
         {
             Contract.Ensures(Contract.Result<int>() > 0);
 
-            var size = info.width * info.height * info.components * ((info.bitspersample + 7) / 8);
+            var size = info.Width * info.Height * info.Components * ((info.BitsPerSample + 7) / 8);
             Contract.Assume(size > 0);
             return size;
         }

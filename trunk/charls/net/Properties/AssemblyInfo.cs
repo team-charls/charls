@@ -5,15 +5,12 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("CharLSNet4")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("CharLSNet")]
+[assembly: AssemblyDescription(".NET 4 Interop layer for the CharLS JPEG-LS codec")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("CharLSNet4")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("CharLS")]
+[assembly: AssemblyCopyright("Copyright © Jan de Vaan 2007-2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

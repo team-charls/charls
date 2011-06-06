@@ -89,6 +89,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JfifParameters.cs" />
+    <Compile Include="JlsCustomParameters.cs" />
+    <Compile Include="JlsParameters.cs" />
     <Compile Include="JpegLSCodec.cs" />
     <Compile Include="JpegLSError.cs" />
     <Compile Include="JpegLSInterleaveMode.cs" />

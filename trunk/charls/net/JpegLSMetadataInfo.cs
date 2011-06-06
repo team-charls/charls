@@ -18,9 +18,9 @@ namespace CharLS
 
         internal JpegLSMetadataInfo(ref JlsParameters jlsParameters)
         {
-            Width = jlsParameters.width;
-            Height = jlsParameters.height;
-            ComponentCount = jlsParameters.components;
+            Width = jlsParameters.Width;
+            Height = jlsParameters.Height;
+            ComponentCount = jlsParameters.Components;
         }
 
         /// <summary>
