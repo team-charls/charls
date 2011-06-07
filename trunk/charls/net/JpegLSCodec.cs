@@ -83,9 +83,9 @@ namespace CharLS
             JlsParameters info;
             JpegLsReadHeaderThrowWhenError(source, count, out info);
 
-            var decompressed = new byte[GetUncompressedSize(ref info)];
-            Decompress(source, count, decompressed);
-            return decompressed;
+            var destination = new byte[GetUncompressedSize(ref info)];
+            Decompress(source, count, destination);
+            return destination;
         }
 
         /// <summary>
@@ -93,14 +93,14 @@ namespace CharLS
         /// </summary>
         /// <param name="source">The byte array that contains the JPEG-LS encoded data to decompress.</param>
         /// <param name="count">The number of bytes of the array to decompress.</param>
-        /// <param name="destination">The destination byte array that will the decompressed data when the function returns.</param>
+        /// <param name="destination">The destination byte array that will hold the decompressed data when the function returns.</param>
         public static void Decompress(byte[] source, int count, byte[] destination)
         {
             Contract.Requires<ArgumentNullException>(source != null);
             Contract.Requires<ArgumentException>(count >= 0 && count <= source.Length);
             Contract.Requires<ArgumentNullException>(destination != null);
 
-            JpegLSError error = SafeNativeMethods.JpegLsDecode(source, source.Length, source, count, IntPtr.Zero);
+            JpegLSError error = SafeNativeMethods.JpegLsDecode(destination, destination.Length, source, count, IntPtr.Zero);
             HandleResult(error);
         }
 
