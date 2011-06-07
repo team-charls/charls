@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\Win32\Debug\</OutputPath>
+    <OutputPath>..\..\Win32\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -60,12 +60,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="JpegLSCodecTest.cs" />
+    <Compile Include="JpegLSMetadataInfoTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\net\CharLSNet.csproj">
       <Project>{4EDED401-1B63-4989-BF3F-2875B6C9203D}</Project>
       <Name>CharLSNet</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
