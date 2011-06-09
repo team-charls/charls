@@ -116,14 +116,14 @@ protected:
 
 	void OverFlow()
 	{
-		if (_compressedStream == NULL)	
-			throw new JlsException(CompressedBufferTooSmall);
+		if (_compressedStream == NULL)
+			throw JlsException(CompressedBufferTooSmall);
 
 		size_t bytesCount = _position-(BYTE*)&_buffer[0];
 		size_t bytesWritten = (size_t)_compressedStream->sputn((char*)&_buffer[0], _position - (BYTE*)&_buffer[0]);
 
 		if (bytesWritten != bytesCount)
-			throw new JlsException(CompressedBufferTooSmall);
+			throw JlsException(CompressedBufferTooSmall);
 
 		_position = (BYTE*)&_buffer[0];
 		_compressedLength = _buffer.size();
