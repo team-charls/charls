@@ -2,6 +2,7 @@
 // (C) Jan de Vaan 2007-2011, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
+using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 
@@ -37,8 +38,28 @@ namespace CharLS.Test
             var expected = ReadAllBytes("TEST8.PPM", 15);
             var uncompressed = JpegLSCodec.Decompress(source);
 
-            //// TODO: resolve issue why decompressed data doesn't match expected.
-            ////Assert.AreEqual(expected, uncompressed);
+            var info = JpegLSCodec.GetMetadataInfo(source);
+            if (info.InterleaveMode == JpegLSInterleaveMode.None && info.ComponentCount == 3)
+            {
+                expected = TripletToPlanar(expected, info.Width, info.Height);
+            }
+
+            Assert.AreEqual(expected, uncompressed);
+        }
+
+        private static byte[] TripletToPlanar(IList<byte> buffer, int width, int height)
+        {
+            var result = new byte[buffer.Count];
+
+            int bytePlaneCount = width * height;
+            for (int i = 0; i < bytePlaneCount; i++)
+            {
+                result[i] = buffer[i * 3];
+                result[i + bytePlaneCount] = buffer[(i * 3) + 1];
+                result[i + (2 * bytePlaneCount)] = buffer[(i * 3) + 2];
+            }
+
+            return result;
         }
 
         private static byte[] ReadAllBytes(string path, int bytesToSkip = 0)
