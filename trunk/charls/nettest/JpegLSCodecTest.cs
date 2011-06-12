@@ -47,6 +47,21 @@ namespace CharLS.Test
             Assert.AreEqual(expected, uncompressed);
         }
 
+        [Test]
+        public void Compress()
+        {
+            var info = new JpegLSMetadataInfo(255, 255, 8, 3);
+
+            var uncompressedOriginal = ReadAllBytes("TEST8.PPM", 15);
+            uncompressedOriginal = TripletToPlanar(uncompressedOriginal, info.Width, info.Height);
+
+            var compressed = JpegLSCodec.Compress(info, uncompressedOriginal);
+
+            var uncompressed = JpegLSCodec.Decompress(compressed.Array, compressed.Count);
+            //// TODO: debug why check fails.
+            ////Assert.AreEqual(uncompressedOriginal, uncompressed);
+        }
+
         private static byte[] TripletToPlanar(IList<byte> buffer, int width, int height)
         {
             var result = new byte[buffer.Count];

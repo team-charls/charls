@@ -17,12 +17,91 @@ namespace CharLS
     /// </remarks>
     public static class JpegLSCodec
     {
-        // Design notes:
-        // - The words compress/decompress are used as these are the terms used by the .NET BCLs (System.IO.Compression namespace)
-        // - The input/output buffers parameters are using the common .NET order, which is different the the CharLS C API.
-        public static byte[] Compress(byte[] source, long index, long length)
+        /* Design notes:
+           - The words compress/decompress are used as these are the terms used by the .NET BCLs (System.IO.Compression namespace)
+             The CharLS C API uses the terms encode/decode.
+           - The input/output buffers parameters are using the common .NET order, which is different the CharLS C API.
+        */
+
+        /// <summary>
+        /// Compresses the specified image passed in the source buffer.
+        /// </summary>
+        /// <param name="info">The info.</param>
+        /// <param name="pixels">The source.</param>
+        /// <returns>An arraySegment with a reference to the byte array with the compressed data in the JPEG-LS format.</returns>
+        /// <exception cref="InternalBufferOverflowException">The compressed output doesn't fit into the maximum defined output buffer.</exception>
+        public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels)
         {
-            return null;
+            Contract.Requires<ArgumentNullException>(info != null);
+            Contract.Requires<ArgumentException>(info.Width > 0 && info.Width <= 65535);
+            Contract.Requires<ArgumentException>(info.Height > 0 && info.Height <= 65535);
+            Contract.Requires<ArgumentNullException>(pixels != null);
+
+            return Compress(info, pixels, pixels.Length);
+        }
+
+        /// <summary>
+        /// Compresses the specified image passed in the source buffer.
+        /// </summary>
+        /// <param name="info">The info.</param>
+        /// <param name="pixels">The source.</param>
+        /// <param name="pixelCount">The pixel count.</param>
+        /// <returns>An arraySegment with a reference to the byte array with the compressed data in the JPEG-LS format.</returns>
+        /// <exception cref="InternalBufferOverflowException">The compressed output doesn't fit into the maximum defined output buffer.</exception>
+        public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount)
+        {
+            Contract.Requires<ArgumentNullException>(info != null);
+            Contract.Requires<ArgumentException>(info.Width > 0 && info.Width <= 65535);
+            Contract.Requires<ArgumentException>(info.Height > 0 && info.Height <= 65535);
+            Contract.Requires<ArgumentNullException>(pixels != null);
+            Contract.Requires<ArgumentNullException>(pixelCount > 0 && pixelCount <= pixels.Length);
+
+            // Assume compressed size <= uncompressed size (covers 99% of the cases).
+            var buffer = new byte[pixels.Length];
+            int compressedCount;
+
+            if (!TryCompress(info, pixels, pixels.Length, buffer, buffer.Length, out compressedCount))
+            {
+                // Increase output buffer to hold compressed data.
+                buffer = new byte[(int)(pixels.Length * 1.5)];
+                if (!TryCompress(info, pixels, pixels.Length, buffer, buffer.Length, out compressedCount))
+                    throw new InternalBufferOverflowException(
+                        "Compression failed: compressed output larger then 1.5 * input.");
+            }
+
+            return new ArraySegment<byte>(buffer, 0, compressedCount);
+        }
+
+        /// <summary>
+        /// Tries the compress the array with pixels into the provided buffer.
+        /// </summary>
+        /// <param name="info">The info.</param>
+        /// <param name="pixels">The pixels.</param>
+        /// <param name="pixelCount">The pixel count.</param>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="bufferLength">Length of the buffer.</param>
+        /// <param name="compressedCount">The compressed count.</param>
+        /// <returns>true when the compressed fits into the buffer, otherwise false.</returns>
+        public static bool TryCompress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, byte[] buffer, int bufferLength, out int compressedCount)
+        {
+            Contract.Requires<ArgumentNullException>(info != null);
+            Contract.Requires<ArgumentException>(info.Width > 0 && info.Width <= 65535);
+            Contract.Requires<ArgumentException>(info.Height > 0 && info.Height <= 65535);
+            Contract.Requires<ArgumentNullException>(pixels != null);
+            Contract.Requires<ArgumentNullException>(pixelCount > 0 && pixelCount <= pixels.Length);
+            Contract.Requires<ArgumentNullException>(buffer != null);
+            Contract.Requires<ArgumentNullException>(bufferLength > 0 && bufferLength <= buffer.Length);
+
+            var parameters = new JlsParameters();
+            info.CopyTo(ref parameters);
+
+            var result = SafeNativeMethods.JpegLsEncode(
+                buffer, bufferLength, out compressedCount, pixels, pixelCount, ref parameters);
+            if (result == JpegLSError.UncompressedBufferTooSmall)
+                return false;
+
+            HandleResult(result);
+            return true;
         }
 
         /// <summary>
@@ -108,7 +187,9 @@ namespace CharLS
         {
             Contract.Requires(source != null);
 
-            JpegLSError result = SafeNativeMethods.JpegLsReadHeader(source, length, out info);
+            JpegLSError result = Environment.Is64BitProcess ?
+                SafeNativeMethods.JpegLsReadHeader64(source, length, out info) :
+                SafeNativeMethods.JpegLsReadHeader(source, length, out info);
             HandleResult(result);
         }
 
@@ -127,7 +208,10 @@ namespace CharLS
                 return;
 
             if (result == JpegLSError.InvalidCompressedData)
-                throw new InvalidDataException();
+                throw new InvalidDataException("Bad compressed data. Unable to decompress.");
+
+            if (result == JpegLSError.InvalidJlsParameters)
+                throw new InvalidDataException("One of the JLS parameters is invalid. Unable to process.");
         }
     }
 }

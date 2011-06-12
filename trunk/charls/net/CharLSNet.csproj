@@ -142,6 +142,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="JfifParameters.cs" />
     <Compile Include="JlsCustomParameters.cs" />
     <Compile Include="JlsParameters.cs" />

@@ -20,6 +20,21 @@ namespace CharLS
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JpegLSMetadataInfo"/> class.
+        /// </summary>
+        /// <param name="pixelWidth">The width of the bitmap.</param>
+        /// <param name="pixelHeight">The height of the bitmap.</param>
+        /// <param name="bitsPerSample">The bits per sample.</param>
+        /// <param name="componentCount">The component count.</param>
+        public JpegLSMetadataInfo(int pixelWidth, int pixelHeight, int bitsPerSample, int componentCount)
+        {
+            Width = pixelWidth;
+            Height = pixelHeight;
+            BitsPerSample = bitsPerSample;
+            ComponentCount = componentCount;
+        }
+
         internal JpegLSMetadataInfo(ref JlsParameters parameters)
         {
             Width = parameters.Width;
@@ -136,15 +151,25 @@ namespace CharLS
         {
             unchecked
             {
-                int result = this.Width;
-                result = (result * 397) ^ this.Height;
-                result = (result * 397) ^ this.BitsPerSample;
-                result = (result * 397) ^ this.BytesPerLine;
-                result = (result * 397) ^ this.ComponentCount;
-                result = (result * 397) ^ this.AllowedLossyError;
-                result = (result * 397) ^ this.InterleaveMode.GetHashCode();
+                int result = Width;
+                result = (result * 397) ^ Height;
+                result = (result * 397) ^ BitsPerSample;
+                result = (result * 397) ^ BytesPerLine;
+                result = (result * 397) ^ ComponentCount;
+                result = (result * 397) ^ AllowedLossyError;
+                result = (result * 397) ^ InterleaveMode.GetHashCode();
                 return result;
             }
+        }
+
+        internal void CopyTo(ref JlsParameters parameters)
+        {
+            parameters.Width = Width;
+            parameters.Height = Height;
+            parameters.Components = ComponentCount;
+            parameters.BitsPerSample = BitsPerSample;
+            parameters.InterleaveMode = InterleaveMode;
+            parameters.AllowedLossyError = AllowedLossyError;
         }
     }
 }
