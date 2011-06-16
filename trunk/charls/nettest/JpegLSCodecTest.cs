@@ -2,14 +2,13 @@
 // (C) Jan de Vaan 2007-2011, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 
 namespace CharLS.Test
 {
-    using System;
-
     [TestFixture]
     public class JpegLSCodecTest
     {
