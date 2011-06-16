@@ -68,6 +68,37 @@ namespace CharLS.Test
             Assert.AreEqual(uncompressedOriginal, uncompressed);
         }
 
+        [Test]
+        public void CompressOneByOneColor()
+        {
+            var info = new JpegLSMetadataInfo(1, 1, 8, 3);
+            var uncompressedOriginal = new byte[] { 77, 33, 255 };
+
+            var compressedSegment = JpegLSCodec.Compress(info, uncompressedOriginal);
+            var compressed = new byte[compressedSegment.Count];
+            Array.Copy(compressedSegment.Array, compressed, compressed.Length);
+
+            var uncompressed = JpegLSCodec.Decompress(compressed);
+            Assert.AreEqual(info.UncompressedSize, uncompressed.Length);
+            Assert.AreEqual(uncompressedOriginal, uncompressed);
+        }
+
+        [Test]
+        [Ignore]
+        public void CompressOneByOneBlackAndWhite()
+        {
+            var info = new JpegLSMetadataInfo(1, 1, 1, 1);
+            var uncompressedOriginal = new byte[] { 1 };
+
+            var compressedSegment = JpegLSCodec.Compress(info, uncompressedOriginal);
+            var compressed = new byte[compressedSegment.Count];
+            Array.Copy(compressedSegment.Array, compressed, compressed.Length);
+
+            var uncompressed = JpegLSCodec.Decompress(compressed);
+            Assert.AreEqual(info.UncompressedSize, uncompressed.Length);
+            Assert.AreEqual(uncompressedOriginal, uncompressed);
+        }
+
         private static byte[] TripletToPlanar(IList<byte> buffer, int width, int height)
         {
             var result = new byte[buffer.Count];

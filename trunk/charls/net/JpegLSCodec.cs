@@ -56,14 +56,16 @@ namespace CharLS
             Contract.Requires<ArgumentNullException>(pixels != null);
             Contract.Requires<ArgumentNullException>(pixelCount > 0 && pixelCount <= pixels.Length);
 
+            const int JpegLSHeaderLength = 100;
+
             // Assume compressed size <= uncompressed size (covers 99% of the cases).
-            var buffer = new byte[pixels.Length];
+            var buffer = new byte[pixels.Length + JpegLSHeaderLength];
             int compressedCount;
 
             if (!TryCompress(info, pixels, pixels.Length, buffer, buffer.Length, out compressedCount))
             {
                 // Increase output buffer to hold compressed data.
-                buffer = new byte[(int)(pixels.Length * 1.5)];
+                buffer = new byte[(int)(pixels.Length * 1.5) + JpegLSHeaderLength];
                 if (!TryCompress(info, pixels, pixels.Length, buffer, buffer.Length, out compressedCount))
                     throw new InternalBufferOverflowException(
                         "Compression failed: compressed output larger then 1.5 * input.");
@@ -97,7 +99,7 @@ namespace CharLS
 
             var result = SafeNativeMethods.JpegLsEncode(
                 buffer, bufferLength, out compressedCount, pixels, pixelCount, ref parameters);
-            if (result == JpegLSError.UncompressedBufferTooSmall)
+            if (result == JpegLSError.CompressedBufferTooSmall)
                 return false;
 
             HandleResult(result);
@@ -212,6 +214,9 @@ namespace CharLS
 
             if (result == JpegLSError.InvalidJlsParameters)
                 throw new InvalidDataException("One of the JLS parameters is invalid. Unable to process.");
+
+            if (result == JpegLSError.UncompressedBufferTooSmall)
+                throw new ArgumentException("The pixel buffer is too small, related to the metadata description");
         }
     }
 }
