@@ -8,6 +8,8 @@ using NUnit.Framework;
 
 namespace CharLS.Test
 {
+    using System;
+
     [TestFixture]
     public class JpegLSCodecTest
     {
@@ -39,7 +41,7 @@ namespace CharLS.Test
             var uncompressed = JpegLSCodec.Decompress(source);
 
             var info = JpegLSCodec.GetMetadataInfo(source);
-            if (info.InterleaveMode == JpegLSInterleaveMode.None && info.ComponentCount == 3)
+            if (info.InterleaveMode == JpegLSInterleaveMode.Planar && info.ComponentCount == 3)
             {
                 expected = TripletToPlanar(expected, info.Width, info.Height);
             }
@@ -50,16 +52,21 @@ namespace CharLS.Test
         [Test]
         public void Compress()
         {
-            var info = new JpegLSMetadataInfo(255, 255, 8, 3);
+            var info = new JpegLSMetadataInfo(256, 256, 8, 3);
 
             var uncompressedOriginal = ReadAllBytes("TEST8.PPM", 15);
             uncompressedOriginal = TripletToPlanar(uncompressedOriginal, info.Width, info.Height);
 
-            var compressed = JpegLSCodec.Compress(info, uncompressedOriginal);
+            var compressedSegment = JpegLSCodec.Compress(info, uncompressedOriginal);
+            var compressed = new byte[compressedSegment.Count];
+            Array.Copy(compressedSegment.Array, compressed, compressed.Length);
 
-            var uncompressed = JpegLSCodec.Decompress(compressed.Array, compressed.Count);
-            //// TODO: debug why check fails.
-            ////Assert.AreEqual(uncompressedOriginal, uncompressed);
+            var compressedInfo = JpegLSCodec.GetMetadataInfo(compressed);
+            Assert.AreEqual(info, compressedInfo);
+
+            var uncompressed = JpegLSCodec.Decompress(compressed);
+            Assert.AreEqual(info.UncompressedSize, uncompressed.Length);
+            Assert.AreEqual(uncompressedOriginal, uncompressed);
         }
 
         private static byte[] TripletToPlanar(IList<byte> buffer, int width, int height)

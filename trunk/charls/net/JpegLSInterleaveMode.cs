@@ -10,9 +10,10 @@ namespace CharLS
     public enum JpegLSInterleaveMode
     {
         /// <summary>
-        /// The pixel data is not multi-component.
+        /// The pixel data stored as component for component: RRRGGGBBB.
+        /// Also default option for pixel data with only 1 component.
         /// </summary>
-        None,
+        Planar,
 
         /// <summary>
         /// The interleave mode is by line. A full line of each 
@@ -21,8 +22,8 @@ namespace CharLS
         Line,
 
         /// <summary>
-        /// The interleave mode is by sample. A sample from each component is processed in turn.
+        /// The data is stored by pixel. For color image this is the format like RGBRGBRGB.
         /// </summary>
-        Sample
+        Pixel
     }
 }
