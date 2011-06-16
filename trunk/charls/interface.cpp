@@ -1,9 +1,9 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 
-//implement correct linkage for win32 dlls
+// Implement correct linkage for win32 dlls
 #if defined(WIN32) && defined(CHARLS_DLL)
 #define CHARLS_IMEXPORT(returntype) __declspec(dllexport) returntype __stdcall
 #else
@@ -17,7 +17,7 @@
 #include <sstream>
 
 
-JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParameters* pparams)
+static JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParameters* pparams)
 {
 	if (pparams == NULL)
 		return InvalidJlsParameters;
@@ -31,11 +31,9 @@ JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParameters* ppa
 	if (pparams->height < 1 || pparams->height > 65535)
 		return ParameterValueNotSupported;
 
-	int bytesperline = pparams->bytesperline < 0 ? -pparams->bytesperline : pparams->bytesperline;
-
 	if (uncompressedStream.rawData != NULL)
 	{
-		if (uncompressedStream.count < size_t(bytesperline * pparams->height))
+		if (uncompressedStream.count < size_t(pparams->height * pparams->width * pparams->components * (pparams->bitspersample > 8 ? 2 : 1)))
 			return UncompressedBufferTooSmall;
 	}
 	else if (uncompressedStream.rawStream == NULL)
@@ -45,11 +43,17 @@ JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParameters* ppa
 }
 
 
-
 CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t* pcbyteWritten, ByteStreamInfo rawStreamInfo, struct JlsParameters* pparams)
 {
+	if (pcbyteWritten == NULL)
+		return InvalidJlsParameters;
+
+	JLS_ERROR parameterError = CheckInput(rawStreamInfo, pparams);
+	if (parameterError != OK)
+		return parameterError;
+
 	JlsParameters info = *pparams;
-	if(info.bytesperline == 0)
+	if (info.bytesperline == 0)
 	{
 		info.bytesperline = info.width * ((info.bitspersample + 7)/8);
 		if (info.ilv != ILV_NONE)
@@ -57,14 +61,6 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 			info.bytesperline *= info.components;
 		}
 	}
-
-	JLS_ERROR parameterError = CheckInput(rawStreamInfo, &info);
-
-	if (parameterError != OK)
-		return parameterError;
-
-	if (pcbyteWritten == NULL)
-		return InvalidJlsParameters;
 
 	Size size = Size(info.width, info.height);
 	JpegMarkerWriter stream;
