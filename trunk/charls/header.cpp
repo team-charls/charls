@@ -62,7 +62,7 @@ JlsCustomParameters ComputeDefault(LONG MAXVAL, LONG NEAR)
 
 JLS_ERROR CheckParameterCoherent(const JlsParameters* pparams)
 {
-	if (pparams->bitspersample < 6 || pparams->bitspersample > 16)
+	if (pparams->bitspersample < 2 || pparams->bitspersample > 16)
 		return ParameterValueNotSupported;
 
 	if (pparams->ilv < 0 || pparams->ilv > 2)

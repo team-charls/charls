@@ -52,43 +52,50 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 	if (parameterError != OK)
 		return parameterError;
 
-	JlsParameters info = *pparams;
-	if (info.bytesperline == 0)
+	try
 	{
-		info.bytesperline = info.width * ((info.bitspersample + 7)/8);
-		if (info.ilv != ILV_NONE)
+		JlsParameters info = *pparams;
+		if (info.bytesperline == 0)
 		{
-			info.bytesperline *= info.components;
+			info.bytesperline = info.width * ((info.bitspersample + 7)/8);
+			if (info.ilv != ILV_NONE)
+			{
+				info.bytesperline *= info.components;
+			}
 		}
-	}
 
-	Size size = Size(info.width, info.height);
-	JpegMarkerWriter stream;
+		Size size = Size(info.width, info.height);
+		JpegMarkerWriter stream;
 
-	stream.Init(size, info.bitspersample, info.components);
+		stream.Init(size, info.bitspersample, info.components);
 
-	if (info.colorTransform != 0)
-	{
-		stream.AddColorTransform(info.colorTransform);
-	}
+		if (info.colorTransform != 0)
+		{
+			stream.AddColorTransform(info.colorTransform);
+		}
 
-	if (info.ilv == ILV_NONE)
-	{
-		LONG cbyteComp = size.cx*size.cy*((info.bitspersample +7)/8);
-		for (LONG component = 0; component < info.components; ++component)
+		if (info.ilv == ILV_NONE)
+		{
+			LONG cbyteComp = size.cx*size.cy*((info.bitspersample +7)/8);
+			for (LONG component = 0; component < info.components; ++component)
+			{
+				stream.AddScan(rawStreamInfo, &info);
+				SkipBytes(&rawStreamInfo, cbyteComp);
+			}
+		}
+		else
 		{
 			stream.AddScan(rawStreamInfo, &info);
-			SkipBytes(&rawStreamInfo, cbyteComp);
 		}
+	
+		stream.Write(compressedStreamInfo);
+		*pcbyteWritten = stream.GetBytesWritten();
+		return OK;
 	}
-	else
+	catch (const JlsException& e)
 	{
-		stream.AddScan(rawStreamInfo, &info);
+		return e._error;
 	}
-
-	stream.Write(compressedStreamInfo);
-	*pcbyteWritten = stream.GetBytesWritten();
-	return OK;
 }
 
 

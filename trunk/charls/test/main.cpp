@@ -91,23 +91,51 @@ void TestTraits8bit()
 	}
 }
 
+std::vector<BYTE> MakeSomeNoise(int length, int bitcount, int seed)
+{
+	srand(seed);
+	std::vector<BYTE> rgbyteNoise(length);
+	BYTE mask = (1 << bitcount) - 1;
+	for (int icol= 0; icol<length; ++icol)
+	{
+		BYTE val = BYTE(rand());
+		rgbyteNoise[icol] = BYTE(val & mask);
+	}	
+	return rgbyteNoise;
+}
+
 
 void TestNoiseImage()
 {
-	srand(21344);
-	Size size2 = Size(1024, 1024);
-	std::vector<BYTE> rgbyteNoise(size2.cx * size2.cy);
-
-	for (int line = 0; line<size2.cy; ++line)
+	Size size2 = Size(512, 512);	
+		
+	for (int bitDepth = 8; bitDepth >=2; --bitDepth)
 	{
-		for (int icol= 0; icol<size2.cx; ++icol)
-		{
-			BYTE val = BYTE(rand());
-			rgbyteNoise[line*size2.cx + icol] = BYTE(val & 0x7F);// < line ? val : 0;
-		}
-	}
+		std::stringstream label;
+		label << "noise, bitdepth: " << bitDepth;
 
-	TestRoundTrip("noise", rgbyteNoise, size2, 7, 1);
+		std::vector<BYTE> noiseBytes = MakeSomeNoise(size2.cx * size2.cy, bitDepth, 21344);
+		TestRoundTrip(label.str().c_str(), noiseBytes, size2, bitDepth, 1);
+	}
+}
+ 
+
+void TestFailOnTooSmallOutputBuffer()
+{
+	Size size = Size(8, 8);
+	std::vector<BYTE> rgbyteRaw = MakeSomeNoise(8 * 8, 8, 21344);
+
+	std::vector<BYTE> rgbyteCompressed(1);
+ 	 
+	JlsParameters info = JlsParameters();
+	info.components = 1;
+	info.bitspersample = 8;
+	info.height = size.cy;
+	info.width = size.cx;
+
+	size_t compressedLength;
+	JLS_ERROR err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteRaw.size(), &info);
+	ASSERT(err == CompressedBufferTooSmall);
 }
 
 
@@ -376,6 +404,8 @@ void UnitTest()
 
 	printf("Test Small buffer\r\n");
 	TestTooSmallOutputBuffer();
+	
+	TestFailOnTooSmallOutputBuffer();
 
 	printf("Test Color transform equivalence on HP images\r\n");
 	TestColorTransforms_HpImages();

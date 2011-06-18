@@ -91,6 +91,9 @@ private:
 		}
 		else
 		{
+			if (_byteOffset >= _data.count)
+				throw JlsException(CompressedBufferTooSmall);
+
 			_data.rawData[_byteOffset++] = val; 
 		}
 	}
