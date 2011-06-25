@@ -305,13 +305,11 @@ bool EncodePnm(char* pnmFilename, std::basic_filebuf<char>* jlsFile)
 		}
 	}
 	
-	  
-	
 	ByteStreamInfo rawStreamInfo = {pnmFile.rdbuf()};
 	ByteStreamInfo jlsStreamInfo = {jlsFile};
 	
 	JlsParameters params = JlsParameters();
-	int componentCount = readValues[0] == 5 ? 3 : 1;
+	int componentCount = readValues[0] == 6 ? 3 : 1;
 	params.width = readValues[1];
 	params.height = readValues[2];
 	params.components = componentCount;
