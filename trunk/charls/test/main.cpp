@@ -22,6 +22,8 @@
 
 typedef const char* SZC;
 
+const std::ios_base::open_mode mode_input  = std::ios_base::in  | std::ios::binary;
+const std::ios_base::open_mode mode_output = std::ios_base::out | std::ios::binary;
 
 bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* info)
 {
@@ -31,9 +33,9 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* 
 		return false;
 	}
 	std::basic_filebuf<char> jlsFile; 
-	jlsFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
-	ByteStreamInfo rawStreamInfo = {&jlsFile};
+	jlsFile.open(strNameEncoded, mode_input);
 
+	ByteStreamInfo rawStreamInfo = {&jlsFile};
 
 	JLS_ERROR err = JpegLsReadHeaderStream(rawStreamInfo, info);
 	ASSERT(err == OK);
@@ -225,7 +227,7 @@ void TestDecodeRect()
 void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp, int ccomponent, int ilv, size_t expectedLength)
 {
 	std::basic_filebuf<char> myFile; // On the stack
-	myFile.open(file, std::ios_base::in | std::ios::binary);
+	myFile.open(file, mode_input);
 	ASSERT(myFile.is_open());
 
 	myFile.pubseekoff(std::streamoff(offset), std::ios_base::cur);
@@ -247,47 +249,36 @@ void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp
 	myFile.close();
 }
 
-bool DecodeToPnm(char* fileIn, char* fileOut)
-{
-	std::basic_filebuf<char> jlsFile; 
-	jlsFile.open(fileIn, std::ios_base::in | std::ios::binary);
-	ByteStreamInfo compressedByteStream = {&jlsFile};
+bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
+{	
+	ByteStreamInfo compressedByteStream = {jlsFile.rdbuf()};
 
 	JlsParameters info = JlsParameters();
 	JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
 	if (err != OK)
-	{
-		jlsFile.close();
-		return false;
-	}
-
+	  	return false;
+ 
 	int maxval = (1 << info.bitspersample) - 1;
 	int id = info.components == 3 ? 6 : 5;
 	info.colorTransform = XFORM_BIGENDIAN;
 
-	std::fstream pnmFile(fileOut, std::ios_base::out | std::ios::binary); 
-
-	pnmFile << 'P' << id << ' ' << info.width << ' ' << info.height << ' '<< maxval << ' ';
+	pnmFile << 'P' << id << ' ' << info.width << ' ' << info.height << ' '<< maxval << "   " << std::endl;
 	ByteStreamInfo pnmStream = {pnmFile.rdbuf()};
 
-	jlsFile.pubseekpos(std::ios::beg, std::ios_base::in);
+	jlsFile.seekg(0);
 	JpegLsDecodeStream(pnmStream, compressedByteStream, &info);
-
-	jlsFile.close();
-	pnmFile.close();
 	return true;
 }
 
-
-bool EncodePnm(char* pnmFilename, std::basic_filebuf<char>* jlsFile)
+std::vector<int> readPnmHeader(std::istream& pnmFile)
 {
-	std::fstream pnmFile(pnmFilename, std::ios_base::in | std::ios::binary); 
+	std::vector<int> readValues;
+	
 	char first = (char) pnmFile.get();
 
 	if (first != 'P')
-		return false;
+		return readValues;
 
-	std::vector<int> readValues;
 	while (readValues.size() < 4)
 	{
 		std::string bytes;
@@ -304,9 +295,18 @@ bool EncodePnm(char* pnmFilename, std::basic_filebuf<char>* jlsFile)
 			readValues.push_back(value);
 		}
 	}
+	return readValues;
+}
+
+bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
+{	
+	std::vector<int> readValues = readPnmHeader(pnmFile);
+
+	if (readValues.size() !=4)
+		return false;
 	
 	ByteStreamInfo rawStreamInfo = {pnmFile.rdbuf()};
-	ByteStreamInfo jlsStreamInfo = {jlsFile};
+	ByteStreamInfo jlsStreamInfo = {jlsFileStream.rdbuf()};
 	
 	JlsParameters params = JlsParameters();
 	int componentCount = readValues[0] == 6 ? 3 : 1;
@@ -319,17 +319,15 @@ bool EncodePnm(char* pnmFilename, std::basic_filebuf<char>* jlsFile)
 	size_t bytesWritten = 0;
 
 	JpegLsEncodeStream(jlsStreamInfo, &bytesWritten, rawStreamInfo, &params);
-
-	pnmFile.close();
-
 	return true;
 }
+
 
 
 void TestDecodeFromStream(char* strNameEncoded)
 {
 	std::basic_filebuf<char> jlsFile; 
-	jlsFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
+	jlsFile.open(strNameEncoded, mode_input);
 	ASSERT(jlsFile.is_open());
 	ByteStreamInfo compressedByteStream = {&jlsFile};
 
@@ -351,16 +349,17 @@ void TestDecodeFromStream(char* strNameEncoded)
 
 JLS_ERROR DecodeRaw(char* strNameEncoded, char* strNameOutput)
 {
-	std::basic_filebuf<char> jlsFile; 
-	jlsFile.open(strNameEncoded, std::ios_base::in | std::ios::binary);
-	ByteStreamInfo compressedByteStream = {&jlsFile};
+	std::fstream jlsFile(strNameEncoded, mode_input); 	
+	ByteStreamInfo compressedByteStream = {jlsFile.rdbuf()};
 
-	std::basic_filebuf<char> rawFile;
-	rawFile.open(strNameOutput, std::ios_base::out | std::ios::binary);
+	std::fstream rawFile(strNameOutput, mode_output); 
+	ByteStreamInfo rawStream = {rawFile.rdbuf()};
 
-	ByteStreamInfo rawStream = {&rawFile};
+	JLS_ERROR value = JpegLsDecodeStream(rawStream, compressedByteStream, NULL);
+	jlsFile.close();
+	rawFile.close();
 
-	return JpegLsDecodeStream(rawStream, compressedByteStream, NULL);
+	return value;
 }
 
 void TestEncodeFromStream()
@@ -440,9 +439,7 @@ int main(int argc, char* argv[])
 				printf("Syntax: -decoderaw inputfile outputfile \r\n");		
 				return 0;
 			}
-			int error = DecodeRaw(argv[2],argv[3]);		
-			return error;
-			continue;
+			return DecodeRaw(argv[2],argv[3]);		
 		}
 
 		if (str.compare("-decodetopnm") == 0)
@@ -452,9 +449,10 @@ int main(int argc, char* argv[])
 				printf("Syntax: -decodetopnm inputfile outputfile \r\n");		
 				return 0;
 			}
-			int error = DecodeToPnm(argv[2],argv[3]);
-			return error;
-			continue;
+			std::fstream pnmFile(argv[3], mode_output); 
+			std::fstream jlsFile(argv[2], mode_input);
+
+			return DecodeToPnm(jlsFile, pnmFile);			
 		}
 
 		if (str.compare("-encodepnm") == 0)
@@ -464,13 +462,10 @@ int main(int argc, char* argv[])
 				printf("Syntax: -encodepnm inputfile outputfile \r\n");
 				return 0;
 			}
-			std::basic_filebuf<char> jlsFile;
-			jlsFile.open(argv[3], std::ios_base::out | std::ios::binary);
-			int error = EncodePnm(argv[2],&jlsFile);	
-			jlsFile.close();
-
-			return error;
-			continue;
+			std::fstream pnmFile(argv[2], mode_input); 
+			std::fstream jlsFile(argv[3], mode_output); 
+	
+			return EncodePnm(pnmFile,jlsFile);				
 		}
 
 		if (str.compare("-bitstreamdamage") == 0)
