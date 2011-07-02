@@ -37,7 +37,9 @@ namespace CharLS
             Contract.Requires<ArgumentException>(info.Height > 0 && info.Height <= 65535);
             Contract.Requires<ArgumentNullException>(pixels != null);
 
-            return Compress(info, pixels, pixels.Length);
+            var pixelCount = pixels.Length;
+            Contract.Assume(pixelCount > 0 && pixelCount <= pixels.Length);
+            return Compress(info, pixels, pixelCount);
         }
 
         /// <summary>
@@ -66,6 +68,9 @@ namespace CharLS
             {
                 // Increase output buffer to hold compressed data.
                 buffer = new byte[(int)(pixels.Length * 1.5) + JpegLSHeaderLength];
+
+                Contract.Assume(info.Width > 0 && info.Width <= 65535);
+                Contract.Assume(info.Height > 0 && info.Height <= 65535);
                 if (!TryCompress(info, pixels, pixels.Length, buffer, buffer.Length, out compressedCount))
                     throw new InternalBufferOverflowException(
                         "Compression failed: compressed output larger then 1.5 * input.");
