@@ -75,4 +75,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="charls.rc" />
+  </ItemGroup>
 </Project>
