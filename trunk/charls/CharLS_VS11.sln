@@ -11,15 +11,15 @@ Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccLocalPath0 = .
-		SccLocalPath1 = net
-		SccLocalPath2 = nettest
-		SccLocalPath3 = .
+		SccLocalPath1 = .
+		SccLocalPath2 = net
+		SccLocalPath3 = nettest
 		SccNumberOfProjects = 4
-		SccProjectName1 = net
-		SccProjectName2 = nettest
-		SccProjectUniqueName0 = CharLS_VS11.vcxproj
-		SccProjectUniqueName1 = net\\CharLSNet_VS11.csproj
-		SccProjectUniqueName2 = nettest\\CharLSNetTest_VS11.csproj
+		SccProjectName2 = net
+		SccProjectName3 = nettest
+		SccProjectUniqueName1 = CharLS_VS11.vcxproj
+		SccProjectUniqueName2 = net\\CharLSNet_VS11.csproj
+		SccProjectUniqueName3 = nettest\\CharLSNetTest_VS11.csproj
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs08
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
