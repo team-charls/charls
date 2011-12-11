@@ -354,12 +354,12 @@
     <ClInclude Include="encoderstrategy.h" />
     <ClInclude Include="header.h" />
     <ClInclude Include="interface.h" />
+    <ClInclude Include="jpegmarker.h" />
     <ClInclude Include="lookuptable.h" />
     <ClInclude Include="losslesstraits.h" />
     <ClInclude Include="processline.h" />
     <ClInclude Include="publictypes.h" />
     <ClInclude Include="scan.h" />
-    <ClInclude Include="streams.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>

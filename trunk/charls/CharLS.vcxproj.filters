@@ -68,10 +68,10 @@
     <ClInclude Include="scan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="streams.h">
+    <ClInclude Include="util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="util.h">
+    <ClInclude Include="jpegmarker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

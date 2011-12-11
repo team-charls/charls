@@ -65,13 +65,12 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 		}
 
 		Size size = Size(info.width, info.height);
-		JpegMarkerWriter stream;
 
-		stream.Init(size, info.bitspersample, info.components);
+		JpegMarkerWriter writer(info.jfif, size, info.bitspersample, info.components);
 
 		if (info.colorTransform != 0)
 		{
-			stream.AddColorTransform(info.colorTransform);
+			writer.AddColorTransform(info.colorTransform);
 		}
 
 		if (info.ilv == ILV_NONE)
@@ -79,17 +78,17 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 			LONG cbyteComp = size.cx*size.cy*((info.bitspersample +7)/8);
 			for (LONG component = 0; component < info.components; ++component)
 			{
-				stream.AddScan(rawStreamInfo, &info);
+				writer.AddScan(rawStreamInfo, &info);
 				SkipBytes(&rawStreamInfo, cbyteComp);
 			}
 		}
 		else
 		{
-			stream.AddScan(rawStreamInfo, &info);
+			writer.AddScan(rawStreamInfo, &info);
 		}
 	
-		stream.Write(compressedStreamInfo);
-		*pcbyteWritten = stream.GetBytesWritten();
+		writer.Write(compressedStreamInfo);
+		*pcbyteWritten = writer.GetBytesWritten();
 		return OK;
 	}
 	catch (const JlsException& e)
@@ -180,29 +179,28 @@ extern "C"
 
 		Size size = Size(info.width, info.height);
 
-		JpegMarkerWriter stream;	
-		stream.Init(size, info.bitspersample, info.components);
+		JpegMarkerWriter writer(info.jfif, size, info.bitspersample, info.components);
 
 		if (info.ilv == ILV_NONE)
 		{
 			LONG fieldLength = size.cx*size.cy*((info.bitspersample +7)/8);
 			for (LONG component = 0; component < info.components; ++component)
 			{
-				stream.AddScan(rawStreamInfo, &info);
+				writer.AddScan(rawStreamInfo, &info);
 				SkipBytes(&rawStreamInfo, fieldLength);
 			}
 		}
 		else
 		{
-			stream.AddScan(rawStreamInfo, &info);
+			writer.AddScan(rawStreamInfo, &info);
 		}
 
 		std::vector<BYTE> rgbyteCompressed(compressedLength + 16);
 
 		memcpy(&rgbyteCompressed[0], compressedData, compressedLength);
 
-		stream.EnableCompare(true);
-		stream.Write(FromByteArray(&rgbyteCompressed[0], rgbyteCompressed.size()));
+		writer.EnableCompare(true);
+		writer.Write(FromByteArray(&rgbyteCompressed[0], rgbyteCompressed.size()));
 
 		return OK;
 	}

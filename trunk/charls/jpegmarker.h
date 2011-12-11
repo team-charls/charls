@@ -1,17 +1,15 @@
 // 
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
-#ifndef CHARLS_STREAMS
-#define CHARLS_STREAMS
+#ifndef CHARLS_JPEGMARKER
+#define CHARLS_JPEGMARKER
 
 #include <memory>
 #include <vector>
 #include "util.h"
 
 
-
-// This file defines JPEG-LS markers: The header and the actual pixel data. Header markers have fixed length, the pixeldata not. 
-
+// This file defines JPEG-LS markers: The header and the actual pixel data. Header markers have fixed length, the pixeldata not.
 
 
 class JpegSegment;
@@ -19,7 +17,7 @@ class JpegSegment;
 enum JPEGLS_ColorXForm
 {
 	// default (RGB)
-	COLORXFORM_NONE = 0,	
+	COLORXFORM_NONE = 0,
 
 	// Color transforms as defined by HP
 	COLORXFORM_HP1,
@@ -48,29 +46,27 @@ class JpegMarkerWriter
 	friend class JpegImageDataSegment;
 
 public:
-	JpegMarkerWriter();
+	JpegMarkerWriter(const JfifParameters& jfifParameters, Size size, LONG bitsPerSample, LONG ccomp);
 	virtual ~JpegMarkerWriter();
 
-	void Init(Size size, LONG bitsPerSample, LONG ccomp);
 	void AddScan(ByteStreamInfo info, const JlsParameters* pparams);
-	
+
 	void AddLSE(const JlsCustomParameters* pcustom);
 	void AddColorTransform(int i);
 	size_t GetBytesWritten()
 		{ return _byteOffset; }
 
 	size_t GetLength()
-	{ return _data.count - _byteOffset; }
+		{ return _data.count - _byteOffset; }
 
- 
 	size_t Write(ByteStreamInfo info);
-	
+
 	void EnableCompare(bool bCompare) 
-	{ _bCompare = bCompare; }
+		{ _bCompare = bCompare; }
+
 private:
-	
 	BYTE* GetPos() const
-	{ return _data.rawData + _byteOffset; }
+		{ return _data.rawData + _byteOffset; }
 
 	ByteStreamInfo OutputStream() const
 	{ 
@@ -79,7 +75,6 @@ private:
 		data.rawData += _byteOffset;
 		return data; 
 	}
-
 
 	void WriteByte(BYTE val)
 	{ 
@@ -103,7 +98,7 @@ private:
 		for (size_t i = 0; i < rgbyte.size(); ++i)
 		{
 			WriteByte(rgbyte[i]);
-		}		
+		}
 	}
 
 	void WriteWord(USHORT val)
@@ -112,22 +107,20 @@ private:
 		WriteByte(BYTE(val % 0x100));
 	}
 
-
-    void Seek(size_t byteCount)
-	{ 
+	void Seek(size_t byteCount)
+	{
 		if (_data.rawStream != NULL)
 			return;
 
-	    _byteOffset += byteCount;
+		_byteOffset += byteCount;
 	}
-
 
 private:
 	bool _bCompare;
 	ByteStreamInfo _data;
 	size_t _byteOffset;
 	LONG _lastCompenentIndex;
-	std::vector<JpegSegment*> _segments;	
+	std::vector<JpegSegment*> _segments;
 };
 
 
@@ -138,7 +131,7 @@ class JpegMarkerReader
 {
 public:
 	JpegMarkerReader(ByteStreamInfo byteStreamInfo);
-	
+
 	const JlsParameters& GetMetadata() const
 		{ return _info; } 
 
@@ -147,7 +140,7 @@ public:
 
 	void Read(ByteStreamInfo info);
 	void ReadHeader();
-	
+
 	void EnableCompare(bool bCompare)
 		{ _bCompare = bCompare;	}
 
@@ -172,15 +165,13 @@ private:
 	// Color Transform Application Markers & Code Stream (HP extension)
 	int ReadColorSpace();
 	int ReadColorXForm();
-	
+
 private:
 	ByteStreamInfo _byteStream;
 	bool _bCompare;
 	JlsParameters _info;
 	JlsRect _rect;
 };
-
-
 
 
 #endif

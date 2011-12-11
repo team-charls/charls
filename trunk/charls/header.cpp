@@ -139,19 +139,55 @@ JpegSegment* CreateMarkerStartOfFrame(Size size, LONG bitsPerSample, LONG ccomp)
 }
 
 
+//
+// CreateJFIF()
+//
+JpegMarkerSegment* CreateJFIF(const JfifParameters* jfif)
+{
+	std::vector<BYTE> rgbyte;
+	for(int i = 0; i < (int)sizeof(jfifID); i++)
+	{
+		rgbyte.push_back(jfifID[i]);
+	}
+
+	push_back(rgbyte, (USHORT)jfif->Ver);
+
+	rgbyte.push_back(jfif->units);	
+	push_back(rgbyte, (USHORT)jfif->XDensity);
+	push_back(rgbyte, (USHORT)jfif->YDensity);
+
+	// thumbnail
+	rgbyte.push_back((BYTE)jfif->Xthumb);
+	rgbyte.push_back((BYTE)jfif->Ythumb);
+	if(jfif->Xthumb > 0) 
+	{
+		if(jfif->pdataThumbnail)
+			throw JlsException(InvalidJlsParameters);
+
+		rgbyte.insert(rgbyte.end(), (BYTE*)jfif->pdataThumbnail, (BYTE*)jfif->pdataThumbnail+3*jfif->Xthumb*jfif->Ythumb
+		);
+	}
+
+	return new JpegMarkerSegment(JPEG_APP0, rgbyte);
+}
 
 
 //
 // ctor()
 //
-JpegMarkerWriter::JpegMarkerWriter() :
+JpegMarkerWriter::JpegMarkerWriter(const JfifParameters& jfifParameters, Size size, LONG bitsPerSample, LONG ccomp) :
 	_bCompare(false),
 	_byteOffset(0),
 	_lastCompenentIndex(0),
 	_data()
 {
-}
+	if (jfifParameters.Ver)
+	{
+		_segments.push_back(CreateJFIF(&jfifParameters));
+	}
 
+	_segments.push_back(CreateMarkerStartOfFrame(size, bitsPerSample, ccomp));
+}
 
 
 //
@@ -167,17 +203,6 @@ JpegMarkerWriter::~JpegMarkerWriter()
 }
 
 
-
-
-//
-// Init()
-//
-void JpegMarkerWriter::Init(Size size, LONG bitsPerSample, LONG ccomp)
-{
-	_segments.push_back(CreateMarkerStartOfFrame(size, bitsPerSample, ccomp));
-}
-
-
 void JpegMarkerWriter::AddColorTransform(int i)
 {
 	std::vector<BYTE> rgbyteXform;
@@ -187,7 +212,7 @@ void JpegMarkerWriter::AddColorTransform(int i)
 	rgbyteXform.push_back('x');
 	rgbyteXform.push_back((BYTE)i);
 
-	_segments.push_back(new JpegMarkerSegment(JPEG_APP8, rgbyteXform));	
+	_segments.push_back(new JpegMarkerSegment(JPEG_APP8, rgbyteXform));
 }
 
 
@@ -200,7 +225,7 @@ size_t JpegMarkerWriter::Write(ByteStreamInfo info)
 
 	WriteByte(0xFF);
 	WriteByte(JPEG_SOI);
-	
+
 	for (size_t i = 0; i < _segments.size(); ++i)
 	{
 		_segments[i]->Write(this);
@@ -493,38 +518,6 @@ void JpegMarkerReader::ReadJfif()
 	}
 }
 
-//
-// CreateJFIF()
-//
-JpegMarkerSegment* CreateJFIF(const JfifParameters* jfif)
-{
-	std::vector<BYTE> rgbyte;
-	for(int i = 0; i < (int)sizeof(jfifID); i++)
-	{
-		rgbyte.push_back(jfifID[i]);
-	}
-
-	push_back(rgbyte, (USHORT)jfif->Ver);
-
-	rgbyte.push_back(jfif->units);	
-	push_back(rgbyte, (USHORT)jfif->XDensity);
-	push_back(rgbyte, (USHORT)jfif->YDensity);
-
-	// thumbnail
-	rgbyte.push_back((BYTE)jfif->Xthumb);
-	rgbyte.push_back((BYTE)jfif->Ythumb);
-	if(jfif->Xthumb > 0) 
-	{
-		if(jfif->pdataThumbnail)
-			throw JlsException(InvalidJlsParameters);
-
-		rgbyte.insert(rgbyte.end(), (BYTE*)jfif->pdataThumbnail, (BYTE*)jfif->pdataThumbnail+3*jfif->Xthumb*jfif->Ythumb
-		);
-	}
-	
-	return new JpegMarkerSegment(JPEG_APP0, rgbyte);
-}
-
 
 //
 // ReadStartOfFrame()
@@ -600,16 +593,10 @@ public:
 	ByteStreamInfo _rawStreamInfo;
 	JlsParameters _info;	
 };
-
-
  
 
 void JpegMarkerWriter::AddScan(ByteStreamInfo info, const JlsParameters* pparams)
 {
-	if (pparams->jfif.Ver)
-	{
-		_segments.push_back(CreateJFIF(&pparams->jfif));
-	}
 	if (!IsDefault(&pparams->custom))
 	{
 		_segments.push_back(CreateLSE(&pparams->custom));
@@ -622,11 +609,12 @@ void JpegMarkerWriter::AddScan(ByteStreamInfo info, const JlsParameters* pparams
 
 	_lastCompenentIndex += 1;
 	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _lastCompenentIndex : -1));
-	
+
 	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
-	
+
 	_segments.push_back(new JpegImageDataSegment(info, *pparams, _lastCompenentIndex, ccomp));
 }
+
 
 //
 // ReadColorSpace()
@@ -635,7 +623,6 @@ int JpegMarkerReader::ReadColorSpace()
 {
 	return 0;
 }
-
 
 
 //
@@ -667,14 +654,13 @@ int JpegMarkerReader::ReadColorXForm()
 }
 
 
-
-
 ByteStreamInfo FromStream(std::basic_streambuf<char>* stream)
 {
 	ByteStreamInfo info = ByteStreamInfo();
 	info.rawStream = stream;	
 	return info;
 }
+
 
 void SkipBytes(ByteStreamInfo* streamInfo, size_t count)
 {
