@@ -28,9 +28,12 @@ namespace CharLS
         /// </summary>
         /// <param name="info">The info.</param>
         /// <param name="pixels">The source.</param>
-        /// <returns>An arraySegment with a reference to the byte array with the compressed data in the JPEG-LS format.</returns>
+        /// <param name="jfifHeader">if set to <c>true</c> a jfif header will be added to the encoded byte stream.</param>
+        /// <returns>
+        /// An arraySegment with a reference to the byte array with the compressed data in the JPEG-LS format.
+        /// </returns>
         /// <exception cref="InternalBufferOverflowException">The compressed output doesn't fit into the maximum defined output buffer.</exception>
-        public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels)
+        public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, bool jfifHeader = false)
         {
             Contract.Requires<ArgumentNullException>(info != null);
             Contract.Requires<ArgumentException>(info.Width > 0 && info.Width <= 65535);
@@ -39,7 +42,7 @@ namespace CharLS
 
             var pixelCount = pixels.Length;
             Contract.Assume(pixelCount > 0 && pixelCount <= pixels.Length);
-            return Compress(info, pixels, pixelCount);
+            return Compress(info, pixels, pixelCount, jfifHeader);
         }
 
         /// <summary>
@@ -48,9 +51,10 @@ namespace CharLS
         /// <param name="info">The info.</param>
         /// <param name="pixels">The source.</param>
         /// <param name="pixelCount">The pixel count.</param>
+        /// <param name="jfifHeader">if set to <c>true</c> a jfif header will be added to the encoded byte stream.</param>
         /// <returns>An arraySegment with a reference to the byte array with the compressed data in the JPEG-LS format.</returns>
         /// <exception cref="InternalBufferOverflowException">The compressed output doesn't fit into the maximum defined output buffer.</exception>
-        public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount)
+        public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, bool jfifHeader)
         {
             Contract.Requires<ArgumentNullException>(info != null);
             Contract.Requires<ArgumentException>(info.Width > 0 && info.Width <= 65535);
@@ -64,14 +68,14 @@ namespace CharLS
             var buffer = new byte[pixels.Length + JpegLSHeaderLength];
             int compressedCount;
 
-            if (!TryCompress(info, pixels, pixels.Length, buffer, buffer.Length, out compressedCount))
+            if (!TryCompress(info, pixels, pixels.Length, buffer, buffer.Length, jfifHeader, out compressedCount))
             {
                 // Increase output buffer to hold compressed data.
                 buffer = new byte[(int)(pixels.Length * 1.5) + JpegLSHeaderLength];
 
                 Contract.Assume(info.Width > 0 && info.Width <= 65535);
                 Contract.Assume(info.Height > 0 && info.Height <= 65535);
-                if (!TryCompress(info, pixels, pixels.Length, buffer, buffer.Length, out compressedCount))
+                if (!TryCompress(info, pixels, pixels.Length, buffer, buffer.Length, jfifHeader, out compressedCount))
                     throw new InternalBufferOverflowException(
                         "Compression failed: compressed output larger then 1.5 * input.");
             }
@@ -87,9 +91,10 @@ namespace CharLS
         /// <param name="pixelCount">The pixel count.</param>
         /// <param name="buffer">The buffer.</param>
         /// <param name="bufferLength">Length of the buffer.</param>
+        /// <param name="jfifHeader">if set to <c>true</c> a jfif header will be added to the encoded byte stream.</param>
         /// <param name="compressedCount">The compressed count.</param>
         /// <returns>true when the compressed fits into the buffer, otherwise false.</returns>
-        public static bool TryCompress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, byte[] buffer, int bufferLength, out int compressedCount)
+        public static bool TryCompress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, byte[] buffer, int bufferLength, bool jfifHeader, out int compressedCount)
         {
             Contract.Requires<ArgumentNullException>(info != null);
             Contract.Requires<ArgumentException>(info.Width > 0 && info.Width <= 65535);
@@ -101,6 +106,13 @@ namespace CharLS
 
             var parameters = new JlsParameters();
             info.CopyTo(ref parameters);
+            if (jfifHeader)
+            {
+                parameters.Jfif.Version = (1 << 8) + 2; // JFIF version 1.02
+                parameters.Jfif.Units = 0;
+                parameters.Jfif.DensityX = 1;
+                parameters.Jfif.DensityY = 1;
+            }
 
             var result = SafeNativeMethods.JpegLsEncode(
                 buffer, bufferLength, out compressedCount, pixels, pixelCount, ref parameters);

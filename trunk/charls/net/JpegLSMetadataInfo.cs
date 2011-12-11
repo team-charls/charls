@@ -31,7 +31,7 @@ namespace CharLS
         {
             Width = pixelWidth;
             Height = pixelHeight;
-            BitsPerSample = bitsPerSample;
+            BitsPerComponent = bitsPerSample;
             ComponentCount = componentCount;
         }
 
@@ -40,28 +40,29 @@ namespace CharLS
             Width = parameters.Width;
             Height = parameters.Height;
             ComponentCount = parameters.Components;
-            BitsPerSample = parameters.BitsPerSample;
+            BitsPerComponent = parameters.BitsPerSample;
             AllowedLossyError = parameters.AllowedLossyError;
             InterleaveMode = parameters.InterleaveMode;
         }
 
         /// <summary>
-        /// Gets or sets the width.
+        /// Gets or sets the width of the image in pixels.
         /// </summary>
         /// <value>The width.</value>
         public int Width { get; set; }
 
         /// <summary>
-        /// Gets or sets the height.
+        /// Gets or sets the height of the image in pixels.
         /// </summary>
         /// <value>The height.</value>
         public int Height { get; set; }
 
         /// <summary>
-        /// Gets or sets the bits per sample.
+        /// Gets or sets the bits per component.
+        /// Typical 8 for a color component and between 2 and 16 for a monochrome component.
         /// </summary>
         /// <value>The bits per sample.</value>
-        public int BitsPerSample { get; set; }
+        public int BitsPerComponent { get; set; }
 
         /// <summary>
         /// Gets or sets the bytes per line.
@@ -70,7 +71,8 @@ namespace CharLS
         public int BytesPerLine { get; set; }
 
         /// <summary>
-        /// Gets or sets the component count.
+        /// Gets or sets the component count per pixel.
+        /// Typical 1 for monochrome images and 3 for color images.
         /// </summary>
         /// <value>The component count.</value>
         public int ComponentCount { get; set; }
@@ -93,7 +95,7 @@ namespace CharLS
         /// <value>The size of byte array.</value>
         public int UncompressedSize
         {
-            get { return Width * Height * ComponentCount * ((BitsPerSample + 7) / 8); }
+            get { return Width * Height * ComponentCount * ((BitsPerComponent + 7) / 8); }
         }
 
         /// <summary>
@@ -105,7 +107,7 @@ namespace CharLS
         public override string ToString()
         {
             return string.Format(CultureInfo.InvariantCulture, "Width = {0}, Height = {1}, BitsPerSample = {2}, ComponentCount = {3}, AllowedLossyError = {4}",
-                Width, Height, BitsPerSample, ComponentCount, AllowedLossyError);
+                Width, Height, BitsPerComponent, ComponentCount, AllowedLossyError);
         }
 
         /// <summary>
@@ -136,7 +138,7 @@ namespace CharLS
             return Width == other.Width &&
                    Height == other.Height &&
                    ComponentCount == other.ComponentCount &&
-                   BitsPerSample == other.BitsPerSample &&
+                   BitsPerComponent == other.BitsPerComponent &&
                    AllowedLossyError == other.AllowedLossyError &&
                    InterleaveMode == other.InterleaveMode;
         }
@@ -153,7 +155,7 @@ namespace CharLS
             {
                 int result = Width;
                 result = (result * 397) ^ Height;
-                result = (result * 397) ^ BitsPerSample;
+                result = (result * 397) ^ BitsPerComponent;
                 result = (result * 397) ^ BytesPerLine;
                 result = (result * 397) ^ ComponentCount;
                 result = (result * 397) ^ AllowedLossyError;
@@ -167,7 +169,7 @@ namespace CharLS
             parameters.Width = Width;
             parameters.Height = Height;
             parameters.Components = ComponentCount;
-            parameters.BitsPerSample = BitsPerSample;
+            parameters.BitsPerSample = BitsPerComponent;
             parameters.InterleaveMode = InterleaveMode;
             parameters.AllowedLossyError = AllowedLossyError;
         }

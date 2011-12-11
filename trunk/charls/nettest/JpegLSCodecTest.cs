@@ -17,7 +17,7 @@ namespace CharLS.Test
         {
             var source = ReadAllBytes("T8C0E0.JLS");
             var info = JpegLSCodec.GetMetadataInfo(source);
-            var expected = new JpegLSMetadataInfo { Height = 256, Width = 256, BitsPerSample = 8, ComponentCount = 3 };
+            var expected = new JpegLSMetadataInfo { Height = 256, Width = 256, BitsPerComponent = 8, ComponentCount = 3 };
 
             Assert.AreEqual(expected, info);
         }
@@ -27,7 +27,7 @@ namespace CharLS.Test
         {
             var source = ReadAllBytes("T8C0E3.JLS");
             var info = JpegLSCodec.GetMetadataInfo(source);
-            var expected = new JpegLSMetadataInfo { Height = 256, Width = 256, BitsPerSample = 8, ComponentCount = 3, AllowedLossyError = 3 };
+            var expected = new JpegLSMetadataInfo { Height = 256, Width = 256, BitsPerComponent = 8, ComponentCount = 3, AllowedLossyError = 3 };
 
             Assert.AreEqual(expected, info);
         }
