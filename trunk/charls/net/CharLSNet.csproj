@@ -163,6 +163,11 @@
     <None Include="CharLSKeyPair.snk" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CharLS.vcxproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
