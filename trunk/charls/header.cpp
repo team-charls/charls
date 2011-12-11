@@ -135,7 +135,7 @@ JpegSegment* CreateMarkerStartOfFrame(Size size, LONG bitsPerSample, LONG ccomp)
 		vec.push_back(0);
 	}
 
-	return new JpegMarkerSegment(JPEG_SOF, vec);
+	return new JpegMarkerSegment(JPEG_SOF_55, vec);
 }
 
 
@@ -152,7 +152,7 @@ JpegMarkerSegment* CreateJFIF(const JfifParameters* jfif)
 
 	push_back(rgbyte, (USHORT)jfif->Ver);
 
-	rgbyte.push_back(jfif->units);	
+	rgbyte.push_back(jfif->units);
 	push_back(rgbyte, (USHORT)jfif->XDensity);
 	push_back(rgbyte, (USHORT)jfif->YDensity);
 
@@ -359,14 +359,14 @@ int JpegMarkerReader::ReadMarker(BYTE marker)
 {
 		switch (marker)
 		{
-			case JPEG_SOF: return ReadStartOfFrame(); 
-			case JPEG_COM: return ReadComment();	   
+			case JPEG_SOF_55: return ReadStartOfFrame();
+			case JPEG_COM: return ReadComment();
 			case JPEG_LSE: return ReadPresetParameters();
-			case JPEG_APP0: return 0; 
-			case JPEG_APP7: return ReadColorSpace(); 
-			case JPEG_APP8: return ReadColorXForm(); 
+			case JPEG_APP0: return 0;
+			case JPEG_APP7: return ReadColorSpace();
+			case JPEG_APP8: return ReadColorXForm();
 			// Other tags not supported (among which DNL DRI)
-			default: 		throw JlsException(ImageTypeNotSupported);
+			default: throw JlsException(ImageTypeNotSupported);
 		}
 }
 
