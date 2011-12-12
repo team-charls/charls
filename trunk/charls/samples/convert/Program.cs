@@ -45,6 +45,14 @@ namespace Convert
 
                 // Prepare the 'info' metadata that describes the pixels in the byte buffer.
                 var info = new JpegLSMetadataInfo(frame.PixelWidth, frame.PixelHeight, 8, componentCount);
+                if (componentCount == 3)
+                {
+                    info.InterleaveMode = JpegLSInterleaveMode.Line;
+
+                    // PixelFormat is Bgr24. CharLS expects RGB byte stream.
+                    // By enabling this CharLS will transform input before decoding.
+                    info.OutputBgr = true;
+                }
 
                 // Compress.
                 var compressedPixels = JpegLSCodec.Compress(info, uncompressedPixels, true);
