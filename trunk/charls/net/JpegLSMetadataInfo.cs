@@ -90,6 +90,14 @@ namespace CharLS
         public JpegLSInterleaveMode InterleaveMode { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether CharLS will perform a RGB to BGR conversion.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if CharLS should perform a conversion; otherwise, <c>false</c>.
+        /// </value>
+        public bool OutputBgr { get; set; }
+
+        /// <summary>
         /// Gets the size of an byte array needed to hold the uncompressed pixels.
         /// </summary>
         /// <value>The size of byte array.</value>
@@ -140,7 +148,8 @@ namespace CharLS
                    ComponentCount == other.ComponentCount &&
                    BitsPerComponent == other.BitsPerComponent &&
                    AllowedLossyError == other.AllowedLossyError &&
-                   InterleaveMode == other.InterleaveMode;
+                   InterleaveMode == other.InterleaveMode &&
+                   OutputBgr == other.OutputBgr;
         }
 
         /// <summary>
@@ -160,6 +169,7 @@ namespace CharLS
                 result = (result * 397) ^ ComponentCount;
                 result = (result * 397) ^ AllowedLossyError;
                 result = (result * 397) ^ InterleaveMode.GetHashCode();
+                result = (result * 397) ^ OutputBgr.GetHashCode();
                 return result;
             }
         }
@@ -172,6 +182,7 @@ namespace CharLS
             parameters.BitsPerSample = BitsPerComponent;
             parameters.InterleaveMode = InterleaveMode;
             parameters.AllowedLossyError = AllowedLossyError;
+            parameters.OutputBgr = OutputBgr;
         }
     }
 }
