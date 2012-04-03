@@ -14,23 +14,6 @@
 
 class JpegSegment;
 
-enum JPEGLS_ColorXForm
-{
-	// default (RGB)
-	COLORXFORM_NONE = 0,
-
-	// Color transforms as defined by HP
-	COLORXFORM_HP1,
-	COLORXFORM_HP2,
-	COLORXFORM_HP3,
-
-	// Defined by HP but not supported by CharLS
-	COLORXFORM_RGB_AS_YUV_LOSSY,
-	COLORXFORM_MATRIX,
-
-	XFORM_BIGENDIAN = 1 << 29,
-	XFORM_LITTLEENDIAN = 1 << 30,
-};
 
 
 ByteStreamInfo FromByteArray(const void* bytes, size_t count);

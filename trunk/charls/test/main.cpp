@@ -22,8 +22,8 @@
 
 typedef const char* SZC;
 
-const std::ios_base::open_mode mode_input  = std::ios_base::in  | std::ios::binary;
-const std::ios_base::open_mode mode_output = std::ios_base::out | std::ios::binary;
+const std::ios_base::openmode mode_input  = std::ios_base::in  | std::ios::binary;
+const std::ios_base::openmode mode_output = std::ios_base::out | std::ios::binary;
 
 bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* info)
 {
@@ -324,7 +324,7 @@ bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
 
 
 
-void TestDecodeFromStream(char* strNameEncoded)
+void TestDecodeFromStream(const char* strNameEncoded)
 {
 	std::basic_filebuf<char> jlsFile; 
 	jlsFile.open(strNameEncoded, mode_input);
@@ -347,7 +347,7 @@ void TestDecodeFromStream(char* strNameEncoded)
 }
 
 
-JLS_ERROR DecodeRaw(char* strNameEncoded, char* strNameOutput)
+JLS_ERROR DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
 {
 	std::fstream jlsFile(strNameEncoded, mode_input); 	
 	ByteStreamInfo compressedByteStream = {jlsFile.rdbuf()};
