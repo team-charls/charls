@@ -177,9 +177,9 @@ JpegMarkerSegment* CreateJFIF(const JfifParameters* jfif)
 //
 JpegMarkerWriter::JpegMarkerWriter(const JfifParameters& jfifParameters, Size size, LONG bitsPerSample, LONG ccomp) :
 	_bCompare(false),
+	_data(),
 	_byteOffset(0),
-	_lastCompenentIndex(0),
-	_data()
+	_lastCompenentIndex(0)
 {
 	if (jfifParameters.Ver)
 	{

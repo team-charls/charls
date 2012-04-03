@@ -65,7 +65,7 @@ inline void ByteSwap(unsigned char* data, int count)
 	for(int i = 0; i < count/4; i++)
 	{
 		unsigned int value = data32[i];
-		data32[i] = (value >> 8) & 0x00FF00FF | ((value & 0x00FF00FF) << 8);
+		data32[i] = ((value >> 8) & 0x00FF00FF) | ((value & 0x00FF00FF) << 8);
 	}
 
 	if ((count % 4) != 0)

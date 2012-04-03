@@ -224,7 +224,7 @@ void TestDecodeRect()
 
 
 
-void TestEncodeFromStream(char* file, int offset, int width, int height, int bpp, int ccomponent, int ilv, size_t expectedLength)
+void TestEncodeFromStream(const char* file, int offset, int width, int height, int bpp, int ccomponent, int ilv, size_t expectedLength)
 {
 	std::basic_filebuf<char> myFile; // On the stack
 	myFile.open(file, mode_input);
