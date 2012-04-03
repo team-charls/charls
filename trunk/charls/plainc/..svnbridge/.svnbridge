@@ -11,4 +11,11 @@ WindowsFormsApplication2
 WindowsFormsApplication1
 Release
 Win32
+</Value></Property><Property><Name>svn:ignore</Name><Value>Debug
+*.user
+WindowsFormsApplication2
+WindowsFormsApplication1
+Release
+Win32
+x64
 </Value></Property></Properties></ItemProperties>
