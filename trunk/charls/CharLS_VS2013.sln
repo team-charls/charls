@@ -7,9 +7,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLS_VS2013", "CharLS_VS2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharLSNet_VS2013", "net\CharLSNet_VS2013.csproj", "{4EDED401-1B63-4989-BF3F-2875B6C9203D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharLSNetTest_VS2013", "nettest\CharLSNetTest_VS2013.csproj", "{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
+		SccNumberOfProjects = 4
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs08
 		SccLocalPath0 = .
@@ -18,6 +20,9 @@ Global
 		SccProjectUniqueName2 = net\\CharLSNet_VS2013.csproj
 		SccProjectName2 = net
 		SccLocalPath2 = net
+		SccProjectUniqueName3 = nettest\\CharLSNetTest_VS2013.csproj
+		SccProjectName3 = nettest
+		SccLocalPath3 = nettest
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Checked|Win32 = Checked|Win32
@@ -45,9 +50,19 @@ Global
 		{4EDED401-1B63-4989-BF3F-2875B6C9203D}.Checked|x64.ActiveCfg = Checked|Any CPU
 		{4EDED401-1B63-4989-BF3F-2875B6C9203D}.Checked|x64.Build.0 = Checked|Any CPU
 		{4EDED401-1B63-4989-BF3F-2875B6C9203D}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{4EDED401-1B63-4989-BF3F-2875B6C9203D}.Debug|Win32.Build.0 = Debug|Any CPU
 		{4EDED401-1B63-4989-BF3F-2875B6C9203D}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{4EDED401-1B63-4989-BF3F-2875B6C9203D}.Release|Win32.ActiveCfg = Release|Any CPU
 		{4EDED401-1B63-4989-BF3F-2875B6C9203D}.Release|x64.ActiveCfg = Release|Any CPU
+		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Checked|Win32.ActiveCfg = Checked|Any CPU
+		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Checked|Win32.Build.0 = Checked|Any CPU
+		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Checked|x64.ActiveCfg = Checked|Any CPU
+		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Checked|x64.Build.0 = Checked|Any CPU
+		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Debug|Win32.Build.0 = Debug|Any CPU
+		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Release|Win32.ActiveCfg = Release|Any CPU
+		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
