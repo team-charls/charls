@@ -199,7 +199,6 @@ JpegMarkerWriter::~JpegMarkerWriter()
 	{
 		delete _segments[i];
 	}
-	_segments.empty();
 }
 
 
