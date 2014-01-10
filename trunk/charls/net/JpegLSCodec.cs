@@ -114,8 +114,9 @@ namespace CharLS
                 parameters.Jfif.DensityY = 1;
             }
 
-            var result = SafeNativeMethods.JpegLsEncode(
-                buffer, bufferLength, out compressedCount, pixels, pixelCount, ref parameters);
+            var result = Environment.Is64BitProcess ?
+                SafeNativeMethods.JpegLsEncode64(buffer, bufferLength, out compressedCount, pixels, pixelCount, ref parameters) :
+                SafeNativeMethods.JpegLsEncode(buffer, bufferLength, out compressedCount, pixels, pixelCount, ref parameters);
             if (result == JpegLSError.CompressedBufferTooSmall)
                 return false;
 
@@ -142,6 +143,7 @@ namespace CharLS
         /// <param name="source">The JPEG-LS compressed source.</param>
         /// <param name="count">The count of bytes that are valid in the array.</param>
         /// <returns>An JpegLSMetadataInfo instance.</returns>
+        /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
         public static JpegLSMetadataInfo GetMetadataInfo(byte[] source, int count)
         {
             Contract.Requires<ArgumentNullException>(source != null);
@@ -158,6 +160,7 @@ namespace CharLS
         /// </summary>
         /// <param name="source">The byte array that contains the JPEG-LS encoded data to decompress.</param>
         /// <returns>A byte array with the decompressed data.</returns>
+        /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
         public static byte[] Decompress(byte[] source)
         {
             Contract.Requires<ArgumentNullException>(source != null);
@@ -172,6 +175,7 @@ namespace CharLS
         /// <param name="source">The byte array that contains the JPEG-LS encoded data to decompress.</param>
         /// <param name="count">The number of bytes of the array to decompress.</param>
         /// <returns>A byte array with the decompressed data.</returns>
+        /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
         public static byte[] Decompress(byte[] source, int count)
         {
             Contract.Requires<ArgumentNullException>(source != null);
@@ -192,13 +196,17 @@ namespace CharLS
         /// <param name="source">The byte array that contains the JPEG-LS encoded data to decompress.</param>
         /// <param name="count">The number of bytes of the array to decompress.</param>
         /// <param name="destination">The destination byte array that will hold the decompressed data when the function returns.</param>
+        /// <exception cref="ArgumentException">Thrown when the destination array is too small to hold the decompressed pixel data.</exception>
+        /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
         public static void Decompress(byte[] source, int count, byte[] destination)
         {
             Contract.Requires<ArgumentNullException>(source != null);
             Contract.Requires<ArgumentException>(count >= 0 && count <= source.Length);
             Contract.Requires<ArgumentNullException>(destination != null);
 
-            JpegLSError error = SafeNativeMethods.JpegLsDecode(destination, destination.Length, source, count, IntPtr.Zero);
+            JpegLSError error = Environment.Is64BitProcess ?
+                SafeNativeMethods.JpegLsDecode64(destination, destination.Length, source, count, IntPtr.Zero) :
+                SafeNativeMethods.JpegLsDecode(destination, destination.Length, source, count, IntPtr.Zero);
             HandleResult(error);
         }
 
