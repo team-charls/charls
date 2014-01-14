@@ -11,6 +11,14 @@ namespace CharLS
     /// <summary>
     /// Contains meta information about a compressed JPEG-LS stream or info how to compress.
     /// </summary>
+    /// <remarks>
+    /// This 'info' class is used for 2 purposes:
+    /// 1) The JPEG-LS algorithm needs information which type of bitmap is stored in an array bytes.
+    /// This information is needed to correctly compress (encode) the pixels to a JPEG-LS byte stream.
+    /// 2) Information which kind of bitmap is stored in a JPEG-LS byte stream is stored in the JPEG-LS byte stream.
+    /// This information can be extracted without decompressing (decoding) the byte stream. This information is often
+    /// required to prepare output buffers to received the decompressed byte stream.
+    /// </remarks>
     public class JpegLSMetadataInfo : IEquatable<JpegLSMetadataInfo>
     {
         /// <summary>
@@ -25,13 +33,13 @@ namespace CharLS
         /// </summary>
         /// <param name="pixelWidth">The width of the bitmap.</param>
         /// <param name="pixelHeight">The height of the bitmap.</param>
-        /// <param name="bitsPerSample">The bits per sample.</param>
-        /// <param name="componentCount">The component count.</param>
-        public JpegLSMetadataInfo(int pixelWidth, int pixelHeight, int bitsPerSample, int componentCount)
+        /// <param name="bitsPerComponent">The number of bits per component. Typical 8 for color and 2 to 16 for monochrome bitmaps.</param>
+        /// <param name="componentCount">The component count. Typical 1 for monochrome images and 3 for color images.</param>
+        public JpegLSMetadataInfo(int pixelWidth, int pixelHeight, int bitsPerComponent, int componentCount)
         {
             Width = pixelWidth;
             Height = pixelHeight;
-            BitsPerComponent = bitsPerSample;
+            BitsPerComponent = bitsPerComponent;
             ComponentCount = componentCount;
         }
 
@@ -78,9 +86,9 @@ namespace CharLS
         public int ComponentCount { get; set; }
 
         /// <summary>
-        /// Gets or sets the allowed lossy error.
+        /// Gets or sets the allowed error value for non-lossless compression.
         /// </summary>
-        /// <value>The allowed lossy error.</value>
+        /// <value>The allowed error value.</value>
         public int AllowedLossyError { get; set; }
 
         /// <summary>

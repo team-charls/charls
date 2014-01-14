@@ -1,5 +1,5 @@
 ﻿//
-// (C) Jan de Vaan 2007-2011, all rights reserved. See the accompanying "License.txt" for licensed use.
+// (C) Jan de Vaan 2007-2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 using System;
@@ -24,14 +24,12 @@ namespace CharLS
         */
 
         /// <summary>
-        /// Compresses the specified image passed in the source buffer.
+        /// Compresses the specified image passed in the source pixel buffer.
         /// </summary>
-        /// <param name="info">The info.</param>
-        /// <param name="pixels">The source.</param>
-        /// <param name="jfifHeader">if set to <c>true</c> a jfif header will be added to the encoded byte stream.</param>
-        /// <returns>
-        /// An arraySegment with a reference to the byte array with the compressed data in the JPEG-LS format.
-        /// </returns>
+        /// <param name="info">The meta info that describes the format and type of the pixels.</param>
+        /// <param name="pixels">An array of bytes that represents the content of a bitmap image.</param>
+        /// <param name="jfifHeader">if set to <c>true</c> a JFIF header will be added to the encoded byte stream.</param>
+        /// <returns>An arraySegment with a reference to the byte array with the compressed data in the JPEG-LS format.</returns>
         /// <exception cref="InternalBufferOverflowException">The compressed output doesn't fit into the maximum defined output buffer.</exception>
         public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, bool jfifHeader = false)
         {
@@ -46,12 +44,12 @@ namespace CharLS
         }
 
         /// <summary>
-        /// Compresses the specified image passed in the source buffer.
+        /// Compresses the specified image passed in the source pixel buffer.
         /// </summary>
-        /// <param name="info">The info.</param>
-        /// <param name="pixels">The source.</param>
-        /// <param name="pixelCount">The pixel count.</param>
-        /// <param name="jfifHeader">if set to <c>true</c> a jfif header will be added to the encoded byte stream.</param>
+        /// <param name="info">The meta info that describes the format and type of the pixels.</param>
+        /// <param name="pixels">An array of bytes that represents the content of a bitmap image.</param>
+        /// <param name="pixelCount">The number of pixel in the pixel array.</param>
+        /// <param name="jfifHeader">if set to <c>true</c> a JFIF header will be added to the encoded byte stream.</param>
         /// <returns>An arraySegment with a reference to the byte array with the compressed data in the JPEG-LS format.</returns>
         /// <exception cref="InternalBufferOverflowException">The compressed output doesn't fit into the maximum defined output buffer.</exception>
         public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, bool jfifHeader)
@@ -68,14 +66,14 @@ namespace CharLS
             var buffer = new byte[pixels.Length + JpegLSHeaderLength];
             int compressedCount;
 
-            if (!TryCompress(info, pixels, pixels.Length, buffer, buffer.Length, jfifHeader, out compressedCount))
+            if (!TryCompress(info, pixels, pixels.Length, jfifHeader, buffer, buffer.Length, out compressedCount))
             {
                 // Increase output buffer to hold compressed data.
                 buffer = new byte[(int)(pixels.Length * 1.5) + JpegLSHeaderLength];
 
                 Contract.Assume(info.Width > 0 && info.Width <= 65535);
                 Contract.Assume(info.Height > 0 && info.Height <= 65535);
-                if (!TryCompress(info, pixels, pixels.Length, buffer, buffer.Length, jfifHeader, out compressedCount))
+                if (!TryCompress(info, pixels, pixels.Length, jfifHeader, buffer, buffer.Length, out compressedCount))
                     throw new InternalBufferOverflowException(
                         "Compression failed: compressed output larger then 1.5 * input.");
             }
@@ -86,37 +84,37 @@ namespace CharLS
         /// <summary>
         /// Tries the compress the array with pixels into the provided buffer.
         /// </summary>
-        /// <param name="info">The info.</param>
-        /// <param name="pixels">The pixels.</param>
-        /// <param name="pixelCount">The pixel count.</param>
-        /// <param name="buffer">The buffer.</param>
-        /// <param name="bufferLength">Length of the buffer.</param>
-        /// <param name="jfifHeader">if set to <c>true</c> a jfif header will be added to the encoded byte stream.</param>
-        /// <param name="compressedCount">The compressed count.</param>
-        /// <returns>true when the compressed fits into the buffer, otherwise false.</returns>
-        public static bool TryCompress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, byte[] buffer, int bufferLength, bool jfifHeader, out int compressedCount)
+        /// <param name="info">The meta info that describes the format and type of the pixels.</param>
+        /// <param name="pixels">An array of bytes that represents the content of a bitmap image.</param>
+        /// <param name="pixelCount">The number of pixel in the pixel array.</param>
+        /// <param name="jfifHeader">if set to <c>true</c> a JFIF header will be added to the encoded byte stream.</param>
+        /// <param name="destination">The destination buffer that will hold the JPEG-LS compressed (encoded) bit stream.</param>
+        /// <param name="destinationLength">Length of the destination buffer that can be used (can be less then the length of the destination array).</param>
+        /// <param name="compressedCount">The number of bytes that have been compressed (encoded) into the destination array.</param>
+        /// <returns><c>true</c> when the compressed bit stream fits into the destination array, otherwise <c>false</c>.</returns>
+        public static bool TryCompress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, bool jfifHeader, byte[] destination, int destinationLength, out int compressedCount)
         {
             Contract.Requires<ArgumentNullException>(info != null);
             Contract.Requires<ArgumentException>(info.Width > 0 && info.Width <= 65535);
             Contract.Requires<ArgumentException>(info.Height > 0 && info.Height <= 65535);
             Contract.Requires<ArgumentNullException>(pixels != null);
             Contract.Requires<ArgumentNullException>(pixelCount > 0 && pixelCount <= pixels.Length);
-            Contract.Requires<ArgumentNullException>(buffer != null);
-            Contract.Requires<ArgumentNullException>(bufferLength > 0 && bufferLength <= buffer.Length);
+            Contract.Requires<ArgumentNullException>(destination != null);
+            Contract.Requires<ArgumentNullException>(destinationLength > 0 && destinationLength <= destination.Length);
 
             var parameters = new JlsParameters();
             info.CopyTo(ref parameters);
             if (jfifHeader)
             {
                 parameters.Jfif.Version = (1 << 8) + 2; // JFIF version 1.02
-                parameters.Jfif.Units = 0;
-                parameters.Jfif.DensityX = 1;
+                parameters.Jfif.Units = 0; // No units, aspect ratio only specified
+                parameters.Jfif.DensityX = 1; // use standard 1:1 aspect ratio. (density should always be set to non-zero values).
                 parameters.Jfif.DensityY = 1;
             }
 
             var result = Environment.Is64BitProcess ?
-                SafeNativeMethods.JpegLsEncode64(buffer, bufferLength, out compressedCount, pixels, pixelCount, ref parameters) :
-                SafeNativeMethods.JpegLsEncode(buffer, bufferLength, out compressedCount, pixels, pixelCount, ref parameters);
+                SafeNativeMethods.JpegLsEncode64(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters) :
+                SafeNativeMethods.JpegLsEncode(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters);
             if (result == JpegLSError.CompressedBufferTooSmall)
                 return false;
 
@@ -125,9 +123,9 @@ namespace CharLS
         }
 
         /// <summary>
-        /// Gets the metadata info as stored in a JPEG-LS compressed byte array.
+        /// Gets the metadata info as stored in a JPEG-LS compressed bit stream.
         /// </summary>
-        /// <param name="source">The JPEG-LS compressed source.</param>
+        /// <param name="source">The JPEG-LS compressed bit stream.</param>
         /// <returns>An JpegLSMetadataInfo instance.</returns>
         public static JpegLSMetadataInfo GetMetadataInfo(byte[] source)
         {
@@ -138,9 +136,9 @@ namespace CharLS
         }
 
         /// <summary>
-        /// Gets the metadata info as stored in a JPEG-LS compressed byte array.
+        /// Gets the metadata info as stored in a JPEG-LS compressed bit stream.
         /// </summary>
-        /// <param name="source">The JPEG-LS compressed source.</param>
+        /// <param name="source">The JPEG-LS compressed bit stream.</param>
         /// <param name="count">The count of bytes that are valid in the array.</param>
         /// <returns>An JpegLSMetadataInfo instance.</returns>
         /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
@@ -159,7 +157,7 @@ namespace CharLS
         /// Decompresses the JPEG-LS encoded data passed in the source byte array.
         /// </summary>
         /// <param name="source">The byte array that contains the JPEG-LS encoded data to decompress.</param>
-        /// <returns>A byte array with the decompressed data.</returns>
+        /// <returns>A byte array with the pixel data.</returns>
         /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
         public static byte[] Decompress(byte[] source)
         {
@@ -174,7 +172,7 @@ namespace CharLS
         /// </summary>
         /// <param name="source">The byte array that contains the JPEG-LS encoded data to decompress.</param>
         /// <param name="count">The number of bytes of the array to decompress.</param>
-        /// <returns>A byte array with the decompressed data.</returns>
+        /// <returns>A byte array with the pixel data.</returns>
         /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
         public static byte[] Decompress(byte[] source, int count)
         {
@@ -195,18 +193,18 @@ namespace CharLS
         /// </summary>
         /// <param name="source">The byte array that contains the JPEG-LS encoded data to decompress.</param>
         /// <param name="count">The number of bytes of the array to decompress.</param>
-        /// <param name="destination">The destination byte array that will hold the decompressed data when the function returns.</param>
+        /// <param name="pixels">The byte array that will hold the pixels when the function returns.</param>
         /// <exception cref="ArgumentException">Thrown when the destination array is too small to hold the decompressed pixel data.</exception>
-        /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
-        public static void Decompress(byte[] source, int count, byte[] destination)
+        /// <exception cref="InvalidDataException">Thrown when the source array contains an invalid encodeded JPEG-LS bit stream.</exception>
+        public static void Decompress(byte[] source, int count, byte[] pixels)
         {
             Contract.Requires<ArgumentNullException>(source != null);
             Contract.Requires<ArgumentException>(count >= 0 && count <= source.Length);
-            Contract.Requires<ArgumentNullException>(destination != null);
+            Contract.Requires<ArgumentNullException>(pixels != null);
 
             JpegLSError error = Environment.Is64BitProcess ?
-                SafeNativeMethods.JpegLsDecode64(destination, destination.Length, source, count, IntPtr.Zero) :
-                SafeNativeMethods.JpegLsDecode(destination, destination.Length, source, count, IntPtr.Zero);
+                SafeNativeMethods.JpegLsDecode64(pixels, pixels.Length, source, count, IntPtr.Zero) :
+                SafeNativeMethods.JpegLsDecode(pixels, pixels.Length, source, count, IntPtr.Zero);
             HandleResult(error);
         }
 
