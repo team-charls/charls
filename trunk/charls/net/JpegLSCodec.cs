@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.IO;
 
 namespace CharLS
@@ -229,17 +230,71 @@ namespace CharLS
 
         private static void HandleResult(JpegLSError result)
         {
-            if (result == JpegLSError.None)
-                return;
+            Exception exception;
 
-            if (result == JpegLSError.InvalidCompressedData)
-                throw new InvalidDataException("Bad compressed data. Unable to decompress.");
+            switch (result)
+            {
+                case JpegLSError.None:
+                    return;
 
-            if (result == JpegLSError.InvalidJlsParameters)
-                throw new InvalidDataException("One of the JLS parameters is invalid. Unable to process.");
+                case JpegLSError.InvalidCompressedData:
+                    exception = new InvalidDataException("Bad compressed data. Unable to decompress.");
+                    break;
 
-            if (result == JpegLSError.UncompressedBufferTooSmall)
-                throw new ArgumentException("The pixel buffer is too small, related to the metadata description");
+                case JpegLSError.InvalidJlsParameters:
+                    exception = new InvalidDataException("One of the JLS parameters is invalid. Unable to process.");
+                    break;
+
+                case JpegLSError.UncompressedBufferTooSmall:
+                    exception = new ArgumentException("The pixel buffer is too small, related to the metadata description");
+                    break;
+
+                case JpegLSError.ParameterValueNotSupported:
+                    exception = new ArgumentException("The pixel buffer is too small, related to the metadata description");
+                    break;
+
+                case JpegLSError.CompressedBufferTooSmall:
+                    exception = new InvalidDataException("The buffer containing the compressed data is too small to decode the complete image");
+                    break;
+
+                case JpegLSError.TooMuchCompressedData:
+                    exception = new InvalidDataException("The buffer containing the compressed data has still data while the complete image has already been decoded");
+                    break;
+
+                case JpegLSError.ImageTypeNotSupported:
+                    exception = new InvalidDataException("The encoded bit stream contains options that are not supported by this implementation");
+                    break;
+
+                case JpegLSError.UnsupportedBitDepthForTransform:
+                    exception = new InvalidDataException("Unsupported bit depth for transformation");
+                    break;
+
+                case JpegLSError.UnsupportedColorTransform:
+                    exception = new InvalidDataException("Unsupported color transformation");
+                    break;
+
+                case JpegLSError.UnsupportedEncoding:
+                    exception = new InvalidDataException("Unsupported encoded frame detected. Only JPEG-LS encoded frames are supported.");
+                    break;
+
+                case JpegLSError.UnknownJpegMarker:
+                    exception = new InvalidDataException("An unknown JPEG marker code is detected in the encoded bit stream");
+                    break;
+
+                case JpegLSError.MissingJpegMarkerStart:
+                    exception = new InvalidDataException("The decoding process expects a start of JPEG marker code (0xFF) but none was found");
+                    break;
+
+                default:
+                    exception = new NotImplementedException(string.Format(CultureInfo.InvariantCulture,
+                        "The native codec has returned an unexpected result value: {0}", result));
+                    break;
+            }
+
+            var data = exception.Data;
+            Contract.Assume(data != null);
+            data.Add("JpegLSError", result);
+            throw exception;
         }
     }
 }
