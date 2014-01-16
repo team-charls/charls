@@ -323,7 +323,7 @@ void JpegMarkerReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 void JpegMarkerReader::ReadHeader()
 {
 	if (ReadByte() != 0xFF)
-		throw JlsException(InvalidCompressedData);
+		throw JlsException(MissingJpegMarkerStart);
 
 	if (ReadByte() != JPEG_SOI)
 		throw JlsException(InvalidCompressedData);
@@ -331,7 +331,7 @@ void JpegMarkerReader::ReadHeader()
 	for (;;)
 	{
 		if (ReadByte() != 0xFF)
-			throw JlsException(InvalidCompressedData);
+			throw JlsException(MissingJpegMarkerStart);
 
 		BYTE marker = (BYTE)ReadByte();
 
@@ -354,19 +354,32 @@ void JpegMarkerReader::ReadHeader()
 	}
 }
 
+
 int JpegMarkerReader::ReadMarker(BYTE marker)
 {
-		switch (marker)
-		{
-			case JPEG_SOF_55: return ReadStartOfFrame();
-			case JPEG_COM: return ReadComment();
-			case JPEG_LSE: return ReadPresetParameters();
-			case JPEG_APP0: return 0;
-			case JPEG_APP7: return ReadColorSpace();
-			case JPEG_APP8: return ReadColorXForm();
-			// Other tags not supported (among which DNL DRI)
-			default: throw JlsException(ImageTypeNotSupported);
-		}
+	switch (marker)
+	{
+		case JPEG_SOF_55: return ReadStartOfFrame();
+		case JPEG_COM: return ReadComment();
+		case JPEG_LSE: return ReadPresetParameters();
+		case JPEG_APP0: return 0;
+		case JPEG_APP7: return ReadColorSpace();
+		case JPEG_APP8: return ReadColorXForm();
+		case JPEG_SOF_0:
+		case JPEG_SOF_1:
+		case JPEG_SOF_2:
+		case JPEG_SOF_3:
+		case JPEG_SOF_5:
+		case JPEG_SOF_6:
+		case JPEG_SOF_7:
+		case JPEG_SOF_9:
+		case JPEG_SOF_10:
+		case JPEG_SOF_11:
+			throw JlsException(UnsupportedEncoding);
+
+		// Other tags not supported (among which DNL DRI)
+		default: throw JlsException(UnknownJpegMarker);
+	}
 }
 
 

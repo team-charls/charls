@@ -9,9 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharLSNet_VS2013", "net\Cha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharLSNetTest_VS2013", "nettest\CharLSNetTest_VS2013.csproj", "{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSTest_VS2013", "test\CharLSTest_VS2013.vcxproj", "{3E349E7B-30C2-4791-81B7-1108014291B7}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs08
 		SccLocalPath0 = .
@@ -23,6 +25,9 @@ Global
 		SccProjectUniqueName3 = nettest\\CharLSNetTest_VS2013.csproj
 		SccProjectName3 = nettest
 		SccLocalPath3 = nettest
+		SccProjectUniqueName4 = test\\CharLSTest_VS2013.vcxproj
+		SccProjectName4 = test
+		SccLocalPath4 = test
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Checked|Win32 = Checked|Win32
@@ -69,6 +74,18 @@ Global
 		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Release|Win32.Build.0 = Release|x86
 		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Release|x64.ActiveCfg = Release|x64
 		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}.Release|x64.Build.0 = Release|x64
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Checked|Win32.ActiveCfg = Checked|Win32
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Checked|Win32.Build.0 = Checked|Win32
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Checked|x64.ActiveCfg = Checked|x64
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Checked|x64.Build.0 = Checked|x64
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Debug|Win32.Build.0 = Debug|Win32
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Debug|x64.ActiveCfg = Debug|x64
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Debug|x64.Build.0 = Debug|x64
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Release|Win32.ActiveCfg = Release|Win32
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Release|Win32.Build.0 = Release|Win32
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Release|x64.ActiveCfg = Release|x64
+		{3E349E7B-30C2-4791-81B7-1108014291B7}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

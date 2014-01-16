@@ -17,11 +17,14 @@ enum JLS_ERROR
 	ParameterValueNotSupported,
 	UncompressedBufferTooSmall,
 	CompressedBufferTooSmall,
-	InvalidCompressedData,
+	InvalidCompressedData,           // This error is returned when the encoded bit stream contains a general structural problem.
 	TooMuchCompressedData,
-	ImageTypeNotSupported,
+	ImageTypeNotSupported,           // This error is returned when the bit stream is encoded with an option that is not supported by this implementation.
 	UnsupportedBitDepthForTransform,
-	UnsupportedColorTransform
+	UnsupportedColorTransform,
+	UnsupportedEncoding,             // This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
+	UnknownJpegMarker,               // This error is returned when an unknown JPEG marker code is detected in the encoded bit stream.
+	MissingJpegMarkerStart           // This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
 };
 
 

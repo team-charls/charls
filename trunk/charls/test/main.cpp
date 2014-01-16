@@ -6,9 +6,7 @@
 #include "config.h"
 #include <sstream>
 #include <fstream>
-
 #include <vector>
-
 #include "../interface.h"
 #include "../util.h"
 #include "../header.h"
@@ -24,6 +22,7 @@ typedef const char* SZC;
 
 const std::ios_base::openmode mode_input  = std::ios_base::in  | std::ios::binary;
 const std::ios_base::openmode mode_output = std::ios_base::out | std::ios::binary;
+
 
 bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* info)
 {
@@ -41,8 +40,6 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* 
 	ASSERT(err == OK);
 	return err == OK;
 }
-
-
 
 
 void TestTraits16bit()
@@ -69,6 +66,7 @@ void TestTraits16bit()
 	}
 }
 
+
 void TestTraits8bit()
 {
 	DefaultTraitsT<BYTE,BYTE> traits1 = DefaultTraitsT<BYTE,BYTE>(255,0);
@@ -93,6 +91,7 @@ void TestTraits8bit()
 	}
 }
 
+
 std::vector<BYTE> MakeSomeNoise(int length, int bitcount, int seed)
 {
 	srand(seed);
@@ -102,7 +101,7 @@ std::vector<BYTE> MakeSomeNoise(int length, int bitcount, int seed)
 	{
 		BYTE val = BYTE(rand());
 		rgbyteNoise[icol] = BYTE(val & mask);
-	}	
+	}
 	return rgbyteNoise;
 }
 
@@ -110,7 +109,7 @@ std::vector<BYTE> MakeSomeNoise(int length, int bitcount, int seed)
 void TestNoiseImage()
 {
 	Size size2 = Size(512, 512);	
-		
+
 	for (int bitDepth = 8; bitDepth >=2; --bitDepth)
 	{
 		std::stringstream label;
@@ -120,7 +119,7 @@ void TestNoiseImage()
 		TestRoundTrip(label.str().c_str(), noiseBytes, size2, bitDepth, 1);
 	}
 }
- 
+
 
 void TestFailOnTooSmallOutputBuffer()
 {
@@ -128,7 +127,7 @@ void TestFailOnTooSmallOutputBuffer()
 	std::vector<BYTE> rgbyteRaw = MakeSomeNoise(8 * 8, 8, 21344);
 
 	std::vector<BYTE> rgbyteCompressed(1);
- 	 
+
 	JlsParameters info = JlsParameters();
 	info.components = 1;
 	info.bitspersample = 8;
@@ -139,7 +138,6 @@ void TestFailOnTooSmallOutputBuffer()
 	JLS_ERROR err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteRaw.size(), &info);
 	ASSERT(err == CompressedBufferTooSmall);
 }
-
 
 
 void TestBgra()
@@ -169,20 +167,19 @@ void TestBgr()
 	ASSERT(rgbyteDecoded[info.width * 6 + 3] == 0x2d);
 	ASSERT(rgbyteDecoded[info.width * 6 + 4] == 0x43);
 	ASSERT(rgbyteDecoded[info.width * 6 + 5] == 0x4d);	
-
 }
 
 
 void TestTooSmallOutputBuffer()
 {
-	std::vector<BYTE> rgbyteCompressed;	
+	std::vector<BYTE> rgbyteCompressed;
 	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
 		return;
 
-	std::vector<BYTE> rgbyteOut(512 * 511);	
+	std::vector<BYTE> rgbyteOut(512 * 511);
 	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
 
-	ASSERT(error == UncompressedBufferTooSmall);	
+	ASSERT(error == UncompressedBufferTooSmall);
 }
 
 
@@ -199,6 +196,41 @@ void TestBadImage()
 }
 
 
+void TestDecodeBitStreamWithNoMarkerStart()
+{
+	BYTE encodedData[2] = { 0x33, 0x33 };
+	BYTE output[1000];
+
+	JLS_ERROR error = JpegLsDecode(output, 1000, encodedData, 2, NULL);
+	ASSERT(error == MissingJpegMarkerStart);
+}
+
+
+void TestDecodeBitStreamWithUnsupportedEncoding()
+{
+	BYTE encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
+	                        0xFF, 0xC3, // Start Of Frame (lossless, huffman) (JPEG_SOF_3)
+	                        0x00, 0x00  // Lenght of data of the marker
+	                      };
+	BYTE output[1000];
+
+	JLS_ERROR error = JpegLsDecode(output, 1000, encodedData, 6, NULL);
+	ASSERT(error == UnsupportedEncoding);
+}
+
+
+void TestDecodeBitStreamWithUnknownJpegMarker()
+{
+	BYTE encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
+		0xFF, 0x01, // Undefined marker
+		0x00, 0x00  // Lenght of data of the marker
+	};
+	BYTE output[1000];
+
+	JLS_ERROR error = JpegLsDecode(output, 1000, encodedData, 6, NULL);
+	ASSERT(error == UnknownJpegMarker);
+}
+
 
 void TestDecodeRect()
 {
@@ -208,7 +240,7 @@ void TestDecodeRect()
 		return;
 
 	std::vector<BYTE> rgbyteOutFull(info.width*info.height*info.components);
-	JLS_ERROR error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);	
+	JLS_ERROR error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
 	ASSERT(error == OK);
 
 	JlsRect rect = { 128, 128, 256, 1 };
@@ -220,8 +252,6 @@ void TestDecodeRect()
 	ASSERT(memcmp(&rgbyteOutFull[rect.X + rect.Y*512], &rgbyteOut[0], rect.Width * rect.Height) == 0);
 	ASSERT(rgbyteOut[rect.Width * rect.Height] == 0x1f);
 }
-
-
 
 
 void TestEncodeFromStream(const char* file, int offset, int width, int height, int bpp, int ccomponent, int ilv, size_t expectedLength)
@@ -249,15 +279,16 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
 	myFile.close();
 }
 
+
 bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
-{	
+{
 	ByteStreamInfo compressedByteStream = {jlsFile.rdbuf()};
 
 	JlsParameters info = JlsParameters();
 	JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
 	if (err != OK)
-	  	return false;
- 
+		return false;
+
 	int maxval = (1 << info.bitspersample) - 1;
 	int id = info.components == 3 ? 6 : 5;
 	info.colorTransform = XFORM_BIGENDIAN;
@@ -269,6 +300,7 @@ bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
 	JpegLsDecodeStream(pnmStream, compressedByteStream, &info);
 	return true;
 }
+
 
 std::vector<int> readPnmHeader(std::istream& pnmFile)
 {
@@ -298,16 +330,17 @@ std::vector<int> readPnmHeader(std::istream& pnmFile)
 	return readValues;
 }
 
+
 bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
-{	
+{
 	std::vector<int> readValues = readPnmHeader(pnmFile);
 
 	if (readValues.size() !=4)
 		return false;
-	
+
 	ByteStreamInfo rawStreamInfo = {pnmFile.rdbuf()};
 	ByteStreamInfo jlsStreamInfo = {jlsFileStream.rdbuf()};
-	
+
 	JlsParameters params = JlsParameters();
 	int componentCount = readValues[0] == 6 ? 3 : 1;
 	params.width = readValues[1];
@@ -321,7 +354,6 @@ bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
 	JpegLsEncodeStream(jlsStreamInfo, &bytesWritten, rawStreamInfo, &params);
 	return true;
 }
-
 
 
 void TestDecodeFromStream(const char* strNameEncoded)
@@ -362,6 +394,7 @@ JLS_ERROR DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
 	return value;
 }
 
+
 void TestEncodeFromStream()
 {
 	////TestDecodeFromStream("test/user_supplied/output.jls");
@@ -370,7 +403,6 @@ void TestEncodeFromStream()
 	//TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
 	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,2, 99734);
 	TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,1, 100615);
-	
 }
 
 
@@ -411,6 +443,11 @@ void UnitTest()
 	TestSampleAnnexH3();
 
 	TestNoiseImage();
+
+	printf("Test robustness\r\n");
+	TestDecodeBitStreamWithNoMarkerStart();
+	TestDecodeBitStreamWithUnsupportedEncoding();
+	TestDecodeBitStreamWithUnknownJpegMarker();
 }
 
 
@@ -436,7 +473,7 @@ int main(int argc, char* argv[])
 		{
 			if (i != 1 || argc != 4)
 			{
-				printf("Syntax: -decoderaw inputfile outputfile \r\n");		
+				printf("Syntax: -decoderaw inputfile outputfile \r\n");
 				return 0;
 			}
 			return DecodeRaw(argv[2],argv[3]);		
@@ -446,13 +483,13 @@ int main(int argc, char* argv[])
 		{
 			if (i != 1 || argc != 4)
 			{
-				printf("Syntax: -decodetopnm inputfile outputfile \r\n");		
+				printf("Syntax: -decodetopnm inputfile outputfile \r\n");
 				return 0;
 			}
 			std::fstream pnmFile(argv[3], mode_output); 
 			std::fstream jlsFile(argv[2], mode_input);
 
-			return DecodeToPnm(jlsFile, pnmFile);			
+			return DecodeToPnm(jlsFile, pnmFile);
 		}
 
 		if (str.compare("-encodepnm") == 0)
@@ -465,7 +502,7 @@ int main(int argc, char* argv[])
 			std::fstream pnmFile(argv[2], mode_input); 
 			std::fstream jlsFile(argv[3], mode_output); 
 	
-			return EncodePnm(pnmFile,jlsFile);				
+			return EncodePnm(pnmFile,jlsFile);
 		}
 
 		if (str.compare("-bitstreamdamage") == 0)
