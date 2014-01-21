@@ -409,7 +409,7 @@ void TestEncodeFromStream()
 void TestColorTransforms_HpImages();
 void TestConformance();
 void TestSampleAnnexH3();
-void PerformanceTests();
+void PerformanceTests(int loopCount);
 void DamagedBitstreamTests();
 void TestDicomWG4Images();
 
@@ -455,7 +455,7 @@ int main(int argc, char* argv[])
 {
 	if (argc == 1)
 	{
-		printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance, -dontwait -decoderaw -encodepnm -decodetopnm \r\n");		
+		printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance[:loop count], -dontwait -decoderaw -encodepnm -decodetopnm \r\n");
 		return 0;
 	}
 
@@ -476,7 +476,7 @@ int main(int argc, char* argv[])
 				printf("Syntax: -decoderaw inputfile outputfile \r\n");
 				return 0;
 			}
-			return DecodeRaw(argv[2],argv[3]);		
+			return DecodeRaw(argv[2],argv[3]);
 		}
 
 		if (str.compare("-decodetopnm") == 0)
@@ -511,9 +511,23 @@ int main(int argc, char* argv[])
 			continue;
 		}
 
-		if (str.compare("-performance") == 0)
+		if (str.compare(0, 12, "-performance") == 0)
 		{
-			PerformanceTests();
+			int loopCount = 1;
+
+			// Extract the optional loop count from the command line. Longer running tests make the measurements more reliable.
+			auto index = str.find(':');
+			if (index != std::string::npos)
+			{
+				loopCount = std::stoi(str.substr(++index));
+				if (loopCount < 1)
+				{
+					printf("Loop count not understood or invalid: %s\r\n", str.c_str());
+					break;
+				}
+			}
+
+			PerformanceTests(loopCount);
 			continue;
 		}
 

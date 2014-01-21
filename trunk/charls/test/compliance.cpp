@@ -29,6 +29,7 @@ void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
 	std::swap(rgbyte, rgbytePlanar);
 }
 
+
 void Triplet2Line(std::vector<BYTE>& rgbyte, Size size)
 {
 	std::vector<BYTE> rgbyteInterleaved(rgbyte.size());
@@ -51,11 +52,8 @@ void Triplet2Line(std::vector<BYTE>& rgbyte, Size size)
 }
 
 
-
-
-
-void TestCompliance(const BYTE* compressedBytes, int compressedLength, const BYTE* rgbyteRaw, int cbyteRaw, bool bcheckEncode)
-{	
+void TestCompliance(const BYTE* compressedBytes, size_t compressedLength, const BYTE* rgbyteRaw, size_t cbyteRaw, bool bcheckEncode)
+{
 	JlsParameters info = JlsParameters();
 	JLS_ERROR err = JpegLsReadHeader(compressedBytes, compressedLength, &info);
 	ASSERT(err == OK);
@@ -76,18 +74,16 @@ void TestCompliance(const BYTE* compressedBytes, int compressedLength, const BYT
 	if (info.allowedlossyerror == 0)
 	{
 		BYTE* pbyteOut = &rgbyteOut[0];
-		for (int i = 0; i < cbyteRaw; ++i)
+		for (size_t i = 0; i < cbyteRaw; ++i)
 		{
 			if (rgbyteRaw[i] != pbyteOut[i])
 			{
 				ASSERT(false);
 				break;
 			}
-		}						    
+		}
 	}
-
 }
-
 
 
 void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEncode)
@@ -110,7 +106,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 
 	if (metadata.bitspersample > 8)
 	{
-		FixEndian(&rgbyteRaw, false);				
+		FixEndian(&rgbyteRaw, false);
 	}
 
 	Size size = Size(metadata.width, metadata.height);

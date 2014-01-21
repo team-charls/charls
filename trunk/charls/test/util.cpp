@@ -79,13 +79,11 @@ void WriteFile(SZC strName, std::vector<BYTE>& vec)
 }
 
 
-void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size, int cbit, int ccomp)
-{	
+void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount)
+{
 	std::vector<BYTE> rgbyteCompressed(size.cx *size.cy * ccomp * cbit / 4);
 
 	std::vector<BYTE> rgbyteOut(size.cx * size.cy * ((cbit + 7) / 8) * ccomp);
-
-	double dblstart = getTime();
 
 	JlsParameters info = JlsParameters();
 	info.components = ccomp;
@@ -103,21 +101,29 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 		info.colorTransform = COLORXFORM_HP1;
 	}
 
-	size_t compressedLength;
-	JLS_ERROR err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &info);
-	ASSERT(err == OK);
-
+	size_t compressedLength = 0;
+	double dwtimeEncodeStart = getTime();
+	for (int i = 0; i < loopCount; ++i)
+	{
+		JLS_ERROR err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &info);
+		ASSERT(err == OK);
+	}
 	double dwtimeEncodeComplete = getTime();
 
-    err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(compressedLength), NULL);
-	ASSERT(err == OK);
-
-	double bitspersample = compressedLength  * 8  * 1.0 /  (ccomp *size.cy * size.cx);
+	double dwtimeDecodeStart = getTime();
+	for (int i = 0; i < loopCount; ++i)
+	{
+		JLS_ERROR err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(compressedLength), NULL);
+		ASSERT(err == OK);
+	}
 	double dwtimeDecodeComplete = getTime();
+
+	double bitspersample = compressedLength * 8 * 1.0 / (ccomp *size.cy * size.cx);
 	std::cout << "RoundTrip test for: " << strName << "\n\r";
-	double decodeTime = dwtimeDecodeComplete - dwtimeEncodeComplete;
-	double symbolRate = (ccomp *size.cy * size.cx)/(1000.0 * decodeTime);
-	printf("Size:%4ldx%4ld Encode:%7.2f Decode:%7.2f Bps:%5.2f Decode rate:%5.1f M/s \n\r", size.cx, size.cy, dwtimeEncodeComplete - dblstart, dwtimeDecodeComplete - dwtimeEncodeComplete, bitspersample, symbolRate);
+	double encodeTime = (dwtimeEncodeComplete - dwtimeEncodeStart) / loopCount;
+	double decodeTime = (dwtimeDecodeComplete - dwtimeDecodeStart) / loopCount;
+	double symbolRate = (ccomp * size.cy * size.cx) / (1000.0 * decodeTime);
+	printf("Size:%4ldx%4ld, Encode time:%7.2f ms, Decode time:%7.2f ms, Bits per sample:%5.2f, Decode rate:%5.1f M/s \n\r", size.cx, size.cy, encodeTime, decodeTime, bitspersample, symbolRate);
 	BYTE* pbyteOut = &rgbyteOut[0];
 	for (size_t i = 0; i < rgbyteOut.size(); ++i)
 	{
@@ -126,11 +132,11 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 			ASSERT(false);
 			break;
 		}
-	}	
+	}
 }
 
 
-void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile)
+void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile, int loopCount)
 {
 	int byteCount = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
 	std::vector<BYTE> rgbyteUncompressed;
@@ -140,9 +146,9 @@ void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool litt
 
 	if (cbit > 8)
 	{
-		FixEndian(&rgbyteUncompressed, littleEndianFile);		
+		FixEndian(&rgbyteUncompressed, littleEndianFile);
 	}
 
-	TestRoundTrip(strName, rgbyteUncompressed, size2, cbit, ccomp);
+	TestRoundTrip(strName, rgbyteUncompressed, size2, cbit, ccomp, loopCount);
 }
 
