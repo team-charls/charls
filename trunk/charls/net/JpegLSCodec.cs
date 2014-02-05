@@ -128,6 +128,7 @@ namespace CharLS
         /// </summary>
         /// <param name="source">The JPEG-LS compressed bit stream.</param>
         /// <returns>An JpegLSMetadataInfo instance.</returns>
+        /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
         public static JpegLSMetadataInfo GetMetadataInfo(byte[] source)
         {
             Contract.Requires<ArgumentNullException>(source != null);
