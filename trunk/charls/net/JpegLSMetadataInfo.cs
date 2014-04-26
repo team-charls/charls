@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Globalization;
+using System.IO;
 
 namespace CharLS
 {
@@ -19,12 +20,24 @@ namespace CharLS
     /// This information can be extracted without decompressing (decoding) the byte stream. This information is often
     /// required to prepare output buffers to received the decompressed byte stream.
     /// </remarks>
-    public class JpegLSMetadataInfo : IEquatable<JpegLSMetadataInfo>
+    public sealed class JpegLSMetadataInfo : IEquatable<JpegLSMetadataInfo>
     {
+        private int width;
+        private int height;
+        private int bitsPerComponent;
+        private int componentCount;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="JpegLSMetadataInfo"/> class.
         /// </summary>
-        public JpegLSMetadataInfo()
+        /// <remarks>
+        /// Initializes a minimal <see cref="JpegLSMetadataInfo"/> instance with:
+        /// Width = 1
+        /// Height = 1
+        /// BitsPerComponent = 2
+        /// ComponentCount = 1
+        /// </remarks>
+        public JpegLSMetadataInfo() : this(1, 1, 2, 1)
         {
         }
 
@@ -37,18 +50,37 @@ namespace CharLS
         /// <param name="componentCount">The component count. Typical 1 for monochrome images and 3 for color images.</param>
         public JpegLSMetadataInfo(int pixelWidth, int pixelHeight, int bitsPerComponent, int componentCount)
         {
-            Width = pixelWidth;
-            Height = pixelHeight;
-            BitsPerComponent = bitsPerComponent;
-            ComponentCount = componentCount;
+            Contract.Requires<ArgumentException>(pixelWidth > 0);
+            Contract.Requires<ArgumentException>(pixelHeight > 0);
+            Contract.Requires<ArgumentException>(bitsPerComponent > 1);
+            Contract.Requires<ArgumentException>(componentCount > 0);
+
+            width = pixelWidth;
+            height = pixelHeight;
+            this.bitsPerComponent = bitsPerComponent;
+            this.componentCount = componentCount;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JpegLSMetadataInfo"/> class.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <exception cref="InvalidDataException">Thrown when one the values are out of bounds.</exception>
         internal JpegLSMetadataInfo(ref JlsParameters parameters)
         {
-            Width = parameters.Width;
-            Height = parameters.Height;
-            ComponentCount = parameters.Components;
-            BitsPerComponent = parameters.BitsPerSample;
+            if (parameters.Width < 1)
+                throw new InvalidDataException("parameters.Width < 1");
+            if (parameters.Height < 1)
+                throw new InvalidDataException("parameters.Height < 1");
+            if (parameters.BitsPerSample < 2)
+                throw new InvalidDataException("parameters.BitsPerSample < 2");
+            if (parameters.Components < 1)
+                throw new InvalidDataException("parameters.Components < 1");
+
+            width = parameters.Width;
+            height = parameters.Height;
+            componentCount = parameters.Components;
+            bitsPerComponent = parameters.BitsPerSample;
             AllowedLossyError = parameters.AllowedLossyError;
             InterleaveMode = parameters.InterleaveMode;
         }
@@ -57,20 +89,59 @@ namespace CharLS
         /// Gets or sets the width of the image in pixels.
         /// </summary>
         /// <value>The width.</value>
-        public int Width { get; set; }
+        public int Width
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                return width;
+            }
+
+            set
+            {
+                Contract.Requires<ArgumentException>(value > 0);
+                width = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the height of the image in pixels.
         /// </summary>
         /// <value>The height.</value>
-        public int Height { get; set; }
+        public int Height
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                return height;
+            }
+
+            set
+            {
+                Contract.Requires<ArgumentException>(value > 0);
+                height = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the bits per component.
         /// Typical 8 for a color component and between 2 and 16 for a monochrome component.
         /// </summary>
         /// <value>The bits per sample.</value>
-        public int BitsPerComponent { get; set; }
+        public int BitsPerComponent
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 1);
+                return bitsPerComponent;
+            }
+
+            set
+            {
+                Contract.Requires<ArgumentException>(value > 1);
+                bitsPerComponent = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the bytes per line.
@@ -83,7 +154,20 @@ namespace CharLS
         /// Typical 1 for monochrome images and 3 for color images.
         /// </summary>
         /// <value>The component count.</value>
-        public int ComponentCount { get; set; }
+        public int ComponentCount
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                return componentCount;
+            }
+
+            set
+            {
+                Contract.Requires<ArgumentException>(value > 0);
+                componentCount = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the allowed error value for non-lossless compression.
@@ -111,7 +195,13 @@ namespace CharLS
         /// <value>The size of byte array.</value>
         public int UncompressedSize
         {
-            get { return Width * Height * ComponentCount * ((BitsPerComponent + 7) / 8); }
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                var result = Width * Height * ComponentCount * ((BitsPerComponent + 7) / 8);
+                Contract.Assume(result > 0);
+                return result;
+            }
         }
 
         /// <summary>
@@ -191,6 +281,15 @@ namespace CharLS
             parameters.InterleaveMode = InterleaveMode;
             parameters.AllowedLossyError = AllowedLossyError;
             parameters.OutputBgr = OutputBgr;
+        }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(width > 0);
+            Contract.Invariant(height > 0);
+            Contract.Invariant(bitsPerComponent > 1);
+            Contract.Invariant(componentCount > 0);
         }
     }
 }

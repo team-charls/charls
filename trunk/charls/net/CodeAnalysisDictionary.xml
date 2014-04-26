@@ -8,6 +8,7 @@
         <Word>jfif</Word>
         <Word>bgr</Word>
         <Word>jls</Word>
+        <Word>BitsPerSample</Word>
       </Recognized>
       <Deprecated>
       </Deprecated>

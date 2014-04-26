@@ -14,10 +14,10 @@ namespace CharLS.Test
         {
             var info = new JpegLSMetadataInfo();
 
-            Assert.AreEqual(0, info.Width);
-            Assert.AreEqual(0, info.Height);
-            Assert.AreEqual(0, info.ComponentCount);
-            Assert.AreEqual(0, info.BitsPerComponent);
+            Assert.AreEqual(1, info.Width);
+            Assert.AreEqual(1, info.Height);
+            Assert.AreEqual(1, info.ComponentCount);
+            Assert.AreEqual(2, info.BitsPerComponent);
             Assert.AreEqual(0, info.AllowedLossyError);
             Assert.AreEqual(JpegLSInterleaveMode.Planar, info.InterleaveMode);
         }
@@ -39,7 +39,7 @@ namespace CharLS.Test
         public void EquatableDifferentObjects()
         {
             var a = new JpegLSMetadataInfo();
-            var b = new JpegLSMetadataInfo { Height = 1 };
+            var b = new JpegLSMetadataInfo { Height = 2 };
 
             Assert.IsFalse(a.Equals(b));
             Assert.IsFalse(a.Equals((object)b));
