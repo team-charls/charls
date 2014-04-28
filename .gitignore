@@ -1,0 +1,9 @@
+# GIT ignore file for CharLS
+
+obj/
+bin/
+Win32/
+x64/
+*.opensdf
+*.sdf
+CharLS_VS2013.v12.suo
