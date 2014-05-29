@@ -6,9 +6,12 @@
 
 #include "colortransform.h"
 #include <iostream>
+#include <vector>
+
 #ifdef _MSC_VER 
-#pragma warning(disable: 4996)
+#pragma warning(disable: 4996) // disable 'function': was declared deprecated also 'std::<function name>': Function call with parameters that may be unsafe
 #endif
+
 //
 // This file defines the ProcessLine base class, its derivitives and helper functions.
 // During coding/decoding, CharLS process one line at a time. The different Processline implementations
