@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30516.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLS_VS2013", "CharLS_VS2013.vcxproj", "{524BE26D-FC60-4BC4-9100-128A0502FFF7}"
 EndProject
@@ -19,32 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Native", "Native", "{1C1CF6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".NET", ".NET", "{A81B52AC-655D-4D1F-B21B-9BC4529AB447}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSUnitTest_VS2013", "unittest\CharLSUnitTest_VS2013.vcxproj", "{5293D7B4-4192-41FD-B9AF-CF4051D44545}"
+EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs08
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = CharLS_VS2013.vcxproj
-		SccProjectTopLevelParentUniqueName1 = CharLS_VS2013.sln
-		SccLocalPath1 = .
-		SccProjectUniqueName2 = net\\CharLSNet_VS2013.csproj
-		SccProjectTopLevelParentUniqueName2 = CharLS_VS2013.sln
-		SccProjectName2 = net
-		SccLocalPath2 = net
-		SccProjectUniqueName3 = nettest\\CharLSNetTest_VS2013.csproj
-		SccProjectTopLevelParentUniqueName3 = CharLS_VS2013.sln
-		SccProjectName3 = nettest
-		SccLocalPath3 = nettest
-		SccProjectUniqueName4 = test\\CharLSTest_VS2013.vcxproj
-		SccProjectTopLevelParentUniqueName4 = CharLS_VS2013.sln
-		SccProjectName4 = test
-		SccLocalPath4 = test
-		SccProjectUniqueName5 = samples\\viewer\\Viewer_VS2013.csproj
-		SccProjectTopLevelParentUniqueName5 = CharLS_VS2013.sln
-		SccProjectName5 = samples/viewer
-		SccLocalPath5 = samples\\viewer
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Checked|Win32 = Checked|Win32
 		Checked|x64 = Checked|x64
@@ -114,15 +91,25 @@ Global
 		{62B47821-5105-49A2-A157-5FAE1AEA0686}.Release|Win32.Build.0 = Release|x86
 		{62B47821-5105-49A2-A157-5FAE1AEA0686}.Release|x64.ActiveCfg = Release|x64
 		{62B47821-5105-49A2-A157-5FAE1AEA0686}.Release|x64.Build.0 = Release|x64
+		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Checked|Win32.ActiveCfg = Debug|Win32
+		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Checked|Win32.Build.0 = Debug|Win32
+		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Checked|x64.ActiveCfg = Release|Win32
+		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Debug|Win32.Build.0 = Debug|Win32
+		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Debug|x64.ActiveCfg = Debug|Win32
+		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Release|Win32.ActiveCfg = Release|Win32
+		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Release|Win32.Build.0 = Release|Win32
+		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{3E349E7B-30C2-4791-81B7-1108014291B7} = {1C1CF63C-A53A-449F-90D3-63321015FD65}
 		{524BE26D-FC60-4BC4-9100-128A0502FFF7} = {1C1CF63C-A53A-449F-90D3-63321015FD65}
-		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41} = {A81B52AC-655D-4D1F-B21B-9BC4529AB447}
 		{4EDED401-1B63-4989-BF3F-2875B6C9203D} = {A81B52AC-655D-4D1F-B21B-9BC4529AB447}
+		{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41} = {A81B52AC-655D-4D1F-B21B-9BC4529AB447}
+		{3E349E7B-30C2-4791-81B7-1108014291B7} = {1C1CF63C-A53A-449F-90D3-63321015FD65}
 		{62B47821-5105-49A2-A157-5FAE1AEA0686} = {BE733144-010D-4F7F-A619-0B73D8461D60}
+		{5293D7B4-4192-41FD-B9AF-CF4051D44545} = {1C1CF63C-A53A-449F-90D3-63321015FD65}
 	EndGlobalSection
 EndGlobal
