@@ -334,6 +334,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="JpegStreamWriter.cd" />
     <None Include="CMakeLists.txt" />
     <None Include="License.txt" />
   </ItemGroup>

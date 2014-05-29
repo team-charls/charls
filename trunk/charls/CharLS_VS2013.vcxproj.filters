@@ -64,6 +64,9 @@
   <ItemGroup>
     <None Include="CMakeLists.txt" />
     <None Include="License.txt" />
+    <None Include="JpegStreamWriter.cd">
+      <Filter>Design</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -71,6 +74,9 @@
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{5878f549-2a1c-4453-b438-dc34c34aa9af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Design">
+      <UniqueIdentifier>{fa2c9109-3699-4d9b-a224-c59a1b549527}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
