@@ -8,7 +8,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 IF(CMAKE_COMPILER_IS_GNUCC)
 # the following is optimization micromanagement that made better code for x86
 # SET(CMAKE_CXX_FLAGS "-D NDEBUG -O3 -Wall -Wextra -pedantic -fvisibility=hidden -fomit-frame-pointer -momit-leaf-frame-pointer -fweb  -ftracer" )
-SET(CMAKE_CXX_FLAGS "-D NDEBUG -O3" )
+SET(CMAKE_CXX_FLAGS "-D NDEBUG -O3 -std=c++11" )
 ENDIF(CMAKE_COMPILER_IS_GNUCC)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
