@@ -66,7 +66,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 
 		Size size = Size(info.width, info.height);
 
-		JpegMarkerWriter writer(info.jfif, size, info.bitspersample, info.components);
+		JpegStreamWriter writer(info.jfif, size, info.bitspersample, info.components);
 
 		if (info.colorTransform != 0)
 		{
@@ -179,7 +179,7 @@ extern "C"
 
 		Size size = Size(info.width, info.height);
 
-		JpegMarkerWriter writer(info.jfif, size, info.bitspersample, info.components);
+		JpegStreamWriter writer(info.jfif, size, info.bitspersample, info.components);
 
 		if (info.ilv == ILV_NONE)
 		{

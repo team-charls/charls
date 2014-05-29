@@ -21,38 +21,46 @@ ByteStreamInfo FromStream(std::basic_streambuf<char>* stream);
 void SkipBytes(ByteStreamInfo* streamInfo, size_t count);
 
 //
-// JpegMarkerWriter: minimal implementation to write JPEG markers
+// Purpose: 'Writer'class that can generate JPEG-LS file streams.
 //
-class JpegMarkerWriter
+class JpegStreamWriter
 {
 	friend class JpegMarkerSegment;
 	friend class JpegImageDataSegment;
 
 public:
-	JpegMarkerWriter(const JfifParameters& jfifParameters, Size size, LONG bitsPerSample, LONG ccomp);
-	virtual ~JpegMarkerWriter();
+	JpegStreamWriter(const JfifParameters& jfifParameters, Size size, LONG bitsPerSample, LONG ccomp);
+	virtual ~JpegStreamWriter();
 
 	void AddScan(ByteStreamInfo info, const JlsParameters* pparams);
 
 	void AddLSE(const JlsCustomParameters* pcustom);
 	void AddColorTransform(int i);
 	size_t GetBytesWritten()
-		{ return _byteOffset; }
+	{
+		return _byteOffset;
+	}
 
 	size_t GetLength()
-		{ return _data.count - _byteOffset; }
+	{ 
+		return _data.count - _byteOffset;
+	}
 
 	size_t Write(ByteStreamInfo info);
 
-	void EnableCompare(bool bCompare) 
-		{ _bCompare = bCompare; }
+	void EnableCompare(bool bCompare)
+	{
+		_bCompare = bCompare;
+	}
 
 private:
 	BYTE* GetPos() const
-		{ return _data.rawData + _byteOffset; }
+	{
+		return _data.rawData + _byteOffset;
+	}
 
 	ByteStreamInfo OutputStream() const
-	{ 
+	{
 		ByteStreamInfo data = _data;
 		data.count -= _byteOffset;
 		data.rawData += _byteOffset;

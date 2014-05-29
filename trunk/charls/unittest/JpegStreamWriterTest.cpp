@@ -21,7 +21,7 @@ namespace CharLSUnitTest
 			LONG bitsPerSample = 1;
 			LONG ccomp = 0;
 
-			JpegMarkerWriter writer(jfifParameters, size, bitsPerSample, ccomp);
+			JpegStreamWriter writer(jfifParameters, size, bitsPerSample, ccomp);
 			Assert::AreEqual(static_cast<size_t>(0), writer.GetLength());
 		}
 	};

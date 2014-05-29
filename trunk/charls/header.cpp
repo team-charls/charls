@@ -79,9 +79,7 @@ JLS_ERROR CheckParameterCoherent(const JlsParameters* pparams)
 	}
 }
 
-//
-// JpegMarkerSegment
-//
+
 class JpegMarkerSegment : public JpegSegment
 {
 public:
@@ -91,16 +89,47 @@ public:
 		std::swap(_vecbyte, vecbyte);
 	}
 
-	virtual void Write(JpegMarkerWriter* pstream)
+	virtual void Serialize(JpegStreamWriter& streamWriter)
 	{
-		pstream->WriteByte(0xFF);
-		pstream->WriteByte(_marker);
-		pstream->WriteWord(USHORT(_vecbyte.size() + 2));
-		pstream->WriteBytes(_vecbyte);
+		streamWriter.WriteByte(0xFF);
+		streamWriter.WriteByte(_marker);
+		streamWriter.WriteWord(USHORT(_vecbyte.size() + 2));
+		streamWriter.WriteBytes(_vecbyte);
 	}
 
+private:
 	BYTE _marker;
 	std::vector<BYTE> _vecbyte;
+};
+
+
+class JpegImageDataSegment : public JpegSegment
+{
+public:
+	JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& info, LONG icompStart, int ccompScan) :
+		_ccompScan(ccompScan),
+		_icompStart(icompStart),
+		_rawStreamInfo(rawStream),
+		_info(info)
+	{
+	}
+
+	void Serialize(JpegStreamWriter& streamWriter)
+	{
+		JlsParameters info = _info;
+		info.components = _ccompScan;
+		std::auto_ptr<EncoderStrategy> qcodec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
+		ProcessLine* processLine = qcodec->CreateProcess(_rawStreamInfo);
+		ByteStreamInfo compressedData = streamWriter.OutputStream();
+		size_t cbyteWritten = qcodec->EncodeScan(std::auto_ptr<ProcessLine>(processLine), &compressedData, streamWriter._bCompare ? streamWriter.GetPos() : NULL);
+		streamWriter.Seek(cbyteWritten);
+	}
+
+private:
+	int _ccompScan;
+	LONG _icompStart;
+	ByteStreamInfo _rawStreamInfo;
+	JlsParameters _info;
 };
 
 
@@ -114,9 +143,6 @@ void push_back(std::vector<BYTE>& vec, USHORT value)
 }
 
 
-//
-// CreateMarkerStartOfFrame()
-//
 JpegSegment* CreateMarkerStartOfFrame(Size size, LONG bitsPerSample, LONG ccomp)
 {
 	std::vector<BYTE> vec;
@@ -139,9 +165,6 @@ JpegSegment* CreateMarkerStartOfFrame(Size size, LONG bitsPerSample, LONG ccomp)
 }
 
 
-//
-// CreateJFIF()
-//
 JpegMarkerSegment* CreateJFIF(const JfifParameters* jfif)
 {
 	std::vector<BYTE> rgbyte;
@@ -172,10 +195,52 @@ JpegMarkerSegment* CreateJFIF(const JfifParameters* jfif)
 }
 
 
-//
-// ctor()
-//
-JpegMarkerWriter::JpegMarkerWriter(const JfifParameters& jfifParameters, Size size, LONG bitsPerSample, LONG ccomp) :
+JpegMarkerSegment* CreateLSE(const JlsCustomParameters* pcustom)
+{
+	std::vector<BYTE> rgbyte;
+
+	rgbyte.push_back(1);
+	push_back(rgbyte, (USHORT) pcustom->MAXVAL);
+	push_back(rgbyte, (USHORT) pcustom->T1);
+	push_back(rgbyte, (USHORT) pcustom->T2);
+	push_back(rgbyte, (USHORT) pcustom->T3);
+	push_back(rgbyte, (USHORT) pcustom->RESET);
+
+	return new JpegMarkerSegment(JPEG_LSE, rgbyte);
+}
+
+
+JpegMarkerSegment* EncodeStartOfScan(const JlsParameters* pparams, LONG icomponent)
+{
+	BYTE itable = 0;
+
+	std::vector<BYTE> rgbyte;
+
+	if (icomponent < 0)
+	{
+		rgbyte.push_back((BYTE) pparams->components);
+		for (LONG i = 0; i < pparams->components; ++i)
+		{
+			rgbyte.push_back(BYTE(i + 1));
+			rgbyte.push_back(itable);
+		}
+	}
+	else
+	{
+		rgbyte.push_back(1);
+		rgbyte.push_back((BYTE) icomponent);
+		rgbyte.push_back(itable);
+	}
+
+	rgbyte.push_back(BYTE(pparams->allowedlossyerror));
+	rgbyte.push_back(BYTE(pparams->ilv));
+	rgbyte.push_back(0); // transform
+
+	return new JpegMarkerSegment(JPEG_SOS, rgbyte);
+}
+
+
+JpegStreamWriter::JpegStreamWriter(const JfifParameters& jfifParameters, Size size, LONG bitsPerSample, LONG ccomp) :
 	_bCompare(false),
 	_data(),
 	_byteOffset(0),
@@ -190,10 +255,7 @@ JpegMarkerWriter::JpegMarkerWriter(const JfifParameters& jfifParameters, Size si
 }
 
 
-//
-// dtor()
-//
-JpegMarkerWriter::~JpegMarkerWriter()
+JpegStreamWriter::~JpegStreamWriter()
 {
 	for (size_t i = 0; i < _segments.size(); ++i)
 	{
@@ -202,7 +264,7 @@ JpegMarkerWriter::~JpegMarkerWriter()
 }
 
 
-void JpegMarkerWriter::AddColorTransform(int i)
+void JpegStreamWriter::AddColorTransform(int i)
 {
 	std::vector<BYTE> rgbyteXform;
 	rgbyteXform.push_back('m');
@@ -215,10 +277,7 @@ void JpegMarkerWriter::AddColorTransform(int i)
 }
 
 
-//
-// Write()
-//
-size_t JpegMarkerWriter::Write(ByteStreamInfo info)
+size_t JpegStreamWriter::Write(ByteStreamInfo info)
 {
 	_data = info;
 
@@ -227,7 +286,7 @@ size_t JpegMarkerWriter::Write(ByteStreamInfo info)
 
 	for (size_t i = 0; i < _segments.size(); ++i)
 	{
-		_segments[i]->Write(this);
+		_segments[i]->Serialize(*this);
 	}
 
 	//_bCompare = false;
@@ -238,6 +297,26 @@ size_t JpegMarkerWriter::Write(ByteStreamInfo info)
 	return _byteOffset;
 }
 
+
+void JpegStreamWriter::AddScan(ByteStreamInfo info, const JlsParameters* pparams)
+{
+	if (!IsDefault(&pparams->custom))
+	{
+		_segments.push_back(CreateLSE(&pparams->custom));
+	}
+	else if (pparams->bitspersample > 12)
+	{
+		JlsCustomParameters preset = ComputeDefault((1 << pparams->bitspersample) - 1, pparams->allowedlossyerror);
+		_segments.push_back(CreateLSE(&preset));
+	}
+
+	_lastCompenentIndex += 1;
+	_segments.push_back(EncodeStartOfScan(pparams, pparams->ilv == ILV_NONE ? _lastCompenentIndex : -1));
+
+	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
+
+	_segments.push_back(new JpegImageDataSegment(info, *pparams, _lastCompenentIndex, ccomp));
+}
 
 
 JpegMarkerReader::JpegMarkerReader(ByteStreamInfo byteStreamInfo) :
@@ -266,9 +345,7 @@ int ReadScanHeader(BYTE* compressedBytes)
 	return (int)readBytes;
 }
 
-//
-// Read()
-//
+
 void JpegMarkerReader::Read(ByteStreamInfo rawPixels)
 {
 	ReadHeader();
@@ -306,8 +383,7 @@ void JpegMarkerReader::Read(ByteStreamInfo rawPixels)
 	}
 }
 
-// ReadNBytes()
-//
+
 void JpegMarkerReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 {
 	for (int i = 0; i < byteCount; ++i)
@@ -317,9 +393,6 @@ void JpegMarkerReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 }
 
 
-//
-// ReadHeader()
-//
 void JpegMarkerReader::ReadHeader()
 {
 	if (ReadByte() != 0xFF)
@@ -383,50 +456,6 @@ int JpegMarkerReader::ReadMarker(BYTE marker)
 }
 
 
-JpegMarkerSegment* EncodeStartOfScan(const JlsParameters* pparams, LONG icomponent)
-{
-	BYTE itable = 0;
-
-	std::vector<BYTE> rgbyte;
-
-	if (icomponent < 0)
-	{
-		rgbyte.push_back((BYTE)pparams->components);
-		for (LONG i = 0; i < pparams->components; ++i)
-		{
-			rgbyte.push_back(BYTE(i + 1));
-			rgbyte.push_back(itable);
-		}
-	}
-	else
-	{
-		rgbyte.push_back(1);
-		rgbyte.push_back((BYTE)icomponent);
-		rgbyte.push_back(itable);
-	}
-
-	rgbyte.push_back(BYTE(pparams->allowedlossyerror));
-	rgbyte.push_back(BYTE(pparams->ilv));
-	rgbyte.push_back(0); // transform
-
-	return new JpegMarkerSegment(JPEG_SOS, rgbyte);
-}
-
-
-
-JpegMarkerSegment* CreateLSE(const JlsCustomParameters* pcustom)
-{
-	std::vector<BYTE> rgbyte;
-
-	rgbyte.push_back(1);
-	push_back(rgbyte, (USHORT)pcustom->MAXVAL);
-	push_back(rgbyte, (USHORT)pcustom->T1);
-	push_back(rgbyte, (USHORT)pcustom->T2);
-	push_back(rgbyte, (USHORT)pcustom->T3);
-	push_back(rgbyte, (USHORT)pcustom->RESET);
-	
-	return new JpegMarkerSegment(JPEG_LSE, rgbyte);
-}
 
 //
 // ReadPresetParameters()
@@ -575,71 +604,12 @@ int JpegMarkerReader::ReadWord()
 }
 
 
-
-class JpegImageDataSegment: public JpegSegment
-{
-public:
-
-	JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& info, LONG icompStart, int ccompScan)  :
-		_ccompScan(ccompScan),
-		_icompStart(icompStart),
-		_rawStreamInfo(rawStream),
-		_info(info)
-	{
-	}
-
-	void Write(JpegMarkerWriter* pstream)
-	{
-		JlsParameters info = _info;
-		info.components = _ccompScan;	
-		std::auto_ptr<EncoderStrategy> qcodec =JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
-		ProcessLine* processLine = qcodec->CreateProcess(_rawStreamInfo);
-		ByteStreamInfo compressedData = pstream->OutputStream();
-		size_t cbyteWritten = qcodec->EncodeScan(std::auto_ptr<ProcessLine>(processLine), &compressedData, pstream->_bCompare ? pstream->GetPos() : NULL); 
-		pstream->Seek(cbyteWritten);
-	}
-
-
-	int _ccompScan;
-	LONG _icompStart;
-	ByteStreamInfo _rawStreamInfo;
-	JlsParameters _info;	
-};
- 
-
-void JpegMarkerWriter::AddScan(ByteStreamInfo info, const JlsParameters* pparams)
-{
-	if (!IsDefault(&pparams->custom))
-	{
-		_segments.push_back(CreateLSE(&pparams->custom));
-	}
-	else if (pparams->bitspersample > 12)
-	{
-		JlsCustomParameters preset = ComputeDefault((1 << pparams->bitspersample) - 1, pparams->allowedlossyerror);
-		_segments.push_back(CreateLSE(&preset));
-	}
-
-	_lastCompenentIndex += 1;
-	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _lastCompenentIndex : -1));
-
-	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
-
-	_segments.push_back(new JpegImageDataSegment(info, *pparams, _lastCompenentIndex, ccomp));
-}
-
-
-//
-// ReadColorSpace()
-//
 int JpegMarkerReader::ReadColorSpace()
 {
 	return 0;
 }
 
 
-//
-// ReadColorXForm()
-//
 int JpegMarkerReader::ReadColorXForm()
 {
 	std::vector<char> sourceTag;
