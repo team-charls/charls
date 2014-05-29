@@ -6,6 +6,7 @@
 #include "util.h"
 #include "header.h"
 #include "jpegmarker.h"
+#include "jpegstreamwriter.h"
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
 #include <memory>

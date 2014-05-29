@@ -353,6 +353,9 @@
     <ClInclude Include="encoderstrategy.h" />
     <ClInclude Include="header.h" />
     <ClInclude Include="interface.h" />
+    <ClInclude Include="jpegmarker.h" />
+    <ClInclude Include="jpegsegment.h" />
+    <ClInclude Include="jpegstreamwriter.h" />
     <ClInclude Include="lookuptable.h" />
     <ClInclude Include="losslesstraits.h" />
     <ClInclude Include="processline.h" />

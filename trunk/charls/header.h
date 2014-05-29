@@ -66,16 +66,5 @@ JLS_ERROR CheckParameterCoherent(const JlsParameters* pparams);
 
 JlsCustomParameters ComputeDefault(LONG MAXVAL, LONG NEAR);
 
-//
-// Purpose: base class for segments that can be written to JPEG streams.
-//
-class JpegSegment
-{
-protected:
-	JpegSegment() {}
-public:
-	virtual ~JpegSegment() {}
-	virtual void Serialize(JpegStreamWriter& streamWriter) = 0;
-};
 
 #endif

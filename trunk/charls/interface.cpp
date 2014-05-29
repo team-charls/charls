@@ -14,6 +14,7 @@
 #include "util.h"
 #include "interface.h"
 #include "header.h"
+#include "jpegstreamwriter.h"
 #include <sstream>
 
 

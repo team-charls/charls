@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 
-#include "..\jpegmarker.h"
+#include "..\jpegstreamwriter.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
