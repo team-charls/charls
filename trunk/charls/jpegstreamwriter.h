@@ -22,10 +22,17 @@ public:
 	JpegStreamWriter(const JfifParameters& jfifParameters, Size size, LONG bitsPerSample, LONG ccomp);
 	virtual ~JpegStreamWriter();
 
+	void AddSegment(JpegSegment* segment)
+	{
+		_segments.push_back(segment);
+	}
+
 	void AddScan(ByteStreamInfo info, const JlsParameters* pparams);
 
 	void AddLSE(const JlsCustomParameters* pcustom);
+
 	void AddColorTransform(int i);
+
 	size_t GetBytesWritten()
 	{
 		return _byteOffset;

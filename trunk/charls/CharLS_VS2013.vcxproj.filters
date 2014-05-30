@@ -10,6 +10,12 @@
     <ClCompile Include="jpegls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="jpegmarkersegment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jpegstreamwriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="colortransform.h">
@@ -64,6 +70,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jpegmarker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jpegmarkersegment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jpegimagedatasegment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -342,6 +342,8 @@
     <ClCompile Include="header.cpp" />
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="jpegls.cpp" />
+    <ClCompile Include="jpegmarkersegment.cpp" />
+    <ClCompile Include="jpegstreamwriter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="colortransform.h" />
@@ -353,7 +355,9 @@
     <ClInclude Include="encoderstrategy.h" />
     <ClInclude Include="header.h" />
     <ClInclude Include="interface.h" />
+    <ClInclude Include="jpegimagedatasegment.h" />
     <ClInclude Include="jpegmarker.h" />
+    <ClInclude Include="jpegmarkersegment.h" />
     <ClInclude Include="jpegsegment.h" />
     <ClInclude Include="jpegstreamwriter.h" />
     <ClInclude Include="lookuptable.h" />

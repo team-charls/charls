@@ -29,5 +29,8 @@
     <ClCompile Include="JpegStreamWriterTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="jpegmarkersegmenttest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
