@@ -90,7 +90,7 @@ std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameter
 		DefaultTraitsT<BYTE,BYTE> traits((1 << info.bitspersample) - 1, info.allowedlossyerror); 
 		traits.MAXVAL = presets.MAXVAL;
 		traits.RESET = presets.RESET;
-		strategy = std::make_unique<JlsCodec<DefaultTraitsT<BYTE, BYTE>, STRATEGY>>(traits, info);
+		strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<BYTE, BYTE>, STRATEGY>(traits, info));
 	}
 	else
 	{
@@ -108,7 +108,7 @@ std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameter
 template<class TRAITS, class STRATEGY>
 std::unique_ptr<STRATEGY> CreateCodec(const TRAITS& t, const STRATEGY*, const JlsParameters& info)
 {
-	return std::make_unique<JlsCodec<TRAITS, STRATEGY>>(t, info);
+	return std::unique_ptr<STRATEGY>(new JlsCodec<TRAITS, STRATEGY>(t, info));
 }
 
 

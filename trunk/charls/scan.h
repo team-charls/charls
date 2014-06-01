@@ -806,7 +806,7 @@ size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> proce
 	ByteStreamInfo info = { NULL, (BYTE*)pvoidCompare, compressedData->count };
 	if (pvoidCompare != NULL)
 	{
-		STRATEGY::_qdecoder = std::make_unique<JlsCodec<TRAITS, DecoderStrategy>>(traits, Info());
+		STRATEGY::_qdecoder = std::unique_ptr<DecoderStrategy>(new JlsCodec<TRAITS, DecoderStrategy>(traits, Info()));
 		STRATEGY::_qdecoder->Init(&info);
 	}
 
