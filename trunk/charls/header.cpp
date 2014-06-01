@@ -66,10 +66,10 @@ void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
 {
 	JlsParameters info = _info;
 	info.components = _ccompScan;
-	std::auto_ptr<EncoderStrategy> qcodec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
-	ProcessLine* processLine = qcodec->CreateProcess(_rawStreamInfo);
+	auto codec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
+	std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
 	ByteStreamInfo compressedData = streamWriter.OutputStream();
-	size_t cbyteWritten = qcodec->EncodeScan(std::auto_ptr<ProcessLine>(processLine), &compressedData, streamWriter._bCompare ? streamWriter.GetPos() : NULL);
+	size_t cbyteWritten = codec->EncodeScan(std::move(processLine), &compressedData, streamWriter._bCompare ? streamWriter.GetPos() : NULL);
 	streamWriter.Seek(cbyteWritten);
 }
 
@@ -133,10 +133,10 @@ void JpegMarkerReader::Read(ByteStreamInfo rawPixels)
 	{
 		ReadStartOfScan(componentIndex == 0);
 
-		std::auto_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);	
-		ProcessLine* processLine = qcodec->CreateProcess(rawPixels);
-		qcodec->DecodeScan(std::auto_ptr<ProcessLine>(processLine), _rect, &_byteStream, _bCompare); 
-		SkipBytes(&rawPixels, (size_t)bytesPerPlane);		
+		std::unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);
+		std::unique_ptr<ProcessLine> processLine(qcodec->CreateProcess(rawPixels));
+		qcodec->DecodeScan(std::move(processLine), _rect, &_byteStream, _bCompare); 
+		SkipBytes(&rawPixels, (size_t)bytesPerPlane);
 
 		if (_info.ilv != ILV_NONE)
 			return;

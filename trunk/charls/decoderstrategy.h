@@ -33,7 +33,7 @@ public:
 	virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 
 	virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-	virtual void DecodeScan(std::auto_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCheck) = 0;
+	virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCheck) = 0;
 
 	void Init(ByteStreamInfo* compressedStream)
 	{
@@ -307,7 +307,7 @@ public:
 
 protected:
 	JlsParameters _info;
-	std::auto_ptr<ProcessLine> _processLine;
+	std::unique_ptr<ProcessLine> _processLine;
 
 private:
 	std::vector<BYTE> _buffer;

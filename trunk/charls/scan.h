@@ -194,8 +194,8 @@ public:
 	void InitDefault();
 	void InitParams(LONG t1, LONG t2, LONG t3, LONG nReset);
 
-	size_t  EncodeScan(std::auto_ptr<ProcessLine> rawData, ByteStreamInfo* compressedData, void* pvoidCompare);
-	void DecodeScan(std::auto_ptr<ProcessLine> rawData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCompare);
+	size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo* compressedData, void* pvoidCompare);
+	void DecodeScan(std::unique_ptr<ProcessLine> rawData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCompare);
 
 protected:
 	// codec parameters 
@@ -799,14 +799,14 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
 // Setup codec for encoding and calls DoScan
 
 template<class TRAITS, class STRATEGY>
-size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(std::auto_ptr<ProcessLine> processLine, ByteStreamInfo* compressedData, void* pvoidCompare)
+size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo* compressedData, void* pvoidCompare)
 {
-	STRATEGY::_processLine = processLine;
+	STRATEGY::_processLine = std::move(processLine);
 
 	ByteStreamInfo info = { NULL, (BYTE*)pvoidCompare, compressedData->count };
 	if (pvoidCompare != NULL)
 	{
-		STRATEGY::_qdecoder = std::auto_ptr<DecoderStrategy>(new JlsCodec<TRAITS,DecoderStrategy>(traits, Info()));
+		STRATEGY::_qdecoder = std::make_unique<JlsCodec<TRAITS, DecoderStrategy>>(traits, Info());
 		STRATEGY::_qdecoder->Init(&info);
 	}
 
@@ -821,11 +821,11 @@ size_t JlsCodec<TRAITS,STRATEGY>::EncodeScan(std::auto_ptr<ProcessLine> processL
 
 
 template<class TRAITS, class STRATEGY>
-void JlsCodec<TRAITS,STRATEGY>::DecodeScan(std::auto_ptr<ProcessLine> processLine, const JlsRect& rect, ByteStreamInfo* compressedData, bool bCompare)
+void JlsCodec<TRAITS, STRATEGY>::DecodeScan(std::unique_ptr<ProcessLine> processLine, const JlsRect& rect, ByteStreamInfo* compressedData, bool bCompare)
 {
-	STRATEGY::_processLine = processLine;
+	STRATEGY::_processLine = std::move(processLine);
 
-	BYTE* compressedBytes	= const_cast<BYTE*>(static_cast<const BYTE*>(compressedData->rawData));
+	BYTE* compressedBytes = const_cast<BYTE*>(static_cast<const BYTE*>(compressedData->rawData));
 	_bCompare = bCompare;
 	_rect = rect;
 

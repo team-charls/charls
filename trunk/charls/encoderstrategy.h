@@ -41,7 +41,7 @@ public:
 
 	virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 
-	virtual size_t EncodeScan(std::auto_ptr<ProcessLine> rawData, ByteStreamInfo* compressedData, void* pvoidCompare) = 0;
+	virtual size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo* compressedData, void* pvoidCompare) = 0;
 
 	virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 
@@ -173,17 +173,16 @@ protected:
 	}
 
 
-	std::auto_ptr<DecoderStrategy> _qdecoder; 
+	std::unique_ptr<DecoderStrategy> _qdecoder;
 
 protected:
 	JlsParameters _info;
-	std::auto_ptr<ProcessLine> _processLine;
+	std::unique_ptr<ProcessLine> _processLine;
 
 private:
 	unsigned int valcurrent;
 	LONG bitpos;
 	size_t _compressedLength;
-
 
 	// encoding
 	BYTE* _position;
