@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{8ca30619-71d8-425a-9553-cfa711b26778}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8eedc6ce-e067-4ddb-af1c-7f62a0728c4b}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Data Files">
+      <UniqueIdentifier>{f66094c9-5b39-4281-a320-591115eed6a7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="bitstreamdamage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="compliance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dicomsamples.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="performance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="conformance\T16E0.JLS">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="conformance\TEST16.PGM">
+      <Filter>Data Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="0015.raw">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lena8b.jls">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\T8C2E3.JLS">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\TEST8.PPM">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="alphatest.raw">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MR2_UNC">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="lena8b.raw" />
+  </ItemGroup>
+</Project>
