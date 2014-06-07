@@ -37,4 +37,3 @@ private:
 	BYTE _marker;
 	std::vector<BYTE> _vecbyte;
 };
-

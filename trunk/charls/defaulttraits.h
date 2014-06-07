@@ -14,12 +14,12 @@
 // This is done for lossless coding/decoding: see losslesstraits.h 
 
 template <class sample, class pixel>
-struct DefaultTraitsT 
+struct DefaultTraitsT
 {
 public:
 	typedef sample SAMPLE;
 	typedef pixel PIXEL;
-	
+
 	LONG MAXVAL;
 	LONG RANGE;
 	LONG NEAR;
@@ -44,25 +44,26 @@ public:
 		NEAR   = jls_near;
 		MAXVAL = max;
 		RANGE  = (MAXVAL + 2 * NEAR )/(2 * NEAR + 1) + 1;
-		bpp = log_2(max);	
+		bpp = log_2(max);
 		LIMIT = 2 * (bpp + MAX(8,bpp));
 		qbpp = log_2(RANGE);
 		RESET = BASIC_RESET;
 	}
 
-	
 	inlinehint LONG ComputeErrVal(LONG e) const
 	{
-	 	return ModRange(Quantize(e));
+		return ModRange(Quantize(e));
 	}
-	
+
 	inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)
 	{
 		return FixReconstructedValue(Px + DeQuantize(ErrVal)); 
 	}
 
 	inlinehint bool IsNear(LONG lhs, LONG rhs) const
-		{ return abs(lhs-rhs) <=NEAR; }
+	{
+		return abs(lhs-rhs) <=NEAR;
+	}
 
 	bool IsNear(Triplet<SAMPLE> lhs, Triplet<SAMPLE> rhs) const
 	{
@@ -75,8 +76,8 @@ public:
 	{
 		if ((Pxc & MAXVAL) == Pxc)
 			return Pxc;
-		
-		return (~(Pxc >> (LONG_BITCOUNT-1))) & MAXVAL;		
+
+		return (~(Pxc >> (LONG_BITCOUNT-1))) & MAXVAL;
 	}
 
 	inlinehint LONG ModRange(LONG Errval) const
@@ -93,16 +94,14 @@ public:
 		return Errval;
 	}
 
-
 private:
 	LONG Quantize(LONG Errval) const
 	{
 		if (Errval > 0)
 			return  (Errval + NEAR) / (2 * NEAR + 1);
 		else
-			return - (NEAR - Errval) / (2 * NEAR + 1);		
+			return - (NEAR - Errval) / (2 * NEAR + 1);
 	}
-
 
 	inlinehint LONG DeQuantize(LONG Errval) const
 	{
@@ -116,9 +115,8 @@ private:
 		else if (val > MAXVAL + NEAR)
 			val = val - RANGE*(2*NEAR+1);
 
-		return SAMPLE(CorrectPrediction(val)); 
+		return SAMPLE(CorrectPrediction(val));
 	}
-
 };
 
 

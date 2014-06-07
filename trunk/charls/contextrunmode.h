@@ -8,12 +8,11 @@
 
 // Implements statistical modelling for the run mode context.
 // Computes model dependent parameters like the golomb code lengths
-
 struct CContextRunMode 
 {
 	CContextRunMode(LONG a, LONG nRItype, LONG nReset) :
 		A(a),
-		N(1),	
+		N(1),
 		Nn(0),
 		_nRItype(nRItype),
 		_nReset((BYTE)nReset)
@@ -27,8 +26,8 @@ struct CContextRunMode
 	BYTE _nReset;
 
 	CContextRunMode()
-	{}
-
+	{
+	}
 
 	inlinehint LONG GetGolomb() const
 	{
@@ -36,16 +35,15 @@ struct CContextRunMode
 		LONG TEMP	= A + (N >> 1) * _nRItype;
 		LONG k = 0;
 		for(; Ntest < TEMP; k++) 
-		{ 
+		{
 			Ntest <<= 1;
 			ASSERT(k <= 32); 
-		};
+		}
 		return k;
 	}
 
-
 	void UpdateVariables(LONG Errval, LONG EMErrval)
-	{		
+	{
 		if (Errval < 0)
 		{
 			Nn = Nn + 1;
@@ -72,10 +70,9 @@ struct CContextRunMode
 			return -errvalabs;
 		}
 
-		ASSERT(map == ComputeMap(errvalabs, k));	
+		ASSERT(map == ComputeMap(errvalabs, k));
 		return errvalabs;
 	}
-
 
 	bool ComputeMap(LONG Errval, LONG k) const
 	{
@@ -83,14 +80,13 @@ struct CContextRunMode
 			return true;
 
 		if ((Errval < 0) && (2 * Nn >= N))
-			return true;		 
+			return true;
 
 		if ((Errval < 0) && (k != 0))
 			return true;
 
 		return false;
 	}
-
 
 	inlinehint bool ComputeMapNegativeE(LONG k) const
 	{

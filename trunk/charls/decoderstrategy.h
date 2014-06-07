@@ -114,7 +114,6 @@ public:
 			throw JlsException(TooMuchCompressedData);
 	}
 
-
 	inlinehint bool OptimizedRead()
 	{
 		// Easy & fast: if there is no 0xFF byte in sight, we can read without bitstuffing
@@ -132,7 +131,8 @@ public:
 
 	typedef size_t bufType;
 
-	enum { 
+	enum
+	{
 		bufferbits = sizeof( bufType ) * 8
 	};
 
@@ -184,7 +184,6 @@ public:
 		return;
 	}
 
-
 	BYTE* FindNextFF()
 	{
 		BYTE* pbyteNextFF = _position;
@@ -199,7 +198,6 @@ public:
 
 		return pbyteNextFF;
 	}
-
 
 	BYTE* GetCurBytePos() const
 	{
@@ -218,7 +216,6 @@ public:
 		}
 	}
 
-
 	inlinehint LONG ReadValue(LONG length)
 	{
 		if (_validBits < length)
@@ -235,7 +232,6 @@ public:
 		return result;
 	}
 
-
 	inlinehint LONG PeekByte()
 	{
 		if (_validBits < 8)
@@ -245,7 +241,6 @@ public:
 
 		return _readCache >> (bufferbits - 8); 
 	}
-
 
 	inlinehint bool ReadBit()
 	{
@@ -258,7 +253,6 @@ public:
 		Skip(1);
 		return bSet;
 	}
-
 
 	inlinehint LONG Peek0Bits()
 	{
@@ -278,7 +272,6 @@ public:
 		return -1;
 	}
 
-
 	inlinehint LONG ReadHighbits()
 	{
 		LONG count = Peek0Bits();
@@ -295,7 +288,6 @@ public:
 				return highbits;
 		}
 	}
-
 
 	LONG ReadLongValue(LONG length)
 	{

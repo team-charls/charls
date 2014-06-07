@@ -331,7 +331,6 @@ public:
 		}
 	}
 
-
 private:
 	const JlsParameters& _info;
 	std::vector<SAMPLE> _templine;
@@ -340,7 +339,6 @@ private:
 	typename TRANSFORM::INVERSE _inverseTransform;
 	ByteStreamInfo _rawPixels;
 };
-
 
 
 #endif

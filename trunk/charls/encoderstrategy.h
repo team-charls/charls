@@ -15,14 +15,14 @@ class EncoderStrategy
 
 public:
 	explicit EncoderStrategy(const JlsParameters& info) :
-		 _info(info),
-		 valcurrent(0),
-		 bitpos(0),
-		 _compressedLength(0),
-		 _position(0),
-		 _isFFWritten(false),
-		 _bytesWritten(0),
-		 _compressedStream(NULL)
+		_info(info),
+		valcurrent(0),
+		bitpos(0),
+		_compressedLength(0),
+		_position(0),
+		_isFFWritten(false),
+		_bytesWritten(0),
+		_compressedStream(NULL)
 	{
 	}
 
@@ -65,7 +65,6 @@ protected:
 			_compressedLength = _buffer.size();
 		}
 	}
-
 
 	void AppendToBitStream(LONG value, LONG length)
 	{
@@ -169,9 +168,8 @@ protected:
 
 	inlinehint void AppendOnesToBitStream(LONG length)
 	{
-		AppendToBitStream((1 << length) - 1, length);	
+		AppendToBitStream((1 << length) - 1, length);
 	}
-
 
 	std::unique_ptr<DecoderStrategy> _qdecoder;
 
