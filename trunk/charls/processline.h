@@ -34,7 +34,7 @@ class PostProcesSingleComponent : public ProcessLine
 {
 public:
 	PostProcesSingleComponent(void* rawData, const JlsParameters& info, int bytesPerPixel) :
-		_rawData((BYTE*)rawData), 
+		_rawData(static_cast<BYTE*>(rawData)),
 		_bytesPerPixel(bytesPerPixel),
 		_bytesPerLine(info.bytesperline)
 	{
@@ -129,7 +129,7 @@ template<class TRANSFORM, class SAMPLE>
 void TransformLineToQuad(const SAMPLE* ptypeInput, LONG pixelStrideIn, Quad<SAMPLE>* pbyteBuffer, LONG pixelStride, TRANSFORM& transform)
 {
 	int cpixel = MIN(pixelStride, pixelStrideIn);
-	Quad<SAMPLE>* ptypeBuffer = (Quad<SAMPLE>*)pbyteBuffer;
+	Quad<SAMPLE>* ptypeBuffer = pbyteBuffer;
 
 	for (int x = 0; x < cpixel; ++x)
 	{
@@ -144,7 +144,7 @@ template<class TRANSFORM, class SAMPLE>
 void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAMPLE* ptypeBuffer, LONG pixelStride, TRANSFORM& transform)
 {
 	int cpixel = MIN(pixelStride, pixelStrideIn);
-	const Quad<SAMPLE>* ptypeBufferIn = (Quad<SAMPLE>*)pbyteInput;
+	const Quad<SAMPLE>* ptypeBufferIn = pbyteInput;
 
 	for (int x = 0; x < cpixel; ++x)
 	{
@@ -153,8 +153,8 @@ void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAM
 
 		ptypeBuffer[x] = colorTranformed.v1;
 		ptypeBuffer[x + pixelStride] = colorTranformed.v2;
-		ptypeBuffer[x + 2 *pixelStride] = colorTranformed.v3;
-		ptypeBuffer[x + 3 *pixelStride] = colorTranformed.v4;
+		ptypeBuffer[x + 2 * pixelStride] = colorTranformed.v3;
+		ptypeBuffer[x + 3 * pixelStride] = colorTranformed.v4;
 	}
 }
 
@@ -184,7 +184,7 @@ template<class TRANSFORM, class SAMPLE>
 void TransformLineToTriplet(const SAMPLE* ptypeInput, LONG pixelStrideIn, Triplet<SAMPLE>* pbyteBuffer, LONG pixelStride, TRANSFORM& transform)
 {
 	int cpixel = MIN(pixelStride, pixelStrideIn);
-	Triplet<SAMPLE>* ptypeBuffer = (Triplet<SAMPLE>*)pbyteBuffer;
+	Triplet<SAMPLE>* ptypeBuffer = pbyteBuffer;
 
 	for (int x = 0; x < cpixel; ++x)
 	{
@@ -197,7 +197,7 @@ template<class TRANSFORM, class SAMPLE>
 void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAMPLE* ptypeBuffer, LONG pixelStride, TRANSFORM& transform)
 {
 	int cpixel = MIN(pixelStride, pixelStrideIn);
-	const Triplet<SAMPLE>* ptypeBufferIn = (Triplet<SAMPLE>*)pbyteInput;
+	const Triplet<SAMPLE>* ptypeBufferIn = pbyteInput;
 
 	for (int x = 0; x < cpixel; ++x)
 	{
@@ -262,7 +262,7 @@ public:
 	{
 		if (_info.outputBgr)
 		{
-			memcpy(&_templine[0], source, sizeof(Triplet<SAMPLE>)*pixelCount);
+			memcpy(&_templine[0], source, sizeof(Triplet<SAMPLE>) * pixelCount);
 			TransformRgbToBgr((SAMPLE*)&_templine[0], _info.components, pixelCount);
 			source = &_templine[0];
 		}
@@ -271,19 +271,18 @@ public:
 		{
 			if (_info.ilv == ILV_SAMPLE)
 			{
-				TransformLine((Triplet<SAMPLE>*)dest, (const Triplet<SAMPLE>*)source, pixelCount, _transform);
+				TransformLine(static_cast<Triplet<SAMPLE>*>(dest), static_cast<const Triplet<SAMPLE>*>(source), pixelCount, _transform);
 			}
 			else
 			{
-				TransformTripletToLine((const Triplet<SAMPLE>*)source, pixelCount, (SAMPLE*)dest, destStride, _transform);
+				TransformTripletToLine(static_cast<const Triplet<SAMPLE>*>(source), pixelCount, static_cast<SAMPLE*>(dest), destStride, _transform);
 			}
 		}
 		else if (_info.components == 4 && _info.ilv == ILV_LINE)
 		{
-			TransformQuadToLine((const Quad<SAMPLE>*)source, pixelCount, (SAMPLE*)dest, destStride, _transform);
+			TransformQuadToLine(static_cast<const Quad<SAMPLE>*>(source), pixelCount, static_cast<SAMPLE*>(dest), destStride, _transform);
 		}
 	}
-
 
 	void DecodeTransform(const void* pSrc, void* rawData, int pixelCount, int byteStride)
 	{
@@ -291,21 +290,21 @@ public:
 		{
 			if (_info.ilv == ILV_SAMPLE)
 			{
-				TransformLine((Triplet<SAMPLE>*)rawData, (const Triplet<SAMPLE>*)pSrc, pixelCount, _inverseTransform);
+				TransformLine(static_cast<Triplet<SAMPLE>*>(rawData), static_cast<const Triplet<SAMPLE>*>(pSrc), pixelCount, _inverseTransform);
 			}
 			else
 			{
-				TransformLineToTriplet((const SAMPLE*)pSrc, byteStride, (Triplet<SAMPLE>*)rawData, pixelCount, _inverseTransform);
+				TransformLineToTriplet(static_cast<const SAMPLE*>(pSrc), byteStride, static_cast<Triplet<SAMPLE>*>(rawData), pixelCount, _inverseTransform);
 			}
 		}
 		else if (_info.components == 4 && _info.ilv == ILV_LINE)
 		{
-			TransformLineToQuad((const SAMPLE*)pSrc, byteStride, (Quad<SAMPLE>*)rawData, pixelCount, _inverseTransform);
+			TransformLineToQuad(static_cast<const SAMPLE*>(pSrc), byteStride, static_cast<Quad<SAMPLE>*>(rawData), pixelCount, _inverseTransform);
 		}
 
 		if (_info.outputBgr)
 		{
-			TransformRgbToBgr((SAMPLE*)rawData, _info.components, pixelCount);
+			TransformRgbToBgr(static_cast<SAMPLE*>(rawData), _info.components, pixelCount);
 		}
 	}
 
