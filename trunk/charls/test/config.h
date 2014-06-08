@@ -16,11 +16,11 @@
 #endif
 
 #else
-#include <assert.h>
+#include <cassert>
 #define CHARLS_DLL
 #endif
 
-#include <stdio.h>
+#include <cstdio>
 
 typedef unsigned char BYTE;
 typedef unsigned short USHORT;

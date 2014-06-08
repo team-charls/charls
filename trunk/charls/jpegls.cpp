@@ -11,9 +11,9 @@
 #include "contextrunmode.h"
 #include "lookuptable.h"
 
-#include <math.h>
+#include <cmath>
+#include <cstdio>
 #include <vector>
-#include <stdio.h>
 #include <iostream>
 
 

@@ -7,8 +7,8 @@
 #define CHARLS_UTIL
 
 #include "publictypes.h"
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include <vector>
 
 #ifndef MAX

@@ -11,7 +11,7 @@
 #    define ASSERT(t) { }
 #  endif
 #else
-#include <assert.h>
+#include <cassert>
 #define ASSERT(t) assert(t)
 #endif
 
@@ -23,7 +23,7 @@
 #endif
 
 #ifdef __GNUC__
-#include <stdint.h>
+#include <cstdint>
 #else
 typedef long long int64_t;
 typedef unsigned long long uint64_t;
