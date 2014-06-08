@@ -9,7 +9,7 @@
 #include <vector>
 
 #ifdef _MSC_VER 
-#pragma warning(disable: 4996) // disable 'function': was declared deprecated also 'std::<function name>': Function call with parameters that may be unsafe
+#pragma warning(disable: 4996) // 'function': was declared deprecated also 'std::<function name>': Function call with parameters that may be unsafe [VS2012]
 #endif
 
 //

@@ -10,7 +10,7 @@
 // Color transforms work best for computer generated images. 
 //
 #ifdef _MSC_VER
-#pragma warning (disable: 4127)
+#pragma warning (disable: 4127) // conditional expression is constant (caused by some template methods that are not fully specialized) [VS2013]
 #endif
 
 template<class sample>
