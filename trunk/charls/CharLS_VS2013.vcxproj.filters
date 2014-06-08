@@ -88,6 +88,9 @@
     <None Include="JpegStream.cd">
       <Filter>Design</Filter>
     </None>
+    <None Include="Strategy.cd">
+      <Filter>Design</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
