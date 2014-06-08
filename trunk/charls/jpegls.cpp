@@ -4,21 +4,17 @@
 
 #include "config.h"
 #include "util.h"
-#include "jpegmarker.h"
 #include "header.h"
-
-#include <math.h>
-
-#include <vector>
-#include <stdio.h>
-#include <iostream>
-
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
 #include "context.h"
 #include "contextrunmode.h"
 #include "lookuptable.h"
 
+#include <math.h>
+#include <vector>
+#include <stdio.h>
+#include <iostream>
 
 
 // As defined in the JPEG-LS standard 

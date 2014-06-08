@@ -5,13 +5,13 @@
 #ifndef CHARLS_DECODERSTATEGY
 #define CHARLS_DECODERSTATEGY
 
-#include "jpegmarker.h"
+
 #include "processline.h"
 #include "config.h"
 #include "util.h"
+#include <memory>
 
-// Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
-
+// Purpose: Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
 class DecoderStrategy
 {
 public:
@@ -169,9 +169,9 @@ public:
 				}
 			}
 
-			_readCache	|= valnew << (bufferbits - 8 - _validBits);
-			_position		+= 1;
-			_validBits	+= 8;
+			_readCache |= valnew << (bufferbits - 8 - _validBits);
+			_position += 1;
+			_validBits += 8;
 
 			if (valnew == 0xFF)
 			{
@@ -283,7 +283,7 @@ public:
 		Skip(15);
 
 		for (LONG highbits = 15; ; highbits++)
-		{ 
+		{
 			if (ReadBit())
 				return highbits;
 		}

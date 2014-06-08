@@ -6,7 +6,8 @@
 #ifndef CHARLS_HEADER
 #define CHARLS_HEADER
 
-#include "jpegmarker.h"
+#include <memory>
+
 
 // JPEG Marker codes have the pattern 0xFFaa. The valid 'aa' options are defined by several ITU / IEC standards.
 // 0x00, 0x01, 0xFE, 0xC0-0xDF are defined in ITU T.81/IEC 10918-1
@@ -51,7 +52,8 @@ const int BASIC_T3 = 21;
 const LONG BASIC_RESET = 64;
 
 class JpegMarkerWriter;
-
+struct JlsParameters;
+class JpegCustomParameters;
 
 template<class STRATEGY>
 class JlsCodecFactory 
@@ -62,7 +64,7 @@ private:
 	std::unique_ptr<STRATEGY> GetCodecImpl(const JlsParameters& info);
 };
 
-JLS_ERROR CheckParameterCoherent(const JlsParameters* pparams);
+JLS_ERROR CheckParameterCoherent(const JlsParameters& pparams);
 
 JlsCustomParameters ComputeDefault(LONG MAXVAL, LONG NEAR);
 

@@ -7,7 +7,7 @@
 
 #include "../interface.h"
 #include "../util.h"
-#include "../jpegmarker.h"
+#include "../jpegstreamreader.h"
 
 #include <iostream>
 #include <vector>

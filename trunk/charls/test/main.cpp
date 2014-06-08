@@ -13,7 +13,7 @@
 #include "../defaulttraits.h"
 #include "../losslesstraits.h"
 #include "../colortransform.h"
-#include "../jpegmarker.h"
+#include "../jpegstreamreader.h"
 #include "../processline.h"
 
 #include "util.h"

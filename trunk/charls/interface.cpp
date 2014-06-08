@@ -14,6 +14,7 @@
 #include "util.h"
 #include "interface.h"
 #include "header.h"
+#include "jpegstreamreader.h"
 #include "jpegstreamwriter.h"
 #include <sstream>
 
@@ -40,7 +41,7 @@ static JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParamete
 	else if (uncompressedStream.rawStream == NULL)
 		return InvalidJlsParameters;
 
-	return CheckParameterCoherent(pparams);
+	return CheckParameterCoherent(*pparams);
 }
 
 
@@ -101,7 +102,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 
 CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, JlsParameters* info)
 {
-	JpegMarkerReader reader(compressedStream);
+	JpegStreamReader reader(compressedStream);
 
 	if (info != NULL)
 	{
@@ -124,7 +125,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, 
 {
 	try
 	{
-		JpegMarkerReader reader(rawStreamInfo);
+		JpegStreamReader reader(rawStreamInfo);
 		reader.ReadHeader();
 		reader.ReadStartOfScan(true);
 		JlsParameters info = reader.GetMetadata();
@@ -210,7 +211,7 @@ extern "C"
 	CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsRect roi, JlsParameters* info)
 	{
 		ByteStreamInfo compressedStream = FromByteArray(compressedData, compressedLength);
-		JpegMarkerReader reader(compressedStream);
+		JpegStreamReader reader(compressedStream);
 
 		ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
 

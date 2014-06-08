@@ -334,12 +334,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="JpegStreamWriter.cd" />
+    <None Include="JpegStream.cd" />
     <None Include="CMakeLists.txt" />
     <None Include="License.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="header.cpp" />
+    <ClCompile Include="jpegstreamreader.cpp" />
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="jpegls.cpp" />
     <ClCompile Include="jpegmarkersegment.cpp" />
@@ -356,7 +356,7 @@
     <ClInclude Include="header.h" />
     <ClInclude Include="interface.h" />
     <ClInclude Include="jpegimagedatasegment.h" />
-    <ClInclude Include="jpegmarker.h" />
+    <ClInclude Include="jpegstreamreader.h" />
     <ClInclude Include="jpegmarkersegment.h" />
     <ClInclude Include="jpegsegment.h" />
     <ClInclude Include="jpegstreamwriter.h" />

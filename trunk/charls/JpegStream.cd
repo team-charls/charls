@@ -6,18 +6,18 @@
   <Class Name="JpegSegment">
     <Position X="2.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAIAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
-      <FileName>header.h</FileName>
+      <HashCode>AAAAIAAAAAAAAAAAAAAAEAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>jpegsegment.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="JpegMarkerSegment">
-    <Position X="0.5" Y="3" Width="1.75" />
+    <Position X="0.5" Y="3" Width="3" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAABACAAAAAAAAAAAAAAAAAAAEAAgA=</HashCode>
-      <FileName>header.cpp</FileName>
+      <HashCode>AAAAAAAAADABAAAABACACAAQACAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>jpegmarkersegment.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="JpegImageDataSegment">
@@ -26,18 +26,22 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAIAAAAAAAAAAAhAAEAgAA=</HashCode>
-      <FileName>header.cpp</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAIACAAAAAAAAAhAAAAgAA=</HashCode>
+      <FileName>jpegimagedatasegment.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="JpegMarkerWriter">
-    <Position X="6.75" Y="0.5" Width="2.25" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
+  <Class Name="JpegStreamWriter">
+    <Position X="6.5" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAQAAgABKAAAAAADgAAEAgAQAAKAIAgAAAQAAUCAAA=</HashCode>
-      <FileName>jpegmarker.h</FileName>
+      <HashCode>AAAYAAgABKAAAAAADgAAEAgAQAACAYAgABAAAAUCAAA=</HashCode>
+      <FileName>jpegstreamwriter.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="JpegStreamReader">
+    <Position X="9" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AACZEBECAIEAEQAAAIAAAAAgACAABFAJQEAgAAAAAAA=</HashCode>
+      <FileName>jpegstreamreader.h</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

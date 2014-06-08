@@ -158,4 +158,22 @@ public:
 };
 
 
+inline ByteStreamInfo FromStream(std::basic_streambuf<char>* stream)
+{
+	ByteStreamInfo info = ByteStreamInfo();
+	info.rawStream = stream;
+	return info;
+}
+
+
+inline void SkipBytes(ByteStreamInfo* streamInfo, size_t count)
+{
+	if (streamInfo->rawData == NULL)
+		return;
+
+	streamInfo->rawData += count;
+	streamInfo->count -= count;
+}
+
+
 #endif
