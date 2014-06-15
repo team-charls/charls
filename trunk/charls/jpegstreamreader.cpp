@@ -69,7 +69,7 @@ void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
 	auto codec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
 	std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
 	ByteStreamInfo compressedData = streamWriter.OutputStream();
-	size_t cbyteWritten = codec->EncodeScan(std::move(processLine), &compressedData, streamWriter._bCompare ? streamWriter.GetPos() : NULL);
+	size_t cbyteWritten = codec->EncodeScan(std::move(processLine), &compressedData, streamWriter._bCompare ? streamWriter.GetPos() : nullptr);
 	streamWriter.Seek(cbyteWritten);
 }
 
@@ -99,7 +99,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 
 	int64_t bytesPerPlane = (int64_t)(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
 
-	if (rawPixels.rawData != NULL && int64_t(rawPixels.count) < bytesPerPlane * _info.components)
+	if (rawPixels.rawData && int64_t(rawPixels.count) < bytesPerPlane * _info.components)
 		throw JlsException(UncompressedBufferTooSmall);
 
 	int componentIndex = 0;
@@ -296,7 +296,7 @@ int JpegStreamReader::ReadStartOfFrame()
 
 BYTE JpegStreamReader::ReadByte()
 {
-	if (_byteStream.rawStream != NULL)
+	if (_byteStream.rawStream)
 		return (BYTE)_byteStream.rawStream->sbumpc();
 
 	if (_byteStream.count <= 0)

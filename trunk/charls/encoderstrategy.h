@@ -20,7 +20,7 @@ public:
 		_position(0),
 		_isFFWritten(false),
 		_bytesWritten(0),
-		_compressedStream(NULL)
+		_compressedStream(nullptr)
 	{
 	}
 
@@ -50,25 +50,24 @@ protected:
 		bitpos = 32;
 		valcurrent = 0;
 
-		if (compressedStream->rawStream == NULL)
-		{
-			_position = compressedStream->rawData;
-			_compressedLength = compressedStream->count;
-		}
-		else
+		if (compressedStream->rawStream)
 		{
 			_compressedStream = compressedStream->rawStream;
 			_buffer.resize(4000);
-			_position = (BYTE*)&_buffer[0];
+			_position = (BYTE*) &_buffer[0];
 			_compressedLength = _buffer.size();
+		}
+		else
+		{
+			_position = compressedStream->rawData;
+			_compressedLength = compressedStream->count;
 		}
 	}
 
 	void AppendToBitStream(LONG value, LONG length)
 	{
 		ASSERT(length < 32 && length >= 0);
-
-		ASSERT((_qdecoder.get() == NULL) || (length == 0 && value == 0) ||( _qdecoder->ReadLongValue(length) == value));
+		ASSERT((!_qdecoder) || (length == 0 && value == 0) ||( _qdecoder->ReadLongValue(length) == value));
 
 #ifndef NDEBUG
 		if (length < 32)
@@ -105,7 +104,7 @@ protected:
 		Flush();
 		ASSERT(bitpos == 0x20);
 
-		if (_compressedStream != NULL)
+		if (_compressedStream)
 		{
 			OverFlow();
 		}
@@ -113,7 +112,7 @@ protected:
 
 	void OverFlow()
 	{
-		if (_compressedStream == NULL)
+		if (!_compressedStream)
 			throw JlsException(CompressedBufferTooSmall);
 
 		size_t bytesCount = _position-(BYTE*)&_buffer[0];
@@ -128,7 +127,7 @@ protected:
 
 	void Flush()
 	{
-		if (_compressedLength < 4 && _compressedStream != NULL)
+		if (_compressedLength < 4 && _compressedStream)
 		{
 			OverFlow();
 		}
@@ -159,9 +158,9 @@ protected:
 		}
 	}
 
-	size_t GetLength() 
+	size_t GetLength()
 	{
-		return _bytesWritten - (bitpos -32)/8; 
+		return _bytesWritten - (bitpos -32)/8;
 	}
 
 	inlinehint void AppendOnesToBitStream(LONG length)

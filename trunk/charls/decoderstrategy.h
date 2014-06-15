@@ -17,12 +17,12 @@ class DecoderStrategy
 public:
 	DecoderStrategy(const JlsParameters& info) :
 		_info(info),
-		_byteStream(NULL),
+		_byteStream(nullptr),
 		_readCache(0),
 		_validBits(0),
-		_position(NULL),
-		_nextFFPosition(NULL),
-		_endPosition(NULL)
+		_position(nullptr),
+		_nextFFPosition(nullptr),
+		_endPosition(nullptr)
 	{
 	}
 
@@ -40,7 +40,7 @@ public:
 		_validBits = 0;
 		_readCache = 0;
 
-		if (compressedStream->rawStream != NULL)
+		if (compressedStream->rawStream)
 		{
 			_buffer.resize(40000);
 			_position = (BYTE*)&_buffer[0];
@@ -50,7 +50,7 @@ public:
 		}
 		else
 		{
-			_byteStream = NULL;
+			_byteStream = nullptr;
 			_position = compressedStream->rawData;
 			_endPosition = _position + compressedStream->count;
 		}
@@ -61,7 +61,7 @@ public:
 
 	void AddBytesFromStream()
 	{
-		if (_byteStream == NULL || _byteStream->sgetc() == std::char_traits<char>::eof())
+		if (!_byteStream || _byteStream->sgetc() == std::char_traits<char>::eof())
 			return;
 
 		size_t count = _endPosition - _position; 

@@ -68,7 +68,7 @@ private:
 	{
 		ASSERT(!_bCompare || _data.rawData[_byteOffset] == val);
 
-		if (_data.rawStream != NULL)
+		if (_data.rawStream)
 		{
 			_data.rawStream->sputc(val);
 		}
@@ -97,7 +97,7 @@ private:
 
 	void Seek(size_t byteCount)
 	{
-		if (_data.rawStream != NULL)
+		if (_data.rawStream)
 			return;
 
 		_byteOffset += byteCount;

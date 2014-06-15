@@ -230,7 +230,7 @@ public:
 
 	void NewLineRequested(void* dest, int pixelCount, int destStride)
 	{
-		if (_rawPixels.rawStream == NULL)
+		if (!_rawPixels.rawStream)
 		{
 			Transform(_rawPixels.rawData, dest, pixelCount, destStride);
 			_rawPixels.rawData += _info.bytesperline;
@@ -310,7 +310,7 @@ public:
 
 	void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride)
 	{
-		if (_rawPixels.rawStream != NULL)
+		if (_rawPixels.rawStream)
 		{
 			std::streamsize bytesToWrite = pixelCount * _info.components * sizeof(SAMPLE);
 			DecodeTransform(pSrc, &_buffer[0], pixelCount, sourceStride);

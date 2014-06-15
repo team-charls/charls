@@ -177,7 +177,7 @@ void TestTooSmallOutputBuffer()
 		return;
 
 	std::vector<BYTE> rgbyteOut(512 * 511);
-	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
+	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), nullptr);
 
 	ASSERT(error == UncompressedBufferTooSmall);
 }
@@ -190,7 +190,7 @@ void TestBadImage()
 		return;
 
 	std::vector<BYTE> rgbyteOut(2500 * 3000 * 2);
-	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
+	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), nullptr);
 
 	ASSERT(error == UncompressedBufferTooSmall);
 }
@@ -201,7 +201,7 @@ void TestDecodeBitStreamWithNoMarkerStart()
 	BYTE encodedData[2] = { 0x33, 0x33 };
 	BYTE output[1000];
 
-	JLS_ERROR error = JpegLsDecode(output, 1000, encodedData, 2, NULL);
+	JLS_ERROR error = JpegLsDecode(output, 1000, encodedData, 2, nullptr);
 	ASSERT(error == MissingJpegMarkerStart);
 }
 
@@ -227,7 +227,7 @@ void TestDecodeBitStreamWithUnknownJpegMarker()
 	};
 	BYTE output[1000];
 
-	JLS_ERROR error = JpegLsDecode(output, 1000, encodedData, 6, NULL);
+	JLS_ERROR error = JpegLsDecode(output, 1000, encodedData, 6, nullptr);
 	ASSERT(error == UnknownJpegMarker);
 }
 
@@ -240,13 +240,13 @@ void TestDecodeRect()
 		return;
 
 	std::vector<BYTE> rgbyteOutFull(info.width*info.height*info.components);
-	JLS_ERROR error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
+	JLS_ERROR error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), nullptr);
 	ASSERT(error == OK);
 
 	JlsRect rect = { 128, 128, 256, 1 };
 	std::vector<BYTE> rgbyteOut(rect.Width * rect.Height);
 	rgbyteOut.push_back(0x1f);
-	error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), rect, NULL);	
+	error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), rect, nullptr);
 	ASSERT(error == OK);
 
 	ASSERT(memcmp(&rgbyteOutFull[rect.X + rect.Y*512], &rgbyteOut[0], rect.Width * rect.Height) == 0);
@@ -371,7 +371,7 @@ void TestDecodeFromStream(const char* strNameEncoded)
 	std::basic_stringbuf<char> buf;
 	ByteStreamInfo rawStreamInfo = { &buf };
 
-	err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, NULL);
+	err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, nullptr);
 	////size_t outputCount = buf.str().size();
 
 	ASSERT(err == OK);
@@ -387,7 +387,7 @@ JLS_ERROR DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
 	std::fstream rawFile(strNameOutput, mode_output); 
 	ByteStreamInfo rawStream = {rawFile.rdbuf()};
 
-	JLS_ERROR value = JpegLsDecodeStream(rawStream, compressedByteStream, NULL);
+	JLS_ERROR value = JpegLsDecodeStream(rawStream, compressedByteStream, nullptr);
 	jlsFile.close();
 	rawFile.close();
 

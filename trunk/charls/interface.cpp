@@ -21,10 +21,10 @@
 
 static JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParameters* pparams)
 {
-	if (pparams == NULL)
+	if (!pparams)
 		return InvalidJlsParameters;
 
-	if (uncompressedStream.rawStream == NULL && uncompressedStream.rawData == NULL)
+	if (!uncompressedStream.rawStream && !uncompressedStream.rawData)
 		return InvalidJlsParameters;
 
 	if (pparams->width < 1 || pparams->width > 65535)
@@ -33,12 +33,12 @@ static JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParamete
 	if (pparams->height < 1 || pparams->height > 65535)
 		return ParameterValueNotSupported;
 
-	if (uncompressedStream.rawData != NULL)
+	if (uncompressedStream.rawData)
 	{
 		if (uncompressedStream.count < size_t(pparams->height * pparams->width * pparams->components * (pparams->bitspersample > 8 ? 2 : 1)))
 			return UncompressedBufferTooSmall;
 	}
-	else if (uncompressedStream.rawStream == NULL)
+	else if (!uncompressedStream.rawStream)
 		return InvalidJlsParameters;
 
 	return CheckParameterCoherent(*pparams);
@@ -47,7 +47,7 @@ static JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParamete
 
 CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t* pcbyteWritten, ByteStreamInfo rawStreamInfo, struct JlsParameters* pparams)
 {
-	if (pcbyteWritten == NULL)
+	if (!pcbyteWritten)
 		return InvalidJlsParameters;
 
 	JLS_ERROR parameterError = CheckInput(rawStreamInfo, pparams);
@@ -104,7 +104,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStre
 {
 	JpegStreamReader reader(compressedStream);
 
-	if (info != NULL)
+	if (info)
 	{
 		reader.SetInfo(info);
 	}
@@ -215,7 +215,7 @@ extern "C"
 
 		ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
 
-		if (info != NULL)
+		if (info)
 		{
 			reader.SetInfo(info);
 		}

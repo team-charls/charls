@@ -21,7 +21,7 @@ void TestDamagedBitStream1()
 		return;
 
 	std::vector<BYTE> rgbyteOut(256 * 256 * 2);	
-	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
+	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), nullptr);
 	ASSERT(error == InvalidCompressedData);
 
 }
@@ -29,7 +29,7 @@ void TestDamagedBitStream1()
 
 void TestDamagedBitStream2()
 {
-	std::vector<BYTE> rgbyteCompressed;	
+	std::vector<BYTE> rgbyteCompressed;
 	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
 		return;
 
@@ -37,7 +37,7 @@ void TestDamagedBitStream2()
 	rgbyteCompressed.resize(40000,3);
 
 	std::vector<BYTE> rgbyteOut(512 * 512);	
-	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
+	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), nullptr);
 	ASSERT(error == InvalidCompressedData);
 
 }
@@ -46,15 +46,15 @@ void TestDamagedBitStream2()
 
 void TestDamagedBitStream3()
 {
-	std::vector<BYTE> rgbyteCompressed;	
+	std::vector<BYTE> rgbyteCompressed;
 	if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
-		return;	
+		return;
 
 	rgbyteCompressed[300] = 0xFF;
 	rgbyteCompressed[301] = 0xFF;
 
-	std::vector<BYTE> rgbyteOut(512 * 512);	
-	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
+	std::vector<BYTE> rgbyteOut(512 * 512);
+	JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), nullptr);
 	ASSERT(error == InvalidCompressedData);
 
 }
@@ -62,13 +62,13 @@ void TestDamagedBitStream3()
 
 void TestFileWithRandomHeaderDamage(SZC filename)
 {
-	std::vector<BYTE> rgbyteCompressedOrg;	
+	std::vector<BYTE> rgbyteCompressedOrg;
 	if (!ReadFile(filename, &rgbyteCompressedOrg, 0))
-		return;	
+		return;
 
 	srand(102347325);
 
-	std::vector<BYTE> rgbyteOut(512 * 512);	
+	std::vector<BYTE> rgbyteOut(512 * 512);
 
 	for (int i = 0; i < 40; ++i)
 	{
@@ -78,11 +78,11 @@ void TestFileWithRandomHeaderDamage(SZC filename)
 		for (int j = 0; j < 20; ++j)
 		{
 			rgbyteCompressedTest[i] = (BYTE)rand();
-			rgbyteCompressedTest[i+1] = (BYTE)rand();				
-			rgbyteCompressedTest[i+2] = (BYTE)rand();		
-			rgbyteCompressedTest[i+3] = (BYTE)rand();		
-			
-			JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressedTest[0], int(rgbyteCompressedTest.size()), NULL);
+			rgbyteCompressedTest[i+1] = (BYTE)rand();
+			rgbyteCompressedTest[i+2] = (BYTE)rand();
+			rgbyteCompressedTest[i+3] = (BYTE)rand();
+
+			JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressedTest[0], int(rgbyteCompressedTest.size()), nullptr);
 			errors[error] = errors[error] + 1;
 		}
 
@@ -95,7 +95,7 @@ void TestFileWithRandomHeaderDamage(SZC filename)
 			std::cout <<  errors[error] << "x error (" << error << "); ";
 		}
 
-		std::cout << "\r\n";		
+		std::cout << "\r\n";
 	}
 }
 

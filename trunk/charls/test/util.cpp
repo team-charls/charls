@@ -113,7 +113,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 	double dwtimeDecodeStart = getTime();
 	for (int i = 0; i < loopCount; ++i)
 	{
-		JLS_ERROR err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(compressedLength), NULL);
+		JLS_ERROR err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(compressedLength), nullptr);
 		ASSERT(err == OK);
 	}
 	double dwtimeDecodeComplete = getTime();

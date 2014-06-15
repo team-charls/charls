@@ -34,8 +34,8 @@ void TestDicomSampleImage(const char* name)
 	bool success = ReadFile(name, &data, 9);
 
 	ASSERT(success);
-	
-        BYTE pixeldataStart[] =  { 0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7 };
+
+	BYTE pixeldataStart[] =  { 0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7 };
 
 	int offset = findstring(data, pixeldataStart, COUNT(pixeldataStart));
 
@@ -56,15 +56,15 @@ void TestDicomSampleImage(const char* name)
 	std::vector<BYTE> dataUnc;
 	dataUnc.resize(info.bytesperline * info.height);
 
-	error = JpegLsDecode(&dataUnc[0], dataUnc.size(), &data[0], data.size(), NULL);
+	error = JpegLsDecode(&dataUnc[0], dataUnc.size(), &data[0], data.size(), nullptr);
 	ASSERT(error == OK);
 	std::cout << ".";
 }
 
 void TestDicomWG4Images()
 {
-	TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/XA1_JLSL");	
-	TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/CT2_JLSL");	
+	TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/XA1_JLSL");
+	TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/CT2_JLSL");
 	TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/MG1_JLSL");
 	TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/MR1_JLSL");
 	TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/MR2_JLSL");
