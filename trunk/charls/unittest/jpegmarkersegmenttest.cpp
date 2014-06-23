@@ -67,6 +67,32 @@ namespace CharLSUnitTest
 			Assert::AreEqual(static_cast<uint8_t>(3), buffer[18]);
 			Assert::AreEqual(static_cast<uint8_t>(0x11), buffer[19]);
 			Assert::AreEqual(static_cast<uint8_t>(0), buffer[20]);
+
+			//delete segment;
+		}
+
+		TEST_METHOD(CreateStartOfFrameMarkerWithLowBoundaryValues)
+		{
+			JpegMarkerSegment* segment = JpegMarkerSegment::CreateStartOfFrameMarker(0, 0, 1, 1);
+
+			uint8_t buffer[17];
+			auto bytesWritten = SerializeSegment(segment, buffer, _countof(buffer));
+			Assert::AreEqual(static_cast<size_t>(17), bytesWritten);
+			Assert::AreEqual(static_cast<uint8_t>(1), buffer[6]);
+			Assert::AreEqual(static_cast<uint8_t>(1), buffer[11]);
+			//delete segment;
+		}
+
+		TEST_METHOD(CreateStartOfFrameMarkerWithHighBoundaryValues)
+		{
+			JpegMarkerSegment* segment = JpegMarkerSegment::CreateStartOfFrameMarker(UINT16_MAX, UINT16_MAX, UINT8_MAX, UINT8_MAX - 1);
+
+			uint8_t buffer[776];
+			auto bytesWritten = SerializeSegment(segment, buffer, _countof(buffer));
+			Assert::AreEqual(static_cast<size_t>(776), bytesWritten);
+			Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[6]);
+			Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX - 1), buffer[11]);
+			//delete segment;
 		}
 
 		TEST_METHOD(CreateJpegFileInterchangeFormatMarker)
