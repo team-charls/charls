@@ -8,12 +8,13 @@
 #include "jpegsegment.h"
 #include "jpegstreamwriter.h"
 #include <vector>
+#include <cstdint>
 
 
 class JpegMarkerSegment : public JpegSegment
 {
 public:
-	JpegMarkerSegment(BYTE marker, std::vector<BYTE>&& content) :
+	JpegMarkerSegment(BYTE marker, std::vector<uint8_t>&& content) :
 		_marker(marker),
 		_content(content)
 	{
@@ -23,11 +24,18 @@ public:
 	{
 		streamWriter.WriteByte(0xFF);
 		streamWriter.WriteByte(_marker);
-		streamWriter.WriteWord(USHORT(_content.size() + 2));
+		streamWriter.WriteWord(static_cast<uint16_t>(_content.size() + 2));
 		streamWriter.WriteBytes(_content);
 	}
 
-	static JpegMarkerSegment* CreateStartOfFrameMarker(Size size, LONG bitsPerSample, LONG componentCount);
+	/// <summary>
+	/// Creates a JPEG-LS Start Of Frame (SOF-55) marker.
+	/// </summary>
+	/// <param name="width">The width of the frame.</param>
+	/// <param name="height">The height of the frame.</param>
+	/// <param name="bitsPerSample">The bits per sample.</param>
+	/// <param name="componentCount">The component count.</param>
+	static JpegMarkerSegment* CreateStartOfFrameMarker(int width, int height, LONG bitsPerSample, LONG componentCount);
 	static JpegMarkerSegment* CreateJpegFileInterchangeFormatMarker(const JfifParameters& jfif);
 	static JpegMarkerSegment* CreateJpegLSExtendedParametersMarker(const JlsCustomParameters& pcustom);
 	static JpegMarkerSegment* CreateColorTransformMarker(int i);
@@ -35,5 +43,5 @@ public:
 
 private:
 	BYTE _marker;
-	std::vector<BYTE> _content;
+	std::vector<uint8_t> _content;
 };

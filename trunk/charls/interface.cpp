@@ -67,15 +67,13 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 			}
 		}
 
-		Size size = Size(info.width, info.height);
-
 		JpegStreamWriter writer;
 		if (info.jfif.Ver)
 		{
 			writer.AddSegment(JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(info.jfif));
 		}
 
-		writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameMarker(size, info.bitspersample, info.components));
+		writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameMarker(info.width, info.height, info.bitspersample, info.components));
 
 
 		if (info.colorTransform != 0)
@@ -85,7 +83,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 
 		if (info.ilv == ILV_NONE)
 		{
-			LONG cbyteComp = size.cx*size.cy*((info.bitspersample +7)/8);
+			LONG cbyteComp = info.width * info.height * ((info.bitspersample + 7) / 8);
 			for (LONG component = 0; component < info.components; ++component)
 			{
 				writer.AddScan(rawStreamInfo, &info);
@@ -187,20 +185,18 @@ extern "C"
 		if (error != OK)
 			return error;
 
-		Size size = Size(info.width, info.height);
-
 		JpegStreamWriter writer;
 		if (info.jfif.Ver)
 		{
 			writer.AddSegment(JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(info.jfif));
 		}
 
-		writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameMarker(size, info.bitspersample, info.components));
+		writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameMarker(info.width, info.height, info.bitspersample, info.components));
 
 
 		if (info.ilv == ILV_NONE)
 		{
-			LONG fieldLength = size.cx*size.cy*((info.bitspersample +7)/8);
+			LONG fieldLength = info.width * info.height * ((info.bitspersample + 7) / 8);
 			for (LONG component = 0; component < info.components; ++component)
 			{
 				writer.AddScan(rawStreamInfo, &info);

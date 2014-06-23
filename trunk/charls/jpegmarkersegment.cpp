@@ -8,22 +8,27 @@
 #include <vector>
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(Size size, LONG bitsPerSample, LONG componentCount)
+JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(int width, int height, LONG bitsPerSample, LONG componentCount)
 {
+	ASSERT(width >= 0 && width <= UINT16_MAX);
+	ASSERT(height >= 0 && height <= UINT16_MAX);
+	ASSERT(bitsPerSample > 0 && bitsPerSample <= UINT8_MAX);
+	ASSERT(componentCount > 0 && componentCount <= (UINT8_MAX - 1));
+
 	// Create a Frame Header as defined in T.87, C.2.2 and T.81, B.2.2
-	std::vector<BYTE> content;
-	content.push_back(static_cast<BYTE>(bitsPerSample)); // P = Sample precision
-	push_back(content, static_cast<USHORT>(size.cy));    // Y = Number of lines
-	push_back(content, static_cast<USHORT>(size.cx));    // X = Number of samples per line
+	std::vector<uint8_t> content;
+	content.push_back(static_cast<uint8_t>(bitsPerSample)); // P = Sample precision
+	push_back(content, static_cast<uint16_t>(height));    // Y = Number of lines
+	push_back(content, static_cast<uint16_t>(width));    // X = Number of samples per line
 
 	// Components
-	content.push_back(static_cast<BYTE>(componentCount)); // Nf = Number of image components in frame
-	for (BYTE component = 0; component < componentCount; component++)
+	content.push_back(static_cast<uint8_t>(componentCount)); // Nf = Number of image components in frame
+	for (int component = 0; component < componentCount; ++component)
 	{
 		// Component Specification parameters
-		content.push_back(component + 1); // Ci = Component identifier
-		content.push_back(0x11);          // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
-		content.push_back(0);             // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
+		content.push_back(static_cast<uint8_t>(component + 1)); // Ci = Component identifier
+		content.push_back(0x11);                                // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
+		content.push_back(0);                                   // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
 	}
 
 	return new JpegMarkerSegment(JPEG_SOF_55, std::move(content));

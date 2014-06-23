@@ -36,11 +36,10 @@ namespace CharLSUnitTest
 	public:
 		TEST_METHOD(CreateStartOfFrameMarker)
 		{
-			Size size(100, UINT16_MAX);
 			LONG bitsPerSample = 8;
 			LONG componentCount = 3;
 
-			JpegMarkerSegment* segment = JpegMarkerSegment::CreateStartOfFrameMarker(size, bitsPerSample, componentCount);
+			JpegMarkerSegment* segment = JpegMarkerSegment::CreateStartOfFrameMarker(100, UINT16_MAX, bitsPerSample, componentCount);
 
 			uint8_t buffer[23];
 			auto bytesWritten = SerializeSegment(segment, buffer, _countof(buffer));
