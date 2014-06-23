@@ -16,6 +16,7 @@
 #include "header.h"
 #include "jpegstreamreader.h"
 #include "jpegstreamwriter.h"
+#include "jpegmarkersegment.h"
 #include <sstream>
 
 
@@ -68,7 +69,14 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 
 		Size size = Size(info.width, info.height);
 
-		JpegStreamWriter writer(info.jfif, size, info.bitspersample, info.components);
+		JpegStreamWriter writer;
+		if (info.jfif.Ver)
+		{
+			writer.AddSegment(JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(info.jfif));
+		}
+
+		writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameMarker(size, info.bitspersample, info.components));
+
 
 		if (info.colorTransform != 0)
 		{
@@ -181,7 +189,14 @@ extern "C"
 
 		Size size = Size(info.width, info.height);
 
-		JpegStreamWriter writer(info.jfif, size, info.bitspersample, info.components);
+		JpegStreamWriter writer;
+		if (info.jfif.Ver)
+		{
+			writer.AddSegment(JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(info.jfif));
+		}
+
+		writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameMarker(size, info.bitspersample, info.components));
+
 
 		if (info.ilv == ILV_NONE)
 		{

@@ -8,22 +8,23 @@
 #include <vector>
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(Size size, LONG bitsPerSample, LONG ccomp)
+JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(Size size, LONG bitsPerSample, LONG componentCount)
 {
-	std::vector<BYTE> vec;
-	vec.push_back(static_cast<BYTE>(bitsPerSample));
-	push_back(vec, static_cast<USHORT>(size.cy));
-	push_back(vec, static_cast<USHORT>(size.cx));
+	// Create a Frame Header as defined in T.87, C.2.2 and T.81, B.2.2
 
-	// components
-	vec.push_back(static_cast<BYTE>(ccomp));
-	for (BYTE component = 0; component < ccomp; component++)
+	std::vector<BYTE> vec;
+	vec.push_back(static_cast<BYTE>(bitsPerSample)); // P = Sample precision
+	push_back(vec, static_cast<USHORT>(size.cy));    // Y = Number of lines
+	push_back(vec, static_cast<USHORT>(size.cx));    // X = Number of samples per line
+
+	// Components
+	vec.push_back(static_cast<BYTE>(componentCount)); // Nf = Number of image components in frame
+	for (BYTE component = 0; component < componentCount; component++)
 	{
-		// rescaling
-		vec.push_back(component + 1);
-		vec.push_back(0x11);
-		//"Tq1" reserved, 0
-		vec.push_back(0);
+		// Component Specification parameters
+		vec.push_back(component + 1); // Ci = Component identifier
+		vec.push_back(0x11);          // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
+		vec.push_back(0);             // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
 	}
 
 	return new JpegMarkerSegment(JPEG_SOF_55, vec);

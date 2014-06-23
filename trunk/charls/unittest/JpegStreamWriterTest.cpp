@@ -16,13 +16,7 @@ namespace CharLSUnitTest
 	public:
 		TEST_METHOD(LengthWillbeZeroAfterCreate)
 		{
-			JfifParameters jfifParameters;
-
-			Size size(100, 100);
-			LONG bitsPerSample = 1;
-			LONG ccomp = 0;
-
-			JpegStreamWriter writer(jfifParameters, size, bitsPerSample, ccomp);
+			JpegStreamWriter writer;
 			Assert::AreEqual(static_cast<size_t>(0), writer.GetLength());
 		}
 	};

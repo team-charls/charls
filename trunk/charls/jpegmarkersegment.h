@@ -27,7 +27,7 @@ public:
 		streamWriter.WriteBytes(_vecbyte);
 	}
 
-	static JpegMarkerSegment* CreateStartOfFrameMarker(Size size, LONG bitsPerSample, LONG ccomp);
+	static JpegMarkerSegment* CreateStartOfFrameMarker(Size size, LONG bitsPerSample, LONG componentCount);
 	static JpegMarkerSegment* CreateJpegFileInterchangeFormatMarker(const JfifParameters& jfif);
 	static JpegMarkerSegment* CreateJpegLSExtendedParametersMarker(const JlsCustomParameters& pcustom);
 	static JpegMarkerSegment* CreateColorTransformMarker(int i);

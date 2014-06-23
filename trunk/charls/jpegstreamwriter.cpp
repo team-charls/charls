@@ -35,18 +35,12 @@ namespace
 }
 
 
-JpegStreamWriter::JpegStreamWriter(const JfifParameters& jfifParameters, Size size, LONG bitsPerSample, LONG ccomp) :
+JpegStreamWriter::JpegStreamWriter() :
 _bCompare(false),
 _data(),
 _byteOffset(0),
 _lastCompenentIndex(0)
 {
-	if (jfifParameters.Ver)
-	{
-		AddSegment(JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(jfifParameters));
-	}
-
-	AddSegment(JpegMarkerSegment::CreateStartOfFrameMarker(size, bitsPerSample, ccomp));
 }
 
 

@@ -19,7 +19,7 @@ class JpegStreamWriter
 	friend class JpegImageDataSegment;
 
 public:
-	JpegStreamWriter(const JfifParameters& jfifParameters, Size size, LONG bitsPerSample, LONG ccomp);
+	JpegStreamWriter();
 	virtual ~JpegStreamWriter();
 
 	void AddSegment(JpegSegment* segment)
