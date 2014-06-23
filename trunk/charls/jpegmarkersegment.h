@@ -13,18 +13,18 @@
 class JpegMarkerSegment : public JpegSegment
 {
 public:
-	JpegMarkerSegment(BYTE marker, std::vector<BYTE> vecbyte)
+	JpegMarkerSegment(BYTE marker, std::vector<BYTE>&& content) :
+		_marker(marker),
+		_content(content)
 	{
-		_marker = marker;
-		std::swap(_vecbyte, vecbyte);
 	}
 
 	virtual void Serialize(JpegStreamWriter& streamWriter)
 	{
 		streamWriter.WriteByte(0xFF);
 		streamWriter.WriteByte(_marker);
-		streamWriter.WriteWord(USHORT(_vecbyte.size() + 2));
-		streamWriter.WriteBytes(_vecbyte);
+		streamWriter.WriteWord(USHORT(_content.size() + 2));
+		streamWriter.WriteBytes(_content);
 	}
 
 	static JpegMarkerSegment* CreateStartOfFrameMarker(Size size, LONG bitsPerSample, LONG componentCount);
@@ -35,5 +35,5 @@ public:
 
 private:
 	BYTE _marker;
-	std::vector<BYTE> _vecbyte;
+	std::vector<BYTE> _content;
 };

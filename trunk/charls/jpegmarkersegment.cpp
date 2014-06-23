@@ -11,23 +11,22 @@
 JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(Size size, LONG bitsPerSample, LONG componentCount)
 {
 	// Create a Frame Header as defined in T.87, C.2.2 and T.81, B.2.2
-
-	std::vector<BYTE> vec;
-	vec.push_back(static_cast<BYTE>(bitsPerSample)); // P = Sample precision
-	push_back(vec, static_cast<USHORT>(size.cy));    // Y = Number of lines
-	push_back(vec, static_cast<USHORT>(size.cx));    // X = Number of samples per line
+	std::vector<BYTE> content;
+	content.push_back(static_cast<BYTE>(bitsPerSample)); // P = Sample precision
+	push_back(content, static_cast<USHORT>(size.cy));    // Y = Number of lines
+	push_back(content, static_cast<USHORT>(size.cx));    // X = Number of samples per line
 
 	// Components
-	vec.push_back(static_cast<BYTE>(componentCount)); // Nf = Number of image components in frame
+	content.push_back(static_cast<BYTE>(componentCount)); // Nf = Number of image components in frame
 	for (BYTE component = 0; component < componentCount; component++)
 	{
 		// Component Specification parameters
-		vec.push_back(component + 1); // Ci = Component identifier
-		vec.push_back(0x11);          // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
-		vec.push_back(0);             // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
+		content.push_back(component + 1); // Ci = Component identifier
+		content.push_back(0x11);          // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
+		content.push_back(0);             // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
 	}
 
-	return new JpegMarkerSegment(JPEG_SOF_55, vec);
+	return new JpegMarkerSegment(JPEG_SOF_55, std::move(content));
 }
 
 
@@ -58,7 +57,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(cons
 		rgbyte.insert(rgbyte.end(), (BYTE*) jfifParameters.pdataThumbnail, (BYTE*) jfifParameters.pdataThumbnail + 3 * jfifParameters.Xthumb * jfifParameters.Ythumb);
 	}
 
-	return new JpegMarkerSegment(JPEG_APP0, rgbyte);
+	return new JpegMarkerSegment(JPEG_APP0, std::move(rgbyte));
 }
 
 
@@ -73,7 +72,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(const
 	push_back(rgbyte, (USHORT) customParameters.T3);
 	push_back(rgbyte, (USHORT) customParameters.RESET);
 
-	return new JpegMarkerSegment(JPEG_LSE, rgbyte);
+	return new JpegMarkerSegment(JPEG_LSE, std::move(rgbyte));
 }
 
 
@@ -87,7 +86,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(int i)
 	rgbyteXform.push_back('x');
 	rgbyteXform.push_back((BYTE) i);
 
-	return new JpegMarkerSegment(JPEG_APP8, rgbyteXform);
+	return new JpegMarkerSegment(JPEG_APP8, std::move(rgbyteXform));
 }
 
 
@@ -117,5 +116,5 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(const JlsParameter
 	rgbyte.push_back(BYTE(pparams->ilv));
 	rgbyte.push_back(0); // transform
 
-	return new JpegMarkerSegment(JPEG_SOS, rgbyte);
+	return new JpegMarkerSegment(JPEG_SOS, std::move(rgbyte));
 }
