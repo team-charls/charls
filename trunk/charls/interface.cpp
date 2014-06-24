@@ -20,7 +20,7 @@
 #include <sstream>
 
 
-static JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParameters* pparams)
+static JLS_ERROR CheckInput(const ByteStreamInfo& uncompressedStream, const JlsParameters* pparams)
 {
 	if (!pparams)
 		return InvalidJlsParameters;

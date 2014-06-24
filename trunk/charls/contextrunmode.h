@@ -6,41 +6,52 @@
 #ifndef CHARLS_CONTEXTRUNMODE
 #define CHARLS_CONTEXTRUNMODE
 
+#include <cstdint>
+
 // Implements statistical modelling for the run mode context.
 // Computes model dependent parameters like the golomb code lengths
-struct CContextRunMode 
+struct CContextRunMode
 {
+	// Note: members are sorted based on their size.
+	LONG A;
+	LONG _nRItype;
+	uint8_t _nReset;
+	uint8_t N;
+	uint8_t Nn;
+
+	CContextRunMode() :
+		A(),
+		_nRItype(),
+		_nReset(),
+		N(),
+		Nn()
+	{
+	}
+
+
 	CContextRunMode(LONG a, LONG nRItype, LONG nReset) :
 		A(a),
-		N(1),
-		Nn(0),
 		_nRItype(nRItype),
-		_nReset((BYTE)nReset)
+		_nReset(static_cast<uint8_t>(nReset)),
+		N(1),
+		Nn(0)
 	{
 	}
 
-	LONG A;
-	BYTE N;
-	BYTE Nn;
-	LONG _nRItype;
-	BYTE _nReset;
-
-	CContextRunMode()
-	{
-	}
 
 	inlinehint LONG GetGolomb() const
 	{
-		LONG Ntest	= N;
-		LONG TEMP	= A + (N >> 1) * _nRItype;
+		LONG Ntest = N;
+		LONG TEMP = A + (N >> 1) * _nRItype;
 		LONG k = 0;
 		for(; Ntest < TEMP; k++) 
 		{
 			Ntest <<= 1;
-			ASSERT(k <= 32); 
+			ASSERT(k <= 32);
 		}
 		return k;
 	}
+
 
 	void UpdateVariables(LONG Errval, LONG EMErrval)
 	{
@@ -58,6 +69,7 @@ struct CContextRunMode
 		N = N + 1;
 	}
 
+
 	inlinehint LONG ComputeErrVal(LONG temp, LONG k)
 	{
 		bool map = temp & 1;
@@ -74,6 +86,7 @@ struct CContextRunMode
 		return errvalabs;
 	}
 
+
 	bool ComputeMap(LONG Errval, LONG k) const
 	{
 		if ((k == 0) && (Errval > 0) && (2 * Nn < N))
@@ -87,6 +100,7 @@ struct CContextRunMode
 
 		return false;
 	}
+
 
 	inlinehint bool ComputeMapNegativeE(LONG k) const
 	{

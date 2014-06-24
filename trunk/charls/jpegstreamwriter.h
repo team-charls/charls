@@ -27,7 +27,7 @@ public:
 		_segments.push_back(segment);
 	}
 
-	void AddScan(ByteStreamInfo info, const JlsParameters* pparams);
+	void AddScan(const ByteStreamInfo& info, const JlsParameters* pparams);
 
 	void AddLSE(const JlsCustomParameters* pcustom);
 
@@ -43,7 +43,7 @@ public:
 		return _data.count - _byteOffset;
 	}
 
-	size_t Write(ByteStreamInfo info);
+	size_t Write(const ByteStreamInfo& info);
 
 	void EnableCompare(bool bCompare)
 	{

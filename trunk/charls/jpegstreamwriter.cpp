@@ -59,7 +59,7 @@ void JpegStreamWriter::AddColorTransform(int i)
 }
 
 
-size_t JpegStreamWriter::Write(ByteStreamInfo info)
+size_t JpegStreamWriter::Write(const ByteStreamInfo& info)
 {
 	_data = info;
 
@@ -80,7 +80,7 @@ size_t JpegStreamWriter::Write(ByteStreamInfo info)
 }
 
 
-void JpegStreamWriter::AddScan(ByteStreamInfo info, const JlsParameters* pparams)
+void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters* pparams)
 {
 	if (!IsDefault(&pparams->custom))
 	{

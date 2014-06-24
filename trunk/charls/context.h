@@ -12,9 +12,19 @@
 //
 struct JlsContext
 {
-public:
-	JlsContext() 
-	{}
+	LONG A;
+	LONG B;
+	short C;
+	short N;
+
+	JlsContext() :
+		A(),
+		B(),
+		C(),
+		N(1)
+	{
+	}
+
 
 	JlsContext(LONG a) :
 		A(a),
@@ -24,10 +34,6 @@ public:
 	{
 	}
 
-	LONG A;
-	LONG B;
-	short C;
-	short N;
 
 	inlinehint LONG GetErrorCorrection(LONG k) const
 	{
@@ -36,6 +42,7 @@ public:
 
 		return BitWiseSign(2 * B + N - 1);
 	}
+
 
 	inlinehint void UpdateVariables(LONG errorValue, LONG NEAR, LONG NRESET)
 	{
@@ -82,6 +89,7 @@ public:
 
 		ASSERT(N != 0);
 	}
+
 
 	inlinehint LONG GetGolomb() const
 	{

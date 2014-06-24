@@ -104,17 +104,19 @@ public:
 
 public:
 
-	JlsCodec(const TRAITS& inTraits, const JlsParameters& info) : STRATEGY(info), 
-	traits(inTraits),
+	JlsCodec(const TRAITS& inTraits, const JlsParameters& info) :
+		STRATEGY(info),
+		traits(inTraits),
 		_rect(),
 		_width(info.width),
 		T1(0),
 		T2(0),
 		T3(0),
 		_RUNindex(0),
+		_previousLine(),
+		_currentLine(),
 		_pquant(0),
 		_bCompare(0)
-
 	{
 		if (Info().ilv == ILV_NONE)
 		{
@@ -207,7 +209,7 @@ protected:
 	LONG T3; 
 
 	// compression context
-	JlsContext _contexts[365];	
+	JlsContext _contexts[365];
 	CContextRunMode _contextRunmode[2];
 	LONG _RUNindex;
 	PIXEL* _previousLine; // previous line ptr
@@ -627,7 +629,7 @@ LONG JlsCodec<TRAITS,STRATEGY>::DoRunMode(LONG startIndex, DecoderStrategy*)
 
 	// run interruption
 	PIXEL Rb = _previousLine[endIndex];
-	_currentLine[endIndex] =	DecodeRIPixel(Ra, Rb);
+	_currentLine[endIndex] = DecodeRIPixel(Ra, Rb);
 	DecrementRunIndex();
 	return endIndex - startIndex + 1;
 }

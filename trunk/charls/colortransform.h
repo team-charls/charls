@@ -35,7 +35,7 @@ struct TransformNone : public TransformNoneImpl<sample>
 template<class sample>
 struct TransformHp1
 {
-	enum { RANGE = 1 << sizeof(sample)*8 };
+	enum { RANGE = 1 << (sizeof(sample) * 8) };
 	typedef sample SAMPLE;
 
 	struct INVERSE
@@ -62,7 +62,7 @@ struct TransformHp1
 template<class sample>
 struct TransformHp2
 {
-	enum { RANGE = 1 << sizeof(sample)*8 };
+	enum { RANGE = 1 << (sizeof(sample) * 8) };
 	typedef sample SAMPLE;
 
 	struct INVERSE
@@ -89,7 +89,7 @@ struct TransformHp2
 template<class sample>
 struct TransformHp3
 {
-	enum { RANGE = 1 << sizeof(sample) * 8 };
+	enum { RANGE = 1 << (sizeof(sample) * 8) };
 	typedef sample SAMPLE;
 
 	struct INVERSE
@@ -151,7 +151,7 @@ struct TransformShifted
 
 
 	TransformShifted(int shift) :
-		 _shift(shift)
+		_shift(shift)
 	{
 	}
 

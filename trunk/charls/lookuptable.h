@@ -10,7 +10,9 @@
 // Tables for fast decoding of short Golomb Codes.
 struct Code
 {
-	Code()
+	Code() :
+		_value(),
+		_length()
 	{
 	}
 

@@ -40,7 +40,7 @@ public:
 		_info = *info;
 	}
 
-	void SetRect(JlsRect rect)
+	void SetRect(const JlsRect& rect)
 	{
 		_rect = rect;
 	}
