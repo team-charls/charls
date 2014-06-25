@@ -216,7 +216,6 @@ class ProcessTransformed : public ProcessLine
 {
 	typedef typename TRANSFORM::SAMPLE SAMPLE;
 
-	ProcessTransformed(const ProcessTransformed&) {}
 public:
 	ProcessTransformed(ByteStreamInfo rawStream, const JlsParameters& info, TRANSFORM transform) :
 		_info(info),
