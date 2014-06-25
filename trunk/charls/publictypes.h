@@ -8,6 +8,7 @@
 
 #ifdef __cplusplus
 #include <iostream>
+#include <cstddef>
 #endif
 
 enum JLS_ERROR
@@ -119,11 +120,11 @@ struct ByteStreamInfo
 {
 	std::basic_streambuf<char>* rawStream;
 	BYTE* rawData;
-	size_t count;
+	std::size_t count;
 };
 
 
-inline ByteStreamInfo FromByteArray(const void* bytes, size_t count)
+inline ByteStreamInfo FromByteArray(const void* bytes, std::size_t count)
 {
 	ByteStreamInfo info = ByteStreamInfo();
 	info.rawData = (BYTE*)bytes;

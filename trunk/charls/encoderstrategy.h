@@ -39,7 +39,7 @@ public:
 
 	virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 
-	virtual size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo* compressedData, void* pvoidCompare) = 0;
+	virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo* compressedData, void* pvoidCompare) = 0;
 
 	virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 
@@ -115,8 +115,8 @@ protected:
 		if (!_compressedStream)
 			throw JlsException(CompressedBufferTooSmall);
 
-		size_t bytesCount = _position-(BYTE*)&_buffer[0];
-		size_t bytesWritten = (size_t)_compressedStream->sputn((char*)&_buffer[0], _position - (BYTE*)&_buffer[0]);
+		std::size_t bytesCount = _position-(BYTE*)&_buffer[0];
+		std::size_t bytesWritten = (std::size_t)_compressedStream->sputn((char*)&_buffer[0], _position - (BYTE*)&_buffer[0]);
 
 		if (bytesWritten != bytesCount)
 			throw JlsException(CompressedBufferTooSmall);
@@ -158,7 +158,7 @@ protected:
 		}
 	}
 
-	size_t GetLength()
+	std::size_t GetLength()
 	{
 		return _bytesWritten - (bitpos -32)/8;
 	}
@@ -177,12 +177,12 @@ protected:
 private:
 	unsigned int valcurrent;
 	LONG bitpos;
-	size_t _compressedLength;
+	std::size_t _compressedLength;
 
 	// encoding
 	BYTE* _position;
 	bool _isFFWritten;
-	size_t _bytesWritten;
+	std::size_t _bytesWritten;
 
 	std::vector<BYTE> _buffer;
 	std::basic_streambuf<char>* _compressedStream;

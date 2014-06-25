@@ -64,16 +64,16 @@ public:
 		if (!_byteStream || _byteStream->sgetc() == std::char_traits<char>::eof())
 			return;
 
-		size_t count = _endPosition - _position; 
+		std::size_t count = _endPosition - _position;
 
 		if (count > 64)
 			return;
 
-		for (size_t i = 0; i < count; ++i)
+		for (std::size_t i = 0; i < count; ++i)
 		{
 			_buffer[i] = _position[i];
 		}
-		size_t offset = &_buffer[0] - _position;
+		std::size_t offset = &_buffer[0] - _position;
 
 		_position += offset;
 		_endPosition += offset;
@@ -129,7 +129,7 @@ public:
 		return false;
 	}
 
-	typedef size_t bufType;
+	typedef std::size_t bufType;
 
 	enum
 	{

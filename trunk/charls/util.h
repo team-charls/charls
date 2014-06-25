@@ -166,7 +166,7 @@ inline ByteStreamInfo FromStream(std::basic_streambuf<char>* stream)
 }
 
 
-inline void SkipBytes(ByteStreamInfo* streamInfo, size_t count)
+inline void SkipBytes(ByteStreamInfo* streamInfo, std::size_t count)
 {
 	if (!streamInfo->rawData)
 		return;

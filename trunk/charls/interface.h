@@ -7,6 +7,7 @@
 #define JLS_INTERFACE
 
 #include "publictypes.h"
+#include <stddef.h>
 
 /* non-windows (static linking) */
 #if !defined(CHARLS_IMEXPORT) && !defined(_WIN32)

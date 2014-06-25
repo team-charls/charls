@@ -89,14 +89,14 @@ public:
 
 	void NewLineRequested(void* dest, int pixelCount, int /*destStride*/)
 	{
-		size_t bytesToRead = pixelCount * _bytesPerPixel;
+		std::size_t bytesToRead = pixelCount * _bytesPerPixel;
 		while (bytesToRead != 0)
 		{
 			std::streamsize bytesRead = _rawData->sgetn((char*)dest, bytesToRead);
 			if (bytesRead == 0)
 				throw JlsException(UncompressedBufferTooSmall);
 
-			bytesToRead = (size_t)(bytesToRead - bytesRead);
+			bytesToRead = (std::size_t)(bytesToRead - bytesRead);
 		}
 
 		if (_bytesPerPixel == 2 )

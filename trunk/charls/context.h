@@ -49,12 +49,12 @@ struct JlsContext
 		ASSERT(N != 0);
 
 		// For performance work on copies of A,B,N (compiler will use registers).
-		int a = A + abs(errorValue);
+		int a = A + std::abs(errorValue);
 		int b = B + errorValue * (2 * NEAR + 1); 
 		int n = N;
 
 		ASSERT(a < 65536 * 256);
-		ASSERT(abs(b) < 65536 * 256);
+		ASSERT(std::abs(b) < 65536 * 256);
 
 		if (n == NRESET) 
 		{

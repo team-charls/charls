@@ -33,17 +33,17 @@ public:
 
 	void AddColorTransform(int i);
 
-	size_t GetBytesWritten()
+	std::size_t GetBytesWritten()
 	{
 		return _byteOffset;
 	}
 
-	size_t GetLength()
+	std::size_t GetLength()
 	{
 		return _data.count - _byteOffset;
 	}
 
-	size_t Write(const ByteStreamInfo& info);
+	std::size_t Write(const ByteStreamInfo& info);
 
 	void EnableCompare(bool bCompare)
 	{
@@ -83,7 +83,7 @@ private:
 
 	void WriteBytes(const std::vector<BYTE>& rgbyte)
 	{
-		for (size_t i = 0; i < rgbyte.size(); ++i)
+		for (std::size_t i = 0; i < rgbyte.size(); ++i)
 		{
 			WriteByte(rgbyte[i]);
 		}
@@ -95,7 +95,7 @@ private:
 		WriteByte(BYTE(val % 0x100));
 	}
 
-	void Seek(size_t byteCount)
+	void Seek(std::size_t byteCount)
 	{
 		if (_data.rawStream)
 			return;
@@ -106,7 +106,7 @@ private:
 private:
 	bool _bCompare;
 	ByteStreamInfo _data;
-	size_t _byteOffset;
+	std::size_t _byteOffset;
 	LONG _lastCompenentIndex;
 	std::vector<JpegSegment*> _segments;
 };
