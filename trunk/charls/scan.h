@@ -772,9 +772,9 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
 	{
 		switch(transform)
 		{
-			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<SAMPLE> >(info, Info(), TransformHp1<SAMPLE>()); break;
-			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<SAMPLE> >(info, Info(), TransformHp2<SAMPLE>()); break;
-			case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<SAMPLE> >(info, Info(), TransformHp3<SAMPLE>()); break;
+			case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<SAMPLE> >(info, Info(), TransformHp1<SAMPLE>());
+			case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<SAMPLE> >(info, Info(), TransformHp2<SAMPLE>());
+			case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<SAMPLE> >(info, Info(), TransformHp3<SAMPLE>());
 			default: throw JlsException(UnsupportedColorTransform);
 		}
 	}
@@ -783,9 +783,9 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
 		int shift = 16 - Info().bitspersample;
 		switch(transform)
 		{
-			case COLORXFORM_HP1 : return new ProcessTransformed<TransformShifted<TransformHp1<USHORT> > >(info, Info(), TransformShifted<TransformHp1<USHORT> >(shift)); break;
-			case COLORXFORM_HP2 : return new ProcessTransformed<TransformShifted<TransformHp2<USHORT> > >(info, Info(), TransformShifted<TransformHp2<USHORT> >(shift)); break;
-			case COLORXFORM_HP3 : return new ProcessTransformed<TransformShifted<TransformHp3<USHORT> > >(info, Info(), TransformShifted<TransformHp3<USHORT> >(shift)); break;
+			case COLORXFORM_HP1 : return new ProcessTransformed<TransformShifted<TransformHp1<USHORT> > >(info, Info(), TransformShifted<TransformHp1<USHORT> >(shift));
+			case COLORXFORM_HP2 : return new ProcessTransformed<TransformShifted<TransformHp2<USHORT> > >(info, Info(), TransformShifted<TransformHp2<USHORT> >(shift));
+			case COLORXFORM_HP3 : return new ProcessTransformed<TransformShifted<TransformHp3<USHORT> > >(info, Info(), TransformShifted<TransformHp3<USHORT> >(shift));
 			default: throw JlsException(UnsupportedColorTransform);
 		}
 	}
