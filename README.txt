@@ -14,4 +14,4 @@ Features
 
 Project Documentation
 ---------------------
-All project documentation can be found on htts://charls.codeplex.com
+All project documentation can be found on http://charls.codeplex.com
