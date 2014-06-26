@@ -224,8 +224,8 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
 			throw JlsException(InvalidCompressedData); // TODO: throw more specific error code.
 	}
 	int length = ReadByte(); //length
-	length = length * 256 + ReadByte();
-	
+	length = length * 256 + ReadByte(); // TODO: do something with 'length' or remove it.
+
 	LONG componentCount = ReadByte();
 	if (componentCount != 1 && componentCount != _info.components)
 		throw JlsException(ParameterValueNotSupported);
@@ -299,7 +299,7 @@ BYTE JpegStreamReader::ReadByte()
 	if (_byteStream.rawStream)
 		return (BYTE)_byteStream.rawStream->sbumpc();
 
-	if (_byteStream.count <= 0)
+	if (_byteStream.count == 0)
 		throw JlsException(InvalidCompressedData);
 
 	BYTE value = _byteStream.rawData[0]; 
