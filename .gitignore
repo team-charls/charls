@@ -4,6 +4,14 @@ obj/
 bin/
 Win32/
 x64/
+[Dd]ebug/
 *.opensdf
 *.sdf
-CharLS_VS2013.v12.suo
+
+# Ignore files created by Visual Studio
+*.suo
+*.user
+*.ipch
+
+# Ignore Coverity build folder
+cov-int/
