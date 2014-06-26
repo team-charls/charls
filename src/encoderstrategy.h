@@ -158,9 +158,9 @@ protected:
 		}
 	}
 
-	std::size_t GetLength()
+	std::size_t GetLength() const
 	{
-		return _bytesWritten - (bitpos -32)/8;
+		return _bytesWritten - (bitpos - 32) / 8;
 	}
 
 	inlinehint void AppendOnesToBitStream(LONG length)

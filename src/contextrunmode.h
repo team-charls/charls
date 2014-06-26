@@ -70,7 +70,7 @@ struct CContextRunMode
 	}
 
 
-	inlinehint LONG ComputeErrVal(LONG temp, LONG k)
+	inlinehint LONG ComputeErrVal(LONG temp, LONG k) const
 	{
 		bool map = temp & 1;
 

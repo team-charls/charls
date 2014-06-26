@@ -33,12 +33,12 @@ public:
 
 	void AddColorTransform(int i);
 
-	std::size_t GetBytesWritten()
+	std::size_t GetBytesWritten() const
 	{
 		return _byteOffset;
 	}
 
-	std::size_t GetLength()
+	std::size_t GetLength() const
 	{
 		return _data.count - _byteOffset;
 	}

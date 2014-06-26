@@ -55,7 +55,7 @@ public:
 		return ModRange(Quantize(e));
 	}
 
-	inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)
+	inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal) const
 	{
 		return FixReconstructedValue(Px + DeQuantize(ErrVal)); 
 	}

@@ -60,7 +60,7 @@ public:
 		}
 	}
 
-	inlinehint const Code& Get(LONG value)
+	inlinehint const Code& Get(LONG value) const
 	{
 		return _rgtype[value];
 	}

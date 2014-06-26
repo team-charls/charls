@@ -18,7 +18,7 @@ struct TransformNoneImpl
 {
 	typedef sample SAMPLE;
 
-	inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3)
+	inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
 	{
 		return Triplet<SAMPLE>(v1, v2, v3);
 	}
@@ -42,13 +42,13 @@ struct TransformHp1
 	{
 		INVERSE(const TransformHp1&) {};
 
-		inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3)
+		inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
 		{
 			return Triplet<SAMPLE>(v1 + v2 - RANGE/2, v2, v3 + v2 - RANGE/2);
 		}
 	};
 
-	inlinehint Triplet<SAMPLE> operator()(int R, int G, int B)
+	inlinehint Triplet<SAMPLE> operator()(int R, int G, int B) const
 	{
 		Triplet<SAMPLE> hp1;
 		hp1.v2 = SAMPLE(G);
@@ -69,7 +69,7 @@ struct TransformHp2
 	{
 		INVERSE(const TransformHp2&) {};
 
-		inlinehint   Triplet<SAMPLE> operator() (int v1, int v2, int v3)
+		inlinehint   Triplet<SAMPLE> operator() (int v1, int v2, int v3) const
 		{
 			Triplet<SAMPLE> rgb;
 			rgb.R  = SAMPLE(v1 + v2 - RANGE / 2);                     // new R
@@ -79,7 +79,7 @@ struct TransformHp2
 		}
 	};
 
-	inlinehint Triplet<SAMPLE> operator()(int R, int G, int B)
+	inlinehint Triplet<SAMPLE> operator()(int R, int G, int B) const
 	{
 		return Triplet<SAMPLE>(R - G + RANGE / 2, G, B - ((R+G )>>1) - RANGE / 2);
 	}
@@ -96,7 +96,7 @@ struct TransformHp3
 	{
 		INVERSE(const TransformHp3&) {};
 
-		inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3)
+		inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
 		{
 			int G = v1 - ((v3 + v2)>>2) + RANGE/4;
 			Triplet<SAMPLE> rgb;
@@ -107,7 +107,7 @@ struct TransformHp3
 		}
 	};
 
-	inlinehint Triplet<SAMPLE> operator() (int R, int G, int B)
+	inlinehint Triplet<SAMPLE> operator() (int R, int G, int B) const
 	{
 		Triplet<SAMPLE> hp3;
 		hp3.v2 = SAMPLE(B - G + RANGE / 2);
