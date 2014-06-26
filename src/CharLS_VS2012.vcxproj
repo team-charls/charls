@@ -336,7 +336,6 @@
     <None Include="License.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="header.cpp" />
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="jpegls.cpp">
       <IntrinsicFunctions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IntrinsicFunctions>
@@ -356,6 +355,9 @@
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</BufferSecurityCheck>
       <FunctionLevelLinking Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</FunctionLevelLinking>
     </ClCompile>
+    <ClCompile Include="jpegmarkersegment.cpp" />
+    <ClCompile Include="jpegstreamreader.cpp" />
+    <ClCompile Include="jpegstreamwriter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="colortransform.h" />

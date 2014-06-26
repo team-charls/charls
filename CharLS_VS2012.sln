@@ -1,27 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLS_VS2012", "CharLS_VS2012.vcxproj", "{524BE26D-FC60-4BC4-9100-128A0502FFF7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLS_VS2012", "src\CharLS_VS2012.vcxproj", "{524BE26D-FC60-4BC4-9100-128A0502FFF7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharLSNet_VS2012", "net\CharLSNet_VS2012.csproj", "{4EDED401-1B63-4989-BF3F-2875B6C9203D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharLSNetTest_VS2012", "nettest\CharLSNetTest_VS2012.csproj", "{8B9087C8-9C4D-4F4E-BAC3-2434D915DD41}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs08
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = CharLS_VS2012.vcxproj
-		SccLocalPath1 = .
-		SccProjectUniqueName2 = net\\CharLSNet_VS2012.csproj
-		SccProjectName2 = net
-		SccLocalPath2 = net
-		SccProjectUniqueName3 = nettest\\CharLSNetTest_VS2012.csproj
-		SccProjectName3 = nettest
-		SccLocalPath3 = nettest
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Checked|Win32 = Checked|Win32
 		Checked|x64 = Checked|x64

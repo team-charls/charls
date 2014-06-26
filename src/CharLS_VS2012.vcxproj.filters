@@ -15,13 +15,19 @@
     <None Include="License.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="header.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="interface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jpegls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jpegmarkersegment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jpegstreamreader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jpegstreamwriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
