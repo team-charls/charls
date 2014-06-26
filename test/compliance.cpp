@@ -5,9 +5,9 @@
 
 #include "config.h"
 
-#include "../interface.h"
-#include "../util.h"
-#include "../jpegstreamreader.h"
+#include "../src/interface.h"
+#include "../src/util.h"
+#include "../src/jpegstreamreader.h"
 
 #include <iostream>
 #include <vector>

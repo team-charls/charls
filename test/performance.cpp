@@ -4,16 +4,16 @@
 
 
 #include "config.h"
-#include <iostream>
-#include <vector>
 
-#include "../interface.h"
-#include "../util.h"
-#include "../colortransform.h"
-#include "../jpegstreamreader.h"
-#include "../processline.h"
+#include "../src/interface.h"
+#include "../src/util.h"
+#include "../src/colortransform.h"
+#include "../src/jpegstreamreader.h"
+#include "../src/processline.h"
 
 #include "util.h"
+#include <iostream>
+#include <vector>
 
 
 

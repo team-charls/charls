@@ -54,9 +54,6 @@
     <None Include="conformance\TEST16.PGM">
       <Filter>Data Files</Filter>
     </None>
-    <None Include="lena8b.raw">
-      <Filter>Data Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="0015.raw">
@@ -77,5 +74,6 @@
     <CustomBuild Include="MR2_UNC">
       <Filter>Data Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="lena8b.raw" />
   </ItemGroup>
 </Project>
