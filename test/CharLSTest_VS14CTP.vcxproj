@@ -415,16 +415,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
     </CustomBuild>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CharLS.vcxproj">
-      <Project>{524be26d-fc60-4bc4-9100-128a0502fff7}</Project>
-      <Private>false</Private>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -339,7 +339,6 @@
     <None Include="License.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="header.cpp" />
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="jpegls.cpp" />
     <ClCompile Include="jpegmarkersegment.cpp" />
