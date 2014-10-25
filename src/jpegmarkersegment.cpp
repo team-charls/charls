@@ -6,6 +6,7 @@
 #include "header.h"
 #include "util.h"
 #include <vector>
+#include <cstdint>
 
 
 JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(int width, int height, LONG bitsPerSample, LONG componentCount)
