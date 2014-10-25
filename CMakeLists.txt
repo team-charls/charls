@@ -23,7 +23,7 @@ if(WIN32)
    endif(BUILD_SHARED_LIBS)
 endif(WIN32)
 
-add_library(CharLS header.cpp  interface.cpp  jpegls.cpp  jpegmarkersegment.cpp  jpegstreamwriter.cpp)
+add_library(CharLS interface.cpp jpegls.cpp jpegmarkersegment.cpp jpegstreamreader.cpp jpegstreamwriter.cpp)
 
 add_executable(charlstest test/main.cpp test/time.cpp test/util.cpp test/bitstreamdamage.cpp test/compliance.cpp test/performance.cpp test/dicomsamples.cpp)
 target_link_libraries (charlstest CharLS)
