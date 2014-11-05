@@ -342,6 +342,7 @@
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="jpegls.cpp" />
     <ClCompile Include="jpegmarkersegment.cpp" />
+    <ClCompile Include="jpegstreamreader.cpp" />
     <ClCompile Include="jpegstreamwriter.cpp" />
   </ItemGroup>
   <ItemGroup>
