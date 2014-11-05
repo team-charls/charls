@@ -26,7 +26,7 @@ namespace CharLS
         /// Initializes a new instance of the <see cref="JpegLSBitmapDecoder"/> class.
         /// </summary>
         /// <param name="bitmapStream">The bitmap stream to decode.</param>
-        /// <exception cref="FileFormatException">The bitmapstram is not a JPEG-LS encoded image.</exception>
+        /// <exception cref="FileFormatException">The bitmap stream is not a JPEG-LS encoded image.</exception>
         public JpegLSBitmapDecoder(Stream bitmapStream)
         {
             Contract.Requires<ArgumentNullException>(bitmapStream != null);
@@ -90,6 +90,7 @@ namespace CharLS
                         case 8:
                             return PixelFormats.Gray8;
                     }
+
                     break;
                 case 3:
                     switch (info.BitsPerComponent)
@@ -97,6 +98,7 @@ namespace CharLS
                         case 8:
                             return PixelFormats.Rgb24;
                     }
+
                     break;
             }
 
