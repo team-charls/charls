@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Viewer</RootNamespace>
     <AssemblyName>Viewer</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.3</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -347,7 +347,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\net\CharLSNet_VS14CTP.csproj">
+    <ProjectReference Include="..\..\net\CharLSNet_VS2015.csproj">
       <Project>{4eded401-1b63-4989-bf3f-2875b6c9203d}</Project>
       <Name>CharLSNet_VS2013</Name>
     </ProjectReference>

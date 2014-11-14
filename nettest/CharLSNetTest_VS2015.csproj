@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CharLS.Test</RootNamespace>
     <AssemblyName>CharLSNetTest</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.3</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -244,7 +244,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\net\CharLSNet_VS14CTP.csproj">
+    <ProjectReference Include="..\net\CharLSNet_VS2015.csproj">
       <Project>{4eded401-1b63-4989-bf3f-2875b6c9203d}</Project>
       <Name>CharLSNet_VS2013</Name>
     </ProjectReference>
