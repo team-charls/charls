@@ -331,4 +331,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="CheckForCodeContracts" Condition="'$(CodeContractsImported)' != 'true'">
+    <Error Text="To build this project Code Contracts should be installed. http://msdn.microsoft.com/en-us/devlabs/dd491992.aspx" />
+  </Target>
+  <PropertyGroup>
+    <CompileDependsOn>$(CompileDependsOn);CheckForCodeContracts</CompileDependsOn>
+  </PropertyGroup>
 </Project>
