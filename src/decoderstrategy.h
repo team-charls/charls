@@ -43,7 +43,7 @@ public:
 		if (compressedStream->rawStream)
 		{
 			_buffer.resize(40000);
-			_position = (BYTE*)&_buffer[0];
+            _position = (uint8_t*) &_buffer[0];
 			_endPosition = _position;
 			_byteStream = compressedStream->rawStream;
 			AddBytesFromStream();
@@ -184,9 +184,9 @@ public:
 		return;
 	}
 
-	BYTE* FindNextFF()
+    uint8_t* FindNextFF()
 	{
-		BYTE* pbyteNextFF = _position;
+        uint8_t* pbyteNextFF = _position;
 
 		while (pbyteNextFF < _endPosition)
 		{
@@ -199,10 +199,10 @@ public:
 		return pbyteNextFF;
 	}
 
-	BYTE* GetCurBytePos() const
+    uint8_t* GetCurBytePos() const
 	{
 		LONG validBits = _validBits;
-		BYTE* compressedBytes = _position;
+        uint8_t* compressedBytes = _position;
 
 		for (;;)
 		{
@@ -302,15 +302,15 @@ protected:
 	std::unique_ptr<ProcessLine> _processLine;
 
 private:
-	std::vector<BYTE> _buffer;
+    std::vector<uint8_t> _buffer;
 	std::basic_streambuf<char>* _byteStream;
 
 	// decoding
 	bufType _readCache;
 	LONG _validBits;
-	BYTE* _position;
-	BYTE* _nextFFPosition;
-	BYTE* _endPosition;
+    uint8_t* _position;
+    uint8_t* _nextFFPosition;
+    uint8_t* _endPosition;
 };
 
 

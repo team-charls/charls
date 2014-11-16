@@ -20,10 +20,10 @@
 #endif
 
 
-inline void push_back(std::vector<BYTE>& vec, USHORT value)
+inline void push_back(std::vector<uint8_t>& vec, USHORT value)
 {
-	vec.push_back(BYTE(value / 0x100));
-	vec.push_back(BYTE(value % 0x100));
+    vec.push_back(uint8_t(value / 0x100));
+    vec.push_back(uint8_t(value % 0x100));
 }
 
 
@@ -91,12 +91,12 @@ struct Triplet
 	};
 };
 
-inline bool operator==(const Triplet<BYTE>& lhs, const Triplet<BYTE>& rhs)
+inline bool operator==(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
 {
 	return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3;
 }
 
-inline bool  operator!=(const Triplet<BYTE>& lhs, const Triplet<BYTE>& rhs)
+inline bool  operator!=(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
 {
 	return !(lhs == rhs);
 }
@@ -129,7 +129,7 @@ struct FromBigEndian
 template <>
 struct FromBigEndian<4>
 {
-	inlinehint static unsigned int Read(BYTE* pbyte)
+    inlinehint static unsigned int Read(uint8_t* pbyte)
 	{
 		return  (pbyte[0] << 24) + (pbyte[1] << 16) + (pbyte[2] << 8) + (pbyte[3] << 0);
 	}
@@ -139,7 +139,7 @@ struct FromBigEndian<4>
 template <>
 struct FromBigEndian<8>
 {
-	inlinehint static uint64_t Read(BYTE* pbyte)
+    inlinehint static uint64_t Read(uint8_t* pbyte)
 	{
 		return (uint64_t(pbyte[0]) << 56) + (uint64_t(pbyte[1]) << 48) + (uint64_t(pbyte[2]) << 40) + (uint64_t(pbyte[3]) << 32) +
 				(uint64_t(pbyte[4]) << 24) + (uint64_t(pbyte[5]) << 16) + (uint64_t(pbyte[6]) <<  8) + (uint64_t(pbyte[7]) << 0);

@@ -67,7 +67,7 @@ struct LosslessTraitsT : public LosslessTraitsImplT<SAMPLE, bpp>
 
 
 template<>
-struct LosslessTraitsT<BYTE, 8> : public LosslessTraitsImplT<BYTE, 8>
+struct LosslessTraitsT<uint8_t, 8> : public LosslessTraitsImplT<uint8_t, 8>
 {
 	typedef SAMPLE PIXEL;
 
@@ -81,9 +81,9 @@ struct LosslessTraitsT<BYTE, 8> : public LosslessTraitsImplT<BYTE, 8>
 		return (signed char)(d);
 	}
 
-	static inlinehint BYTE ComputeReconstructedSample(LONG Px, LONG ErrVal)
+    static inlinehint uint8_t ComputeReconstructedSample(LONG Px, LONG ErrVal)
 	{
-		return BYTE(Px + ErrVal);
+        return uint8_t(Px + ErrVal);
 	}
 };
 

@@ -34,7 +34,7 @@ class PostProcesSingleComponent : public ProcessLine
 {
 public:
 	PostProcesSingleComponent(void* rawData, const JlsParameters& info, int bytesPerPixel) :
-		_rawData(static_cast<BYTE*>(rawData)),
+        _rawData(static_cast<uint8_t*>(rawData)),
 		_bytesPerPixel(bytesPerPixel),
 		_bytesPerLine(info.bytesperline)
 	{
@@ -53,7 +53,7 @@ public:
 	}
 
 private:
-	BYTE* _rawData;
+    uint8_t* _rawData;
 	int _bytesPerPixel;
 	int _bytesPerLine;
 };
@@ -333,7 +333,7 @@ public:
 private:
 	const JlsParameters& _info;
 	std::vector<SAMPLE> _templine;
-	std::vector<BYTE> _buffer;
+    std::vector<uint8_t> _buffer;
 	TRANSFORM _transform;
 	typename TRANSFORM::INVERSE _inverseTransform;
 	ByteStreamInfo _rawPixels;

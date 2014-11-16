@@ -54,7 +54,7 @@ protected:
 		{
 			_compressedStream = compressedStream->rawStream;
 			_buffer.resize(4000);
-			_position = (BYTE*) &_buffer[0];
+            _position = (uint8_t*) &_buffer[0];
 			_compressedLength = _buffer.size();
 		}
 		else
@@ -115,13 +115,13 @@ protected:
 		if (!_compressedStream)
 			throw JlsException(CompressedBufferTooSmall);
 
-		std::size_t bytesCount = _position-(BYTE*)&_buffer[0];
-		std::size_t bytesWritten = (std::size_t)_compressedStream->sputn((char*)&_buffer[0], _position - (BYTE*)&_buffer[0]);
+        std::size_t bytesCount = _position - (uint8_t*) &_buffer[0];
+        std::size_t bytesWritten = (std::size_t)_compressedStream->sputn((char*) &_buffer[0], _position - (uint8_t*) &_buffer[0]);
 
 		if (bytesWritten != bytesCount)
 			throw JlsException(CompressedBufferTooSmall);
 
-		_position = (BYTE*)&_buffer[0];
+        _position = (uint8_t*) &_buffer[0];
 		_compressedLength = _buffer.size();
 	}
 
@@ -140,13 +140,13 @@ protected:
 			if (_isFFWritten)
 			{
 				// insert highmost bit
-				*_position = BYTE(valcurrent >> 25);
+                *_position = uint8_t(valcurrent >> 25);
 				valcurrent = valcurrent << 7;
 				bitpos += 7;
 			}
 			else
 			{
-				*_position = BYTE(valcurrent >> 24);
+                *_position = uint8_t(valcurrent >> 24);
 				valcurrent = valcurrent << 8;
 				bitpos += 8;
 			}
@@ -180,11 +180,11 @@ private:
 	std::size_t _compressedLength;
 
 	// encoding
-	BYTE* _position;
+    uint8_t* _position;
 	bool _isFFWritten;
 	std::size_t _bytesWritten;
 
-	std::vector<BYTE> _buffer;
+    std::vector<uint8_t> _buffer;
 	std::basic_streambuf<char>* _compressedStream;
 };
 

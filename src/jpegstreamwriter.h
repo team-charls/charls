@@ -51,7 +51,7 @@ public:
 	}
 
 private:
-	BYTE* GetPos() const
+    uint8_t* GetPos() const
 	{
 		return _data.rawData + _byteOffset;
 	}
@@ -64,7 +64,7 @@ private:
 		return data;
 	}
 
-	void WriteByte(BYTE val)
+    void WriteByte(uint8_t val)
 	{
 		ASSERT(!_bCompare || _data.rawData[_byteOffset] == val);
 
@@ -81,18 +81,18 @@ private:
 		}
 	}
 
-	void WriteBytes(const std::vector<BYTE>& rgbyte)
+    void WriteBytes(const std::vector<uint8_t>& bytes)
 	{
-		for (std::size_t i = 0; i < rgbyte.size(); ++i)
+		for (std::size_t i = 0; i < bytes.size(); ++i)
 		{
-			WriteByte(rgbyte[i]);
+			WriteByte(bytes[i]);
 		}
 	}
 
-	void WriteWord(USHORT val)
+	void WriteWord(USHORT value)
 	{
-		WriteByte(BYTE(val / 0x100));
-		WriteByte(BYTE(val % 0x100));
+        WriteByte(static_cast<uint8_t>(value / 0x100));
+        WriteByte(static_cast<uint8_t>(value % 0x100));
 	}
 
 	void Seek(std::size_t byteCount)

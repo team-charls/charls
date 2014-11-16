@@ -208,7 +208,7 @@ extern "C"
 			writer.AddScan(rawStreamInfo, &info);
 		}
 
-		std::vector<BYTE> rgbyteCompressed(compressedLength + 16);
+        std::vector<uint8_t> rgbyteCompressed(compressedLength + 16);
 
 		memcpy(&rgbyteCompressed[0], compressedData, compressedLength);
 

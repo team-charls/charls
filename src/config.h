@@ -22,13 +22,6 @@
 
 #endif
 
-#ifdef __GNUC__
-#include <cstdint>
-#else
-typedef long long int64_t;
-typedef unsigned long long uint64_t;
-#endif
-
 /* Typedef used by Charls for the default integral type.  charls will work correctly with 64 or 32 bit. */
 typedef long LONG;
 
@@ -38,7 +31,6 @@ enum constants
 };
 
 
-typedef unsigned char BYTE;
 typedef unsigned short USHORT;
 
 #undef  NEAR

@@ -38,9 +38,9 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(int width, int he
 
 JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(const JfifParameters& jfifParameters)
 {
-	BYTE jfifID [] = { 'J', 'F', 'I', 'F', '\0' };
+    uint8_t jfifID [] = { 'J', 'F', 'I', 'F', '\0' };
 
-	std::vector<BYTE> rgbyte;
+    std::vector<uint8_t> rgbyte;
 	for (int i = 0; i < (int)sizeof(jfifID); i++)
 	{
 		rgbyte.push_back(jfifID[i]);
@@ -53,14 +53,14 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(cons
 	push_back(rgbyte, (USHORT) jfifParameters.YDensity);
 
 	// thumbnail
-	rgbyte.push_back((BYTE) jfifParameters.Xthumb);
-	rgbyte.push_back((BYTE) jfifParameters.Ythumb);
+    rgbyte.push_back((uint8_t) jfifParameters.Xthumb);
+    rgbyte.push_back((uint8_t) jfifParameters.Ythumb);
 	if (jfifParameters.Xthumb > 0)
 	{
 		if (jfifParameters.pdataThumbnail)
 			throw JlsException(InvalidJlsParameters);
 
-		rgbyte.insert(rgbyte.end(), (BYTE*) jfifParameters.pdataThumbnail, (BYTE*) jfifParameters.pdataThumbnail + 3 * jfifParameters.Xthumb * jfifParameters.Ythumb);
+        rgbyte.insert(rgbyte.end(), (uint8_t*) jfifParameters.pdataThumbnail, (uint8_t*) jfifParameters.pdataThumbnail + 3 * jfifParameters.Xthumb * jfifParameters.Ythumb);
 	}
 
 	return new JpegMarkerSegment(JPEG_APP0, std::move(rgbyte));
@@ -69,7 +69,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(cons
 
 JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(const JlsCustomParameters& customParameters)
 {
-	std::vector<BYTE> rgbyte;
+    std::vector<uint8_t> rgbyte;
 
 	rgbyte.push_back(1);
 	push_back(rgbyte, (USHORT) customParameters.MAXVAL);
@@ -84,13 +84,13 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(const
 
 JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(int i)
 {
-	std::vector<BYTE> rgbyteXform;
+    std::vector<uint8_t> rgbyteXform;
 
 	rgbyteXform.push_back('m');
 	rgbyteXform.push_back('r');
 	rgbyteXform.push_back('f');
 	rgbyteXform.push_back('x');
-	rgbyteXform.push_back((BYTE) i);
+    rgbyteXform.push_back((uint8_t) i);
 
 	return new JpegMarkerSegment(JPEG_APP8, std::move(rgbyteXform));
 }
@@ -98,28 +98,28 @@ JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(int i)
 
 JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(const JlsParameters* pparams, LONG icomponent)
 {
-	BYTE itable = 0;
+    uint8_t itable = 0;
 
-	std::vector<BYTE> rgbyte;
+    std::vector<uint8_t> rgbyte;
 
 	if (icomponent < 0)
 	{
-		rgbyte.push_back((BYTE) pparams->components);
+        rgbyte.push_back((uint8_t) pparams->components);
 		for (LONG i = 0; i < pparams->components; ++i)
 		{
-			rgbyte.push_back(BYTE(i + 1));
+            rgbyte.push_back(uint8_t(i + 1));
 			rgbyte.push_back(itable);
 		}
 	}
 	else
 	{
 		rgbyte.push_back(1);
-		rgbyte.push_back((BYTE) icomponent);
+        rgbyte.push_back((uint8_t) icomponent);
 		rgbyte.push_back(itable);
 	}
 
-	rgbyte.push_back(BYTE(pparams->allowedlossyerror));
-	rgbyte.push_back(BYTE(pparams->ilv));
+    rgbyte.push_back(uint8_t(pparams->allowedlossyerror));
+    rgbyte.push_back(uint8_t(pparams->ilv));
 	rgbyte.push_back(0); // transform
 
 	return new JpegMarkerSegment(JPEG_SOS, std::move(rgbyte));

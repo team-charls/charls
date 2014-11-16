@@ -83,10 +83,10 @@ std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameter
 
 	if (presets.RESET != 0 && presets.RESET != BASIC_RESET)
 	{
-		DefaultTraitsT<BYTE,BYTE> traits((1 << info.bitspersample) - 1, info.allowedlossyerror); 
+        DefaultTraitsT<uint8_t, uint8_t> traits((1 << info.bitspersample) - 1, info.allowedlossyerror);
 		traits.MAXVAL = presets.MAXVAL;
 		traits.RESET = presets.RESET;
-		strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<BYTE, BYTE>, STRATEGY>(traits, info));
+        strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint8_t, uint8_t>, STRATEGY>(traits, info));
 	}
 	else
 	{
@@ -124,13 +124,13 @@ std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParam
 		if (info.ilv == ILV_SAMPLE)
 		{
 			if (info.bitspersample == 8)
-				return CreateCodec(LosslessTraitsT<Triplet<BYTE>,8>(), s, info);
+                return CreateCodec(LosslessTraitsT<Triplet<uint8_t>, 8>(), s, info);
 		}
 		else
 		{
 			switch (info.bitspersample)
 			{
-				case  8: return CreateCodec(LosslessTraitsT<BYTE,    8>(), s, info);
+                case  8: return CreateCodec(LosslessTraitsT<uint8_t, 8>(), s, info);
 				case 12: return CreateCodec(LosslessTraitsT<USHORT, 12>(), s, info);
 				case 16: return CreateCodec(LosslessTraitsT<USHORT, 16>(), s, info);
 			}
@@ -144,9 +144,9 @@ std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParam
 	if (info.bitspersample <= 8)
 	{
 		if (info.ilv == ILV_SAMPLE)
-			return CreateCodec(DefaultTraitsT<BYTE,Triplet<BYTE> >(maxval, info.allowedlossyerror), s, info);
+            return CreateCodec(DefaultTraitsT<uint8_t, Triplet<uint8_t> >(maxval, info.allowedlossyerror), s, info);
 
-		return CreateCodec(DefaultTraitsT<BYTE, BYTE>((1 << info.bitspersample) - 1, info.allowedlossyerror), s, info);
+        return CreateCodec(DefaultTraitsT<uint8_t, uint8_t>((1 << info.bitspersample) - 1, info.allowedlossyerror), s, info);
 	}
 	else if (info.bitspersample <= 16)
 	{

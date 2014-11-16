@@ -14,7 +14,7 @@
 class JpegMarkerSegment : public JpegSegment
 {
 public:
-	JpegMarkerSegment(BYTE marker, std::vector<uint8_t>&& content) :
+    JpegMarkerSegment(uint8_t marker, std::vector<uint8_t>&& content) :
 		_marker(marker),
 		_content(content)
 	{
@@ -42,6 +42,6 @@ public:
 	static JpegMarkerSegment* CreateStartOfScanMarker(const JlsParameters* pparams, LONG icomponent);
 
 private:
-	BYTE _marker;
+    uint8_t _marker;
 	std::vector<uint8_t> _content;
 };

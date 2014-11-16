@@ -48,7 +48,7 @@ public:
 		::memset(_rgtype, 0, sizeof(_rgtype));
 	}
 
-	void AddEntry(BYTE bvalue, Code c)
+    void AddEntry(uint8_t bvalue, Code c)
 	{
 		LONG length = c.GetLength();
 		ASSERT(length <= cbit);

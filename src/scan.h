@@ -294,7 +294,7 @@ CTable InitTable(LONG k)
 			break;
 
 		Code code = Code( nerr, short(paircode.first) );
-		table.AddEntry(BYTE(paircode.second), code);
+        table.AddEntry(uint8_t(paircode.second), code);
 	}
 
 	for (short nerr = -1; ; nerr--)
@@ -306,7 +306,7 @@ CTable InitTable(LONG k)
 			break;
 
 		Code code = Code(nerr, short(paircode.first));
-		table.AddEntry(BYTE(paircode.second), code);
+        table.AddEntry(uint8_t(paircode.second), code);
 	}
 
 	return table;
@@ -800,7 +800,7 @@ size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> proce
 {
 	STRATEGY::_processLine = std::move(processLine);
 
-	ByteStreamInfo info = { nullptr, (BYTE*) pvoidCompare, compressedData->count };
+    ByteStreamInfo info = { nullptr, (uint8_t*) pvoidCompare, compressedData->count };
 	if (pvoidCompare)
 	{
 		STRATEGY::_qdecoder = std::unique_ptr<DecoderStrategy>(new JlsCodec<TRAITS, DecoderStrategy>(traits, Info()));
@@ -822,7 +822,7 @@ void JlsCodec<TRAITS, STRATEGY>::DecodeScan(std::unique_ptr<ProcessLine> process
 {
 	STRATEGY::_processLine = std::move(processLine);
 
-	BYTE* compressedBytes = const_cast<BYTE*>(static_cast<const BYTE*>(compressedData->rawData));
+    uint8_t* compressedBytes = const_cast<uint8_t*>(static_cast<const uint8_t*>(compressedData->rawData));
 	_bCompare = bCompare;
 	_rect = rect;
 

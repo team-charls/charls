@@ -15,7 +15,7 @@
 
 
 // JFIF\0
-BYTE jfifID[] = {'J','F','I','F','\0'};
+uint8_t jfifID [] = { 'J', 'F', 'I', 'F', '\0' };
 
 
 LONG CLAMP(LONG i, LONG j, LONG MAXVAL)
@@ -143,8 +143,7 @@ void JpegStreamReader::ReadHeader()
 		if (ReadByte() != 0xFF)
 			throw JlsException(MissingJpegMarkerStart);
 
-		BYTE marker = (BYTE)ReadByte();
-
+        uint8_t marker = ReadByte();
 		if (marker == JPEG_SOS)
 			return;
 
@@ -165,7 +164,7 @@ void JpegStreamReader::ReadHeader()
 }
 
 
-int JpegStreamReader::ReadMarker(BYTE marker)
+int JpegStreamReader::ReadMarker(uint8_t marker)
 {
 	switch (marker)
 	{
@@ -294,15 +293,15 @@ int JpegStreamReader::ReadStartOfFrame()
 }
 
 
-BYTE JpegStreamReader::ReadByte()
+uint8_t JpegStreamReader::ReadByte()
 {
 	if (_byteStream.rawStream)
-		return (BYTE)_byteStream.rawStream->sbumpc();
+        return (uint8_t) _byteStream.rawStream->sbumpc();
 
 	if (_byteStream.count == 0)
 		throw JlsException(InvalidCompressedData);
 
-	BYTE value = _byteStream.rawData[0]; 
+    uint8_t value = _byteStream.rawData[0];
 	
 	SkipBytes(&_byteStream, 1);
 

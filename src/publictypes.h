@@ -9,6 +9,7 @@
 #ifdef __cplusplus
 #include <iostream>
 #include <cstddef>
+#include <cstdint>
 #endif
 
 enum JLS_ERROR
@@ -119,7 +120,7 @@ enum JPEGLS_ColorXForm
 struct ByteStreamInfo
 {
 	std::basic_streambuf<char>* rawStream;
-	BYTE* rawData;
+    uint8_t* rawData;
 	std::size_t count;
 };
 
@@ -127,7 +128,7 @@ struct ByteStreamInfo
 inline ByteStreamInfo FromByteArray(const void* bytes, std::size_t count)
 {
 	ByteStreamInfo info = ByteStreamInfo();
-	info.rawData = (BYTE*)bytes;
+    info.rawData = (uint8_t*) bytes;
 	info.count = count;
 	return info;
 }

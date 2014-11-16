@@ -46,7 +46,7 @@ public:
 	}
 
 	void ReadStartOfScan(bool firstComponent);
-	BYTE ReadByte();
+    uint8_t ReadByte();
 
 private:
 	void ReadScan(ByteStreamInfo rawPixels);
@@ -55,7 +55,7 @@ private:
 	int ReadStartOfFrame();
 	int ReadWord();
 	void ReadNBytes(std::vector<char>& dst, int byteCount);
-	int ReadMarker(BYTE marker);
+    int ReadMarker(uint8_t marker);
 
 	// JFIF
 	void ReadJfif();
