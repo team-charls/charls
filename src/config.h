@@ -31,8 +31,6 @@ enum constants
 };
 
 
-typedef unsigned short USHORT;
-
 #undef  NEAR
 
 #ifndef inlinehint

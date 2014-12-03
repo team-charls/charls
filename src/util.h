@@ -20,10 +20,10 @@
 #endif
 
 
-inline void push_back(std::vector<uint8_t>& vec, USHORT value)
+inline void push_back(std::vector<uint8_t>& values, uint16_t value)
 {
-    vec.push_back(uint8_t(value / 0x100));
-    vec.push_back(uint8_t(value % 0x100));
+    values.push_back(uint8_t(value / 0x100));
+	values.push_back(uint8_t(value % 0x100));
 }
 
 

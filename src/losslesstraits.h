@@ -89,7 +89,7 @@ struct LosslessTraitsT<uint8_t, 8> : public LosslessTraitsImplT<uint8_t, 8>
 
 
 template<>
-struct LosslessTraitsT<USHORT, 16> : public LosslessTraitsImplT<USHORT, 16>
+struct LosslessTraitsT<uint16_t, 16> : public LosslessTraitsImplT<uint16_t, 16>
 {
 	typedef SAMPLE PIXEL;
 

@@ -89,7 +89,7 @@ private:
 		}
 	}
 
-	void WriteWord(USHORT value)
+	void WriteWord(uint16_t value)
 	{
         WriteByte(static_cast<uint8_t>(value / 0x100));
         WriteByte(static_cast<uint8_t>(value % 0x100));

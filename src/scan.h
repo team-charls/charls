@@ -783,9 +783,9 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
 		int shift = 16 - Info().bitspersample;
 		switch(transform)
 		{
-			case COLORXFORM_HP1 : return new ProcessTransformed<TransformShifted<TransformHp1<USHORT> > >(info, Info(), TransformShifted<TransformHp1<USHORT> >(shift));
-			case COLORXFORM_HP2 : return new ProcessTransformed<TransformShifted<TransformHp2<USHORT> > >(info, Info(), TransformShifted<TransformHp2<USHORT> >(shift));
-			case COLORXFORM_HP3 : return new ProcessTransformed<TransformShifted<TransformHp3<USHORT> > >(info, Info(), TransformShifted<TransformHp3<USHORT> >(shift));
+			case COLORXFORM_HP1 : return new ProcessTransformed<TransformShifted<TransformHp1<uint16_t> > >(info, Info(), TransformShifted<TransformHp1<uint16_t> >(shift));
+			case COLORXFORM_HP2 : return new ProcessTransformed<TransformShifted<TransformHp2<uint16_t> > >(info, Info(), TransformShifted<TransformHp2<uint16_t> >(shift));
+			case COLORXFORM_HP3 : return new ProcessTransformed<TransformShifted<TransformHp3<uint16_t> > >(info, Info(), TransformShifted<TransformHp3<uint16_t> >(shift));
 			default: throw JlsException(UnsupportedColorTransform);
 		}
 	}

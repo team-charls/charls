@@ -46,11 +46,11 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(cons
 		rgbyte.push_back(jfifID[i]);
 	}
 
-	push_back(rgbyte, (USHORT) jfifParameters.Ver);
+	push_back(rgbyte, (uint16_t) jfifParameters.Ver);
 
 	rgbyte.push_back(jfifParameters.units);
-	push_back(rgbyte, (USHORT) jfifParameters.XDensity);
-	push_back(rgbyte, (USHORT) jfifParameters.YDensity);
+	push_back(rgbyte, (uint16_t) jfifParameters.XDensity);
+	push_back(rgbyte, (uint16_t) jfifParameters.YDensity);
 
 	// thumbnail
     rgbyte.push_back((uint8_t) jfifParameters.Xthumb);
@@ -72,11 +72,11 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(const
     std::vector<uint8_t> rgbyte;
 
 	rgbyte.push_back(1);
-	push_back(rgbyte, (USHORT) customParameters.MAXVAL);
-	push_back(rgbyte, (USHORT) customParameters.T1);
-	push_back(rgbyte, (USHORT) customParameters.T2);
-	push_back(rgbyte, (USHORT) customParameters.T3);
-	push_back(rgbyte, (USHORT) customParameters.RESET);
+	push_back(rgbyte, (uint16_t) customParameters.MAXVAL);
+	push_back(rgbyte, (uint16_t) customParameters.T1);
+	push_back(rgbyte, (uint16_t) customParameters.T2);
+	push_back(rgbyte, (uint16_t) customParameters.T3);
+	push_back(rgbyte, (uint16_t) customParameters.RESET);
 
 	return new JpegMarkerSegment(JPEG_LSE, std::move(rgbyte));
 }
