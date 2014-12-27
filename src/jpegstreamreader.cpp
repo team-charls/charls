@@ -9,6 +9,7 @@
 #include "jpegstreamwriter.h"
 #include "jpegmarkersegment.h"
 #include "jpegimagedatasegment.h"
+#include "jpegmarkercode.h"
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
 #include <memory>
@@ -135,7 +136,7 @@ void JpegStreamReader::ReadHeader()
 	if (ReadByte() != 0xFF)
 		throw JlsException(MissingJpegMarkerStart);
 
-	if (ReadByte() != JPEG_SOI)
+	if (static_cast<JpegMarkerCode>(ReadByte()) != JpegMarkerCode::StartOfImage)
 		throw JlsException(InvalidCompressedData);
 
 	for (;;)
@@ -143,8 +144,8 @@ void JpegStreamReader::ReadHeader()
 		if (ReadByte() != 0xFF)
 			throw JlsException(MissingJpegMarkerStart);
 
-        uint8_t marker = ReadByte();
-		if (marker == JPEG_SOS)
+        JpegMarkerCode marker = static_cast<JpegMarkerCode>(ReadByte());
+		if (marker == JpegMarkerCode::StartOfScan)
 			return;
 
 		LONG cbyteMarker = ReadWord();
@@ -164,30 +165,43 @@ void JpegStreamReader::ReadHeader()
 }
 
 
-int JpegStreamReader::ReadMarker(uint8_t marker)
+int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
 {
 	switch (marker)
 	{
-		case JPEG_SOF_55: return ReadStartOfFrame();
-		case JPEG_COM: return ReadComment();
-		case JPEG_LSE: return ReadPresetParameters();
-		case JPEG_APP0: return 0;
-		case JPEG_APP7: return ReadColorSpace();
-		case JPEG_APP8: return ReadColorXForm();
-		case JPEG_SOF_0:
-		case JPEG_SOF_1:
-		case JPEG_SOF_2:
-		case JPEG_SOF_3:
-		case JPEG_SOF_5:
-		case JPEG_SOF_6:
-		case JPEG_SOF_7:
-		case JPEG_SOF_9:
-		case JPEG_SOF_10:
-		case JPEG_SOF_11:
-			throw JlsException(UnsupportedEncoding);
+        case JpegMarkerCode::StartOfFrameJpegLS:
+            return ReadStartOfFrame();
+
+		case JpegMarkerCode::Comment:
+            return ReadComment();
+
+		case JpegMarkerCode::JpegLSExtendedParameters:
+            return ReadPresetParameters();
+
+        case JpegMarkerCode::ApplicationData0:
+            return 0;
+
+		case JpegMarkerCode::ApplicationData7:
+            return ReadColorSpace();
+
+		case JpegMarkerCode::ApplicationData8:
+            return ReadColorXForm();
+
+        case JpegMarkerCode::StartOfFrameBaselineJpeg:
+        case JpegMarkerCode::StartOfFrameExtendedSequential:
+		case JpegMarkerCode::StartOfFrameProgressive:
+		case JpegMarkerCode::StartOfFrameLossless:
+		case JpegMarkerCode::StartOfFrameDifferentialSequential:
+		case JpegMarkerCode::StartOfFrameDifferentialProgressive:
+		case JpegMarkerCode::StartOfFrameDifferentialLossless:
+		case JpegMarkerCode::StartOfFrameExtendedArithemtic:
+		case JpegMarkerCode::StartOfFrameProgressiveArithemtic:
+		case JpegMarkerCode::StartOfFrameLosslessArithemtic:
+            throw JlsException(UnsupportedEncoding);
 
 		// Other tags not supported (among which DNL DRI)
-		default: throw JlsException(UnknownJpegMarker);
+		default:
+            throw JlsException(UnknownJpegMarker);
 	}
 }
 
@@ -219,7 +233,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
 	{
 		if (ReadByte() != 0xFF)
 			throw JlsException(MissingJpegMarkerStart);
-		if (ReadByte() != JPEG_SOS)
+		if (static_cast<JpegMarkerCode>(ReadByte()) != JpegMarkerCode::StartOfScan)
 			throw JlsException(InvalidCompressedData); // TODO: throw more specific error code.
 	}
 	int length = ReadByte(); //length

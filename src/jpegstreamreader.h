@@ -4,9 +4,13 @@
 #ifndef CHARLS_JPEGMARKER
 #define CHARLS_JPEGMARKER
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 #include "util.h"
+
+
+enum class JpegMarkerCode : uint8_t;
 
 
 //
@@ -55,7 +59,7 @@ private:
 	int ReadStartOfFrame();
 	int ReadWord();
 	void ReadNBytes(std::vector<char>& dst, int byteCount);
-    int ReadMarker(uint8_t marker);
+    int ReadMarker(JpegMarkerCode marker);
 
 	// JFIF
 	void ReadJfif();

@@ -75,6 +75,9 @@
     <ClInclude Include="jpegimagedatasegment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jpegmarkercode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />

@@ -3,7 +3,7 @@
 //
 
 #include "jpegmarkersegment.h"
-#include "header.h"
+#include "jpegmarkercode.h"
 #include "util.h"
 #include <vector>
 #include <cstdint>
@@ -11,28 +11,28 @@
 
 JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(int width, int height, LONG bitsPerSample, LONG componentCount)
 {
-	ASSERT(width >= 0 && width <= UINT16_MAX);
-	ASSERT(height >= 0 && height <= UINT16_MAX);
-	ASSERT(bitsPerSample > 0 && bitsPerSample <= UINT8_MAX);
-	ASSERT(componentCount > 0 && componentCount <= (UINT8_MAX - 1));
+    ASSERT(width >= 0 && width <= UINT16_MAX);
+    ASSERT(height >= 0 && height <= UINT16_MAX);
+    ASSERT(bitsPerSample > 0 && bitsPerSample <= UINT8_MAX);
+    ASSERT(componentCount > 0 && componentCount <= (UINT8_MAX - 1));
 
-	// Create a Frame Header as defined in T.87, C.2.2 and T.81, B.2.2
-	std::vector<uint8_t> content;
-	content.push_back(static_cast<uint8_t>(bitsPerSample)); // P = Sample precision
-	push_back(content, static_cast<uint16_t>(height));    // Y = Number of lines
-	push_back(content, static_cast<uint16_t>(width));    // X = Number of samples per line
+    // Create a Frame Header as defined in T.87, C.2.2 and T.81, B.2.2
+    std::vector<uint8_t> content;
+    content.push_back(static_cast<uint8_t>(bitsPerSample)); // P = Sample precision
+    push_back(content, static_cast<uint16_t>(height));    // Y = Number of lines
+    push_back(content, static_cast<uint16_t>(width));    // X = Number of samples per line
 
-	// Components
-	content.push_back(static_cast<uint8_t>(componentCount)); // Nf = Number of image components in frame
-	for (int component = 0; component < componentCount; ++component)
-	{
-		// Component Specification parameters
-		content.push_back(static_cast<uint8_t>(component + 1)); // Ci = Component identifier
-		content.push_back(0x11);                                // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
-		content.push_back(0);                                   // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
-	}
+    // Components
+    content.push_back(static_cast<uint8_t>(componentCount)); // Nf = Number of image components in frame
+    for (int component = 0; component < componentCount; ++component)
+    {
+        // Component Specification parameters
+        content.push_back(static_cast<uint8_t>(component + 1)); // Ci = Component identifier
+        content.push_back(0x11);                                // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
+        content.push_back(0);                                   // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
+    }
 
-	return new JpegMarkerSegment(JPEG_SOF_55, std::move(content));
+    return new JpegMarkerSegment(JpegMarkerCode::StartOfFrameJpegLS, std::move(content));
 }
 
 
@@ -41,29 +41,29 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(cons
     uint8_t jfifID [] = { 'J', 'F', 'I', 'F', '\0' };
 
     std::vector<uint8_t> rgbyte;
-	for (int i = 0; i < (int)sizeof(jfifID); i++)
-	{
-		rgbyte.push_back(jfifID[i]);
-	}
+    for (int i = 0; i < (int)sizeof(jfifID); i++)
+    {
+        rgbyte.push_back(jfifID[i]);
+    }
 
-	push_back(rgbyte, (uint16_t) jfifParameters.Ver);
+    push_back(rgbyte, (uint16_t) jfifParameters.Ver);
 
-	rgbyte.push_back(jfifParameters.units);
-	push_back(rgbyte, (uint16_t) jfifParameters.XDensity);
-	push_back(rgbyte, (uint16_t) jfifParameters.YDensity);
+    rgbyte.push_back(jfifParameters.units);
+    push_back(rgbyte, (uint16_t) jfifParameters.XDensity);
+    push_back(rgbyte, (uint16_t) jfifParameters.YDensity);
 
-	// thumbnail
+    // thumbnail
     rgbyte.push_back((uint8_t) jfifParameters.Xthumb);
     rgbyte.push_back((uint8_t) jfifParameters.Ythumb);
-	if (jfifParameters.Xthumb > 0)
-	{
-		if (jfifParameters.pdataThumbnail)
-			throw JlsException(InvalidJlsParameters);
+    if (jfifParameters.Xthumb > 0)
+    {
+        if (jfifParameters.pdataThumbnail)
+            throw JlsException(InvalidJlsParameters);
 
         rgbyte.insert(rgbyte.end(), (uint8_t*) jfifParameters.pdataThumbnail, (uint8_t*) jfifParameters.pdataThumbnail + 3 * jfifParameters.Xthumb * jfifParameters.Ythumb);
-	}
+    }
 
-	return new JpegMarkerSegment(JPEG_APP0, std::move(rgbyte));
+    return new JpegMarkerSegment(JpegMarkerCode::ApplicationData0, std::move(rgbyte));
 }
 
 
@@ -71,14 +71,14 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(const
 {
     std::vector<uint8_t> rgbyte;
 
-	rgbyte.push_back(1);
-	push_back(rgbyte, (uint16_t) customParameters.MAXVAL);
-	push_back(rgbyte, (uint16_t) customParameters.T1);
-	push_back(rgbyte, (uint16_t) customParameters.T2);
-	push_back(rgbyte, (uint16_t) customParameters.T3);
-	push_back(rgbyte, (uint16_t) customParameters.RESET);
+    rgbyte.push_back(1);
+    push_back(rgbyte, (uint16_t) customParameters.MAXVAL);
+    push_back(rgbyte, (uint16_t) customParameters.T1);
+    push_back(rgbyte, (uint16_t) customParameters.T2);
+    push_back(rgbyte, (uint16_t) customParameters.T3);
+    push_back(rgbyte, (uint16_t) customParameters.RESET);
 
-	return new JpegMarkerSegment(JPEG_LSE, std::move(rgbyte));
+    return new JpegMarkerSegment(JpegMarkerCode::JpegLSExtendedParameters, std::move(rgbyte));
 }
 
 
@@ -86,13 +86,13 @@ JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(int i)
 {
     std::vector<uint8_t> rgbyteXform;
 
-	rgbyteXform.push_back('m');
-	rgbyteXform.push_back('r');
-	rgbyteXform.push_back('f');
-	rgbyteXform.push_back('x');
+    rgbyteXform.push_back('m');
+    rgbyteXform.push_back('r');
+    rgbyteXform.push_back('f');
+    rgbyteXform.push_back('x');
     rgbyteXform.push_back((uint8_t) i);
 
-	return new JpegMarkerSegment(JPEG_APP8, std::move(rgbyteXform));
+    return new JpegMarkerSegment(JpegMarkerCode::ApplicationData8, std::move(rgbyteXform));
 }
 
 
@@ -102,25 +102,25 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(const JlsParameter
 
     std::vector<uint8_t> rgbyte;
 
-	if (icomponent < 0)
-	{
+    if (icomponent < 0)
+    {
         rgbyte.push_back((uint8_t) pparams->components);
-		for (LONG i = 0; i < pparams->components; ++i)
-		{
+        for (LONG i = 0; i < pparams->components; ++i)
+        {
             rgbyte.push_back(uint8_t(i + 1));
-			rgbyte.push_back(itable);
-		}
-	}
-	else
-	{
-		rgbyte.push_back(1);
+            rgbyte.push_back(itable);
+        }
+    }
+    else
+    {
+        rgbyte.push_back(1);
         rgbyte.push_back((uint8_t) icomponent);
-		rgbyte.push_back(itable);
-	}
+        rgbyte.push_back(itable);
+    }
 
     rgbyte.push_back(uint8_t(pparams->allowedlossyerror));
     rgbyte.push_back(uint8_t(pparams->ilv));
-	rgbyte.push_back(0); // transform
+    rgbyte.push_back(0); // transform
 
-	return new JpegMarkerSegment(JPEG_SOS, std::move(rgbyte));
+    return new JpegMarkerSegment(JpegMarkerCode::StartOfScan, std::move(rgbyte));
 }

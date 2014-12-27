@@ -6,6 +6,7 @@
 #include "jpegstreamwriter.h"
 #include "jpegmarkersegment.h"
 #include "jpegimagedatasegment.h"
+#include "jpegmarkercode.h"
 #include "header.h"
 #include "util.h"
 #include <vector>
@@ -63,8 +64,7 @@ size_t JpegStreamWriter::Write(const ByteStreamInfo& info)
 {
 	_data = info;
 
-	WriteByte(0xFF);
-	WriteByte(JPEG_SOI);
+	WriteMarker(JpegMarkerCode::StartOfImage);
 
 	for (size_t i = 0; i < _segments.size(); ++i)
 	{
@@ -73,8 +73,7 @@ size_t JpegStreamWriter::Write(const ByteStreamInfo& info)
 
 	//_bCompare = false;
 
-	WriteByte(0xFF);
-	WriteByte(JPEG_EOI);
+	WriteMarker(JpegMarkerCode::EndOfImage);
 
 	return _byteOffset;
 }

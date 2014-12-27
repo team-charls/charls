@@ -353,6 +353,7 @@
     <ClInclude Include="header.h" />
     <ClInclude Include="interface.h" />
     <ClInclude Include="jpegimagedatasegment.h" />
+    <ClInclude Include="jpegmarkercode.h" />
     <ClInclude Include="jpegmarkersegment.h" />
     <ClInclude Include="jpegsegment.h" />
     <ClInclude Include="jpegstreamwriter.h" />

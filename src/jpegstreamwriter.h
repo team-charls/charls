@@ -9,6 +9,8 @@
 #include "jpegsegment.h"
 #include <vector>
 
+enum class JpegMarkerCode : uint8_t;
+
 
 //
 // Purpose: 'Writer'class that can generate JPEG-LS file streams.
@@ -93,6 +95,12 @@ private:
 	{
         WriteByte(static_cast<uint8_t>(value / 0x100));
         WriteByte(static_cast<uint8_t>(value % 0x100));
+	}
+
+	void WriteMarker(JpegMarkerCode marker)
+	{
+		WriteByte(0xFF);
+		WriteByte(static_cast<uint8_t>(marker));
 	}
 
 	void Seek(std::size_t byteCount)
