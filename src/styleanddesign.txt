@@ -1,0 +1,22 @@
+Style and Design
+================
+
+Introduction
+------------
+
+The purpose of this document is to record the basic style and design guidelines of CharLS to ensure consistency and 
+to record decisions.
+
+
+Tabs and Spaces
+---------------
+Spaces with an indent of 4. This to ensure maximum readability with different editors/platforms.
+
+
+Exceptions and Error Handling
+-----------------------------
+* C++ Exceptions should be derived from std::exception. (Common accepted idom)
+* The exception should be convertible to an error code to support the C API
+* An english error text that describes the problem is extreme usefull.
+
+=> Design: std::system_error is the standard solution to throw exceptions from libraries (CharLS is a library)

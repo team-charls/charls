@@ -286,6 +286,14 @@ namespace CharLS
                     exception = new InvalidDataException("The decoding process expects a start of JPEG marker code (0xFF) but none was found");
                     break;
 
+                case JpegLSError.UnspecifiedFailure:
+                    exception = new InvalidDataException("Failure detected, but no specific info about the error is available.");
+                    break;
+
+                case JpegLSError.UnexpectedFailure:
+                    exception = new InvalidOperationException("Unexpected failure. The state of the implementation may be invalid.");
+                    break;
+
                 default:
                     exception = new NotImplementedException(string.Format(CultureInfo.InvariantCulture,
                         "The native codec has returned an unexpected result value: {0}", result));

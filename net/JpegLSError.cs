@@ -20,7 +20,7 @@ namespace CharLS
         InvalidJlsParameters,
 
         /// <summary>
-        /// The parameter value not supported
+        /// The parameter value not supported.
         /// </summary>
         ParameterValueNotSupported,
 
@@ -40,7 +40,7 @@ namespace CharLS
         InvalidCompressedData,
 
         /// <summary>
-        /// The too much compressed data.
+        /// Too much compressed data. The decoding proccess is ready but the input buffer still contains encoded data.
         /// </summary>
         TooMuchCompressedData,
 
@@ -55,7 +55,7 @@ namespace CharLS
         UnsupportedBitDepthForTransform,
 
         /// <summary>
-        /// The color transform is not supported.
+        /// The color transformation is not supported.
         /// </summary>
         UnsupportedColorTransform,
 
@@ -72,6 +72,16 @@ namespace CharLS
         /// <summary>
         /// This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
         /// </summary>
-        MissingJpegMarkerStart
+        MissingJpegMarkerStart,
+
+        /// <summary>
+        /// This error is returned when the implementation detected a failure, but no specific error is available.
+        /// </summary>
+        UnspecifiedFailure = 13,
+
+        /// <summary>
+        /// This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
+        /// </summary>
+        UnexpectedFailure = 14
     }
 }

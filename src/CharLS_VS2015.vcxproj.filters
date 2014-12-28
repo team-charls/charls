@@ -100,4 +100,7 @@
       <UniqueIdentifier>{fa2c9109-3699-4d9b-a224-c59a1b549527}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="styleanddesign.txt" />
+  </ItemGroup>
 </Project>

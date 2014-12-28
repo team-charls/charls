@@ -10,6 +10,9 @@
 #include "context.h"
 #include "contextrunmode.h"
 #include "lookuptable.h"
+#include "losslesstraits.h"
+#include "defaulttraits.h"
+#include "scan.h"
 
 #include <cmath>
 #include <cstdio>
@@ -24,10 +27,12 @@ const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6
 
 
 
-#include "losslesstraits.h"
-#include "defaulttraits.h"
+const std::error_category& CharLSCategoryInstance()
+{
+    static charls_category instance;
+    return instance;
+}
 
-#include "scan.h"
 
 signed char QuantizeGratientOrg(const JlsCustomParameters& preset, LONG NEAR, LONG Di)
 {

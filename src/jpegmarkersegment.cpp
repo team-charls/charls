@@ -58,7 +58,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(cons
     if (jfifParameters.Xthumb > 0)
     {
         if (jfifParameters.pdataThumbnail)
-            throw JlsException(InvalidJlsParameters);
+            throw std::system_error(InvalidJlsParameters, CharLSCategoryInstance());
 
         rgbyte.insert(rgbyte.end(), (uint8_t*) jfifParameters.pdataThumbnail, (uint8_t*) jfifParameters.pdataThumbnail + 3 * jfifParameters.Xthumb * jfifParameters.Ythumb);
     }
