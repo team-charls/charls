@@ -152,20 +152,6 @@ struct FromBigEndian<8>
 };
 
 
-class charls_category : public std::error_category {
-public:
-    virtual const char* name() const noexcept
-    {
-        return "charls";
-    }
-
-    std::string message(int /* errval */) const
-    {
-        return "CharLS error";
-    }
-};
-
-
 const std::error_category& CharLSCategoryInstance();
 
 
