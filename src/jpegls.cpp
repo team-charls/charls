@@ -12,7 +12,6 @@
 #include "lookuptable.h"
 #include "losslesstraits.h"
 #include "defaulttraits.h"
-#include "scan.h"
 
 #include <cmath>
 #include <cstdio>
@@ -25,6 +24,14 @@
 // used to determine how large runs should be encoded at a time. 
 const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
+#include "scan.h"
+
+
+// Visual Studio 2013 does not supports the keyword noexcept. But it has the macro _NOEXCEPT.
+#ifndef _NOEXCEPT
+#define _NOEXCEPT noexcept
+#endif
+
 
 class charls_category : public std::error_category {
 public:
@@ -33,7 +40,7 @@ public:
         return "charls";
     }
 
-        std::string message(int /* errval */) const
+    std::string message(int /* errval */) const
     {
         return "CharLS error";
     }
