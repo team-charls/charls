@@ -14,21 +14,21 @@
 
 namespace
 {
-	bool IsDefault(const JlsCustomParameters* pcustom)
+	bool IsDefault(const JlsCustomParameters& custom)
 	{
-		if (pcustom->MAXVAL != 0)
+		if (custom.MAXVAL != 0)
 			return false;
 
-		if (pcustom->T1 != 0)
+		if (custom.T1 != 0)
 			return false;
 
-		if (pcustom->T2 != 0)
+		if (custom.T2 != 0)
 			return false;
 
-		if (pcustom->T3 != 0)
+		if (custom.T3 != 0)
 			return false;
 
-		if (pcustom->RESET != 0)
+		if (custom.RESET != 0)
 			return false;
 
 		return true;
@@ -79,22 +79,22 @@ size_t JpegStreamWriter::Write(const ByteStreamInfo& info)
 }
 
 
-void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters* pparams)
+void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& params)
 {
-	if (!IsDefault(&pparams->custom))
+	if (!IsDefault(params.custom))
 	{
-		AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(pparams->custom));
+		AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(params.custom));
 	}
-	else if (pparams->bitspersample > 12)
+	else if (params.bitspersample > 12)
 	{
-		JlsCustomParameters preset = ComputeDefault((1 << pparams->bitspersample) - 1, pparams->allowedlossyerror);
+		JlsCustomParameters preset = ComputeDefault((1 << params.bitspersample) - 1, params.allowedlossyerror);
 		AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(preset));
 	}
 
 	_lastCompenentIndex += 1;
-	AddSegment(JpegMarkerSegment::CreateStartOfScanMarker(pparams, pparams->ilv == ILV_NONE ? _lastCompenentIndex : -1));
+	AddSegment(JpegMarkerSegment::CreateStartOfScanMarker(params, params.ilv == ILV_NONE ? _lastCompenentIndex : -1));
 
-	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
+	int ccomp = params.ilv == ILV_NONE ? 1 : params.components;
 
-	AddSegment(new JpegImageDataSegment(info, *pparams, _lastCompenentIndex, ccomp));
+	AddSegment(new JpegImageDataSegment(info, params, _lastCompenentIndex, ccomp));
 }

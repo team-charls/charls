@@ -29,9 +29,7 @@ public:
         _segments.push_back(segment);
     }
 
-    void AddScan(const ByteStreamInfo& info, const JlsParameters* pparams);
-
-    void AddLSE(const JlsCustomParameters* pcustom);
+    void AddScan(const ByteStreamInfo& info, const JlsParameters& params);
 
     void AddColorTransform(int i);
 

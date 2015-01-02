@@ -39,9 +39,9 @@ public:
 		_bCompare = bCompare;
 	}
 
-	void SetInfo(JlsParameters* info)
+	void SetInfo(const JlsParameters& info)
 	{
-		_info = *info;
+		_info = info;
 	}
 
 	void SetRect(const JlsRect& rect)

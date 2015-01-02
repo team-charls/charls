@@ -96,7 +96,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(int i)
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(const JlsParameters* pparams, LONG icomponent)
+JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(const JlsParameters& params, LONG icomponent)
 {
     uint8_t itable = 0;
 
@@ -104,8 +104,8 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(const JlsParameter
 
     if (icomponent < 0)
     {
-        rgbyte.push_back((uint8_t) pparams->components);
-        for (LONG i = 0; i < pparams->components; ++i)
+        rgbyte.push_back((uint8_t) params.components);
+        for (LONG i = 0; i < params.components; ++i)
         {
             rgbyte.push_back(uint8_t(i + 1));
             rgbyte.push_back(itable);
@@ -118,8 +118,8 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(const JlsParameter
         rgbyte.push_back(itable);
     }
 
-    rgbyte.push_back(uint8_t(pparams->allowedlossyerror));
-    rgbyte.push_back(uint8_t(pparams->ilv));
+    rgbyte.push_back(uint8_t(params.allowedlossyerror));
+    rgbyte.push_back(uint8_t(params.ilv));
     rgbyte.push_back(0); // transform
 
     return new JpegMarkerSegment(JpegMarkerCode::StartOfScan, std::move(rgbyte));

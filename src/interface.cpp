@@ -57,7 +57,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
     try
     {
         if (!pcbyteWritten)
-        return InvalidJlsParameters;
+            return InvalidJlsParameters;
 
         JLS_ERROR parameterError = CheckInput(rawStreamInfo, pparams);
         if (parameterError != OK)
@@ -92,15 +92,15 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
             LONG cbyteComp = info.width * info.height * ((info.bitspersample + 7) / 8);
             for (LONG component = 0; component < info.components; ++component)
             {
-                writer.AddScan(rawStreamInfo, &info);
+                writer.AddScan(rawStreamInfo, info);
                 SkipBytes(&rawStreamInfo, cbyteComp);
             }
         }
         else
         {
-            writer.AddScan(rawStreamInfo, &info);
+            writer.AddScan(rawStreamInfo, info);
         }
-    
+
         writer.Write(compressedStreamInfo);
         *pcbyteWritten = writer.GetBytesWritten();
         return OK;
@@ -124,7 +124,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStre
 
         if (info)
         {
-            reader.SetInfo(info);
+            reader.SetInfo(*info);
         }
 
         reader.Read(rawStream);
@@ -217,13 +217,13 @@ extern "C"
             LONG fieldLength = info.width * info.height * ((info.bitspersample + 7) / 8);
             for (LONG component = 0; component < info.components; ++component)
             {
-                writer.AddScan(rawStreamInfo, &info);
+                writer.AddScan(rawStreamInfo, info);
                 SkipBytes(&rawStreamInfo, fieldLength);
             }
         }
         else
         {
-            writer.AddScan(rawStreamInfo, &info);
+            writer.AddScan(rawStreamInfo, info);
         }
 
         std::vector<uint8_t> rgbyteCompressed(compressedLength + 16);
@@ -248,7 +248,7 @@ extern "C"
 
             if (info)
             {
-                reader.SetInfo(info);
+                reader.SetInfo(*info);
             }
 
             reader.SetRect(roi);
