@@ -1,5 +1,5 @@
 ﻿//
-// (C) Jan de Vaan 2007-2011, all rights reserved. See the accompanying "License.txt" for licensed use.
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
 //
 
 using System.Runtime.InteropServices;

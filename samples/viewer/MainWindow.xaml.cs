@@ -1,11 +1,11 @@
 ﻿//
-// (C) Jan de Vaan 2007-2014, all rights reserved. See the accompanying "License.txt" for licensed use.
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
 //
 
-using CharLS;
-using Microsoft.Win32;
 using System.IO;
 using System.Windows;
+using CharLS;
+using Microsoft.Win32;
 
 namespace Viewer
 {
