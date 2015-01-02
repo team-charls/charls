@@ -113,7 +113,7 @@ private:
     bool _bCompare;
     ByteStreamInfo _data;
     std::size_t _byteOffset;
-    LONG _lastCompenentIndex;
+    int32_t _lastCompenentIndex;
     std::vector<JpegSegment*> _segments;
 };
 

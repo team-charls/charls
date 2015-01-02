@@ -83,19 +83,19 @@ public:
         _endPosition += readbytes;
     }
 
-    inlinehint void Skip(LONG length)
+    inlinehint void Skip(int32_t length)
     {
         _validBits -= length;
         _readCache = _readCache << length; 
     }
 
 
-    void OnLineBegin(LONG /*cpixel*/, void* /*ptypeBuffer*/, LONG /*pixelStride*/) 
+    void OnLineBegin(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) 
     {
     }
 
 
-    void OnLineEnd(LONG pixelCount, const void* ptypeBuffer, LONG pixelStride)
+    void OnLineEnd(int32_t pixelCount, const void* ptypeBuffer, int32_t pixelStride)
     {
         _processLine->NewLineDecoded(ptypeBuffer, pixelCount, pixelStride);
     }
@@ -201,12 +201,12 @@ public:
 
     uint8_t* GetCurBytePos() const
     {
-        LONG validBits = _validBits;
+        int32_t validBits = _validBits;
         uint8_t* compressedBytes = _position;
 
         for (;;)
         {
-            LONG cbitLast = compressedBytes[-1] == 0xFF ? 7 : 8;
+            int32_t cbitLast = compressedBytes[-1] == 0xFF ? 7 : 8;
 
             if (validBits < cbitLast )
                 return compressedBytes;
@@ -216,7 +216,7 @@ public:
         }
     }
 
-    inlinehint LONG ReadValue(LONG length)
+    inlinehint int32_t ReadValue(int32_t length)
     {
         if (_validBits < length)
         {
@@ -227,12 +227,12 @@ public:
 
         ASSERT(length != 0 && length <= _validBits);
         ASSERT(length < 32);
-        LONG result = LONG(_readCache >> (bufferbits - length));
+        int32_t result = int32_t(_readCache >> (bufferbits - length));
         Skip(length);
         return result;
     }
 
-    inlinehint LONG PeekByte()
+    inlinehint int32_t PeekByte()
     {
         if (_validBits < 8)
         {
@@ -254,7 +254,7 @@ public:
         return bSet;
     }
 
-    inlinehint LONG Peek0Bits()
+    inlinehint int32_t Peek0Bits()
     {
         if (_validBits < 16)
         {
@@ -262,7 +262,7 @@ public:
         }
         bufType valTest = _readCache;
 
-        for (LONG count = 0; count < 16; count++)
+        for (int32_t count = 0; count < 16; count++)
         {
             if ((valTest & (bufType(1) << (bufferbits - 1))) != 0)
                 return count;
@@ -272,9 +272,9 @@ public:
         return -1;
     }
 
-    inlinehint LONG ReadHighbits()
+    inlinehint int32_t ReadHighbits()
     {
-        LONG count = Peek0Bits();
+        int32_t count = Peek0Bits();
         if (count >= 0)
         {
             Skip(count + 1);
@@ -282,14 +282,14 @@ public:
         }
         Skip(15);
 
-        for (LONG highbits = 15; ; highbits++)
+        for (int32_t highbits = 15; ; highbits++)
         {
             if (ReadBit())
                 return highbits;
         }
     }
 
-    LONG ReadLongValue(LONG length)
+    int32_t ReadLongValue(int32_t length)
     {
         if (length <= 24)
             return ReadValue(length);
@@ -307,7 +307,7 @@ private:
 
     // decoding
     bufType _readCache;
-    LONG _validBits;
+    int32_t _validBits;
     uint8_t* _position;
     uint8_t* _nextFFPosition;
     uint8_t* _endPosition;

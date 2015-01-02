@@ -6,6 +6,7 @@
 #ifndef CHARLS_UTIL
 #define CHARLS_UTIL
 
+#include "config.h"
 #include "publictypes.h"
 #include <cstdlib>
 #include <cstring>
@@ -20,6 +21,11 @@
 #define MIN(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
+enum constants
+{
+    INT32_BITCOUNT = sizeof(int32_t) * 8
+};
+
 
 inline void push_back(std::vector<uint8_t>& values, uint16_t value)
 {
@@ -28,10 +34,10 @@ inline void push_back(std::vector<uint8_t>& values, uint16_t value)
 }
 
 
-inline LONG log_2(LONG n)
+inline int32_t log_2(int32_t n)
 {
-    LONG x = 0;
-    while (n > (LONG(1) << x))
+    int32_t x = 0;
+    while (n > (int32_t(1) << x))
     {
         ++x;
     }
@@ -39,26 +45,26 @@ inline LONG log_2(LONG n)
 }
 
 
-inline LONG Sign(LONG n)
+inline int32_t Sign(int32_t n)
 {
-    return (n >> (LONG_BITCOUNT - 1)) | 1;
+    return (n >> (INT32_BITCOUNT - 1)) | 1;
 }
 
 
-inline LONG BitWiseSign(LONG i)
+inline int32_t BitWiseSign(int32_t i)
 {
-    return i >> (LONG_BITCOUNT - 1);
+    return i >> (INT32_BITCOUNT - 1);
 }
 
 
 struct Size
 {
-    Size(LONG width, LONG height) :
+    Size(int32_t width, int32_t height) :
         cx(width),
         cy(height)
     {}
-    LONG cx;
-    LONG cy;
+    int32_t cx;
+    int32_t cy;
 };
 
 
@@ -71,7 +77,7 @@ struct Triplet
         v3(0)
     {}
 
-    Triplet(LONG x1, LONG x2, LONG x3) :
+    Triplet(int32_t x1, int32_t x2, int32_t x3) :
         v1((SAMPLE)x1),
         v2((SAMPLE)x2),
         v3((SAMPLE)x3)
@@ -114,7 +120,7 @@ struct Quad : public Triplet<sample>
         v4(0)
         {}
 
-    Quad(Triplet<sample> triplet, LONG alpha) : Triplet<sample>(triplet), A((sample)alpha)
+    Quad(Triplet<sample> triplet, int32_t alpha) : Triplet<sample>(triplet), A((sample)alpha)
         {}
 
     union

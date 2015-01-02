@@ -89,8 +89,8 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 
         if (info.ilv == ILV_NONE)
         {
-            LONG cbyteComp = info.width * info.height * ((info.bitspersample + 7) / 8);
-            for (LONG component = 0; component < info.components; ++component)
+            int32_t cbyteComp = info.width * info.height * ((info.bitspersample + 7) / 8);
+            for (int32_t component = 0; component < info.components; ++component)
             {
                 writer.AddScan(rawStreamInfo, info);
                 SkipBytes(&rawStreamInfo, cbyteComp);
@@ -214,8 +214,8 @@ extern "C"
 
         if (info.ilv == ILV_NONE)
         {
-            LONG fieldLength = info.width * info.height * ((info.bitspersample + 7) / 8);
-            for (LONG component = 0; component < info.components; ++component)
+            int32_t fieldLength = info.width * info.height * ((info.bitspersample + 7) / 8);
+            for (int32_t component = 0; component < info.components; ++component)
             {
                 writer.AddScan(rawStreamInfo, info);
                 SkipBytes(&rawStreamInfo, fieldLength);

@@ -12,19 +12,19 @@
 class JpegImageDataSegment : public JpegSegment
 {
 public:
-	JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& info, LONG icompStart, int ccompScan) :
-		_ccompScan(ccompScan),
-		_icompStart(icompStart),
-		_rawStreamInfo(rawStream),
-		_info(info)
-	{
-	}
+    JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& info, int32_t icompStart, int ccompScan) :
+        _ccompScan(ccompScan),
+        _icompStart(icompStart),
+        _rawStreamInfo(rawStream),
+        _info(info)
+    {
+    }
 
-	void Serialize(JpegStreamWriter& streamWriter);
+    void Serialize(JpegStreamWriter& streamWriter);
 
 private:
-	int _ccompScan;
-	LONG _icompStart;
-	ByteStreamInfo _rawStreamInfo;
-	JlsParameters _info;
+    int _ccompScan;
+    int32_t _icompStart;
+    ByteStreamInfo _rawStreamInfo;
+    JlsParameters _info;
 };

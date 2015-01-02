@@ -19,7 +19,7 @@
 uint8_t jfifID [] = { 'J', 'F', 'I', 'F', '\0' };
 
 
-LONG CLAMP(LONG i, LONG j, LONG MAXVAL)
+int32_t CLAMP(int32_t i, int32_t j, int32_t MAXVAL)
 {
     if (i > MAXVAL || i < j)
         return j;
@@ -28,11 +28,11 @@ LONG CLAMP(LONG i, LONG j, LONG MAXVAL)
 }
 
 
-JlsCustomParameters ComputeDefault(LONG MAXVAL, LONG NEAR)
+JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
 {
     JlsCustomParameters preset = JlsCustomParameters();
 
-    LONG FACTOR = (MIN(MAXVAL, 4095) + 128)/256;
+    int32_t FACTOR = (MIN(MAXVAL, 4095) + 128) / 256;
 
     preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
     preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
@@ -148,7 +148,7 @@ void JpegStreamReader::ReadHeader()
         if (marker == JpegMarkerCode::StartOfScan)
             return;
 
-        LONG cbyteMarker = ReadWord();
+        int32_t cbyteMarker = ReadWord();
 
         int bytesRead = ReadMarker(marker) + 2;
 
@@ -208,7 +208,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
 
 int JpegStreamReader::ReadPresetParameters()
 {
-    LONG type = ReadByte();
+    int type = ReadByte();
 
     switch (type)
     {
@@ -239,11 +239,11 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     int length = ReadByte();
     length = length * 256 + ReadByte(); // TODO: do something with 'length' or remove it.
 
-    LONG componentCount = ReadByte();
+    int componentCount = ReadByte();
     if (componentCount != 1 && componentCount != _info.components)
         throw std::system_error(ParameterValueNotSupported, CharLSCategoryInstance());
 
-    for (LONG i = 0; i < componentCount; ++i)
+    for (int i = 0; i < componentCount; ++i)
     {
         ReadByte();
         ReadByte();

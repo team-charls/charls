@@ -9,7 +9,7 @@
 #include <cstdint>
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(int width, int height, LONG bitsPerSample, LONG componentCount)
+JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(int width, int height, int32_t bitsPerSample, int32_t componentCount)
 {
     ASSERT(width >= 0 && width <= UINT16_MAX);
     ASSERT(height >= 0 && height <= UINT16_MAX);
@@ -96,7 +96,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(int i)
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(const JlsParameters& params, LONG icomponent)
+JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(const JlsParameters& params, int32_t icomponent)
 {
     uint8_t itable = 0;
 
@@ -105,7 +105,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(const JlsParameter
     if (icomponent < 0)
     {
         rgbyte.push_back((uint8_t) params.components);
-        for (LONG i = 0; i < params.components; ++i)
+        for (int i = 0; i < params.components; ++i)
         {
             rgbyte.push_back(uint8_t(i + 1));
             rgbyte.push_back(itable);

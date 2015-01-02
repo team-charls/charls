@@ -4,7 +4,6 @@
 #ifndef CHARLS_PUBLICTYPES
 #define CHARLS_PUBLICTYPES
 
-#include "config.h"
 
 #ifdef __cplusplus
 #include <iostream>

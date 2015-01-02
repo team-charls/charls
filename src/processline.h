@@ -126,7 +126,7 @@ private:
 
 
 template<class TRANSFORM, class SAMPLE>
-void TransformLineToQuad(const SAMPLE* ptypeInput, LONG pixelStrideIn, Quad<SAMPLE>* pbyteBuffer, LONG pixelStride, TRANSFORM& transform)
+void TransformLineToQuad(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Quad<SAMPLE>* pbyteBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
     int cpixel = MIN(pixelStride, pixelStrideIn);
     Quad<SAMPLE>* ptypeBuffer = pbyteBuffer;
@@ -141,7 +141,7 @@ void TransformLineToQuad(const SAMPLE* ptypeInput, LONG pixelStrideIn, Quad<SAMP
 
 
 template<class TRANSFORM, class SAMPLE> 
-void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAMPLE* ptypeBuffer, LONG pixelStride, TRANSFORM& transform)
+void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, int32_t pixelStrideIn, SAMPLE* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
     int cpixel = MIN(pixelStride, pixelStrideIn);
     const Quad<SAMPLE>* ptypeBufferIn = pbyteInput;
@@ -181,7 +181,7 @@ void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixe
 
 
 template<class TRANSFORM, class SAMPLE> 
-void TransformLineToTriplet(const SAMPLE* ptypeInput, LONG pixelStrideIn, Triplet<SAMPLE>* pbyteBuffer, LONG pixelStride, TRANSFORM& transform)
+void TransformLineToTriplet(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Triplet<SAMPLE>* pbyteBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
     int cpixel = MIN(pixelStride, pixelStrideIn);
     Triplet<SAMPLE>* ptypeBuffer = pbyteBuffer;
@@ -194,7 +194,7 @@ void TransformLineToTriplet(const SAMPLE* ptypeInput, LONG pixelStrideIn, Triple
 
 
 template<class TRANSFORM, class SAMPLE>
-void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAMPLE* ptypeBuffer, LONG pixelStride, TRANSFORM& transform)
+void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, int32_t pixelStrideIn, SAMPLE* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
     int cpixel = MIN(pixelStride, pixelStrideIn);
     const Triplet<SAMPLE>* ptypeBufferIn = pbyteInput;

@@ -6,6 +6,7 @@
 #ifndef CHARLS_CONFIG
 #define CHARLS_CONFIG
 
+
 #ifdef NDEBUG
 #  ifndef ASSERT
 #    define ASSERT(t) { }
@@ -21,14 +22,6 @@
 #endif
 
 #endif
-
-/* Typedef used by Charls for the default integral type.  charls will work correctly with 64 or 32 bit. */
-typedef long LONG;
-
-enum constants
-{
-  LONG_BITCOUNT = sizeof(LONG)*8
-};
 
 
 #undef  NEAR
@@ -47,8 +40,5 @@ enum constants
 #  endif
 #endif
 
-#if defined(i386) || defined(__i386__) || defined(_M_IX86) || defined(__amd64__) || defined(_M_X64)
-#define ARCH_HAS_UNALIGNED_MEM_ACCESS /* TODO define this symbol for more architectures */
-#endif
 
 #endif

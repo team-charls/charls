@@ -36,8 +36,8 @@ namespace CharLSUnitTest
 	public:
 		TEST_METHOD(CreateStartOfFrameMarker)
 		{
-			LONG bitsPerSample = 8;
-			LONG componentCount = 3;
+			int32_t bitsPerSample = 8;
+			int32_t componentCount = 3;
 
 			JpegMarkerSegment* segment = JpegMarkerSegment::CreateStartOfFrameMarker(100, UINT16_MAX, bitsPerSample, componentCount);
 
@@ -116,7 +116,7 @@ namespace CharLSUnitTest
 		TEST_METHOD(CreateStartOfScanMarker)
 		{
 			// TODO
-			//static JpegMarkerSegment* CreateStartOfScanMarker(const JlsParameters* pparams, LONG icomponent);
+			//static JpegMarkerSegment* CreateStartOfScanMarker(const JlsParameters* pparams, int32_t icomponent);
 		}
 	};
 }

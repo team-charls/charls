@@ -14,7 +14,7 @@ const int BASIC_T1 = 3;
 const int BASIC_T2 = 7;
 const int BASIC_T3 = 21;
 
-const LONG BASIC_RESET = 64;
+const int32_t BASIC_RESET = 64;
 
 struct JlsParameters;
 class JpegCustomParameters;
@@ -30,7 +30,7 @@ private:
 
 JLS_ERROR CheckParameterCoherent(const JlsParameters& pparams);
 
-JlsCustomParameters ComputeDefault(LONG MAXVAL, LONG NEAR);
+JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR);
 
 
 #endif

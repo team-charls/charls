@@ -38,11 +38,11 @@ public:
     /// <param name="height">The height of the frame.</param>
     /// <param name="bitsPerSample">The bits per sample.</param>
     /// <param name="componentCount">The component count.</param>
-    static JpegMarkerSegment* CreateStartOfFrameMarker(int width, int height, LONG bitsPerSample, LONG componentCount);
+    static JpegMarkerSegment* CreateStartOfFrameMarker(int width, int height, int32_t bitsPerSample, int32_t componentCount);
     static JpegMarkerSegment* CreateJpegFileInterchangeFormatMarker(const JfifParameters& jfif);
     static JpegMarkerSegment* CreateJpegLSExtendedParametersMarker(const JlsCustomParameters& pcustom);
     static JpegMarkerSegment* CreateColorTransformMarker(int i);
-    static JpegMarkerSegment* CreateStartOfScanMarker(const JlsParameters& pparams, LONG icomponent);
+    static JpegMarkerSegment* CreateStartOfScanMarker(const JlsParameters& pparams, int32_t icomponent);
 
 private:
     JpegMarkerCode _marker;

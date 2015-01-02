@@ -28,14 +28,14 @@ public:
     {
     }
 
-    LONG PeekByte();
+    int32_t PeekByte();
 
-    void OnLineBegin(LONG cpixel, void* ptypeBuffer, LONG pixelStride)
+    void OnLineBegin(int32_t cpixel, void* ptypeBuffer, int32_t pixelStride)
     {
         _processLine->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
     }
 
-    void OnLineEnd(LONG /*cpixel*/, void* /*ptypeBuffer*/, LONG /*pixelStride*/) { }
+    void OnLineEnd(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) { }
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 
@@ -64,7 +64,7 @@ protected:
         }
     }
 
-    void AppendToBitStream(LONG value, LONG length)
+    void AppendToBitStream(int32_t value, int32_t length)
     {
         ASSERT(length < 32 && length >= 0);
         ASSERT((!_qdecoder) || (length == 0 && value == 0) ||( _qdecoder->ReadLongValue(length) == value));
@@ -132,7 +132,7 @@ protected:
             OverFlow();
         }
 
-        for (LONG i = 0; i < 4; ++i)
+        for (int32_t i = 0; i < 4; ++i)
         {
             if (bitpos >= 32)
                 break;
@@ -163,7 +163,7 @@ protected:
         return _bytesWritten - (bitpos - 32) / 8;
     }
 
-    inlinehint void AppendOnesToBitStream(LONG length)
+    inlinehint void AppendOnesToBitStream(int32_t length)
     {
         AppendToBitStream((1 << length) - 1, length);
     }
@@ -176,7 +176,7 @@ protected:
 
 private:
     unsigned int valcurrent;
-    LONG bitpos;
+    int32_t bitpos;
     std::size_t _compressedLength;
 
     // encoding
