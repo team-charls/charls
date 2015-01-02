@@ -4,7 +4,7 @@
 
 
 #include "config.h"
-#include "../src/interface.h"
+#include "../src/charls.h"
 #include "../src/util.h"
 #include "../src/header.h"
 #include "../src/defaulttraits.h"

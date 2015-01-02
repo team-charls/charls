@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "../../src/interface.h"
+#include "../../src/charls.h"
 
 
 typedef struct {

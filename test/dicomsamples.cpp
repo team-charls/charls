@@ -6,7 +6,7 @@
 
 
 #include "util.h"
-#include "../src/interface.h"
+#include "../src/charls.h"
 
 
 int findstring(std::vector<BYTE>& container, BYTE* bytesToFind, unsigned int bytesLength)

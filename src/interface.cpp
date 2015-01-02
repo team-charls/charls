@@ -12,7 +12,7 @@
 
 #include "config.h"
 #include "util.h"
-#include "interface.h"
+#include "charls.h"
 #include "header.h"
 #include "jpegstreamreader.h"
 #include "jpegstreamwriter.h"
