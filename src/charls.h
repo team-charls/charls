@@ -25,7 +25,7 @@
 #endif
 
 #if !defined(CHARLS_IMEXPORT)
-#error Please #define CHARLS_STATIC or CHARLS_DLL before including "interface.h" to indicate if CharLS is built as a static library or as a dll. 
+#error Please #define CHARLS_STATIC or CHARLS_DLL before including "charls.h" to indicate if CharLS is built as a static library or as a dll.
 #endif
 
 

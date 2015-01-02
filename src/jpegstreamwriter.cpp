@@ -14,25 +14,25 @@
 
 namespace
 {
-	bool IsDefault(const JlsCustomParameters& custom)
-	{
-		if (custom.MAXVAL != 0)
-			return false;
+    bool IsDefault(const JlsCustomParameters& custom)
+    {
+        if (custom.MAXVAL != 0)
+            return false;
 
-		if (custom.T1 != 0)
-			return false;
+        if (custom.T1 != 0)
+            return false;
 
-		if (custom.T2 != 0)
-			return false;
+        if (custom.T2 != 0)
+            return false;
 
-		if (custom.T3 != 0)
-			return false;
+        if (custom.T3 != 0)
+            return false;
 
-		if (custom.RESET != 0)
-			return false;
+        if (custom.RESET != 0)
+            return false;
 
-		return true;
-	}
+        return true;
+    }
 }
 
 
@@ -47,54 +47,54 @@ _lastCompenentIndex(0)
 
 JpegStreamWriter::~JpegStreamWriter()
 {
-	for (size_t i = 0; i < _segments.size(); ++i)
-	{
-		delete _segments[i];
-	}
+    for (size_t i = 0; i < _segments.size(); ++i)
+    {
+        delete _segments[i];
+    }
 }
 
 
 void JpegStreamWriter::AddColorTransform(int i)
 {
-	AddSegment(JpegMarkerSegment::CreateColorTransformMarker(i));
+    AddSegment(JpegMarkerSegment::CreateColorTransformMarker(i));
 }
 
 
 size_t JpegStreamWriter::Write(const ByteStreamInfo& info)
 {
-	_data = info;
+    _data = info;
 
-	WriteMarker(JpegMarkerCode::StartOfImage);
+    WriteMarker(JpegMarkerCode::StartOfImage);
 
-	for (size_t i = 0; i < _segments.size(); ++i)
-	{
-		_segments[i]->Serialize(*this);
-	}
+    for (size_t i = 0; i < _segments.size(); ++i)
+    {
+        _segments[i]->Serialize(*this);
+    }
 
-	//_bCompare = false;
+    //_bCompare = false;
 
-	WriteMarker(JpegMarkerCode::EndOfImage);
+    WriteMarker(JpegMarkerCode::EndOfImage);
 
-	return _byteOffset;
+    return _byteOffset;
 }
 
 
 void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& params)
 {
-	if (!IsDefault(params.custom))
-	{
-		AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(params.custom));
-	}
-	else if (params.bitspersample > 12)
-	{
-		JlsCustomParameters preset = ComputeDefault((1 << params.bitspersample) - 1, params.allowedlossyerror);
-		AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(preset));
-	}
+    if (!IsDefault(params.custom))
+    {
+        AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(params.custom));
+    }
+    else if (params.bitspersample > 12)
+    {
+        JlsCustomParameters preset = ComputeDefault((1 << params.bitspersample) - 1, params.allowedlossyerror);
+        AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(preset));
+    }
 
-	_lastCompenentIndex += 1;
-	AddSegment(JpegMarkerSegment::CreateStartOfScanMarker(params, params.ilv == ILV_NONE ? _lastCompenentIndex : -1));
+    _lastCompenentIndex += 1;
+    AddSegment(JpegMarkerSegment::CreateStartOfScanMarker(params, params.ilv == ILV_NONE ? _lastCompenentIndex : -1));
 
-	int ccomp = params.ilv == ILV_NONE ? 1 : params.components;
+    int ccomp = params.ilv == ILV_NONE ? 1 : params.components;
 
-	AddSegment(new JpegImageDataSegment(info, params, _lastCompenentIndex, ccomp));
+    AddSegment(new JpegImageDataSegment(info, params, _lastCompenentIndex, ccomp));
 }

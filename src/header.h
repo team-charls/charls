@@ -23,9 +23,9 @@ template<class STRATEGY>
 class JlsCodecFactory 
 {
 public:
-	std::unique_ptr<STRATEGY> GetCodec(const JlsParameters& info, const JlsCustomParameters&);
+    std::unique_ptr<STRATEGY> GetCodec(const JlsParameters& info, const JlsCustomParameters&);
 private:
-	std::unique_ptr<STRATEGY> GetCodecImpl(const JlsParameters& info);
+    std::unique_ptr<STRATEGY> GetCodecImpl(const JlsParameters& info);
 };
 
 JLS_ERROR CheckParameterCoherent(const JlsParameters& pparams);

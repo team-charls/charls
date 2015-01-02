@@ -4,10 +4,10 @@
 #ifndef CHARLS_JPEGMARKER
 #define CHARLS_JPEGMARKER
 
+#include "util.h"
 #include <cstdint>
 #include <memory>
 #include <vector>
-#include "util.h"
 
 
 enum class JpegMarkerCode : uint8_t;
@@ -19,59 +19,59 @@ enum class JpegMarkerCode : uint8_t;
 class JpegStreamReader
 {
 public:
-	JpegStreamReader(ByteStreamInfo byteStreamInfo);
+    JpegStreamReader(ByteStreamInfo byteStreamInfo);
 
-	const JlsParameters& GetMetadata() const
-	{
-		return _info;
-	}
+    const JlsParameters& GetMetadata() const
+    {
+        return _info;
+    }
 
-	const JlsCustomParameters& GetCustomPreset() const
-	{
-		return _info.custom;
-	}
+    const JlsCustomParameters& GetCustomPreset() const
+    {
+        return _info.custom;
+    }
 
-	void Read(ByteStreamInfo info);
-	void ReadHeader();
+    void Read(ByteStreamInfo info);
+    void ReadHeader();
 
-	void EnableCompare(bool bCompare)
-	{
-		_bCompare = bCompare;
-	}
+    void EnableCompare(bool bCompare)
+    {
+        _bCompare = bCompare;
+    }
 
-	void SetInfo(const JlsParameters& info)
-	{
-		_info = info;
-	}
+    void SetInfo(const JlsParameters& info)
+    {
+        _info = info;
+    }
 
-	void SetRect(const JlsRect& rect)
-	{
-		_rect = rect;
-	}
+    void SetRect(const JlsRect& rect)
+    {
+        _rect = rect;
+    }
 
-	void ReadStartOfScan(bool firstComponent);
+    void ReadStartOfScan(bool firstComponent);
     uint8_t ReadByte();
 
 private:
-	void ReadScan(ByteStreamInfo rawPixels);
-	int ReadPresetParameters();
-	int ReadComment();
-	int ReadStartOfFrame();
-	int ReadWord();
-	void ReadNBytes(std::vector<char>& dst, int byteCount);
+    void ReadScan(ByteStreamInfo rawPixels);
+    int ReadPresetParameters();
+    int ReadComment();
+    int ReadStartOfFrame();
+    int ReadWord();
+    void ReadNBytes(std::vector<char>& dst, int byteCount);
     int ReadMarker(JpegMarkerCode marker);
 
-	// JFIF
-	void ReadJfif();
-	// Color Transform Application Markers & Code Stream (HP extension)
-	int ReadColorSpace();
-	int ReadColorXForm();
+    // JFIF
+    void ReadJfif();
+    // Color Transform Application Markers & Code Stream (HP extension)
+    int ReadColorSpace();
+    int ReadColorXForm();
 
 private:
-	ByteStreamInfo _byteStream;
-	bool _bCompare;
-	JlsParameters _info;
-	JlsRect _rect;
+    ByteStreamInfo _byteStream;
+    bool _bCompare;
+    JlsParameters _info;
+    JlsRect _rect;
 };
 
 
