@@ -113,9 +113,17 @@ namespace CharLS
                 parameters.Jfif.DensityY = 1;
             }
 
-            var result = Environment.Is64BitProcess ?
-                SafeNativeMethods.JpegLsEncode64(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters) :
-                SafeNativeMethods.JpegLsEncode(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters);
+            JpegLSError result;
+            if (Environment.Is64BitProcess)
+            {
+                long count;
+                result = SafeNativeMethods.JpegLsEncode64(destination, destinationLength, out count, pixels, pixelCount, ref parameters);
+                compressedCount = (int)count;
+            }
+            else
+            {
+                result = SafeNativeMethods.JpegLsEncode(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters);
+            }
             if (result == JpegLSError.CompressedBufferTooSmall)
                 return false;
 

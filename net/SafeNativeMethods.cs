@@ -16,7 +16,7 @@ namespace CharLS
         internal static extern JpegLSError JpegLsReadHeader([In] byte[] compressedSource, int compressedLength, out JlsParameters info);
 
         [DllImport(Nativex64Library, SetLastError = false, EntryPoint = "JpegLsReadHeader")]
-        internal static extern JpegLSError JpegLsReadHeader64([In] byte[] compressedSource, int compressedLength, out JlsParameters info);
+        internal static extern JpegLSError JpegLsReadHeader64([In] byte[] compressedSource, long compressedLength, out JlsParameters info);
 
         [DllImport(Nativex86Library, SetLastError = false)]
         internal static extern JpegLSError JpegLsDecode(
@@ -29,9 +29,9 @@ namespace CharLS
         [DllImport(Nativex64Library, SetLastError = false, EntryPoint = "JpegLsDecode")]
         internal static extern JpegLSError JpegLsDecode64(
             [Out] byte[] uncompressedData,
-            int uncompressedLength,
+            long uncompressedLength,
             [In] byte[] compressedData,
-            int compressedLength,
+            long compressedLength,
             IntPtr info);
 
         [DllImport(Nativex86Library, SetLastError = false)]
@@ -46,10 +46,10 @@ namespace CharLS
         [DllImport(Nativex64Library, SetLastError = false, EntryPoint = "JpegLsEncode")]
         internal static extern JpegLSError JpegLsEncode64(
             [Out] byte[] compressedData,
-            int compressedLength,
-            out int byteCountWritten,
+            long compressedLength,
+            out long byteCountWritten,
             [In] byte[] uncompressedData,
-            int uncompressedLength,
+            long uncompressedLength,
             [In] ref JlsParameters info);
     }
 }
