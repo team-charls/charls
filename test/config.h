@@ -9,14 +9,7 @@
 #pragma warning (disable: 4996)
 #endif
 
-// enable ASSERT() on linux 
-#ifndef _WIN32
-#ifndef _DEBUG
-#define _DEBUG
-#endif
-
-#else
-#include <cassert>
+#ifdef _WIN32
 #define CHARLS_DLL
 #endif
 

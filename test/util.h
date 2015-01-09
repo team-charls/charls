@@ -17,4 +17,21 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 void WriteFile(SZC strName, std::vector<BYTE>& vec);
 void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEncode = true);
 
+class UnitTestException : public std::exception {
+public:
+    explicit UnitTestException() : exception("UNIT-TEST_FAILED")
+    {
+    }
+};
+
+class Assert
+{
+public:
+    static void IsTrue(bool condition)
+    {
+        if (!condition)
+            throw UnitTestException();
+    }
+};
+
 #endif
