@@ -154,7 +154,7 @@ void TestBgra()
 void TestBgr()
 {
     JlsParameters info;
-    std::vector<BYTE> rgbyteEncoded;    
+    std::vector<BYTE> rgbyteEncoded;
     ScanFile("test/conformance/T8C2E3.JLS", &rgbyteEncoded, &info);
     std::vector<BYTE> rgbyteDecoded(info.width * info.height * info.components);    
 
@@ -179,7 +179,7 @@ void TestTooSmallOutputBuffer()
         return;
 
     std::vector<BYTE> rgbyteOut(512 * 511);
-    JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), nullptr);
+    JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
 
     Assert::IsTrue(error == UncompressedBufferTooSmall);
 }
@@ -192,7 +192,7 @@ void TestBadImage()
         return;
 
     std::vector<BYTE> rgbyteOut(2500 * 3000 * 2);
-    JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), nullptr);
+    JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
 
     Assert::IsTrue(error == UncompressedBufferTooSmall);
 }
@@ -242,13 +242,13 @@ void TestDecodeRect()
         return;
 
     std::vector<BYTE> rgbyteOutFull(info.width*info.height*info.components);
-    JLS_ERROR error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), nullptr);
+    JLS_ERROR error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
     Assert::IsTrue(error == OK);
 
     JlsRect rect = { 128, 128, 256, 1 };
     std::vector<BYTE> rgbyteOut(rect.Width * rect.Height);
     rgbyteOut.push_back(0x1f);
-    error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), rect, nullptr);
+    error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), rect, nullptr);
     Assert::IsTrue(error == OK);
 
     Assert::IsTrue(memcmp(&rgbyteOutFull[rect.X + rect.Y*512], &rgbyteOut[0], rect.Width * rect.Height) == 0);
@@ -367,6 +367,7 @@ void TestDecodeFromStream(const char* strNameEncoded)
 
     JlsParameters info = JlsParameters();
     JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
+    Assert::IsTrue(err == OK);
 
     jlsFile.pubseekpos(std::ios::beg, std::ios_base::in);
 
