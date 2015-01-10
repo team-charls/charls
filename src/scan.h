@@ -196,7 +196,7 @@ public:
     void InitDefault();
     void InitParams(int32_t t1, int32_t t2, int32_t t3, int32_t nReset);
 
-    size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo* compressedData, void* pvoidCompare);
+    size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData, void* pvoidCompare);
     void DecodeScan(std::unique_ptr<ProcessLine> rawData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCompare);
 
 protected:
@@ -795,11 +795,11 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
 // Setup codec for encoding and calls DoScan
 
 template<class TRAITS, class STRATEGY>
-size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo* compressedData, void* pvoidCompare)
+size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo& compressedData, void* pvoidCompare)
 {
     STRATEGY::_processLine = std::move(processLine);
 
-    ByteStreamInfo info = { nullptr, (uint8_t*) pvoidCompare, compressedData->count };
+    ByteStreamInfo info = { nullptr, (uint8_t*) pvoidCompare, compressedData.count };
     if (pvoidCompare)
     {
         STRATEGY::_qdecoder = std::unique_ptr<DecoderStrategy>(new JlsCodec<TRAITS, DecoderStrategy>(traits, Info()));

@@ -41,28 +41,28 @@ public:
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 
-    virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo* compressedData, void* pvoidCompare) = 0;
+    virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData, void* pvoidCompare) = 0;
 
     virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 
 protected:
 
-    void Init(ByteStreamInfo* compressedStream)
+    void Init(ByteStreamInfo& compressedStream)
     {
         bitpos = 32;
         valcurrent = 0;
 
-        if (compressedStream->rawStream)
+        if (compressedStream.rawStream)
         {
-            _compressedStream = compressedStream->rawStream;
+            _compressedStream = compressedStream.rawStream;
             _buffer.resize(4000);
             _position = (uint8_t*) &_buffer[0];
             _compressedLength = _buffer.size();
         }
         else
         {
-            _position = compressedStream->rawData;
-            _compressedLength = compressedStream->count;
+            _position = compressedStream.rawData;
+            _compressedLength = compressedStream.count;
         }
     }
 

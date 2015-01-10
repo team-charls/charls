@@ -70,7 +70,7 @@ void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
     auto codec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
     std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
     ByteStreamInfo compressedData = streamWriter.OutputStream();
-    size_t cbyteWritten = codec->EncodeScan(std::move(processLine), &compressedData, streamWriter._bCompare ? streamWriter.GetPos() : nullptr);
+    size_t cbyteWritten = codec->EncodeScan(std::move(processLine), compressedData, streamWriter._bCompare ? streamWriter.GetPos() : nullptr);
     streamWriter.Seek(cbyteWritten);
 }
 
