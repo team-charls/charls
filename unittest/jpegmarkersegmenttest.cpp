@@ -12,111 +12,111 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace CharLSUnitTest
 {
-	TEST_CLASS(JpegMarkerSegmentTest)
-	{
-	private:
-		static size_t SerializeSegment(JpegMarkerSegment* segment, uint8_t* buffer, size_t count)
-		{
-			ByteStreamInfo info = FromByteArray(buffer, count);
-			JpegStreamWriter writer;
-			writer.AddSegment(segment);
-			auto bytesWritten = writer.Write(info);
+    TEST_CLASS(JpegMarkerSegmentTest)
+    {
+    private:
+        static size_t SerializeSegment(JpegMarkerSegment* segment, uint8_t* buffer, size_t count)
+        {
+            ByteStreamInfo info = FromByteArray(buffer, count);
+            JpegStreamWriter writer;
+            writer.AddSegment(segment);
+            auto bytesWritten = writer.Write(info);
 
-			Assert::IsTrue(bytesWritten >= 4);
+            Assert::IsTrue(bytesWritten >= 4);
 
-			Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
-			Assert::AreEqual(static_cast<uint8_t>(0xD8), buffer[1]); // JPEG_SOI
+            Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
+            Assert::AreEqual(static_cast<uint8_t>(0xD8), buffer[1]); // JPEG_SOI
 
-			Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[bytesWritten - 2]);
-			Assert::AreEqual(static_cast<uint8_t>(0xD9), buffer[bytesWritten - 1]); // JPEG_EOI
+            Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[bytesWritten - 2]);
+            Assert::AreEqual(static_cast<uint8_t>(0xD9), buffer[bytesWritten - 1]); // JPEG_EOI
 
-			return bytesWritten;
-		}
+            return bytesWritten;
+        }
 
-	public:
-		TEST_METHOD(CreateStartOfFrameMarker)
-		{
-			int32_t bitsPerSample = 8;
-			int32_t componentCount = 3;
+    public:
+        TEST_METHOD(CreateStartOfFrameMarker)
+        {
+            int32_t bitsPerSample = 8;
+            int32_t componentCount = 3;
 
-			JpegMarkerSegment* segment = JpegMarkerSegment::CreateStartOfFrameMarker(100, UINT16_MAX, bitsPerSample, componentCount);
+            JpegMarkerSegment* segment = JpegMarkerSegment::CreateStartOfFrameMarker(100, UINT16_MAX, bitsPerSample, componentCount);
 
-			uint8_t buffer[23];
-			auto bytesWritten = SerializeSegment(segment, buffer, _countof(buffer));
+            uint8_t buffer[23];
+            auto bytesWritten = SerializeSegment(segment, buffer, _countof(buffer));
 
-			Assert::AreEqual(static_cast<size_t>(23), bytesWritten);
-			Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[2]);
-			Assert::AreEqual(static_cast<uint8_t>(0xF7), buffer[3]); // JPEG_SOF_55
-			Assert::AreEqual(static_cast<uint8_t>(0), buffer[4]);   // 6 + (3 * 3) + 2 (in little endian)
-			Assert::AreEqual(static_cast<uint8_t>(17), buffer[5]);  // 6 + (3 * 3) + 2 (in little endian)
-			Assert::AreEqual(static_cast<uint8_t>(bitsPerSample), buffer[6]);
-			Assert::AreEqual(static_cast<uint8_t>(255), buffer[7]);    // height (in little endian)
-			Assert::AreEqual(static_cast<uint8_t>(255), buffer[8]);  // height (in little endian)
-			Assert::AreEqual(static_cast<uint8_t>(0), buffer[9]);    // width (in little endian)
-			Assert::AreEqual(static_cast<uint8_t>(100), buffer[10]);  // width (in little endian)
-			Assert::AreEqual(static_cast<uint8_t>(componentCount), buffer[11]);
+            Assert::AreEqual(static_cast<size_t>(23), bytesWritten);
+            Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[2]);
+            Assert::AreEqual(static_cast<uint8_t>(0xF7), buffer[3]); // JPEG_SOF_55
+            Assert::AreEqual(static_cast<uint8_t>(0), buffer[4]);   // 6 + (3 * 3) + 2 (in little endian)
+            Assert::AreEqual(static_cast<uint8_t>(17), buffer[5]);  // 6 + (3 * 3) + 2 (in little endian)
+            Assert::AreEqual(static_cast<uint8_t>(bitsPerSample), buffer[6]);
+            Assert::AreEqual(static_cast<uint8_t>(255), buffer[7]);    // height (in little endian)
+            Assert::AreEqual(static_cast<uint8_t>(255), buffer[8]);  // height (in little endian)
+            Assert::AreEqual(static_cast<uint8_t>(0), buffer[9]);    // width (in little endian)
+            Assert::AreEqual(static_cast<uint8_t>(100), buffer[10]);  // width (in little endian)
+            Assert::AreEqual(static_cast<uint8_t>(componentCount), buffer[11]);
 
-			Assert::AreEqual(static_cast<uint8_t>(1), buffer[12]);
-			Assert::AreEqual(static_cast<uint8_t>(0x11), buffer[13]);
-			Assert::AreEqual(static_cast<uint8_t>(0), buffer[14]);
+            Assert::AreEqual(static_cast<uint8_t>(1), buffer[12]);
+            Assert::AreEqual(static_cast<uint8_t>(0x11), buffer[13]);
+            Assert::AreEqual(static_cast<uint8_t>(0), buffer[14]);
 
-			Assert::AreEqual(static_cast<uint8_t>(2), buffer[15]);
-			Assert::AreEqual(static_cast<uint8_t>(0x11), buffer[16]);
-			Assert::AreEqual(static_cast<uint8_t>(0), buffer[17]);
+            Assert::AreEqual(static_cast<uint8_t>(2), buffer[15]);
+            Assert::AreEqual(static_cast<uint8_t>(0x11), buffer[16]);
+            Assert::AreEqual(static_cast<uint8_t>(0), buffer[17]);
 
-			Assert::AreEqual(static_cast<uint8_t>(3), buffer[18]);
-			Assert::AreEqual(static_cast<uint8_t>(0x11), buffer[19]);
-			Assert::AreEqual(static_cast<uint8_t>(0), buffer[20]);
+            Assert::AreEqual(static_cast<uint8_t>(3), buffer[18]);
+            Assert::AreEqual(static_cast<uint8_t>(0x11), buffer[19]);
+            Assert::AreEqual(static_cast<uint8_t>(0), buffer[20]);
 
-			//delete segment;
-		}
+            //delete segment;
+        }
 
-		TEST_METHOD(CreateStartOfFrameMarkerWithLowBoundaryValues)
-		{
-			JpegMarkerSegment* segment = JpegMarkerSegment::CreateStartOfFrameMarker(0, 0, 1, 1);
+        TEST_METHOD(CreateStartOfFrameMarkerWithLowBoundaryValues)
+        {
+            JpegMarkerSegment* segment = JpegMarkerSegment::CreateStartOfFrameMarker(0, 0, 1, 1);
 
-			uint8_t buffer[17];
-			auto bytesWritten = SerializeSegment(segment, buffer, _countof(buffer));
-			Assert::AreEqual(static_cast<size_t>(17), bytesWritten);
-			Assert::AreEqual(static_cast<uint8_t>(1), buffer[6]);
-			Assert::AreEqual(static_cast<uint8_t>(1), buffer[11]);
-			//delete segment;
-		}
+            uint8_t buffer[17];
+            auto bytesWritten = SerializeSegment(segment, buffer, _countof(buffer));
+            Assert::AreEqual(static_cast<size_t>(17), bytesWritten);
+            Assert::AreEqual(static_cast<uint8_t>(1), buffer[6]);
+            Assert::AreEqual(static_cast<uint8_t>(1), buffer[11]);
+            //delete segment;
+        }
 
-		TEST_METHOD(CreateStartOfFrameMarkerWithHighBoundaryValues)
-		{
-			JpegMarkerSegment* segment = JpegMarkerSegment::CreateStartOfFrameMarker(UINT16_MAX, UINT16_MAX, UINT8_MAX, UINT8_MAX - 1);
+        TEST_METHOD(CreateStartOfFrameMarkerWithHighBoundaryValues)
+        {
+            JpegMarkerSegment* segment = JpegMarkerSegment::CreateStartOfFrameMarker(UINT16_MAX, UINT16_MAX, UINT8_MAX, UINT8_MAX - 1);
 
-			uint8_t buffer[776];
-			auto bytesWritten = SerializeSegment(segment, buffer, _countof(buffer));
-			Assert::AreEqual(static_cast<size_t>(776), bytesWritten);
-			Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[6]);
-			Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX - 1), buffer[11]);
-			//delete segment;
-		}
+            uint8_t buffer[776];
+            auto bytesWritten = SerializeSegment(segment, buffer, _countof(buffer));
+            Assert::AreEqual(static_cast<size_t>(776), bytesWritten);
+            Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[6]);
+            Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX - 1), buffer[11]);
+            //delete segment;
+        }
 
-		TEST_METHOD(CreateJpegFileInterchangeFormatMarker)
-		{
-			// TODO
-			//static JpegMarkerSegment* CreateJpegFileInterchangeFormatMarker(const JfifParameters& jfif);
-		}
+        TEST_METHOD(CreateJpegFileInterchangeFormatMarker)
+        {
+            // TODO
+            //static JpegMarkerSegment* CreateJpegFileInterchangeFormatMarker(const JfifParameters& jfif);
+        }
 
-		TEST_METHOD(CreateJpegLSExtendedParametersMarker)
-		{
-			// TODO
-			//static JpegMarkerSegment* CreateJpegLSExtendedParametersMarker(const JlsCustomParameters& pcustom);
-		}
+        TEST_METHOD(CreateJpegLSExtendedParametersMarker)
+        {
+            // TODO
+            //static JpegMarkerSegment* CreateJpegLSExtendedParametersMarker(const JlsCustomParameters& pcustom);
+        }
 
-		TEST_METHOD(CreateColorTransformMarker)
-		{
-			// TODO
-			//static JpegMarkerSegment* CreateColorTransformMarker(int i);
-		}
+        TEST_METHOD(CreateColorTransformMarker)
+        {
+            // TODO
+            //static JpegMarkerSegment* CreateColorTransformMarker(int i);
+        }
 
-		TEST_METHOD(CreateStartOfScanMarker)
-		{
-			// TODO
-			//static JpegMarkerSegment* CreateStartOfScanMarker(const JlsParameters* pparams, int32_t icomponent);
-		}
-	};
+        TEST_METHOD(CreateStartOfScanMarker)
+        {
+            // TODO
+            //static JpegMarkerSegment* CreateStartOfScanMarker(const JlsParameters* pparams, int32_t icomponent);
+        }
+    };
 }

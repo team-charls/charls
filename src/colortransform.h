@@ -4,14 +4,18 @@
 #ifndef CHARLS_COLORTRANSFORM
 #define CHARLS_COLORTRANSFORM
 
-//
+
+#include "util.h"
+
+
 // This file defines simple classes that define (lossless) color transforms.
 // They are invoked in processline.h to convert between decoded values and the internal line buffers. 
-// Color transforms work best for computer generated images. 
+// Color transforms work best for computer generated images.
 //
 #ifdef _MSC_VER
 #pragma warning (disable: 4127) // conditional expression is constant (caused by some template methods that are not fully specialized) [VS2013]
 #endif
+
 
 template<class sample>
 struct TransformNoneImpl
