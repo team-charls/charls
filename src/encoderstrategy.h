@@ -16,8 +16,8 @@ class EncoderStrategy
 public:
     explicit EncoderStrategy(const JlsParameters& info) :
         _info(info),
-        valcurrent(0),
-        bitpos(0),
+        _valcurrent(0),
+        _bitpos(0),
         _compressedLength(0),
         _position(0),
         _isFFWritten(false),
@@ -49,8 +49,8 @@ protected:
 
     void Init(ByteStreamInfo& compressedStream)
     {
-        bitpos = 32;
-        valcurrent = 0;
+        _bitpos = 32;
+        _valcurrent = 0;
 
         if (compressedStream.rawStream)
         {
@@ -79,18 +79,18 @@ protected:
         }
 #endif
 
-        bitpos -= length;
-        if (bitpos >= 0)
+        _bitpos -= length;
+        if (_bitpos >= 0)
         {
-            valcurrent = valcurrent | (value << bitpos);
+            _valcurrent = _valcurrent | (value << _bitpos);
             return;
         }
-        valcurrent |= value >> -bitpos;
+        _valcurrent |= value >> -_bitpos;
 
         Flush();
 
-        ASSERT(bitpos >=0);
-        valcurrent |= value << bitpos;
+        ASSERT(_bitpos >=0);
+        _valcurrent |= value << _bitpos;
     }
 
     void EndScan()
@@ -99,12 +99,12 @@ protected:
 
         // if a 0xff was written, Flush() will force one unset bit anyway
         if (_isFFWritten)
-            AppendToBitStream(0, (bitpos - 1) % 8);
+            AppendToBitStream(0, (_bitpos - 1) % 8);
         else
-            AppendToBitStream(0, bitpos % 8);
+            AppendToBitStream(0, _bitpos % 8);
 
         Flush();
-        ASSERT(bitpos == 0x20);
+        ASSERT(_bitpos == 0x20);
 
         if (_compressedStream)
         {
@@ -136,21 +136,21 @@ protected:
 
         for (int32_t i = 0; i < 4; ++i)
         {
-            if (bitpos >= 32)
+            if (_bitpos >= 32)
                 break;
 
             if (_isFFWritten)
             {
                 // insert highmost bit
-                *_position = uint8_t(valcurrent >> 25);
-                valcurrent = valcurrent << 7;
-                bitpos += 7;
+                *_position = static_cast<uint8_t>(_valcurrent >> 25);
+                _valcurrent = _valcurrent << 7;
+                _bitpos += 7;
             }
             else
             {
-                *_position = uint8_t(valcurrent >> 24);
-                valcurrent = valcurrent << 8;
-                bitpos += 8;
+                *_position = static_cast<uint8_t>(_valcurrent >> 24);
+                _valcurrent = _valcurrent << 8;
+                _bitpos += 8;
             }
 
             _isFFWritten = *_position == 0xFF;
@@ -162,7 +162,7 @@ protected:
 
     std::size_t GetLength() const
     {
-        return _bytesWritten - (bitpos - 32) / 8;
+        return _bytesWritten - (_bitpos - 32) / 8;
     }
 
     inlinehint void AppendOnesToBitStream(int32_t length)
@@ -177,8 +177,8 @@ protected:
     std::unique_ptr<ProcessLine> _processLine;
 
 private:
-    unsigned int valcurrent;
-    int32_t bitpos;
+    unsigned int _valcurrent;
+    int32_t _bitpos;
     std::size_t _compressedLength;
 
     // encoding
