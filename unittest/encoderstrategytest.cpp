@@ -21,7 +21,7 @@ public:
     {
     }
 
-    virtual size_t EncodeScan(std::unique_ptr<ProcessLine>, ByteStreamInfo*, void*)
+    virtual size_t EncodeScan(std::unique_ptr<ProcessLine>, ByteStreamInfo&, void*)
     {
         return 0;
     }
