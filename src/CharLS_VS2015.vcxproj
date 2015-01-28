@@ -242,7 +242,6 @@
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
-      <DisableLanguageExtensions>true</DisableLanguageExtensions>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -343,6 +342,7 @@
     <ClCompile Include="jpegstreamwriter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="charls.h" />
     <ClInclude Include="colortransform.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="context.h" />
@@ -351,11 +351,11 @@
     <ClInclude Include="defaulttraits.h" />
     <ClInclude Include="encoderstrategy.h" />
     <ClInclude Include="header.h" />
-    <ClInclude Include="interface.h" />
     <ClInclude Include="jpegimagedatasegment.h" />
     <ClInclude Include="jpegmarkercode.h" />
     <ClInclude Include="jpegmarkersegment.h" />
     <ClInclude Include="jpegsegment.h" />
+    <ClInclude Include="jpegstreamreader.h" />
     <ClInclude Include="jpegstreamwriter.h" />
     <ClInclude Include="lookuptable.h" />
     <ClInclude Include="losslesstraits.h" />

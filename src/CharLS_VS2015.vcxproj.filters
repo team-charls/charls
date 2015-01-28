@@ -42,9 +42,6 @@
     <ClInclude Include="header.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="interface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="lookuptable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -78,6 +75,10 @@
     <ClInclude Include="jpegmarkercode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jpegstreamreader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="charls.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />
