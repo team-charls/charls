@@ -45,13 +45,20 @@ extern "C"
     /// <param name="bytesWritten">This parameter will hold the number of bytes written to the destination byte array. Cannot be NULL.</param>
     /// <param name="source">Byte array that holds the pixels that should be encoded.</param>
     /// <param name="sourceLength">Length of the array in bytes.</param>
-    /// <param name="parameters">Info that describes the pixel data and how to encode it.</param>
+    /// <param name="info">Info that describes the pixel data and how to encode it.</param>
     CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten,
-        const void* source, size_t sourceLength, const struct JlsParameters* parameters);
+        const void* source, size_t sourceLength, const struct JlsParameters* info);
 
-  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompressedLength, 
-        const void* compressedData, size_t compressedLength, 
-        struct JlsParameters* info);
+    /// <summary>
+    /// Encodes a JPEG-LS encoded byte array to uncompressed pixel data byte array.
+    /// </summary>
+    /// <param name="destination">Byte array that holds the uncompressed pixel data bytes when the funtion returns.</param>
+    /// <param name="destinationLength">Length of the array in bytes. If the array is too small the function will return an error.</param>
+    /// <param name="source">Byte array that holds the JPEG-LS encoded data that should be decoded.</param>
+    /// <param name="sourceLength">Length of the array in bytes.</param>
+    /// <param name="info">Info that describes the pixel data and how to decode it.</param>
+    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecode(void* destination, size_t destinationLength,
+        const void* source, size_t sourceLength, const struct JlsParameters* info);
 
   CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, 
         const void* compressedData, size_t compressedLength, 
@@ -67,9 +74,9 @@ extern "C"
 #ifdef __cplusplus
 
 }
-    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo rawStream, size_t& bytesWritten, ByteStreamInfo inputStream, const struct JlsParameters& info);
-    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo output, ByteStreamInfo input, struct JlsParameters* info);
-    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsReadHeaderStream(ByteStreamInfo input, struct JlsParameters* info);
+    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo rawStream, size_t& bytesWritten, ByteStreamInfo inputStream, const JlsParameters& info);
+    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo output, ByteStreamInfo input, const JlsParameters* info);
+    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsReadHeaderStream(ByteStreamInfo input, JlsParameters* info);
 
 #endif
 

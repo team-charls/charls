@@ -110,7 +110,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 }
 
 
-CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, JlsParameters* info)
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info)
 {
     try
     {
@@ -170,10 +170,10 @@ extern "C"
     }
 
 
-    CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsParameters* info)
+    CHARLS_IMEXPORT(JLS_ERROR) JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* info)
     {
-        ByteStreamInfo compressedStream = FromByteArray(compressedData, compressedLength);
-        ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
+        ByteStreamInfo compressedStream = FromByteArray(source, sourceLength);
+        ByteStreamInfo rawStreamInfo = FromByteArray(destination, destinationLength);
 
         return JpegLsDecodeStream(rawStreamInfo, compressedStream, info);
     }
