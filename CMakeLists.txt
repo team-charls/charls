@@ -18,8 +18,8 @@ SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D NDEBUG -O3")
 
 ENDIF(CMAKE_COMPILER_IS_GNUCC)
 
-OPTION(charls_BUILD_SHARED_LIBS "Build CharLS with shared libraries." OFF)
-SET(BUILD_SHARED_LIBS ${charls_BUILD_SHARED_LIBS})
+option (BUILD_SHARED_LIBS "Build CharLS with shared libraries." OFF)
+option (BUILD_TESTING     "Build tests"                         ON)
 
 if(WIN32)
    if(BUILD_SHARED_LIBS)
@@ -29,8 +29,24 @@ if(WIN32)
    endif(BUILD_SHARED_LIBS)
 endif(WIN32)
 
+set (charls_HEADERS
+src/charls.h          src/context.h          src/defaulttraits.h    src/jpegimagedatasegment.h  src/jpegsegment.h       src/lookuptable.h     src/publictypes.h
+src/colortransform.h  src/contextrunmode.h   src/encoderstrategy.h  src/jpegmarkercode.h        src/jpegstreamreader.h  src/losslesstraits.h  src/scan.h
+src/config.h          src/decoderstrategy.h  src/header.h           src/jpegmarkersegment.h     src/jpegstreamwriter.h  src/processline.h     src/util.h)
+
 add_library(CharLS src/interface.cpp src/jpegls.cpp src/jpegmarkersegment.cpp src/jpegstreamreader.cpp src/jpegstreamwriter.cpp)
+set (CHARLS_LIB_MAJOR_VERSION 1)
+set (CHARLS_LIB_MINOR_VERSION 0)
+set_target_properties( CharLS PROPERTIES
+                              VERSION ${CHARLS_LIB_MAJOR_VERSION}.${CHARLS_LIB_MINOR_VERSION}
+                              SOVERSION ${CHARLS_LIB_MAJOR_VERSION})
 
-add_executable(charlstest test/main.cpp test/time.cpp test/util.cpp test/bitstreamdamage.cpp test/compliance.cpp test/performance.cpp test/dicomsamples.cpp)
-target_link_libraries (charlstest CharLS)
+install (TARGETS CharLS RUNTIME DESTINATION bin
+                        LIBRARY DESTINATION lib${LIB_SUFFIX}
+                        ARCHIVE DESTINATION lib${LIB_SUFFIX})
+install (FILES ${charls_HEADERS} DESTINATION include/CharLS)
 
+if (BUILD_TESTING)
+  add_executable(charlstest test/main.cpp test/time.cpp test/util.cpp test/bitstreamdamage.cpp test/compliance.cpp test/performance.cpp test/dicomsamples.cpp)
+  target_link_libraries (charlstest CharLS)
+endif ()
