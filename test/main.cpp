@@ -274,7 +274,7 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
     params.ilv = (interleavemode) ilv;
     size_t bytesWritten = 0;
 
-    JpegLsEncodeStream(FromByteArray(compressed, width * height * ccomponent * 2), &bytesWritten, rawStreamInfo, &params);
+    JpegLsEncodeStream(FromByteArray(compressed, width * height * ccomponent * 2), bytesWritten, rawStreamInfo, params);
     Assert::IsTrue(bytesWritten == expectedLength);
 
     delete[] compressed;
@@ -353,7 +353,7 @@ bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
     params.colorTransform = XFORM_BIGENDIAN;
     size_t bytesWritten = 0;
 
-    JpegLsEncodeStream(jlsStreamInfo, &bytesWritten, rawStreamInfo, &params);
+    JpegLsEncodeStream(jlsStreamInfo, bytesWritten, rawStreamInfo, params);
     return true;
 }
 

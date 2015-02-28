@@ -37,8 +37,17 @@ extern "C"
 {
 
 #endif
-  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* byteCountWritten, 
-        const void* uncompressedData, size_t uncompressedLength, struct JlsParameters* info);
+    /// <summary>
+    /// Encodes a byte array with pixel data to a JPEG-LS encoded (compressed) byte array.
+    /// </summary>
+    /// <param name="destination">Byte array that holds the encoded bytes when the funtion returns.</param>
+    /// <param name="destinationLength">Length of the array in bytes. If the array is too small the function will return an error.</param>
+    /// <param name="bytesWritten">This parameter will hold the number of bytes written to the destination byte array. Cannot be NULL.</param>
+    /// <param name="source">Byte array that holds the pixels that should be encoded.</param>
+    /// <param name="sourceLength">Length of the array in bytes.</param>
+    /// <param name="parameters">Info that describes the pixel data and how to encode it.</param>
+    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten,
+        const void* source, size_t sourceLength, const struct JlsParameters* parameters);
 
   CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecode(void* uncompressedData, size_t uncompressedLength, 
         const void* compressedData, size_t compressedLength, 
@@ -58,7 +67,7 @@ extern "C"
 #ifdef __cplusplus
 
 }
-    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo rawStream, size_t* bytesWritten, ByteStreamInfo inputStream, struct JlsParameters* info);
+    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo rawStream, size_t& bytesWritten, ByteStreamInfo inputStream, const struct JlsParameters& info);
     CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo output, ByteStreamInfo input, struct JlsParameters* info);
     CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsReadHeaderStream(ByteStreamInfo input, struct JlsParameters* info);
 

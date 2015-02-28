@@ -20,29 +20,26 @@
 #include <sstream>
 
 
-static JLS_ERROR CheckInput(const ByteStreamInfo& uncompressedStream, const JlsParameters* pparams)
+static JLS_ERROR CheckInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& parameters)
 {
-    if (!pparams)
-        return InvalidJlsParameters;
-
     if (!uncompressedStream.rawStream && !uncompressedStream.rawData)
         return InvalidJlsParameters;
 
-    if (pparams->width < 1 || pparams->width > 65535)
+    if (parameters.width < 1 || parameters.width > 65535)
         return ParameterValueNotSupported;
 
-    if (pparams->height < 1 || pparams->height > 65535)
+    if (parameters.height < 1 || parameters.height > 65535)
         return ParameterValueNotSupported;
 
     if (uncompressedStream.rawData)
     {
-        if (uncompressedStream.count < size_t(pparams->height * pparams->width * pparams->components * (pparams->bitspersample > 8 ? 2 : 1)))
+        if (uncompressedStream.count < size_t(parameters.height * parameters.width * parameters.components * (parameters.bitspersample > 8 ? 2 : 1)))
             return UncompressedBufferTooSmall;
     }
     else if (!uncompressedStream.rawStream)
         return InvalidJlsParameters;
 
-    return CheckParameterCoherent(*pparams);
+    return CheckParameterCoherent(parameters);
 }
 
 
@@ -52,18 +49,15 @@ static JLS_ERROR SystemErrorToCharLSError(const std::system_error& e)
 }
 
 
-CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t* pcbyteWritten, ByteStreamInfo rawStreamInfo, struct JlsParameters* pparams)
+CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& pcbyteWritten, ByteStreamInfo rawStreamInfo, const struct JlsParameters& parameters)
 {
     try
     {
-        if (!pcbyteWritten)
-            return InvalidJlsParameters;
-
-        JLS_ERROR parameterError = CheckInput(rawStreamInfo, pparams);
+        JLS_ERROR parameterError = CheckInput(rawStreamInfo, parameters);
         if (parameterError != OK)
             return parameterError;
 
-        JlsParameters info = *pparams;
+        JlsParameters info = parameters;
         if (info.bytesperline == 0)
         {
             info.bytesperline = info.width * ((info.bitspersample + 7)/8);
@@ -102,7 +96,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
         }
 
         writer.Write(compressedStreamInfo);
-        *pcbyteWritten = writer.GetBytesWritten();
+        pcbyteWritten = writer.GetBytesWritten();
         return OK;
     }
     catch (const std::system_error& e)
@@ -164,12 +158,15 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, 
 
 extern "C"
 {
-    CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* compressedData, size_t compressedLength, size_t* pcbyteWritten, const void* uncompressedData, size_t uncompressedLength, struct JlsParameters* pparams)
+    CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, const void* source, size_t sourceLength, const struct JlsParameters* parameters)
     {
-        ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
-        ByteStreamInfo compressedStreamInfo = FromByteArray(compressedData, compressedLength);
+        if (!destination || !bytesWritten || !source || !parameters)
+            return InvalidJlsParameters;
 
-        return JpegLsEncodeStream(compressedStreamInfo, pcbyteWritten, rawStreamInfo, pparams);
+        ByteStreamInfo rawStreamInfo = FromByteArray(source, sourceLength);
+        ByteStreamInfo compressedStreamInfo = FromByteArray(destination, destinationLength);
+
+        return JpegLsEncodeStream(compressedStreamInfo, *bytesWritten, rawStreamInfo, *parameters);
     }
 
 
@@ -198,7 +195,7 @@ extern "C"
 
         ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
 
-        error = CheckInput(rawStreamInfo, &info);
+        error = CheckInput(rawStreamInfo, info);
 
         if (error != OK)
             return error;
