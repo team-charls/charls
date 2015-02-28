@@ -35,6 +35,11 @@ public:
     {
         AppendToBitStream(value, length);
     }
+
+    void FlushTest()
+    {
+        Flush();
+    }
 };
 
 
@@ -50,6 +55,7 @@ namespace CharLSUnitTest
             EncoderStrategyTester es(info);
 
             es.AppendToBitStreamTest(0, 0);
+            es.FlushTest();
         }
     };
 }
