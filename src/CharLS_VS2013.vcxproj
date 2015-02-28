@@ -335,8 +335,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="JpegStream.cd" />
-    <None Include="CMakeLists.txt" />
-    <None Include="License.txt" />
     <None Include="Strategy.cd" />
   </ItemGroup>
   <ItemGroup>

@@ -83,8 +83,6 @@
     <ResourceCompile Include="charls.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CMakeLists.txt" />
-    <None Include="License.txt" />
     <None Include="JpegStream.cd">
       <Filter>Design</Filter>
     </None>

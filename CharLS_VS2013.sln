@@ -23,6 +23,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSUnitTest_VS2013", "un
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Convert", "samples\convert.c\Convert.vcxproj", "{C36798B3-86DA-4935-80C4-996D5C415DA1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "General", "General", "{BFE72899-7046-41AA-BE14-47F3A5579C05}"
+	ProjectSection(SolutionItems) = preProject
+		CMakeLists.txt = CMakeLists.txt
+		License.txt = License.txt
+		README.txt = README.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Checked|Win32 = Checked|Win32
