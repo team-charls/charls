@@ -78,6 +78,9 @@
     <ClInclude Include="charls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jlscodecfactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />

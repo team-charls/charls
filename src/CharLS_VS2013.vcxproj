@@ -354,6 +354,7 @@
     <ClInclude Include="encoderstrategy.h" />
     <ClInclude Include="header.h" />
     <ClInclude Include="charls.h" />
+    <ClInclude Include="jlscodecfactory.h" />
     <ClInclude Include="jpegimagedatasegment.h" />
     <ClInclude Include="jpegstreamreader.h" />
     <ClInclude Include="jpegmarkersegment.h" />

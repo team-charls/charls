@@ -12,6 +12,7 @@
 #include "lookuptable.h"
 #include "losslesstraits.h"
 #include "defaulttraits.h"
+#include "jlscodecfactory.h"
 
 #include <cmath>
 #include <cstdio>

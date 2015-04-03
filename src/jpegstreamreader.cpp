@@ -13,6 +13,13 @@
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
 #include <memory>
+#include "jlscodecfactory.h"
+
+
+// Default bin sizes for JPEG-LS statistical modeling. Can be overriden at compression time, however this is rarely done.
+const int BASIC_T1 = 3;
+const int BASIC_T2 = 7;
+const int BASIC_T3 = 21;
 
 
 // JFIF\0
