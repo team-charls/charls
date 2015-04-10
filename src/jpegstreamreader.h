@@ -4,9 +4,7 @@
 #ifndef CHARLS_JPEGMARKER
 #define CHARLS_JPEGMARKER
 
-#include "util.h"
 #include <cstdint>
-#include <memory>
 #include <vector>
 
 

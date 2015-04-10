@@ -7,13 +7,12 @@
 #include "header.h"
 #include "jpegstreamreader.h"
 #include "jpegstreamwriter.h"
-#include "jpegmarkersegment.h"
 #include "jpegimagedatasegment.h"
 #include "jpegmarkercode.h"
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
-#include <memory>
 #include "jlscodecfactory.h"
+#include <memory>
 
 
 // Default bin sizes for JPEG-LS statistical modeling. Can be overriden at compression time, however this is rarely done.
@@ -105,7 +104,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
         _rect.Height = _info.height;
     }
 
-    int64_t bytesPerPlane = (int64_t)(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
+    int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
 
     if (rawPixels.rawData && int64_t(rawPixels.count) < bytesPerPlane * _info.components)
         throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
@@ -119,7 +118,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
         std::unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);
         std::unique_ptr<ProcessLine> processLine(qcodec->CreateProcess(rawPixels));
         qcodec->DecodeScan(std::move(processLine), _rect, &_byteStream, _bCompare); 
-        SkipBytes(&rawPixels, (size_t)bytesPerPlane);
+        SkipBytes(&rawPixels, static_cast<size_t>(bytesPerPlane));
 
         if (_info.ilv != ILV_NONE)
             return;
@@ -133,7 +132,7 @@ void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 {
     for (int i = 0; i < byteCount; ++i)
     {
-        dst.push_back((char)ReadByte());
+        dst.push_back(static_cast<char>(ReadByte()));
     }
 }
 
@@ -279,7 +278,7 @@ int JpegStreamReader::ReadComment()
 
 void JpegStreamReader::ReadJfif()
 {
-    for(int i = 0; i < (int)sizeof(jfifID); i++)
+    for(int i = 0; i < static_cast<int>(sizeof(jfifID)); i++)
     {
         if(jfifID[i] != ReadByte())
             return;
@@ -296,7 +295,8 @@ void JpegStreamReader::ReadJfif()
     _info.jfif.Ythumb = ReadByte();
     if(_info.jfif.Xthumb > 0 && _info.jfif.pdataThumbnail) 
     {
-        std::vector<char> tempbuff((char*)_info.jfif.pdataThumbnail, (char*)_info.jfif.pdataThumbnail+3*_info.jfif.Xthumb*_info.jfif.Ythumb);
+        std::vector<char> tempbuff(static_cast<char*>(_info.jfif.pdataThumbnail), 
+            static_cast<char*>(_info.jfif.pdataThumbnail)+3*_info.jfif.Xthumb*_info.jfif.Ythumb);
         ReadNBytes(tempbuff, 3*_info.jfif.Xthumb*_info.jfif.Ythumb);
     }
 }
@@ -317,7 +317,7 @@ int JpegStreamReader::ReadStartOfFrame()
 uint8_t JpegStreamReader::ReadByte()
 {
     if (_byteStream.rawStream)
-        return (uint8_t) _byteStream.rawStream->sbumpc();
+        return static_cast<uint8_t>(_byteStream.rawStream->sbumpc());
 
     if (_byteStream.count == 0)
         throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());

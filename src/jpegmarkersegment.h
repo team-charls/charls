@@ -23,7 +23,7 @@ public:
     {
     }
 
-    virtual void Serialize(JpegStreamWriter& streamWriter)
+    virtual void Serialize(JpegStreamWriter& streamWriter) override
     {
         streamWriter.WriteByte(0xFF);
         streamWriter.WriteByte(static_cast<uint8_t>(_marker));

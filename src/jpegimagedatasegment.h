@@ -7,7 +7,6 @@
 #include "util.h"
 #include "jpegsegment.h"
 #include "jpegstreamwriter.h"
-#include <vector>
 
 class JpegImageDataSegment : public JpegSegment
 {
@@ -20,7 +19,7 @@ public:
     {
     }
 
-    void Serialize(JpegStreamWriter& streamWriter);
+    virtual void Serialize(JpegStreamWriter& streamWriter) override;
 
 private:
     int _ccompScan;

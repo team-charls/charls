@@ -5,11 +5,6 @@
 #define CHARLS_PUBLICTYPES
 
 
-#ifdef __cplusplus
-#include <iostream>
-#include <cstddef>
-#include <cstdint>
-#endif
 
 enum JLS_ERROR
 {
@@ -104,6 +99,10 @@ enum JPEGLS_ColorXForm
 
 
 #ifdef __cplusplus
+
+#include <iostream>
+#include <cstdint>
+
 
 // 
 // ByteStreamInfo & FromByteArray helper function

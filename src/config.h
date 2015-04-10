@@ -31,7 +31,7 @@
 #    ifdef NDEBUG
 #      define inlinehint __forceinline
 #    else
-#      define inlinehint
+#      define inlinehint inline
 #    endif
 #  elif defined(__GNUC__) && (__GNUC__ > 3 || __GNUC__ == 3 && __GNUC_MINOR__ > 0)
 #    define inlinehint inline

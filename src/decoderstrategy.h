@@ -43,7 +43,7 @@ public:
         if (compressedStream->rawStream)
         {
             _buffer.resize(40000);
-            _position = (uint8_t*) &_buffer[0];
+            _position = static_cast<uint8_t*>(&_buffer[0]);
             _endPosition = _position;
             _byteStream = compressedStream->rawStream;
             AddBytesFromStream();
@@ -79,7 +79,7 @@ public:
         _endPosition += offset;
         _nextFFPosition += offset;
 
-        std::streamsize readbytes = _byteStream->sgetn((char*)_endPosition, _buffer.size() - count);
+        std::streamsize readbytes = _byteStream->sgetn(reinterpret_cast<char*>(_endPosition), _buffer.size() - count);
         _endPosition += readbytes;
     }
 

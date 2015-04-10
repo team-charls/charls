@@ -60,25 +60,25 @@ struct LosslessTraitsImplT
 
 
 template <class SAMPLE, int32_t bpp>
-struct LosslessTraitsT : public LosslessTraitsImplT<SAMPLE, bpp> 
+struct LosslessTraitsT : LosslessTraitsImplT<SAMPLE, bpp> 
 {
     typedef SAMPLE PIXEL;
 };
 
 
 template<>
-struct LosslessTraitsT<uint8_t, 8> : public LosslessTraitsImplT<uint8_t, 8>
+struct LosslessTraitsT<uint8_t, 8> : LosslessTraitsImplT<uint8_t, 8>
 {
     typedef SAMPLE PIXEL;
 
     static inlinehint signed char ModRange(int32_t Errval) 
     {
-        return (signed char)Errval;
+        return static_cast<signed char>(Errval);
     }
 
     static inlinehint int32_t ComputeErrVal(int32_t d)
     {
-        return (signed char)(d);
+        return static_cast<signed char>(d);
     }
 
     static inlinehint uint8_t ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
@@ -89,7 +89,7 @@ struct LosslessTraitsT<uint8_t, 8> : public LosslessTraitsImplT<uint8_t, 8>
 
 
 template<>
-struct LosslessTraitsT<uint16_t, 16> : public LosslessTraitsImplT<uint16_t, 16>
+struct LosslessTraitsT<uint16_t, 16> : LosslessTraitsImplT<uint16_t, 16>
 {
     typedef SAMPLE PIXEL;
 
@@ -111,7 +111,7 @@ struct LosslessTraitsT<uint16_t, 16> : public LosslessTraitsImplT<uint16_t, 16>
 
 
 template<class SAMPLE, int32_t bpp>
-struct LosslessTraitsT<Triplet<SAMPLE>, bpp> : public LosslessTraitsImplT<SAMPLE, bpp>
+struct LosslessTraitsT<Triplet<SAMPLE>, bpp> : LosslessTraitsImplT<SAMPLE, bpp>
 {
     typedef Triplet<SAMPLE> PIXEL;
 

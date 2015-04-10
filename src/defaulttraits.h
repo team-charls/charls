@@ -16,7 +16,6 @@
 template <class sample, class pixel>
 struct DefaultTraitsT
 {
-public:
     typedef sample SAMPLE;
     typedef pixel PIXEL;
 

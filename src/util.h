@@ -8,8 +8,6 @@
 
 #include "config.h"
 #include "publictypes.h"
-#include <cstdlib>
-#include <cstring>
 #include <vector>
 #include <system_error>
 
@@ -78,9 +76,9 @@ struct Triplet
     {}
 
     Triplet(int32_t x1, int32_t x2, int32_t x3) :
-        v1((SAMPLE)x1),
-        v2((SAMPLE)x2),
-        v3((SAMPLE)x3)
+        v1(static_cast<SAMPLE>(x1)),
+        v2(static_cast<SAMPLE>(x2)),
+        v3(static_cast<SAMPLE>(x3))
     {}
 
     union
@@ -107,20 +105,20 @@ inline bool operator==(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
 }
 
 
-inline bool  operator!=(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
+inline bool operator!=(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
 {
     return !(lhs == rhs);
 }
 
 
 template<class sample>
-struct Quad : public Triplet<sample>
+struct Quad : Triplet<sample>
 {
     Quad() : 
         v4(0)
         {}
 
-    Quad(Triplet<sample> triplet, int32_t alpha) : Triplet<sample>(triplet), A((sample)alpha)
+    Quad(Triplet<sample> triplet, int32_t alpha) : Triplet<sample>(triplet), A(static_cast<sample>(alpha))
         {}
 
     union

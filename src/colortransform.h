@@ -30,7 +30,7 @@ struct TransformNoneImpl
 
 
 template<class sample>
-struct TransformNone : public TransformNoneImpl<sample>
+struct TransformNone : TransformNoneImpl<sample>
 {
     typedef struct TransformNoneImpl<sample> INVERSE;
 };

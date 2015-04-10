@@ -4,13 +4,19 @@
 #ifndef CHARLS_PROCESSLINE
 #define CHARLS_PROCESSLINE
 
-#include "colortransform.h"
-#include <iostream>
+#include "util.h"
+#include "publictypes.h"
 #include <vector>
 
 #ifdef _MSC_VER 
 #pragma warning(disable: 4996) // 'function': was declared deprecated also 'std::<function name>': Function call with parameters that may be unsafe [VS2012]
 #endif
+
+// TODO: analyze if template code can be improved
+#ifdef _MSC_VER 
+#pragma warning(disable: 4127) // conditional expression is constant [VS2013]
+#endif
+
 
 //
 // This file defines the ProcessLine base class, its derivitives and helper functions.
@@ -40,13 +46,13 @@ public:
     {
     }
 
-    void NewLineRequested(void* dest, int pixelCount, int /*byteStride*/)
+    void NewLineRequested(void* dest, int pixelCount, int /*byteStride*/) override
     {
         ::memcpy(dest, _rawData, pixelCount * _bytesPerPixel);
         _rawData += _bytesPerLine;
     }
 
-    void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/)
+    void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/) override
     {
         ::memcpy(_rawData, pSrc, pixelCount * _bytesPerPixel);
         _rawData += _bytesPerLine;
@@ -64,7 +70,7 @@ inline void ByteSwap(unsigned char* data, int count)
     if (count & 1)
         throw std::system_error(InvalidJlsParameters, CharLSCategoryInstance());
 
-    unsigned int* data32 = (unsigned int*)data;
+    unsigned int* data32 = reinterpret_cast<unsigned int*>(data);
     for(int i = 0; i < count/4; i++)
     {
         unsigned int value = data32[i];
@@ -87,7 +93,7 @@ public:
     {
     }
 
-    void NewLineRequested(void* dest, int pixelCount, int /*destStride*/)
+    void NewLineRequested(void* dest, int pixelCount, int /*destStride*/) override
     {
         std::size_t bytesToRead = pixelCount * _bytesPerPixel;
         while (bytesToRead != 0)
@@ -96,12 +102,12 @@ public:
             if (bytesRead == 0)
                 throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
 
-            bytesToRead = (std::size_t)(bytesToRead - bytesRead);
+            bytesToRead = static_cast<std::size_t>(bytesToRead - bytesRead);
         }
 
         if (_bytesPerPixel == 2 )
         {
-            ByteSwap((unsigned char*)dest, 2 * pixelCount);
+            ByteSwap(static_cast<unsigned char*>(dest), 2 * pixelCount);
         }
 
         if (_bytesPerLine - pixelCount * _bytesPerPixel > 0)
@@ -113,7 +119,7 @@ public:
     void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/)
     {
         int bytesToWrite = pixelCount * _bytesPerPixel;
-        std::streamsize bytesWritten = _rawData->sputn((const char*)pSrc, bytesToWrite);
+        std::streamsize bytesWritten = _rawData->sputn(static_cast<const char*>(pSrc), bytesToWrite);
         if (bytesWritten != bytesToWrite)
             throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
     }
@@ -227,7 +233,7 @@ public:
     {
     }
 
-    void NewLineRequested(void* dest, int pixelCount, int destStride)
+    void NewLineRequested(void* dest, int pixelCount, int destStride) override
     {
         if (!_rawPixels.rawStream)
         {
@@ -262,7 +268,7 @@ public:
         if (_info.outputBgr)
         {
             memcpy(&_templine[0], source, sizeof(Triplet<SAMPLE>) * pixelCount);
-            TransformRgbToBgr((SAMPLE*)&_templine[0], _info.components, pixelCount);
+            TransformRgbToBgr(static_cast<SAMPLE*>(&_templine[0]), _info.components, pixelCount);
             source = &_templine[0];
         }
 
@@ -307,7 +313,7 @@ public:
         }
     }
 
-    void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride)
+    void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride) override
     {
         if (_rawPixels.rawStream)
         {

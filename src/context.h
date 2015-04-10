@@ -106,10 +106,10 @@ struct JlsContext
         if (Ntest << 4 >= Atest) return 4;
 
         int32_t k = 5;
-        for(; (Ntest << k) < Atest; k++) 
+        for(; (Ntest << k) < Atest; k++)
         {
-            ASSERT(k <= 32); 
-        };
+            ASSERT(k <= 32);
+        }
         return k;
     }
 };

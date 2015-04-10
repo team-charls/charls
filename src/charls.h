@@ -7,19 +7,23 @@
 #define CHARLS_CHARLS
 
 #include "publictypes.h"
-#include <stddef.h>
 
-/* non-windows (static linking) */
+// Windows and building CharLS DLL itself.
+#if defined(WIN32) && defined(CHARLS_DLL_BUILD)
+#define CHARLS_IMEXPORT(returntype) __declspec(dllexport) returntype __stdcall
+#endif
+
+// Non-windows (static linking)
 #if !defined(CHARLS_IMEXPORT) && !defined(_WIN32)
 #  define CHARLS_IMEXPORT(returntype) returntype
 #endif
 
-/* windows static linking */
+// Windows static linking
 #if !defined(CHARLS_IMEXPORT) && defined(CHARLS_STATIC)
 #  define CHARLS_IMEXPORT(returntype) returntype
 #endif
 
-/* windows dll */
+// Windows dll
 #if !defined(CHARLS_IMEXPORT) && defined(CHARLS_DLL)
 #  define CHARLS_IMEXPORT(returntype) __declspec(dllimport) returntype __stdcall
 #endif

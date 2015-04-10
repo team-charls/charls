@@ -7,14 +7,11 @@
 #include "header.h"
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
-#include "context.h"
-#include "contextrunmode.h"
 #include "lookuptable.h"
 #include "losslesstraits.h"
 #include "defaulttraits.h"
 #include "jlscodecfactory.h"
 
-#include <cmath>
 #include <cstdio>
 #include <vector>
 #include <iostream>
@@ -36,12 +33,12 @@ const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6
 
 class charls_category : public std::error_category {
 public:
-    virtual const char* name() const _NOEXCEPT
+    virtual const char* name() const _NOEXCEPT override
     {
         return "charls";
     }
 
-    std::string message(int /* errval */) const
+    std::string message(int /* errval */) const override
     {
         return "CharLS error";
     }

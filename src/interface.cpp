@@ -3,12 +3,6 @@
 //
 
 
-// Implement correct linkage for win32 dlls
-#if defined(WIN32) && defined(CHARLS_DLL)
-#define CHARLS_IMEXPORT(returntype) __declspec(dllexport) returntype __stdcall
-#else
-#define CHARLS_IMEXPORT(returntype) returntype
-#endif
 
 #include "config.h"
 #include "util.h"
@@ -17,7 +11,6 @@
 #include "jpegstreamreader.h"
 #include "jpegstreamwriter.h"
 #include "jpegmarkersegment.h"
-#include <sstream>
 
 
 static JLS_ERROR CheckInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& parameters)
