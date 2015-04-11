@@ -274,7 +274,7 @@ public:
 
         if (_info.components == 3)
         {
-            if (_info.ilv == ILV_SAMPLE)
+            if (_info.ilv == charls::InterleaveMode::Sample)
             {
                 TransformLine(static_cast<Triplet<SAMPLE>*>(dest), static_cast<const Triplet<SAMPLE>*>(source), pixelCount, _transform);
             }
@@ -283,7 +283,7 @@ public:
                 TransformTripletToLine(static_cast<const Triplet<SAMPLE>*>(source), pixelCount, static_cast<SAMPLE*>(dest), destStride, _transform);
             }
         }
-        else if (_info.components == 4 && _info.ilv == ILV_LINE)
+        else if (_info.components == 4 && _info.ilv == charls::InterleaveMode::Line)
         {
             TransformQuadToLine(static_cast<const Quad<SAMPLE>*>(source), pixelCount, static_cast<SAMPLE*>(dest), destStride, _transform);
         }
@@ -293,7 +293,7 @@ public:
     {
         if (_info.components == 3)
         {
-            if (_info.ilv == ILV_SAMPLE)
+            if (_info.ilv == charls::InterleaveMode::Sample)
             {
                 TransformLine(static_cast<Triplet<SAMPLE>*>(rawData), static_cast<const Triplet<SAMPLE>*>(pSrc), pixelCount, _inverseTransform);
             }
@@ -302,7 +302,7 @@ public:
                 TransformLineToTriplet(static_cast<const SAMPLE*>(pSrc), byteStride, static_cast<Triplet<SAMPLE>*>(rawData), pixelCount, _inverseTransform);
             }
         }
-        else if (_info.components == 4 && _info.ilv == ILV_LINE)
+        else if (_info.components == 4 && _info.ilv == charls::InterleaveMode::Line)
         {
             TransformLineToQuad(static_cast<const SAMPLE*>(pSrc), byteStride, static_cast<Quad<SAMPLE>*>(rawData), pixelCount, _inverseTransform);
         }
@@ -325,7 +325,7 @@ public:
                 ByteSwap(&_buffer[0], _info.components * sizeof(SAMPLE) * pixelCount);
             }
 
-            std::streamsize bytesWritten = _rawPixels.rawStream->sputn((char*)&_buffer[0], bytesToWrite);
+            std::streamsize bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(&_buffer[0]), bytesToWrite);
             if (bytesWritten != bytesToWrite)
                 throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
         }

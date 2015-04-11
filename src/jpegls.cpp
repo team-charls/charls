@@ -16,6 +16,8 @@
 #include <vector>
 #include <iostream>
 
+using namespace charls;
+
 
 // As defined in the JPEG-LS standard 
 
@@ -136,7 +138,7 @@ std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParam
 {
     STRATEGY* s = nullptr;
 
-    if (info.ilv == ILV_SAMPLE && info.components != 3)
+    if (info.ilv == InterleaveMode::Sample && info.components != 3)
         return nullptr;
 
 #ifndef DISABLE_SPECIALIZATIONS
@@ -144,7 +146,7 @@ std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParam
     // optimized lossless versions common formats
     if (info.allowedlossyerror == 0)
     {
-        if (info.ilv == ILV_SAMPLE)
+        if (info.ilv == InterleaveMode::Sample)
         {
             if (info.bitspersample == 8)
                 return CreateCodec(LosslessTraitsT<Triplet<uint8_t>, 8>(), s, info);
@@ -166,14 +168,14 @@ std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParam
 
     if (info.bitspersample <= 8)
     {
-        if (info.ilv == ILV_SAMPLE)
+        if (info.ilv == InterleaveMode::Sample)
             return CreateCodec(DefaultTraitsT<uint8_t, Triplet<uint8_t> >(maxval, info.allowedlossyerror), s, info);
 
         return CreateCodec(DefaultTraitsT<uint8_t, uint8_t>((1 << info.bitspersample) - 1, info.allowedlossyerror), s, info);
     }
     else if (info.bitspersample <= 16)
     {
-        if (info.ilv == ILV_SAMPLE)
+        if (info.ilv == InterleaveMode::Sample)
             return CreateCodec(DefaultTraitsT<uint16_t,Triplet<uint16_t> >(maxval, info.allowedlossyerror), s, info);
 
         return CreateCodec(DefaultTraitsT<uint16_t, uint16_t>(maxval, info.allowedlossyerror), s, info);

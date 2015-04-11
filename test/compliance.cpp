@@ -15,6 +15,9 @@
 #include "util.h"
 
 
+using namespace charls;
+
+
 void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
 {
     std::vector<BYTE> rgbytePlanar(rgbyte.size());
@@ -111,7 +114,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 
     Size size = Size(metadata.width, metadata.height);
 
-    if (metadata.ilv == ILV_NONE && metadata.components == 3)
+    if (metadata.ilv == InterleaveMode::None && metadata.components == 3)
     {
         Triplet2Planar(rgbyteRaw, Size(metadata.width, metadata.height));
     }

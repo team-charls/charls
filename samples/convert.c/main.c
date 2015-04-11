@@ -105,7 +105,10 @@ int main(int argc, char* argv[])
 
     size_t byteCountWritten;
 
-   
+
+    info.ilv = CHARLS_IM_SAMPLE;
+
+
     //result = JpegLsEncode(compressedData, bufferSize, &byteCountWritten, uncompressedData, bufferSize, &info);
 
     return result;

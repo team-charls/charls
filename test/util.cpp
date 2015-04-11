@@ -15,6 +15,9 @@
 #include "time.h"
 
 
+using namespace charls;
+
+
 bool IsMachineLittleEndian()
 {
     int a = 0xFF000001;
@@ -93,11 +96,11 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 
     if (ccomp == 4)
     {
-        info.ilv = ILV_LINE;
+        info.ilv = InterleaveMode::Line;
     }
     else if (ccomp == 3)
     {
-        info.ilv = ILV_LINE;
+        info.ilv = InterleaveMode::Line;
         info.colorTransform = COLORXFORM_HP1;
     }
 

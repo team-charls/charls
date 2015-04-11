@@ -14,6 +14,8 @@
 #include "jlscodecfactory.h"
 #include <memory>
 
+using namespace charls;
+
 
 // Default bin sizes for JPEG-LS statistical modeling. Can be overriden at compression time, however this is rarely done.
 const int BASIC_T1 = 3;
@@ -54,17 +56,17 @@ JLS_ERROR CheckParameterCoherent(const JlsParameters& parameters)
     if (parameters.bitspersample < 2 || parameters.bitspersample > 16)
         return ParameterValueNotSupported;
 
-    if (parameters.ilv < 0 || parameters.ilv > 2)
+    if (parameters.ilv < InterleaveMode::None || parameters.ilv > InterleaveMode::Sample)
         return InvalidCompressedData;
 
     switch (parameters.components)
     {
-        case 4: return parameters.ilv == ILV_SAMPLE ? ParameterValueNotSupported : OK;
+        case 4: return parameters.ilv == InterleaveMode::Sample ? ParameterValueNotSupported : OK;
         case 3: return OK;
-        case 1: return parameters.ilv != ILV_NONE ? ParameterValueNotSupported : OK;
+        case 1: return parameters.ilv != InterleaveMode::None ? ParameterValueNotSupported : OK;
         case 0: return InvalidJlsParameters;
 
-        default: return parameters.ilv != ILV_NONE ? ParameterValueNotSupported : OK;
+        default: return parameters.ilv != InterleaveMode::None ? ParameterValueNotSupported : OK;
     }
 }
 
@@ -120,7 +122,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
         qcodec->DecodeScan(std::move(processLine), _rect, &_byteStream, _bCompare); 
         SkipBytes(&rawPixels, static_cast<size_t>(bytesPerPlane));
 
-        if (_info.ilv != ILV_NONE)
+        if (_info.ilv != InterleaveMode::None)
             return;
 
         componentIndex += 1;
@@ -255,8 +257,8 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
         ReadByte();
     }
     _info.allowedlossyerror = ReadByte();
-    _info.ilv = interleavemode(ReadByte());
-    if (!(_info.ilv == ILV_NONE || _info.ilv == ILV_LINE || _info.ilv == ILV_SAMPLE))
+    _info.ilv = static_cast<InterleaveMode>(ReadByte());
+    if (!(_info.ilv == InterleaveMode::None || _info.ilv == InterleaveMode::Line || _info.ilv == InterleaveMode::Sample))
         throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());// TODO: throw more specific error code.
     if (ReadByte() != 0)
         throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());// TODO: throw more specific error code.
@@ -264,7 +266,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     if(_info.bytesperline == 0)
     {
         int width = _rect.Width != 0 ? _rect.Width : _info.width;
-        int components = _info.ilv == ILV_NONE ? 1 : _info.components;
+        int components = _info.ilv == InterleaveMode::None ? 1 : _info.components;
         _info.bytesperline = components * width * ((_info.bitspersample + 7)/8);
     }
 }

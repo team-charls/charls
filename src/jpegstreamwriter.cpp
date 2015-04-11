@@ -11,6 +11,8 @@
 #include "util.h"
 #include <vector>
 
+using namespace charls;
+
 
 namespace
 {
@@ -92,9 +94,9 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
     }
 
     _lastCompenentIndex += 1;
-    AddSegment(JpegMarkerSegment::CreateStartOfScanMarker(params, params.ilv == ILV_NONE ? _lastCompenentIndex : -1));
+    AddSegment(JpegMarkerSegment::CreateStartOfScanMarker(params, params.ilv == InterleaveMode::None ? _lastCompenentIndex : -1));
 
-    int ccomp = params.ilv == ILV_NONE ? 1 : params.components;
+    int ccomp = params.ilv == InterleaveMode::None ? 1 : params.components;
 
     AddSegment(new JpegImageDataSegment(info, params, _lastCompenentIndex, ccomp));
 }

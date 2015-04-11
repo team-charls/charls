@@ -5,7 +5,6 @@
 #define CHARLS_PUBLICTYPES
 
 
-
 enum JLS_ERROR
 {
     OK                              = 0,  // The operation completed without errors.
@@ -25,13 +24,32 @@ enum JLS_ERROR
     UnexpectedFailure               = 14, // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
 };
 
+#ifdef __cplusplus
 
-enum interleavemode
+namespace charls
 {
-    ILV_NONE = 0,
-    ILV_LINE = 1,
-    ILV_SAMPLE = 2
+    enum class InterleaveMode
+    {
+        None   = 0,
+        Line   = 1,
+        Sample = 2
+    };
+}
+
+typedef charls::InterleaveMode CharlsInterleaveModeType;
+
+#else
+
+enum CharlsInterleaveMode
+{
+    CHARLS_IM_NONE   = 0,
+    CHARLS_IM_LINE   = 1,
+    CHARLS_IM_SAMPLE = 2
 };
+
+typedef enum CharlsInterleaveMode CharlsInterleaveModeType;
+
+#endif
 
 
 struct JlsCustomParameters
@@ -71,7 +89,7 @@ struct JlsParameters
     int bytesperline;	/* for [source (at encoding)][decoded (at decoding)] pixel image in user buffer */
     int components;
     int allowedlossyerror;
-    enum interleavemode ilv;
+    CharlsInterleaveModeType ilv;
     int colorTransform;
     char outputBgr;
     struct JlsCustomParameters custom;

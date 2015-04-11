@@ -106,8 +106,6 @@ public:
     typedef typename TRAITS::PIXEL PIXEL;
     typedef typename TRAITS::SAMPLE SAMPLE;
 
-public:
-
     JlsCodec(const TRAITS& inTraits, const JlsParameters& info) :
         STRATEGY(info),
         traits(inTraits),
@@ -122,7 +120,7 @@ public:
         _pquant(0),
         _bCompare(0)
     {
-        if (Info().ilv == ILV_NONE)
+        if (Info().ilv == InterleaveMode::None)
         {
             Info().components = 1;
         }
@@ -141,7 +139,7 @@ public:
 
     bool IsInterleaved()
     {
-        if (Info().ilv == ILV_NONE)
+        if (Info().ilv == InterleaveMode::None)
             return false;
 
         if (Info().components == 1)
@@ -715,7 +713,7 @@ template<class TRAITS, class STRATEGY>
 void JlsCodec<TRAITS,STRATEGY>::DoScan()
 {
     int32_t pixelstride = _width + 4;
-    int components = Info().ilv == ILV_LINE ? Info().components : 1;
+    int components = Info().ilv == charls::InterleaveMode::Line ? Info().components : 1;
 
     std::vector<PIXEL> vectmp(2 * components * pixelstride);
     std::vector<int32_t> rgRUNindex(components);

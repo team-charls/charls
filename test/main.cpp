@@ -20,6 +20,9 @@
 #include <vector>
 
 
+using namespace charls;
+
+
 typedef const char* SZC;
 
 const std::ios_base::openmode mode_input  = std::ios_base::in  | std::ios::binary;
@@ -256,7 +259,7 @@ void TestDecodeRect()
 }
 
 
-void TestEncodeFromStream(const char* file, int offset, int width, int height, int bpp, int ccomponent, int ilv, size_t expectedLength)
+void TestEncodeFromStream(const char* file, int offset, int width, int height, int bpp, int ccomponent, InterleaveMode ilv, size_t expectedLength)
 {
     std::basic_filebuf<char> myFile; // On the stack
     myFile.open(file, mode_input);
@@ -271,7 +274,7 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
     params.width = width;
     params.components = ccomponent;
     params.bitspersample= bpp;
-    params.ilv = (interleavemode) ilv;
+    params.ilv = ilv;
     size_t bytesWritten = 0;
 
     JpegLsEncodeStream(FromByteArray(compressed, width * height * ccomponent * 2), bytesWritten, rawStreamInfo, params);
@@ -349,7 +352,7 @@ bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
     params.height = readValues[2];
     params.components = componentCount;
     params.bitspersample= log_2(readValues[3]+1);
-    params.ilv = componentCount == 3 ? ILV_LINE : ILV_NONE;
+    params.ilv = componentCount == 3 ? InterleaveMode::Line : InterleaveMode::None;
     params.colorTransform = XFORM_BIGENDIAN;
     size_t bytesWritten = 0;
 
@@ -402,10 +405,10 @@ void TestEncodeFromStream()
 {
     ////TestDecodeFromStream("test/user_supplied/output.jls");
 
-    TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1,0,    0x3D3ee);
+    TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1, InterleaveMode::None, 0x3D3ee);
     //TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
-    TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,2, 99734);
-    TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8,3,1, 100615);
+    TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, InterleaveMode::Sample, 99734);
+    TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, InterleaveMode::Line, 100615);
 }
 
 

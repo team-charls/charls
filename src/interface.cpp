@@ -13,6 +13,9 @@
 #include "jpegmarkersegment.h"
 
 
+using namespace charls;
+
+
 static JLS_ERROR CheckInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& parameters)
 {
     if (!uncompressedStream.rawStream && !uncompressedStream.rawData)
@@ -54,7 +57,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
         if (info.bytesperline == 0)
         {
             info.bytesperline = info.width * ((info.bitspersample + 7)/8);
-            if (info.ilv != ILV_NONE)
+            if (info.ilv != InterleaveMode::None)
             {
                 info.bytesperline *= info.components;
             }
@@ -74,7 +77,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
             writer.AddColorTransform(info.colorTransform);
         }
 
-        if (info.ilv == ILV_NONE)
+        if (info.ilv == InterleaveMode::None)
         {
             int32_t cbyteComp = info.width * info.height * ((info.bitspersample + 7) / 8);
             for (int32_t component = 0; component < info.components; ++component)
@@ -202,7 +205,7 @@ extern "C"
         writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameMarker(info.width, info.height, info.bitspersample, info.components));
 
 
-        if (info.ilv == ILV_NONE)
+        if (info.ilv == InterleaveMode::None)
         {
             int32_t fieldLength = info.width * info.height * ((info.bitspersample + 7) / 8);
             for (int32_t component = 0; component < info.components; ++component)
