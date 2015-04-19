@@ -256,7 +256,7 @@ public:
 
             bytesToRead -= read;
         }
-        if (sizeof(SAMPLE) == 2 && _info.colorTransform == XFORM_BIGENDIAN)
+        if (sizeof(SAMPLE) == 2 && _info.colorTransform == charls::ColorTransformation::BigEndian)
         {
             ByteSwap(&_buffer[0], _info.components * sizeof(SAMPLE) * pixelCount);
         }
@@ -320,7 +320,7 @@ public:
             std::streamsize bytesToWrite = pixelCount * _info.components * sizeof(SAMPLE);
             DecodeTransform(pSrc, &_buffer[0], pixelCount, sourceStride);
 
-            if (sizeof(SAMPLE) == 2 && _info.colorTransform == XFORM_BIGENDIAN)
+            if (sizeof(SAMPLE) == 2 && _info.colorTransform == charls::ColorTransformation::BigEndian)
             {
                 ByteSwap(&_buffer[0], _info.components * sizeof(SAMPLE) * pixelCount);
             }

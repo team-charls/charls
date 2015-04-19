@@ -765,31 +765,32 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
             static_cast<ProcessLine*>(new PostProcesSingleStream(info.rawStream, Info(), sizeof(typename TRAITS::PIXEL)));
     }
 
-    int transform = Info().colorTransform & 0xFF;
-    if (transform == 0)
+    if (Info().colorTransform == ColorTransformation::None)
         return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(info, Info(), TransformNone<SAMPLE>()); 
 
-    if ((Info().bitspersample == sizeof(SAMPLE) * 8))
+    if (Info().bitspersample == sizeof(SAMPLE) * 8)
     {
-        switch(transform)
+        switch (Info().colorTransform)
         {
-            case COLORXFORM_HP1 : return new ProcessTransformed<TransformHp1<SAMPLE> >(info, Info(), TransformHp1<SAMPLE>());
-            case COLORXFORM_HP2 : return new ProcessTransformed<TransformHp2<SAMPLE> >(info, Info(), TransformHp2<SAMPLE>());
-            case COLORXFORM_HP3 : return new ProcessTransformed<TransformHp3<SAMPLE> >(info, Info(), TransformHp3<SAMPLE>());
+            case ColorTransformation::HP1: return new ProcessTransformed<TransformHp1<SAMPLE> >(info, Info(), TransformHp1<SAMPLE>());
+            case ColorTransformation::HP2: return new ProcessTransformed<TransformHp2<SAMPLE> >(info, Info(), TransformHp2<SAMPLE>());
+            case ColorTransformation::HP3: return new ProcessTransformed<TransformHp3<SAMPLE> >(info, Info(), TransformHp3<SAMPLE>());
             default: throw std::system_error(UnsupportedColorTransform, CharLSCategoryInstance());
         }
     }
-    else if (Info().bitspersample > 8)
+
+    if (Info().bitspersample > 8)
     {
         int shift = 16 - Info().bitspersample;
-        switch(transform)
+        switch (Info().colorTransform)
         {
-            case COLORXFORM_HP1 : return new ProcessTransformed<TransformShifted<TransformHp1<uint16_t> > >(info, Info(), TransformShifted<TransformHp1<uint16_t> >(shift));
-            case COLORXFORM_HP2 : return new ProcessTransformed<TransformShifted<TransformHp2<uint16_t> > >(info, Info(), TransformShifted<TransformHp2<uint16_t> >(shift));
-            case COLORXFORM_HP3 : return new ProcessTransformed<TransformShifted<TransformHp3<uint16_t> > >(info, Info(), TransformShifted<TransformHp3<uint16_t> >(shift));
+            case ColorTransformation::HP1: return new ProcessTransformed<TransformShifted<TransformHp1<uint16_t> > >(info, Info(), TransformShifted<TransformHp1<uint16_t> >(shift));
+            case ColorTransformation::HP2: return new ProcessTransformed<TransformShifted<TransformHp2<uint16_t> > >(info, Info(), TransformShifted<TransformHp2<uint16_t> >(shift));
+            case ColorTransformation::HP3: return new ProcessTransformed<TransformShifted<TransformHp3<uint16_t> > >(info, Info(), TransformShifted<TransformHp3<uint16_t> >(shift));
             default: throw std::system_error(UnsupportedColorTransform, CharLSCategoryInstance());
         }
     }
+
     throw std::system_error(UnsupportedBitDepthForTransform, CharLSCategoryInstance());
 }
 

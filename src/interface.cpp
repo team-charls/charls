@@ -72,7 +72,7 @@ CHARLS_IMEXPORT(JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
         writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameMarker(info.width, info.height, info.bitspersample, info.components));
 
 
-        if (info.colorTransform != 0)
+        if (info.colorTransform != ColorTransformation::None)
         {
             writer.AddColorTransform(info.colorTransform);
         }

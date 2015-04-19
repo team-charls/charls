@@ -101,7 +101,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
     else if (ccomp == 3)
     {
         info.ilv = InterleaveMode::Line;
-        info.colorTransform = COLORXFORM_HP1;
+        info.colorTransform = ColorTransformation::HP1;
     }
 
     size_t compressedLength = 0;

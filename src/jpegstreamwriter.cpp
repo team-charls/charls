@@ -11,6 +11,7 @@
 #include "util.h"
 #include <vector>
 
+
 using namespace charls;
 
 
@@ -56,9 +57,9 @@ JpegStreamWriter::~JpegStreamWriter()
 }
 
 
-void JpegStreamWriter::AddColorTransform(int i)
+void JpegStreamWriter::AddColorTransform(ColorTransformation transformation)
 {
-    AddSegment(JpegMarkerSegment::CreateColorTransformMarker(i));
+    AddSegment(JpegMarkerSegment::CreateColorTransformMarker(transformation));
 }
 
 

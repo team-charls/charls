@@ -175,6 +175,9 @@ void JpegStreamReader::ReadHeader()
 
 int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
 {
+    // ISO/IEC 14495-1, ITU-T Recommendation T.87, C.1.1. defines the following markers valid for a JPEG-LS byte stream:
+    // SOF55, LSE, SOI, EOI, SOS, DNL, DRI, RSTm, APPn, COM.
+    // All other markers shall not be present.
     switch (marker)
     {
         case JpegMarkerCode::StartOfFrameJpegLS:
@@ -348,20 +351,20 @@ int JpegStreamReader::ReadColorXForm()
     std::vector<char> sourceTag;
     ReadNBytes(sourceTag, 4);
 
-    if(strncmp(&sourceTag[0],"mrfx", 4) != 0)
+    if (strncmp(&sourceTag[0], "mrfx", 4) != 0)
         return 4;
 
-    int xform = ReadByte();
-    switch(xform) 
+    auto xform = static_cast<ColorTransformation>(ReadByte());
+    switch (xform)
     {
-        case COLORXFORM_NONE:
-        case COLORXFORM_HP1:
-        case COLORXFORM_HP2:
-        case COLORXFORM_HP3:
+        case ColorTransformation::None:
+        case ColorTransformation::HP1:
+        case ColorTransformation::HP2:
+        case ColorTransformation::HP3:
             _info.colorTransform = xform;
             return 5;
-        case COLORXFORM_RGB_AS_YUV_LOSSY:
-        case COLORXFORM_MATRIX:
+        case ColorTransformation::RgbAsYuvLossy:
+        case ColorTransformation::Matrix:
             throw std::system_error(ImageTypeNotSupported, CharLSCategoryInstance());
         default:
             throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());

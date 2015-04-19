@@ -48,9 +48,28 @@ namespace charls
         /// </summary>
         Sample = 2
     };
+
+    enum class ColorTransformation
+    {
+        // Default (RGB)
+        None = 0,
+
+        // Color transforms as defined by HP
+        // Not part of the JPEG-LS standard in any way, provided for compatibility with existing streams.
+        HP1,
+        HP2,
+        HP3,
+
+        // Defined by HP but not supported by CharLS
+        RgbAsYuvLossy,
+        Matrix,
+        BigEndian = 1 << 29,
+        LittleEndian = 1 << 30
+    };
 }
 
 typedef charls::InterleaveMode CharlsInterleaveModeType;
+typedef charls::ColorTransformation CharlsColorTransformationType;
 
 #else
 
@@ -61,7 +80,26 @@ enum CharlsInterleaveMode
     CHARLS_IM_SAMPLE = 2
 };
 
+enum CharlsColorTransformation
+{
+    // default (RGB)
+    CHARLS_COLOR_TRANSFORMATION_NONE = 0,
+
+    // Color transforms as defined by HP
+    // Not part of the JPEG-LS standard in any way, provided for compatibility with existing streams.
+    CHARLS_COLOR_TRANSFORMATION_HP1,
+    CHARLS_COLOR_TRANSFORMATION_HP2,
+    CHARLS_COLOR_TRANSFORMATION_HP3,
+
+    // Defined by HP but not supported by CharLS
+    CHARLS_COLOR_TRANSFORMATION_RGB_AS_YUV_LOSSY,
+    CHARLS_COLOR_TRANSFORMATION_MATRIX,
+    CHARLS_COLOR_TRANSFORMATION_BIGENDIAN = 1 << 29,
+    CHARLS_COLOR_TRANSFORMATION_LITTLEENDIAN = 1 << 30
+};
+
 typedef enum CharlsInterleaveMode CharlsInterleaveModeType;
+typedef enum CharlsColorTransformation CharlsColorTransformationType;
 
 #endif
 
@@ -104,30 +142,13 @@ struct JlsParameters
     int components;
     int allowedlossyerror;
     CharlsInterleaveModeType ilv;
-    int colorTransform;
+    CharlsColorTransformationType colorTransform;
     char outputBgr;
     struct JlsCustomParameters custom;
     struct JfifParameters jfif;
 };
 
 
-enum JPEGLS_ColorXForm
-{
-    // default (RGB)
-    COLORXFORM_NONE = 0,
-
-    // Color transforms as defined by HP
-    // Not part of the JPEG-LS standard in any way, provided for compatibility with existing streams.
-    COLORXFORM_HP1,
-    COLORXFORM_HP2,
-    COLORXFORM_HP3,
-
-    // Defined by HP but not supported by CharLS
-    COLORXFORM_RGB_AS_YUV_LOSSY,
-    COLORXFORM_MATRIX,
-    XFORM_BIGENDIAN = 1 << 29,
-    XFORM_LITTLEENDIAN = 1 << 30
-};
 
 
 #ifdef __cplusplus

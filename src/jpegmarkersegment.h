@@ -41,7 +41,7 @@ public:
     static JpegMarkerSegment* CreateStartOfFrameMarker(int width, int height, int32_t bitsPerSample, int32_t componentCount);
     static JpegMarkerSegment* CreateJpegFileInterchangeFormatMarker(const JfifParameters& jfif);
     static JpegMarkerSegment* CreateJpegLSExtendedParametersMarker(const JlsCustomParameters& pcustom);
-    static JpegMarkerSegment* CreateColorTransformMarker(int i);
+    static JpegMarkerSegment* CreateColorTransformMarker(charls::ColorTransformation transformation);
     static JpegMarkerSegment* CreateStartOfScanMarker(const JlsParameters& pparams, int32_t icomponent);
 
 private:

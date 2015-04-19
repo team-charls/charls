@@ -296,7 +296,7 @@ bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
 
     int maxval = (1 << info.bitspersample) - 1;
     int id = info.components == 3 ? 6 : 5;
-    info.colorTransform = XFORM_BIGENDIAN;
+    info.colorTransform = ColorTransformation::BigEndian;
 
     pnmFile << 'P' << id << ' ' << info.width << ' ' << info.height << ' '<< maxval << "   " << std::endl;
     ByteStreamInfo pnmStream = {pnmFile.rdbuf()};
@@ -353,7 +353,7 @@ bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
     params.components = componentCount;
     params.bitspersample= log_2(readValues[3]+1);
     params.ilv = componentCount == 3 ? InterleaveMode::Line : InterleaveMode::None;
-    params.colorTransform = XFORM_BIGENDIAN;
+    params.colorTransform = ColorTransformation::BigEndian;
     size_t bytesWritten = 0;
 
     JpegLsEncodeStream(jlsStreamInfo, bytesWritten, rawStreamInfo, params);

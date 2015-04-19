@@ -31,7 +31,7 @@ public:
 
     void AddScan(const ByteStreamInfo& info, const JlsParameters& params);
 
-    void AddColorTransform(int i);
+    void AddColorTransform(charls::ColorTransformation transformation);
 
     std::size_t GetBytesWritten() const
     {
@@ -109,7 +109,6 @@ private:
         _byteOffset += byteCount;
     }
 
-private:
     bool _bCompare;
     ByteStreamInfo _data;
     std::size_t _byteOffset;

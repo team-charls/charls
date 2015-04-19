@@ -9,6 +9,9 @@
 #include <cstdint>
 
 
+using namespace charls;
+
+
 JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(int width, int height, int32_t bitsPerSample, int32_t componentCount)
 {
     ASSERT(width >= 0 && width <= UINT16_MAX);
@@ -82,7 +85,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(const
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(int i)
+JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(ColorTransformation transformation)
 {
     std::vector<uint8_t> rgbyteXform;
 
@@ -90,7 +93,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(int i)
     rgbyteXform.push_back('r');
     rgbyteXform.push_back('f');
     rgbyteXform.push_back('x');
-    rgbyteXform.push_back(static_cast<uint8_t>(i));
+    rgbyteXform.push_back(static_cast<uint8_t>(transformation));
 
     return new JpegMarkerSegment(JpegMarkerCode::ApplicationData8, std::move(rgbyteXform));
 }
