@@ -2,15 +2,15 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 //
 
-#include "config.h"
 #include "util.h"
-#include "header.h"
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
 #include "lookuptable.h"
 #include "losslesstraits.h"
 #include "defaulttraits.h"
 #include "jlscodecfactory.h"
+#include "jpegstreamreader.h"
+
 
 #include <cstdio>
 #include <vector>

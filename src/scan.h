@@ -5,7 +5,6 @@
 #ifndef CHARLS_SCAN
 #define CHARLS_SCAN
 
-#include "config.h"
 #include "lookuptable.h"
 #include "contextrunmode.h"
 #include "context.h"

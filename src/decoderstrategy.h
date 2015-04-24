@@ -6,9 +6,8 @@
 #define CHARLS_DECODERSTATEGY
 
 
-#include "processline.h"
-#include "config.h"
 #include "util.h"
+#include "processline.h"
 #include <memory>
 
 // Purpose: Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy

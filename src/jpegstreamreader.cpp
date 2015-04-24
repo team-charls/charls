@@ -2,16 +2,15 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-#include "config.h"
-#include "util.h"
-#include "header.h"
 #include "jpegstreamreader.h"
+#include "util.h"
 #include "jpegstreamwriter.h"
 #include "jpegimagedatasegment.h"
 #include "jpegmarkercode.h"
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
 #include "jlscodecfactory.h"
+#include "defaulttraits.h"
 #include <memory>
 
 using namespace charls;

@@ -4,11 +4,11 @@
 
 
 #include "jpegstreamwriter.h"
+#include "util.h"
 #include "jpegmarkersegment.h"
 #include "jpegimagedatasegment.h"
 #include "jpegmarkercode.h"
-#include "header.h"
-#include "util.h"
+#include "jpegstreamreader.h"
 #include <vector>
 
 

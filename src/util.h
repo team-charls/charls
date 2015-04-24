@@ -6,10 +6,39 @@
 #ifndef CHARLS_UTIL
 #define CHARLS_UTIL
 
-#include "config.h"
 #include "publictypes.h"
 #include <vector>
 #include <system_error>
+
+#ifdef NDEBUG
+#  ifndef ASSERT
+#    define ASSERT(t) { }
+#  endif
+#else
+#include <cassert>
+#define ASSERT(t) assert(t)
+#endif
+
+#if defined(_WIN32)
+#ifdef _MSC_VER
+#pragma warning (disable:4512) // assignment operator could not be generated [VS2013]
+#endif
+#endif
+
+#undef  NEAR
+
+#ifndef inlinehint
+#  ifdef _MSC_VER
+#    ifdef NDEBUG
+#      define inlinehint __forceinline
+#    else
+#      define inlinehint inline
+#    endif
+#  elif
+#    define inlinehint inline
+#  endif
+#endif
+
 
 #ifndef MAX
 #define MAX(a,b)            (((a) > (b)) ? (a) : (b))

@@ -346,13 +346,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="colortransform.h" />
-    <ClInclude Include="config.h" />
     <ClInclude Include="context.h" />
     <ClInclude Include="contextrunmode.h" />
     <ClInclude Include="decoderstrategy.h" />
     <ClInclude Include="defaulttraits.h" />
     <ClInclude Include="encoderstrategy.h" />
-    <ClInclude Include="header.h" />
     <ClInclude Include="charls.h" />
     <ClInclude Include="jlscodecfactory.h" />
     <ClInclude Include="jpegimagedatasegment.h" />

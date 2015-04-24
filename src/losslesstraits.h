@@ -7,7 +7,7 @@
 #ifndef CHARLS_LOSSLESSTRAITS
 #define CHARLS_LOSSLESSTRAITS
 
-#include "header.h"
+#include "defaulttraits.h"
 
 //
 // optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.

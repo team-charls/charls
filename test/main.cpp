@@ -6,7 +6,6 @@
 #include "config.h"
 #include "../src/charls.h"
 #include "../src/util.h"
-#include "../src/header.h"
 #include "../src/defaulttraits.h"
 #include "../src/losslesstraits.h"
 #include "../src/colortransform.h"

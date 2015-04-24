@@ -4,10 +4,8 @@
 
 
 
-#include "config.h"
-#include "util.h"
 #include "charls.h"
-#include "header.h"
+#include "util.h"
 #include "jpegstreamreader.h"
 #include "jpegstreamwriter.h"
 #include "jpegmarkersegment.h"

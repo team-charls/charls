@@ -4,11 +4,20 @@
 #ifndef CHARLS_JPEGMARKER
 #define CHARLS_JPEGMARKER
 
+
+#include "publictypes.h"
 #include <cstdint>
 #include <vector>
 
 
 enum class JpegMarkerCode : uint8_t;
+struct JlsParameters;
+class JpegCustomParameters;
+
+
+JLS_ERROR CheckParameterCoherent(const JlsParameters& pparams);
+JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR);
+
 
 
 //
