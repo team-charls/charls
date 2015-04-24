@@ -19,7 +19,7 @@ namespace CharLS.Test
             Assert.AreEqual(1, info.ComponentCount);
             Assert.AreEqual(2, info.BitsPerComponent);
             Assert.AreEqual(0, info.AllowedLossyError);
-            Assert.AreEqual(JpegLSInterleaveMode.Planar, info.InterleaveMode);
+            Assert.AreEqual(JpegLSInterleaveMode.None, info.InterleaveMode);
         }
 
         [Test]

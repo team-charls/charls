@@ -40,7 +40,7 @@ namespace CharLS.Test
             var uncompressed = JpegLSCodec.Decompress(source);
 
             var info = JpegLSCodec.GetMetadataInfo(source);
-            if (info.InterleaveMode == JpegLSInterleaveMode.Planar && info.ComponentCount == 3)
+            if (info.InterleaveMode == JpegLSInterleaveMode.None && info.ComponentCount == 3)
             {
                 expected = TripletToPlanar(expected, info.Width, info.Height);
             }
