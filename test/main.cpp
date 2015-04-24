@@ -4,15 +4,12 @@
 
 
 #include "config.h"
+#include "util.h"
 #include "../src/charls.h"
-#include "../src/util.h"
+
 #include "../src/defaulttraits.h"
 #include "../src/losslesstraits.h"
-#include "../src/colortransform.h"
-#include "../src/jpegstreamreader.h"
 #include "../src/processline.h"
-
-#include "util.h"
 
 #include <sstream>
 #include <fstream>

@@ -4,15 +4,8 @@
 
 
 #include "config.h"
-
-#include "../src/charls.h"
-#include "../src/util.h"
-#include "../src/colortransform.h"
-#include "../src/jpegstreamreader.h"
-#include "../src/processline.h"
-
 #include "util.h"
-#include <iostream>
+
 #include <vector>
 
 

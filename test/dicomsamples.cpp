@@ -1,12 +1,10 @@
 
 
 #include "config.h"
-#include <iostream>
-#include <vector>
-
-
 #include "util.h"
 #include "../src/charls.h"
+#include <iostream>
+#include <vector>
 
 
 int findstring(std::vector<BYTE>& container, BYTE* bytesToFind, unsigned int bytesLength)

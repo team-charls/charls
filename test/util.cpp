@@ -4,15 +4,13 @@
 
 
 #include "config.h"
-#include <iostream>
-#include <vector>
-
-#include "../src/charls.h"
-#include "../src/util.h"
-#include "../src/jpegstreamreader.h"
-
 #include "util.h"
 #include "time.h"
+
+#include "../src/charls.h"
+
+#include <iostream>
+#include <vector>
 
 
 using namespace charls;

@@ -7,7 +7,6 @@
 // to avoid a global include of windows.h, this is a separate file.
 
 
-#include "config.h"
 
 #if defined(_WIN32)
 

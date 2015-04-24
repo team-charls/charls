@@ -4,15 +4,12 @@
 
 
 #include "config.h"
-#include <iostream>
-#include <vector>
+#include "util.h"
 
 #include "../src/charls.h"
-#include "../src/util.h"
-#include "../src/jpegstreamreader.h"
-#include "../src/processline.h"
 
-#include "util.h"
+#include <iostream>
+#include <vector>
 
 
 void TestDamagedBitStream1()
