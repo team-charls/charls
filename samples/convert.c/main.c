@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "../../src/charls.h"
 
@@ -51,62 +52,118 @@ typedef struct {
 } bmp_dib_header_t;
 
 
-static void bmp_read_header(FILE *fp, bmp_header_t *header)
+static bool bmp_read_header(FILE *fp, bmp_header_t *header)
 {
-    fread(&(header->magic), sizeof(header->magic), 1, fp);
-    fread(&(header->filesz), sizeof(uint32_t), 1, fp);
-    fread(&(header->creator1), sizeof(uint16_t), 1, fp);
-    fread(&(header->creator2), sizeof(uint16_t), 1, fp);
-    fread(&(header->offset), sizeof(uint32_t), 1, fp);
+    return fread(&(header->magic), sizeof(header->magic), 1, fp) &&
+           fread(&(header->filesz), sizeof(uint32_t), 1, fp) &&
+           fread(&(header->creator1), sizeof(uint16_t), 1, fp) &&
+           fread(&(header->creator2), sizeof(uint16_t), 1, fp) &&
+           fread(&(header->offset), sizeof(uint32_t), 1, fp) &&
+           header->magic[0] == 0x42 && header->magic[1] == 0x4D;
 }
 
 
-static void bmp_read_dib_header(FILE *fp, bmp_dib_header_t *header)
+static bool bmp_read_dib_header(FILE *fp, bmp_dib_header_t *header)
 {
-    fread(&(header->header_sz), sizeof(uint32_t), 1, fp);
-    fread(&(header->width), sizeof(uint32_t), 1, fp);
-    fread(&(header->height), sizeof(uint32_t), 1, fp);
-    fread(&(header->nplanes), sizeof(uint16_t), 1, fp);
-    fread(&(header->depth), sizeof(uint16_t), 1, fp);
+    return fread(&(header->header_sz), sizeof(uint32_t), 1, fp) &&
+           fread(&(header->width), sizeof(uint32_t), 1, fp) &&
+           fread(&(header->height), sizeof(uint32_t), 1, fp) &&
+           fread(&(header->nplanes), sizeof(uint16_t), 1, fp) &&
+           fread(&(header->depth), sizeof(uint16_t), 1, fp);
 }
 
-//static bool 
+
+static void* bmp_read_pixel_data(FILE *fp, uint32_t offset, const bmp_dib_header_t *header)
+{
+    if (fseek(fp, offset, SEEK_SET))
+        return NULL;
+
+    size_t buffer_size = header->height * header->width * 3;
+    void *buffer = malloc(buffer_size);
+    if (buffer)
+    {
+        if (!fread(buffer, buffer_size, 1, fp))
+        {
+            free(buffer);
+            buffer = NULL;
+        }
+    }
+
+    return buffer;
+}
+
+
+static void* encode_bmp_to_jpegls(void* pixel_data, const bmp_dib_header_t *header)
+{
+    // This function only supports 24-bit BMP pixel data.
+    // 24-BMP pixel data is stored by pixel as RGB. JPEG-LS 
+    struct JlsParameters info;
+
+    size_t encoded_buffer_size;
+    void* encoded_buffer;
+
+    //result = JpegLsEncode(compressedData, bufferSize, &byteCountWritten, uncompressedData, bufferSize, &info);
+
+}
+
 
 int main(int argc, char* argv[])
 {
-    if (argc < 3) {
-        printf("Usage: [input file name] [output file name]\n");
-        return EXIT_FAILURE;
-    }
-
-    FILE *fp;
-    int row;
-    unsigned char *buf;
-    bmp_header_t header;
-    bmp_dib_header_t dib_header;
-    struct JlsParameters info;
-
     int result = EXIT_FAILURE;
 
-    /* Create the file */
-    if ((fp = fopen(argv[1], "rb")))
+    if (argc < 3) {
+        printf("Usage: [input file name] [output file name]\n");
+        return result;
+    }
+
+    FILE *fp = fopen(argv[1], "rb");
+    if (fp)
     {
-        bmp_read_header(fp, &header);
+        bmp_header_t header;
+        bmp_dib_header_t dib_header;
 
+        if (bmp_read_header(fp, &header) &&
+            bmp_read_dib_header(fp, &dib_header))
+        {
+            void *pixel_data = bmp_read_pixel_data(fp, header.offset, &dib_header);
+            if (pixel_data)
+            {
+                // TODO: swap lines?
+                // TODO: Encode to JPEG-LS
+                uint32_t encoded_size;
+                void *encoded_data = encode_bmp_to_jpegls(pixel_data, &dib_header);
 
-        bmp_read_dib_header(fp, &dib_header);
-        result = EXIT_SUCCESS;
+                // TODO: Save to output file.
+
+                free(pixel_data);
+                result = EXIT_SUCCESS;
+            }
+            else
+            {
+                printf("Failed to read the BMP pixel data from the file: %s\n", argv[1]);
+            }
+        }
+        else
+        {
+            printf("Failed to read the BMP info from the file: %s\n", argv[1]);
+        }
+
+        fclose(fp);
+    }
+    else
+    {
+        printf("Failed to open file: %s\n", argv[1]);
     }
 
 
-    size_t bufferSize;
-    void* uncompressedData;
-    void* compressedData;
+    //size_t bufferSize;
+    //void* uncompressedData;
+    //void* compressedData;
 
-    size_t byteCountWritten;
+    //size_t byteCountWritten;
 
 
-    info.ilv = CHARLS_IM_SAMPLE;
+    //info.ilv = CHARLS_IM_SAMPLE;
 
 
     //result = JpegLsEncode(compressedData, bufferSize, &byteCountWritten, uncompressedData, bufferSize, &info);
