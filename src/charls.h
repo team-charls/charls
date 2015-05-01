@@ -37,8 +37,12 @@
 
 #include <iostream>
 
-extern "C" 
+extern "C"
 {
+
+#else
+
+#include <stddef.h>
 
 #endif
     /// <summary>
