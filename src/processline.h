@@ -131,7 +131,7 @@ private:
 };
 
 
-template<class TRANSFORM, class SAMPLE>
+template<typename TRANSFORM, typename SAMPLE>
 void TransformLineToQuad(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Quad<SAMPLE>* pbyteBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
     int cpixel = MIN(pixelStride, pixelStrideIn);
@@ -146,7 +146,7 @@ void TransformLineToQuad(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Quad<S
 }
 
 
-template<class TRANSFORM, class SAMPLE> 
+template<typename TRANSFORM, typename SAMPLE>
 void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, int32_t pixelStrideIn, SAMPLE* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
     int cpixel = MIN(pixelStride, pixelStrideIn);
@@ -165,7 +165,7 @@ void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, int32_t pixelStrideIn, 
 }
 
 
-template<class SAMPLE>
+template<typename SAMPLE>
 void TransformRgbToBgr(SAMPLE* pDest, int samplesPerPixel, int pixelCount)
 {
     for (int i = 0; i < pixelCount; ++i)
@@ -176,7 +176,7 @@ void TransformRgbToBgr(SAMPLE* pDest, int samplesPerPixel, int pixelCount)
 }
 
 
-template<class TRANSFORM, class SAMPLE>
+template<typename TRANSFORM, typename SAMPLE>
 void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixelCount, TRANSFORM& transform)
 {
     for (int i = 0; i < pixelCount; ++i)
@@ -186,7 +186,7 @@ void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixe
 }
 
 
-template<class TRANSFORM, class SAMPLE> 
+template<typename TRANSFORM, typename SAMPLE>
 void TransformLineToTriplet(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Triplet<SAMPLE>* pbyteBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
     int cpixel = MIN(pixelStride, pixelStrideIn);
@@ -199,7 +199,7 @@ void TransformLineToTriplet(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Tri
 }
 
 
-template<class TRANSFORM, class SAMPLE>
+template<typename TRANSFORM, typename SAMPLE>
 void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, int32_t pixelStrideIn, SAMPLE* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
     int cpixel = MIN(pixelStride, pixelStrideIn);
@@ -217,7 +217,7 @@ void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, int32_t pixelStri
 }
 
 
-template<class TRANSFORM>
+template<typename TRANSFORM>
 class ProcessTransformed : public ProcessLine
 {
     typedef typename TRANSFORM::SAMPLE SAMPLE;

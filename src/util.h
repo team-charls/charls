@@ -95,7 +95,7 @@ struct Size
 };
 
 
-template<class SAMPLE>
+template<typename SAMPLE>
 struct Triplet
 {
     Triplet() :
@@ -140,7 +140,7 @@ inline bool operator!=(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
 }
 
 
-template<class sample>
+template<typename sample>
 struct Quad : Triplet<sample>
 {
     Quad() : 
@@ -158,13 +158,13 @@ struct Quad : Triplet<sample>
 };
 
 
-template <int size>
+template<int size>
 struct FromBigEndian
 {
 };
 
 
-template <>
+template<>
 struct FromBigEndian<4>
 {
     inlinehint static unsigned int Read(uint8_t* pbyte)
@@ -174,7 +174,7 @@ struct FromBigEndian<4>
 };
 
 
-template <>
+template<>
 struct FromBigEndian<8>
 {
     inlinehint static uint64_t Read(uint8_t* pbyte)

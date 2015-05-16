@@ -9,7 +9,7 @@
 struct JlsCustomParameters;
 struct JlsParameters;
 
-template<class STRATEGY>
+template<typename STRATEGY>
 class JlsCodecFactory
 {
 public:

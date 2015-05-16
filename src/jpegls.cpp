@@ -101,7 +101,7 @@ std::vector<signed char> rgquant12Ll = CreateQLutLossless(12);
 std::vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
-template<class STRATEGY>
+template<typename STRATEGY>
 std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& info, const JlsCustomParameters& presets)
 {
     std::unique_ptr<STRATEGY> strategy;
@@ -126,14 +126,14 @@ std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameter
 }
 
 
-template<class TRAITS, class STRATEGY>
+template<typename TRAITS, typename STRATEGY>
 std::unique_ptr<STRATEGY> CreateCodec(const TRAITS& t, const STRATEGY*, const JlsParameters& info)
 {
     return std::unique_ptr<STRATEGY>(new JlsCodec<TRAITS, STRATEGY>(t, info));
 }
 
 
-template<class STRATEGY>
+template<typename STRATEGY>
 std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters& info)
 {
     STRATEGY* s = nullptr;
