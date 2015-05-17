@@ -2,7 +2,8 @@
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
 //
 
-#pragma once
+#ifndef CHARLS_JPEGMARKERSEGMENT
+#define CHARLS_JPEGMARKERSEGMENT
 
 #include "util.h"
 #include "jpegsegment.h"
@@ -48,3 +49,5 @@ private:
     JpegMarkerCode _marker;
     std::vector<uint8_t> _content;
 };
+
+#endif
