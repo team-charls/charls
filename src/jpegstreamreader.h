@@ -1,9 +1,8 @@
 //
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 //
-#ifndef CHARLS_JPEGMARKER
-#define CHARLS_JPEGMARKER
-
+#ifndef CHARLS_JPEGSTREAMREADER
+#define CHARLS_JPEGSTREAMREADER
 
 #include "publictypes.h"
 #include <cstdint>

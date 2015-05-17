@@ -324,7 +324,7 @@ uint8_t JpegStreamReader::ReadByte()
         return static_cast<uint8_t>(_byteStream.rawStream->sbumpc());
 
     if (_byteStream.count == 0)
-        throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());
+        throw std::system_error(CompressedBufferTooSmall, CharLSCategoryInstance());
 
     uint8_t value = _byteStream.rawData[0];
     SkipBytes(&_byteStream, 1);
