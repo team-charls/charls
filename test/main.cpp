@@ -412,6 +412,7 @@ void TestColorTransforms_HpImages();
 void TestConformance();
 void TestSampleAnnexH3();
 void PerformanceTests(int loopCount);
+void DecodePerformanceTests(int loopCount);
 void DamagedBitstreamTests();
 void TestDicomWG4Images();
 
@@ -537,6 +538,26 @@ int main(int argc, char* argv[])
             }
 
             PerformanceTests(loopCount);
+            continue;
+        }
+
+        if (str.compare(0, 18, "-decodeperformance") == 0)
+        {
+            int loopCount = 1;
+
+            // Extract the optional loop count from the command line. Longer running tests make the measurements more reliable.
+            auto index = str.find(':');
+            if (index != std::string::npos)
+            {
+                loopCount = std::stoi(str.substr(++index));
+                if (loopCount < 1)
+                {
+                    printf("Loop count not understood or invalid: %s\r\n", str.c_str());
+                    break;
+                }
+            }
+
+            DecodePerformanceTests(loopCount);
             continue;
         }
 
