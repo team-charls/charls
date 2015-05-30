@@ -14,7 +14,7 @@ struct JlsParameters;
 class JpegCustomParameters;
 
 
-JLS_ERROR CheckParameterCoherent(const JlsParameters& pparams);
+charls::ApiResult CheckParameterCoherent(const JlsParameters& pparams);
 JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR);
 
 

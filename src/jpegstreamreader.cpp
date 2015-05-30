@@ -50,22 +50,22 @@ JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
 }
 
 
-JLS_ERROR CheckParameterCoherent(const JlsParameters& parameters)
+ApiResult CheckParameterCoherent(const JlsParameters& parameters)
 {
     if (parameters.bitspersample < 2 || parameters.bitspersample > 16)
-        return ParameterValueNotSupported;
+        return ApiResult::ParameterValueNotSupported;
 
     if (parameters.ilv < InterleaveMode::None || parameters.ilv > InterleaveMode::Sample)
-        return InvalidCompressedData;
+        return ApiResult::InvalidCompressedData;
 
     switch (parameters.components)
     {
-        case 4: return parameters.ilv == InterleaveMode::Sample ? ParameterValueNotSupported : OK;
-        case 3: return OK;
-        case 1: return parameters.ilv != InterleaveMode::None ? ParameterValueNotSupported : OK;
-        case 0: return InvalidJlsParameters;
+        case 4: return parameters.ilv == InterleaveMode::Sample ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
+        case 3: return ApiResult::OK;
+        case 1: return parameters.ilv != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
+        case 0: return ApiResult::InvalidJlsParameters;
 
-        default: return parameters.ilv != InterleaveMode::None ? ParameterValueNotSupported : OK;
+        default: return parameters.ilv != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
     }
 }
 
@@ -95,9 +95,9 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 {
     ReadHeader();
 
-    JLS_ERROR error = CheckParameterCoherent(_info);
-    if (error != OK)
-        throw std::system_error(error, CharLSCategoryInstance());
+    auto result = CheckParameterCoherent(_info);
+    if (result != ApiResult::OK)
+        throw std::system_error(static_cast<int>(result), CharLSCategoryInstance());
 
     if (_rect.Width <= 0)
     {
@@ -108,7 +108,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
     int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
 
     if (rawPixels.rawData && int64_t(rawPixels.count) < bytesPerPlane * _info.components)
-        throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
+        throw std::system_error(static_cast<int>(ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
 
     int componentIndex = 0;
 
@@ -141,15 +141,15 @@ void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 void JpegStreamReader::ReadHeader()
 {
     if (ReadByte() != 0xFF)
-        throw std::system_error(MissingJpegMarkerStart, CharLSCategoryInstance());
+        throw std::system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
 
     if (static_cast<JpegMarkerCode>(ReadByte()) != JpegMarkerCode::StartOfImage)
-        throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());
+        throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
 
     for (;;)
     {
         if (ReadByte() != 0xFF)
-            throw std::system_error(MissingJpegMarkerStart, CharLSCategoryInstance());
+            throw std::system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
 
         JpegMarkerCode marker = static_cast<JpegMarkerCode>(ReadByte());
         if (marker == JpegMarkerCode::StartOfScan)
@@ -162,7 +162,7 @@ void JpegStreamReader::ReadHeader()
         int paddingToRead = cbyteMarker - bytesRead;
 
         if (paddingToRead < 0)
-            throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());
+            throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
 
         for (int i = 0; i < paddingToRead; ++i)
         {
@@ -207,11 +207,11 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         case JpegMarkerCode::StartOfFrameExtendedArithemtic:
         case JpegMarkerCode::StartOfFrameProgressiveArithemtic:
         case JpegMarkerCode::StartOfFrameLosslessArithemtic:
-            throw std::system_error(UnsupportedEncoding, CharLSCategoryInstance());
+            throw std::system_error(static_cast<int>(ApiResult::UnsupportedEncoding), CharLSCategoryInstance());
 
         // Other tags not supported (among which DNL DRI)
         default:
-            throw std::system_error(UnknownJpegMarker, CharLSCategoryInstance());
+            throw std::system_error(static_cast<int>(ApiResult::UnknownJpegMarker), CharLSCategoryInstance());
     }
 }
 
@@ -242,16 +242,16 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     if (!firstComponent)
     {
         if (ReadByte() != 0xFF)
-            throw std::system_error(MissingJpegMarkerStart, CharLSCategoryInstance());
+            throw std::system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
         if (static_cast<JpegMarkerCode>(ReadByte()) != JpegMarkerCode::StartOfScan)
-            throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());// TODO: throw more specific error code.
+            throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
     }
     int length = ReadByte();
     length = length * 256 + ReadByte(); // TODO: do something with 'length' or remove it.
 
     int componentCount = ReadByte();
     if (componentCount != 1 && componentCount != _info.components)
-        throw std::system_error(ParameterValueNotSupported, CharLSCategoryInstance());
+        throw std::system_error(static_cast<int>(ApiResult::ParameterValueNotSupported), CharLSCategoryInstance());
 
     for (int i = 0; i < componentCount; ++i)
     {
@@ -261,9 +261,9 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     _info.allowedlossyerror = ReadByte();
     _info.ilv = static_cast<InterleaveMode>(ReadByte());
     if (!(_info.ilv == InterleaveMode::None || _info.ilv == InterleaveMode::Line || _info.ilv == InterleaveMode::Sample))
-        throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());// TODO: throw more specific error code.
+        throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
     if (ReadByte() != 0)
-        throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());// TODO: throw more specific error code.
+        throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
 
     if(_info.bytesperline == 0)
     {
@@ -324,7 +324,7 @@ uint8_t JpegStreamReader::ReadByte()
         return static_cast<uint8_t>(_byteStream.rawStream->sbumpc());
 
     if (_byteStream.count == 0)
-        throw std::system_error(CompressedBufferTooSmall, CharLSCategoryInstance());
+        throw std::system_error(static_cast<int>(ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
 
     uint8_t value = _byteStream.rawData[0];
     SkipBytes(&_byteStream, 1);
@@ -364,8 +364,8 @@ int JpegStreamReader::ReadColorXForm()
             return 5;
         case ColorTransformation::RgbAsYuvLossy:
         case ColorTransformation::Matrix:
-            throw std::system_error(ImageTypeNotSupported, CharLSCategoryInstance());
+            throw std::system_error(static_cast<int>(ApiResult::ImageTypeNotSupported), CharLSCategoryInstance());
         default:
-            throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());
+            throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
     }
 }

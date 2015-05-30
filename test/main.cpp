@@ -37,9 +37,9 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* 
 
     ByteStreamInfo rawStreamInfo = {&jlsFile};
 
-    JLS_ERROR err = JpegLsReadHeaderStream(rawStreamInfo, info);
-    Assert::IsTrue(err == OK);
-    return err == OK;
+    auto err = JpegLsReadHeaderStream(rawStreamInfo, info);
+    Assert::IsTrue(err == ApiResult::OK);
+    return err == ApiResult::OK;
 }
 
 
@@ -136,8 +136,8 @@ void TestFailOnTooSmallOutputBuffer()
     info.width = size.cx;
 
     size_t compressedLength;
-    JLS_ERROR err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteRaw.size(), &info);
-    Assert::IsTrue(err == CompressedBufferTooSmall);
+    auto err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteRaw.size(), &info);
+    Assert::IsTrue(err == ApiResult::CompressedBufferTooSmall);
 }
 
 
@@ -159,8 +159,8 @@ void TestBgr()
 
     info.outputBgr = true;
 
-    JLS_ERROR err = JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &info);
-    Assert::IsTrue(err == OK);
+    auto err = JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &info);
+    Assert::IsTrue(err == ApiResult::OK);
 
     Assert::IsTrue(rgbyteDecoded[0] == 0x69);
     Assert::IsTrue(rgbyteDecoded[1] == 0x77);
@@ -178,9 +178,9 @@ void TestTooSmallOutputBuffer()
         return;
 
     std::vector<BYTE> rgbyteOut(512 * 511);
-    JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
+    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
 
-    Assert::IsTrue(error == UncompressedBufferTooSmall);
+    Assert::IsTrue(error == ApiResult::UncompressedBufferTooSmall);
 }
 
 
@@ -191,9 +191,9 @@ void TestBadImage()
         return;
 
     std::vector<BYTE> rgbyteOut(2500 * 3000 * 2);
-    JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
+    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
 
-    Assert::IsTrue(error == UncompressedBufferTooSmall);
+    Assert::IsTrue(error == ApiResult::UncompressedBufferTooSmall);
 }
 
 
@@ -202,8 +202,8 @@ void TestDecodeBitStreamWithNoMarkerStart()
     BYTE encodedData[2] = { 0x33, 0x33 };
     BYTE output[1000];
 
-    JLS_ERROR error = JpegLsDecode(output, 1000, encodedData, 2, nullptr);
-    Assert::IsTrue(error == MissingJpegMarkerStart);
+    auto error = JpegLsDecode(output, 1000, encodedData, 2, nullptr);
+    Assert::IsTrue(error == ApiResult::MissingJpegMarkerStart);
 }
 
 
@@ -215,8 +215,8 @@ void TestDecodeBitStreamWithUnsupportedEncoding()
                           };
     BYTE output[1000];
 
-    JLS_ERROR error = JpegLsDecode(output, 1000, encodedData, 6, NULL);
-    Assert::IsTrue(error == UnsupportedEncoding);
+    auto error = JpegLsDecode(output, 1000, encodedData, 6, nullptr);
+    Assert::IsTrue(error == ApiResult::UnsupportedEncoding);
 }
 
 
@@ -228,8 +228,8 @@ void TestDecodeBitStreamWithUnknownJpegMarker()
     };
     BYTE output[1000];
 
-    JLS_ERROR error = JpegLsDecode(output, 1000, encodedData, 6, nullptr);
-    Assert::IsTrue(error == UnknownJpegMarker);
+    auto error = JpegLsDecode(output, 1000, encodedData, 6, nullptr);
+    Assert::IsTrue(error == ApiResult::UnknownJpegMarker);
 }
 
 
@@ -241,14 +241,14 @@ void TestDecodeRect()
         return;
 
     std::vector<BYTE> rgbyteOutFull(info.width*info.height*info.components);
-    JLS_ERROR error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
-    Assert::IsTrue(error == OK);
+    auto error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
+    Assert::IsTrue(error == ApiResult::OK);
 
     JlsRect rect = { 128, 128, 256, 1 };
     std::vector<BYTE> rgbyteOut(rect.Width * rect.Height);
     rgbyteOut.push_back(0x1f);
     error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), rect, nullptr);
-    Assert::IsTrue(error == OK);
+    Assert::IsTrue(error == ApiResult::OK);
 
     Assert::IsTrue(memcmp(&rgbyteOutFull[rect.X + rect.Y*512], &rgbyteOut[0], rect.Width * rect.Height) == 0);
     Assert::IsTrue(rgbyteOut[rect.Width * rect.Height] == 0x1f);
@@ -286,8 +286,8 @@ bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
     ByteStreamInfo compressedByteStream = {jlsFile.rdbuf()};
 
     JlsParameters info = JlsParameters();
-    JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
-    if (err != OK)
+    auto err = JpegLsReadHeaderStream(compressedByteStream, &info);
+    if (err != ApiResult::OK)
         return false;
 
     int maxval = (1 << info.bitspersample) - 1;
@@ -365,8 +365,8 @@ void TestDecodeFromStream(const char* strNameEncoded)
     ByteStreamInfo compressedByteStream = {&jlsFile};
 
     JlsParameters info = JlsParameters();
-    JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
-    Assert::IsTrue(err == OK);
+    auto err = JpegLsReadHeaderStream(compressedByteStream, &info);
+    Assert::IsTrue(err == ApiResult::OK);
 
     jlsFile.pubseekpos(std::ios::beg, std::ios_base::in);
 
@@ -376,12 +376,12 @@ void TestDecodeFromStream(const char* strNameEncoded)
     err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, nullptr);
     ////size_t outputCount = buf.str().size();
 
-    Assert::IsTrue(err == OK);
+    Assert::IsTrue(err == ApiResult::OK);
     //Assert::IsTrue(outputCount == 512 * 512);
 }
 
 
-JLS_ERROR DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
+ApiResult DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
 {
     std::fstream jlsFile(strNameEncoded, mode_input);   
     ByteStreamInfo compressedByteStream = {jlsFile.rdbuf()};
@@ -389,7 +389,7 @@ JLS_ERROR DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
     std::fstream rawFile(strNameOutput, mode_output); 
     ByteStreamInfo rawStream = {rawFile.rdbuf()};
 
-    JLS_ERROR value = JpegLsDecodeStream(rawStream, compressedByteStream, nullptr);
+    auto value = JpegLsDecodeStream(rawStream, compressedByteStream, nullptr);
     jlsFile.close();
     rawFile.close();
 
@@ -486,7 +486,7 @@ int main(int argc, char* argv[])
                 printf("Syntax: -decoderaw inputfile outputfile \r\n");
                 return 0;
             }
-            return DecodeRaw(argv[2],argv[3]);
+            return static_cast<int>(DecodeRaw(argv[2], argv[3]));
         }
 
         if (str.compare("-decodetopnm") == 0)

@@ -5,29 +5,32 @@
 #define CHARLS_PUBLICTYPES
 
 
-enum JLS_ERROR
-{
-    OK                              = 0,  // The operation completed without errors.
-    InvalidJlsParameters            = 1,  // One of the JLS parameters is invalid.
-    ParameterValueNotSupported      = 2,  // The parameter value not supported.
-    UncompressedBufferTooSmall      = 3,  // The uncompressed buffer is too small to hold all the output.
-    CompressedBufferTooSmall        = 4,  // The compressed buffer too small, more input data was expected.
-    InvalidCompressedData           = 5,  // This error is returned when the encoded bit stream contains a general structural problem.
-    TooMuchCompressedData           = 6,  // Too much compressed data.The decoding proccess is ready but the input buffer still contains encoded data.
-    ImageTypeNotSupported           = 7,  // This error is returned when the bit stream is encoded with an option that is not supported by this implementation.
-    UnsupportedBitDepthForTransform = 8,  // The bit depth for transformation is not supported.
-    UnsupportedColorTransform       = 9,  // The color transformation is not supported.
-    UnsupportedEncoding             = 10, // This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
-    UnknownJpegMarker               = 11, // This error is returned when an unknown JPEG marker code is detected in the encoded bit stream.
-    MissingJpegMarkerStart          = 12, // This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
-    UnspecifiedFailure              = 13, // This error is returned when the implementation detected a failure, but no specific error is available.
-    UnexpectedFailure               = 14, // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
-};
-
 #ifdef __cplusplus
 
 namespace charls
 {
+    /// <summary>
+    /// Defines the result values that are returned by the CharLS API functions.
+    /// </summary>
+    enum class ApiResult
+    {
+        OK = 0,                              // The operation completed without errors.
+        InvalidJlsParameters = 1,            // One of the JLS parameters is invalid.
+        ParameterValueNotSupported = 2,      // The parameter value not supported.
+        UncompressedBufferTooSmall = 3,      // The uncompressed buffer is too small to hold all the output.
+        CompressedBufferTooSmall = 4,        // The compressed buffer too small, more input data was expected.
+        InvalidCompressedData = 5,           // This error is returned when the encoded bit stream contains a general structural problem.
+        TooMuchCompressedData = 6,           // Too much compressed data.The decoding proccess is ready but the input buffer still contains encoded data.
+        ImageTypeNotSupported = 7,           // This error is returned when the bit stream is encoded with an option that is not supported by this implementation.
+        UnsupportedBitDepthForTransform = 8, // The bit depth for transformation is not supported.
+        UnsupportedColorTransform = 9,       // The color transformation is not supported.
+        UnsupportedEncoding = 10,            // This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
+        UnknownJpegMarker = 11,              // This error is returned when an unknown JPEG marker code is detected in the encoded bit stream.
+        MissingJpegMarkerStart = 12,         // This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
+        UnspecifiedFailure = 13,             // This error is returned when the implementation detected a failure, but no specific error is available.
+        UnexpectedFailure = 14,              // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
+    };
+
     /// <summary>
     /// Defines the interleave mode for multi-component (color) pixel data.
     /// </summary>
@@ -68,10 +71,30 @@ namespace charls
     };
 }
 
+typedef charls::ApiResult CharlsApiResultType;
 typedef charls::InterleaveMode CharlsInterleaveModeType;
 typedef charls::ColorTransformation CharlsColorTransformationType;
 
 #else
+
+enum CharlsApiResult
+{
+    CHARLS_API_RESULT_OK                                  = 0,  // The operation completed without errors.
+    CHARLS_API_RESULT_INVALID_JLS_PARAMETERS              = 1,  // One of the JLS parameters is invalid.
+    CHARLS_API_RESULT_PARAMETER_VALUE_NOT_SUPPORTED       = 2,  // The parameter value not supported.
+    CHARLS_API_RESULT_UNCOMPRESSED_BUFFER_TOO_SMALL       = 3,  // The uncompressed buffer is too small to hold all the output.
+    CHARLS_API_RESULT_COMPRESSED_BUFFER_TOO_SMALL         = 4,  // The compressed buffer too small, more input data was expected.
+    CHARLS_API_RESULT_INVALID_COMPRESSED_DATA             = 5,  // This error is returned when the encoded bit stream contains a general structural problem.
+    CHARLS_API_RESULT_TOO_MUCH_COMPRESSED_DATA            = 6,  // Too much compressed data.The decoding proccess is ready but the input buffer still contains encoded data.
+    CHARLS_API_RESULT_IMAGE_TYPE_NOT_SUPPORTED            = 7,  // This error is returned when the bit stream is encoded with an option that is not supported by this implementation.
+    CHARLS_API_RESULT_UNSUPPORTED_BIT_DEPTH_FOR_TRANSFORM = 8,  // The bit depth for transformation is not supported.
+    CHARLS_API_RESULT_UNSUPPORTED_COLOR_TRANSFORM         = 9,  // The color transformation is not supported.
+    CHARLS_API_RESULT_UNSUPPORTED_ENCODING                = 10, // This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
+    CHARLS_API_RESULT_UNKNOWN_JPEG_MARKER                 = 11, // This error is returned when an unknown JPEG marker code is detected in the encoded bit stream.
+    CHARLS_API_RESULT_MISSING_JPEG_MARKER_START           = 12, // This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
+    CHARLS_API_RESULT_UNSPECIFIED_FAILURE                 = 13, // This error is returned when the implementation detected a failure, but no specific error is available.
+    CHARLS_API_RESULT_UNEXPECTED_FAILURE                  = 14, // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
+};
 
 enum CharlsInterleaveMode
 {
@@ -82,22 +105,17 @@ enum CharlsInterleaveMode
 
 enum CharlsColorTransformation
 {
-    // default (RGB)
     CHARLS_COLOR_TRANSFORMATION_NONE = 0,
-
-    // Color transforms as defined by HP
-    // Not part of the JPEG-LS standard in any way, provided for compatibility with existing streams.
     CHARLS_COLOR_TRANSFORMATION_HP1,
     CHARLS_COLOR_TRANSFORMATION_HP2,
     CHARLS_COLOR_TRANSFORMATION_HP3,
-
-    // Defined by HP but not supported by CharLS
     CHARLS_COLOR_TRANSFORMATION_RGB_AS_YUV_LOSSY,
     CHARLS_COLOR_TRANSFORMATION_MATRIX,
     CHARLS_COLOR_TRANSFORMATION_BIGENDIAN = 1 << 29,
     CHARLS_COLOR_TRANSFORMATION_LITTLEENDIAN = 1 << 30
 };
 
+typedef enum CharlsApiResult CharlsApiResultType;
 typedef enum CharlsInterleaveMode CharlsInterleaveModeType;
 typedef enum CharlsColorTransformation CharlsColorTransformationType;
 
@@ -220,7 +238,7 @@ struct ByteStreamInfo
 inline ByteStreamInfo FromByteArray(const void* bytes, std::size_t count)
 {
     ByteStreamInfo info = ByteStreamInfo();
-    info.rawData = (uint8_t*) bytes;
+    info.rawData = static_cast<uint8_t*>(const_cast<void*>(bytes));
     info.count = count;
     return info;
 }

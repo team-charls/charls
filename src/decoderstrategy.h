@@ -106,11 +106,11 @@ public:
             ReadBit();
 
             if ((*_position) != 0xFF)
-                throw std::system_error(TooMuchCompressedData, CharLSCategoryInstance());
+                throw std::system_error(static_cast<int>(charls::ApiResult::TooMuchCompressedData), CharLSCategoryInstance());
         }
 
         if (_readCache != 0)
-            throw std::system_error(TooMuchCompressedData, CharLSCategoryInstance());
+            throw std::system_error(static_cast<int>(charls::ApiResult::TooMuchCompressedData), CharLSCategoryInstance());
     }
 
     inlinehint bool OptimizedRead()
@@ -149,7 +149,7 @@ public:
             if (_position >= _endPosition)
             {
                 if (_validBits <= 0)
-                    throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());
+                    throw std::system_error(static_cast<int>(charls::ApiResult::InvalidCompressedData), CharLSCategoryInstance());
 
                 return;
             }
@@ -162,7 +162,7 @@ public:
                 if (_position == _endPosition - 1 || (_position[1] & 0x80) != 0)
                 {
                     if (_validBits <= 0)
-                        throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());
+                        throw std::system_error(static_cast<int>(charls::ApiResult::InvalidCompressedData), CharLSCategoryInstance());
 
                     return;
                 }
@@ -221,7 +221,7 @@ public:
         {
             MakeValid();
             if (_validBits < length)
-                throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());
+                throw std::system_error(static_cast<int>(charls::ApiResult::InvalidCompressedData), CharLSCategoryInstance());
         }
 
         ASSERT(length != 0 && length <= _validBits);

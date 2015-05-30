@@ -54,7 +54,7 @@ extern "C"
     /// <param name="source">Byte array that holds the pixels that should be encoded.</param>
     /// <param name="sourceLength">Length of the array in bytes.</param>
     /// <param name="info">Info that describes the pixel data and how to encode it.</param>
-    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten,
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten,
         const void* source, size_t sourceLength, const struct JlsParameters* info);
 
     /// <summary>
@@ -65,26 +65,26 @@ extern "C"
     /// <param name="source">Byte array that holds the JPEG-LS encoded data that should be decoded.</param>
     /// <param name="sourceLength">Length of the array in bytes.</param>
     /// <param name="info">Info that describes the pixel data and how to decode it.</param>
-    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecode(void* destination, size_t destinationLength,
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecode(void* destination, size_t destinationLength,
         const void* source, size_t sourceLength, const struct JlsParameters* info);
 
-  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, 
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength,
         const void* compressedData, size_t compressedLength, 
         struct JlsRect rect, struct JlsParameters* info);
 
-  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsReadHeader(const void* compressedData, size_t compressedLength, 
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsReadHeader(const void* compressedData, size_t compressedLength,
         struct JlsParameters* info);
 
-  CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, 
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength,
         const void* compressedData, size_t compressedLength);
 
   
 #ifdef __cplusplus
 
 }
-    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsEncodeStream(ByteStreamInfo rawStream, size_t& bytesWritten, ByteStreamInfo inputStream, const JlsParameters& info);
-    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsDecodeStream(ByteStreamInfo output, ByteStreamInfo input, const JlsParameters* info);
-    CHARLS_IMEXPORT(enum JLS_ERROR) JpegLsReadHeaderStream(ByteStreamInfo input, JlsParameters* info);
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsEncodeStream(ByteStreamInfo rawStream, size_t& bytesWritten, ByteStreamInfo inputStream, const JlsParameters& info);
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecodeStream(ByteStreamInfo output, ByteStreamInfo input, const JlsParameters* info);
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsReadHeaderStream(ByteStreamInfo input, JlsParameters* info);
 
 #endif
 

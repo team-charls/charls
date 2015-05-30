@@ -49,7 +49,7 @@ namespace CharLSUnitTest
             }
             catch (const std::system_error &error)
             {
-                Assert::AreEqual(error.code().value(), static_cast<int>(CompressedBufferTooSmall));
+                Assert::AreEqual(error.code().value(), static_cast<int>(charls::ApiResult::CompressedBufferTooSmall));
                 return;
             }
 

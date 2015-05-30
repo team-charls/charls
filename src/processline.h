@@ -68,7 +68,7 @@ private:
 inline void ByteSwap(unsigned char* data, int count)
 {
     if (count & 1)
-        throw std::system_error(InvalidJlsParameters, CharLSCategoryInstance());
+        throw std::system_error(static_cast<int>(charls::ApiResult::InvalidJlsParameters), CharLSCategoryInstance());
 
     unsigned int* data32 = reinterpret_cast<unsigned int*>(data);
     for(int i = 0; i < count/4; i++)
@@ -100,7 +100,7 @@ public:
         {
             std::streamsize bytesRead = _rawData->sgetn((char*)dest, bytesToRead);
             if (bytesRead == 0)
-                throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
+                throw std::system_error(static_cast<int>(charls::ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
 
             bytesToRead = static_cast<std::size_t>(bytesToRead - bytesRead);
         }
@@ -121,7 +121,7 @@ public:
         int bytesToWrite = pixelCount * _bytesPerPixel;
         std::streamsize bytesWritten = _rawData->sputn(static_cast<const char*>(pSrc), bytesToWrite);
         if (bytesWritten != bytesToWrite)
-            throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
+            throw std::system_error(static_cast<int>(charls::ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
     }
 
 private:
@@ -252,7 +252,7 @@ public:
         {
             std::streamsize read = rawStream->sgetn((char*)&_buffer[0], bytesToRead);
             if (read == 0)
-                throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
+                throw std::system_error(static_cast<int>(charls::ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
 
             bytesToRead -= read;
         }
@@ -327,7 +327,7 @@ public:
 
             std::streamsize bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(&_buffer[0]), bytesToWrite);
             if (bytesWritten != bytesToWrite)
-                throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
+                throw std::system_error(static_cast<int>(ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
         }
         else
         {
