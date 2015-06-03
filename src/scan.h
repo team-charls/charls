@@ -9,6 +9,7 @@
 #include "contextrunmode.h"
 #include "context.h"
 #include "colortransform.h"
+#include <sstream>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
 
@@ -735,7 +736,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan()
             // initialize edge pixels used for prediction
             _previousLine[_width] = _previousLine[_width - 1];
             _currentLine[-1] = _previousLine[0];
-            DoLine((PIXEL*) nullptr); // dummy arg for overload resolution
+            DoLine(static_cast<PIXEL*>(nullptr)); // dummy arg for overload resolution
 
             rgRUNindex[component] = _RUNindex;
             _previousLine += pixelstride;
@@ -755,7 +756,7 @@ void JlsCodec<TRAITS,STRATEGY>::DoScan()
 // Factory function for ProcessLine objects to copy/transform unencoded pixels to/from our scanline buffers.
 
 template<class TRAITS, class STRATEGY>
-ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
+ProcessLine* JlsCodec<TRAITS, STRATEGY>::CreateProcess(ByteStreamInfo info)
 {
     if (!IsInterleaved())
     {
@@ -771,10 +772,13 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
     {
         switch (Info().colorTransform)
         {
-            case ColorTransformation::HP1: return new ProcessTransformed<TransformHp1<SAMPLE> >(info, Info(), TransformHp1<SAMPLE>());
-            case ColorTransformation::HP2: return new ProcessTransformed<TransformHp2<SAMPLE> >(info, Info(), TransformHp2<SAMPLE>());
-            case ColorTransformation::HP3: return new ProcessTransformed<TransformHp3<SAMPLE> >(info, Info(), TransformHp3<SAMPLE>());
-            default: throw std::system_error(static_cast<int>(ApiResult::UnsupportedColorTransform), CharLSCategoryInstance());
+            case ColorTransformation::HP1: return new ProcessTransformed<TransformHp1<SAMPLE>>(info, Info(), TransformHp1<SAMPLE>());
+            case ColorTransformation::HP2: return new ProcessTransformed<TransformHp2<SAMPLE>>(info, Info(), TransformHp2<SAMPLE>());
+            case ColorTransformation::HP3: return new ProcessTransformed<TransformHp3<SAMPLE>>(info, Info(), TransformHp3<SAMPLE>());
+            default:
+                std::ostringstream message;
+                message << "Color transformation " << Info().colorTransform << " is not supported.";
+                throw CreateSystemError(ApiResult::UnsupportedColorTransform, message.str());
         }
     }
 
@@ -783,10 +787,13 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
         int shift = 16 - Info().bitspersample;
         switch (Info().colorTransform)
         {
-            case ColorTransformation::HP1: return new ProcessTransformed<TransformShifted<TransformHp1<uint16_t> > >(info, Info(), TransformShifted<TransformHp1<uint16_t> >(shift));
-            case ColorTransformation::HP2: return new ProcessTransformed<TransformShifted<TransformHp2<uint16_t> > >(info, Info(), TransformShifted<TransformHp2<uint16_t> >(shift));
-            case ColorTransformation::HP3: return new ProcessTransformed<TransformShifted<TransformHp3<uint16_t> > >(info, Info(), TransformShifted<TransformHp3<uint16_t> >(shift));
-            default: throw std::system_error(static_cast<int>(ApiResult::UnsupportedColorTransform), CharLSCategoryInstance());
+            case ColorTransformation::HP1: return new ProcessTransformed<TransformShifted<TransformHp1<uint16_t>>>(info, Info(), TransformShifted<TransformHp1<uint16_t>>(shift));
+            case ColorTransformation::HP2: return new ProcessTransformed<TransformShifted<TransformHp2<uint16_t>>>(info, Info(), TransformShifted<TransformHp2<uint16_t>>(shift));
+            case ColorTransformation::HP3: return new ProcessTransformed<TransformShifted<TransformHp3<uint16_t>>>(info, Info(), TransformShifted<TransformHp3<uint16_t>>(shift));
+            default:
+                std::ostringstream message;
+                message << "Color transformation " << Info().colorTransform << " is not supported.";
+                throw CreateSystemError(ApiResult::UnsupportedColorTransform, message.str());
         }
     }
 

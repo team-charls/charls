@@ -206,4 +206,17 @@ inline void SkipBytes(ByteStreamInfo* streamInfo, std::size_t count)
 }
 
 
+template<typename T>
+std::ostream& operator<<(typename std::enable_if<std::is_enum<T>::value, std::ostream>::type& stream, const T& e)
+{
+    return stream << static_cast<typename std::underlying_type<T>::type>(e);
+}
+
+
+inline std::system_error CreateSystemError(charls::ApiResult errorCode, const std::string& message)
+{
+    return std::system_error(static_cast<int>(errorCode), CharLSCategoryInstance(), message);
+}
+
+
 #endif
