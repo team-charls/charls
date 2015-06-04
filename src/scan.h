@@ -9,6 +9,7 @@
 #include "contextrunmode.h"
 #include "context.h"
 #include "colortransform.h"
+#include <sstream>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
 
@@ -246,7 +247,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t
     {
         ErrVal = UnMapErrVal(DecodeValue(k, traits.LIMIT, traits.qbpp)); 
         if (abs(ErrVal) > 65535)
-            throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());
+            throw std::system_error(static_cast<int>(charls::ApiResult::InvalidCompressedData), CharLSCategoryInstance());
     }
     if (k == 0)
     {
@@ -538,9 +539,9 @@ void JlsCodec<TRAITS, STRATEGY>::EncodeRunPixels(int32_t runLength, bool endOfLi
 
     if (endOfLine) 
     {
-        if (runLength != 0)
+        if (runLength != 0) 
         {
-            STRATEGY::AppendOnesToBitStream(1);
+            STRATEGY::AppendOnesToBitStream(1);	
         }
     }
     else
@@ -576,7 +577,7 @@ int32_t JlsCodec<TRAITS, STRATEGY>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, i
     }
 
     if (index > cpixelMac)
-        throw std::system_error(InvalidCompressedData, CharLSCategoryInstance());
+        throw std::system_error(static_cast<int>(charls::ApiResult::InvalidCompressedData), CharLSCategoryInstance());
 
     for (int32_t i = 0; i < index; ++i)
     {
@@ -735,7 +736,7 @@ void JlsCodec<TRAITS, STRATEGY>::DoScan()
             // initialize edge pixels used for prediction
             _previousLine[_width] = _previousLine[_width - 1];
             _currentLine[-1] = _previousLine[0];
-            DoLine((PIXEL*) nullptr); // dummy arg for overload resolution
+            DoLine(static_cast<PIXEL*>(nullptr)); // dummy arg for overload resolution
 
             rgRUNindex[component] = _RUNindex;
             _previousLine += pixelstride;
@@ -771,10 +772,13 @@ ProcessLine* JlsCodec<TRAITS, STRATEGY>::CreateProcess(ByteStreamInfo info)
     {
         switch (Info().colorTransform)
         {
-            case ColorTransformation::HP1: return new ProcessTransformed<TransformHp1<SAMPLE> >(info, Info(), TransformHp1<SAMPLE>());
-            case ColorTransformation::HP2: return new ProcessTransformed<TransformHp2<SAMPLE> >(info, Info(), TransformHp2<SAMPLE>());
-            case ColorTransformation::HP3: return new ProcessTransformed<TransformHp3<SAMPLE> >(info, Info(), TransformHp3<SAMPLE>());
-            default: throw std::system_error(UnsupportedColorTransform, CharLSCategoryInstance());
+            case ColorTransformation::HP1: return new ProcessTransformed<TransformHp1<SAMPLE>>(info, Info(), TransformHp1<SAMPLE>());
+            case ColorTransformation::HP2: return new ProcessTransformed<TransformHp2<SAMPLE>>(info, Info(), TransformHp2<SAMPLE>());
+            case ColorTransformation::HP3: return new ProcessTransformed<TransformHp3<SAMPLE>>(info, Info(), TransformHp3<SAMPLE>());
+            default:
+                std::ostringstream message;
+                message << "Color transformation " << Info().colorTransform << " is not supported.";
+                throw CreateSystemError(ApiResult::UnsupportedColorTransform, message.str());
         }
     }
 
@@ -783,14 +787,17 @@ ProcessLine* JlsCodec<TRAITS, STRATEGY>::CreateProcess(ByteStreamInfo info)
         int shift = 16 - Info().bitspersample;
         switch (Info().colorTransform)
         {
-            case ColorTransformation::HP1: return new ProcessTransformed<TransformShifted<TransformHp1<uint16_t> > >(info, Info(), TransformShifted<TransformHp1<uint16_t> >(shift));
-            case ColorTransformation::HP2: return new ProcessTransformed<TransformShifted<TransformHp2<uint16_t> > >(info, Info(), TransformShifted<TransformHp2<uint16_t> >(shift));
-            case ColorTransformation::HP3: return new ProcessTransformed<TransformShifted<TransformHp3<uint16_t> > >(info, Info(), TransformShifted<TransformHp3<uint16_t> >(shift));
-            default: throw std::system_error(UnsupportedColorTransform, CharLSCategoryInstance());
+            case ColorTransformation::HP1: return new ProcessTransformed<TransformShifted<TransformHp1<uint16_t>>>(info, Info(), TransformShifted<TransformHp1<uint16_t>>(shift));
+            case ColorTransformation::HP2: return new ProcessTransformed<TransformShifted<TransformHp2<uint16_t>>>(info, Info(), TransformShifted<TransformHp2<uint16_t>>(shift));
+            case ColorTransformation::HP3: return new ProcessTransformed<TransformShifted<TransformHp3<uint16_t>>>(info, Info(), TransformShifted<TransformHp3<uint16_t>>(shift));
+            default:
+                std::ostringstream message;
+                message << "Color transformation " << Info().colorTransform << " is not supported.";
+                throw CreateSystemError(ApiResult::UnsupportedColorTransform, message.str());
         }
     }
 
-    throw std::system_error(UnsupportedBitDepthForTransform, CharLSCategoryInstance());
+    throw std::system_error(static_cast<int>(ApiResult::UnsupportedBitDepthForTransform), CharLSCategoryInstance());
 }
 
 
@@ -801,7 +808,7 @@ size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> proce
 {
     STRATEGY::_processLine = std::move(processLine);
 
-    ByteStreamInfo info = { nullptr, (uint8_t*) pvoidCompare, compressedData.count };
+    ByteStreamInfo info = { nullptr, static_cast<uint8_t*>(pvoidCompare), compressedData.count };
     if (pvoidCompare)
     {
         STRATEGY::_qdecoder = std::unique_ptr<DecoderStrategy>(new JlsCodec<TRAITS, DecoderStrategy>(traits, Info()));

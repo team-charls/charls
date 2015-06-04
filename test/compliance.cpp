@@ -56,13 +56,13 @@ void Triplet2Line(std::vector<BYTE>& rgbyte, Size size)
 void TestCompliance(const BYTE* compressedBytes, size_t compressedLength, const BYTE* rgbyteRaw, size_t cbyteRaw, bool bcheckEncode)
 {
     JlsParameters info = JlsParameters();
-    JLS_ERROR err = JpegLsReadHeader(compressedBytes, compressedLength, &info);
-    Assert::IsTrue(err == OK);
+    auto err = JpegLsReadHeader(compressedBytes, compressedLength, &info);
+    Assert::IsTrue(err == ApiResult::OK);
 
     if (bcheckEncode)
     {
         err = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, compressedBytes, compressedLength);
-        Assert::IsTrue(err == OK);
+        Assert::IsTrue(err == ApiResult::OK);
     }
 
     std::vector<BYTE> rgbyteCompressed(info.height *info.width* 4);
@@ -70,7 +70,7 @@ void TestCompliance(const BYTE* compressedBytes, size_t compressedLength, const 
     std::vector<BYTE> rgbyteOut(info.height *info.width * ((info.bitspersample + 7) / 8) * info.components);
 
     err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), compressedBytes, compressedLength, nullptr);
-    Assert::IsTrue(err == OK);
+    Assert::IsTrue(err == ApiResult::OK);
 
     if (info.allowedlossyerror == 0)
     {
@@ -95,7 +95,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
         return;
 
     JlsParameters metadata;
-    if (JpegLsReadHeader(&rgbyteFile[0], rgbyteFile.size(), &metadata) != OK)
+    if (JpegLsReadHeader(&rgbyteFile[0], rgbyteFile.size(), &metadata) != ApiResult::OK)
     {
         Assert::IsTrue(false);
         return;

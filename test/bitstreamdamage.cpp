@@ -19,8 +19,8 @@ void TestDamagedBitStream1()
         return;
 
     std::vector<BYTE> rgbyteOut(256 * 256 * 2); 
-    JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
-    Assert::IsTrue(error == InvalidCompressedData);
+    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
+    Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
 }
 
 
@@ -34,8 +34,8 @@ void TestDamagedBitStream2()
     rgbyteCompressed.resize(40000,3);
 
     std::vector<BYTE> rgbyteOut(512 * 512); 
-    JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
-    Assert::IsTrue(error == InvalidCompressedData);
+    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
+    Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
 }
 
 
@@ -49,8 +49,8 @@ void TestDamagedBitStream3()
     rgbyteCompressed[301] = 0xFF;
 
     std::vector<BYTE> rgbyteOut(512 * 512);
-    JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
-    Assert::IsTrue(error == InvalidCompressedData);
+    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
+    Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
 }
 
 
@@ -67,17 +67,17 @@ void TestFileWithRandomHeaderDamage(SZC filename)
     for (int i = 0; i < 40; ++i)
     {
         std::vector<BYTE> rgbyteCompressedTest(rgbyteCompressedOrg);
-        std::vector<int> errors(10,0);
+        std::vector<int> errors(10, 0);
 
         for (int j = 0; j < 20; ++j)
         {
-            rgbyteCompressedTest[i] = (BYTE)rand();
-            rgbyteCompressedTest[i+1] = (BYTE)rand();
-            rgbyteCompressedTest[i+2] = (BYTE)rand();
-            rgbyteCompressedTest[i+3] = (BYTE)rand();
+            rgbyteCompressedTest[i] = static_cast<BYTE>(rand());
+            rgbyteCompressedTest[i+1] = static_cast<BYTE>(rand());
+            rgbyteCompressedTest[i+2] = static_cast<BYTE>(rand());
+            rgbyteCompressedTest[i+3] = static_cast<BYTE>(rand());
 
-            JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressedTest[0], rgbyteCompressedTest.size(), nullptr);
-            errors[error] = errors[error] + 1;
+            auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressedTest[0], rgbyteCompressedTest.size(), nullptr);
+            errors[static_cast<int>(error)]++;
         }
 
         std::cout << "With garbage input at index " << i << ": ";

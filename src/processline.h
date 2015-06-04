@@ -7,6 +7,7 @@
 #include "util.h"
 #include "publictypes.h"
 #include <vector>
+#include <sstream>
 
 #ifdef _MSC_VER 
 #pragma warning(disable: 4996) // 'function': was declared deprecated also 'std::<function name>': Function call with parameters that may be unsafe [VS2012]
@@ -68,10 +69,14 @@ private:
 inline void ByteSwap(unsigned char* data, int count)
 {
     if (count & 1)
-        throw std::system_error(InvalidJlsParameters, CharLSCategoryInstance());
+    {
+        std::ostringstream message;
+        message << "An odd number of bytes (" << count << ") cannot be swapped.";
+        throw CreateSystemError(charls::ApiResult::InvalidJlsParameters, message.str());
+    }
 
     unsigned int* data32 = reinterpret_cast<unsigned int*>(data);
-    for(int i = 0; i < count/4; i++)
+    for(int i = 0; i < count / 4; i++)
     {
         unsigned int value = data32[i];
         data32[i] = ((value >> 8) & 0x00FF00FF) | ((value & 0x00FF00FF) << 8);
@@ -98,9 +103,9 @@ public:
         std::size_t bytesToRead = pixelCount * _bytesPerPixel;
         while (bytesToRead != 0)
         {
-            std::streamsize bytesRead = _rawData->sgetn((char*)dest, bytesToRead);
+            std::streamsize bytesRead = _rawData->sgetn(static_cast<char*>(dest), bytesToRead);
             if (bytesRead == 0)
-                throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
+                throw std::system_error(static_cast<int>(charls::ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
 
             bytesToRead = static_cast<std::size_t>(bytesToRead - bytesRead);
         }
@@ -116,12 +121,12 @@ public:
         }
     }
 
-    void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/)
+    void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/) override
     {
         int bytesToWrite = pixelCount * _bytesPerPixel;
         std::streamsize bytesWritten = _rawData->sputn(static_cast<const char*>(pSrc), bytesToWrite);
         if (bytesWritten != bytesToWrite)
-            throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
+            throw std::system_error(static_cast<int>(charls::ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
     }
 
 private:
@@ -248,11 +253,15 @@ public:
     void Transform(std::basic_streambuf<char>* rawStream, void* dest, int pixelCount, int destStride)
     {
         std::streamsize bytesToRead = pixelCount * _info.components * sizeof(SAMPLE);
-        while(bytesToRead != 0)
+        while (bytesToRead != 0)
         {
-            std::streamsize read = rawStream->sgetn((char*)&_buffer[0], bytesToRead);
+            std::streamsize read = rawStream->sgetn(reinterpret_cast<char*>(&_buffer[0]), bytesToRead);
             if (read == 0)
-                throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
+            {
+                std::ostringstream message;
+                message << "No more bytes available in input buffer, still neededing " << read;
+                throw CreateSystemError(charls::ApiResult::UncompressedBufferTooSmall, message.str());
+            }
 
             bytesToRead -= read;
         }
@@ -327,7 +336,7 @@ public:
 
             std::streamsize bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(&_buffer[0]), bytesToWrite);
             if (bytesWritten != bytesToWrite)
-                throw std::system_error(UncompressedBufferTooSmall, CharLSCategoryInstance());
+                throw std::system_error(static_cast<int>(charls::ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
         }
         else
         {

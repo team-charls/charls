@@ -75,7 +75,7 @@ private:
         else
         {
             if (_byteOffset >= _data.count)
-                throw std::system_error(CompressedBufferTooSmall, CharLSCategoryInstance());
+                throw std::system_error(static_cast<int>(charls::ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
 
             _data.rawData[_byteOffset++] = val;
         }

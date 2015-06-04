@@ -20,3 +20,19 @@ Exceptions and Error Handling
 * An english error text that describes the problem is extreme usefull.
 
 => Design: std::system_error is the standard solution to throw exceptions from libraries (CharLS is a library)
+
+
+Template: class vs typename
+---------------------------
+The typename keyword is the prefered keyword to "mark" template variables.
+
+
+Prevent header file double include
+----------------------------------
+There are 2 methods to prevent double include:
+
+1) #pragma once. Supported by Visual Studio, GCC and many other compilers, but in essence a compiler extension 
+
+2) #ifdef CHARLS_<FILENAME> \ #define CHARLS_<FILENAME> \ #endif construction.
+
+* For maximum platform compatiblity, method 2 should be used.

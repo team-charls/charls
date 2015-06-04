@@ -2,7 +2,8 @@
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
 //
 
-#pragma once
+#ifndef CHARLS_JPEGIMAGEDATASEGMENT
+#define CHARLS_JPEGIMAGEDATASEGMENT
 
 #include "util.h"
 #include "jpegsegment.h"
@@ -27,3 +28,5 @@ private:
     ByteStreamInfo _rawStreamInfo;
     JlsParameters _info;
 };
+
+#endif

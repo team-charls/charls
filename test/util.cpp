@@ -37,28 +37,28 @@ void FixEndian(std::vector<BYTE>* rgbyte, bool littleEndianData)
 
 
 
-bool ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs, int bytes)
+bool ReadFile(SZC strName, std::vector<uint8_t>* pvec, int offset, int bytes)
 {
     FILE* pfile = fopen(strName, "rb");
-    if( !pfile ) 
+    if (!pfile)
     {
-        fprintf( stderr, "Could not open %s\n", strName );
+        fprintf(stderr, "Could not open %s\n", strName);
         return false;
     }
 
-    fseek(pfile, 0, SEEK_END);  
+    fseek(pfile, 0, SEEK_END);
     int cbyteFile = ftell(pfile);
-    if (ioffs < 0)
+    if (offset < 0)
     {
         Assert::IsTrue(bytes != 0);
-        ioffs = cbyteFile - bytes;
+        offset = cbyteFile - bytes;
     }
     if (bytes == 0)
     {
-        bytes = cbyteFile  -ioffs;
+        bytes = cbyteFile - offset;
     }
 
-    fseek(pfile, ioffs, SEEK_SET);
+    fseek(pfile, offset, SEEK_SET);
     pvec->resize(bytes);
     size_t bytesRead = fread(&(*pvec)[0],1, pvec->size(), pfile);
     fclose(pfile);
@@ -66,7 +66,7 @@ bool ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs, int bytes)
 }
 
 
-void WriteFile(SZC strName, std::vector<BYTE>& vec)
+void WriteFile(SZC strName, std::vector<uint8_t>& vec)
 {
     FILE* pfile = fopen(strName, "wb");
     if( !pfile ) 
@@ -106,16 +106,16 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
     double dwtimeEncodeStart = getTime();
     for (int i = 0; i < loopCount; ++i)
     {
-        JLS_ERROR err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &info);
-        Assert::IsTrue(err == OK);
+        auto err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &info);
+        Assert::IsTrue(err == ApiResult::OK);
     }
     double dwtimeEncodeComplete = getTime();
 
     double dwtimeDecodeStart = getTime();
     for (int i = 0; i < loopCount; ++i)
     {
-        JLS_ERROR err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], compressedLength, nullptr);
-        Assert::IsTrue(err == OK);
+        auto err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], compressedLength, nullptr);
+        Assert::IsTrue(err == ApiResult::OK);
     }
     double dwtimeDecodeComplete = getTime();
 
