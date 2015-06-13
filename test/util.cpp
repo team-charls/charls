@@ -106,7 +106,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
     double dwtimeEncodeStart = getTime();
     for (int i = 0; i < loopCount; ++i)
     {
-        auto err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &info);
+        auto err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &info, nullptr);
         Assert::IsTrue(err == ApiResult::OK);
     }
     double dwtimeEncodeComplete = getTime();
@@ -114,7 +114,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
     double dwtimeDecodeStart = getTime();
     for (int i = 0; i < loopCount; ++i)
     {
-        auto err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], compressedLength, nullptr);
+        auto err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], compressedLength, nullptr, nullptr);
         Assert::IsTrue(err == ApiResult::OK);
     }
     double dwtimeDecodeComplete = getTime();

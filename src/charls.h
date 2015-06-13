@@ -54,8 +54,19 @@ extern "C"
     /// <param name="source">Byte array that holds the pixels that should be encoded.</param>
     /// <param name="sourceLength">Length of the array in bytes.</param>
     /// <param name="info">Info that describes the pixel data and how to encode it.</param>
+    /// <param name="errorMessage">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
     CHARLS_IMEXPORT(CharlsApiResultType) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten,
-        const void* source, size_t sourceLength, const struct JlsParameters* info);
+        const void* source, size_t sourceLength, const struct JlsParameters* info, char* errorMessage);
+
+    /// <summary>
+    /// Retrieves the JPEG-LS header. This info can be used to pre-allocate the uncompressed output buffer.
+    /// </summary>
+    /// <param name="compressedData">Byte array that holds the JPEG-LS encoded data of which the header should be extracted.</param>
+    /// <param name="compressedLength">Length of the array in bytes.</param>
+    /// <param name="info">Info object that describes how the pixel data is encoded.</param>
+    /// <param name="errorMessage">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsReadHeader(const void* compressedData, size_t compressedLength,
+        struct JlsParameters* info, char* errorMessage);
 
     /// <summary>
     /// Encodes a JPEG-LS encoded byte array to uncompressed pixel data byte array.
@@ -65,26 +76,23 @@ extern "C"
     /// <param name="source">Byte array that holds the JPEG-LS encoded data that should be decoded.</param>
     /// <param name="sourceLength">Length of the array in bytes.</param>
     /// <param name="info">Info that describes the pixel data and how to decode it.</param>
+    /// <param name="errorMessage">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
     CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecode(void* destination, size_t destinationLength,
-        const void* source, size_t sourceLength, const struct JlsParameters* info);
+        const void* source, size_t sourceLength, const struct JlsParameters* info, char* errorMessage);
 
     CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength,
-        const void* compressedData, size_t compressedLength, 
-        struct JlsRect rect, struct JlsParameters* info);
-
-    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsReadHeader(const void* compressedData, size_t compressedLength,
-        struct JlsParameters* info);
+        const void* compressedData, size_t compressedLength,
+        struct JlsRect rect, struct JlsParameters* info, char* errorMessage);
 
     CHARLS_IMEXPORT(CharlsApiResultType) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength,
-        const void* compressedData, size_t compressedLength);
+        const void* compressedData, size_t compressedLength, char* errorMessage);
 
-  
 #ifdef __cplusplus
 
 }
-    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsEncodeStream(ByteStreamInfo rawStream, size_t& bytesWritten, ByteStreamInfo inputStream, const JlsParameters& info);
-    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecodeStream(ByteStreamInfo output, ByteStreamInfo input, const JlsParameters* info);
-    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsReadHeaderStream(ByteStreamInfo input, JlsParameters* info);
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsEncodeStream(ByteStreamInfo rawStream, size_t& bytesWritten, ByteStreamInfo inputStream, const JlsParameters& info, char* errorMessage);
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecodeStream(ByteStreamInfo output, ByteStreamInfo input, const JlsParameters* info, char* errorMessage);
+    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsReadHeaderStream(ByteStreamInfo input, JlsParameters* info, char* errorMessage);
 
 #endif
 

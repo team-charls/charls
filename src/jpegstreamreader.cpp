@@ -207,11 +207,19 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         case JpegMarkerCode::StartOfFrameExtendedArithemtic:
         case JpegMarkerCode::StartOfFrameProgressiveArithemtic:
         case JpegMarkerCode::StartOfFrameLosslessArithemtic:
-            throw std::system_error(static_cast<int>(ApiResult::UnsupportedEncoding), CharLSCategoryInstance());
+            {
+                std::ostringstream message;
+                message << "JPEG encoding with marker " << static_cast<unsigned int>(marker) << " is not supported.";
+                throw CreateSystemError(ApiResult::UnsupportedEncoding, message.str());
+            }
 
         // Other tags not supported (among which DNL DRI)
         default:
-            throw std::system_error(static_cast<int>(ApiResult::UnknownJpegMarker), CharLSCategoryInstance());
+            {
+                std::ostringstream message;
+                message << "Unknown JPEG marker " << static_cast<unsigned int>(marker) << " encountered.";
+                throw CreateSystemError(ApiResult::UnknownJpegMarker, message.str());
+            }
     }
 }
 

@@ -19,7 +19,7 @@ void TestDamagedBitStream1()
         return;
 
     std::vector<BYTE> rgbyteOut(256 * 256 * 2); 
-    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
+    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
     Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
 }
 
@@ -34,7 +34,7 @@ void TestDamagedBitStream2()
     rgbyteCompressed.resize(40000,3);
 
     std::vector<BYTE> rgbyteOut(512 * 512); 
-    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
+    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
     Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
 }
 
@@ -49,7 +49,7 @@ void TestDamagedBitStream3()
     rgbyteCompressed[301] = 0xFF;
 
     std::vector<BYTE> rgbyteOut(512 * 512);
-    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr);
+    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
     Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
 }
 
@@ -76,7 +76,7 @@ void TestFileWithRandomHeaderDamage(SZC filename)
             rgbyteCompressedTest[i+2] = static_cast<BYTE>(rand());
             rgbyteCompressedTest[i+3] = static_cast<BYTE>(rand());
 
-            auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressedTest[0], rgbyteCompressedTest.size(), nullptr);
+            auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressedTest[0], rgbyteCompressedTest.size(), nullptr, nullptr);
             errors[static_cast<int>(error)]++;
         }
 

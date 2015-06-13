@@ -43,7 +43,34 @@ static ApiResult SystemErrorToCharLSError(const std::system_error& e)
 }
 
 
-CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& pcbyteWritten, ByteStreamInfo rawStreamInfo, const struct JlsParameters& parameters)
+static void ClearErrorMessage(char* errorMessage)
+{
+    if (errorMessage)
+    {
+        errorMessage[0] = 0;
+    }
+}
+
+
+static void CopyWhatTextToErrorMessage(const std::system_error& e, char* errorMessage)
+{
+    if (!errorMessage)
+        return;
+
+    if (e.code().category() == CharLSCategoryInstance())
+    {
+        ASSERT(strlen(e.what()) < 255);
+        strcpy(errorMessage, e.what());
+    }
+    else
+    {
+        errorMessage[0] = 0;
+    }
+}
+
+
+CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& pcbyteWritten,
+    ByteStreamInfo rawStreamInfo, const struct JlsParameters& parameters, char* errorMessage)
 {
     try
     {
@@ -91,20 +118,24 @@ CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 
         writer.Write(compressedStreamInfo);
         pcbyteWritten = writer.GetBytesWritten();
+
+        ClearErrorMessage(errorMessage);
         return ApiResult::OK;
     }
     catch (const std::system_error& e)
     {
+        CopyWhatTextToErrorMessage(e, errorMessage);
         return SystemErrorToCharLSError(e);
     }
     catch (...)
     {
+        ClearErrorMessage(errorMessage);
         return ApiResult::UnexpectedFailure;
     }
 }
 
 
-CHARLS_IMEXPORT(ApiResult) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info)
+CHARLS_IMEXPORT(ApiResult) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info, char* errorMessage)
 {
     try
     {
@@ -116,43 +147,50 @@ CHARLS_IMEXPORT(ApiResult) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStre
         }
 
         reader.Read(rawStream);
+
+        ClearErrorMessage(errorMessage);
         return ApiResult::OK;
     }
     catch (const std::system_error& e)
     {
+        CopyWhatTextToErrorMessage(e, errorMessage);
         return SystemErrorToCharLSError(e);
     }
     catch (...)
     {
+        ClearErrorMessage(errorMessage);
         return ApiResult::UnexpectedFailure;
     }
 }
 
 
-CHARLS_IMEXPORT(ApiResult) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* pparams)
+CHARLS_IMEXPORT(ApiResult) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* pparams, char* errorMessage)
 {
     try
     {
         JpegStreamReader reader(rawStreamInfo);
         reader.ReadHeader();
         reader.ReadStartOfScan(true);
-        JlsParameters info = reader.GetMetadata();
-        *pparams = info;
+        *pparams = reader.GetMetadata();
+
+        ClearErrorMessage(errorMessage);
         return ApiResult::OK;
     }
     catch (const std::system_error& e)
     {
+        CopyWhatTextToErrorMessage(e, errorMessage);
         return SystemErrorToCharLSError(e);
     }
     catch (...)
     {
+        ClearErrorMessage(errorMessage);
         return ApiResult::UnexpectedFailure;
     }
 }
 
 extern "C"
 {
-    CHARLS_IMEXPORT(ApiResult) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, const void* source, size_t sourceLength, const struct JlsParameters* parameters)
+    CHARLS_IMEXPORT(ApiResult) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, const void* source, size_t sourceLength, const struct JlsParameters* parameters, char* errorMessage)
     {
         if (!destination || !bytesWritten || !source || !parameters)
             return ApiResult::InvalidJlsParameters;
@@ -160,30 +198,30 @@ extern "C"
         ByteStreamInfo rawStreamInfo = FromByteArray(source, sourceLength);
         ByteStreamInfo compressedStreamInfo = FromByteArray(destination, destinationLength);
 
-        return JpegLsEncodeStream(compressedStreamInfo, *bytesWritten, rawStreamInfo, *parameters);
+        return JpegLsEncodeStream(compressedStreamInfo, *bytesWritten, rawStreamInfo, *parameters, errorMessage);
     }
 
 
-    CHARLS_IMEXPORT(ApiResult) JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* info)
+    CHARLS_IMEXPORT(ApiResult) JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* pparams, char* errorMessage)
+    {
+        return JpegLsReadHeaderStream(FromByteArray(compressedData, compressedLength), pparams, errorMessage);
+    }
+
+
+    CHARLS_IMEXPORT(ApiResult) JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* info, char* errorMessage)
     {
         ByteStreamInfo compressedStream = FromByteArray(source, sourceLength);
         ByteStreamInfo rawStreamInfo = FromByteArray(destination, destinationLength);
 
-        return JpegLsDecodeStream(rawStreamInfo, compressedStream, info);
-    }
-
-    
-    CHARLS_IMEXPORT(ApiResult) JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* pparams)
-    {
-        return JpegLsReadHeaderStream(FromByteArray(compressedData, compressedLength), pparams);
+        return JpegLsDecodeStream(rawStreamInfo, compressedStream, info, errorMessage);
     }
 
 
-    CHARLS_IMEXPORT(ApiResult) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength)
+    CHARLS_IMEXPORT(ApiResult) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, char* errorMessage)
     {
         JlsParameters info = JlsParameters();
 
-        auto error = JpegLsReadHeader(compressedData, compressedLength, &info);
+        auto error = JpegLsReadHeader(compressedData, compressedLength, &info, errorMessage);
         if (error != ApiResult::OK)
             return error;
 
@@ -224,11 +262,13 @@ extern "C"
         writer.EnableCompare(true);
         writer.Write(FromByteArray(&rgbyteCompressed[0], rgbyteCompressed.size()));
 
+        ClearErrorMessage(errorMessage);
         return ApiResult::OK;
     }
 
 
-    CHARLS_IMEXPORT(ApiResult) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, JlsRect roi, JlsParameters* info)
+    CHARLS_IMEXPORT(ApiResult) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength,
+        JlsRect roi, JlsParameters* info, char* errorMessage)
     {
         try
         {
@@ -243,16 +283,19 @@ extern "C"
             }
 
             reader.SetRect(roi);
-
             reader.Read(rawStreamInfo);
+
+            ClearErrorMessage(errorMessage);
             return ApiResult::OK;
         }
         catch (const std::system_error& e)
         {
+            CopyWhatTextToErrorMessage(e, errorMessage);
             return SystemErrorToCharLSError(e);
         }
         catch (...)
         {
+            ClearErrorMessage(errorMessage);
             return ApiResult::UnexpectedFailure;
         }
     }

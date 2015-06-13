@@ -90,7 +90,7 @@ void DecodePerformanceTests(int loopCount)
         return;
 
     JlsParameters info;
-    auto result = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &info);
+    auto result = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &info, nullptr);
     if (result != charls::ApiResult::OK)
         return;
 
@@ -100,7 +100,7 @@ void DecodePerformanceTests(int loopCount)
     for (int i = 0; i < loopCount; ++i)
     {
 
-        result = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpeglsCompressed.data(), jpeglsCompressed.size(), &info);
+        result = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpeglsCompressed.data(), jpeglsCompressed.size(), &info, nullptr);
         if (result != charls::ApiResult::OK)
             return;
     }

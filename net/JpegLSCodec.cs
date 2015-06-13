@@ -6,9 +6,11 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
+using System.Text;
 
 namespace CharLS
 {
+
     /// <summary>
     /// Provides methods and for compressing and decompressing arrays using the JPEG-LS algorithm.
     /// </summary>
@@ -113,21 +115,22 @@ namespace CharLS
                 parameters.Jfif.DensityY = 1;
             }
 
+            var errorMessage = new StringBuilder(256);
             JpegLSError result;
             if (Environment.Is64BitProcess)
             {
                 long count;
-                result = SafeNativeMethods.JpegLsEncode64(destination, destinationLength, out count, pixels, pixelCount, ref parameters);
+                result = SafeNativeMethods.JpegLsEncode64(destination, destinationLength, out count, pixels, pixelCount, ref parameters, errorMessage);
                 compressedCount = (int)count;
             }
             else
             {
-                result = SafeNativeMethods.JpegLsEncode(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters);
+                result = SafeNativeMethods.JpegLsEncode(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters, errorMessage);
             }
             if (result == JpegLSError.CompressedBufferTooSmall)
                 return false;
 
-            HandleResult(result);
+            HandleResult(result, errorMessage);
             return true;
         }
 
@@ -212,20 +215,22 @@ namespace CharLS
             Contract.Requires<ArgumentException>(count >= 0 && count <= source.Length);
             Contract.Requires<ArgumentNullException>(pixels != null);
 
+            var errorMessage = new StringBuilder(256);
             JpegLSError error = Environment.Is64BitProcess ?
-                SafeNativeMethods.JpegLsDecode64(pixels, pixels.Length, source, count, IntPtr.Zero) :
-                SafeNativeMethods.JpegLsDecode(pixels, pixels.Length, source, count, IntPtr.Zero);
-            HandleResult(error);
+                SafeNativeMethods.JpegLsDecode64(pixels, pixels.Length, source, count, IntPtr.Zero, errorMessage) :
+                SafeNativeMethods.JpegLsDecode(pixels, pixels.Length, source, count, IntPtr.Zero, errorMessage);
+            HandleResult(error, errorMessage);
         }
 
         private static void JpegLsReadHeaderThrowWhenError(byte[] source, int length, out JlsParameters info)
         {
             Contract.Requires(source != null);
 
+            var errorMessage = new StringBuilder(256);
             JpegLSError result = Environment.Is64BitProcess ?
-                SafeNativeMethods.JpegLsReadHeader64(source, length, out info) :
-                SafeNativeMethods.JpegLsReadHeader(source, length, out info);
-            HandleResult(result);
+                SafeNativeMethods.JpegLsReadHeader64(source, length, out info, errorMessage) :
+                SafeNativeMethods.JpegLsReadHeader(source, length, out info, errorMessage);
+            HandleResult(result, errorMessage);
         }
 
         private static int GetUncompressedSize(ref JlsParameters info)
@@ -237,7 +242,7 @@ namespace CharLS
             return size;
         }
 
-        private static void HandleResult(JpegLSError result)
+        private static void HandleResult(JpegLSError result, StringBuilder errorMessage)
         {
             Exception exception;
 
@@ -246,56 +251,23 @@ namespace CharLS
                 case JpegLSError.None:
                     return;
 
-                case JpegLSError.InvalidCompressedData:
-                    exception = new InvalidDataException("Bad compressed data. Unable to decompress.");
-                    break;
-
+                case JpegLSError.TooMuchCompressedData:
                 case JpegLSError.InvalidJlsParameters:
-                    exception = new InvalidDataException("One of the JLS parameters is invalid. Unable to process.");
+                case JpegLSError.InvalidCompressedData:
+                case JpegLSError.CompressedBufferTooSmall:
+                case JpegLSError.ImageTypeNotSupported:
+                case JpegLSError.UnsupportedBitDepthForTransform:
+                case JpegLSError.UnsupportedColorTransform:
+                case JpegLSError.UnsupportedEncoding:
+                case JpegLSError.UnknownJpegMarker:
+                case JpegLSError.MissingJpegMarkerStart:
+                case JpegLSError.UnspecifiedFailure:
+                    exception = new InvalidDataException(errorMessage.ToString());
                     break;
 
                 case JpegLSError.UncompressedBufferTooSmall:
-                    exception = new ArgumentException("The pixel buffer is too small, related to the metadata description");
-                    break;
-
                 case JpegLSError.ParameterValueNotSupported:
-                    exception = new ArgumentException("The pixel buffer is too small, related to the metadata description");
-                    break;
-
-                case JpegLSError.CompressedBufferTooSmall:
-                    exception = new InvalidDataException("The buffer containing the compressed data is too small to decode the complete image");
-                    break;
-
-                case JpegLSError.TooMuchCompressedData:
-                    exception = new InvalidDataException("The buffer containing the compressed data has still data while the complete image has already been decoded");
-                    break;
-
-                case JpegLSError.ImageTypeNotSupported:
-                    exception = new InvalidDataException("The encoded bit stream contains options that are not supported by this implementation");
-                    break;
-
-                case JpegLSError.UnsupportedBitDepthForTransform:
-                    exception = new InvalidDataException("Unsupported bit depth for transformation");
-                    break;
-
-                case JpegLSError.UnsupportedColorTransform:
-                    exception = new InvalidDataException("Unsupported color transformation");
-                    break;
-
-                case JpegLSError.UnsupportedEncoding:
-                    exception = new InvalidDataException("Unsupported encoded frame detected. Only JPEG-LS encoded frames are supported.");
-                    break;
-
-                case JpegLSError.UnknownJpegMarker:
-                    exception = new InvalidDataException("An unknown JPEG marker code is detected in the encoded bit stream");
-                    break;
-
-                case JpegLSError.MissingJpegMarkerStart:
-                    exception = new InvalidDataException("The decoding process expects a start of JPEG marker code (0xFF) but none was found");
-                    break;
-
-                case JpegLSError.UnspecifiedFailure:
-                    exception = new InvalidDataException("Failure detected, but no specific info about the error is available.");
+                    exception = new ArgumentException(errorMessage.ToString());
                     break;
 
                 case JpegLSError.UnexpectedFailure:
