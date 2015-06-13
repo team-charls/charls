@@ -14,7 +14,7 @@
 // This class is assumes MAXVAL correspond to a whole number of bits, and no custom RESET value is set when encoding.
 // The point of this is to have the most optimized code for the most common and most demanding scenario. 
 
-template <class sample, int32_t bitsperpixel>
+template<typename sample, int32_t bitsperpixel>
 struct LosslessTraitsImplT 
 {
     typedef sample SAMPLE;
@@ -34,7 +34,7 @@ struct LosslessTraitsImplT
         return ModRange(d);
     }
 
-    static inlinehint bool IsNear(int32_t lhs, int32_t rhs) 
+    static inlinehint bool IsNear(int32_t lhs, int32_t rhs)
     {
         return lhs == rhs;
     }
@@ -59,7 +59,7 @@ struct LosslessTraitsImplT
 };
 
 
-template <class SAMPLE, int32_t bpp>
+template<typename SAMPLE, int32_t bpp>
 struct LosslessTraitsT : LosslessTraitsImplT<SAMPLE, bpp> 
 {
     typedef SAMPLE PIXEL;
@@ -110,7 +110,7 @@ struct LosslessTraitsT<uint16_t, 16> : LosslessTraitsImplT<uint16_t, 16>
 };
 
 
-template<class SAMPLE, int32_t bpp>
+template<typename SAMPLE, int32_t bpp>
 struct LosslessTraitsT<Triplet<SAMPLE>, bpp> : LosslessTraitsImplT<SAMPLE, bpp>
 {
     typedef Triplet<SAMPLE> PIXEL;

@@ -17,7 +17,7 @@ const int BASIC_RESET = 64;
 // This is to allow the traits class to replace the default implementation here with optimized specific implementations.
 // This is done for lossless coding/decoding: see losslesstraits.h 
 
-template <class sample, class pixel>
+template<typename sample, typename pixel>
 struct DefaultTraitsT
 {
     typedef sample SAMPLE;
@@ -44,7 +44,7 @@ struct DefaultTraitsT
 
     DefaultTraitsT(int32_t max, int32_t jls_near)
     {
-        NEAR   = jls_near;
+        NEAR = jls_near;
         MAXVAL = max;
         RANGE  = (MAXVAL + 2 * NEAR )/(2 * NEAR + 1) + 1;
         bpp = log_2(max);
@@ -65,14 +65,14 @@ struct DefaultTraitsT
 
     inlinehint bool IsNear(int32_t lhs, int32_t rhs) const
     {
-        return abs(lhs-rhs) <=NEAR;
+        return abs(lhs-rhs) <= NEAR;
     }
 
     bool IsNear(Triplet<SAMPLE> lhs, Triplet<SAMPLE> rhs) const
     {
-        return abs(lhs.v1-rhs.v1) <=NEAR && 
-            abs(lhs.v2-rhs.v2) <=NEAR && 
-            abs(lhs.v3-rhs.v3) <=NEAR; 
+        return abs(lhs.v1-rhs.v1) <= NEAR &&
+               abs(lhs.v2-rhs.v2) <= NEAR && 
+               abs(lhs.v3-rhs.v3) <= NEAR;
     }
 
     inlinehint int32_t CorrectPrediction(int32_t Pxc) const
