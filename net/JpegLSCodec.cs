@@ -35,10 +35,15 @@ namespace CharLS
         /// <exception cref="InternalBufferOverflowException">The compressed output doesn't fit into the maximum defined output buffer.</exception>
         public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, bool jfifHeader = false)
         {
-            Contract.Requires<ArgumentNullException>(info != null);
-            Contract.Requires<ArgumentException>(info.Width > 0 && info.Width <= 65535);
-            Contract.Requires<ArgumentException>(info.Height > 0 && info.Height <= 65535);
-            Contract.Requires<ArgumentNullException>(pixels != null);
+            if (info == null)
+                throw new ArgumentNullException("info");
+            if (info.Width <= 0 || info.Width > 65535)
+                throw new ArgumentException("Width property needs to be in the range <0, 65535>", "info");
+            if (info.Height <= 0 || info.Height > 65535)
+                throw new ArgumentException("Height property needs to be in the range <0, 65535>", "info");
+            if (pixels == null)
+                throw new ArgumentNullException("pixels");
+            Contract.EndContractBlock();
 
             var pixelCount = pixels.Length;
             Contract.Assume(pixelCount > 0 && pixelCount <= pixels.Length);
@@ -56,11 +61,17 @@ namespace CharLS
         /// <exception cref="InternalBufferOverflowException">The compressed output doesn't fit into the maximum defined output buffer.</exception>
         public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, bool jfifHeader)
         {
-            Contract.Requires<ArgumentNullException>(info != null);
-            Contract.Requires<ArgumentException>(info.Width > 0 && info.Width <= 65535);
-            Contract.Requires<ArgumentException>(info.Height > 0 && info.Height <= 65535);
-            Contract.Requires<ArgumentNullException>(pixels != null);
-            Contract.Requires<ArgumentNullException>(pixelCount > 0 && pixelCount <= pixels.Length);
+            if (info == null)
+                throw new ArgumentNullException("info");
+            if (info.Width <= 0 || info.Width > 65535)
+                throw new ArgumentException("Width property needs to be in the range <0, 65535>", "info");
+            if (info.Height <= 0 || info.Height > 65535)
+                throw new ArgumentException("Height property needs to be in the range <0, 65535>", "info");
+            if (pixels == null)
+                throw new ArgumentNullException("pixels");
+            if (pixelCount <= 0 || pixelCount > pixels.Length)
+                throw new ArgumentException("pixelCount <= 0 || pixelCount > pixels.Length", "pixelCount");
+            Contract.EndContractBlock();
 
             const int JpegLSHeaderLength = 100;
 
@@ -96,13 +107,20 @@ namespace CharLS
         /// <returns><c>true</c> when the compressed bit stream fits into the destination array, otherwise <c>false</c>.</returns>
         public static bool TryCompress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, bool jfifHeader, byte[] destination, int destinationLength, out int compressedCount)
         {
-            Contract.Requires<ArgumentNullException>(info != null);
-            Contract.Requires<ArgumentException>(info.Width > 0 && info.Width <= 65535);
-            Contract.Requires<ArgumentException>(info.Height > 0 && info.Height <= 65535);
-            Contract.Requires<ArgumentNullException>(pixels != null);
-            Contract.Requires<ArgumentNullException>(pixelCount > 0 && pixelCount <= pixels.Length);
-            Contract.Requires<ArgumentNullException>(destination != null);
-            Contract.Requires<ArgumentNullException>(destinationLength > 0 && destinationLength <= destination.Length);
+            if (info == null)
+                throw new ArgumentNullException("info");
+            if (info.Width <= 0 || info.Width > 65535)
+                throw new ArgumentException("Width property needs to be in the range <0, 65535>", "info");
+            if (info.Height <= 0 || info.Height > 65535)
+                throw new ArgumentException("Height property needs to be in the range <0, 65535>", "info");
+            if (pixels == null)
+                throw new ArgumentNullException("pixels");
+            if (pixelCount <= 0 || pixelCount > pixels.Length)
+                throw new ArgumentException("pixelCount <= 0 || pixelCount > pixels.Length", "pixelCount");
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (destinationLength <= 0 || destinationLength > destination.Length)
+                throw new ArgumentException("destination <= 0 || destinationCount > destination.Length", "destinationLength");
             Contract.Ensures(Contract.ValueAtReturn(out compressedCount) >= 0);
 
             var parameters = new JlsParameters();
@@ -144,7 +162,8 @@ namespace CharLS
         /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
         public static JpegLSMetadataInfo GetMetadataInfo(byte[] source)
         {
-            Contract.Requires<ArgumentNullException>(source != null);
+            if (source == null)
+                throw new ArgumentNullException("source");
             Contract.Ensures(Contract.Result<JpegLSMetadataInfo>() != null);
 
             return GetMetadataInfo(source, source.Length);
@@ -159,8 +178,10 @@ namespace CharLS
         /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
         public static JpegLSMetadataInfo GetMetadataInfo(byte[] source, int count)
         {
-            Contract.Requires<ArgumentNullException>(source != null);
-            Contract.Requires<ArgumentException>(count >= 0 && count <= source.Length);
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (count < 0 || count > source.Length)
+                throw new ArgumentNullException("count < 0 || count > source.Length", "count");
             Contract.Ensures(Contract.Result<JpegLSMetadataInfo>() != null);
 
             JlsParameters info;
@@ -176,7 +197,8 @@ namespace CharLS
         /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
         public static byte[] Decompress(byte[] source)
         {
-            Contract.Requires<ArgumentNullException>(source != null);
+            if (source == null)
+                throw new ArgumentNullException("source");
             Contract.Ensures(Contract.Result<byte[]>() != null);
 
             return Decompress(source, source.Length);
@@ -191,8 +213,10 @@ namespace CharLS
         /// <exception cref="InvalidDataException">Thrown when the source array contains invalid compressed data.</exception>
         public static byte[] Decompress(byte[] source, int count)
         {
-            Contract.Requires<ArgumentNullException>(source != null);
-            Contract.Requires<ArgumentException>(count >= 0 && count <= source.Length);
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (count < 0 || count > source.Length)
+                throw new ArgumentNullException("count < 0 || count > source.Length", "count");
             Contract.Ensures(Contract.Result<byte[]>() != null);
 
             JlsParameters info;
@@ -213,9 +237,13 @@ namespace CharLS
         /// <exception cref="InvalidDataException">Thrown when the source array contains an invalid encodeded JPEG-LS bit stream.</exception>
         public static void Decompress(byte[] source, int count, byte[] pixels)
         {
-            Contract.Requires<ArgumentNullException>(source != null);
-            Contract.Requires<ArgumentException>(count >= 0 && count <= source.Length);
-            Contract.Requires<ArgumentNullException>(pixels != null);
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (count < 0 || count > source.Length)
+                throw new ArgumentNullException("count < 0 || count > source.Length", "count");
+            if (pixels == null)
+                throw new ArgumentNullException("pixels");
+            Contract.EndContractBlock();
 
             var errorMessage = new StringBuilder(256);
             JpegLSError error = Environment.Is64BitProcess ?

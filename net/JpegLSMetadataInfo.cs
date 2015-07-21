@@ -44,19 +44,24 @@ namespace CharLS
         /// <summary>
         /// Initializes a new instance of the <see cref="JpegLSMetadataInfo"/> class.
         /// </summary>
-        /// <param name="pixelWidth">The width of the bitmap.</param>
-        /// <param name="pixelHeight">The height of the bitmap.</param>
+        /// <param name="width">The width of the bitmap.</param>
+        /// <param name="height">The height of the bitmap.</param>
         /// <param name="bitsPerComponent">The number of bits per component. Typical 8 for color and 2 to 16 for monochrome bitmaps.</param>
         /// <param name="componentCount">The component count. Typical 1 for monochrome images and 3 for color images.</param>
-        public JpegLSMetadataInfo(int pixelWidth, int pixelHeight, int bitsPerComponent, int componentCount)
+        public JpegLSMetadataInfo(int width, int height, int bitsPerComponent, int componentCount)
         {
-            Contract.Requires<ArgumentException>(pixelWidth > 0);
-            Contract.Requires<ArgumentException>(pixelHeight > 0);
-            Contract.Requires<ArgumentException>(bitsPerComponent > 1);
-            Contract.Requires<ArgumentException>(componentCount > 0);
+            if (width <= 0)
+                throw new ArgumentException("width <= 0", "width");
+            if (height <= 0)
+                throw new ArgumentException("height <= 0", "height");
+            if (bitsPerComponent < 2)
+                throw new ArgumentException("bitsPerComponent < 2", "bitsPerComponent");
+            if (componentCount <= 0)
+                throw new ArgumentException("componentCount <= 0", "componentCount");
+            Contract.EndContractBlock();
 
-            width = pixelWidth;
-            height = pixelHeight;
+            this.width = width;
+            this.height = height;
             this.bitsPerComponent = bitsPerComponent;
             this.componentCount = componentCount;
         }
@@ -99,7 +104,9 @@ namespace CharLS
 
             set
             {
-                Contract.Requires<ArgumentException>(value > 0);
+                if (value <= 0)
+                    throw new ArgumentException("value <= 0", "value");
+                Contract.EndContractBlock();
                 width = value;
             }
         }
@@ -118,7 +125,9 @@ namespace CharLS
 
             set
             {
-                Contract.Requires<ArgumentException>(value > 0);
+                if (value <= 0)
+                    throw new ArgumentException("value <= 0", "value");
+                Contract.EndContractBlock();
                 height = value;
             }
         }
@@ -138,7 +147,9 @@ namespace CharLS
 
             set
             {
-                Contract.Requires<ArgumentException>(value > 1);
+                if (value < 2)
+                    throw new ArgumentException("value < 2", "value");
+                Contract.EndContractBlock();
                 bitsPerComponent = value;
             }
         }
@@ -164,7 +175,9 @@ namespace CharLS
 
             set
             {
-                Contract.Requires<ArgumentException>(value > 0);
+                if (value < 1)
+                    throw new ArgumentException("value < 1", "value");
+                Contract.EndContractBlock();
                 componentCount = value;
             }
         }

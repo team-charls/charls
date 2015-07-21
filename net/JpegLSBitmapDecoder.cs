@@ -29,7 +29,9 @@ namespace CharLS
         /// <exception cref="FileFormatException">The bitmap stream is not a JPEG-LS encoded image.</exception>
         public JpegLSBitmapDecoder(Stream bitmapStream)
         {
-            Contract.Requires<ArgumentNullException>(bitmapStream != null);
+            if (bitmapStream == null)
+                throw new ArgumentNullException("bitmapStream");
+            Contract.EndContractBlock();
 
             try
             {
