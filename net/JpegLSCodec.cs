@@ -10,7 +10,6 @@ using System.Text;
 
 namespace CharLS
 {
-
     /// <summary>
     /// Provides methods and for compressing and decompressing arrays using the JPEG-LS algorithm.
     /// </summary>
@@ -80,7 +79,7 @@ namespace CharLS
                     throw new InternalBufferOverflowException(
                         "Compression failed: compressed output larger then 1.5 * input.");
             }
-
+            Contract.Assume(buffer.Length >= compressedCount);
             return new ArraySegment<byte>(buffer, 0, compressedCount);
         }
 
@@ -104,6 +103,7 @@ namespace CharLS
             Contract.Requires<ArgumentNullException>(pixelCount > 0 && pixelCount <= pixels.Length);
             Contract.Requires<ArgumentNullException>(destination != null);
             Contract.Requires<ArgumentNullException>(destinationLength > 0 && destinationLength <= destination.Length);
+            Contract.Ensures(Contract.ValueAtReturn(out compressedCount) >= 0);
 
             var parameters = new JlsParameters();
             info.CopyTo(ref parameters);
@@ -127,6 +127,8 @@ namespace CharLS
             {
                 result = SafeNativeMethods.JpegLsEncode(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters, errorMessage);
             }
+            Contract.Assume(compressedCount >= 0);
+
             if (result == JpegLSError.CompressedBufferTooSmall)
                 return false;
 
