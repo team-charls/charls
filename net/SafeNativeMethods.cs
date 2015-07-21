@@ -14,13 +14,13 @@ namespace CharLS
         private const string Nativex86Library = "CharLS.dll";
         private const string Nativex64Library = "CharLS64.dll";
 
-        [DllImport(Nativex86Library, SetLastError = false, CharSet = CharSet.Ansi)]
+        [DllImport(Nativex86Library, SetLastError = false, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern JpegLSError JpegLsReadHeader([In] byte[] compressedSource, int compressedLength, out JlsParameters info, [Out] StringBuilder errorMessage);
 
-        [DllImport(Nativex64Library, SetLastError = false, CharSet = CharSet.Ansi, EntryPoint = "JpegLsReadHeader")]
+        [DllImport(Nativex64Library, SetLastError = false, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true, EntryPoint = "JpegLsReadHeader")]
         internal static extern JpegLSError JpegLsReadHeader64([In] byte[] compressedSource, long compressedLength, out JlsParameters info, [Out] StringBuilder errorMessage);
 
-        [DllImport(Nativex86Library, SetLastError = false, CharSet = CharSet.Ansi)]
+        [DllImport(Nativex86Library, SetLastError = false, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern JpegLSError JpegLsDecode(
             [Out] byte[] uncompressedData,
             int uncompressedLength,
@@ -29,7 +29,7 @@ namespace CharLS
             IntPtr info,
             [Out] StringBuilder errorMessage);
 
-        [DllImport(Nativex64Library, SetLastError = false, CharSet = CharSet.Ansi, EntryPoint = "JpegLsDecode")]
+        [DllImport(Nativex64Library, SetLastError = false, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true, EntryPoint = "JpegLsDecode")]
         internal static extern JpegLSError JpegLsDecode64(
             [Out] byte[] uncompressedData,
             long uncompressedLength,
@@ -38,7 +38,7 @@ namespace CharLS
             IntPtr info,
             [Out] StringBuilder errorMessage);
 
-        [DllImport(Nativex86Library, SetLastError = false, CharSet = CharSet.Ansi)]
+        [DllImport(Nativex86Library, SetLastError = false, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         internal static extern JpegLSError JpegLsEncode(
             [Out] byte[] compressedData,
             int compressedLength,
@@ -48,7 +48,7 @@ namespace CharLS
             [In] ref JlsParameters info,
             [Out] StringBuilder errorMessage);
 
-        [DllImport(Nativex64Library, SetLastError = false, CharSet = CharSet.Ansi, EntryPoint = "JpegLsEncode")]
+        [DllImport(Nativex64Library, SetLastError = false, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true, EntryPoint = "JpegLsEncode")]
         internal static extern JpegLSError JpegLsEncode64(
             [Out] byte[] compressedData,
             long compressedLength,
