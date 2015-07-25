@@ -1,5 +1,5 @@
 ﻿//
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 using System;
@@ -87,9 +87,9 @@ namespace CharLS
                 Contract.Assume(info.Width > 0 && info.Width <= 65535);
                 Contract.Assume(info.Height > 0 && info.Height <= 65535);
                 if (!TryCompress(info, pixels, pixels.Length, jfifHeader, buffer, buffer.Length, out compressedCount))
-                    throw new InternalBufferOverflowException(
-                        "Compression failed: compressed output larger then 1.5 * input.");
+                    throw new InternalBufferOverflowException("Compression failed: compressed output larger then 1.5 * input.");
             }
+
             Contract.Assume(buffer.Length >= compressedCount);
             return new ArraySegment<byte>(buffer, 0, compressedCount);
         }
@@ -145,6 +145,7 @@ namespace CharLS
             {
                 result = SafeNativeMethods.JpegLsEncode(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters, errorMessage);
             }
+
             Contract.Assume(compressedCount >= 0);
 
             if (result == JpegLSError.CompressedBufferTooSmall)

@@ -1,5 +1,5 @@
 ﻿//
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 using System;
@@ -115,7 +115,7 @@ namespace CharLS.Test
                 {
                     0xFF, 0xD8, // Start Of Image (JPEG_SOI)
                     0xFF, 0xC3, // Start Of Frame (lossless, huffman) (JPEG_SOF_3)
-                    0x00, 0x00  // Lenght of data of the marker
+                    0x00, 0x00 // Lenght of data of the marker
                 };
             var exception = Assert.Throws<InvalidDataException>(() => JpegLSCodec.Decompress(compressed));
             Assert.AreEqual(JpegLSError.UnsupportedEncoding, exception.Data["JpegLSError"]);
@@ -126,9 +126,9 @@ namespace CharLS.Test
         {
             var compressed = new byte[]
                 {
-                    0xFF, 0xD8,  // Start Of Image (JPEG_SOI)
-                    0xFF, 0x01,  // Undefined marker
-                    0x00, 0x00   // Lenght of data of the marker
+                    0xFF, 0xD8, // Start Of Image (JPEG_SOI)
+                    0xFF, 0x01, // Undefined marker
+                    0x00, 0x00 // Lenght of data of the marker
                 };
 
             var exception = Assert.Throws<InvalidDataException>(() => JpegLSCodec.Decompress(compressed));

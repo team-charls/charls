@@ -1,5 +1,5 @@
 ﻿//
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 using System;
@@ -15,7 +15,7 @@ namespace CharLS.Test
         [Test]
         public void CreateWithNull()
         {
-            Assert.Throws<ArgumentNullException>( () => new JpegLSBitmapDecoder(null));
+            Assert.Throws<ArgumentNullException>(() => new JpegLSBitmapDecoder(null));
         }
 
         public void Rgb24Bitmap()

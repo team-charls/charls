@@ -1,5 +1,5 @@
 ﻿//
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 namespace CharLS
@@ -16,7 +16,7 @@ namespace CharLS
         None = 0,
 
         /// <summary>
-        /// The interleave mode is by line. A full line of each 
+        /// The interleave mode is by line. A full line of each
         /// component is encoded before moving to the next line.
         /// </summary>
         Line = 1,

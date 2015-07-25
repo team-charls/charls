@@ -1,5 +1,5 @@
 ﻿//
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 using System;
@@ -8,7 +8,6 @@ using System.Text;
 
 namespace CharLS
 {
-
     internal static class SafeNativeMethods
     {
         private const string Nativex86Library = "CharLS.dll";
