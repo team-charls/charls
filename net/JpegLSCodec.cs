@@ -84,8 +84,8 @@ namespace CharLS
                 // Increase output buffer to hold compressed data.
                 buffer = new byte[(int)(pixels.Length * 1.5) + JpegLSHeaderLength];
 
-                Contract.Assume(info.Width > 0 && info.Width <= 65535);
-                Contract.Assume(info.Height > 0 && info.Height <= 65535);
+                Contract.Assume(info.Width <= 65535);
+                Contract.Assume(info.Height <= 65535);
                 if (!TryCompress(info, pixels, pixels.Length, jfifHeader, buffer, buffer.Length, out compressedCount))
                     throw new InternalBufferOverflowException("Compression failed: compressed output larger then 1.5 * input.");
             }
@@ -182,7 +182,7 @@ namespace CharLS
             if (source == null)
                 throw new ArgumentNullException("source");
             if (count < 0 || count > source.Length)
-                throw new ArgumentNullException("count < 0 || count > source.Length", "count");
+                throw new ArgumentException("count < 0 || count > source.Length", "count");
             Contract.Ensures(Contract.Result<JpegLSMetadataInfo>() != null);
 
             JlsParameters info;
@@ -217,7 +217,7 @@ namespace CharLS
             if (source == null)
                 throw new ArgumentNullException("source");
             if (count < 0 || count > source.Length)
-                throw new ArgumentNullException("count < 0 || count > source.Length", "count");
+                throw new ArgumentException("count < 0 || count > source.Length", "count");
             Contract.Ensures(Contract.Result<byte[]>() != null);
 
             JlsParameters info;
@@ -241,7 +241,7 @@ namespace CharLS
             if (source == null)
                 throw new ArgumentNullException("source");
             if (count < 0 || count > source.Length)
-                throw new ArgumentNullException("count < 0 || count > source.Length", "count");
+                throw new ArgumentException("count < 0 || count > source.Length", "count");
             if (pixels == null)
                 throw new ArgumentNullException("pixels");
             Contract.EndContractBlock();

@@ -9,6 +9,7 @@
         <Word>bgr</Word>
         <Word>jls</Word>
         <Word>BitsPerSample</Word>
+        <Word>Rgb</Word>
       </Recognized>
       <Deprecated>
       </Deprecated>
