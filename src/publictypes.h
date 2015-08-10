@@ -139,15 +139,54 @@ struct JlsRect
 };
 
 
+/// <summary>
+/// Defines the parameters for the JPEG File Interchange Format.
+/// The format is defined in the JPEG File Interchange Format v1.02 document by Eric Hamilton.
+/// </summary>
+/// <remarks>
+/// The JPEG File Interchange Format is the de-facto standard JPEG interchange format.
+/// </remarks>
 struct JfifParameters
 {
-    int   Ver;
-    char  units;
-    int   XDensity;
-    int   YDensity;
+    /// <summary>
+    /// Version of the JPEG File Interchange Format.
+    /// Should be set to zero to not write a JFIF header or to 1.02, encoded as: (1 * 256) + 2. 
+    /// </summary>
+    int Ver;
+
+    /// <summary>
+    /// Defines the units for the X and Y densities.
+    /// 0: no units, X and Y specify the pixel aspect ratio.
+    /// 1: X and Y are dots per inch.
+    /// 2: X and Y are dots per cm.
+    /// </summary>
+    char units;
+
+    /// <summary>
+    /// Horizontal pixel density
+    /// </summary>
+    int XDensity;
+
+    /// <summary>
+    /// Vertical pixel density
+    /// </summary>
+    int YDensity;
+
+    /// <summary>
+    /// Thumbnail horizontal pixel count.
+    /// </summary>
     short Xthumb;
+
+    /// <summary>
+    /// Thumbnail vertical pixel count.
+    /// </summary>
     short Ythumb;
-    void* pdataThumbnail; /* user must set buffer which size is Xthumb*Ythumb*3(RGB) before JpegLsDecode() */
+
+    /// <summary>
+    /// Reference to a buffer with thumbnail pixels of size Xthumb*Ythumb*3(RGB).
+    /// This parameter is only used when creating JPEG-LS encoded images.
+    /// </summary>
+    void* pdataThumbnail;
 };
 
 

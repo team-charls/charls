@@ -39,34 +39,42 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(int width, int he
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(const JfifParameters& jfifParameters)
+JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(const JfifParameters& params)
 {
-    uint8_t jfifID [] = { 'J', 'F', 'I', 'F', '\0' };
+    ASSERT(params.units == 0 || params.units == 1 || params.units == 2);
+    ASSERT(params.XDensity > 0);
+    ASSERT(params.YDensity > 0);
+    ASSERT(params.Xthumb >= 0 && params.Xthumb < 256);
+    ASSERT(params.Ythumb >= 0 && params.Ythumb < 256);
 
-    std::vector<uint8_t> rgbyte;
-    for (int i = 0; i < static_cast<int>(sizeof(jfifID)); i++)
+    // Create a JPEG APP0 segment in the JPEG File Interchange Format, v1.02
+    std::vector<uint8_t> content;
+
+    uint8_t jfifID [] = { 'J', 'F', 'I', 'F', '\0' };
+    for (int i = 0; i < static_cast<int>(sizeof(jfifID)); ++i)
     {
-        rgbyte.push_back(jfifID[i]);
+        content.push_back(jfifID[i]);
     }
 
-    push_back(rgbyte, static_cast<uint16_t>(jfifParameters.Ver));
+    push_back(content, static_cast<uint16_t>(params.Ver));
 
-    rgbyte.push_back(jfifParameters.units);
-    push_back(rgbyte, static_cast<uint16_t>(jfifParameters.XDensity));
-    push_back(rgbyte, static_cast<uint16_t>(jfifParameters.YDensity));
+    content.push_back(params.units);
+    push_back(content, static_cast<uint16_t>(params.XDensity));
+    push_back(content, static_cast<uint16_t>(params.YDensity));
 
     // thumbnail
-    rgbyte.push_back(static_cast<uint8_t>(jfifParameters.Xthumb));
-    rgbyte.push_back(static_cast<uint8_t>(jfifParameters.Ythumb));
-    if (jfifParameters.Xthumb > 0)
+    content.push_back(static_cast<uint8_t>(params.Xthumb));
+    content.push_back(static_cast<uint8_t>(params.Ythumb));
+    if (params.Xthumb > 0)
     {
-        if (jfifParameters.pdataThumbnail)
+        if (params.pdataThumbnail)
             throw std::system_error(static_cast<int>(ApiResult::InvalidJlsParameters), CharLSCategoryInstance());
 
-        rgbyte.insert(rgbyte.end(), static_cast<uint8_t*>(jfifParameters.pdataThumbnail), static_cast<uint8_t*>(jfifParameters.pdataThumbnail) + 3 * jfifParameters.Xthumb * jfifParameters.Ythumb);
+        content.insert(content.end(), static_cast<uint8_t*>(params.pdataThumbnail),
+            static_cast<uint8_t*>(params.pdataThumbnail) + 3 * params.Xthumb * params.Ythumb);
     }
 
-    return new JpegMarkerSegment(JpegMarkerCode::ApplicationData0, std::move(rgbyte));
+    return new JpegMarkerSegment(JpegMarkerCode::ApplicationData0, std::move(content));
 }
 
 
