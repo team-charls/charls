@@ -102,6 +102,14 @@
     </ClCompile>
     <ClCompile Include="JpegStreamWriterTest.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\src\CharLS_VS2015.vcxproj">
+      <Project>{524be26d-fc60-4bc4-9100-128a0502fff7}</Project>
+      <Private>false</Private>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
