@@ -98,15 +98,15 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(const
 
 JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(ColorTransformation transformation)
 {
-    std::vector<uint8_t> rgbyteXform;
+    std::vector<uint8_t> content;
 
-    rgbyteXform.push_back('m');
-    rgbyteXform.push_back('r');
-    rgbyteXform.push_back('f');
-    rgbyteXform.push_back('x');
-    rgbyteXform.push_back(static_cast<uint8_t>(transformation));
+    content.push_back('m');
+    content.push_back('r');
+    content.push_back('f');
+    content.push_back('x');
+    content.push_back(static_cast<uint8_t>(transformation));
 
-    return new JpegMarkerSegment(JpegMarkerCode::ApplicationData8, std::move(rgbyteXform));
+    return new JpegMarkerSegment(JpegMarkerCode::ApplicationData8, std::move(content));
 }
 
 

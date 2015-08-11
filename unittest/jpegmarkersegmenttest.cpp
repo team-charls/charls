@@ -10,6 +10,7 @@
 #include <cstdint>
 
 using namespace std;
+using namespace charls;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace CharLSUnitTest
@@ -179,10 +180,23 @@ namespace CharLSUnitTest
             Assert::AreEqual(static_cast<uint8_t>(7), buffer[16]);
         }
 
-        TEST_METHOD(CreateColorTransformMarker)
+        TEST_METHOD(CreateColorTransformMarkerAndSerialize)
         {
-            // TODO
-            //static JpegMarkerSegment* CreateColorTransformMarker(int i);
+            ColorTransformation transformation = ColorTransformation::BigEndian;
+
+            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateColorTransformMarker(transformation));
+
+            uint8_t buffer[13];
+            auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
+            Assert::AreEqual(static_cast<size_t>(13), bytesWritten);
+
+            // Verify mrfx identifier string.
+            Assert::AreEqual(static_cast<uint8_t>('m'), buffer[6]);
+            Assert::AreEqual(static_cast<uint8_t>('r'), buffer[7]);
+            Assert::AreEqual(static_cast<uint8_t>('f'), buffer[8]);
+            Assert::AreEqual(static_cast<uint8_t>('x'), buffer[9]);
+
+            Assert::AreEqual(static_cast<uint8_t>(charls::ColorTransformation::BigEndian), buffer[10]);
         }
 
         TEST_METHOD(CreateStartOfScanMarker)
