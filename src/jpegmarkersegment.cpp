@@ -43,36 +43,35 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameSegment(int width, int h
 JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(const JfifParameters& params)
 {
     ASSERT(params.units == 0 || params.units == 1 || params.units == 2);
-    ASSERT(params.XDensity > 0);
-    ASSERT(params.YDensity > 0);
-    ASSERT(params.Xthumb >= 0 && params.Xthumb < 256);
-    ASSERT(params.Ythumb >= 0 && params.Ythumb < 256);
+    ASSERT(params.Xdensity > 0);
+    ASSERT(params.Ydensity > 0);
+    ASSERT(params.Xthumbnail >= 0 && params.Xthumbnail < 256);
+    ASSERT(params.Ythumbnail >= 0 && params.Ythumbnail < 256);
 
-    // Create a JPEG APP0 segment in the JPEG File Interchange Format, v1.02
+    // Create a JPEG APP0 segment in the JPEG File Interchange Format (JFIF), v1.02
     std::vector<uint8_t> content;
 
-    uint8_t jfifID [] = { 'J', 'F', 'I', 'F', '\0' };
-    for (int i = 0; i < static_cast<int>(sizeof(jfifID)); ++i)
+    for (auto c : { 'J', 'F', 'I', 'F', '\0' })
     {
-        content.push_back(jfifID[i]);
+        content.push_back(c);
     }
 
-    push_back(content, static_cast<uint16_t>(params.Ver));
+    push_back(content, static_cast<uint16_t>(params.version));
 
-    content.push_back(params.units);
-    push_back(content, static_cast<uint16_t>(params.XDensity));
-    push_back(content, static_cast<uint16_t>(params.YDensity));
+    content.push_back(static_cast<uint8_t>(params.units));
+    push_back(content, static_cast<uint16_t>(params.Xdensity));
+    push_back(content, static_cast<uint16_t>(params.Ydensity));
 
     // thumbnail
-    content.push_back(static_cast<uint8_t>(params.Xthumb));
-    content.push_back(static_cast<uint8_t>(params.Ythumb));
-    if (params.Xthumb > 0)
+    content.push_back(static_cast<uint8_t>(params.Xthumbnail));
+    content.push_back(static_cast<uint8_t>(params.Ythumbnail));
+    if (params.Xthumbnail > 0)
     {
-        if (params.pdataThumbnail)
+        if (params.thumbnail)
             throw std::system_error(static_cast<int>(ApiResult::InvalidJlsParameters), CharLSCategoryInstance());
 
-        content.insert(content.end(), static_cast<uint8_t*>(params.pdataThumbnail),
-            static_cast<uint8_t*>(params.pdataThumbnail) + 3 * params.Xthumb * params.Ythumb);
+        content.insert(content.end(), static_cast<uint8_t*>(params.thumbnail),
+            static_cast<uint8_t*>(params.thumbnail) + 3 * params.Xthumbnail * params.Ythumbnail);
     }
 
     return new JpegMarkerSegment(JpegMarkerCode::ApplicationData0, std::move(content));

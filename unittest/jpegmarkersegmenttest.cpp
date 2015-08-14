@@ -104,12 +104,12 @@ namespace CharLSUnitTest
         {
             JfifParameters params;
 
-            params.Ver = (1 * 256) + 2;
+            params.version = (1 * 256) + 2;
             params.units = 2;
-            params.XDensity = 96;
-            params.YDensity = 300;
-            params.Xthumb = 0;
-            params.Ythumb = 0;
+            params.Xdensity = 96;
+            params.Ydensity = 300;
+            params.Xthumbnail = 0;
+            params.Ythumbnail = 0;
 
             auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(params));
 

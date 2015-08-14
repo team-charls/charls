@@ -305,21 +305,21 @@ void JpegStreamReader::ReadJfif()
         if(jfifID[i] != ReadByte())
             return;
     }
-    _info.jfif.Ver   = ReadWord();
+    _info.jfif.version   = ReadWord();
 
     // DPI or DPcm
     _info.jfif.units = ReadByte();
-    _info.jfif.XDensity = ReadWord();
-    _info.jfif.YDensity = ReadWord();
+    _info.jfif.Xdensity = ReadWord();
+    _info.jfif.Ydensity = ReadWord();
 
     // thumbnail
-    _info.jfif.Xthumb = ReadByte();
-    _info.jfif.Ythumb = ReadByte();
-    if(_info.jfif.Xthumb > 0 && _info.jfif.pdataThumbnail) 
+    _info.jfif.Xthumbnail = ReadByte();
+    _info.jfif.Ythumbnail = ReadByte();
+    if(_info.jfif.Xthumbnail > 0 && _info.jfif.thumbnail) 
     {
-        std::vector<char> tempbuff(static_cast<char*>(_info.jfif.pdataThumbnail), 
-            static_cast<char*>(_info.jfif.pdataThumbnail)+3*_info.jfif.Xthumb*_info.jfif.Ythumb);
-        ReadNBytes(tempbuff, 3*_info.jfif.Xthumb*_info.jfif.Ythumb);
+        std::vector<char> tempbuff(static_cast<char*>(_info.jfif.thumbnail), 
+            static_cast<char*>(_info.jfif.thumbnail)+3*_info.jfif.Xthumbnail*_info.jfif.Ythumbnail);
+        ReadNBytes(tempbuff, 3*_info.jfif.Xthumbnail*_info.jfif.Ythumbnail);
     }
 }
 

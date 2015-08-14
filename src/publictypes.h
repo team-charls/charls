@@ -7,6 +7,8 @@
 
 #ifdef __cplusplus
 
+#include <cstdint>
+
 namespace charls
 {
     /// <summary>
@@ -76,6 +78,8 @@ typedef charls::InterleaveMode CharlsInterleaveModeType;
 typedef charls::ColorTransformation CharlsColorTransformationType;
 
 #else
+
+#include <stdint.h>
 
 enum CharlsApiResult
 {
@@ -152,7 +156,7 @@ struct JfifParameters
     /// Version of the JPEG File Interchange Format.
     /// Should be set to zero to not write a JFIF header or to 1.02, encoded as: (1 * 256) + 2. 
     /// </summary>
-    int Ver;
+    int32_t version;
 
     /// <summary>
     /// Defines the units for the X and Y densities.
@@ -160,33 +164,33 @@ struct JfifParameters
     /// 1: X and Y are dots per inch.
     /// 2: X and Y are dots per cm.
     /// </summary>
-    char units;
+    int32_t units;
 
     /// <summary>
     /// Horizontal pixel density
     /// </summary>
-    int XDensity;
+    int32_t Xdensity;
 
     /// <summary>
     /// Vertical pixel density
     /// </summary>
-    int YDensity;
+    int32_t Ydensity;
 
     /// <summary>
     /// Thumbnail horizontal pixel count.
     /// </summary>
-    short Xthumb;
+    int32_t Xthumbnail;
 
     /// <summary>
     /// Thumbnail vertical pixel count.
     /// </summary>
-    short Ythumb;
+    int32_t Ythumbnail;
 
     /// <summary>
-    /// Reference to a buffer with thumbnail pixels of size Xthumb*Ythumb*3(RGB).
+    /// Reference to a buffer with thumbnail pixels of size Xthumbnail * Ythumbnail * 3(RGB).
     /// This parameter is only used when creating JPEG-LS encoded images.
     /// </summary>
-    void* pdataThumbnail;
+    void* thumbnail;
 };
 
 

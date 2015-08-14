@@ -25,7 +25,7 @@ namespace CharLS
         /// <summary>
         /// Units for pixel density fields. 0 - No units, aspect ratio only specified. 1 - Pixels per inch. 2 - Pixels per centimeter.
         /// </summary>
-        internal byte Units;
+        internal int Units;
 
         /// <summary>
         /// Integer horizontal pixel density.
@@ -37,8 +37,8 @@ namespace CharLS
         /// </summary>
         internal int DensityY;
 
-        private readonly short thumbX; // note: passing a thumbnail to add to the bytestream is currently not supported in the .NET layer.
-        private readonly short thumbY;
+        private readonly int thumbX; // note: passing a thumbnail to add to the bytestream is currently not supported in the .NET layer.
+        private readonly int thumbY;
         private readonly IntPtr dataThumbnail; // user must set buffer which size is Xthumb*Ythumb*3(RGB) before JpegLsDecode()
     }
 }

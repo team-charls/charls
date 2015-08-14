@@ -89,7 +89,7 @@ CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
         }
 
         JpegStreamWriter writer;
-        if (info.jfif.Ver)
+        if (info.jfif.version)
         {
             writer.AddSegment(JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(info.jfif));
         }
@@ -233,7 +233,7 @@ extern "C"
             return error;
 
         JpegStreamWriter writer;
-        if (info.jfif.Ver)
+        if (info.jfif.version)
         {
             writer.AddSegment(JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(info.jfif));
         }
