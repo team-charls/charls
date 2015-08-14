@@ -199,10 +199,20 @@ namespace CharLSUnitTest
             Assert::AreEqual(static_cast<uint8_t>(charls::ColorTransformation::BigEndian), buffer[10]);
         }
 
-        TEST_METHOD(CreateStartOfScanMarker)
+        TEST_METHOD(CreateStartOfScanMarkerAndSerialize)
         {
-            // TODO
-            //static JpegMarkerSegment* CreateStartOfScanMarker(const JlsParameters* pparams, int32_t icomponent);
+            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfScanMarker(6, 1, 2, InterleaveMode::None));
+
+            uint8_t buffer[14];
+            auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
+            Assert::AreEqual(static_cast<size_t>(14), bytesWritten);
+
+            Assert::AreEqual(static_cast<uint8_t>(1), buffer[6]); // component count.
+            Assert::AreEqual(static_cast<uint8_t>(6), buffer[7]); // component index.
+            Assert::AreEqual(static_cast<uint8_t>(0), buffer[8]); // table ID.
+            Assert::AreEqual(static_cast<uint8_t>(2), buffer[9]); // NEAR parameter.
+            Assert::AreEqual(static_cast<uint8_t>(0), buffer[10]); // ILV parameter.
+            Assert::AreEqual(static_cast<uint8_t>(0), buffer[11]); // transformation.
         }
     };
 }

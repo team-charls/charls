@@ -110,31 +110,24 @@ JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(ColorTransforma
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(const JlsParameters& params, int32_t icomponent)
+JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(int componentIndex, int componentCount, int allowedLossyError, charls::InterleaveMode interleaveMode)
 {
-    uint8_t itable = 0;
+    ASSERT(componentIndex >= 0);
+    ASSERT(componentCount > 0);
 
-    std::vector<uint8_t> rgbyte;
+    // Create a Scan Header as defined in T.87, C.2.3 and T.81, B.2.3
+    std::vector<uint8_t> content;
 
-    if (icomponent < 0)
+    content.push_back(static_cast<uint8_t>(componentCount));
+    for (int i = 0; i < componentCount; ++i)
     {
-        rgbyte.push_back(static_cast<uint8_t>(params.components));
-        for (int i = 0; i < params.components; ++i)
-        {
-            rgbyte.push_back(uint8_t(i + 1));
-            rgbyte.push_back(itable);
-        }
-    }
-    else
-    {
-        rgbyte.push_back(1);
-        rgbyte.push_back(static_cast<uint8_t>(icomponent));
-        rgbyte.push_back(itable);
+        content.push_back(static_cast<uint8_t>(componentIndex + i));
+        content.push_back(0);  // Mapping table selector (0 = no table)
     }
 
-    rgbyte.push_back(static_cast<uint8_t>(params.allowedlossyerror));
-    rgbyte.push_back(static_cast<uint8_t>(params.ilv));
-    rgbyte.push_back(0); // transform
+    content.push_back(static_cast<uint8_t>(allowedLossyError)); // NEAR parameter
+    content.push_back(static_cast<uint8_t>(interleaveMode)); // ILV parameter
+    content.push_back(0); // transformation
 
-    return new JpegMarkerSegment(JpegMarkerCode::StartOfScan, std::move(rgbyte));
+    return new JpegMarkerSegment(JpegMarkerCode::StartOfScan, std::move(content));
 }

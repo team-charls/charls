@@ -33,7 +33,7 @@ public:
     }
 
     /// <summary>
-    /// Creates a JPEG-LS Start Of Frame (SOF-55) marker.
+    /// Creates a JPEG-LS Start Of Frame (SOF-55) segment.
     /// </summary>
     /// <param name="width">The width of the frame.</param>
     /// <param name="height">The height of the frame.</param>
@@ -43,7 +43,16 @@ public:
     static JpegMarkerSegment* CreateJpegFileInterchangeFormatMarker(const JfifParameters& jfif);
     static JpegMarkerSegment* CreateJpegLSExtendedParametersMarker(const JlsCustomParameters& pcustom);
     static JpegMarkerSegment* CreateColorTransformMarker(charls::ColorTransformation transformation);
-    static JpegMarkerSegment* CreateStartOfScanMarker(const JlsParameters& pparams, int32_t icomponent);
+
+
+    /// <summary>
+    /// Creates a JPEG-LS Start Of Scan (SOS) segment.
+    /// </summary>
+    /// <param name="componentIndex">The component index of the scan segment or the start index if component count > 1.</param>
+    /// <param name="componentCount">The number of components in the scan segment. Can only be > 1 when the components are interleaved.</param>
+    /// <param name="allowedLossyError">The allowed lossy error. 0 means lossless</param>
+    /// <param name="interleaveMode">The interleave mode of the components.</param>
+    static JpegMarkerSegment* CreateStartOfScanMarker(int componentIndex, int componentCount, int allowedLossyError, charls::InterleaveMode interleaveMode);
 
 private:
     JpegMarkerCode _marker;

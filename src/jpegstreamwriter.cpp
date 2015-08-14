@@ -94,10 +94,10 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
         AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(preset));
     }
 
+    // Note: it is a common practice to start to count components by index 1.
     _lastCompenentIndex += 1;
-    AddSegment(JpegMarkerSegment::CreateStartOfScanMarker(params, params.ilv == InterleaveMode::None ? _lastCompenentIndex : -1));
-
     int ccomp = params.ilv == InterleaveMode::None ? 1 : params.components;
+    AddSegment(JpegMarkerSegment::CreateStartOfScanMarker(_lastCompenentIndex, ccomp, params.allowedlossyerror, params.ilv));
 
     AddSegment(new JpegImageDataSegment(info, params, _lastCompenentIndex, ccomp));
 }
