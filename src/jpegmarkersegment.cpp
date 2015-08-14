@@ -13,7 +13,7 @@ using namespace std;
 using namespace charls;
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(int width, int height, int32_t bitsPerSample, int32_t componentCount)
+JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameSegment(int width, int height, int bitsPerSample, int componentCount)
 {
     ASSERT(width >= 0 && width <= UINT16_MAX);
     ASSERT(height >= 0 && height <= UINT16_MAX);
@@ -40,7 +40,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameMarker(int width, int he
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(const JfifParameters& params)
+JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(const JfifParameters& params)
 {
     ASSERT(params.units == 0 || params.units == 1 || params.units == 2);
     ASSERT(params.XDensity > 0);
@@ -79,7 +79,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(cons
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(const JlsCustomParameters& params)
+JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(const JlsCustomParameters& params)
 {
     std::vector<uint8_t> content;
 
@@ -96,7 +96,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(const
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(ColorTransformation transformation)
+JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformSegment(ColorTransformation transformation)
 {
     std::vector<uint8_t> content;
 
@@ -110,7 +110,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformMarker(ColorTransforma
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanMarker(int componentIndex, int componentCount, int allowedLossyError, charls::InterleaveMode interleaveMode)
+JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanSegment(int componentIndex, int componentCount, int allowedLossyError, charls::InterleaveMode interleaveMode)
 {
     ASSERT(componentIndex >= 0);
     ASSERT(componentCount > 0);

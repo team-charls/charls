@@ -43,7 +43,7 @@ namespace CharLSUnitTest
             int32_t bitsPerSample = 8;
             int32_t componentCount = 3;
 
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfFrameMarker(100, UINT16_MAX, bitsPerSample, componentCount));
+            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfFrameSegment(100, UINT16_MAX, bitsPerSample, componentCount));
 
             uint8_t buffer[23];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -79,7 +79,7 @@ namespace CharLSUnitTest
             const int32_t bitsPerSample = 2;
             const int32_t componentCount = 1;
             
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfFrameMarker(0, 0, bitsPerSample, componentCount));
+            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfFrameSegment(0, 0, bitsPerSample, componentCount));
 
             uint8_t buffer[17];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -90,7 +90,7 @@ namespace CharLSUnitTest
 
         TEST_METHOD(CreateStartOfFrameMarkerWithHighBoundaryValuesAndSerialize)
         {
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfFrameMarker(UINT16_MAX, UINT16_MAX, UINT8_MAX, UINT8_MAX - 1));
+            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfFrameSegment(UINT16_MAX, UINT16_MAX, UINT8_MAX, UINT8_MAX - 1));
 
             uint8_t buffer[776];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -111,7 +111,7 @@ namespace CharLSUnitTest
             params.Xthumb = 0;
             params.Ythumb = 0;
 
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateJpegFileInterchangeFormatMarker(params));
+            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(params));
 
             uint8_t buffer[22];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -150,7 +150,7 @@ namespace CharLSUnitTest
             params.T3 = 3;
             params.RESET = 7;
 
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(params));
+            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(params));
 
             uint8_t buffer[19];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -182,9 +182,9 @@ namespace CharLSUnitTest
 
         TEST_METHOD(CreateColorTransformMarkerAndSerialize)
         {
-            ColorTransformation transformation = ColorTransformation::BigEndian;
+            ColorTransformation transformation = ColorTransformation::HP1;
 
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateColorTransformMarker(transformation));
+            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateColorTransformSegment(transformation));
 
             uint8_t buffer[13];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -196,12 +196,12 @@ namespace CharLSUnitTest
             Assert::AreEqual(static_cast<uint8_t>('f'), buffer[8]);
             Assert::AreEqual(static_cast<uint8_t>('x'), buffer[9]);
 
-            Assert::AreEqual(static_cast<uint8_t>(charls::ColorTransformation::BigEndian), buffer[10]);
+            Assert::AreEqual(static_cast<uint8_t>(transformation), buffer[10]);
         }
 
         TEST_METHOD(CreateStartOfScanMarkerAndSerialize)
         {
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfScanMarker(6, 1, 2, InterleaveMode::None));
+            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfScanSegment(6, 1, 2, InterleaveMode::None));
 
             uint8_t buffer[14];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));

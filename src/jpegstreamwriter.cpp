@@ -59,7 +59,7 @@ JpegStreamWriter::~JpegStreamWriter()
 
 void JpegStreamWriter::AddColorTransform(ColorTransformation transformation)
 {
-    AddSegment(JpegMarkerSegment::CreateColorTransformMarker(transformation));
+    AddSegment(JpegMarkerSegment::CreateColorTransformSegment(transformation));
 }
 
 
@@ -86,18 +86,18 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
 {
     if (!IsDefault(params.custom))
     {
-        AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(params.custom));
+        AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(params.custom));
     }
     else if (params.bitspersample > 12)
     {
         JlsCustomParameters preset = ComputeDefault((1 << params.bitspersample) - 1, params.allowedlossyerror);
-        AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersMarker(preset));
+        AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(preset));
     }
 
     // Note: it is a common practice to start to count components by index 1.
     _lastCompenentIndex += 1;
     int ccomp = params.ilv == InterleaveMode::None ? 1 : params.components;
-    AddSegment(JpegMarkerSegment::CreateStartOfScanMarker(_lastCompenentIndex, ccomp, params.allowedlossyerror, params.ilv));
+    AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastCompenentIndex, ccomp, params.allowedlossyerror, params.ilv));
 
     AddSegment(new JpegImageDataSegment(info, params, _lastCompenentIndex, ccomp));
 }
