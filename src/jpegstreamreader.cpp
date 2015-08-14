@@ -140,18 +140,12 @@ void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 
 void JpegStreamReader::ReadHeader()
 {
-    if (ReadByte() != 0xFF)
-        throw std::system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
-
-    if (static_cast<JpegMarkerCode>(ReadByte()) != JpegMarkerCode::StartOfImage)
+    if (ReadNextMarker() != JpegMarkerCode::StartOfImage)
         throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
 
     for (;;)
     {
-        if (ReadByte() != 0xFF)
-            throw std::system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
-
-        JpegMarkerCode marker = static_cast<JpegMarkerCode>(ReadByte());
+        JpegMarkerCode marker = ReadNextMarker();
         if (marker == JpegMarkerCode::StartOfScan)
             return;
 
@@ -169,6 +163,22 @@ void JpegStreamReader::ReadHeader()
             ReadByte();
         }
     }
+}
+
+
+JpegMarkerCode JpegStreamReader::ReadNextMarker()
+{
+    if (ReadByte() != 0xFF)
+        throw std::system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
+
+    // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see T.81, B.1.1.2)
+    uint8_t byte;
+    do
+    {
+        byte = ReadByte();
+    } while (byte == 0xFF);
+
+    return static_cast<JpegMarkerCode>(byte);
 }
 
 

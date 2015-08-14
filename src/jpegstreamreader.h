@@ -59,7 +59,7 @@ public:
     uint8_t ReadByte();
 
 private:
-    void ReadScan(ByteStreamInfo rawPixels);
+    JpegMarkerCode ReadNextMarker();
     int ReadPresetParameters();
     int ReadComment();
     int ReadStartOfFrame();

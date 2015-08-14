@@ -6,9 +6,12 @@
 
 #include "CppUnitTest.h"
 #include "..\src\jpegstreamreader.h"
+#include <vector>
 #include <cstdint>
 
+using namespace std;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace charls;
 
 namespace CharLSUnitTest
 {
@@ -28,11 +31,27 @@ namespace CharLSUnitTest
             }
             catch (const std::system_error &error)
             {
-                Assert::AreEqual(error.code().value(), static_cast<int>(charls::ApiResult::CompressedBufferTooSmall));
+                Assert::AreEqual(static_cast<int>(ApiResult::CompressedBufferTooSmall), error.code().value());
                 return;
             }
 
             Assert::Fail();
+        }
+
+        TEST_METHOD(ReadHeaderFromBufferPrecededWithFillBytes)
+        {
+            vector<uint8_t> buffer;
+            buffer.push_back(0xFF);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xD8);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xDA); // SOS: Marks the start of scan.
+
+            ByteStreamInfo byteStream = FromByteArray(&(buffer[0]), 6);
+            JpegStreamReader reader(byteStream);
+
+            reader.ReadHeader(); // if it doesn´t throw test is passed.
         }
     };
 }
