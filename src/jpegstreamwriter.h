@@ -8,6 +8,7 @@
 #include "util.h"
 #include "jpegsegment.h"
 #include <vector>
+#include <memory>
 
 enum class JpegMarkerCode : uint8_t;
 
@@ -22,11 +23,10 @@ class JpegStreamWriter
 
 public:
     JpegStreamWriter();
-    virtual ~JpegStreamWriter();
 
-    void AddSegment(JpegSegment* segment)
+    void AddSegment(std::unique_ptr<JpegSegment> segment)
     {
-        _segments.push_back(segment);
+        _segments.push_back(std::move(segment));
     }
 
     void AddScan(const ByteStreamInfo& info, const JlsParameters& params);
@@ -113,7 +113,7 @@ private:
     ByteStreamInfo _data;
     std::size_t _byteOffset;
     int32_t _lastCompenentIndex;
-    std::vector<JpegSegment*> _segments;
+    std::vector<std::unique_ptr<JpegSegment>> _segments;
 };
 
 #endif

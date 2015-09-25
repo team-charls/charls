@@ -13,7 +13,7 @@ using namespace std;
 using namespace charls;
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameSegment(int width, int height, int bitsPerSample, int componentCount)
+unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateStartOfFrameSegment(int width, int height, int bitsPerSample, int componentCount)
 {
     ASSERT(width >= 0 && width <= UINT16_MAX);
     ASSERT(height >= 0 && height <= UINT16_MAX);
@@ -28,7 +28,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameSegment(int width, int h
 
     // Components
     content.push_back(static_cast<uint8_t>(componentCount)); // Nf = Number of image components in frame
-    for (int component = 0; component < componentCount; ++component)
+    for (auto component = 0; component < componentCount; ++component)
     {
         // Component Specification parameters
         content.push_back(static_cast<uint8_t>(component + 1)); // Ci = Component identifier
@@ -36,11 +36,11 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfFrameSegment(int width, int h
         content.push_back(0);                                   // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
     }
 
-    return new JpegMarkerSegment(JpegMarkerCode::StartOfFrameJpegLS, move(content));
+    return make_unique<JpegMarkerSegment>(JpegMarkerCode::StartOfFrameJpegLS, move(content));
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(const JfifParameters& params)
+unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(const JfifParameters& params)
 {
     ASSERT(params.units == 0 || params.units == 1 || params.units == 2);
     ASSERT(params.Xdensity > 0);
@@ -74,11 +74,11 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(con
             static_cast<uint8_t*>(params.thumbnail) + 3 * params.Xthumbnail * params.Ythumbnail);
     }
 
-    return new JpegMarkerSegment(JpegMarkerCode::ApplicationData0, move(content));
+    return make_unique<JpegMarkerSegment>(JpegMarkerCode::ApplicationData0, move(content));
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(const JlsCustomParameters& params)
+unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(const JlsCustomParameters& params)
 {
     vector<uint8_t> content;
 
@@ -91,11 +91,11 @@ JpegMarkerSegment* JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(cons
     push_back(content, static_cast<uint16_t>(params.T3));
     push_back(content, static_cast<uint16_t>(params.RESET));
 
-    return new JpegMarkerSegment(JpegMarkerCode::JpegLSExtendedParameters, move(content));
+    return make_unique<JpegMarkerSegment>(JpegMarkerCode::JpegLSExtendedParameters, move(content));
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformSegment(ColorTransformation transformation)
+unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateColorTransformSegment(ColorTransformation transformation)
 {
     vector<uint8_t> content;
 
@@ -105,11 +105,11 @@ JpegMarkerSegment* JpegMarkerSegment::CreateColorTransformSegment(ColorTransform
     content.push_back('x');
     content.push_back(static_cast<uint8_t>(transformation));
 
-    return new JpegMarkerSegment(JpegMarkerCode::ApplicationData8, move(content));
+    return make_unique<JpegMarkerSegment>(JpegMarkerCode::ApplicationData8, move(content));
 }
 
 
-JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanSegment(int componentIndex, int componentCount, int allowedLossyError, InterleaveMode interleaveMode)
+unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateStartOfScanSegment(int componentIndex, int componentCount, int allowedLossyError, InterleaveMode interleaveMode)
 {
     ASSERT(componentIndex >= 0);
     ASSERT(componentCount > 0);
@@ -118,7 +118,7 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanSegment(int componentInde
     vector<uint8_t> content;
 
     content.push_back(static_cast<uint8_t>(componentCount));
-    for (int i = 0; i < componentCount; ++i)
+    for (auto i = 0; i < componentCount; ++i)
     {
         content.push_back(static_cast<uint8_t>(componentIndex + i));
         content.push_back(0);  // Mapping table selector (0 = no table)
@@ -128,5 +128,5 @@ JpegMarkerSegment* JpegMarkerSegment::CreateStartOfScanSegment(int componentInde
     content.push_back(static_cast<uint8_t>(interleaveMode)); // ILV parameter
     content.push_back(0); // transformation
 
-    return new JpegMarkerSegment(JpegMarkerCode::StartOfScan, move(content));
+    return make_unique<JpegMarkerSegment>(JpegMarkerCode::StartOfScan, move(content));
 }

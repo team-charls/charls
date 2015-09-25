@@ -49,15 +49,6 @@ JpegStreamWriter::JpegStreamWriter() :
 }
 
 
-JpegStreamWriter::~JpegStreamWriter()
-{
-    for (size_t i = 0; i < _segments.size(); ++i)
-    {
-        delete _segments[i];
-    }
-}
-
-
 void JpegStreamWriter::AddColorTransform(ColorTransformation transformation)
 {
     AddSegment(JpegMarkerSegment::CreateColorTransformSegment(transformation));
@@ -100,5 +91,5 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
     int ccomp = params.ilv == InterleaveMode::None ? 1 : params.components;
     AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastCompenentIndex, ccomp, params.allowedlossyerror, params.ilv));
 
-    AddSegment(new JpegImageDataSegment(info, params, _lastCompenentIndex, ccomp));
+    AddSegment(make_unique<JpegImageDataSegment>(info, params, _lastCompenentIndex, ccomp));
 }

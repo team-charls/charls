@@ -17,12 +17,11 @@ namespace CharLSUnitTest
 {
     TEST_CLASS(JpegMarkerSegmentTest)
     {
-    private:
-        static size_t SerializeSegment(unique_ptr<JpegMarkerSegment> segment, uint8_t* buffer, size_t count)
+        static size_t SerializeSegment(unique_ptr<JpegSegment> segment, uint8_t* buffer, size_t count)
         {
             ByteStreamInfo info = FromByteArray(buffer, count);
             JpegStreamWriter writer;
-            writer.AddSegment(segment.release());
+            writer.AddSegment(move(segment));
             auto bytesWritten = writer.Write(info);
 
             Assert::IsTrue(bytesWritten >= 4);
@@ -43,7 +42,7 @@ namespace CharLSUnitTest
             int32_t bitsPerSample = 8;
             int32_t componentCount = 3;
 
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfFrameSegment(100, UINT16_MAX, bitsPerSample, componentCount));
+            auto segment = JpegMarkerSegment::CreateStartOfFrameSegment(100, UINT16_MAX, bitsPerSample, componentCount);
 
             uint8_t buffer[23];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -79,7 +78,7 @@ namespace CharLSUnitTest
             const int32_t bitsPerSample = 2;
             const int32_t componentCount = 1;
             
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfFrameSegment(0, 0, bitsPerSample, componentCount));
+            auto segment = JpegMarkerSegment::CreateStartOfFrameSegment(0, 0, bitsPerSample, componentCount);
 
             uint8_t buffer[17];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -90,7 +89,7 @@ namespace CharLSUnitTest
 
         TEST_METHOD(CreateStartOfFrameMarkerWithHighBoundaryValuesAndSerialize)
         {
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfFrameSegment(UINT16_MAX, UINT16_MAX, UINT8_MAX, UINT8_MAX - 1));
+            auto segment = JpegMarkerSegment::CreateStartOfFrameSegment(UINT16_MAX, UINT16_MAX, UINT8_MAX, UINT8_MAX - 1);
 
             uint8_t buffer[776];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -111,7 +110,7 @@ namespace CharLSUnitTest
             params.Xthumbnail = 0;
             params.Ythumbnail = 0;
 
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(params));
+            auto segment = JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(params);
 
             uint8_t buffer[22];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -150,7 +149,7 @@ namespace CharLSUnitTest
             params.T3 = 3;
             params.RESET = 7;
 
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(params));
+            auto segment = JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(params);
 
             uint8_t buffer[19];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -184,7 +183,7 @@ namespace CharLSUnitTest
         {
             ColorTransformation transformation = ColorTransformation::HP1;
 
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateColorTransformSegment(transformation));
+            auto segment = JpegMarkerSegment::CreateColorTransformSegment(transformation);
 
             uint8_t buffer[13];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -201,7 +200,7 @@ namespace CharLSUnitTest
 
         TEST_METHOD(CreateStartOfScanMarkerAndSerialize)
         {
-            auto segment = unique_ptr<JpegMarkerSegment>(JpegMarkerSegment::CreateStartOfScanSegment(6, 1, 2, InterleaveMode::None));
+            auto segment = JpegMarkerSegment::CreateStartOfScanSegment(6, 1, 2, InterleaveMode::None);
 
             uint8_t buffer[14];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
