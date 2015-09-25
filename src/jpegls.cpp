@@ -11,11 +11,12 @@
 #include "jlscodecfactory.h"
 #include "jpegstreamreader.h"
 
-
 #include <cstdio>
 #include <vector>
 #include <iostream>
 
+
+using namespace std;
 using namespace charls;
 
 
@@ -33,21 +34,21 @@ const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6
 #endif
 
 
-class charls_category : public std::error_category {
+class charls_category : public error_category {
 public:
     virtual const char* name() const _NOEXCEPT override
     {
         return "charls";
     }
 
-    std::string message(int /* errval */) const override
+    string message(int /* errval */) const override
     {
         return "CharLS error";
     }
 };
 
 
-const std::error_category& CharLSCategoryInstance()
+const error_category& CharLSCategoryInstance()
 {
     static charls_category instance;
     return instance;
@@ -69,12 +70,12 @@ signed char QuantizeGratientOrg(const JlsCustomParameters& preset, int32_t NEAR,
 }
 
 
-std::vector<signed char> CreateQLutLossless(int32_t cbit)
+vector<signed char> CreateQLutLossless(int32_t cbit)
 {
     JlsCustomParameters preset = ComputeDefault((1 << cbit) - 1, 0);
     int32_t range = preset.MAXVAL + 1;
 
-    std::vector<signed char> lut(range * 2);
+    vector<signed char> lut(range * 2);
     
     for (int32_t diff = -range; diff < range; diff++)
     {
@@ -95,16 +96,16 @@ CTable decodingTables[16] = { InitTable(0), InitTable(1), InitTable(2), InitTabl
 
 
 // Lookup tables: sample differences to bin indexes. 
-std::vector<signed char> rgquant8Ll = CreateQLutLossless(8);
-std::vector<signed char> rgquant10Ll = CreateQLutLossless(10);
-std::vector<signed char> rgquant12Ll = CreateQLutLossless(12);
-std::vector<signed char> rgquant16Ll = CreateQLutLossless(16);
+vector<signed char> rgquant8Ll = CreateQLutLossless(8);
+vector<signed char> rgquant10Ll = CreateQLutLossless(10);
+vector<signed char> rgquant12Ll = CreateQLutLossless(12);
+vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
 template<typename STRATEGY>
-std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& info, const JlsCustomParameters& presets)
+unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& info, const JlsCustomParameters& presets)
 {
-    std::unique_ptr<STRATEGY> strategy;
+    unique_ptr<STRATEGY> strategy;
 
     if (presets.RESET != 0 && presets.RESET != BASIC_RESET)
     {
@@ -127,14 +128,14 @@ std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameter
 
 
 template<typename TRAITS, typename STRATEGY>
-std::unique_ptr<STRATEGY> CreateCodec(const TRAITS& t, const STRATEGY*, const JlsParameters& info)
+unique_ptr<STRATEGY> CreateCodec(const TRAITS& t, const STRATEGY*, const JlsParameters& info)
 {
-    return std::unique_ptr<STRATEGY>(new JlsCodec<TRAITS, STRATEGY>(t, info));
+    return unique_ptr<STRATEGY>(new JlsCodec<TRAITS, STRATEGY>(t, info));
 }
 
 
 template<typename STRATEGY>
-std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters& info)
+unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters& info)
 {
     STRATEGY* s = nullptr;
 
@@ -173,7 +174,7 @@ std::unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParam
 
         return CreateCodec(DefaultTraitsT<uint8_t, uint8_t>((1 << info.bitspersample) - 1, info.allowedlossyerror), s, info);
     }
-    else if (info.bitspersample <= 16)
+    if (info.bitspersample <= 16)
     {
         if (info.ilv == InterleaveMode::Sample)
             return CreateCodec(DefaultTraitsT<uint16_t,Triplet<uint16_t> >(maxval, info.allowedlossyerror), s, info);

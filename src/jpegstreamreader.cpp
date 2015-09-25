@@ -13,6 +13,8 @@
 #include "defaulttraits.h"
 #include <memory>
 
+
+using namespace std;
 using namespace charls;
 
 
@@ -75,7 +77,7 @@ void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
     JlsParameters info = _info;
     info.components = _ccompScan;
     auto codec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
-    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
+    unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
     ByteStreamInfo compressedData = streamWriter.OutputStream();
     size_t cbyteWritten = codec->EncodeScan(std::move(processLine), compressedData, streamWriter._bCompare ? streamWriter.GetPos() : nullptr);
     streamWriter.Seek(cbyteWritten);
@@ -116,9 +118,9 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
     {
         ReadStartOfScan(componentIndex == 0);
 
-        std::unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);
-        std::unique_ptr<ProcessLine> processLine(qcodec->CreateProcess(rawPixels));
-        qcodec->DecodeScan(std::move(processLine), _rect, &_byteStream, _bCompare); 
+        unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);
+        unique_ptr<ProcessLine> processLine(qcodec->CreateProcess(rawPixels));
+        qcodec->DecodeScan(move(processLine), _rect, &_byteStream, _bCompare); 
         SkipBytes(&rawPixels, static_cast<size_t>(bytesPerPlane));
 
         if (_info.ilv != InterleaveMode::None)
@@ -129,7 +131,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 }
 
 
-void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
+void JpegStreamReader::ReadNBytes(vector<char>& dst, int byteCount)
 {
     for (int i = 0; i < byteCount; ++i)
     {
@@ -218,7 +220,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         case JpegMarkerCode::StartOfFrameProgressiveArithemtic:
         case JpegMarkerCode::StartOfFrameLosslessArithemtic:
             {
-                std::ostringstream message;
+                ostringstream message;
                 message << "JPEG encoding with marker " << static_cast<unsigned int>(marker) << " is not supported.";
                 throw CreateSystemError(ApiResult::UnsupportedEncoding, message.str());
             }
@@ -226,7 +228,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         // Other tags not supported (among which DNL DRI)
         default:
             {
-                std::ostringstream message;
+                ostringstream message;
                 message << "Unknown JPEG marker " << static_cast<unsigned int>(marker) << " encountered.";
                 throw CreateSystemError(ApiResult::UnknownJpegMarker, message.str());
             }
@@ -365,7 +367,7 @@ int JpegStreamReader::ReadColorSpace()
 
 int JpegStreamReader::ReadColorXForm()
 {
-    std::vector<char> sourceTag;
+    vector<char> sourceTag;
     ReadNBytes(sourceTag, 4);
 
     if (strncmp(&sourceTag[0], "mrfx", 4) != 0)

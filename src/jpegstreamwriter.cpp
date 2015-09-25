@@ -12,6 +12,7 @@
 #include <vector>
 
 
+using namespace std;
 using namespace charls;
 
 
@@ -40,10 +41,10 @@ namespace
 
 
 JpegStreamWriter::JpegStreamWriter() :
-_bCompare(false),
-_data(),
-_byteOffset(0),
-_lastCompenentIndex(0)
+    _bCompare(false),
+    _data(),
+    _byteOffset(0),
+    _lastCompenentIndex(0)
 {
 }
 
