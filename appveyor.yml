@@ -9,6 +9,7 @@ platform:
 - x64
 before_build:
 - set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
+- nuget restore
 build:
   project: CharLS_VS2015.sln
   verbosity: minimal
