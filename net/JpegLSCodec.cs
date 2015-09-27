@@ -123,7 +123,7 @@ namespace CharLS
                 throw new ArgumentException("destination <= 0 || destinationCount > destination.Length", "destinationLength");
             Contract.Ensures(Contract.ValueAtReturn(out compressedCount) >= 0);
 
-            var parameters = new JlsParameters();
+            var parameters = default(JlsParameters);
             info.CopyTo(ref parameters);
             if (jfifHeader)
             {

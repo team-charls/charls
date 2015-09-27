@@ -37,7 +37,8 @@ namespace CharLS
         /// BitsPerComponent = 2
         /// ComponentCount = 1
         /// </remarks>
-        public JpegLSMetadataInfo() : this(1, 1, 2, 1)
+        public JpegLSMetadataInfo()
+            : this(1, 1, 2, 1)
         {
         }
 
