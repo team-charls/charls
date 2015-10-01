@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
 
             if (pixel_data)
             {
-                uint32_t encoded_size;
+                size_t encoded_size;
                 void *encoded_data = encode_bmp_to_jpegls(pixel_data, buffer_size, &dib_header, &encoded_size);
                 free(pixel_data);
 
