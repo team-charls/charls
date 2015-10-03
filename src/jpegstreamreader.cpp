@@ -64,7 +64,6 @@ ApiResult CheckParameterCoherent(const JlsParameters& parameters)
     {
         case 4: return parameters.ilv == InterleaveMode::Sample ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
         case 3: return ApiResult::OK;
-        case 1: return parameters.ilv != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
         case 0: return ApiResult::InvalidJlsParameters;
 
         default: return parameters.ilv != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;

@@ -14,9 +14,7 @@ struct JlsParameters;
 class JpegCustomParameters;
 
 
-charls::ApiResult CheckParameterCoherent(const JlsParameters& pparams);
 JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR);
-
 
 
 //
@@ -73,7 +71,6 @@ private:
     int ReadColorSpace();
     int ReadColorXForm();
 
-private:
     ByteStreamInfo _byteStream;
     bool _bCompare;
     JlsParameters _info;
