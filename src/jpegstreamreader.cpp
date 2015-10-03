@@ -1,6 +1,6 @@
-// 
+//
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
 
 #include "jpegstreamreader.h"
 #include "util.h"
@@ -12,7 +12,7 @@
 #include "jlscodecfactory.h"
 #include "defaulttraits.h"
 #include <memory>
-
+#include <iomanip>
 
 using namespace std;
 using namespace charls;
@@ -79,7 +79,7 @@ void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
     auto codec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
     unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
     ByteStreamInfo compressedData = streamWriter.OutputStream();
-    size_t cbyteWritten = codec->EncodeScan(std::move(processLine), compressedData, streamWriter._bCompare ? streamWriter.GetPos() : nullptr);
+    size_t cbyteWritten = codec->EncodeScan(move(processLine), compressedData, streamWriter._bCompare ? streamWriter.GetPos() : nullptr);
     streamWriter.Seek(cbyteWritten);
 }
 
@@ -99,7 +99,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 
     auto result = CheckParameterCoherent(_info);
     if (result != ApiResult::OK)
-        throw std::system_error(static_cast<int>(result), CharLSCategoryInstance());
+        throw system_error(static_cast<int>(result), CharLSCategoryInstance());
 
     if (_rect.Width <= 0)
     {
@@ -110,7 +110,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
     int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
 
     if (rawPixels.rawData && int64_t(rawPixels.count) < bytesPerPlane * _info.components)
-        throw std::system_error(static_cast<int>(ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
+        throw system_error(static_cast<int>(ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
 
     int componentIndex = 0;
 
@@ -143,7 +143,7 @@ void JpegStreamReader::ReadNBytes(vector<char>& dst, int byteCount)
 void JpegStreamReader::ReadHeader()
 {
     if (ReadNextMarker() != JpegMarkerCode::StartOfImage)
-        throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
+        throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
 
     for (;;)
     {
@@ -158,7 +158,7 @@ void JpegStreamReader::ReadHeader()
         int paddingToRead = cbyteMarker - bytesRead;
 
         if (paddingToRead < 0)
-            throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
+            throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
 
         for (int i = 0; i < paddingToRead; ++i)
         {
@@ -170,11 +170,16 @@ void JpegStreamReader::ReadHeader()
 
 JpegMarkerCode JpegStreamReader::ReadNextMarker()
 {
-    if (ReadByte() != 0xFF)
-        throw std::system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
+    auto byte = ReadByte();
+    if (byte != 0xFF)
+    {
+        ostringstream message;
+        message << setfill('0');
+        message << "Expected JPEG Marker start byte 0xFF but the byte value was 0x" << hex << uppercase << setw(2) << static_cast<unsigned int>(byte);
+        throw CreateSystemError(ApiResult::MissingJpegMarkerStart, message.str());
+    }
 
     // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see T.81, B.1.1.2)
-    uint8_t byte;
     do
     {
         byte = ReadByte();
@@ -262,16 +267,16 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     if (!firstComponent)
     {
         if (ReadByte() != 0xFF)
-            throw std::system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
+            throw system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
         if (static_cast<JpegMarkerCode>(ReadByte()) != JpegMarkerCode::StartOfScan)
-            throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
+            throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
     }
     int length = ReadByte();
     length = length * 256 + ReadByte(); // TODO: do something with 'length' or remove it.
 
     int componentCount = ReadByte();
     if (componentCount != 1 && componentCount != _info.components)
-        throw std::system_error(static_cast<int>(ApiResult::ParameterValueNotSupported), CharLSCategoryInstance());
+        throw system_error(static_cast<int>(ApiResult::ParameterValueNotSupported), CharLSCategoryInstance());
 
     for (int i = 0; i < componentCount; ++i)
     {
@@ -281,9 +286,9 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     _info.allowedlossyerror = ReadByte();
     _info.ilv = static_cast<InterleaveMode>(ReadByte());
     if (!(_info.ilv == InterleaveMode::None || _info.ilv == InterleaveMode::Line || _info.ilv == InterleaveMode::Sample))
-        throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
+        throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
     if (ReadByte() != 0)
-        throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
+        throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
 
     if(_info.bytesperline == 0)
     {
@@ -319,7 +324,7 @@ void JpegStreamReader::ReadJfif()
     _info.jfif.Ythumbnail = ReadByte();
     if(_info.jfif.Xthumbnail > 0 && _info.jfif.thumbnail) 
     {
-        std::vector<char> tempbuff(static_cast<char*>(_info.jfif.thumbnail), 
+        vector<char> tempbuff(static_cast<char*>(_info.jfif.thumbnail), 
             static_cast<char*>(_info.jfif.thumbnail)+3*_info.jfif.Xthumbnail*_info.jfif.Ythumbnail);
         ReadNBytes(tempbuff, 3*_info.jfif.Xthumbnail*_info.jfif.Ythumbnail);
     }
@@ -344,7 +349,7 @@ uint8_t JpegStreamReader::ReadByte()
         return static_cast<uint8_t>(_byteStream.rawStream->sbumpc());
 
     if (_byteStream.count == 0)
-        throw std::system_error(static_cast<int>(ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
+        throw system_error(static_cast<int>(ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
 
     uint8_t value = _byteStream.rawData[0];
     SkipBytes(&_byteStream, 1);
@@ -384,8 +389,8 @@ int JpegStreamReader::ReadColorXForm()
             return 5;
         case ColorTransformation::RgbAsYuvLossy:
         case ColorTransformation::Matrix:
-            throw std::system_error(static_cast<int>(ApiResult::ImageTypeNotSupported), CharLSCategoryInstance());
+            throw system_error(static_cast<int>(ApiResult::ImageTypeNotSupported), CharLSCategoryInstance());
         default:
-            throw std::system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
+            throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
     }
 }

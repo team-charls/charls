@@ -29,7 +29,7 @@ namespace CharLSUnitTest
             {
                 reader.ReadHeader();
             }
-            catch (const std::system_error &error)
+            catch (const system_error &error)
             {
                 Assert::AreEqual(static_cast<int>(ApiResult::CompressedBufferTooSmall), error.code().value());
                 return;
@@ -52,6 +52,32 @@ namespace CharLSUnitTest
             JpegStreamReader reader(byteStream);
 
             reader.ReadHeader(); // if it doesn´t throw test is passed.
+        }
+
+        TEST_METHOD(ReadHeaderFromBufferNotStartingWithFFShouldThrow)
+        {
+            vector<uint8_t> buffer;
+            buffer.push_back(0x0F);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xD8);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xDA); // SOS: Marks the start of scan.
+
+            ByteStreamInfo byteStream = FromByteArray(&(buffer[0]), 6);
+            JpegStreamReader reader(byteStream);
+
+            try
+            {
+                reader.ReadHeader();
+            }
+            catch (const system_error &error)
+            {
+                Assert::AreEqual(static_cast<int>(ApiResult::MissingJpegMarkerStart), error.code().value());
+                return;
+            }
+
+            Assert::Fail();
         }
     };
 }
