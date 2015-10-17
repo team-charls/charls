@@ -251,23 +251,20 @@ struct JlsParameters
 };
 
 
-
-
 #ifdef __cplusplus
 
 #include <iostream>
-#include <cstdint>
 
 
-// 
+//
 // ByteStreamInfo & FromByteArray helper function
 //
 // ByteStreamInfo describes the stream: either set rawStream to a valid stream, or rawData/count, not both.
 // it's possible to decode to memorystreams, but using rawData will always be faster.
 //
-// Example use: 
+// Example use:
 //     ByteStreamInfo streamInfo = { fileStream.rdbuf() };
-// or 
+// or
 //     ByteStreamInfo streamInfo = FromByteArray( bytePtr, byteCount);
 //
 struct ByteStreamInfo
