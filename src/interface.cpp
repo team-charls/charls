@@ -55,7 +55,7 @@ static void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParam
 }
 
 
-static ApiResult SystemErrorToCharLSError(const std::system_error& e)
+static ApiResult SystemErrorToCharLSError(const system_error& e)
 {
     return e.code().category() == CharLSCategoryInstance() ? static_cast<ApiResult>(e.code().value()) : ApiResult::UnspecifiedFailure;
 }
@@ -70,7 +70,7 @@ static void ClearErrorMessage(char* errorMessage)
 }
 
 
-static void CopyWhatTextToErrorMessage(const std::system_error& e, char* errorMessage)
+static void CopyWhatTextToErrorMessage(const system_error& e, char* errorMessage)
 {
     if (!errorMessage)
         return;
@@ -138,7 +138,7 @@ CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
         ClearErrorMessage(errorMessage);
         return ApiResult::OK;
     }
-    catch (const std::system_error& e)
+    catch (const system_error& e)
     {
         CopyWhatTextToErrorMessage(e, errorMessage);
         return SystemErrorToCharLSError(e);
@@ -167,7 +167,7 @@ CHARLS_IMEXPORT(ApiResult) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStre
         ClearErrorMessage(errorMessage);
         return ApiResult::OK;
     }
-    catch (const std::system_error& e)
+    catch (const system_error& e)
     {
         CopyWhatTextToErrorMessage(e, errorMessage);
         return SystemErrorToCharLSError(e);
@@ -269,7 +269,7 @@ extern "C"
                 writer.AddScan(rawStreamInfo, info);
             }
 
-            std::vector<uint8_t> rgbyteCompressed(compressedLength + 16);
+            vector<uint8_t> rgbyteCompressed(compressedLength + 16);
 
             memcpy(&rgbyteCompressed[0], compressedData, compressedLength);
 
@@ -278,7 +278,7 @@ extern "C"
             ClearErrorMessage(errorMessage);
             return ApiResult::OK;
         }
-        catch (const std::system_error& e)
+        catch (const system_error& e)
         {
             CopyWhatTextToErrorMessage(e, errorMessage);
             return SystemErrorToCharLSError(e);
@@ -312,7 +312,7 @@ extern "C"
             ClearErrorMessage(errorMessage);
             return ApiResult::OK;
         }
-        catch (const std::system_error& e)
+        catch (const system_error& e)
         {
             CopyWhatTextToErrorMessage(e, errorMessage);
             return SystemErrorToCharLSError(e);
