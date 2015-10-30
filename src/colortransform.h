@@ -44,7 +44,7 @@ struct TransformHp1
 
     struct INVERSE
     {
-        INVERSE(const TransformHp1&) {};
+        explicit INVERSE(const TransformHp1&) {};
 
         inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
         {
@@ -71,7 +71,7 @@ struct TransformHp2
 
     struct INVERSE
     {
-        INVERSE(const TransformHp2&) {};
+        explicit INVERSE(const TransformHp2&) {};
 
         inlinehint Triplet<SAMPLE> operator() (int v1, int v2, int v3) const
         {
@@ -98,7 +98,7 @@ struct TransformHp3
 
     struct INVERSE
     {
-        INVERSE(const TransformHp3&) {};
+        explicit INVERSE(const TransformHp3&) {};
 
         inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
         {
@@ -131,7 +131,7 @@ struct TransformShifted
 
     struct INVERSE
     {
-        INVERSE(const TransformShifted& transform) :
+        explicit INVERSE(const TransformShifted& transform) :
             _shift(transform._shift),
             _inverseTransform(transform._colortransform)
         {
@@ -154,7 +154,7 @@ struct TransformShifted
     };
 
 
-    TransformShifted(int shift) :
+    explicit TransformShifted(int shift) :
         _shift(shift)
     {
     }

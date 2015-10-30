@@ -23,7 +23,7 @@ JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR);
 class JpegStreamReader
 {
 public:
-    JpegStreamReader(ByteStreamInfo byteStreamInfo);
+    explicit JpegStreamReader(ByteStreamInfo byteStreamInfo);
 
     const JlsParameters& GetMetadata() const
     {
