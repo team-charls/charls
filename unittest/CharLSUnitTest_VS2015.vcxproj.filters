@@ -35,5 +35,8 @@
     <ClCompile Include="jpegstreamreadertest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="encoderstrategytest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

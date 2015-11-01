@@ -136,6 +136,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="encoderstrategytest.cpp" />
     <ClCompile Include="jpegmarkersegmenttest.cpp" />
     <ClCompile Include="jpegstreamreadertest.cpp" />
     <ClCompile Include="stdafx.cpp">
