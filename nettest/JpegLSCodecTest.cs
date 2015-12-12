@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using NUnit.Framework;
 
 namespace CharLS.Test
@@ -152,7 +153,7 @@ namespace CharLS.Test
 
         private static byte[] ReadAllBytes(string path, int bytesToSkip = 0)
         {
-            var fullPath = "DataFiles\\" + path;
+            var fullPath = DataFileDirectory + path;
 
             if (bytesToSkip == 0)
                 return File.ReadAllBytes(fullPath);
@@ -164,6 +165,15 @@ namespace CharLS.Test
                 stream.Seek(bytesToSkip, SeekOrigin.Begin);
                 stream.Read(result, 0, result.Length);
                 return result;
+            }
+        }
+
+        private static string DataFileDirectory
+        {
+            get
+            {
+                var assemblyLocation = new Uri(Assembly.GetExecutingAssembly().CodeBase);
+                return Path.GetDirectoryName(assemblyLocation.LocalPath) + @"\DataFiles\";
             }
         }
     }
