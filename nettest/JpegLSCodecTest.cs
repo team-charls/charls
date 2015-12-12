@@ -84,7 +84,7 @@ namespace CharLS.Test
         }
 
         [Test]
-        [Ignore]
+        [Ignore("unit test needs to be upgraded to monochrome with at least 2 bits")]
         public void CompressOneByOneBlackAndWhite()
         {
             var info = new JpegLSMetadataInfo(1, 1, 1, 1);
