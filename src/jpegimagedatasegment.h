@@ -5,7 +5,6 @@
 #ifndef CHARLS_JPEGIMAGEDATASEGMENT
 #define CHARLS_JPEGIMAGEDATASEGMENT
 
-#include "util.h"
 #include "jpegsegment.h"
 #include "jpegstreamwriter.h"
 
@@ -20,7 +19,7 @@ public:
     {
     }
 
-    virtual void Serialize(JpegStreamWriter& streamWriter) override;
+    void Serialize(JpegStreamWriter& streamWriter) override;
 
 private:
     int _ccompScan;

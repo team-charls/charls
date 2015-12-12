@@ -183,19 +183,19 @@ public:
         return;
     }
 
-    uint8_t* FindNextFF()
+    uint8_t* FindNextFF() const
     {
-        uint8_t* pbyteNextFF = _position;
+        auto positionNextFF = _position;
 
-        while (pbyteNextFF < _endPosition)
+        while (positionNextFF < _endPosition)
         {
-            if (*pbyteNextFF == 0xFF) 
+            if (*positionNextFF == 0xFF) 
                 break;
 
-            pbyteNextFF++;
+            positionNextFF++;
         }
 
-        return pbyteNextFF;
+        return positionNextFF;
     }
 
     uint8_t* GetCurBytePos() const
