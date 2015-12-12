@@ -49,15 +49,8 @@ unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateJpegFileInterchangeFormat
     ASSERT(params.Ythumbnail >= 0 && params.Ythumbnail < 256);
 
     // Create a JPEG APP0 segment in the JPEG File Interchange Format (JFIF), v1.02
-    vector<uint8_t> content;
-
-    for (auto c : { 'J', 'F', 'I', 'F', '\0' })
-    {
-        content.push_back(c);
-    }
-
+    vector<uint8_t> content { 'J', 'F', 'I', 'F', '\0' };
     push_back(content, static_cast<uint16_t>(params.version));
-
     content.push_back(static_cast<uint8_t>(params.units));
     push_back(content, static_cast<uint16_t>(params.Xdensity));
     push_back(content, static_cast<uint16_t>(params.Ydensity));
@@ -97,15 +90,9 @@ unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateJpegLSExtendedParametersS
 
 unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateColorTransformSegment(ColorTransformation transformation)
 {
-    vector<uint8_t> content;
-
-    content.push_back('m');
-    content.push_back('r');
-    content.push_back('f');
-    content.push_back('x');
-    content.push_back(static_cast<uint8_t>(transformation));
-
-    return make_unique<JpegMarkerSegment>(JpegMarkerCode::ApplicationData8, move(content));
+    return make_unique<JpegMarkerSegment>(
+        JpegMarkerCode::ApplicationData8,
+        vector<uint8_t> { 'm', 'r', 'f', 'x', static_cast<uint8_t>(transformation) });
 }
 
 
