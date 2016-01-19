@@ -34,7 +34,7 @@
 #    else
 #      define inlinehint inline
 #    endif
-#  elif
+#  else
 #    define inlinehint inline
 #  endif
 #endif
