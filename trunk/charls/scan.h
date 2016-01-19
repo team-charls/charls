@@ -238,12 +238,12 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(LONG Qs, LONG, LONG
 	{
 		STRATEGY::Skip(code.GetLength());
 		ErrVal = code.GetValue(); 
-		ASSERT(abs(ErrVal) < 65535);
+		ASSERT(labs(ErrVal) < 65535);
 	}
 	else
 	{
 		ErrVal = UnMapErrVal(DecodeValue(k, traits.LIMIT, traits.qbpp)); 
-		if (abs(ErrVal) > 65535)
+		if (labs(ErrVal) > 65535)
 			throw JlsException(InvalidCompressedData);
 	}
 	if (k == 0)
@@ -451,7 +451,7 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRIError(CContextRunMode& ctx, LONG Errval)
 {
 	LONG k			= ctx.GetGolomb();
 	bool map		= ctx.ComputeMap(Errval, k);
-	LONG EMErrval	= 2 * abs(Errval) - ctx._nRItype - LONG(map);
+	LONG EMErrval	= 2 * labs(Errval) - ctx._nRItype - LONG(map);
 
 	ASSERT(Errval == ctx.ComputeErrVal(EMErrval + ctx._nRItype, k));
 	EncodeMappedValue(k, EMErrval, traits.LIMIT-J[_RUNindex]-1);
@@ -494,7 +494,7 @@ Triplet<typename TRAITS::SAMPLE> JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(Triple
 template<class TRAITS, class STRATEGY>
 typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DecodeRIPixel(LONG Ra, LONG Rb)
 {
-	if (abs(Ra - Rb) <= traits.NEAR)
+	if (labs(Ra - Rb) <= traits.NEAR)
 	{
 		LONG ErrVal = DecodeRIError(_contextRunmode[1]);
 		return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Ra, ErrVal));
@@ -510,7 +510,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DecodeRIPixel(LONG Ra, LONG R
 template<class TRAITS, class STRATEGY>
 typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(LONG x, LONG Ra, LONG Rb)
 {
-	if (abs(Ra - Rb) <= traits.NEAR)
+	if (labs(Ra - Rb) <= traits.NEAR)
 	{
 		LONG ErrVal	= traits.ComputeErrVal(x - Ra);
 		EncodeRIError(_contextRunmode[1], ErrVal);
