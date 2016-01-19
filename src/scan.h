@@ -117,8 +117,8 @@ public:
         _RUNindex(0),
         _previousLine(),
         _currentLine(),
-        _pquant(0),
-        _bCompare(0)
+        _pquant(nullptr),
+        _bCompare(false)
     {
         if (Info().ilv == InterleaveMode::None)
         {
