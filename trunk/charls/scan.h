@@ -771,7 +771,7 @@ ProcessLine* JlsCodec<TRAITS,STRATEGY>::CreateProcess(ByteStreamInfo info)
 	if (transform == 0)
 		return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(info, Info(), TransformNone<SAMPLE>()); 
 
-	if ((Info().bitspersample == sizeof(SAMPLE)*8))
+	if (Info().bitspersample == sizeof(SAMPLE)*8)
 	{
 		switch(transform)
 		{
