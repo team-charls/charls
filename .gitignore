@@ -4,6 +4,19 @@ obj/
 bin/
 Win32/
 x64/
+[Dd]ebug/
+[Rr]elease/
+
+# Ignore files created by Visual Studio
+*.suo
+*.user
+*.ipch
 *.opensdf
 *.sdf
-CharLS_VS2013.v12.suo
+
+# NuGet Packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
