@@ -43,7 +43,7 @@ public:
 		ASSERT(N != 0);
 
 		// For performance work on copies of A,B,N (compiler will use registers).
-		int a = A + abs(errorValue);
+		int a = A + labs(errorValue);
 		int b = B + errorValue * (2 * NEAR + 1); 
 		int n = N;
 

@@ -62,7 +62,7 @@ public:
 	}
 
 	inlinehint bool IsNear(LONG lhs, LONG rhs) const
-		{ return abs(lhs-rhs) <=NEAR; }
+		{ return labs(lhs-rhs) <=NEAR; }
 
 	bool IsNear(Triplet<SAMPLE> lhs, Triplet<SAMPLE> rhs) const
 	{
@@ -81,14 +81,14 @@ public:
 
 	inlinehint LONG ModRange(LONG Errval) const
 	{
-		ASSERT(abs(Errval) <= RANGE);
+		ASSERT(labs(Errval) <= RANGE);
 		if (Errval < 0)
 			Errval = Errval + RANGE;
 
 		if (Errval >= ((RANGE + 1) / 2))
 			Errval = Errval - RANGE;
 
-		ASSERT(abs(Errval) <= RANGE/2);
+		ASSERT(labs(Errval) <= RANGE/2);
 
 		return Errval;
 	}
