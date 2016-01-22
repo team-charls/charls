@@ -6,6 +6,8 @@
 #define TEST_UTIL
 
 #include "../src/util.h"
+#include <vector>
+#include <exception>
 
 typedef const char* SZC;
 
