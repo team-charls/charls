@@ -7,12 +7,9 @@
 #include "util.h"
 #include <vector>
 #include <cstdint>
-#include <memory>
-
 
 using namespace std;
 using namespace charls;
-
 
 unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateStartOfFrameSegment(int width, int height, int bitsPerSample, int componentCount)
 {
@@ -37,7 +34,7 @@ unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateStartOfFrameSegment(int w
         content.push_back(0);                                   // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
     }
 
-    return make_unique<JpegMarkerSegment>(JpegMarkerCode::StartOfFrameJpegLS, move(content));
+    return charls::make_unique<JpegMarkerSegment>(JpegMarkerCode::StartOfFrameJpegLS, move(content));
 }
 
 
@@ -68,7 +65,7 @@ unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateJpegFileInterchangeFormat
             static_cast<uint8_t*>(params.thumbnail) + 3 * params.Xthumbnail * params.Ythumbnail);
     }
 
-    return make_unique<JpegMarkerSegment>(JpegMarkerCode::ApplicationData0, move(content));
+    return charls::make_unique<JpegMarkerSegment>(JpegMarkerCode::ApplicationData0, move(content));
 }
 
 
@@ -85,13 +82,13 @@ unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateJpegLSExtendedParametersS
     push_back(content, static_cast<uint16_t>(params.T3));
     push_back(content, static_cast<uint16_t>(params.RESET));
 
-    return make_unique<JpegMarkerSegment>(JpegMarkerCode::JpegLSExtendedParameters, move(content));
+    return charls::make_unique<JpegMarkerSegment>(JpegMarkerCode::JpegLSExtendedParameters, move(content));
 }
 
 
 unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateColorTransformSegment(ColorTransformation transformation)
 {
-    return make_unique<JpegMarkerSegment>(
+    return charls::make_unique<JpegMarkerSegment>(
         JpegMarkerCode::ApplicationData8,
         vector<uint8_t> { 'm', 'r', 'f', 'x', static_cast<uint8_t>(transformation) });
 }
@@ -116,5 +113,5 @@ unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateStartOfScanSegment(int co
     content.push_back(static_cast<uint8_t>(interleaveMode)); // ILV parameter
     content.push_back(0); // transformation
 
-    return make_unique<JpegMarkerSegment>(JpegMarkerCode::StartOfScan, move(content));
+    return charls::make_unique<JpegMarkerSegment>(JpegMarkerCode::StartOfScan, move(content));
 }

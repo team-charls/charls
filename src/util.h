@@ -9,6 +9,7 @@
 #include "publictypes.h"
 #include <vector>
 #include <system_error>
+#include <memory>
 
 #ifdef NDEBUG
 #  ifndef ASSERT
@@ -217,6 +218,16 @@ inline std::system_error CreateSystemError(charls::ApiResult errorCode, const st
 {
     return std::system_error(static_cast<int>(errorCode), CharLSCategoryInstance(), message);
 }
+
+
+namespace charls {
+    // std::make_unique is a C++ 14 feature. Define our own to support pure C++11 compilers, VS 2015 is a mixed C++ 11\14 compiler.
+    template<typename T, typename... Args>
+    std::unique_ptr<T> make_unique(Args&&... args) {
+        return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+    }
+
+} // namespace charls
 
 
 #endif

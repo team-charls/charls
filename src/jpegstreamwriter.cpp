@@ -11,7 +11,6 @@
 #include "jpegstreamreader.h"
 #include <vector>
 
-
 using namespace std;
 using namespace charls;
 
@@ -91,5 +90,5 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
     int ccomp = params.ilv == InterleaveMode::None ? 1 : params.components;
     AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastCompenentIndex, ccomp, params.allowedlossyerror, params.ilv));
 
-    AddSegment(make_unique<JpegImageDataSegment>(info, params, _lastCompenentIndex, ccomp));
+    AddSegment(charls::make_unique<JpegImageDataSegment>(info, params, _lastCompenentIndex, ccomp));
 }
