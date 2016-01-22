@@ -8,6 +8,7 @@
 #include "jpegstreamreader.h"
 #include "jpegstreamwriter.h"
 #include "jpegmarkersegment.h"
+#include <string.h>
 
 using namespace std;
 using namespace charls;
