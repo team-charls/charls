@@ -1,0 +1,11 @@
+language: cpp
+
+compiler:
+  - clang
+
+before_script:
+  - mkdir debug
+  - cd debug
+  - cmake -DCMAKE_BUILD_TYPE=Debug ..
+
+script: make
