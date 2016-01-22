@@ -13,6 +13,7 @@ x64/
 *.suo
 *.user
 *.ipch
+*.opendb
 
 # NuGet Packages
 *.nupkg
