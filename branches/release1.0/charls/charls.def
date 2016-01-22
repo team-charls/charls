@@ -1,7 +1,0 @@
-LIBRARY	"CharLS"
-EXPORTS
-    JpegLsEncode
-    JpegLsDecode
-    JpegLsDecodeRect        
-    JpegLsReadHeader  
-    JpegLsVerifyEncode
