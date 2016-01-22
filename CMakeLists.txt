@@ -16,6 +16,17 @@ if (CMAKE_COMPILER_IS_GNUCC)
     set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D NDEBUG -O3")
 ENDIF ()
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    # Define clang C++ defines for both Debug and Release
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
+
+    # Define specific Debug settings.
+    set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+
+    # Define specific Release settings.
+    set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D NDEBUG -O3")
+endif()
+
 option (BUILD_SHARED_LIBS "Build CharLS with shared libraries." OFF)
 option (BUILD_TESTING     "Build tests"                         ON)
 

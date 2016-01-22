@@ -7,6 +7,7 @@
 #include "util.h"
 #include <vector>
 #include <cstdint>
+#include <memory>
 
 
 using namespace std;
