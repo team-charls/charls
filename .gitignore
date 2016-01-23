@@ -14,6 +14,7 @@ x64/
 *.ipch
 *.opensdf
 *.sdf
+*.opendb
 
 # NuGet Packages
 *.nupkg
