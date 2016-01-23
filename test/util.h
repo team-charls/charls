@@ -5,7 +5,7 @@
 #ifndef TEST_UTIL
 #define TEST_UTIL
 
-#include "../util.h"
+#include "../src/util.h"
 
 typedef const char* SZC;
 

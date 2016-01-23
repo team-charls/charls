@@ -7,11 +7,11 @@
 #include <iostream>
 #include <vector>
 
-#include "../interface.h"
-#include "../util.h"
-#include "../colortransform.h"
-#include "../jpegmarker.h"
-#include "../processline.h"
+#include "../src/interface.h"
+#include "../src/util.h"
+#include "../src/colortransform.h"
+#include "../src/jpegmarker.h"
+#include "../src/processline.h"
 
 #include "util.h"
 
