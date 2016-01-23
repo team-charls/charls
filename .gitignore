@@ -6,6 +6,7 @@ Win32/
 x64/
 [Dd]ebug/
 [Rr]elease/
+[Cc]hecked/
 
 # Ignore files created by Visual Studio
 *.suo
