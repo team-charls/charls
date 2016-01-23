@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/team-charls/charls.svg?branch=1.x-master)](https://travis-ci.org/team-charls/charls)
 #CharLS, a JPEG-LS library
 
 ##Project Description
@@ -11,7 +12,6 @@ commercial JPEG LS implementations.
 * High performance C++ implementation with a C interface to ensure maximum interopability.
 * Supports Windows, Linux and Solaris in 32 bit and 64 bit.
 * Includes a wrapper class for .NET
-* 
 
 ##About JPEG-LS
 JPEG-LS (ISO-14495-1/ITU-T.87) is a standard derived from the Hewlett Packard LOCO algorithm. JPEG LS has low complexity (meaning fast compression) and high compression ratios, similar to JPEG 2000. JPEG-LS is more similar to the old Lossless JPEG than to JPEG 2000, but interestingly the two different techniques result in vastly different performance characteristics. 
@@ -22,7 +22,7 @@ JPEG-LS (ISO-14495-1/ITU-T.87) is a standard derived from the Hewlett Packard LO
 
 ###Primary development
 
-Primary development is done on Windows with Visual Studio 2013.
+Primary development is done on Windows with Visual Studio 2015.
 Optimized projects and solution files are available for this environment.
 
 All other platforms are supported by cmake. CMake is a cross platform

@@ -294,7 +294,7 @@ bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
 	info.colorTransform = XFORM_BIGENDIAN;
 
 	pnmFile << 'P' << id << ' ' << info.width << ' ' << info.height << ' '<< maxval << "   " << std::endl;
-	ByteStreamInfo pnmStream = {pnmFile.rdbuf()};
+	ByteStreamInfo pnmStream = {pnmFile.rdbuf(), NULL, 0};
 
 	jlsFile.seekg(0);
 	JpegLsDecodeStream(pnmStream, compressedByteStream, &info);
@@ -519,7 +519,7 @@ int main(int argc, char* argv[])
 			size_t index = str.find(':');
 			if (index != std::string::npos)
 			{
-				loopCount = std::stoi(str.substr(++index));
+				loopCount = atoi(str.substr(++index).c_str());
 				if (loopCount < 1)
 				{
 					printf("Loop count not understood or invalid: %s\r\n", str.c_str());
