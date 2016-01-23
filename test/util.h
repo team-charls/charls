@@ -21,7 +21,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 
 class UnitTestException : public std::exception {
 public:
-    explicit UnitTestException() : exception("UNIT-TEST_FAILED")
+    explicit UnitTestException() : exception()
     {
     }
 };
