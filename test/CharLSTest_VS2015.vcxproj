@@ -412,6 +412,11 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\src\CharLS_VS2015.vcxproj">
+      <Project>{ff506d97-cf63-4268-97b8-6195e13a0114}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

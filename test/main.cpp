@@ -34,7 +34,7 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* 
 	std::basic_filebuf<char> jlsFile; 
 	jlsFile.open(strNameEncoded, mode_input);
 
-	ByteStreamInfo rawStreamInfo = {&jlsFile};
+	ByteStreamInfo rawStreamInfo = {&jlsFile, NULL, 0};
 
 	JLS_ERROR err = JpegLsReadHeaderStream(rawStreamInfo, info);
 	ASSERT(err == OK);
@@ -261,7 +261,7 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
 	ASSERT(myFile.is_open());
 
 	myFile.pubseekoff(std::streamoff(offset), std::ios_base::cur);
-	ByteStreamInfo rawStreamInfo = {&myFile};
+	ByteStreamInfo rawStreamInfo = {&myFile, NULL, 0};
 
 	BYTE* compressed = new BYTE[width * height * ccomponent * 2];
 	JlsParameters params = JlsParameters();
@@ -282,7 +282,7 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
 
 bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
 {
-	ByteStreamInfo compressedByteStream = {jlsFile.rdbuf()};
+	ByteStreamInfo compressedByteStream = {jlsFile.rdbuf(), NULL, 0};
 
 	JlsParameters info = JlsParameters();
 	JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
@@ -338,8 +338,8 @@ bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
 	if (readValues.size() !=4)
 		return false;
 
-	ByteStreamInfo rawStreamInfo = {pnmFile.rdbuf()};
-	ByteStreamInfo jlsStreamInfo = {jlsFileStream.rdbuf()};
+	ByteStreamInfo rawStreamInfo = {pnmFile.rdbuf(), NULL, 0};
+	ByteStreamInfo jlsStreamInfo = {jlsFileStream.rdbuf(), NULL, 0};
 
 	JlsParameters params = JlsParameters();
 	int componentCount = readValues[0] == 6 ? 3 : 1;
@@ -361,7 +361,7 @@ void TestDecodeFromStream(const char* strNameEncoded)
 	std::basic_filebuf<char> jlsFile; 
 	jlsFile.open(strNameEncoded, mode_input);
 	ASSERT(jlsFile.is_open());
-	ByteStreamInfo compressedByteStream = {&jlsFile};
+	ByteStreamInfo compressedByteStream = {&jlsFile, NULL, 0};
 
 	JlsParameters info = JlsParameters();
 	JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
@@ -369,7 +369,7 @@ void TestDecodeFromStream(const char* strNameEncoded)
 	jlsFile.pubseekpos(std::ios::beg, std::ios_base::in);
 
 	std::basic_stringbuf<char> buf;
-	ByteStreamInfo rawStreamInfo = { &buf };
+	ByteStreamInfo rawStreamInfo = {&buf, NULL, 0};
 
 	err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, NULL);
 	////size_t outputCount = buf.str().size();
@@ -381,11 +381,11 @@ void TestDecodeFromStream(const char* strNameEncoded)
 
 JLS_ERROR DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
 {
-	std::fstream jlsFile(strNameEncoded, mode_input); 	
-	ByteStreamInfo compressedByteStream = {jlsFile.rdbuf()};
+	std::fstream jlsFile(strNameEncoded, mode_input);
+	ByteStreamInfo compressedByteStream = {jlsFile.rdbuf(), NULL, 0};
 
 	std::fstream rawFile(strNameOutput, mode_output); 
-	ByteStreamInfo rawStream = {rawFile.rdbuf()};
+	ByteStreamInfo rawStream = {rawFile.rdbuf(), NULL, 0};
 
 	JLS_ERROR value = JpegLsDecodeStream(rawStream, compressedByteStream, NULL);
 	jlsFile.close();
@@ -516,7 +516,7 @@ int main(int argc, char* argv[])
 			int loopCount = 1;
 
 			// Extract the optional loop count from the command line. Longer running tests make the measurements more reliable.
-			auto index = str.find(':');
+			size_t index = str.find(':');
 			if (index != std::string::npos)
 			{
 				loopCount = std::stoi(str.substr(++index));

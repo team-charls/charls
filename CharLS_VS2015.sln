@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLS_VS2015", "src\CharLS
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSTest_VS2015", "test\CharLSTest_VS2015.vcxproj", "{3E349E7B-30C2-4791-81B7-1108014291B7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSUnitTest_VS2015", "unittest\CharLSUnitTest_VS2015.vcxproj", "{5293D7B4-4192-41FD-B9AF-CF4051D44545}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Checked|Win32 = Checked|Win32
@@ -45,16 +43,6 @@ Global
 		{3E349E7B-30C2-4791-81B7-1108014291B7}.Release|Win32.Build.0 = Release|Win32
 		{3E349E7B-30C2-4791-81B7-1108014291B7}.Release|x64.ActiveCfg = Release|x64
 		{3E349E7B-30C2-4791-81B7-1108014291B7}.Release|x64.Build.0 = Release|x64
-		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Checked|Win32.ActiveCfg = Release|Win32
-		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Checked|Win32.Build.0 = Release|Win32
-		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Checked|x64.ActiveCfg = Release|Win32
-		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Checked|x64.Build.0 = Release|Win32
-		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Debug|Win32.ActiveCfg = Debug|Win32
-		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Debug|Win32.Build.0 = Debug|Win32
-		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Debug|x64.ActiveCfg = Debug|Win32
-		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Release|Win32.ActiveCfg = Release|Win32
-		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Release|Win32.Build.0 = Release|Win32
-		{5293D7B4-4192-41FD-B9AF-CF4051D44545}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +50,5 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FF506D97-CF63-4268-97B8-6195E13A0114} = {1C1CF63C-A53A-449F-90D3-63321015FD65}
 		{3E349E7B-30C2-4791-81B7-1108014291B7} = {1C1CF63C-A53A-449F-90D3-63321015FD65}
-		{5293D7B4-4192-41FD-B9AF-CF4051D44545} = {1C1CF63C-A53A-449F-90D3-63321015FD65}
 	EndGlobalSection
 EndGlobal
