@@ -43,7 +43,7 @@ src/context.h         src/defaulttraits.h    src/jpegimagedatasegment.h  src/jpe
 src/colortransform.h  src/contextrunmode.h   src/encoderstrategy.h       src/jpegmarker.h            src/losslesstraits.h    src/scan.h
 src/config.h          src/decoderstrategy.h  src/header.h                src/jpegmarkersegment.h     src/jpegstreamwriter.h  src/processline.h     src/util.h)
 
-add_library(CharLS src/interface.cpp src/jpegls.cpp src/jpegmarkersegment.cpp src/jpegstreamreader.cpp src/jpegstreamwriter.cpp)
+add_library(CharLS src/interface.cpp src/jpegls.cpp src/jpegmarkersegment.cpp src/header.cpp src/jpegstreamwriter.cpp)
 set (CHARLS_LIB_MAJOR_VERSION 1)
 set (CHARLS_LIB_MINOR_VERSION 0)
 set_target_properties( CharLS PROPERTIES
