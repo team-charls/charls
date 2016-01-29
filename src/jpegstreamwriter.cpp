@@ -87,8 +87,8 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
 
     // Note: it is a common practice to start to count components by index 1.
     _lastCompenentIndex += 1;
-    int ccomp = params.ilv == InterleaveMode::None ? 1 : params.components;
-    AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastCompenentIndex, ccomp, params.allowedlossyerror, params.ilv));
+    int componentCount = params.ilv == InterleaveMode::None ? 1 : params.components;
+    AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastCompenentIndex, componentCount, params.allowedlossyerror, params.ilv));
 
-    AddSegment(charls::make_unique<JpegImageDataSegment>(info, params, _lastCompenentIndex, ccomp));
+    AddSegment(charls::make_unique<JpegImageDataSegment>(info, params, componentCount));
 }

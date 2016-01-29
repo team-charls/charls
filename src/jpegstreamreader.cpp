@@ -74,7 +74,7 @@ ApiResult CheckParameterCoherent(const JlsParameters& parameters)
 void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
 {
     JlsParameters info = _info;
-    info.components = _ccompScan;
+    info.components = _componentCount;
     auto codec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
     unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
     ByteStreamInfo compressedData = streamWriter.OutputStream();
