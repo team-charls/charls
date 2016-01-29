@@ -35,7 +35,7 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* 
     std::basic_filebuf<char> jlsFile; 
     jlsFile.open(strNameEncoded, mode_input);
 
-    ByteStreamInfo rawStreamInfo = {&jlsFile};
+    ByteStreamInfo rawStreamInfo = {&jlsFile, nullptr, 0};
 
     auto err = JpegLsReadHeaderStream(rawStreamInfo, info, nullptr);
     Assert::IsTrue(err == ApiResult::OK);
@@ -262,7 +262,7 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
     Assert::IsTrue(myFile.is_open());
 
     myFile.pubseekoff(std::streamoff(offset), std::ios_base::cur);
-    ByteStreamInfo rawStreamInfo = {&myFile};
+    ByteStreamInfo rawStreamInfo = {&myFile, nullptr, 0};
 
     BYTE* compressed = new BYTE[width * height * ccomponent * 2];
     JlsParameters params = JlsParameters();
@@ -283,7 +283,7 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
 
 bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
 {
-    ByteStreamInfo compressedByteStream = {jlsFile.rdbuf()};
+    ByteStreamInfo compressedByteStream = {jlsFile.rdbuf(), nullptr, 0};
 
     JlsParameters info = JlsParameters();
     auto err = JpegLsReadHeaderStream(compressedByteStream, &info, nullptr);
@@ -295,7 +295,7 @@ bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
     info.colorTransform = ColorTransformation::BigEndian;
 
     pnmFile << 'P' << id << ' ' << info.width << ' ' << info.height << ' '<< maxval << "   " << std::endl;
-    ByteStreamInfo pnmStream = {pnmFile.rdbuf()};
+    ByteStreamInfo pnmStream = {pnmFile.rdbuf(), nullptr, 0};
 
     jlsFile.seekg(0);
     JpegLsDecodeStream(pnmStream, compressedByteStream, &info, nullptr);
@@ -339,8 +339,8 @@ bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
     if (readValues.size() !=4)
         return false;
 
-    ByteStreamInfo rawStreamInfo = {pnmFile.rdbuf()};
-    ByteStreamInfo jlsStreamInfo = {jlsFileStream.rdbuf()};
+    ByteStreamInfo rawStreamInfo = {pnmFile.rdbuf(), nullptr, 0};
+    ByteStreamInfo jlsStreamInfo = {jlsFileStream.rdbuf(), nullptr, 0};
 
     JlsParameters params = JlsParameters();
     int componentCount = readValues[0] == 6 ? 3 : 1;
@@ -362,7 +362,7 @@ void TestDecodeFromStream(const char* strNameEncoded)
     std::basic_filebuf<char> jlsFile; 
     jlsFile.open(strNameEncoded, mode_input);
     Assert::IsTrue(jlsFile.is_open());
-    ByteStreamInfo compressedByteStream = {&jlsFile};
+    ByteStreamInfo compressedByteStream = {&jlsFile, nullptr, 0};
 
     JlsParameters info = JlsParameters();
     auto err = JpegLsReadHeaderStream(compressedByteStream, &info, nullptr);
@@ -371,7 +371,7 @@ void TestDecodeFromStream(const char* strNameEncoded)
     jlsFile.pubseekpos(std::ios::beg, std::ios_base::in);
 
     std::basic_stringbuf<char> buf;
-    ByteStreamInfo rawStreamInfo = { &buf };
+    ByteStreamInfo rawStreamInfo = {&buf, nullptr, 0};
 
     err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, nullptr, nullptr);
     ////size_t outputCount = buf.str().size();
@@ -383,11 +383,11 @@ void TestDecodeFromStream(const char* strNameEncoded)
 
 ApiResult DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
 {
-    std::fstream jlsFile(strNameEncoded, mode_input);   
-    ByteStreamInfo compressedByteStream = {jlsFile.rdbuf()};
+    std::fstream jlsFile(strNameEncoded, mode_input);
+    ByteStreamInfo compressedByteStream = {jlsFile.rdbuf(), nullptr, 0};
 
     std::fstream rawFile(strNameOutput, mode_output); 
-    ByteStreamInfo rawStream = {rawFile.rdbuf()};
+    ByteStreamInfo rawStream = {rawFile.rdbuf(), nullptr, 0};
 
     auto value = JpegLsDecodeStream(rawStream, compressedByteStream, nullptr, nullptr);
     jlsFile.close();
