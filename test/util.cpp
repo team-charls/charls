@@ -124,7 +124,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
     double encodeTime = (dwtimeEncodeComplete - dwtimeEncodeStart) / loopCount;
     double decodeTime = (dwtimeDecodeComplete - dwtimeDecodeStart) / loopCount;
     double symbolRate = (ccomp * size.cy * size.cx) / (1000.0 * decodeTime);
-    printf("Size:%4ldx%4ld, Encode time:%7.2f ms, Decode time:%7.2f ms, Bits per sample:%5.2f, Decode rate:%5.1f M/s \n\r", size.cx, size.cy, encodeTime, decodeTime, bitspersample, symbolRate);
+    printf("Size:%4dx%4d, Encode time:%7.2f ms, Decode time:%7.2f ms, Bits per sample:%5.2f, Decode rate:%5.1f M/s \n\r", size.cx, size.cy, encodeTime, decodeTime, bitspersample, symbolRate);
     BYTE* pbyteOut = &rgbyteOut[0];
     for (size_t i = 0; i < rgbyteOut.size(); ++i)
     {
