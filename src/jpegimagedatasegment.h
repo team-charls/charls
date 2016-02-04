@@ -12,9 +12,8 @@
 class JpegImageDataSegment : public JpegSegment
 {
 public:
-	JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& info, LONG icompStart, int ccompScan) :
+	JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& info, int ccompScan) :
 		_ccompScan(ccompScan),
-		_icompStart(icompStart),
 		_rawStreamInfo(rawStream),
 		_info(info)
 	{
@@ -24,7 +23,6 @@ public:
 
 private:
 	int _ccompScan;
-	LONG _icompStart;
 	ByteStreamInfo _rawStreamInfo;
 	JlsParameters _info;
 };
