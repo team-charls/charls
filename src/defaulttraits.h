@@ -7,6 +7,9 @@
 #define CHARLS_DEFAULTTRAITS
 
 
+#include <cstdlib>
+
+
 const int BASIC_RESET = 64;
 
 
@@ -65,14 +68,14 @@ struct DefaultTraitsT
 
     inlinehint bool IsNear(int32_t lhs, int32_t rhs) const
     {
-        return abs(lhs-rhs) <= NEAR;
+        return std::abs(lhs - rhs) <= NEAR;
     }
 
     bool IsNear(Triplet<SAMPLE> lhs, Triplet<SAMPLE> rhs) const
     {
-        return abs(lhs.v1-rhs.v1) <= NEAR &&
-               abs(lhs.v2-rhs.v2) <= NEAR && 
-               abs(lhs.v3-rhs.v3) <= NEAR;
+        return std::abs(lhs.v1 - rhs.v1) <= NEAR &&
+               std::abs(lhs.v2 - rhs.v2) <= NEAR && 
+               std::abs(lhs.v3 - rhs.v3) <= NEAR;
     }
 
     inlinehint int32_t CorrectPrediction(int32_t Pxc) const
@@ -85,14 +88,14 @@ struct DefaultTraitsT
 
     inlinehint int32_t ModRange(int32_t Errval) const
     {
-        ASSERT(abs(Errval) <= RANGE);
+        ASSERT(std::abs(Errval) <= RANGE);
         if (Errval < 0)
             Errval = Errval + RANGE;
 
         if (Errval >= ((RANGE + 1) / 2))
             Errval = Errval - RANGE;
 
-        ASSERT(abs(Errval) <= RANGE/2);
+        ASSERT(std::abs(Errval) <= RANGE/2);
 
         return Errval;
     }

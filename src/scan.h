@@ -10,6 +10,7 @@
 #include "context.h"
 #include "colortransform.h"
 #include <sstream>
+#include <cstdlib>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
 
@@ -241,12 +242,12 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t
     {
         STRATEGY::Skip(code.GetLength());
         ErrVal = code.GetValue(); 
-        ASSERT(abs(ErrVal) < 65535);
+        ASSERT(std::abs(ErrVal) < 65535);
     }
     else
     {
         ErrVal = UnMapErrVal(DecodeValue(k, traits.LIMIT, traits.qbpp)); 
-        if (abs(ErrVal) > 65535)
+        if (std::abs(ErrVal) > 65535)
             throw std::system_error(static_cast<int>(charls::ApiResult::InvalidCompressedData), CharLSCategoryInstance());
     }
     if (k == 0)
@@ -452,7 +453,7 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRIError(CContextRunMode& ctx, int32_t Errv
 {
     int32_t k = ctx.GetGolomb();
     bool map = ctx.ComputeMap(Errval, k);
-    int32_t EMErrval = 2 * abs(Errval) - ctx._nRItype - int32_t(map);
+    int32_t EMErrval = 2 * std::abs(Errval) - ctx._nRItype - int32_t(map);
 
     ASSERT(Errval == ctx.ComputeErrVal(EMErrval + ctx._nRItype, k));
     EncodeMappedValue(k, EMErrval, traits.LIMIT-J[_RUNindex]-1);
@@ -494,7 +495,7 @@ Triplet<typename TRAITS::SAMPLE> JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(Triple
 template<typename TRAITS, typename STRATEGY>
 typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DecodeRIPixel(int32_t Ra, int32_t Rb)
 {
-    if (abs(Ra - Rb) <= traits.NEAR)
+    if (std::abs(Ra - Rb) <= traits.NEAR)
     {
         int32_t ErrVal = DecodeRIError(_contextRunmode[1]);
         return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Ra, ErrVal));
@@ -510,7 +511,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DecodeRIPixel(int32_t Ra, int
 template<typename TRAITS, typename STRATEGY>
 typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(int32_t x, int32_t Ra, int32_t Rb)
 {
-    if (abs(Ra - Rb) <= traits.NEAR)
+    if (std::abs(Ra - Rb) <= traits.NEAR)
     {
         int32_t ErrVal	= traits.ComputeErrVal(x - Ra);
         EncodeRIError(_contextRunmode[1], ErrVal);
