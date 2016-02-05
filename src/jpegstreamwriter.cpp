@@ -90,5 +90,5 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
     int componentCount = params.ilv == InterleaveMode::None ? 1 : params.components;
     AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastCompenentIndex, componentCount, params.allowedlossyerror, params.ilv));
 
-    AddSegment(charls::make_unique<JpegImageDataSegment>(info, params, componentCount));
+    AddSegment(make_unique<JpegImageDataSegment>(info, params, componentCount));
 }
