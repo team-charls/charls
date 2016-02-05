@@ -30,7 +30,7 @@ namespace CharLS
         public JpegLSBitmapDecoder(Stream bitmapStream)
         {
             if (bitmapStream == null)
-                throw new ArgumentNullException("bitmapStream");
+                throw new ArgumentNullException(nameof(bitmapStream));
             Contract.EndContractBlock();
 
             try
@@ -77,31 +77,30 @@ namespace CharLS
         /// Gets the content of an individual frame within a bitmap.
         /// </summary>
         /// <value>The frames.</value>
-        public IList<BitmapFrame> Frames
-        {
-            get { return frames; }
-        }
+        public IList<BitmapFrame> Frames => frames;
 
         private static PixelFormat GetPixelFormat(JpegLSMetadataInfo info)
         {
             switch (info.ComponentCount)
             {
                 case 1:
-                    switch (info.BitsPerComponent)
+                    if (info.BitsPerComponent == 8)
                     {
-                        case 8:
-                            return PixelFormats.Gray8;
+                        return PixelFormats.Gray8;
                     }
 
                     break;
+
                 case 3:
-                    switch (info.BitsPerComponent)
+                    if (info.BitsPerComponent == 8)
                     {
-                        case 8:
-                            return PixelFormats.Rgb24;
+                        return PixelFormats.Rgb24;
                     }
 
                     break;
+
+                default:
+                    throw new NotSupportedException();
             }
 
             throw new NotSupportedException();

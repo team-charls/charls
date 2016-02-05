@@ -36,13 +36,13 @@ namespace CharLS
         public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, bool jfifHeader = false)
         {
             if (info == null)
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             if (info.Width <= 0 || info.Width > 65535)
-                throw new ArgumentException("Width property needs to be in the range <0, 65535>", "info");
+                throw new ArgumentException("Width property needs to be in the range <0, 65535>", nameof(info));
             if (info.Height <= 0 || info.Height > 65535)
-                throw new ArgumentException("Height property needs to be in the range <0, 65535>", "info");
+                throw new ArgumentException("Height property needs to be in the range <0, 65535>", nameof(info));
             if (pixels == null)
-                throw new ArgumentNullException("pixels");
+                throw new ArgumentNullException(nameof(pixels));
             Contract.EndContractBlock();
 
             var pixelCount = pixels.Length;
@@ -62,15 +62,15 @@ namespace CharLS
         public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, bool jfifHeader)
         {
             if (info == null)
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             if (info.Width <= 0 || info.Width > 65535)
-                throw new ArgumentException("Width property needs to be in the range <0, 65535>", "info");
+                throw new ArgumentException("Width property needs to be in the range <0, 65535>", nameof(info));
             if (info.Height <= 0 || info.Height > 65535)
-                throw new ArgumentException("Height property needs to be in the range <0, 65535>", "info");
+                throw new ArgumentException("Height property needs to be in the range <0, 65535>", nameof(info));
             if (pixels == null)
-                throw new ArgumentNullException("pixels");
+                throw new ArgumentNullException(nameof(pixels));
             if (pixelCount <= 0 || pixelCount > pixels.Length)
-                throw new ArgumentException("pixelCount <= 0 || pixelCount > pixels.Length", "pixelCount");
+                throw new ArgumentException("pixelCount <= 0 || pixelCount > pixels.Length", nameof(pixelCount));
             Contract.EndContractBlock();
 
             const int JpegLSHeaderLength = 100;
@@ -108,19 +108,19 @@ namespace CharLS
         public static bool TryCompress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, bool jfifHeader, byte[] destination, int destinationLength, out int compressedCount)
         {
             if (info == null)
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
             if (info.Width <= 0 || info.Width > 65535)
-                throw new ArgumentException("Width property needs to be in the range <0, 65535>", "info");
+                throw new ArgumentException("Width property needs to be in the range <0, 65535>", nameof(info));
             if (info.Height <= 0 || info.Height > 65535)
-                throw new ArgumentException("Height property needs to be in the range <0, 65535>", "info");
+                throw new ArgumentException("Height property needs to be in the range <0, 65535>", nameof(info));
             if (pixels == null)
-                throw new ArgumentNullException("pixels");
+                throw new ArgumentNullException(nameof(pixels));
             if (pixelCount <= 0 || pixelCount > pixels.Length)
-                throw new ArgumentException("pixelCount <= 0 || pixelCount > pixels.Length", "pixelCount");
+                throw new ArgumentException("pixelCount <= 0 || pixelCount > pixels.Length", nameof(pixelCount));
             if (destination == null)
-                throw new ArgumentNullException("destination");
+                throw new ArgumentNullException(nameof(destination));
             if (destinationLength <= 0 || destinationLength > destination.Length)
-                throw new ArgumentException("destination <= 0 || destinationCount > destination.Length", "destinationLength");
+                throw new ArgumentException("destination <= 0 || destinationCount > destination.Length", nameof(destinationLength));
             Contract.Ensures(Contract.ValueAtReturn(out compressedCount) >= 0);
 
             var parameters = default(JlsParameters);
@@ -164,7 +164,7 @@ namespace CharLS
         public static JpegLSMetadataInfo GetMetadataInfo(byte[] source)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             Contract.Ensures(Contract.Result<JpegLSMetadataInfo>() != null);
 
             return GetMetadataInfo(source, source.Length);
@@ -180,9 +180,9 @@ namespace CharLS
         public static JpegLSMetadataInfo GetMetadataInfo(byte[] source, int count)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             if (count < 0 || count > source.Length)
-                throw new ArgumentException("count < 0 || count > source.Length", "count");
+                throw new ArgumentException("count < 0 || count > source.Length", nameof(count));
             Contract.Ensures(Contract.Result<JpegLSMetadataInfo>() != null);
 
             JlsParameters info;
@@ -199,7 +199,7 @@ namespace CharLS
         public static byte[] Decompress(byte[] source)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             Contract.Ensures(Contract.Result<byte[]>() != null);
 
             return Decompress(source, source.Length);
@@ -215,9 +215,9 @@ namespace CharLS
         public static byte[] Decompress(byte[] source, int count)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             if (count < 0 || count > source.Length)
-                throw new ArgumentException("count < 0 || count > source.Length", "count");
+                throw new ArgumentException("count < 0 || count > source.Length", nameof(count));
             Contract.Ensures(Contract.Result<byte[]>() != null);
 
             JlsParameters info;
@@ -239,11 +239,11 @@ namespace CharLS
         public static void Decompress(byte[] source, int count, byte[] pixels)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             if (count < 0 || count > source.Length)
-                throw new ArgumentException("count < 0 || count > source.Length", "count");
+                throw new ArgumentException("count < 0 || count > source.Length", nameof(count));
             if (pixels == null)
-                throw new ArgumentNullException("pixels");
+                throw new ArgumentNullException(nameof(pixels));
             Contract.EndContractBlock();
 
             var errorMessage = new StringBuilder(256);

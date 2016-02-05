@@ -52,13 +52,13 @@ namespace CharLS
         public JpegLSMetadataInfo(int width, int height, int bitsPerComponent, int componentCount)
         {
             if (width <= 0)
-                throw new ArgumentException("width <= 0", "width");
+                throw new ArgumentException("width <= 0", nameof(width));
             if (height <= 0)
-                throw new ArgumentException("height <= 0", "height");
+                throw new ArgumentException("height <= 0", nameof(height));
             if (bitsPerComponent < 2)
-                throw new ArgumentException("bitsPerComponent < 2", "bitsPerComponent");
+                throw new ArgumentException("bitsPerComponent < 2", nameof(bitsPerComponent));
             if (componentCount <= 0)
-                throw new ArgumentException("componentCount <= 0", "componentCount");
+                throw new ArgumentException("componentCount <= 0", nameof(componentCount));
             Contract.EndContractBlock();
 
             this.width = width;
@@ -106,7 +106,7 @@ namespace CharLS
             set
             {
                 if (value <= 0)
-                    throw new ArgumentException("value <= 0", "value");
+                    throw new ArgumentException("value <= 0", nameof(value));
                 Contract.EndContractBlock();
                 width = value;
             }
@@ -127,7 +127,7 @@ namespace CharLS
             set
             {
                 if (value <= 0)
-                    throw new ArgumentException("value <= 0", "value");
+                    throw new ArgumentException("value <= 0", nameof(value));
                 Contract.EndContractBlock();
                 height = value;
             }
@@ -149,7 +149,7 @@ namespace CharLS
             set
             {
                 if (value < 2)
-                    throw new ArgumentException("value < 2", "value");
+                    throw new ArgumentException("value < 2", nameof(value));
                 Contract.EndContractBlock();
                 bitsPerComponent = value;
             }
@@ -177,7 +177,7 @@ namespace CharLS
             set
             {
                 if (value < 1)
-                    throw new ArgumentException("value < 1", "value");
+                    throw new ArgumentException("value < 1", nameof(value));
                 Contract.EndContractBlock();
                 componentCount = value;
             }
