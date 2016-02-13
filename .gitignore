@@ -14,6 +14,7 @@ x64/
 *.user
 *.ipch
 *.opendb
+*.db
 
 # NuGet Packages
 *.nupkg
