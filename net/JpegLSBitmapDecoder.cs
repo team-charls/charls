@@ -27,6 +27,7 @@ namespace CharLS
         /// </summary>
         /// <param name="bitmapStream">The bitmap stream to decode.</param>
         /// <exception cref="FileFormatException">The bitmap stream is not a JPEG-LS encoded image.</exception>
+        /// <exception cref="DllNotFoundException">The native DLL required to decode the JPEG-LS bit stream could not be loaded.</exception>
         public JpegLSBitmapDecoder(Stream bitmapStream)
         {
             if (bitmapStream == null)
@@ -59,15 +60,7 @@ namespace CharLS
                 var frame = BitmapFrame.Create(source);
                 frames = new ReadOnlyCollection<BitmapFrame>(new[] { frame });
             }
-            catch (IOException e)
-            {
-                throw new FileFormatException(e.Message, e);
-            }
-            catch (InvalidDataException e)
-            {
-                throw new FileFormatException(e.Message, e);
-            }
-            catch (DllNotFoundException e)
+            catch (Exception e) when (e is IOException || e is InvalidDataException)
             {
                 throw new FileFormatException(e.Message, e);
             }
