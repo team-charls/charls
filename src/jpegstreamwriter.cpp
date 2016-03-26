@@ -103,5 +103,5 @@ void JpegStreamWriter::AddScan(ByteStreamInfo info, const JlsParameters* pparams
 
 	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
 
-	AddSegment(new JpegImageDataSegment(info, *pparams, _lastCompenentIndex, ccomp));
+	AddSegment(new JpegImageDataSegment(info, *pparams, ccomp));
 }
