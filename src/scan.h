@@ -200,7 +200,7 @@ public:
     void InitParams(int32_t t1, int32_t t2, int32_t t3, int32_t nReset);
 
     size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData, void* pvoidCompare);
-    void DecodeScan(std::unique_ptr<ProcessLine> rawData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCompare);
+    void DecodeScan(std::unique_ptr<ProcessLine> rawData, const JlsRect& size, ByteStreamInfo& compressedData, bool bCompare);
 
 protected:
     // codec parameters
@@ -813,7 +813,7 @@ size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> proce
     if (pvoidCompare)
     {
         STRATEGY::_qdecoder = std::unique_ptr<DecoderStrategy>(new JlsCodec<TRAITS, DecoderStrategy>(traits, Info()));
-        STRATEGY::_qdecoder->Init(&info);
+        STRATEGY::_qdecoder->Init(info);
     }
 
     STRATEGY::Init(compressedData);
@@ -827,11 +827,11 @@ size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> proce
 
 
 template<typename TRAITS, typename STRATEGY>
-void JlsCodec<TRAITS, STRATEGY>::DecodeScan(std::unique_ptr<ProcessLine> processLine, const JlsRect& rect, ByteStreamInfo* compressedData, bool bCompare)
+void JlsCodec<TRAITS, STRATEGY>::DecodeScan(std::unique_ptr<ProcessLine> processLine, const JlsRect& rect, ByteStreamInfo& compressedData, bool bCompare)
 {
     STRATEGY::_processLine = std::move(processLine);
 
-    uint8_t* compressedBytes = const_cast<uint8_t*>(static_cast<const uint8_t*>(compressedData->rawData));
+    uint8_t* compressedBytes = const_cast<uint8_t*>(static_cast<const uint8_t*>(compressedData.rawData));
     _bCompare = bCompare;
     _rect = rect;
 

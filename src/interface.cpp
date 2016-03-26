@@ -125,7 +125,7 @@ CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
             for (int32_t component = 0; component < info.components; ++component)
             {
                 writer.AddScan(rawStreamInfo, info);
-                SkipBytes(&rawStreamInfo, cbyteComp);
+                SkipBytes(rawStreamInfo, cbyteComp);
             }
         }
         else
@@ -262,7 +262,7 @@ extern "C"
                 for (int32_t component = 0; component < info.components; ++component)
                 {
                     writer.AddScan(rawStreamInfo, info);
-                    SkipBytes(&rawStreamInfo, fieldLength);
+                    SkipBytes(rawStreamInfo, fieldLength);
                 }
             }
             else

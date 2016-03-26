@@ -119,8 +119,8 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 
         unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);
         unique_ptr<ProcessLine> processLine(qcodec->CreateProcess(rawPixels));
-        qcodec->DecodeScan(move(processLine), _rect, &_byteStream, _bCompare); 
-        SkipBytes(&rawPixels, static_cast<size_t>(bytesPerPlane));
+        qcodec->DecodeScan(move(processLine), _rect, _byteStream, _bCompare); 
+        SkipBytes(rawPixels, static_cast<size_t>(bytesPerPlane));
 
         if (_info.ilv != InterleaveMode::None)
             return;
@@ -351,7 +351,7 @@ uint8_t JpegStreamReader::ReadByte()
         throw system_error(static_cast<int>(ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
 
     uint8_t value = _byteStream.rawData[0];
-    SkipBytes(&_byteStream, 1);
+    SkipBytes(_byteStream, 1);
     return value;
 }
 

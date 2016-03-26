@@ -32,26 +32,26 @@ public:
     virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
-    virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo* compressedData, bool bCheck) = 0;
+    virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo& compressedData, bool bCheck) = 0;
 
-    void Init(ByteStreamInfo* compressedStream)
+    void Init(ByteStreamInfo& compressedStream)
     {
         _validBits = 0;
         _readCache = 0;
 
-        if (compressedStream->rawStream)
+        if (compressedStream.rawStream)
         {
             _buffer.resize(40000);
             _position = static_cast<uint8_t*>(&_buffer[0]);
             _endPosition = _position;
-            _byteStream = compressedStream->rawStream;
+            _byteStream = compressedStream.rawStream;
             AddBytesFromStream();
         }
         else
         {
             _byteStream = nullptr;
-            _position = compressedStream->rawData;
-            _endPosition = _position + compressedStream->count;
+            _position = compressedStream.rawData;
+            _endPosition = _position + compressedStream.count;
         }
 
         _nextFFPosition = FindNextFF();
