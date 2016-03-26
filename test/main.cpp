@@ -14,7 +14,7 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
-
+#include <algorithm>
 
 using namespace charls;
 
@@ -335,7 +335,6 @@ std::vector<int> readPnmHeader(std::istream& pnmFile)
 bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
 {
     std::vector<int> readValues = readPnmHeader(pnmFile);
-
     if (readValues.size() !=4)
         return false;
 
@@ -354,6 +353,66 @@ bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
 
     JpegLsEncodeStream(jlsStreamInfo, bytesWritten, rawStreamInfo, params, nullptr);
     return true;
+}
+
+
+void ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
+{
+    std::vector<int> header1 = readPnmHeader(pnmFile1);
+    if (header1.size() != 4)
+    {
+        printf("Cannot read header from input file 1\r\n");
+        return;
+    }
+
+    std::vector<int> header2 = readPnmHeader(pnmFile2);
+    if (header2.size() != 4)
+    {
+        printf("Cannot read header from input file 2\r\n");
+        return;
+    }
+
+    if (header1[0] != header2[0])
+    {
+        printf("Header type %i is not equal with type %i\r\n", header1[0], header2[0]);
+        return;
+    }
+
+    if (header1[1] != header2[1])
+    {
+        printf("Width %i is not equal with width %i\r\n", header1[1], header2[1]);
+        return;
+    }
+
+    if (header1[2] != header2[2])
+    {
+        printf("Height %i is not equal with height %i\r\n", header1[2], header2[2]);
+        return;
+    }
+
+    if (header1[3] != header2[3])
+    {
+        printf("max-value %i is not equal with max-value %i\r\n", header1[3], header2[3]);
+        return;
+    }
+
+    size_t byteCount = header1[1] * header1[2] * (header1[3] > 255 ? 2 : 1);
+    std::vector<uint8_t> bytes1(byteCount);
+    std::vector<uint8_t> bytes2(byteCount);
+
+    pnmFile1.read(reinterpret_cast<char*>(&bytes1[0]), byteCount);
+    pnmFile2.read(reinterpret_cast<char*>(&bytes2[0]), byteCount);
+
+    auto match_vecs = std::mismatch(bytes1.begin(), bytes1.end(), bytes2.begin());
+    bool is_mismatch = match_vecs.first != bytes1.end();
+    if (is_mismatch)
+    {
+        printf("Values of the 2 files are different\r\n");
+    }
+    else
+    {
+        printf("Values of the 2 files are equal\r\n");
+    }
 }
 
 
@@ -465,7 +524,7 @@ int main(int argc, char* argv[])
 {
     if (argc == 1)
     {
-        printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance[:loop count], -dontwait -decoderaw -encodepnm -decodetopnm \r\n");
+        printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance[:loop count], -dontwait -decoderaw -encodepnm -decodetopnm -comparepnm\r\n");
         return 0;
     }
 
@@ -506,13 +565,27 @@ int main(int argc, char* argv[])
         {
             if (i != 1 || argc != 4)
             {
-                printf("Syntax: -encodepnm inputfile outputfile \r\n");
+                printf("Syntax: -encodepnm inputfile outputfile\r\n");
                 return 0;
             }
             std::fstream pnmFile(argv[2], mode_input); 
             std::fstream jlsFile(argv[3], mode_output); 
     
             return EncodePnm(pnmFile,jlsFile);
+        }
+
+        if (str.compare("-comparepnm") == 0)
+        {
+            if (i != 1 || argc != 4)
+            {
+                printf("Syntax: -encodepnm inputfile outputfile\r\n");
+                return 0;
+            }
+            std::fstream pnmFile1(argv[2], mode_input);
+            std::fstream pnmFile2(argv[3], mode_input);
+
+            ComparePnm(pnmFile1, pnmFile2);
+            return 0;
         }
 
         if (str.compare("-bitstreamdamage") == 0)

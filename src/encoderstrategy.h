@@ -16,8 +16,8 @@ class EncoderStrategy
 public:
     explicit EncoderStrategy(const JlsParameters& info) :
         _info(info),
-        _valcurrent(0),
-        _bitpos(0),
+        _bitBuffer(0),
+        _freeBitCount(sizeof(_bitBuffer) * 8),
         _compressedLength(0),
         _position(nullptr),
         _isFFWritten(false),
@@ -49,8 +49,8 @@ protected:
 
     void Init(ByteStreamInfo& compressedStream)
     {
-        _bitpos = 32;
-        _valcurrent = 0;
+        _freeBitCount = sizeof(_bitBuffer) * 8;
+        _bitBuffer = 0;
 
         if (compressedStream.rawStream)
         {
@@ -66,31 +66,40 @@ protected:
         }
     }
 
-    void AppendToBitStream(int32_t value, int32_t length)
+    void AppendToBitStream(int32_t bits, int32_t bitCount)
     {
-        ASSERT(length < 32 && length >= 0);
-        ASSERT((!_qdecoder) || (length == 0 && value == 0) ||( _qdecoder->ReadLongValue(length) == value));
+        ASSERT(bitCount < 32 && bitCount >= 0);
+        ASSERT((!_qdecoder) || (bitCount == 0 && bits == 0) ||( _qdecoder->ReadLongValue(bitCount) == bits));
 
 #ifndef NDEBUG
-        if (length < 32)
+        if (bitCount < 32)
         {
-            int mask = (1 << (length)) - 1;
-            ASSERT((value | mask) == mask);
+            int mask = (1 << (bitCount)) - 1;
+            ASSERT((bits | mask) == mask); // not used bits are set. encoding error?
         }
 #endif
 
-        _bitpos -= length;
-        if (_bitpos >= 0)
+        _freeBitCount -= bitCount;
+        if (_freeBitCount >= 0)
         {
-            _valcurrent = _valcurrent | (value << _bitpos);
-            return;
+            _bitBuffer |= bits << _freeBitCount;
         }
-        _valcurrent |= value >> -_bitpos;
+        else
+        {
+            // Add as much bits in the remaining space as possible and flush.
+            _bitBuffer |= bits >> -_freeBitCount;
+            Flush();
 
-        Flush();
+            // A second flush may be required if extra marker detect bits were needed and not all bits could be written.
+            if (_freeBitCount < 0)
+            {
+                _bitBuffer |= bits >> -_freeBitCount;
+                Flush();
+            }
 
-        ASSERT(_bitpos >=0);
-        _valcurrent |= value << _bitpos;
+            ASSERT(_freeBitCount >= 0);
+            _bitBuffer |= bits << _freeBitCount;
+        }
     }
 
     void EndScan()
@@ -99,12 +108,12 @@ protected:
 
         // if a 0xff was written, Flush() will force one unset bit anyway
         if (_isFFWritten)
-            AppendToBitStream(0, (_bitpos - 1) % 8);
+            AppendToBitStream(0, (_freeBitCount - 1) % 8);
         else
-            AppendToBitStream(0, _bitpos % 8);
+            AppendToBitStream(0, _freeBitCount % 8);
 
         Flush();
-        ASSERT(_bitpos == 0x20);
+        ASSERT(_freeBitCount == 0x20);
 
         if (_compressedStream)
         {
@@ -134,23 +143,23 @@ protected:
             OverFlow();
         }
 
-        for (int32_t i = 0; i < 4; ++i)
+        for (int i = 0; i < 4; ++i)
         {
-            if (_bitpos >= 32)
+            if (_freeBitCount >= 32)
                 break;
 
             if (_isFFWritten)
             {
-                // insert highmost bit
-                *_position = static_cast<uint8_t>(_valcurrent >> 25);
-                _valcurrent = _valcurrent << 7;
-                _bitpos += 7;
+                // JPEG-LS requirement (T.87, A.1) to detect markers: after a xFF value a single 0 bit needs to be inserted.
+                *_position = static_cast<uint8_t>(_bitBuffer >> 25);
+                _bitBuffer = _bitBuffer << 7;
+                _freeBitCount += 7;
             }
             else
             {
-                *_position = static_cast<uint8_t>(_valcurrent >> 24);
-                _valcurrent = _valcurrent << 8;
-                _bitpos += 8;
+                *_position = static_cast<uint8_t>(_bitBuffer >> 24);
+                _bitBuffer = _bitBuffer << 8;
+                _freeBitCount += 8;
             }
 
             _isFFWritten = *_position == 0xFF;
@@ -162,7 +171,7 @@ protected:
 
     std::size_t GetLength() const
     {
-        return _bytesWritten - (_bitpos - 32) / 8;
+        return _bytesWritten - (_freeBitCount - 32) / 8;
     }
 
     inlinehint void AppendOnesToBitStream(int32_t length)
@@ -177,8 +186,8 @@ protected:
     std::unique_ptr<ProcessLine> _processLine;
 
 private:
-    unsigned int _valcurrent;
-    int32_t _bitpos;
+    unsigned int _bitBuffer;
+    int32_t _freeBitCount;
     std::size_t _compressedLength;
 
     // encoding

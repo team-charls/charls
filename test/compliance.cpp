@@ -175,11 +175,11 @@ void TestSampleAnnexH3()
 
 
 void TestColorTransforms_HpImages()
-{   
-    DecompressFile("test/jlsimage/banny_normal.jls", "test/jlsimage/banny.ppm",38, false);
-    DecompressFile("test/jlsimage/banny_Hp1.jls", "test/jlsimage/banny.ppm",38, false);
-    DecompressFile("test/jlsimage/banny_Hp2.jls", "test/jlsimage/banny.ppm",38, false);
-    DecompressFile("test/jlsimage/banny_Hp3.jls", "test/jlsimage/banny.ppm",38, false);
+{
+    DecompressFile("test/jlsimage/banny_normal.jls", "test/jlsimage/banny.ppm", 38, false);
+    DecompressFile("test/jlsimage/banny_HP1.jls", "test/jlsimage/banny.ppm", 38, false);
+    DecompressFile("test/jlsimage/banny_HP2.jls", "test/jlsimage/banny.ppm", 38, false);
+    DecompressFile("test/jlsimage/banny_HP3.jls", "test/jlsimage/banny.ppm", 38, false);
 }
 
 
@@ -209,17 +209,16 @@ void TestConformance()
     // Test 8
 
     // Test 9
-    DecompressFile("test/conformance/T8NDE0.JLS", "test/conformance/TEST8BS2.PGM",15);  
+    DecompressFile("test/conformance/T8NDE0.JLS", "test/conformance/TEST8BS2.PGM",15);
 
     // Test 10
-    DecompressFile("test/conformance/T8NDE3.JLS", "test/conformance/TEST8BS2.PGM",15);  
+    DecompressFile("test/conformance/T8NDE3.JLS", "test/conformance/TEST8BS2.PGM",15);
 
     // Test 11
     DecompressFile("test/conformance/T16E0.JLS", "test/conformance/TEST16.PGM",16);
 
     // Test 12
     DecompressFile("test/conformance/T16E3.JLS", "test/conformance/TEST16.PGM",16);
-
 
     // additional, Lena compressed with other codec (UBC?), vfy with CharLS
     DecompressFile("test/lena8b.jls", "test/lena8b.raw",0);

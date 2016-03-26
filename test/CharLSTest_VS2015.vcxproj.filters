@@ -48,10 +48,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="conformance\T16E0.JLS">
-      <Filter>Data Files</Filter>
-    </None>
-    <None Include="conformance\TEST16.PGM">
+    <None Include="conformance\TEST8.PPM">
       <Filter>Data Files</Filter>
     </None>
   </ItemGroup>
@@ -65,9 +62,6 @@
     <CustomBuild Include="conformance\T8C2E3.JLS">
       <Filter>Data Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="conformance\TEST8.PPM">
-      <Filter>Data Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="alphatest.raw">
       <Filter>Data Files</Filter>
     </CustomBuild>
@@ -75,5 +69,53 @@
       <Filter>Data Files</Filter>
     </CustomBuild>
     <CustomBuild Include="lena8b.raw" />
+    <CustomBuild Include="conformance\T8C0E0.JLS">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\T8C1E0.JLS">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\T8C0E3.JLS">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\T8C2E0.JLS">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\T8C1E3.JLS">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\T8NDE0.JLS">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\T8NDE3.JLS">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\T16E0.JLS">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\T16E3.JLS">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\TEST16.PGM">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\TEST8BS2.PGM">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="jlsimage\banny_HP1.jls">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="jlsimage\banny_HP2.jls">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="jlsimage\banny_HP3.jls">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="jlsimage\banny_normal.jls">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="jlsimage\banny.ppm">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

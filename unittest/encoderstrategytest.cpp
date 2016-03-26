@@ -36,14 +36,19 @@ public:
         Init(info);
     }
 
-    void AppendToBitStreamTest(int32_t value, int32_t length)
+    void AppendToBitStreamForward(int32_t value, int32_t length)
     {
         AppendToBitStream(value, length);
     }
 
-    void FlushTest()
+    void FlushForward()
     {
         Flush();
+    }
+
+    std::size_t GetLengthForward()
+    {
+        return GetLength();
     }
 };
 
@@ -67,20 +72,18 @@ namespace CharLSUnitTest
             stream.count = sizeof(data);
             strategy.InitTest(stream);
 
-            strategy.AppendToBitStreamTest(0, 0);
-            strategy.FlushTest();
+            strategy.AppendToBitStreamForward(0, 0);
+            strategy.FlushForward();
         }
 
         TEST_METHOD(AppendToBitStreamFFPattern)
         {
-            // Failing unit test. It exposes the reported bug that AppendToBitStream has a flaw for a certain bit pattern.
-            return;
-
             JlsParameters info;
 
             EncoderStrategyTester strategy(info);
 
             uint8_t data[1024];
+            data[13] = 0x77; // marker byte to detect overruns.
 
             ByteStreamInfo stream;
             stream.rawStream = nullptr;
@@ -89,16 +92,35 @@ namespace CharLSUnitTest
             strategy.InitTest(stream);
 
             // We want _isFFWritten == true.
-            strategy.AppendToBitStreamTest(0, 24);
-            strategy.AppendToBitStreamTest(0xff, 8);
+            strategy.AppendToBitStreamForward(0, 24);
+            strategy.AppendToBitStreamForward(0xff, 8);
 
             // We need the buffer filled with set bits.
-            strategy.AppendToBitStreamTest(0xffff, 16);
-            strategy.AppendToBitStreamTest(0xffff, 16);
+            strategy.AppendToBitStreamForward(0xffff, 16);
+            strategy.AppendToBitStreamForward(0xffff, 16);
 
-            strategy.AppendToBitStreamTest(0, 31);
+            // Buffer is full with FFs and _isFFWritten = true: Flush can only write 30 date bits.
+            strategy.AppendToBitStreamForward(0x3, 31);
 
-            //strategy.FlushTest();
+            strategy.FlushForward();
+
+            // Verify output.
+            auto y = strategy.GetLengthForward();
+            Assert::AreEqual(static_cast<size_t>(13), strategy.GetLengthForward());
+            Assert::AreEqual(static_cast<uint8_t>(0x00), data[0]);
+            Assert::AreEqual(static_cast<uint8_t>(0x00), data[1]);
+            Assert::AreEqual(static_cast<uint8_t>(0x00), data[2]);
+            Assert::AreEqual(static_cast<uint8_t>(0xFF), data[3]);
+            Assert::AreEqual(static_cast<uint8_t>(0x7F), data[4]); // extra 0 bit.
+            Assert::AreEqual(static_cast<uint8_t>(0xFF), data[5]); 
+            Assert::AreEqual(static_cast<uint8_t>(0x7F), data[6]); // extra 0 bit.
+            Assert::AreEqual(static_cast<uint8_t>(0xFF), data[7]);
+            Assert::AreEqual(static_cast<uint8_t>(0x60), data[8]);
+            Assert::AreEqual(static_cast<uint8_t>(0x00), data[9]);
+            Assert::AreEqual(static_cast<uint8_t>(0x00), data[10]);
+            Assert::AreEqual(static_cast<uint8_t>(0x00), data[11]);
+            Assert::AreEqual(static_cast<uint8_t>(0xC0), data[12]);
+            Assert::AreEqual(static_cast<uint8_t>(0x77), data[13]);
         }
     };
 }
