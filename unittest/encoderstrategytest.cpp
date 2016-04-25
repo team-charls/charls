@@ -5,52 +5,10 @@
 #include "stdafx.h"
 
 #include "CppUnitTest.h"
-#include "..\src\encoderstrategy.h"
+#include "encoderstrategytester.h"
+
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
-
-class EncoderStrategyTester : EncoderStrategy
-{
-public:
-    explicit EncoderStrategyTester(const JlsParameters& info) : EncoderStrategy(info)
-    {
-    }
-
-    virtual void SetPresets(const JlsCustomParameters&) override
-    {
-    }
-
-    virtual size_t EncodeScan(std::unique_ptr<ProcessLine>, ByteStreamInfo&, void*) override
-    {
-        return 0;
-    }
-
-    virtual ProcessLine* CreateProcess(ByteStreamInfo) override
-    {
-        return nullptr;
-    }
-
-    void InitTest(ByteStreamInfo& info)
-    {
-        Init(info);
-    }
-
-    void AppendToBitStreamForward(int32_t value, int32_t length)
-    {
-        AppendToBitStream(value, length);
-    }
-
-    void FlushForward()
-    {
-        Flush();
-    }
-
-    std::size_t GetLengthForward()
-    {
-        return GetLength();
-    }
-};
 
 
 namespace CharLSUnitTest
@@ -70,7 +28,7 @@ namespace CharLSUnitTest
             stream.rawStream = nullptr;
             stream.rawData = data;
             stream.count = sizeof(data);
-            strategy.InitTest(stream);
+            strategy.InitForward(stream);
 
             strategy.AppendToBitStreamForward(0, 0);
             strategy.FlushForward();
@@ -89,7 +47,7 @@ namespace CharLSUnitTest
             stream.rawStream = nullptr;
             stream.rawData = data;
             stream.count = sizeof(data);
-            strategy.InitTest(stream);
+            strategy.InitForward(stream);
 
             // We want _isFFWritten == true.
             strategy.AppendToBitStreamForward(0, 24);
