@@ -38,22 +38,19 @@ if (WIN32)
    endif()
 endif()
 
-set (charls_HEADERS
-src/charls.h          src/context.h          src/defaulttraits.h    src/jpegimagedatasegment.h  src/jpegsegment.h       src/lookuptable.h     src/publictypes.h
-src/colortransform.h  src/contextrunmode.h   src/encoderstrategy.h  src/jpegmarkercode.h        src/jpegstreamreader.h  src/losslesstraits.h  src/scan.h
-src/config.h          src/decoderstrategy.h  src/header.h           src/jpegmarkersegment.h     src/jpegstreamwriter.h  src/processline.h     src/util.h)
+set (charls_PUBLIC_HEADERS src/charls.h src/publictypes.h)
 
 add_library(CharLS src/interface.cpp src/jpegls.cpp src/jpegmarkersegment.cpp src/jpegstreamreader.cpp src/jpegstreamwriter.cpp)
-set (CHARLS_LIB_MAJOR_VERSION 1)
+set (CHARLS_LIB_MAJOR_VERSION 2)
 set (CHARLS_LIB_MINOR_VERSION 0)
-set_target_properties( CharLS PROPERTIES
-                              VERSION ${CHARLS_LIB_MAJOR_VERSION}.${CHARLS_LIB_MINOR_VERSION}
-                              SOVERSION ${CHARLS_LIB_MAJOR_VERSION})
+set_target_properties(CharLS PROPERTIES
+                             VERSION ${CHARLS_LIB_MAJOR_VERSION}.${CHARLS_LIB_MINOR_VERSION}
+                             SOVERSION ${CHARLS_LIB_MAJOR_VERSION})
 
 install (TARGETS CharLS RUNTIME DESTINATION bin
                         LIBRARY DESTINATION lib${LIB_SUFFIX}
                         ARCHIVE DESTINATION lib${LIB_SUFFIX})
-install (FILES ${charls_HEADERS} DESTINATION include/CharLS)
+install (FILES ${charls_PUBLIC_HEADERS} DESTINATION include/CharLS)
 
 if (BUILD_TESTING)
   add_executable(charlstest test/main.cpp test/time.cpp test/util.cpp test/bitstreamdamage.cpp test/compliance.cpp test/performance.cpp test/dicomsamples.cpp)
