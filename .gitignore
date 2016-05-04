@@ -4,6 +4,7 @@ obj/
 bin/
 Win32/
 x64/
+.vscode/
 [Dd]ebug/
 [Rr]elease/
 [Cc]hecked/
