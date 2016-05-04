@@ -31,7 +31,7 @@ struct LosslessTraitsImplT
 
     static inlinehint int32_t ComputeErrVal(int32_t d)
     {
-        return ModRange(d);
+        return ModuloRange(d);
     }
 
     static inlinehint bool IsNear(int32_t lhs, int32_t rhs)
@@ -39,9 +39,13 @@ struct LosslessTraitsImplT
         return lhs == rhs;
     }
 
-    static inlinehint int32_t ModRange(int32_t Errval)
+// The following optimalization is implementation-dependent (works on x86 and ARM, see charlstest). 
+#if defined(__clang__)
+     __attribute__((no_sanitize("shift")))
+#endif    
+    static inlinehint int32_t ModuloRange(int32_t errorValue)
     {
-        return int32_t(Errval << (INT32_BITCOUNT  - bpp)) >> (INT32_BITCOUNT  - bpp); 
+        return int32_t(errorValue << (INT32_BITCOUNT - bpp)) >> (INT32_BITCOUNT - bpp); 
     }
 
     static inlinehint SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)

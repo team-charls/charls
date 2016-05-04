@@ -70,13 +70,9 @@ protected:
     {
         ASSERT(bitCount < 32 && bitCount >= 0);
         ASSERT((!_qdecoder) || (bitCount == 0 && bits == 0) ||( _qdecoder->ReadLongValue(bitCount) == bits));
-
 #ifndef NDEBUG
-        if (bitCount < 32)
-        {
-            int mask = (1 << (bitCount)) - 1;
-            ASSERT((bits | mask) == mask); // not used bits are set. encoding error?
-        }
+        int mask = (1u << (bitCount)) - 1;
+        ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
 #endif
 
         _freeBitCount -= bitCount;

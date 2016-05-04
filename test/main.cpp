@@ -56,7 +56,7 @@ void TestTraits16bit()
 
     for (int i = -4096; i < 4096; ++i)
     {
-        Assert::IsTrue(traits1.ModuloRange(i) == traits2.ModRange(i));
+        Assert::IsTrue(traits1.ModuloRange(i) == traits2.ModuloRange(i));
         Assert::IsTrue(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
     }
 
@@ -81,7 +81,7 @@ void TestTraits8bit()
 
     for (int i = -255; i < 255; ++i)
     {
-        Assert::IsTrue(traits1.ModuloRange(i) == traits2.ModRange(i));
+        Assert::IsTrue(traits1.ModuloRange(i) == traits2.ModuloRange(i));
         Assert::IsTrue(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
     }
 
