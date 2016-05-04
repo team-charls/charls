@@ -72,7 +72,9 @@
     <ClInclude Include="jpegstreamreader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="charls.h" />
+    <ClInclude Include="charls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />
