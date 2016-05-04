@@ -138,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="decoderstrategytest.cpp" />
+    <ClCompile Include="defaulttraitstest.cpp" />
     <ClCompile Include="encoderstrategytest.cpp" />
     <ClCompile Include="jpegmarkersegmenttest.cpp" />
     <ClCompile Include="jpegstreamreadertest.cpp" />

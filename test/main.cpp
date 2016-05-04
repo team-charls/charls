@@ -45,8 +45,8 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* 
 
 void TestTraits16bit()
 {
-    DefaultTraitsT<USHORT,USHORT> traits1 = DefaultTraitsT<USHORT,USHORT>(4095,0);
-    LosslessTraitsT<USHORT,12> traits2 = LosslessTraitsT<USHORT,12>();
+    auto traits1 = DefaultTraitsT<uint16_t, uint16_t>(4095,0);
+    auto traits2 = LosslessTraitsT<uint16_t, 12>();
 
     Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
     Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
@@ -56,7 +56,7 @@ void TestTraits16bit()
 
     for (int i = -4096; i < 4096; ++i)
     {
-        Assert::IsTrue(traits1.ModRange(i) == traits2.ModRange(i));
+        Assert::IsTrue(traits1.ModuloRange(i) == traits2.ModRange(i));
         Assert::IsTrue(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
     }
 
@@ -70,8 +70,8 @@ void TestTraits16bit()
 
 void TestTraits8bit()
 {
-    DefaultTraitsT<BYTE,BYTE> traits1 = DefaultTraitsT<BYTE,BYTE>(255,0);
-    LosslessTraitsT<BYTE,8> traits2 = LosslessTraitsT<BYTE,8>();
+    auto traits1 = DefaultTraitsT<uint8_t, uint8_t>(255,0);
+    auto traits2 = LosslessTraitsT<uint8_t, 8>();
 
     Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
     Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
@@ -81,7 +81,7 @@ void TestTraits8bit()
 
     for (int i = -255; i < 255; ++i)
     {
-        Assert::IsTrue(traits1.ModRange(i) == traits2.ModRange(i));
+        Assert::IsTrue(traits1.ModuloRange(i) == traits2.ModRange(i));
         Assert::IsTrue(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
     }
 

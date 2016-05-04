@@ -7,10 +7,11 @@
 #define CHARLS_DEFAULTTRAITS
 
 
+#include "util.h"
 #include <cstdlib>
 
 
-const int BASIC_RESET = 64;
+const int BASIC_RESET = 64; // Default value as defined in ITU T.87, table C.2
 
 
 // Default traits that support all JPEG LS parameters: custom limit, near, maxval (not power of 2)
@@ -27,38 +28,38 @@ struct DefaultTraitsT
     typedef pixel PIXEL;
 
     int32_t MAXVAL;
-    int32_t RANGE;
-    int32_t NEAR;
-    int32_t qbpp;
-    int32_t bpp;
-    int32_t LIMIT;
-    int32_t RESET;
+    const int32_t RANGE;
+    const int32_t NEAR;
+    const int32_t qbpp;
+    const int32_t bpp;
+    const int32_t LIMIT;
+    const int32_t RESET;
 
-    DefaultTraitsT(const DefaultTraitsT& src) :
-        MAXVAL(src.MAXVAL),
-        RANGE(src.RANGE),
-        NEAR(src.NEAR),
-        qbpp(src.qbpp),
-        bpp(src.bpp),
-        LIMIT(src.LIMIT),
-        RESET(src.RESET)
+    DefaultTraitsT(int32_t max, int32_t near, int32_t reset = BASIC_RESET) :
+        MAXVAL(max),
+        RANGE((max + 2 * near) / (2 * near + 1) + 1),
+        NEAR(near),
+        qbpp(log_2(RANGE)),
+        bpp(log_2(max)),
+        LIMIT(2 * (bpp + MAX(8, bpp))),
+        RESET(reset)
     {
     }
 
-    DefaultTraitsT(int32_t max, int32_t jls_near)
+    DefaultTraitsT(const DefaultTraitsT& other) :
+        MAXVAL(other.MAXVAL),
+        RANGE(other.RANGE),
+        NEAR(other.NEAR),
+        qbpp(other.qbpp),
+        bpp(other.bpp),
+        LIMIT(other.LIMIT),
+        RESET(other.RESET)
     {
-        NEAR = jls_near;
-        MAXVAL = max;
-        RANGE  = (MAXVAL + 2 * NEAR )/(2 * NEAR + 1) + 1;
-        bpp = log_2(max);
-        LIMIT = 2 * (bpp + MAX(8,bpp));
-        qbpp = log_2(RANGE);
-        RESET = BASIC_RESET;
     }
 
     inlinehint int32_t ComputeErrVal(int32_t e) const
     {
-        return ModRange(Quantize(e));
+        return ModuloRange(Quantize(e));
     }
 
     inlinehint SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) const
@@ -74,7 +75,7 @@ struct DefaultTraitsT
     bool IsNear(Triplet<SAMPLE> lhs, Triplet<SAMPLE> rhs) const
     {
         return std::abs(lhs.v1 - rhs.v1) <= NEAR &&
-               std::abs(lhs.v2 - rhs.v2) <= NEAR && 
+               std::abs(lhs.v2 - rhs.v2) <= NEAR &&
                std::abs(lhs.v3 - rhs.v3) <= NEAR;
     }
 
@@ -86,18 +87,24 @@ struct DefaultTraitsT
         return (~(Pxc >> (INT32_BITCOUNT-1))) & MAXVAL;
     }
 
-    inlinehint int32_t ModRange(int32_t Errval) const
+    /// <summary>
+    /// Returns the value of errorValue modulo RANGE. ITU.T.87, A.4.5 (code segment A.9)
+    /// </summary>
+    inlinehint int32_t ModuloRange(int32_t errorValue) const
     {
-        ASSERT(std::abs(Errval) <= RANGE);
-        if (Errval < 0)
-            Errval = Errval + RANGE;
+        ASSERT(std::abs(errorValue) <= RANGE);
 
-        if (Errval >= ((RANGE + 1) / 2))
-            Errval = Errval - RANGE;
+        if (errorValue < 0)
+        {
+            errorValue += RANGE;
+        }
+        if (errorValue >= (RANGE + 1) / 2)
+        {
+            errorValue -= RANGE;
+        }
 
-        ASSERT(std::abs(Errval) <= RANGE/2);
-
-        return Errval;
+        ASSERT(-RANGE / 2 <= errorValue && errorValue <= (RANGE / 2) - 1);
+        return errorValue;
     }
 
 private:
@@ -117,9 +124,13 @@ private:
     inlinehint SAMPLE FixReconstructedValue(int32_t val) const
     { 
         if (val < -NEAR)
-            val = val + RANGE*(2*NEAR+1);
+        {
+            val = val + RANGE * (2 * NEAR + 1);
+        }
         else if (val > MAXVAL + NEAR)
-            val = val - RANGE*(2*NEAR+1);
+        {
+            val = val - RANGE * (2 * NEAR + 1);
+        }
 
         return SAMPLE(CorrectPrediction(val));
     }
