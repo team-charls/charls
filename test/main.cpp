@@ -478,7 +478,7 @@ void TestEncodeFromStream()
 {
     ////TestDecodeFromStream("test/user_supplied/output.jls");
 
-    TestEncodeFromStream("test/0015.RAW", 0, 1024, 1024, 8, 1, InterleaveMode::None, 0x3D3ee);
+    TestEncodeFromStream("test/0015.raw", 0, 1024, 1024, 8, 1, InterleaveMode::None, 0x3D3ee);
     //TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
     TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, InterleaveMode::Sample, 99734);
     TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, InterleaveMode::Line, 100615);
