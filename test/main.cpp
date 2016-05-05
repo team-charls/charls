@@ -283,22 +283,22 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
 
 bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
 {
-    ByteStreamInfo compressedByteStream = {jlsFile.rdbuf(), nullptr, 0};
+    ByteStreamInfo compressedByteStream = { jlsFile.rdbuf(), nullptr, 0 };
 
-    JlsParameters info = JlsParameters();
-    auto err = JpegLsReadHeaderStream(compressedByteStream, &info, nullptr);
-    if (err != ApiResult::OK)
+    auto params = JlsParameters();
+    auto result = JpegLsReadHeaderStream(compressedByteStream, &params, nullptr);
+    if (result != ApiResult::OK)
         return false;
 
-    int maxval = (1 << info.bitspersample) - 1;
-    int id = info.components == 3 ? 6 : 5;
-    info.colorTransform = ColorTransformation::BigEndian;
+    int maxValue = (1 << params.bitspersample) - 1;
+    int magicNumber = params.components == 3 ? 6 : 5;
+    params.colorTransform = ColorTransformation::BigEndian;
 
-    pnmFile << 'P' << id << ' ' << info.width << ' ' << info.height << ' '<< maxval << "   " << std::endl;
-    ByteStreamInfo pnmStream = {pnmFile.rdbuf(), nullptr, 0};
+    pnmFile << 'P' << magicNumber << ' ' << params.width << ' ' << params.height << ' '<< maxValue << std::endl;
+    ByteStreamInfo pnmStream = { pnmFile.rdbuf(), nullptr, 0 };
 
     jlsFile.seekg(0);
-    JpegLsDecodeStream(pnmStream, compressedByteStream, &info, nullptr);
+    JpegLsDecodeStream(pnmStream, compressedByteStream, &params, nullptr);
     return true;
 }
 
