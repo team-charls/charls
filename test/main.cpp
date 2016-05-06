@@ -281,24 +281,35 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
 }
 
 
-bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
+bool DecodeToPnm(std::istream& input, std::ostream& output)
 {
-    ByteStreamInfo compressedByteStream = { jlsFile.rdbuf(), nullptr, 0 };
+    ByteStreamInfo inputInfo = { input.rdbuf(), nullptr, 0 };
 
     auto params = JlsParameters();
-    auto result = JpegLsReadHeaderStream(compressedByteStream, &params, nullptr);
+    auto result = JpegLsReadHeaderStream(inputInfo, &params, nullptr);
     if (result != ApiResult::OK)
         return false;
+    input.seekg(0);
 
     int maxValue = (1 << params.bitspersample) - 1;
+    int bytesPerSample = maxValue > 255 ? 2 : 1;
+    std::vector<uint8_t> outputBuffer(params.width * params.height * bytesPerSample);
+    auto outputInfo = FromByteArray(outputBuffer.data(), outputBuffer.size());
+    JpegLsDecodeStream(outputInfo, inputInfo, &params, nullptr);
+
+    // PNM format requires most significant byte first (big endian).
+    if (bytesPerSample == 2)
+    {
+        for (auto i = outputBuffer.begin(); i != outputBuffer.end(); i += 2)
+        {
+            std::iter_swap(i, i + 1);
+        }
+    }
+
     int magicNumber = params.components == 3 ? 6 : 5;
-    params.colorTransform = ColorTransformation::BigEndian;
+    output << 'P' << magicNumber << std::endl << params.width << ' ' << params.height << std::endl << maxValue << std::endl;
+    output.write(reinterpret_cast<char*>(outputBuffer.data()), outputBuffer.size());
 
-    pnmFile << 'P' << magicNumber << ' ' << params.width << ' ' << params.height << ' '<< maxValue << std::endl;
-    ByteStreamInfo pnmStream = { pnmFile.rdbuf(), nullptr, 0 };
-
-    jlsFile.seekg(0);
-    JpegLsDecodeStream(pnmStream, compressedByteStream, &params, nullptr);
     return true;
 }
 
