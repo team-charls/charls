@@ -10,7 +10,6 @@
 #include "context.h"
 #include "colortransform.h"
 #include <sstream>
-#include <cstdlib>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
 
@@ -285,7 +284,7 @@ inlinehint std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t map
 }
 
 
-CTable InitTable(int32_t k)
+inline CTable InitTable(int32_t k)
 {
     CTable table;
     for (short nerr = 0; ; nerr++)
