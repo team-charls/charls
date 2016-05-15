@@ -138,7 +138,7 @@ protected:
 
 	void Flush()
 	{
-		if (_compressedLength < 4 && _compressedStream != NULL)
+		if (_compressedLength < 4)
 		{
 			OverFlow();
 		}
