@@ -124,20 +124,24 @@ void TestNoiseImage()
 
 void TestFailOnTooSmallOutputBuffer()
 {
-    Size size = Size(8, 8);
-    std::vector<BYTE> rgbyteRaw = MakeSomeNoise(8 * 8, 8, 21344);
-
-    std::vector<BYTE> rgbyteCompressed(1);
-
-    JlsParameters info = JlsParameters();
-    info.components = 1;
-    info.bitspersample = 8;
-    info.height = size.cy;
-    info.width = size.cx;
-
+    auto inputBuffer = MakeSomeNoise(8 * 8, 8, 21344);
     size_t compressedLength;
-    auto err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteRaw.size(), &info, nullptr);
-    Assert::IsTrue(err == ApiResult::CompressedBufferTooSmall);
+
+    auto params = JlsParameters();
+    params.components = 1;
+    params.bitspersample = 8;
+    params.height = 8;
+    params.width = 8;
+
+    // Trigger a "buffer too small"" when writing the header markers.
+    std::vector<BYTE> outputBuffer1(1);
+    auto result = JpegLsEncode(outputBuffer1.data(), outputBuffer1.size(), &compressedLength, inputBuffer.data(), inputBuffer.size(), &params, nullptr);
+    Assert::IsTrue(result == ApiResult::CompressedBufferTooSmall);
+
+    // Trigger a "buffer too small"" when writing the encoded pixel bytes.
+    std::vector<BYTE> outputBuffer2(100);
+    result = JpegLsEncode(outputBuffer2.data(), outputBuffer2.size(), &compressedLength, inputBuffer.data(), inputBuffer.size(), &params, nullptr);
+    Assert::IsTrue(result == ApiResult::CompressedBufferTooSmall);
 }
 
 
