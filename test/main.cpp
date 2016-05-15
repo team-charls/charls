@@ -288,16 +288,28 @@ bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
 	JLS_ERROR err = JpegLsReadHeaderStream(compressedByteStream, &info);
 	if (err != OK)
 		return false;
+	jlsFile.seekg(0);
 
 	int maxval = (1 << info.bitspersample) - 1;
-	int id = info.components == 3 ? 6 : 5;
-	info.colorTransform = XFORM_BIGENDIAN;
 
-	pnmFile << 'P' << id << ' ' << info.width << ' ' << info.height << ' '<< maxval << "   " << std::endl;
-	ByteStreamInfo pnmStream = {pnmFile.rdbuf(), NULL, 0};
+	int bytesPerSample = maxval > 255 ? 2 : 1;
+	std::vector<BYTE> outputBuffer(info.width * info.height * bytesPerSample);
+	ByteStreamInfo outputInfo = FromByteArray(outputBuffer.data(), outputBuffer.size());
+	JpegLsDecodeStream(outputInfo, compressedByteStream, &info);
 
-	jlsFile.seekg(0);
-	JpegLsDecodeStream(pnmStream, compressedByteStream, &info);
+	// PNM format requires most significant byte first (big endian).
+	if (bytesPerSample == 2)
+	{
+		for (std::vector<BYTE>::iterator i = outputBuffer.begin(); i != outputBuffer.end(); i += 2)
+		{
+			std::iter_swap(i, i + 1);
+		}
+	}
+
+	int magicNumber = info.components == 3 ? 6 : 5;
+	pnmFile << 'P' << magicNumber << std::endl << info.width << ' ' << info.height << std::endl << maxval << std::endl;
+	pnmFile.write(reinterpret_cast<char*>(&outputBuffer[0]), outputBuffer.size());
+
 	return true;
 }
 
