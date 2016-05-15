@@ -86,6 +86,7 @@
     <None Include="JpegStreamWriter.cd">
       <Filter>Design</Filter>
     </None>
+    <None Include="charls.def" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

@@ -338,6 +338,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="charls.def" />
     <None Include="JpegStreamWriter.cd" />
   </ItemGroup>
   <ItemGroup>
