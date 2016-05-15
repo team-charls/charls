@@ -48,11 +48,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="conformance\TEST8.PPM">
-      <Filter>Data Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="0015.raw">
       <Filter>Data Files</Filter>
     </CustomBuild>
@@ -115,6 +110,9 @@
       <Filter>Data Files</Filter>
     </CustomBuild>
     <CustomBuild Include="jlsimage\banny.ppm">
+      <Filter>Data Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="conformance\TEST8.PPM">
       <Filter>Data Files</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -327,7 +327,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
     </CustomBuild>
-    <None Include="conformance\TEST8.PPM">
+    <CustomBuild Include="conformance\TEST8.PPM">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
@@ -341,7 +341,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-    </None>
+    </CustomBuild>
     <CustomBuild Include="lena8b.jls">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
