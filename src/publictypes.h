@@ -8,6 +8,7 @@
 #ifdef __cplusplus
 
 #include <cstdint>
+#include <cstddef>
 
 namespace charls
 {
@@ -78,7 +79,7 @@ typedef charls::InterleaveMode CharlsInterleaveModeType;
 typedef charls::ColorTransformation CharlsColorTransformationType;
 
 // Defines the size of the char buffer that should be passed to the CharLS API to get the error message text.
-const size_t ErrorMessageSize = 256;
+const std::size_t ErrorMessageSize = 256;
 
 #else
 
