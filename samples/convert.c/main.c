@@ -129,7 +129,7 @@ static void *encode_bmp_to_jpegls(const void *pixel_data, size_t pixel_data_size
     size_t encoded_buffer_size = pixel_data_size + 1024;
     void *encoded_buffer = malloc(encoded_buffer_size);
 
-    char errorMessage[256];
+    char errorMessage[CHARLS_ERROR_MESSAGE_SIZE];
     CharlsApiResultType result = JpegLsEncode(encoded_buffer, encoded_buffer_size, bytes_writen, pixel_data, pixel_data_size, &info, errorMessage);
     if (result != CHARLS_API_RESULT_OK)
     {

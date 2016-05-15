@@ -78,7 +78,7 @@ static void CopyWhatTextToErrorMessage(const system_error& e, char* errorMessage
 
     if (e.code().category() == CharLSCategoryInstance())
     {
-        ASSERT(strlen(e.what()) < 255);
+        ASSERT(strlen(e.what()) < ErrorMessageSize);
         strcpy(errorMessage, e.what());
     }
     else

@@ -77,6 +77,9 @@ typedef charls::ApiResult CharlsApiResultType;
 typedef charls::InterleaveMode CharlsInterleaveModeType;
 typedef charls::ColorTransformation CharlsColorTransformationType;
 
+// Defines the size of the char buffer that should be passed to the CharLS API to get the error message text.
+const size_t ErrorMessageSize = 256;
+
 #else
 
 #include <stdint.h>
@@ -122,6 +125,9 @@ enum CharlsColorTransformation
 typedef enum CharlsApiResult CharlsApiResultType;
 typedef enum CharlsInterleaveMode CharlsInterleaveModeType;
 typedef enum CharlsColorTransformation CharlsColorTransformationType;
+
+// Defines the size of the char buffer that should be passed to the CharLS API to get the error message text.
+#define CHARLS_ERROR_MESSAGE_SIZE 256
 
 #endif
 
