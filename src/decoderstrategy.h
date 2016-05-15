@@ -14,8 +14,8 @@
 class DecoderStrategy
 {
 public:
-    DecoderStrategy(const JlsParameters& info) :
-        _info(info),
+    DecoderStrategy(const JlsParameters& params) :
+        _params(params),
         _byteStream(nullptr),
         _readCache(0),
         _validBits(0),
@@ -297,7 +297,7 @@ public:
     }
 
 protected:
-    JlsParameters _info;
+    JlsParameters _params;
     std::unique_ptr<ProcessLine> _processLine;
 
 private:

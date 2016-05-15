@@ -102,19 +102,19 @@ vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
 template<typename STRATEGY>
-unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& info, const JlsCustomParameters& presets)
+unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& params, const JlsCustomParameters& presets)
 {
     unique_ptr<STRATEGY> strategy;
 
     if (presets.RESET != 0 && presets.RESET != BASIC_RESET)
     {
-        DefaultTraitsT<uint8_t, uint8_t> traits((1 << info.bitspersample) - 1, info.allowedlossyerror, presets.RESET);
+        DefaultTraitsT<uint8_t, uint8_t> traits((1 << params.bitspersample) - 1, params.allowedlossyerror, presets.RESET);
         traits.MAXVAL = presets.MAXVAL;
-        strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint8_t, uint8_t>, STRATEGY>(traits, info));
+        strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint8_t, uint8_t>, STRATEGY>(traits, params));
     }
     else
     {
-        strategy = GetCodecImpl(info);
+        strategy = GetCodecImpl(params);
     }
 
     if (strategy)
@@ -126,58 +126,58 @@ unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& in
 
 
 template<typename TRAITS, typename STRATEGY>
-unique_ptr<STRATEGY> CreateCodec(const TRAITS& t, const STRATEGY*, const JlsParameters& info)
+unique_ptr<STRATEGY> CreateCodec(const TRAITS& t, const STRATEGY*, const JlsParameters& params)
 {
-    return unique_ptr<STRATEGY>(new JlsCodec<TRAITS, STRATEGY>(t, info));
+    return unique_ptr<STRATEGY>(new JlsCodec<TRAITS, STRATEGY>(t, params));
 }
 
 
 template<typename STRATEGY>
-unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters& info)
+unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters& params)
 {
     STRATEGY* s = nullptr;
 
-    if (info.ilv == InterleaveMode::Sample && info.components != 3)
+    if (params.ilv == InterleaveMode::Sample && params.components != 3)
         return nullptr;
 
 #ifndef DISABLE_SPECIALIZATIONS
 
     // optimized lossless versions common formats
-    if (info.allowedlossyerror == 0)
+    if (params.allowedlossyerror == 0)
     {
-        if (info.ilv == InterleaveMode::Sample)
+        if (params.ilv == InterleaveMode::Sample)
         {
-            if (info.bitspersample == 8)
-                return CreateCodec(LosslessTraitsT<Triplet<uint8_t>, 8>(), s, info);
+            if (params.bitspersample == 8)
+                return CreateCodec(LosslessTraitsT<Triplet<uint8_t>, 8>(), s, params);
         }
         else
         {
-            switch (info.bitspersample)
+            switch (params.bitspersample)
             {
-                case  8: return CreateCodec(LosslessTraitsT<uint8_t, 8>(), s, info);
-                case 12: return CreateCodec(LosslessTraitsT<uint16_t, 12>(), s, info);
-                case 16: return CreateCodec(LosslessTraitsT<uint16_t, 16>(), s, info);
+                case  8: return CreateCodec(LosslessTraitsT<uint8_t, 8>(), s, params);
+                case 12: return CreateCodec(LosslessTraitsT<uint16_t, 12>(), s, params);
+                case 16: return CreateCodec(LosslessTraitsT<uint16_t, 16>(), s, params);
             }
         }
     }
 
 #endif
 
-    int maxval = (1 << info.bitspersample) - 1;
+    int maxval = (1 << params.bitspersample) - 1;
 
-    if (info.bitspersample <= 8)
+    if (params.bitspersample <= 8)
     {
-        if (info.ilv == InterleaveMode::Sample)
-            return CreateCodec(DefaultTraitsT<uint8_t, Triplet<uint8_t> >(maxval, info.allowedlossyerror), s, info);
+        if (params.ilv == InterleaveMode::Sample)
+            return CreateCodec(DefaultTraitsT<uint8_t, Triplet<uint8_t> >(maxval, params.allowedlossyerror), s, params);
 
-        return CreateCodec(DefaultTraitsT<uint8_t, uint8_t>((1 << info.bitspersample) - 1, info.allowedlossyerror), s, info);
+        return CreateCodec(DefaultTraitsT<uint8_t, uint8_t>((1 << params.bitspersample) - 1, params.allowedlossyerror), s, params);
     }
-    if (info.bitspersample <= 16)
+    if (params.bitspersample <= 16)
     {
-        if (info.ilv == InterleaveMode::Sample)
-            return CreateCodec(DefaultTraitsT<uint16_t,Triplet<uint16_t> >(maxval, info.allowedlossyerror), s, info);
+        if (params.ilv == InterleaveMode::Sample)
+            return CreateCodec(DefaultTraitsT<uint16_t,Triplet<uint16_t> >(maxval, params.allowedlossyerror), s, params);
 
-        return CreateCodec(DefaultTraitsT<uint16_t, uint16_t>(maxval, info.allowedlossyerror), s, info);
+        return CreateCodec(DefaultTraitsT<uint16_t, uint16_t>(maxval, params.allowedlossyerror), s, params);
     }
     return nullptr;
 }

@@ -52,30 +52,30 @@ JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
 }
 
 
-ApiResult CheckParameterCoherent(const JlsParameters& parameters)
+ApiResult CheckParameterCoherent(const JlsParameters& params)
 {
-    if (parameters.bitspersample < 2 || parameters.bitspersample > 16)
+    if (params.bitspersample < 2 || params.bitspersample > 16)
         return ApiResult::ParameterValueNotSupported;
 
-    if (parameters.ilv < InterleaveMode::None || parameters.ilv > InterleaveMode::Sample)
+    if (params.ilv < InterleaveMode::None || params.ilv > InterleaveMode::Sample)
         return ApiResult::InvalidCompressedData;
 
-    switch (parameters.components)
+    switch (params.components)
     {
-        case 4: return parameters.ilv == InterleaveMode::Sample ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
+        case 4: return params.ilv == InterleaveMode::Sample ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
         case 3: return ApiResult::OK;
         case 0: return ApiResult::InvalidJlsParameters;
 
-        default: return parameters.ilv != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
+        default: return params.ilv != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
     }
 }
 
 
 void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
 {
-    JlsParameters info = _info;
+    JlsParameters info = _params;
     info.components = _componentCount;
-    auto codec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
+    auto codec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _params.custom);
     unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
     ByteStreamInfo compressedData = streamWriter.OutputStream();
     size_t cbyteWritten = codec->EncodeScan(move(processLine), compressedData, streamWriter._bCompare ? streamWriter.GetPos() : nullptr);
@@ -86,7 +86,7 @@ void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
 JpegStreamReader::JpegStreamReader(ByteStreamInfo byteStreamInfo) :
     _byteStream(byteStreamInfo),
     _bCompare(false),
-    _info(),
+    _params(),
     _rect()
 {
 }
@@ -96,33 +96,33 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 {
     ReadHeader();
 
-    auto result = CheckParameterCoherent(_info);
+    auto result = CheckParameterCoherent(_params);
     if (result != ApiResult::OK)
         throw system_error(static_cast<int>(result), CharLSCategoryInstance());
 
     if (_rect.Width <= 0)
     {
-        _rect.Width = _info.width;
-        _rect.Height = _info.height;
+        _rect.Width = _params.width;
+        _rect.Height = _params.height;
     }
 
-    int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
+    int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_params.bitspersample + 7)/8);
 
-    if (rawPixels.rawData && int64_t(rawPixels.count) < bytesPerPlane * _info.components)
+    if (rawPixels.rawData && int64_t(rawPixels.count) < bytesPerPlane * _params.components)
         throw system_error(static_cast<int>(ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
 
     int componentIndex = 0;
 
-    while (componentIndex < _info.components)
+    while (componentIndex < _params.components)
     {
         ReadStartOfScan(componentIndex == 0);
 
-        unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);
+        unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_params, _params.custom);
         unique_ptr<ProcessLine> processLine(qcodec->CreateProcess(rawPixels));
         qcodec->DecodeScan(move(processLine), _rect, _byteStream, _bCompare); 
         SkipBytes(rawPixels, static_cast<size_t>(bytesPerPlane));
 
-        if (_info.ilv != InterleaveMode::None)
+        if (_params.ilv != InterleaveMode::None)
             return;
 
         componentIndex += 1;
@@ -248,11 +248,11 @@ int JpegStreamReader::ReadPresetParameters()
     {
     case 1:
         {
-            _info.custom.MAXVAL = ReadWord();
-            _info.custom.T1 = ReadWord();
-            _info.custom.T2 = ReadWord();
-            _info.custom.T3 = ReadWord();
-            _info.custom.RESET = ReadWord();
+            _params.custom.MAXVAL = ReadWord();
+            _params.custom.T1 = ReadWord();
+            _params.custom.T2 = ReadWord();
+            _params.custom.T3 = ReadWord();
+            _params.custom.RESET = ReadWord();
             return 11;
         }
     }
@@ -274,7 +274,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     length = length * 256 + ReadByte(); // TODO: do something with 'length' or remove it.
 
     int componentCount = ReadByte();
-    if (componentCount != 1 && componentCount != _info.components)
+    if (componentCount != 1 && componentCount != _params.components)
         throw system_error(static_cast<int>(ApiResult::ParameterValueNotSupported), CharLSCategoryInstance());
 
     for (int i = 0; i < componentCount; ++i)
@@ -282,18 +282,18 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
         ReadByte();
         ReadByte();
     }
-    _info.allowedlossyerror = ReadByte();
-    _info.ilv = static_cast<InterleaveMode>(ReadByte());
-    if (!(_info.ilv == InterleaveMode::None || _info.ilv == InterleaveMode::Line || _info.ilv == InterleaveMode::Sample))
+    _params.allowedlossyerror = ReadByte();
+    _params.ilv = static_cast<InterleaveMode>(ReadByte());
+    if (!(_params.ilv == InterleaveMode::None || _params.ilv == InterleaveMode::Line || _params.ilv == InterleaveMode::Sample))
         throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
     if (ReadByte() != 0)
         throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
 
-    if(_info.bytesperline == 0)
+    if(_params.bytesperline == 0)
     {
-        int width = _rect.Width != 0 ? _rect.Width : _info.width;
-        int components = _info.ilv == InterleaveMode::None ? 1 : _info.components;
-        _info.bytesperline = components * width * ((_info.bitspersample + 7)/8);
+        int width = _rect.Width != 0 ? _rect.Width : _params.width;
+        int components = _params.ilv == InterleaveMode::None ? 1 : _params.components;
+        _params.bytesperline = components * width * ((_params.bitspersample + 7)/8);
     }
 }
 
@@ -311,33 +311,33 @@ void JpegStreamReader::ReadJfif()
         if(jfifID[i] != ReadByte())
             return;
     }
-    _info.jfif.version   = ReadWord();
+    _params.jfif.version   = ReadWord();
 
     // DPI or DPcm
-    _info.jfif.units = ReadByte();
-    _info.jfif.Xdensity = ReadWord();
-    _info.jfif.Ydensity = ReadWord();
+    _params.jfif.units = ReadByte();
+    _params.jfif.Xdensity = ReadWord();
+    _params.jfif.Ydensity = ReadWord();
 
     // thumbnail
-    _info.jfif.Xthumbnail = ReadByte();
-    _info.jfif.Ythumbnail = ReadByte();
-    if(_info.jfif.Xthumbnail > 0 && _info.jfif.thumbnail) 
+    _params.jfif.Xthumbnail = ReadByte();
+    _params.jfif.Ythumbnail = ReadByte();
+    if(_params.jfif.Xthumbnail > 0 && _params.jfif.thumbnail) 
     {
-        vector<char> tempbuff(static_cast<char*>(_info.jfif.thumbnail), 
-            static_cast<char*>(_info.jfif.thumbnail)+3*_info.jfif.Xthumbnail*_info.jfif.Ythumbnail);
-        ReadNBytes(tempbuff, 3*_info.jfif.Xthumbnail*_info.jfif.Ythumbnail);
+        vector<char> tempbuff(static_cast<char*>(_params.jfif.thumbnail), 
+            static_cast<char*>(_params.jfif.thumbnail)+3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
+        ReadNBytes(tempbuff, 3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
     }
 }
 
 
 int JpegStreamReader::ReadStartOfFrame()
 {
-    _info.bitspersample = ReadByte();
+    _params.bitspersample = ReadByte();
     int cline = ReadWord();
     int ccol = ReadWord();
-    _info.width = ccol;
-    _info.height = cline;
-    _info.components= ReadByte();
+    _params.width = ccol;
+    _params.height = cline;
+    _params.components= ReadByte();
     return 6;
 }
 
@@ -384,7 +384,7 @@ int JpegStreamReader::ReadColorXForm()
         case ColorTransformation::HP1:
         case ColorTransformation::HP2:
         case ColorTransformation::HP3:
-            _info.colorTransform = xform;
+            _params.colorTransform = xform;
             return 5;
         case ColorTransformation::RgbAsYuvLossy:
         case ColorTransformation::Matrix:

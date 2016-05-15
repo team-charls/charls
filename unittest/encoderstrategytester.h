@@ -10,20 +10,20 @@
 class EncoderStrategyTester : EncoderStrategy
 {
 public:
-    explicit EncoderStrategyTester(const JlsParameters& info) : EncoderStrategy(info)
+    explicit EncoderStrategyTester(const JlsParameters& params) : EncoderStrategy(params)
     {
     }
 
-    virtual void SetPresets(const JlsCustomParameters&) override
+    void SetPresets(const JlsCustomParameters&) override
     {
     }
 
-    virtual size_t EncodeScan(std::unique_ptr<ProcessLine>, ByteStreamInfo&, void*) override
+    size_t EncodeScan(std::unique_ptr<ProcessLine>, ByteStreamInfo&, void*) override
     {
         return 0;
     }
 
-    virtual ProcessLine* CreateProcess(ByteStreamInfo) override
+    ProcessLine* CreateProcess(ByteStreamInfo) override
     {
         return nullptr;
     }
@@ -43,7 +43,7 @@ public:
         Flush();
     }
 
-    std::size_t GetLengthForward()
+    std::size_t GetLengthForward() const
     {
         return GetLength();
     }

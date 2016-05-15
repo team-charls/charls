@@ -27,12 +27,12 @@ public:
 
     const JlsParameters& GetMetadata() const
     {
-        return _info;
+        return _params;
     }
 
     const JlsCustomParameters& GetCustomPreset() const
     {
-        return _info.custom;
+        return _params.custom;
     }
 
     void Read(ByteStreamInfo info);
@@ -43,9 +43,9 @@ public:
         _bCompare = bCompare;
     }
 
-    void SetInfo(const JlsParameters& info)
+    void SetInfo(const JlsParameters& params)
     {
-        _info = info;
+        _params = params;
     }
 
     void SetRect(const JlsRect& rect)
@@ -73,7 +73,7 @@ private:
 
     ByteStreamInfo _byteStream;
     bool _bCompare;
-    JlsParameters _info;
+    JlsParameters _params;
     JlsRect _rect;
 };
 

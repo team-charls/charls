@@ -14,8 +14,8 @@ class EncoderStrategy
 {
 
 public:
-    explicit EncoderStrategy(const JlsParameters& info) :
-        _info(info),
+    explicit EncoderStrategy(const JlsParameters& params) :
+        _params(params),
         _bitBuffer(0),
         _freeBitCount(sizeof(_bitBuffer) * 8),
         _compressedLength(0),
@@ -178,7 +178,7 @@ protected:
     std::unique_ptr<DecoderStrategy> _qdecoder;
 
 protected:
-    JlsParameters _info;
+    JlsParameters _params;
     std::unique_ptr<ProcessLine> _processLine;
 
 private:

@@ -25,7 +25,7 @@ const std::ios_base::openmode mode_input  = std::ios_base::in  | std::ios::binar
 const std::ios_base::openmode mode_output = std::ios_base::out | std::ios::binary;
 
 
-bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* info)
+bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* params)
 {
     if (!ReadFile(strNameEncoded, rgbyteFile))
     {
@@ -37,7 +37,7 @@ bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* 
 
     ByteStreamInfo rawStreamInfo = {&jlsFile, nullptr, 0};
 
-    auto err = JpegLsReadHeaderStream(rawStreamInfo, info, nullptr);
+    auto err = JpegLsReadHeaderStream(rawStreamInfo, params, nullptr);
     Assert::IsTrue(err == ApiResult::OK);
     return err == ApiResult::OK;
 }
@@ -156,22 +156,22 @@ void TestBgra()
 
 void TestBgr()
 {
-    JlsParameters info;
+    JlsParameters params;
     std::vector<BYTE> rgbyteEncoded;
-    ScanFile("test/conformance/T8C2E3.JLS", &rgbyteEncoded, &info);
-    std::vector<BYTE> rgbyteDecoded(info.width * info.height * info.components);    
+    ScanFile("test/conformance/T8C2E3.JLS", &rgbyteEncoded, &params);
+    std::vector<BYTE> rgbyteDecoded(params.width * params.height * params.components);    
 
-    info.outputBgr = true;
+    params.outputBgr = true;
 
-    auto err = JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &info, nullptr);
+    auto err = JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &params, nullptr);
     Assert::IsTrue(err == ApiResult::OK);
 
     Assert::IsTrue(rgbyteDecoded[0] == 0x69);
     Assert::IsTrue(rgbyteDecoded[1] == 0x77);
     Assert::IsTrue(rgbyteDecoded[2] == 0xa1);
-    Assert::IsTrue(rgbyteDecoded[info.width * 6 + 3] == 0x2d);
-    Assert::IsTrue(rgbyteDecoded[info.width * 6 + 4] == 0x43);
-    Assert::IsTrue(rgbyteDecoded[info.width * 6 + 5] == 0x4d);  
+    Assert::IsTrue(rgbyteDecoded[params.width * 6 + 3] == 0x2d);
+    Assert::IsTrue(rgbyteDecoded[params.width * 6 + 4] == 0x43);
+    Assert::IsTrue(rgbyteDecoded[params.width * 6 + 5] == 0x4d);  
 }
 
 
@@ -240,11 +240,11 @@ void TestDecodeBitStreamWithUnknownJpegMarker()
 void TestDecodeRect()
 {
     std::vector<BYTE> rgbyteCompressed;
-    JlsParameters info;
-    if (!ScanFile("test/lena8b.jls", &rgbyteCompressed, &info))
+    JlsParameters params;
+    if (!ScanFile("test/lena8b.jls", &rgbyteCompressed, &params))
         return;
 
-    std::vector<BYTE> rgbyteOutFull(info.width*info.height*info.components);
+    std::vector<BYTE> rgbyteOutFull(params.width*params.height*params.components);
     auto error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
     Assert::IsTrue(error == ApiResult::OK);
 
@@ -456,8 +456,8 @@ void TestDecodeFromStream(const char* strNameEncoded)
     Assert::IsTrue(jlsFile.is_open());
     ByteStreamInfo compressedByteStream = {&jlsFile, nullptr, 0};
 
-    JlsParameters info = JlsParameters();
-    auto err = JpegLsReadHeaderStream(compressedByteStream, &info, nullptr);
+    auto params = JlsParameters();
+    auto err = JpegLsReadHeaderStream(compressedByteStream, &params, nullptr);
     Assert::IsTrue(err == ApiResult::OK);
 
     jlsFile.pubseekpos(std::ios::beg, std::ios_base::in);

@@ -94,8 +94,8 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
     if (!ReadFile(strNameEncoded, &rgbyteFile))
         return;
 
-    JlsParameters metadata;
-    if (JpegLsReadHeader(&rgbyteFile[0], rgbyteFile.size(), &metadata, nullptr) != ApiResult::OK)
+    JlsParameters params;
+    if (JpegLsReadHeader(&rgbyteFile[0], rgbyteFile.size(), &params, nullptr) != ApiResult::OK)
     {
         Assert::IsTrue(false);
         return;
@@ -105,14 +105,14 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
     if (!ReadFile(strNameRaw, &rgbyteRaw, ioffs))
         return;
 
-    if (metadata.bitspersample > 8)
+    if (params.bitspersample > 8)
     {
         FixEndian(&rgbyteRaw, false);
     }
 
-    if (metadata.ilv == InterleaveMode::None && metadata.components == 3)
+    if (params.ilv == InterleaveMode::None && params.components == 3)
     {
-        Triplet2Planar(rgbyteRaw, Size(metadata.width, metadata.height));
+        Triplet2Planar(rgbyteRaw, Size(params.width, params.height));
     }
 
     TestCompliance(&rgbyteFile[0], rgbyteFile.size(), &rgbyteRaw[0], rgbyteRaw.size(), bcheckEncode);

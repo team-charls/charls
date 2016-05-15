@@ -86,27 +86,27 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 
     std::vector<BYTE> rgbyteOut(size.cx * size.cy * ((cbit + 7) / 8) * ccomp);
 
-    JlsParameters info = JlsParameters();
-    info.components = ccomp;
-    info.bitspersample = cbit;
-    info.height = size.cy;
-    info.width = size.cx;
+    JlsParameters params = JlsParameters();
+    params.components = ccomp;
+    params.bitspersample = cbit;
+    params.height = size.cy;
+    params.width = size.cx;
 
     if (ccomp == 4)
     {
-        info.ilv = InterleaveMode::Line;
+        params.ilv = InterleaveMode::Line;
     }
     else if (ccomp == 3)
     {
-        info.ilv = InterleaveMode::Line;
-        info.colorTransform = ColorTransformation::HP1;
+        params.ilv = InterleaveMode::Line;
+        params.colorTransform = ColorTransformation::HP1;
     }
 
     size_t compressedLength = 0;
     double dwtimeEncodeStart = getTime();
     for (int i = 0; i < loopCount; ++i)
     {
-        auto err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &info, nullptr);
+        auto err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &params, nullptr);
         Assert::IsTrue(err == ApiResult::OK);
     }
     double dwtimeEncodeComplete = getTime();

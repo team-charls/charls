@@ -89,18 +89,18 @@ void DecodePerformanceTests(int loopCount)
     if (!ReadFile("decodetest.jls", &jpeglsCompressed, 0, 0))
         return;
 
-    JlsParameters info;
-    auto result = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &info, nullptr);
+    JlsParameters params;
+    auto result = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
     if (result != charls::ApiResult::OK)
         return;
 
 
-    std::vector<uint8_t> uncompressed(info.height * info.width * 2);
+    std::vector<uint8_t> uncompressed(params.height * params.width * 2);
 
     for (int i = 0; i < loopCount; ++i)
     {
 
-        result = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpeglsCompressed.data(), jpeglsCompressed.size(), &info, nullptr);
+        result = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
         if (result != charls::ApiResult::OK)
             return;
     }

@@ -45,14 +45,14 @@ void TestDicomSampleImage(const char* name)
         data.erase(data.begin() + i, data.begin() + i + 8);
     }
 
-    JlsParameters info;
+    JlsParameters params;
 
-    auto error = JpegLsReadHeader(&data[0], data.size(), &info, nullptr);
+    auto error = JpegLsReadHeader(&data[0], data.size(), &params, nullptr);
 
 
 //    0xFE, 0xFF, 0x00, 0xE0, 0x00, 0x00, 0x01, 0x00
     std::vector<BYTE> dataUnc;
-    dataUnc.resize(info.bytesperline * info.height);
+    dataUnc.resize(params.bytesperline * params.height);
 
     error = JpegLsDecode(&dataUnc[0], dataUnc.size(), &data[0], data.size(), nullptr, nullptr);
     Assert::IsTrue(error == charls::ApiResult::OK);

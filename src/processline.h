@@ -41,10 +41,10 @@ public:
 class PostProcesSingleComponent : public ProcessLine
 {
 public:
-    PostProcesSingleComponent(void* rawData, const JlsParameters& info, int bytesPerPixel) :
+    PostProcesSingleComponent(void* rawData, const JlsParameters& params, int bytesPerPixel) :
         _rawData(static_cast<uint8_t*>(rawData)),
         _bytesPerPixel(bytesPerPixel),
-        _bytesPerLine(info.bytesperline)
+        _bytesPerLine(params.bytesperline)
     {
     }
 
@@ -92,10 +92,10 @@ inline void ByteSwap(unsigned char* data, int count)
 class PostProcesSingleStream : public ProcessLine
 {
 public:
-    PostProcesSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& info, int bytesPerPixel) :
+    PostProcesSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& params, int bytesPerPixel) :
         _rawData(rawData),
         _bytesPerPixel(bytesPerPixel),
-        _bytesPerLine(info.bytesperline)
+        _bytesPerLine(params.bytesperline)
     {
     }
 
@@ -230,7 +230,7 @@ class ProcessTransformed : public ProcessLine
 
 public:
     ProcessTransformed(ByteStreamInfo rawStream, const JlsParameters& info, TRANSFORM transform) :
-        _info(info),
+        _params(info),
         _templine(info.width * info.components),
         _buffer(info.width * info.components * sizeof(SAMPLE)),
         _transform(transform),
@@ -244,7 +244,7 @@ public:
         if (!_rawPixels.rawStream)
         {
             Transform(_rawPixels.rawData, dest, pixelCount, destStride);
-            _rawPixels.rawData += _info.bytesperline;
+            _rawPixels.rawData += _params.bytesperline;
             return;
         }
 
@@ -253,7 +253,7 @@ public:
 
     void Transform(std::basic_streambuf<char>* rawStream, void* dest, int pixelCount, int destStride)
     {
-        std::streamsize bytesToRead = pixelCount * _info.components * sizeof(SAMPLE);
+        std::streamsize bytesToRead = pixelCount * _params.components * sizeof(SAMPLE);
         while (bytesToRead != 0)
         {
             std::streamsize read = rawStream->sgetn(reinterpret_cast<char*>(&_buffer[0]), bytesToRead);
@@ -266,25 +266,25 @@ public:
 
             bytesToRead -= read;
         }
-        if (sizeof(SAMPLE) == 2 && _info.colorTransform == charls::ColorTransformation::BigEndian)
+        if (sizeof(SAMPLE) == 2 && _params.colorTransform == charls::ColorTransformation::BigEndian)
         {
-            ByteSwap(&_buffer[0], _info.components * sizeof(SAMPLE) * pixelCount);
+            ByteSwap(&_buffer[0], _params.components * sizeof(SAMPLE) * pixelCount);
         }
         Transform(&_buffer[0], dest, pixelCount, destStride);
     }
 
     void Transform(const void* source, void* dest, int pixelCount, int destStride)
     {
-        if (_info.outputBgr)
+        if (_params.outputBgr)
         {
             memcpy(&_templine[0], source, sizeof(Triplet<SAMPLE>) * pixelCount);
-            TransformRgbToBgr(static_cast<SAMPLE*>(&_templine[0]), _info.components, pixelCount);
+            TransformRgbToBgr(static_cast<SAMPLE*>(&_templine[0]), _params.components, pixelCount);
             source = &_templine[0];
         }
 
-        if (_info.components == 3)
+        if (_params.components == 3)
         {
-            if (_info.ilv == charls::InterleaveMode::Sample)
+            if (_params.ilv == charls::InterleaveMode::Sample)
             {
                 TransformLine(static_cast<Triplet<SAMPLE>*>(dest), static_cast<const Triplet<SAMPLE>*>(source), pixelCount, _transform);
             }
@@ -293,7 +293,7 @@ public:
                 TransformTripletToLine(static_cast<const Triplet<SAMPLE>*>(source), pixelCount, static_cast<SAMPLE*>(dest), destStride, _transform);
             }
         }
-        else if (_info.components == 4 && _info.ilv == charls::InterleaveMode::Line)
+        else if (_params.components == 4 && _params.ilv == charls::InterleaveMode::Line)
         {
             TransformQuadToLine(static_cast<const Quad<SAMPLE>*>(source), pixelCount, static_cast<SAMPLE*>(dest), destStride, _transform);
         }
@@ -301,9 +301,9 @@ public:
 
     void DecodeTransform(const void* pSrc, void* rawData, int pixelCount, int byteStride)
     {
-        if (_info.components == 3)
+        if (_params.components == 3)
         {
-            if (_info.ilv == charls::InterleaveMode::Sample)
+            if (_params.ilv == charls::InterleaveMode::Sample)
             {
                 TransformLine(static_cast<Triplet<SAMPLE>*>(rawData), static_cast<const Triplet<SAMPLE>*>(pSrc), pixelCount, _inverseTransform);
             }
@@ -312,14 +312,14 @@ public:
                 TransformLineToTriplet(static_cast<const SAMPLE*>(pSrc), byteStride, static_cast<Triplet<SAMPLE>*>(rawData), pixelCount, _inverseTransform);
             }
         }
-        else if (_info.components == 4 && _info.ilv == charls::InterleaveMode::Line)
+        else if (_params.components == 4 && _params.ilv == charls::InterleaveMode::Line)
         {
             TransformLineToQuad(static_cast<const SAMPLE*>(pSrc), byteStride, static_cast<Quad<SAMPLE>*>(rawData), pixelCount, _inverseTransform);
         }
 
-        if (_info.outputBgr)
+        if (_params.outputBgr)
         {
-            TransformRgbToBgr(static_cast<SAMPLE*>(rawData), _info.components, pixelCount);
+            TransformRgbToBgr(static_cast<SAMPLE*>(rawData), _params.components, pixelCount);
         }
     }
 
@@ -327,12 +327,12 @@ public:
     {
         if (_rawPixels.rawStream)
         {
-            std::streamsize bytesToWrite = pixelCount * _info.components * sizeof(SAMPLE);
+            std::streamsize bytesToWrite = pixelCount * _params.components * sizeof(SAMPLE);
             DecodeTransform(pSrc, &_buffer[0], pixelCount, sourceStride);
 
-            if (sizeof(SAMPLE) == 2 && _info.colorTransform == charls::ColorTransformation::BigEndian)
+            if (sizeof(SAMPLE) == 2 && _params.colorTransform == charls::ColorTransformation::BigEndian)
             {
-                ByteSwap(&_buffer[0], _info.components * sizeof(SAMPLE) * pixelCount);
+                ByteSwap(&_buffer[0], _params.components * sizeof(SAMPLE) * pixelCount);
             }
 
             std::streamsize bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(&_buffer[0]), bytesToWrite);
@@ -342,12 +342,12 @@ public:
         else
         {
             DecodeTransform(pSrc, _rawPixels.rawData, pixelCount, sourceStride);
-            _rawPixels.rawData += _info.bytesperline;
+            _rawPixels.rawData += _params.bytesperline;
         }
     }
 
 private:
-    const JlsParameters& _info;
+    const JlsParameters& _params;
     std::vector<SAMPLE> _templine;
     std::vector<uint8_t> _buffer;
     TRANSFORM _transform;

@@ -106,11 +106,11 @@ public:
     typedef typename TRAITS::PIXEL PIXEL;
     typedef typename TRAITS::SAMPLE SAMPLE;
 
-    JlsCodec(const TRAITS& inTraits, const JlsParameters& info) :
-        STRATEGY(info),
+    JlsCodec(const TRAITS& inTraits, const JlsParameters& params) :
+        STRATEGY(params),
         traits(inTraits),
         _rect(),
-        _width(info.width),
+        _width(params.width),
         T1(0),
         T2(0),
         T3(0),
@@ -150,7 +150,7 @@ public:
 
     JlsParameters& Info()
     {
-        return STRATEGY::_info;
+        return STRATEGY::_params;
     }
 
     signed char QuantizeGratientOrg(int32_t Di);

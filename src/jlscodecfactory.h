@@ -14,9 +14,9 @@ template<typename STRATEGY>
 class JlsCodecFactory
 {
 public:
-    std::unique_ptr<STRATEGY> GetCodec(const JlsParameters& info, const JlsCustomParameters&);
+    std::unique_ptr<STRATEGY> GetCodec(const JlsParameters& params, const JlsCustomParameters&);
 private:
-    std::unique_ptr<STRATEGY> GetCodecImpl(const JlsParameters& info);
+    std::unique_ptr<STRATEGY> GetCodecImpl(const JlsParameters& params);
 };
 
 #endif

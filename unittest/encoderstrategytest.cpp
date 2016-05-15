@@ -18,9 +18,9 @@ namespace CharLSUnitTest
     public:
         TEST_METHOD(AppendToBitStreamZeroLength)
         {
-            JlsParameters info;
+            JlsParameters params;
 
-            EncoderStrategyTester strategy(info);
+            EncoderStrategyTester strategy(params);
 
             uint8_t data[1024];
 
@@ -36,9 +36,9 @@ namespace CharLSUnitTest
 
         TEST_METHOD(AppendToBitStreamFFPattern)
         {
-            JlsParameters info;
+            JlsParameters params;
 
-            EncoderStrategyTester strategy(info);
+            EncoderStrategyTester strategy(params);
 
             uint8_t data[1024];
             data[13] = 0x77; // marker byte to detect overruns.

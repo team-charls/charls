@@ -89,13 +89,13 @@ static void CopyWhatTextToErrorMessage(const system_error& e, char* errorMessage
 
 
 CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& pcbyteWritten,
-    ByteStreamInfo rawStreamInfo, const struct JlsParameters& parameters, char* errorMessage)
+    ByteStreamInfo rawStreamInfo, const struct JlsParameters& params, char* errorMessage)
 {
     try
     {
-        VerifyInput(rawStreamInfo, parameters);
+        VerifyInput(rawStreamInfo, params);
 
-        JlsParameters info = parameters;
+        JlsParameters info = params;
         if (info.bytesperline == 0)
         {
             info.bytesperline = info.width * ((info.bitspersample + 7)/8);
@@ -181,14 +181,14 @@ CHARLS_IMEXPORT(ApiResult) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStre
 }
 
 
-CHARLS_IMEXPORT(ApiResult) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* pparams, char* errorMessage)
+CHARLS_IMEXPORT(ApiResult) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params, char* errorMessage)
 {
     try
     {
         JpegStreamReader reader(rawStreamInfo);
         reader.ReadHeader();
         reader.ReadStartOfScan(true);
-        *pparams = reader.GetMetadata();
+        *params = reader.GetMetadata();
 
         ClearErrorMessage(errorMessage);
         return ApiResult::OK;
@@ -207,30 +207,30 @@ CHARLS_IMEXPORT(ApiResult) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, 
 
 extern "C"
 {
-    CHARLS_IMEXPORT(ApiResult) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, const void* source, size_t sourceLength, const struct JlsParameters* parameters, char* errorMessage)
+    CHARLS_IMEXPORT(ApiResult) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage)
     {
-        if (!destination || !bytesWritten || !source || !parameters)
+        if (!destination || !bytesWritten || !source || !params)
             return ApiResult::InvalidJlsParameters;
 
         ByteStreamInfo rawStreamInfo = FromByteArray(source, sourceLength);
         ByteStreamInfo compressedStreamInfo = FromByteArray(destination, destinationLength);
 
-        return JpegLsEncodeStream(compressedStreamInfo, *bytesWritten, rawStreamInfo, *parameters, errorMessage);
+        return JpegLsEncodeStream(compressedStreamInfo, *bytesWritten, rawStreamInfo, *params, errorMessage);
     }
 
 
-    CHARLS_IMEXPORT(ApiResult) JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* pparams, char* errorMessage)
+    CHARLS_IMEXPORT(ApiResult) JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* params, char* errorMessage)
     {
-        return JpegLsReadHeaderStream(FromByteArray(compressedData, compressedLength), pparams, errorMessage);
+        return JpegLsReadHeaderStream(FromByteArray(compressedData, compressedLength), params, errorMessage);
     }
 
 
-    CHARLS_IMEXPORT(ApiResult) JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* info, char* errorMessage)
+    CHARLS_IMEXPORT(ApiResult) JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage)
     {
         ByteStreamInfo compressedStream = FromByteArray(source, sourceLength);
         ByteStreamInfo rawStreamInfo = FromByteArray(destination, destinationLength);
 
-        return JpegLsDecodeStream(rawStreamInfo, compressedStream, info, errorMessage);
+        return JpegLsDecodeStream(rawStreamInfo, compressedStream, params, errorMessage);
     }
 
 
