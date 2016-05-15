@@ -8,7 +8,7 @@ JPEG-LS is a low-complexity image compression standard that matches JPEG 2000 co
 
 Features
 --------
-* C++ v11 library implementation with a binary C interface for maximum interoperability.
+* C++14 library implementation with a binary C interface for maximum interoperability. Note: C++03 compatible implementation is maintained in the 1.x-master branch.
 * Supports Windows, Linux and Solaris in 32 bit and 64 bit.
 * Includes an adapter assembly for .NET based languages.
 * Excellent compression and decompression performance.
