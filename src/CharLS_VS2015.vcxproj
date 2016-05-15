@@ -339,8 +339,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="JpegStreamWriter.cd" />
-    <None Include="CMakeLists.txt" />
-    <None Include="License.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="interface.cpp" />
@@ -357,6 +355,7 @@
     <ClInclude Include="decoderstrategy.h" />
     <ClInclude Include="defaulttraits.h" />
     <ClInclude Include="encoderstrategy.h" />
+    <ClInclude Include="jlscodecfactory.h" />
     <ClInclude Include="jpegimagedatasegment.h" />
     <ClInclude Include="jpegmarkercode.h" />
     <ClInclude Include="jpegmarkersegment.h" />
