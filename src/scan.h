@@ -120,7 +120,7 @@ public:
         _pquant(nullptr),
         _bCompare(false)
     {
-        if (Info().ilv == InterleaveMode::None)
+        if (Info().interleaveMode == InterleaveMode::None)
         {
             Info().components = 1;
         }
@@ -139,7 +139,7 @@ public:
 
     bool IsInterleaved()
     {
-        if (Info().ilv == InterleaveMode::None)
+        if (Info().interleaveMode == InterleaveMode::None)
             return false;
 
         if (Info().components == 1)
@@ -713,7 +713,7 @@ template<typename TRAITS, typename STRATEGY>
 void JlsCodec<TRAITS, STRATEGY>::DoScan()
 {
     int32_t pixelstride = _width + 4;
-    int components = Info().ilv == charls::InterleaveMode::Line ? Info().components : 1;
+    int components = Info().interleaveMode == charls::InterleaveMode::Line ? Info().components : 1;
 
     std::vector<PIXEL> vectmp(2 * components * pixelstride);
     std::vector<int32_t> rgRUNindex(components);
@@ -765,34 +765,34 @@ ProcessLine* JlsCodec<TRAITS, STRATEGY>::CreateProcess(ByteStreamInfo info)
             static_cast<ProcessLine*>(new PostProcesSingleStream(info.rawStream, Info(), sizeof(typename TRAITS::PIXEL)));
     }
 
-    if (Info().colorTransform == ColorTransformation::None)
+    if (Info().colorTransformation == ColorTransformation::None)
         return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(info, Info(), TransformNone<SAMPLE>()); 
 
-    if (Info().bitspersample == sizeof(SAMPLE) * 8)
+    if (Info().bitsPerSample == sizeof(SAMPLE) * 8)
     {
-        switch (Info().colorTransform)
+        switch (Info().colorTransformation)
         {
             case ColorTransformation::HP1: return new ProcessTransformed<TransformHp1<SAMPLE>>(info, Info(), TransformHp1<SAMPLE>());
             case ColorTransformation::HP2: return new ProcessTransformed<TransformHp2<SAMPLE>>(info, Info(), TransformHp2<SAMPLE>());
             case ColorTransformation::HP3: return new ProcessTransformed<TransformHp3<SAMPLE>>(info, Info(), TransformHp3<SAMPLE>());
             default:
                 std::ostringstream message;
-                message << "Color transformation " << Info().colorTransform << " is not supported.";
+                message << "Color transformation " << Info().colorTransformation << " is not supported.";
                 throw CreateSystemError(ApiResult::UnsupportedColorTransform, message.str());
         }
     }
 
-    if (Info().bitspersample > 8)
+    if (Info().bitsPerSample > 8)
     {
-        int shift = 16 - Info().bitspersample;
-        switch (Info().colorTransform)
+        int shift = 16 - Info().bitsPerSample;
+        switch (Info().colorTransformation)
         {
             case ColorTransformation::HP1: return new ProcessTransformed<TransformShifted<TransformHp1<uint16_t>>>(info, Info(), TransformShifted<TransformHp1<uint16_t>>(shift));
             case ColorTransformation::HP2: return new ProcessTransformed<TransformShifted<TransformHp2<uint16_t>>>(info, Info(), TransformShifted<TransformHp2<uint16_t>>(shift));
             case ColorTransformation::HP3: return new ProcessTransformed<TransformShifted<TransformHp3<uint16_t>>>(info, Info(), TransformShifted<TransformHp3<uint16_t>>(shift));
             default:
                 std::ostringstream message;
-                message << "Color transformation " << Info().colorTransform << " is not supported.";
+                message << "Color transformation " << Info().colorTransformation << " is not supported.";
                 throw CreateSystemError(ApiResult::UnsupportedColorTransform, message.str());
         }
     }

@@ -67,12 +67,12 @@ void TestCompliance(const BYTE* compressedBytes, size_t compressedLength, const 
 
     std::vector<BYTE> rgbyteCompressed(info.height *info.width* 4);
 
-    std::vector<BYTE> rgbyteOut(info.height *info.width * ((info.bitspersample + 7) / 8) * info.components);
+    std::vector<BYTE> rgbyteOut(info.height *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
 
     err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), compressedBytes, compressedLength, nullptr, nullptr);
     Assert::IsTrue(err == ApiResult::OK);
 
-    if (info.allowedlossyerror == 0)
+    if (info.allowedLossyError == 0)
     {
         BYTE* pbyteOut = &rgbyteOut[0];
         for (size_t i = 0; i < cbyteRaw; ++i)
@@ -105,12 +105,12 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
     if (!ReadFile(strNameRaw, &rgbyteRaw, ioffs))
         return;
 
-    if (params.bitspersample > 8)
+    if (params.bitsPerSample > 8)
     {
         FixEndian(&rgbyteRaw, false);
     }
 
-    if (params.ilv == InterleaveMode::None && params.components == 3)
+    if (params.interleaveMode == InterleaveMode::None && params.components == 3)
     {
         Triplet2Planar(rgbyteRaw, Size(params.width, params.height));
     }

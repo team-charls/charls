@@ -118,11 +118,11 @@ static void *encode_bmp_to_jpegls(const void *pixel_data, size_t pixel_data_size
 {
     // This function only supports 24-bit BMP pixel data.
     // 24-BMP pixel data is stored by pixel as RGB. JPEG-LS 
-    struct JlsParameters params = { .allowedlossyerror = 0, .ilv = CHARLS_IM_SAMPLE };
+    struct JlsParameters params = { .allowedLossyError = 0, .interleaveMode = CHARLS_IM_SAMPLE };
 
     params.width = header->width;
     params.height = header->height;
-    params.bitspersample = 8;
+    params.bitsPerSample = 8;
     params.components = 3;
 
     // Assume that compressed pixels are smaller or equal to uncompressed pixels and reserver some room for JPEG header.

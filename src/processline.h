@@ -44,7 +44,7 @@ public:
     PostProcesSingleComponent(void* rawData, const JlsParameters& params, int bytesPerPixel) :
         _rawData(static_cast<uint8_t*>(rawData)),
         _bytesPerPixel(bytesPerPixel),
-        _bytesPerLine(params.bytesperline)
+        _bytesPerLine(params.stride)
     {
     }
 
@@ -95,7 +95,7 @@ public:
     PostProcesSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& params, int bytesPerPixel) :
         _rawData(rawData),
         _bytesPerPixel(bytesPerPixel),
-        _bytesPerLine(params.bytesperline)
+        _bytesPerLine(params.stride)
     {
     }
 
@@ -244,7 +244,7 @@ public:
         if (!_rawPixels.rawStream)
         {
             Transform(_rawPixels.rawData, dest, pixelCount, destStride);
-            _rawPixels.rawData += _params.bytesperline;
+            _rawPixels.rawData += _params.stride;
             return;
         }
 
@@ -266,7 +266,7 @@ public:
 
             bytesToRead -= read;
         }
-        if (sizeof(SAMPLE) == 2 && _params.colorTransform == charls::ColorTransformation::BigEndian)
+        if (sizeof(SAMPLE) == 2 && _params.colorTransformation == charls::ColorTransformation::BigEndian)
         {
             ByteSwap(&_buffer[0], _params.components * sizeof(SAMPLE) * pixelCount);
         }
@@ -284,7 +284,7 @@ public:
 
         if (_params.components == 3)
         {
-            if (_params.ilv == charls::InterleaveMode::Sample)
+            if (_params.interleaveMode == charls::InterleaveMode::Sample)
             {
                 TransformLine(static_cast<Triplet<SAMPLE>*>(dest), static_cast<const Triplet<SAMPLE>*>(source), pixelCount, _transform);
             }
@@ -293,7 +293,7 @@ public:
                 TransformTripletToLine(static_cast<const Triplet<SAMPLE>*>(source), pixelCount, static_cast<SAMPLE*>(dest), destStride, _transform);
             }
         }
-        else if (_params.components == 4 && _params.ilv == charls::InterleaveMode::Line)
+        else if (_params.components == 4 && _params.interleaveMode == charls::InterleaveMode::Line)
         {
             TransformQuadToLine(static_cast<const Quad<SAMPLE>*>(source), pixelCount, static_cast<SAMPLE*>(dest), destStride, _transform);
         }
@@ -303,7 +303,7 @@ public:
     {
         if (_params.components == 3)
         {
-            if (_params.ilv == charls::InterleaveMode::Sample)
+            if (_params.interleaveMode == charls::InterleaveMode::Sample)
             {
                 TransformLine(static_cast<Triplet<SAMPLE>*>(rawData), static_cast<const Triplet<SAMPLE>*>(pSrc), pixelCount, _inverseTransform);
             }
@@ -312,7 +312,7 @@ public:
                 TransformLineToTriplet(static_cast<const SAMPLE*>(pSrc), byteStride, static_cast<Triplet<SAMPLE>*>(rawData), pixelCount, _inverseTransform);
             }
         }
-        else if (_params.components == 4 && _params.ilv == charls::InterleaveMode::Line)
+        else if (_params.components == 4 && _params.interleaveMode == charls::InterleaveMode::Line)
         {
             TransformLineToQuad(static_cast<const SAMPLE*>(pSrc), byteStride, static_cast<Quad<SAMPLE>*>(rawData), pixelCount, _inverseTransform);
         }
@@ -330,7 +330,7 @@ public:
             std::streamsize bytesToWrite = pixelCount * _params.components * sizeof(SAMPLE);
             DecodeTransform(pSrc, &_buffer[0], pixelCount, sourceStride);
 
-            if (sizeof(SAMPLE) == 2 && _params.colorTransform == charls::ColorTransformation::BigEndian)
+            if (sizeof(SAMPLE) == 2 && _params.colorTransformation == charls::ColorTransformation::BigEndian)
             {
                 ByteSwap(&_buffer[0], _params.components * sizeof(SAMPLE) * pixelCount);
             }
@@ -342,7 +342,7 @@ public:
         else
         {
             DecodeTransform(pSrc, _rawPixels.rawData, pixelCount, sourceStride);
-            _rawPixels.rawData += _params.bytesperline;
+            _rawPixels.rawData += _params.stride;
         }
     }
 

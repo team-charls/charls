@@ -54,19 +54,19 @@ JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
 
 ApiResult CheckParameterCoherent(const JlsParameters& params)
 {
-    if (params.bitspersample < 2 || params.bitspersample > 16)
+    if (params.bitsPerSample < 2 || params.bitsPerSample > 16)
         return ApiResult::ParameterValueNotSupported;
 
-    if (params.ilv < InterleaveMode::None || params.ilv > InterleaveMode::Sample)
+    if (params.interleaveMode < InterleaveMode::None || params.interleaveMode > InterleaveMode::Sample)
         return ApiResult::InvalidCompressedData;
 
     switch (params.components)
     {
-        case 4: return params.ilv == InterleaveMode::Sample ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
+        case 4: return params.interleaveMode == InterleaveMode::Sample ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
         case 3: return ApiResult::OK;
         case 0: return ApiResult::InvalidJlsParameters;
 
-        default: return params.ilv != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
+        default: return params.interleaveMode != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
     }
 }
 
@@ -106,7 +106,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
         _rect.Height = _params.height;
     }
 
-    int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_params.bitspersample + 7)/8);
+    int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_params.bitsPerSample + 7)/8);
 
     if (rawPixels.rawData && int64_t(rawPixels.count) < bytesPerPlane * _params.components)
         throw system_error(static_cast<int>(ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
@@ -122,7 +122,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
         qcodec->DecodeScan(move(processLine), _rect, _byteStream, _bCompare); 
         SkipBytes(rawPixels, static_cast<size_t>(bytesPerPlane));
 
-        if (_params.ilv != InterleaveMode::None)
+        if (_params.interleaveMode != InterleaveMode::None)
             return;
 
         componentIndex += 1;
@@ -282,18 +282,18 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
         ReadByte();
         ReadByte();
     }
-    _params.allowedlossyerror = ReadByte();
-    _params.ilv = static_cast<InterleaveMode>(ReadByte());
-    if (!(_params.ilv == InterleaveMode::None || _params.ilv == InterleaveMode::Line || _params.ilv == InterleaveMode::Sample))
+    _params.allowedLossyError = ReadByte();
+    _params.interleaveMode = static_cast<InterleaveMode>(ReadByte());
+    if (!(_params.interleaveMode == InterleaveMode::None || _params.interleaveMode == InterleaveMode::Line || _params.interleaveMode == InterleaveMode::Sample))
         throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
     if (ReadByte() != 0)
         throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
 
-    if(_params.bytesperline == 0)
+    if(_params.stride == 0)
     {
         int width = _rect.Width != 0 ? _rect.Width : _params.width;
-        int components = _params.ilv == InterleaveMode::None ? 1 : _params.components;
-        _params.bytesperline = components * width * ((_params.bitspersample + 7)/8);
+        int components = _params.interleaveMode == InterleaveMode::None ? 1 : _params.components;
+        _params.stride = components * width * ((_params.bitsPerSample + 7)/8);
     }
 }
 
@@ -332,7 +332,7 @@ void JpegStreamReader::ReadJfif()
 
 int JpegStreamReader::ReadStartOfFrame()
 {
-    _params.bitspersample = ReadByte();
+    _params.bitsPerSample = ReadByte();
     int cline = ReadWord();
     int ccol = ReadWord();
     _params.width = ccol;
@@ -384,7 +384,7 @@ int JpegStreamReader::ReadColorXForm()
         case ColorTransformation::HP1:
         case ColorTransformation::HP2:
         case ColorTransformation::HP3:
-            _params.colorTransform = xform;
+            _params.colorTransformation = xform;
             return 5;
         case ColorTransformation::RgbAsYuvLossy:
         case ColorTransformation::Matrix:

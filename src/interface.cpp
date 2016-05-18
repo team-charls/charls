@@ -25,18 +25,18 @@ static void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParam
     if (parameters.height < 1 || parameters.height > 65535)
         throw CreateSystemError(ApiResult::InvalidJlsParameters, "height needs to be in the range [1, 65535]");
 
-    if (parameters.bitspersample < 2 || parameters.bitspersample > 16)
+    if (parameters.bitsPerSample < 2 || parameters.bitsPerSample > 16)
         throw CreateSystemError(ApiResult::InvalidJlsParameters, "bitspersample needs to be in the range [2, 16]");
 
-    if (!(parameters.ilv == InterleaveMode::None || parameters.ilv == InterleaveMode::Sample || parameters.ilv == InterleaveMode::Line))
-        throw CreateSystemError(ApiResult::InvalidJlsParameters, "ilv needs to be set to a value of {None, Sample, Line}");
+    if (!(parameters.interleaveMode == InterleaveMode::None || parameters.interleaveMode == InterleaveMode::Sample || parameters.interleaveMode == InterleaveMode::Line))
+        throw CreateSystemError(ApiResult::InvalidJlsParameters, "interleaveMode needs to be set to a value of {None, Sample, Line}");
 
     if (parameters.components < 1 || parameters.components > 255)
         throw CreateSystemError(ApiResult::InvalidJlsParameters, "components needs to be in the range [1, 255]");
 
     if (uncompressedStream.rawData)
     {
-        if (uncompressedStream.count < size_t(parameters.height * parameters.width * parameters.components * (parameters.bitspersample > 8 ? 2 : 1)))
+        if (uncompressedStream.count < size_t(parameters.height * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1)))
             throw CreateSystemError(ApiResult::InvalidJlsParameters, "uncompressed size does not match with the other parameters");
     }
 
@@ -45,12 +45,12 @@ static void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParam
     case 3:
         break;
     case 4:
-        if (parameters.ilv == InterleaveMode::Sample)
-            throw CreateSystemError(ApiResult::InvalidJlsParameters, "ilv cannot be set to Sample in combination with components = 4");
+        if (parameters.interleaveMode == InterleaveMode::Sample)
+            throw CreateSystemError(ApiResult::InvalidJlsParameters, "interleaveMode cannot be set to Sample in combination with components = 4");
         break;
     default:
-        if (parameters.ilv != InterleaveMode::None)
-            throw CreateSystemError(ApiResult::InvalidJlsParameters, "ilv can only be set to None in combination with components = 1");
+        if (parameters.interleaveMode != InterleaveMode::None)
+            throw CreateSystemError(ApiResult::InvalidJlsParameters, "interleaveMode can only be set to None in combination with components = 1");
         break;
     }
 }
@@ -96,12 +96,12 @@ CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
         VerifyInput(rawStreamInfo, params);
 
         JlsParameters info = params;
-        if (info.bytesperline == 0)
+        if (info.stride == 0)
         {
-            info.bytesperline = info.width * ((info.bitspersample + 7)/8);
-            if (info.ilv != InterleaveMode::None)
+            info.stride = info.width * ((info.bitsPerSample + 7)/8);
+            if (info.interleaveMode != InterleaveMode::None)
             {
-                info.bytesperline *= info.components;
+                info.stride *= info.components;
             }
         }
 
@@ -111,17 +111,17 @@ CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
             writer.AddSegment(JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(info.jfif));
         }
 
-        writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameSegment(info.width, info.height, info.bitspersample, info.components));
+        writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameSegment(info.width, info.height, info.bitsPerSample, info.components));
 
 
-        if (info.colorTransform != ColorTransformation::None)
+        if (info.colorTransformation != ColorTransformation::None)
         {
-            writer.AddColorTransform(info.colorTransform);
+            writer.AddColorTransform(info.colorTransformation);
         }
 
-        if (info.ilv == InterleaveMode::None)
+        if (info.interleaveMode == InterleaveMode::None)
         {
-            int32_t cbyteComp = info.width * info.height * ((info.bitspersample + 7) / 8);
+            int32_t cbyteComp = info.width * info.height * ((info.bitsPerSample + 7) / 8);
             for (int32_t component = 0; component < info.components; ++component)
             {
                 writer.AddScan(rawStreamInfo, info);
@@ -254,11 +254,11 @@ extern "C"
                 writer.AddSegment(JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(info.jfif));
             }
 
-            writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameSegment(info.width, info.height, info.bitspersample, info.components));
+            writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameSegment(info.width, info.height, info.bitsPerSample, info.components));
 
-            if (info.ilv == InterleaveMode::None)
+            if (info.interleaveMode == InterleaveMode::None)
             {
-                int32_t fieldLength = info.width * info.height * ((info.bitspersample + 7) / 8);
+                int32_t fieldLength = info.width * info.height * ((info.bitsPerSample + 7) / 8);
                 for (int32_t component = 0; component < info.components; ++component)
                 {
                     writer.AddScan(rawStreamInfo, info);

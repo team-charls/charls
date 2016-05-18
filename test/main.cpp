@@ -129,7 +129,7 @@ void TestFailOnTooSmallOutputBuffer()
 
     auto params = JlsParameters();
     params.components = 1;
-    params.bitspersample = 8;
+    params.bitsPerSample = 8;
     params.height = 8;
     params.width = 8;
 
@@ -273,8 +273,8 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
     params.height = height;
     params.width = width;
     params.components = ccomponent;
-    params.bitspersample= bpp;
-    params.ilv = ilv;
+    params.bitsPerSample = bpp;
+    params.interleaveMode = ilv;
     size_t bytesWritten = 0;
 
     JpegLsEncodeStream(FromByteArray(compressed, width * height * ccomponent * 2), bytesWritten, rawStreamInfo, params, nullptr);
@@ -295,7 +295,7 @@ bool DecodeToPnm(std::istream& input, std::ostream& output)
         return false;
     input.seekg(0);
 
-    int maxValue = (1 << params.bitspersample) - 1;
+    int maxValue = (1 << params.bitsPerSample) - 1;
     int bytesPerSample = maxValue > 255 ? 2 : 1;
     std::vector<uint8_t> outputBuffer(params.width * params.height * bytesPerSample);
     auto outputInfo = FromByteArray(outputBuffer.data(), outputBuffer.size());
@@ -361,9 +361,9 @@ bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
     params.width = readValues[1];
     params.height = readValues[2];
     params.components = componentCount;
-    params.bitspersample= log_2(readValues[3]+1);
-    params.ilv = componentCount == 3 ? InterleaveMode::Line : InterleaveMode::None;
-    params.colorTransform = ColorTransformation::BigEndian;
+    params.bitsPerSample = log_2(readValues[3]+1);
+    params.interleaveMode = componentCount == 3 ? InterleaveMode::Line : InterleaveMode::None;
+    params.colorTransformation = ColorTransformation::BigEndian;
     size_t bytesWritten = 0;
 
     JpegLsEncodeStream(jlsStreamInfo, bytesWritten, rawStreamInfo, params, nullptr);

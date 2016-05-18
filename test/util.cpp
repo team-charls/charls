@@ -88,18 +88,18 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 
     JlsParameters params = JlsParameters();
     params.components = ccomp;
-    params.bitspersample = cbit;
+    params.bitsPerSample = cbit;
     params.height = size.cy;
     params.width = size.cx;
 
     if (ccomp == 4)
     {
-        params.ilv = InterleaveMode::Line;
+        params.interleaveMode = InterleaveMode::Line;
     }
     else if (ccomp == 3)
     {
-        params.ilv = InterleaveMode::Line;
-        params.colorTransform = ColorTransformation::HP1;
+        params.interleaveMode = InterleaveMode::Line;
+        params.colorTransformation = ColorTransformation::HP1;
     }
 
     size_t compressedLength = 0;
