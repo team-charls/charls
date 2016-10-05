@@ -299,7 +299,9 @@ bool DecodeToPnm(std::istream& input, std::ostream& output)
     int bytesPerSample = maxValue > 255 ? 2 : 1;
     std::vector<uint8_t> outputBuffer(params.width * params.height * bytesPerSample);
     auto outputInfo = FromByteArray(outputBuffer.data(), outputBuffer.size());
-    JpegLsDecodeStream(outputInfo, inputInfo, &params, nullptr);
+    result = JpegLsDecodeStream(outputInfo, inputInfo, &params, nullptr);
+    if (result != ApiResult::OK)
+        return false;
 
     // PNM format requires most significant byte first (big endian).
     if (bytesPerSample == 2)
