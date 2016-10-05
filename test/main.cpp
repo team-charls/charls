@@ -295,7 +295,9 @@ bool DecodeToPnm(std::istream& jlsFile, std::ostream& pnmFile)
 	int bytesPerSample = maxval > 255 ? 2 : 1;
 	std::vector<BYTE> outputBuffer(info.width * info.height * bytesPerSample);
 	ByteStreamInfo outputInfo = FromByteArray(outputBuffer.data(), outputBuffer.size());
-	JpegLsDecodeStream(outputInfo, compressedByteStream, &info);
+	err = JpegLsDecodeStream(outputInfo, compressedByteStream, &info);
+	if (err != OK)
+		return false;
 
 	// PNM format requires most significant byte first (big endian).
 	if (bytesPerSample == 2)
