@@ -470,7 +470,7 @@ int main(int argc, char* argv[])
 	if (argc == 1)
 	{
 		printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance[:loop count], -dontwait -decoderaw -encodepnm -decodetopnm \r\n");
-		return 0;
+		return EXIT_FAILURE;
 	}
 
 	bool wait = true;
@@ -488,9 +488,9 @@ int main(int argc, char* argv[])
 			if (i != 1 || argc != 4)
 			{
 				printf("Syntax: -decoderaw inputfile outputfile \r\n");
-				return 0;
+				return EXIT_FAILURE;
 			}
-			return DecodeRaw(argv[2],argv[3]);
+			return DecodeRaw(argv[2],argv[3]) == JLS_ERROR::OK ? EXIT_SUCCESS : EXIT_FAILURE;
 		}
 
 		if (str.compare("-decodetopnm") == 0)
@@ -498,12 +498,12 @@ int main(int argc, char* argv[])
 			if (i != 1 || argc != 4)
 			{
 				printf("Syntax: -decodetopnm inputfile outputfile \r\n");
-				return 0;
+				return EXIT_FAILURE;
 			}
 			std::fstream pnmFile(argv[3], mode_output); 
 			std::fstream jlsFile(argv[2], mode_input);
 
-			return DecodeToPnm(jlsFile, pnmFile);
+			return DecodeToPnm(jlsFile, pnmFile) ? EXIT_SUCCESS : EXIT_FAILURE;
 		}
 
 		if (str.compare("-encodepnm") == 0)
@@ -511,12 +511,12 @@ int main(int argc, char* argv[])
 			if (i != 1 || argc != 4)
 			{
 				printf("Syntax: -encodepnm inputfile outputfile \r\n");
-				return 0;
+				return EXIT_FAILURE;
 			}
 			std::fstream pnmFile(argv[2], mode_input); 
 			std::fstream jlsFile(argv[3], mode_output); 
 	
-			return EncodePnm(pnmFile,jlsFile);
+			return EncodePnm(pnmFile,jlsFile) ?  EXIT_SUCCESS : EXIT_FAILURE;
 		}
 
 		if (str.compare("-bitstreamdamage") == 0)
@@ -565,6 +565,7 @@ int main(int argc, char* argv[])
 	{
 		char c;
 		std::cin >> c;
-		return 0;
 	}
+
+	return EXIT_SUCCESS;
 }
