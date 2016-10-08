@@ -4,6 +4,7 @@ obj/
 bin/
 Win32/
 x64/
+.vscode/
 [Dd]ebug/
 [Rr]elease/
 [Cc]hecked/
@@ -15,6 +16,8 @@ x64/
 *.opensdf
 *.sdf
 *.opendb
+*.VC.db
+*.aps
 
 # NuGet Packages
 *.nupkg
