@@ -490,7 +490,7 @@ int main(int argc, char* argv[])
 				printf("Syntax: -decoderaw inputfile outputfile \r\n");
 				return EXIT_FAILURE;
 			}
-			return DecodeRaw(argv[2],argv[3]) == JLS_ERROR::OK ? EXIT_SUCCESS : EXIT_FAILURE;
+			return DecodeRaw(argv[2],argv[3]) == OK ? EXIT_SUCCESS : EXIT_FAILURE;
 		}
 
 		if (str.compare("-decodetopnm") == 0)
