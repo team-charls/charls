@@ -373,46 +373,46 @@ bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
 }
 
 
-void ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
+bool ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
 {
     std::vector<int> header1 = readPnmHeader(pnmFile1);
     if (header1.size() != 4)
     {
         printf("Cannot read header from input file 1\r\n");
-        return;
+        return false;
     }
 
     std::vector<int> header2 = readPnmHeader(pnmFile2);
     if (header2.size() != 4)
     {
         printf("Cannot read header from input file 2\r\n");
-        return;
+        return false;
     }
 
     if (header1[0] != header2[0])
     {
         printf("Header type %i is not equal with type %i\r\n", header1[0], header2[0]);
-        return;
+        return false;
     }
 
     auto width = header1[1];
     if (width != header2[1])
     {
         printf("Width %i is not equal with width %i\r\n", width, header2[1]);
-        return;
+        return false;
     }
 
     auto height = header1[2];
     if (height != header2[2])
     {
         printf("Height %i is not equal with height %i\r\n", height, header2[2]);
-        return;
+        return false;
     }
 
     if (header1[3] != header2[3])
     {
         printf("max-value %i is not equal with max-value %i\r\n", header1[3], header2[3]);
-        return;
+        return false;
     }
     auto bytesPerSample = header1[3] > 255 ? 2 : 1;
 
@@ -432,7 +432,7 @@ void ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
                 if (bytes1[(x * width) + y] != bytes2[(x * width) + y])
                 {
                     printf("Values of the 2 files are different, height:%i, width:%i\r\n", x, y);
-                    return;
+                    return false;
                 }
             }
             else
@@ -441,13 +441,14 @@ void ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
                     bytes1[(x * width) + (y + 1)] != bytes2[(x * width) + (y + 1)])
                 {
                     printf("Values of the 2 files are different, height:%i, width:%i\r\n", x, y);
-                    return;
+                    return false;
                 }
             }
         }
     }
 
     printf("Values of the 2 files are equal\r\n");
+    return true;
 }
 
 
@@ -560,7 +561,7 @@ int main(int argc, char* argv[])
     if (argc == 1)
     {
         printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance[:loop count], -dontwait -decoderaw -encodepnm -decodetopnm -comparepnm\r\n");
-        return 0;
+        return EXIT_FAILURE;
     }
 
     bool wait = true;
@@ -578,9 +579,9 @@ int main(int argc, char* argv[])
             if (i != 1 || argc != 4)
             {
                 printf("Syntax: -decoderaw inputfile outputfile \r\n");
-                return 0;
+                return EXIT_FAILURE;
             }
-            return static_cast<int>(DecodeRaw(argv[2], argv[3]));
+            return DecodeRaw(argv[2], argv[3]) == ApiResult::OK ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         if (str.compare("-decodetopnm") == 0)
@@ -593,7 +594,7 @@ int main(int argc, char* argv[])
             std::fstream pnmFile(argv[3], mode_output); 
             std::fstream jlsFile(argv[2], mode_input);
 
-            return DecodeToPnm(jlsFile, pnmFile);
+            return DecodeToPnm(jlsFile, pnmFile) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         if (str.compare("-encodepnm") == 0)
@@ -606,7 +607,7 @@ int main(int argc, char* argv[])
             std::fstream pnmFile(argv[2], mode_input); 
             std::fstream jlsFile(argv[3], mode_output); 
     
-            return EncodePnm(pnmFile,jlsFile);
+            return EncodePnm(pnmFile,jlsFile) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         if (str.compare("-comparepnm") == 0)
@@ -614,13 +615,12 @@ int main(int argc, char* argv[])
             if (i != 1 || argc != 4)
             {
                 printf("Syntax: -encodepnm inputfile outputfile\r\n");
-                return 0;
+                return EXIT_FAILURE;
             }
             std::fstream pnmFile1(argv[2], mode_input);
             std::fstream pnmFile2(argv[3], mode_input);
 
-            ComparePnm(pnmFile1, pnmFile2);
-            return 0;
+            return ComparePnm(pnmFile1, pnmFile2) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         if (str.compare("-bitstreamdamage") == 0)
@@ -691,6 +691,7 @@ int main(int argc, char* argv[])
 
         char c;
         std::cin >> c;
-        return 0;
     }
+
+    return EXIT_SUCCESS;
 }
