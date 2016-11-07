@@ -84,20 +84,19 @@ void TestCompliance(const BYTE* compressedBytes, size_t compressedLength, const 
 
     if (bcheckEncode)
     {
-        Assert::IsTrue(VerifyEncodedBytes(&rgbyteRaw[0], cbyteRaw, compressedBytes, compressedLength));
+        Assert::IsTrue(VerifyEncodedBytes(rgbyteRaw, cbyteRaw, compressedBytes, compressedLength));
     }
 
     std::vector<BYTE> rgbyteOut(info.height *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
 
-    err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), compressedBytes, compressedLength, nullptr, nullptr);
+    err = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), compressedBytes, compressedLength, nullptr, nullptr);
     Assert::IsTrue(err == ApiResult::OK);
 
     if (info.allowedLossyError == 0)
     {
-        BYTE* pbyteOut = &rgbyteOut[0];
         for (size_t i = 0; i < cbyteRaw; ++i)
         {
-            if (rgbyteRaw[i] != pbyteOut[i])
+            if (rgbyteRaw[i] != rgbyteOut[i])
             {
                 Assert::IsTrue(false);
                 break;
@@ -115,7 +114,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
         return;
 
     JlsParameters params;
-    if (JpegLsReadHeader(&rgbyteFile[0], rgbyteFile.size(), &params, nullptr) != ApiResult::OK)
+    if (JpegLsReadHeader(rgbyteFile.data(), rgbyteFile.size(), &params, nullptr) != ApiResult::OK)
     {
         Assert::IsTrue(false);
         return;
@@ -135,7 +134,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
         Triplet2Planar(rgbyteRaw, Size(params.width, params.height));
     }
 
-    TestCompliance(&rgbyteFile[0], rgbyteFile.size(), &rgbyteRaw[0], rgbyteRaw.size(), bcheckEncode);
+    TestCompliance(rgbyteFile.data(), rgbyteFile.size(), rgbyteRaw.data(), rgbyteRaw.size(), bcheckEncode);
 }
 
 
@@ -189,7 +188,7 @@ void TestSampleAnnexH3()
 {
     ////Size size = Size(4,4);
     std::vector<BYTE> vecRaw(16);
-    memcpy(&vecRaw[0], rgbyte, 16);
+    memcpy(vecRaw.data(), rgbyte, 16);
     ////  TestJls(vecRaw, size, 8, 1, ILV_NONE, rgbyteComp, sizeof(rgbyteComp), false);
 }
 

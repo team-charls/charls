@@ -53,7 +53,7 @@ void TestDicomSampleImage(const char* name)
     std::vector<BYTE> dataUnc;
     dataUnc.resize(params.stride * params.height);
 
-    error = JpegLsDecode(&dataUnc[0], dataUnc.size(), &data[0], data.size(), nullptr, nullptr);
+    error = JpegLsDecode(dataUnc.data(), dataUnc.size(), &data[0], data.size(), nullptr, nullptr);
     Assert::IsTrue(error == charls::ApiResult::OK);
     std::cout << ".";
 }

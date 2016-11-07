@@ -256,7 +256,7 @@ public:
         std::streamsize bytesToRead = pixelCount * _params.components * sizeof(SAMPLE);
         while (bytesToRead != 0)
         {
-            std::streamsize read = rawStream->sgetn(reinterpret_cast<char*>(&_buffer[0]), bytesToRead);
+            std::streamsize read = rawStream->sgetn(reinterpret_cast<char*>(_buffer.data()), bytesToRead);
             if (read == 0)
             {
                 std::ostringstream message;
@@ -268,18 +268,18 @@ public:
         }
         if (sizeof(SAMPLE) == 2 && _params.colorTransformation == charls::ColorTransformation::BigEndian)
         {
-            ByteSwap(&_buffer[0], _params.components * sizeof(SAMPLE) * pixelCount);
+            ByteSwap(_buffer.data(), _params.components * sizeof(SAMPLE) * pixelCount);
         }
-        Transform(&_buffer[0], dest, pixelCount, destStride);
+        Transform(_buffer.data(), dest, pixelCount, destStride);
     }
 
     void Transform(const void* source, void* dest, int pixelCount, int destStride)
     {
         if (_params.outputBgr)
         {
-            memcpy(&_templine[0], source, sizeof(Triplet<SAMPLE>) * pixelCount);
-            TransformRgbToBgr(static_cast<SAMPLE*>(&_templine[0]), _params.components, pixelCount);
-            source = &_templine[0];
+            memcpy(_templine.data(), source, sizeof(Triplet<SAMPLE>) * pixelCount);
+            TransformRgbToBgr(_templine.data(), _params.components, pixelCount);
+            source = _templine.data();
         }
 
         if (_params.components == 3)
@@ -328,14 +328,14 @@ public:
         if (_rawPixels.rawStream)
         {
             std::streamsize bytesToWrite = pixelCount * _params.components * sizeof(SAMPLE);
-            DecodeTransform(pSrc, &_buffer[0], pixelCount, sourceStride);
+            DecodeTransform(pSrc, _buffer.data(), pixelCount, sourceStride);
 
             if (sizeof(SAMPLE) == 2 && _params.colorTransformation == charls::ColorTransformation::BigEndian)
             {
-                ByteSwap(&_buffer[0], _params.components * sizeof(SAMPLE) * pixelCount);
+                ByteSwap(_buffer.data(), _params.components * sizeof(SAMPLE) * pixelCount);
             }
 
-            std::streamsize bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(&_buffer[0]), bytesToWrite);
+            std::streamsize bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(_buffer.data()), bytesToWrite);
             if (bytesWritten != bytesToWrite)
                 throw std::system_error(static_cast<int>(charls::ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
         }

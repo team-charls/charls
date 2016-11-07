@@ -56,7 +56,7 @@ protected:
         {
             _compressedStream = compressedStream.rawStream;
             _buffer.resize(4000);
-            _position = static_cast<uint8_t*>(&_buffer[0]);
+            _position = _buffer.data();
             _compressedLength = _buffer.size();
         }
         else
@@ -122,13 +122,13 @@ protected:
         if (!_compressedStream)
             throw std::system_error(static_cast<int>(charls::ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
 
-        std::size_t bytesCount = _position - static_cast<uint8_t*>(&_buffer[0]);
-        std::size_t bytesWritten = static_cast<std::size_t>(_compressedStream->sputn(reinterpret_cast<char*>(&_buffer[0]), _position - static_cast<uint8_t*>(&_buffer[0])));
+        std::size_t bytesCount = _position - _buffer.data();
+        std::size_t bytesWritten = static_cast<std::size_t>(_compressedStream->sputn(reinterpret_cast<char*>(_buffer.data()), _position - _buffer.data()));
 
         if (bytesWritten != bytesCount)
             throw std::system_error(static_cast<int>(charls::ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
 
-        _position = static_cast<uint8_t*>(&_buffer[0]);
+        _position = _buffer.data();
         _compressedLength = _buffer.size();
     }
 
