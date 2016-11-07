@@ -41,7 +41,7 @@ public:
 
     virtual void SetPresets(const JlsCustomParameters& presets) = 0;
 
-    virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData, void* pvoidCompare) = 0;
+    virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData) = 0;
 
     virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 

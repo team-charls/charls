@@ -40,7 +40,6 @@ namespace
 
 
 JpegStreamWriter::JpegStreamWriter() :
-    _bCompare(false),
     _data(),
     _byteOffset(0),
     _lastCompenentIndex(0)
@@ -64,8 +63,6 @@ size_t JpegStreamWriter::Write(const ByteStreamInfo& info)
     {
         _segments[i]->Serialize(*this);
     }
-
-    //_bCompare = false;
 
     WriteMarker(JpegMarkerCode::EndOfImage);
 

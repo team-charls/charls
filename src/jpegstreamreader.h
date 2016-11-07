@@ -38,11 +38,6 @@ public:
     void Read(ByteStreamInfo info);
     void ReadHeader();
 
-    void EnableCompare(bool bCompare)
-    {
-        _bCompare = bCompare;
-    }
-
     void SetInfo(const JlsParameters& params)
     {
         _params = params;
@@ -65,14 +60,13 @@ private:
     void ReadNBytes(std::vector<char>& dst, int byteCount);
     int ReadMarker(JpegMarkerCode marker);
 
-    // JFIF
     void ReadJfif();
+
     // Color Transform Application Markers & Code Stream (HP extension)
     int ReadColorSpace();
     int ReadColorXForm();
 
     ByteStreamInfo _byteStream;
-    bool _bCompare;
     JlsParameters _params;
     JlsRect _rect;
 };

@@ -117,8 +117,7 @@ public:
         _RUNindex(0),
         _previousLine(),
         _currentLine(),
-        _pquant(nullptr),
-        _bCompare(false)
+        _pquant(nullptr)
     {
         if (Info().interleaveMode == InterleaveMode::None)
         {
@@ -198,8 +197,8 @@ public:
     void InitDefault();
     void InitParams(int32_t t1, int32_t t2, int32_t t3, int32_t nReset);
 
-    size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData, void* pvoidCompare);
-    void DecodeScan(std::unique_ptr<ProcessLine> rawData, const JlsRect& size, ByteStreamInfo& compressedData, bool bCompare);
+    size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData);
+    void DecodeScan(std::unique_ptr<ProcessLine> rawData, const JlsRect& size, ByteStreamInfo& compressedData);
 
 protected:
     // codec parameters
@@ -220,9 +219,6 @@ protected:
     // quantization lookup table
     signed char* _pquant;
     std::vector<signed char> _rgquant;
-
-    // debugging
-    bool _bCompare;
 };
 
 
@@ -804,19 +800,11 @@ ProcessLine* JlsCodec<TRAITS, STRATEGY>::CreateProcess(ByteStreamInfo info)
 // Setup codec for encoding and calls DoScan
 
 template<typename TRAITS, typename STRATEGY>
-size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo& compressedData, void* pvoidCompare)
+size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo& compressedData)
 {
     STRATEGY::_processLine = std::move(processLine);
 
-    ByteStreamInfo info = { nullptr, static_cast<uint8_t*>(pvoidCompare), compressedData.count };
-    if (pvoidCompare)
-    {
-        STRATEGY::_qdecoder = std::unique_ptr<DecoderStrategy>(new JlsCodec<TRAITS, DecoderStrategy>(traits, Info()));
-        STRATEGY::_qdecoder->Init(info);
-    }
-
     STRATEGY::Init(compressedData);
-
     DoScan();
 
     return STRATEGY::GetLength();
@@ -826,12 +814,11 @@ size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> proce
 
 
 template<typename TRAITS, typename STRATEGY>
-void JlsCodec<TRAITS, STRATEGY>::DecodeScan(std::unique_ptr<ProcessLine> processLine, const JlsRect& rect, ByteStreamInfo& compressedData, bool bCompare)
+void JlsCodec<TRAITS, STRATEGY>::DecodeScan(std::unique_ptr<ProcessLine> processLine, const JlsRect& rect, ByteStreamInfo& compressedData)
 {
     STRATEGY::_processLine = std::move(processLine);
 
     uint8_t* compressedBytes = const_cast<uint8_t*>(static_cast<const uint8_t*>(compressedData.rawData));
-    _bCompare = bCompare;
     _rect = rect;
 
     STRATEGY::Init(compressedData);

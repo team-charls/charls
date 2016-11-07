@@ -45,11 +45,6 @@ public:
 
     std::size_t Write(const ByteStreamInfo& info);
 
-    void EnableCompare(bool bCompare)
-    {
-        _bCompare = bCompare;
-    }
-
 private:
     uint8_t* GetPos() const
     {
@@ -66,8 +61,6 @@ private:
 
     void WriteByte(uint8_t val)
     {
-        ASSERT(!_bCompare || _data.rawData[_byteOffset] == val);
-
         if (_data.rawStream)
         {
             _data.rawStream->sputc(val);
@@ -109,7 +102,6 @@ private:
         _byteOffset += byteCount;
     }
 
-    bool _bCompare;
     ByteStreamInfo _data;
     std::size_t _byteOffset;
     int32_t _lastCompenentIndex;

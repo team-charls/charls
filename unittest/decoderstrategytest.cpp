@@ -31,7 +31,7 @@ public:
         return nullptr;
     }
 
-    virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo& compressedData, bool bCheck)
+    virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo& compressedData)
     {
         return;
     }
