@@ -82,9 +82,6 @@ extern "C"
         const void* compressedData, size_t compressedLength,
         struct JlsRect rect, struct JlsParameters* params, char* errorMessage);
 
-    CHARLS_IMEXPORT(CharlsApiResultType) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength,
-        const void* compressedData, size_t compressedLength, char* errorMessage);
-
 #ifdef __cplusplus
 
 }

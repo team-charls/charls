@@ -46,9 +46,8 @@ void TestDicomSampleImage(const char* name)
     }
 
     JlsParameters params;
-
-    auto error = JpegLsReadHeader(&data[0], data.size(), &params, nullptr);
-
+    auto error = JpegLsReadHeader(data.data(), data.size(), &params, nullptr);
+    Assert::IsTrue(error == charls::ApiResult::OK);
 
 //    0xFE, 0xFF, 0x00, 0xE0, 0x00, 0x00, 0x01, 0x00
     std::vector<BYTE> dataUnc;

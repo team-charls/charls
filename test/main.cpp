@@ -161,7 +161,7 @@ void TestBgr()
     ScanFile("test/conformance/T8C2E3.JLS", &rgbyteEncoded, &params);
     std::vector<BYTE> rgbyteDecoded(params.width * params.height * params.components);    
 
-    params.outputBgr = true;
+    params.outputBgr = static_cast<char>(true);
 
     auto err = JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &params, nullptr);
     Assert::IsTrue(err == ApiResult::OK);

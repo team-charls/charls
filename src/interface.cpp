@@ -234,64 +234,6 @@ extern "C"
     }
 
 
-    CHARLS_IMEXPORT(ApiResult) JpegLsVerifyEncode(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength, char* errorMessage)
-    {
-        try
-        {
-            JlsParameters info = JlsParameters();
-
-            auto error = JpegLsReadHeader(compressedData, compressedLength, &info, errorMessage);
-            if (error != ApiResult::OK)
-                return error;
-
-            ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
-
-            VerifyInput(rawStreamInfo, info);
-
-            JpegStreamWriter writer;
-            if (info.jfif.version)
-            {
-                writer.AddSegment(JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(info.jfif));
-            }
-
-            writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameSegment(info.width, info.height, info.bitsPerSample, info.components));
-
-            if (info.interleaveMode == InterleaveMode::None)
-            {
-                int32_t fieldLength = info.width * info.height * ((info.bitsPerSample + 7) / 8);
-                for (int32_t component = 0; component < info.components; ++component)
-                {
-                    writer.AddScan(rawStreamInfo, info);
-                    SkipBytes(rawStreamInfo, fieldLength);
-                }
-            }
-            else
-            {
-                writer.AddScan(rawStreamInfo, info);
-            }
-
-            vector<uint8_t> rgbyteCompressed(compressedLength + 16);
-
-            memcpy(&rgbyteCompressed[0], compressedData, compressedLength);
-
-            writer.EnableCompare(true);
-            writer.Write(FromByteArray(&rgbyteCompressed[0], rgbyteCompressed.size()));
-            ClearErrorMessage(errorMessage);
-            return ApiResult::OK;
-        }
-        catch (const system_error& e)
-        {
-            CopyWhatTextToErrorMessage(e, errorMessage);
-            return SystemErrorToCharLSError(e);
-        }
-        catch (...)
-        {
-            ClearErrorMessage(errorMessage);
-            return ApiResult::UnexpectedFailure;
-        }
-    }
-
-
     CHARLS_IMEXPORT(ApiResult) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength,
         JlsRect roi, JlsParameters* info, char* errorMessage)
     {

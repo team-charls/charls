@@ -1,10 +1,9 @@
-LIBRARY	"CharLS"
+LIBRARY "CharLS"
 EXPORTS
     JpegLsEncode
     JpegLsDecode
-    JpegLsDecodeRect        
-    JpegLsReadHeader  
-    JpegLsVerifyEncode
+    JpegLsDecodeRect
+    JpegLsReadHeader
     JpegLsEncodeStream
     JpegLsDecodeStream
     JpegLsReadHeaderStream

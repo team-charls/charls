@@ -53,6 +53,29 @@ void Triplet2Line(std::vector<BYTE>& rgbyte, Size size)
 }
 
 
+bool VerifyEncodedBytes(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength)
+{
+    JlsParameters info = JlsParameters();
+    auto error = JpegLsReadHeader(compressedData, compressedLength, &info, nullptr);
+    if (error != ApiResult::OK)
+        return false;
+
+    std::vector<uint8_t> ourEncodedBytes(compressedLength + 16);
+    size_t bytesWriten;
+    error = JpegLsEncode(ourEncodedBytes.data(), ourEncodedBytes.size(), &bytesWriten, uncompressedData, uncompressedLength, &info, nullptr);
+
+    for (size_t i = 0; i < compressedLength; ++i)
+    {
+        if (((const uint8_t*)compressedData)[i] != ourEncodedBytes[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 void TestCompliance(const BYTE* compressedBytes, size_t compressedLength, const BYTE* rgbyteRaw, size_t cbyteRaw, bool bcheckEncode)
 {
     JlsParameters info = JlsParameters();
@@ -61,11 +84,8 @@ void TestCompliance(const BYTE* compressedBytes, size_t compressedLength, const 
 
     if (bcheckEncode)
     {
-        err = JpegLsVerifyEncode(&rgbyteRaw[0], cbyteRaw, compressedBytes, compressedLength, nullptr);
-        Assert::IsTrue(err == ApiResult::OK);
+        Assert::IsTrue(VerifyEncodedBytes(&rgbyteRaw[0], cbyteRaw, compressedBytes, compressedLength));
     }
-
-    std::vector<BYTE> rgbyteCompressed(info.height *info.width* 4);
 
     std::vector<BYTE> rgbyteOut(info.height *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
 
