@@ -31,7 +31,7 @@ namespace charls
         UnknownJpegMarker = 11,              // This error is returned when an unknown JPEG marker code is detected in the encoded bit stream.
         MissingJpegMarkerStart = 12,         // This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
         UnspecifiedFailure = 13,             // This error is returned when the implementation detected a failure, but no specific error is available.
-        UnexpectedFailure = 14,              // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
+        UnexpectedFailure = 14               // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
     };
 
     /// <summary>

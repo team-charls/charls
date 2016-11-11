@@ -2,7 +2,7 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-
+#include "bitstreamdamage.h"
 #include "config.h"
 #include "util.h"
 
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <vector>
 
+namespace
+{
 
 void TestDamagedBitStream1()
 {
@@ -100,6 +102,9 @@ void TestRandomMalformedHeader()
     TestFileWithRandomHeaderDamage("test/conformance/T8C1E0.JLS");
     TestFileWithRandomHeaderDamage("test/conformance/T8C2E0.JLS");
 }
+
+
+} // namespace
 
 
 void DamagedBitstreamTests()

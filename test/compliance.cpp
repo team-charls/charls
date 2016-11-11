@@ -66,7 +66,7 @@ bool VerifyEncodedBytes(const void* uncompressedData, size_t uncompressedLength,
 
     for (size_t i = 0; i < compressedLength; ++i)
     {
-        if (((const uint8_t*)compressedData)[i] != ourEncodedBytes[i])
+        if ((reinterpret_cast<const uint8_t*>(compressedData)[i]) != ourEncodedBytes[i])
         {
             return false;
         }
@@ -137,6 +137,8 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
     TestCompliance(rgbyteFile.data(), rgbyteFile.size(), rgbyteRaw.data(), rgbyteRaw.size(), bcheckEncode);
 }
 
+namespace
+{
 
 BYTE palettisedDataH10[] = {
     0xFF, 0xD8, //Start of image (SOI) marker 
@@ -182,6 +184,7 @@ const BYTE rgbyte[] = { 0,   0,  90,  74,
 ////0x01, 0xC0, 0x00, 0x00, 0x57, 0x40, 0x00, 0x00, 0x6E, 0xE6, 0x00, 0x00, 0x01, 0xBC, 0x18, 0x00,
 ////0x00, 0x05, 0xD8, 0x00, 0x00, 0x91, 0x60, 0xFF, 0xD9};
 
+} // namespace
 
 
 void TestSampleAnnexH3()

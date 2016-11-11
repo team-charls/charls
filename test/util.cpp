@@ -47,7 +47,7 @@ bool ReadFile(SZC strName, std::vector<uint8_t>* pvec, int offset, int bytes)
     }
 
     fseek(pfile, 0, SEEK_END);
-    int cbyteFile = ftell(pfile);
+    int cbyteFile = static_cast<int>(ftell(pfile));
     if (offset < 0)
     {
         Assert::IsTrue(bytes != 0);

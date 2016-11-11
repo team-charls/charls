@@ -11,6 +11,8 @@
 #include "../src/losslesstraits.h"
 #include "../src/processline.h"
 
+#include "bitstreamdamage.h"
+
 #include <sstream>
 #include <fstream>
 #include <vector>
@@ -97,8 +99,8 @@ std::vector<BYTE> MakeSomeNoise(int length, int bitcount, int seed)
 {
     srand(seed);
     std::vector<BYTE> rgbyteNoise(length);
-    BYTE mask = (1 << bitcount) - 1;
-    for (int icol= 0; icol<length; ++icol)
+    BYTE mask = static_cast<BYTE>((1 << bitcount) - 1);
+    for (int icol= 0; icol < length; ++icol)
     {
         BYTE val = BYTE(rand());
         rgbyteNoise[icol] = BYTE(val & mask);
@@ -324,7 +326,7 @@ std::vector<int> readPnmHeader(std::istream& pnmFile)
 {
     std::vector<int> readValues;
     
-    char first = (char) pnmFile.get();
+    char first = static_cast<char>(pnmFile.get());
 
     if (first != 'P')
         return readValues;
@@ -508,7 +510,6 @@ void TestConformance();
 void TestSampleAnnexH3();
 void PerformanceTests(int loopCount);
 void DecodePerformanceTests(int loopCount);
-void DamagedBitstreamTests();
 void TestDicomWG4Images();
 
 void UnitTest()

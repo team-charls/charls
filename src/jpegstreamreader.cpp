@@ -17,6 +17,8 @@
 using namespace std;
 using namespace charls;
 
+extern template class JlsCodecFactory<EncoderStrategy>;
+extern template class JlsCodecFactory<DecoderStrategy>;
 
 // Default bin sizes for JPEG-LS statistical modeling. Can be overriden at compression time, however this is rarely done.
 const int BASIC_T1 = 3;
@@ -24,8 +26,13 @@ const int BASIC_T2 = 7;
 const int BASIC_T3 = 21;
 
 
+namespace
+{
+
 // JFIF\0
-uint8_t jfifID [] = { 'J', 'F', 'I', 'F', '\0' };
+uint8_t jfifID[] = { 'J', 'F', 'I', 'F', '\0' };
+
+}
 
 
 int32_t CLAMP(int32_t i, int32_t j, int32_t MAXVAL)

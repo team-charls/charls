@@ -44,7 +44,9 @@ struct TransformHp1
 
     struct INVERSE
     {
-        explicit INVERSE(const TransformHp1&) {};
+        explicit INVERSE(const TransformHp1&)
+        {
+        }
 
         inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
         {
@@ -71,7 +73,9 @@ struct TransformHp2
 
     struct INVERSE
     {
-        explicit INVERSE(const TransformHp2&) {};
+        explicit INVERSE(const TransformHp2&)
+        {
+        }
 
         inlinehint Triplet<SAMPLE> operator() (int v1, int v2, int v3) const
         {
@@ -98,7 +102,9 @@ struct TransformHp3
 
     struct INVERSE
     {
-        explicit INVERSE(const TransformHp3&) {};
+        explicit INVERSE(const TransformHp3&)
+        {
+        }
 
         inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
         {
