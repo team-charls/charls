@@ -32,8 +32,6 @@ namespace
 // JFIF\0
 uint8_t jfifID[] = { 'J', 'F', 'I', 'F', '\0' };
 
-}
-
 
 int32_t CLAMP(int32_t i, int32_t j, int32_t MAXVAL)
 {
@@ -41,21 +39,6 @@ int32_t CLAMP(int32_t i, int32_t j, int32_t MAXVAL)
         return j;
 
     return i;
-}
-
-
-JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
-{
-    JlsCustomParameters preset = JlsCustomParameters();
-
-    int32_t FACTOR = (MIN(MAXVAL, 4095) + 128) / 256;
-
-    preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
-    preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
-    preset.T3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7*NEAR, preset.T2, MAXVAL);
-    preset.MAXVAL = MAXVAL;
-    preset.RESET = BASIC_RESET;
-    return preset;
 }
 
 
@@ -75,6 +58,24 @@ ApiResult CheckParameterCoherent(const JlsParameters& params)
 
         default: return params.interleaveMode != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
     }
+}
+
+
+} // namespace
+
+
+JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
+{
+    JlsCustomParameters preset = JlsCustomParameters();
+
+    int32_t FACTOR = (MIN(MAXVAL, 4095) + 128) / 256;
+
+    preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3 * NEAR, NEAR + 1, MAXVAL);
+    preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5 * NEAR, preset.T1, MAXVAL);
+    preset.T3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7 * NEAR, preset.T2, MAXVAL);
+    preset.MAXVAL = MAXVAL;
+    preset.RESET = BASIC_RESET;
+    return preset;
 }
 
 

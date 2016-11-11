@@ -17,7 +17,6 @@ void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool litt
 void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount = 1);
 
 void WriteFile(SZC strName, std::vector<BYTE>& vec);
-void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEncode = true);
 
 class UnitTestException : public std::exception {
 public:

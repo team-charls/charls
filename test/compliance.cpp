@@ -3,6 +3,7 @@
 // 
 
 
+#include "compliance.h"
 #include "config.h"
 #include "util.h"
 
@@ -14,6 +15,10 @@
 
 
 using namespace charls;
+
+
+namespace
+{
 
 
 void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
@@ -106,7 +111,7 @@ void TestCompliance(const BYTE* compressedBytes, size_t compressedLength, const 
 }
 
 
-void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEncode)
+void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEncode = true)
 {
     std::cout << "Conformance test:" << strNameEncoded << "\n\r";
     std::vector<BYTE> rgbyteFile;
@@ -137,8 +142,6 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
     TestCompliance(rgbyteFile.data(), rgbyteFile.size(), rgbyteRaw.data(), rgbyteRaw.size(), bcheckEncode);
 }
 
-namespace
-{
 
 BYTE palettisedDataH10[] = {
     0xFF, 0xD8, //Start of image (SOI) marker 
@@ -245,5 +248,3 @@ void TestConformance()
     // additional, Lena compressed with other codec (UBC?), vfy with CharLS
     DecompressFile("test/lena8b.jls", "test/lena8b.raw",0);
 }
-
-

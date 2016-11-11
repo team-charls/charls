@@ -1,7 +1,6 @@
-// 
+//
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
-
+//
 
 #include "config.h"
 #include "util.h"
@@ -12,6 +11,9 @@
 #include "../src/processline.h"
 
 #include "bitstreamdamage.h"
+#include "compliance.h"
+#include "performance.h"
+#include "dicomsamples.h"
 
 #include <sstream>
 #include <fstream>
@@ -20,6 +22,8 @@
 
 using namespace charls;
 
+namespace
+{
 
 typedef const char* SZC;
 
@@ -505,13 +509,6 @@ void TestEncodeFromStream()
 }
 
 
-void TestColorTransforms_HpImages();
-void TestConformance();
-void TestSampleAnnexH3();
-void PerformanceTests(int loopCount);
-void DecodePerformanceTests(int loopCount);
-void TestDicomWG4Images();
-
 void UnitTest()
 {
     try
@@ -555,6 +552,8 @@ void UnitTest()
         std::cout << "==> Unit test failed <==\n";
     }
 }
+
+} // namespace
 
 
 int main(int argc, char* argv[])

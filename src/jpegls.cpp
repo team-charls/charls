@@ -56,6 +56,9 @@ const error_category& CharLSCategoryInstance()
 }
 
 
+namespace
+{
+
 signed char QuantizeGratientOrg(const JlsCustomParameters& preset, int32_t NEAR, int32_t Di)
 {
     if (Di <= -preset.T3) return  -4;
@@ -84,6 +87,8 @@ vector<signed char> CreateQLutLossless(int32_t cbit)
     }
     return lut;
 }
+
+} // namespace
 
 // Lookup tables to replace code with lookup tables.
 // To avoid threading issues, all tables are created when the program is loaded.

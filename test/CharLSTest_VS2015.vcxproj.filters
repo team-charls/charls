@@ -49,6 +49,15 @@
     <ClInclude Include="bitstreamdamage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="compliance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="performance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dicomsamples.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="0015.raw">

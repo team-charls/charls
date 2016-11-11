@@ -13,8 +13,10 @@
 using namespace std;
 using namespace charls;
 
+namespace
+{
 
-static void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& parameters)
+void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& parameters)
 {
     if (!uncompressedStream.rawStream && !uncompressedStream.rawData)
         throw CreateSystemError(ApiResult::InvalidJlsParameters, "rawStream or rawData needs to reference to something");
@@ -56,13 +58,13 @@ static void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParam
 }
 
 
-static ApiResult SystemErrorToCharLSError(const system_error& e)
+ApiResult SystemErrorToCharLSError(const system_error& e)
 {
     return e.code().category() == CharLSCategoryInstance() ? static_cast<ApiResult>(e.code().value()) : ApiResult::UnspecifiedFailure;
 }
 
 
-static void ClearErrorMessage(char* errorMessage)
+void ClearErrorMessage(char* errorMessage)
 {
     if (errorMessage)
     {
@@ -71,7 +73,7 @@ static void ClearErrorMessage(char* errorMessage)
 }
 
 
-static void CopyWhatTextToErrorMessage(const system_error& e, char* errorMessage)
+void CopyWhatTextToErrorMessage(const system_error& e, char* errorMessage)
 {
     if (!errorMessage)
         return;
@@ -86,6 +88,8 @@ static void CopyWhatTextToErrorMessage(const system_error& e, char* errorMessage
         errorMessage[0] = 0;
     }
 }
+
+} // namespace
 
 
 CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& pcbyteWritten,
@@ -112,7 +116,6 @@ CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
         }
 
         writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameSegment(info.width, info.height, info.bitsPerSample, info.components));
-
 
         if (info.colorTransformation != ColorTransformation::None)
         {

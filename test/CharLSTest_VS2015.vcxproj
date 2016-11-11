@@ -292,7 +292,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitstreamdamage.h" />
+    <ClInclude Include="compliance.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="dicomsamples.h" />
+    <ClInclude Include="performance.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>

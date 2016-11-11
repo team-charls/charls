@@ -15,6 +15,8 @@
 
 using namespace charls;
 
+namespace
+{
 
 bool IsMachineLittleEndian()
 {
@@ -22,6 +24,8 @@ bool IsMachineLittleEndian()
     char* chars = reinterpret_cast<char*>(&a);
     return chars[0] == 0x01;
 }
+
+} // namespace
 
 
 void FixEndian(std::vector<BYTE>* rgbyte, bool littleEndianData)

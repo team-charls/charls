@@ -1,11 +1,20 @@
+//
+// (C) CharLS Team 2016, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
-
+#include "dicomsamples.h"
 #include "config.h"
 #include "util.h"
 #include "../src/charls.h"
 #include <iostream>
 #include <vector>
 
+
+#define COUNT(x) (sizeof(x)/sizeof(x[0]))
+
+
+namespace
+{
 
 int findstring(std::vector<BYTE>& container, BYTE* bytesToFind, unsigned int bytesLength)
 {
@@ -22,8 +31,6 @@ int findstring(std::vector<BYTE>& container, BYTE* bytesToFind, unsigned int byt
     }
     return -1;
 }
-
-#define COUNT(x) (sizeof(x)/sizeof(x[0]))
 
 
 void TestDicomSampleImage(const char* name)
@@ -57,6 +64,9 @@ void TestDicomSampleImage(const char* name)
     Assert::IsTrue(error == charls::ApiResult::OK);
     std::cout << ".";
 }
+
+} // namespace
+
 
 void TestDicomWG4Images()
 {

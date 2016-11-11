@@ -3,12 +3,16 @@
 // 
 
 
+#include "performance.h"
 #include "config.h"
 #include "util.h"
 #include "../src/charls.h"
 
 #include <vector>
 
+
+namespace
+{
 
 void TestFile16BitAs12(SZC strName, int ioffs, Size size2, int ccomp, bool littleEndianFile)
 {
@@ -68,6 +72,9 @@ void TestLargeImagePerformance(int loopCount)
 }
 
 
+} // namespace
+
+
 void PerformanceTests(int loopCount)
 {
     printf("Test Perf (with loop count %i)\r\n", loopCount);
@@ -91,7 +98,6 @@ void DecodePerformanceTests(int loopCount)
     auto result = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
     if (result != charls::ApiResult::OK)
         return;
-
 
     std::vector<uint8_t> uncompressed(params.height * params.width * 2);
 
