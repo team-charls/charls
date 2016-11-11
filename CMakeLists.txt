@@ -7,7 +7,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
     # SET(CMAKE_CXX_FLAGS "-D NDEBUG -O3 -Wall -Wextra -pedantic -fvisibility=hidden -fomit-frame-pointer -momit-leaf-frame-pointer -fweb  -ftracer" )
 
     # Define GNU C++ defines for both Debug and Release
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -pedantic")
 
     # Define specific Debug settings.
     set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
@@ -18,7 +18,15 @@ ENDIF ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     # Define clang C++ defines for both Debug and Release
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Weverything")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat")            # Ignore, CharLS targets C++11, ignore C++98 compatibility. 
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat-pedantic")   # Ignore, CharLS targets C++11, ignore C++98 compatibility.
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-conversion")         # Ignore, would just introduce ugly static_asserts.
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-padded")                  # Ignore, padding optimization is not needed.
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-switch-enum")             # Ignore, cases are handled by default.
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-global-constructors")     # Ignore, by design CharLS uses types created at startup.
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-exit-time-destructors")   # Ignore, better for memory leak tracking.
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-weak-vtables")            # Ignore, linker will remove the couple of extra vtables.
 
     # Define specific Debug settings.
     set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")

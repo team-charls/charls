@@ -2,7 +2,6 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-
 #include "performance.h"
 #include "config.h"
 #include "util.h"
@@ -10,21 +9,20 @@
 
 #include <vector>
 
-
 namespace
 {
 
 void TestFile16BitAs12(SZC strName, int ioffs, Size size2, int ccomp, bool littleEndianFile)
 {
-    std::vector<BYTE> rgbyteUncompressed;
+    std::vector<uint8_t> rgbyteUncompressed;
     if (!ReadFile(strName, &rgbyteUncompressed, ioffs))
         return;
 
     FixEndian(&rgbyteUncompressed, littleEndianFile);
 
-    USHORT* pushort = (USHORT*)&rgbyteUncompressed[0];
+    USHORT* pushort = reinterpret_cast<USHORT*>(rgbyteUncompressed.data());
 
-    for (int i = 0; i < (int)rgbyteUncompressed.size()/2; ++i)
+    for (size_t i = 0; i < rgbyteUncompressed.size() / 2; ++i)
     {
         pushort[i] = pushort[i] >> 4;
     }
@@ -67,10 +65,9 @@ void TestLargeImagePerformance(int loopCount)
     TestFile("test/rgb8bit/artificial.ppm", 17, Size(3072, 2048), 8, 3, false, loopCount);
     TestFile("test/rgb8bit/bridge.ppm", 17, Size(2749, 4049), 8, 3, false, loopCount);
     TestFile("test/rgb8bit/flower_foveon.ppm", 17, Size(2268, 1512), 8, 3, false, loopCount);
-    //TestFile("test/rgb8bit/big_building.ppm", 17, Size(7216,5412),  8, 3);
-    //  TestFile("test/rgb16bit/bridge.ppm", 19, Size(2749,4049),  16, 3, true);
+    ////TestFile("test/rgb8bit/big_building.ppm", 17, Size(7216,5412),  8, 3);
+    ////TestFile("test/rgb16bit/bridge.ppm", 19, Size(2749,4049),  16, 3, true);
 }
-
 
 } // namespace
 
