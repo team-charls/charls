@@ -2,6 +2,7 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 //
 
+#include "time.h"
 
 // for best accuracy, getTime is implemented platform dependent.
 // to avoid a global include of windows.h, this is a separate file.
@@ -12,7 +13,7 @@
 #include <windows.h>
 
 // returns a point in time in milli seconds (can only be used for time differences, not an absolute time)
-double getTime() 
+double getTime()
 {
     LARGE_INTEGER time;
     ::QueryPerformanceCounter(&time);

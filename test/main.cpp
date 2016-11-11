@@ -194,17 +194,17 @@ void TestTooSmallOutputBuffer()
 }
 
 
-void TestBadImage()
-{
-    std::vector<BYTE> rgbyteCompressed;
-    if (!ReadFile("test/BadCompressedStream.jls", &rgbyteCompressed, 0))
-        return;
-
-    std::vector<BYTE> rgbyteOut(2500 * 3000 * 2);
-    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
-
-    Assert::IsTrue(error == ApiResult::UncompressedBufferTooSmall);
-}
+////void TestBadImage()
+////{
+////    std::vector<BYTE> rgbyteCompressed;
+////    if (!ReadFile("test/BadCompressedStream.jls", &rgbyteCompressed, 0))
+////        return;
+////
+////    std::vector<BYTE> rgbyteOut(2500 * 3000 * 2);
+////    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
+////
+////    Assert::IsTrue(error == ApiResult::UncompressedBufferTooSmall);
+////}
 
 
 void TestDecodeBitStreamWithNoMarkerStart()
@@ -458,28 +458,28 @@ bool ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
 }
 
 
-void TestDecodeFromStream(const char* strNameEncoded)
-{
-    std::basic_filebuf<char> jlsFile; 
-    jlsFile.open(strNameEncoded, mode_input);
-    Assert::IsTrue(jlsFile.is_open());
-    ByteStreamInfo compressedByteStream = {&jlsFile, nullptr, 0};
-
-    auto params = JlsParameters();
-    auto err = JpegLsReadHeaderStream(compressedByteStream, &params, nullptr);
-    Assert::IsTrue(err == ApiResult::OK);
-
-    jlsFile.pubseekpos(std::ios::beg, std::ios_base::in);
-
-    std::basic_stringbuf<char> buf;
-    ByteStreamInfo rawStreamInfo = {&buf, nullptr, 0};
-
-    err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, nullptr, nullptr);
-    ////size_t outputCount = buf.str().size();
-
-    Assert::IsTrue(err == ApiResult::OK);
-    //Assert::IsTrue(outputCount == 512 * 512);
-}
+////void TestDecodeFromStream(const char* strNameEncoded)
+////{
+////    std::basic_filebuf<char> jlsFile; 
+////    jlsFile.open(strNameEncoded, mode_input);
+////    Assert::IsTrue(jlsFile.is_open());
+////    ByteStreamInfo compressedByteStream = {&jlsFile, nullptr, 0};
+////
+////    auto params = JlsParameters();
+////    auto err = JpegLsReadHeaderStream(compressedByteStream, &params, nullptr);
+////    Assert::IsTrue(err == ApiResult::OK);
+////
+////    jlsFile.pubseekpos(std::ios::beg, std::ios_base::in);
+////
+////    std::basic_stringbuf<char> buf;
+////    ByteStreamInfo rawStreamInfo = {&buf, nullptr, 0};
+////
+////    err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, nullptr, nullptr);
+////    ////size_t outputCount = buf.str().size();
+////
+////    Assert::IsTrue(err == ApiResult::OK);
+////    //Assert::IsTrue(outputCount == 512 * 512);
+////}
 
 
 ApiResult DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
@@ -503,7 +503,7 @@ void TestEncodeFromStream()
     ////TestDecodeFromStream("test/user_supplied/output.jls");
 
     TestEncodeFromStream("test/0015.raw", 0, 1024, 1024, 8, 1, InterleaveMode::None, 0x3D3ee);
-    //TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
+    ////TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
     TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, InterleaveMode::Sample, 99734);
     TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, InterleaveMode::Line, 100615);
 }
@@ -513,7 +513,7 @@ void UnitTest()
 {
     try
     {
-        //  TestBadImage();
+        //// TestBadImage();
 
         printf("Test Conformance\r\n");
         TestEncodeFromStream();

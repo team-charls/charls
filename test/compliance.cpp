@@ -1,7 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
-
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 #include "compliance.h"
 #include "config.h"
@@ -13,13 +12,10 @@
 #include <vector>
 #include <cstring>
 
-
 using namespace charls;
-
 
 namespace
 {
-
 
 void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
 {
@@ -33,28 +29,6 @@ void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
         rgbytePlanar[index + 2*cbytePlane]  = rgbyte[index * 3 + 2];
     }
     std::swap(rgbyte, rgbytePlanar);
-}
-
-
-void Triplet2Line(std::vector<BYTE>& rgbyte, Size size)
-{
-    std::vector<BYTE> rgbyteInterleaved(rgbyte.size());
-
-    int cbyteLine = size.cx;
-
-    for (int line = 0; line < size.cy; ++line)
-    {
-        const BYTE* pbyteLineIn = &rgbyte[line * size.cx * 3];
-        BYTE* pbyteLineOut = &rgbyteInterleaved[line * size.cx * 3];
-
-        for (int index = 0; index < cbyteLine; index++)
-        {
-            pbyteLineOut[index]                 = pbyteLineIn[index * 3 + 0];
-            pbyteLineOut[index + 1*cbyteLine]   = pbyteLineIn[index * 3 + 1];
-            pbyteLineOut[index + 2*cbyteLine]   = pbyteLineIn[index * 3 + 2];
-        }
-    }
-    std::swap(rgbyte, rgbyteInterleaved);
 }
 
 
@@ -143,39 +117,39 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 }
 
 
-BYTE palettisedDataH10[] = {
-    0xFF, 0xD8, //Start of image (SOI) marker 
-    0xFF, 0xF7, //Start of JPEG-LS frame (SOF 55) marker – marker segment follows 
-    0x00, 0x0B, //Length of marker segment = 11 bytes including the length field 
-    0x02, //P = Precision = 2 bits per sample 
-    0x00, 0x04, //Y = Number of lines = 4 
-    0x00, 0x03, //X = Number of columns = 3 
-    0x01, //Nf = Number of components in the frame = 1 
-    0x01, //C1  = Component ID = 1 (first and only component) 
-    0x11, //Sub-sampling: H1 = 1, V1 = 1 
-    0x00, //Tq1 = 0 (this field is always 0) 
-
-    0xFF, 0xF8, //LSE – JPEG-LS preset parameters marker 
-    0x00, 0x11, //Length of marker segment = 17 bytes including the length field 
-    0x02, //ID = 2, mapping table  
-    0x05, //TID = 5 Table identifier (arbitrary) 
-    0x03, //Wt = 3 Width of table entry 
-    0xFF, 0xFF, 0xFF, //Entry for index 0 
-    0xFF, 0x00, 0x00, //Entry for index 1 
-    0x00, 0xFF, 0x00, //Entry for index 2 
-    0x00, 0x00, 0xFF, //Entry for index 3 
-
-    0xFF, 0xDA, //Start of scan (SOS) marker 
-    0x00, 0x08, //Length of marker segment = 8 bytes including the length field 
-    0x01, //Ns = Number of components for this scan = 1 
-    0x01, //C1 = Component ID = 1  
-    0x05, //Tm 1  = Mapping table identifier = 5 
-    0x00, //NEAR = 0 (near-lossless max error) 
-    0x00, //ILV = 0 (interleave mode = non-interleaved) 
-    0x00, //Al = 0, Ah = 0 (no point transform) 
-    0xDB, 0x95, 0xF0, //3 bytes of compressed image data 
-    0xFF, 0xD9 //End of image (EOI) marker 
-};
+////BYTE palettisedDataH10[] = {
+////    0xFF, 0xD8, //Start of image (SOI) marker 
+////    0xFF, 0xF7, //Start of JPEG-LS frame (SOF 55) marker – marker segment follows 
+////    0x00, 0x0B, //Length of marker segment = 11 bytes including the length field 
+////    0x02, //P = Precision = 2 bits per sample 
+////    0x00, 0x04, //Y = Number of lines = 4 
+////    0x00, 0x03, //X = Number of columns = 3 
+////    0x01, //Nf = Number of components in the frame = 1 
+////    0x01, //C1  = Component ID = 1 (first and only component) 
+////    0x11, //Sub-sampling: H1 = 1, V1 = 1 
+////    0x00, //Tq1 = 0 (this field is always 0) 
+////
+////    0xFF, 0xF8, //LSE – JPEG-LS preset parameters marker 
+////    0x00, 0x11, //Length of marker segment = 17 bytes including the length field 
+////    0x02, //ID = 2, mapping table  
+////    0x05, //TID = 5 Table identifier (arbitrary) 
+////    0x03, //Wt = 3 Width of table entry 
+////    0xFF, 0xFF, 0xFF, //Entry for index 0 
+////    0xFF, 0x00, 0x00, //Entry for index 1 
+////    0x00, 0xFF, 0x00, //Entry for index 2 
+////    0x00, 0x00, 0xFF, //Entry for index 3 
+////
+////    0xFF, 0xDA, //Start of scan (SOS) marker 
+////    0x00, 0x08, //Length of marker segment = 8 bytes including the length field 
+////    0x01, //Ns = Number of components for this scan = 1 
+////    0x01, //C1 = Component ID = 1  
+////    0x05, //Tm 1  = Mapping table identifier = 5 
+////    0x00, //NEAR = 0 (near-lossless max error) 
+////    0x00, //ILV = 0 (interleave mode = non-interleaved) 
+////    0x00, //Al = 0, Ah = 0 (no point transform) 
+////    0xDB, 0x95, 0xF0, //3 bytes of compressed image data 
+////    0xFF, 0xD9 //End of image (EOI) marker 
+////};
 
 
 const BYTE rgbyte[] = { 0,   0,  90,  74, 
