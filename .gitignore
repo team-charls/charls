@@ -18,6 +18,7 @@ x64/
 *.opendb
 *.db
 *.aps
+*.sqlite
 
 # NuGet Packages
 *.nupkg
