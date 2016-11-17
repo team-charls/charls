@@ -120,13 +120,13 @@ protected:
     void OverFlow()
     {
         if (!_compressedStream)
-            throw std::system_error(static_cast<int>(charls::ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
+            throw charls_error(charls::ApiResult::CompressedBufferTooSmall);
 
         std::size_t bytesCount = _position - _buffer.data();
         std::size_t bytesWritten = static_cast<std::size_t>(_compressedStream->sputn(reinterpret_cast<char*>(_buffer.data()), _position - _buffer.data()));
 
         if (bytesWritten != bytesCount)
-            throw std::system_error(static_cast<int>(charls::ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
+            throw charls_error(charls::ApiResult::CompressedBufferTooSmall);
 
         _position = _buffer.data();
         _compressedLength = _buffer.size();

@@ -186,7 +186,23 @@ struct FromBigEndian<8>
 };
 
 
-const std::error_category& CharLSCategoryInstance();
+class charls_error : public std::system_error
+{
+public:
+    charls_error(charls::ApiResult errorCode)
+        : system_error(static_cast<int>(errorCode), CharLSCategoryInstance())
+    {
+    }
+
+
+    charls_error(charls::ApiResult errorCode, const std::string& message)
+        : system_error(static_cast<int>(errorCode), CharLSCategoryInstance(), message)
+    {
+    }
+
+private:
+    static const std::error_category& CharLSCategoryInstance();
+};
 
 
 inline ByteStreamInfo FromStream(std::basic_streambuf<char>* stream)
@@ -211,12 +227,6 @@ template<typename T>
 std::ostream& operator<<(typename std::enable_if<std::is_enum<T>::value, std::ostream>::type& stream, const T& e)
 {
     return stream << static_cast<typename std::underlying_type<T>::type>(e);
-}
-
-
-inline std::system_error CreateSystemError(charls::ApiResult errorCode, const std::string& message)
-{
-    return std::system_error(static_cast<int>(errorCode), CharLSCategoryInstance(), message);
 }
 
 #endif

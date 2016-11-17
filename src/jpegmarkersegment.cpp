@@ -59,7 +59,7 @@ unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateJpegFileInterchangeFormat
     if (params.Xthumbnail > 0)
     {
         if (params.thumbnail)
-            throw CreateSystemError(ApiResult::InvalidJlsParameters, "params.Xthumbnail is > 0 but params.thumbnail == null_ptr");
+            throw charls_error(ApiResult::InvalidJlsParameters, "params.Xthumbnail is > 0 but params.thumbnail == null_ptr");
 
         content.insert(content.end(), static_cast<uint8_t*>(params.thumbnail),
             static_cast<uint8_t*>(params.thumbnail) + 3 * params.Xthumbnail * params.Ythumbnail);

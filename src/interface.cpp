@@ -2,7 +2,6 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-
 #include "charls.h"
 #include "util.h"
 #include "jpegstreamreader.h"
@@ -19,27 +18,27 @@ namespace
 void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& parameters)
 {
     if (!uncompressedStream.rawStream && !uncompressedStream.rawData)
-        throw CreateSystemError(ApiResult::InvalidJlsParameters, "rawStream or rawData needs to reference to something");
+        throw charls_error(ApiResult::InvalidJlsParameters, "rawStream or rawData needs to reference to something");
 
     if (parameters.width < 1 || parameters.width > 65535)
-        throw CreateSystemError(ApiResult::InvalidJlsParameters, "width needs to be in the range [1, 65535]");
+        throw charls_error(ApiResult::InvalidJlsParameters, "width needs to be in the range [1, 65535]");
 
     if (parameters.height < 1 || parameters.height > 65535)
-        throw CreateSystemError(ApiResult::InvalidJlsParameters, "height needs to be in the range [1, 65535]");
+        throw charls_error(ApiResult::InvalidJlsParameters, "height needs to be in the range [1, 65535]");
 
     if (parameters.bitsPerSample < 2 || parameters.bitsPerSample > 16)
-        throw CreateSystemError(ApiResult::InvalidJlsParameters, "bitspersample needs to be in the range [2, 16]");
+        throw charls_error(ApiResult::InvalidJlsParameters, "bitspersample needs to be in the range [2, 16]");
 
     if (!(parameters.interleaveMode == InterleaveMode::None || parameters.interleaveMode == InterleaveMode::Sample || parameters.interleaveMode == InterleaveMode::Line))
-        throw CreateSystemError(ApiResult::InvalidJlsParameters, "interleaveMode needs to be set to a value of {None, Sample, Line}");
+        throw charls_error(ApiResult::InvalidJlsParameters, "interleaveMode needs to be set to a value of {None, Sample, Line}");
 
     if (parameters.components < 1 || parameters.components > 255)
-        throw CreateSystemError(ApiResult::InvalidJlsParameters, "components needs to be in the range [1, 255]");
+        throw charls_error(ApiResult::InvalidJlsParameters, "components needs to be in the range [1, 255]");
 
     if (uncompressedStream.rawData)
     {
         if (uncompressedStream.count < size_t(parameters.height * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1)))
-            throw CreateSystemError(ApiResult::InvalidJlsParameters, "uncompressed size does not match with the other parameters");
+            throw charls_error(ApiResult::InvalidJlsParameters, "uncompressed size does not match with the other parameters");
     }
 
     switch (parameters.components)
@@ -48,44 +47,47 @@ void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& 
         break;
     case 4:
         if (parameters.interleaveMode == InterleaveMode::Sample)
-            throw CreateSystemError(ApiResult::InvalidJlsParameters, "interleaveMode cannot be set to Sample in combination with components = 4");
+            throw charls_error(ApiResult::InvalidJlsParameters, "interleaveMode cannot be set to Sample in combination with components = 4");
         break;
     default:
         if (parameters.interleaveMode != InterleaveMode::None)
-            throw CreateSystemError(ApiResult::InvalidJlsParameters, "interleaveMode can only be set to None in combination with components = 1");
+            throw charls_error(ApiResult::InvalidJlsParameters, "interleaveMode can only be set to None in combination with components = 1");
         break;
     }
 }
 
 
-ApiResult SystemErrorToCharLSError(const system_error& e)
-{
-    return e.code().category() == CharLSCategoryInstance() ? static_cast<ApiResult>(e.code().value()) : ApiResult::UnspecifiedFailure;
-}
-
-
-void ClearErrorMessage(char* errorMessage)
+ApiResult ResultAndErrorMessage(ApiResult result, char* errorMessage)
 {
     if (errorMessage)
     {
         errorMessage[0] = 0;
     }
+
+    return result;
 }
 
 
-void CopyWhatTextToErrorMessage(const system_error& e, char* errorMessage)
+ApiResult ResultAndErrorMessageFromException(char* errorMessage)
 {
-    if (!errorMessage)
-        return;
-
-    if (e.code().category() == CharLSCategoryInstance())
+    try
     {
-        ASSERT(strlen(e.what()) < ErrorMessageSize);
-        strcpy(errorMessage, e.what());
+        // retrow the exception.
+        throw;
     }
-    else
+    catch (const charls_error& error)
     {
-        errorMessage[0] = 0;
+        if (errorMessage)
+        {
+            ASSERT(strlen(error.what()) < ErrorMessageSize);
+            strcpy(errorMessage, error.what());
+        }
+
+        return static_cast<ApiResult>(error.code().value());
+    }
+    catch (...)
+    {
+        return ResultAndErrorMessage(ApiResult::UnexpectedFailure, errorMessage);
     }
 }
 
@@ -139,18 +141,11 @@ CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
         writer.Write(compressedStreamInfo);
         pcbyteWritten = writer.GetBytesWritten();
 
-        ClearErrorMessage(errorMessage);
-        return ApiResult::OK;
-    }
-    catch (const system_error& e)
-    {
-        CopyWhatTextToErrorMessage(e, errorMessage);
-        return SystemErrorToCharLSError(e);
+        return ResultAndErrorMessage(ApiResult::OK, errorMessage);
     }
     catch (...)
     {
-        ClearErrorMessage(errorMessage);
-        return ApiResult::UnexpectedFailure;
+        return ResultAndErrorMessageFromException(errorMessage);
     }
 }
 
@@ -168,18 +163,11 @@ CHARLS_IMEXPORT(ApiResult) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStre
 
         reader.Read(rawStream);
 
-        ClearErrorMessage(errorMessage);
-        return ApiResult::OK;
-    }
-    catch (const system_error& e)
-    {
-        CopyWhatTextToErrorMessage(e, errorMessage);
-        return SystemErrorToCharLSError(e);
+        return ResultAndErrorMessage(ApiResult::OK, errorMessage);
     }
     catch (...)
     {
-        ClearErrorMessage(errorMessage);
-        return ApiResult::UnexpectedFailure;
+        return ResultAndErrorMessageFromException(errorMessage);
     }
 }
 
@@ -193,18 +181,11 @@ CHARLS_IMEXPORT(ApiResult) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, 
         reader.ReadStartOfScan(true);
         *params = reader.GetMetadata();
 
-        ClearErrorMessage(errorMessage);
-        return ApiResult::OK;
-    }
-    catch (const std::system_error& e)
-    {
-        CopyWhatTextToErrorMessage(e, errorMessage);
-        return SystemErrorToCharLSError(e);
+        return ResultAndErrorMessage(ApiResult::OK, errorMessage);
     }
     catch (...)
     {
-        ClearErrorMessage(errorMessage);
-        return ApiResult::UnexpectedFailure;
+        return ResultAndErrorMessageFromException(errorMessage);
     }
 }
 
@@ -255,18 +236,11 @@ extern "C"
             reader.SetRect(roi);
             reader.Read(rawStreamInfo);
 
-            ClearErrorMessage(errorMessage);
-            return ApiResult::OK;
-        }
-        catch (const system_error& e)
-        {
-            CopyWhatTextToErrorMessage(e, errorMessage);
-            return SystemErrorToCharLSError(e);
+            return ResultAndErrorMessage(ApiResult::OK, errorMessage);
         }
         catch (...)
         {
-            ClearErrorMessage(errorMessage);
-            return ApiResult::UnexpectedFailure;
+            return ResultAndErrorMessageFromException(errorMessage);
         }
     }
 }

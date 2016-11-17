@@ -105,7 +105,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 
     auto result = CheckParameterCoherent(_params);
     if (result != ApiResult::OK)
-        throw system_error(static_cast<int>(result), CharLSCategoryInstance());
+        throw charls_error(result);
 
     if (_rect.Width <= 0)
     {
@@ -116,7 +116,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
     int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_params.bitsPerSample + 7)/8);
 
     if (rawPixels.rawData && int64_t(rawPixels.count) < bytesPerPlane * _params.components)
-        throw system_error(static_cast<int>(ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
+        throw charls_error(ApiResult::UncompressedBufferTooSmall);
 
     int componentIndex = 0;
 
@@ -149,7 +149,7 @@ void JpegStreamReader::ReadNBytes(vector<char>& dst, int byteCount)
 void JpegStreamReader::ReadHeader()
 {
     if (ReadNextMarker() != JpegMarkerCode::StartOfImage)
-        throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
+        throw charls_error(ApiResult::InvalidCompressedData);
 
     for (;;)
     {
@@ -164,7 +164,7 @@ void JpegStreamReader::ReadHeader()
         int paddingToRead = cbyteMarker - bytesRead;
 
         if (paddingToRead < 0)
-            throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
+            throw charls_error(ApiResult::InvalidCompressedData);
 
         for (int i = 0; i < paddingToRead; ++i)
         {
@@ -182,7 +182,7 @@ JpegMarkerCode JpegStreamReader::ReadNextMarker()
         ostringstream message;
         message << setfill('0');
         message << "Expected JPEG Marker start byte 0xFF but the byte value was 0x" << hex << uppercase << setw(2) << static_cast<unsigned int>(byte);
-        throw CreateSystemError(ApiResult::MissingJpegMarkerStart, message.str());
+        throw charls_error(ApiResult::MissingJpegMarkerStart, message.str());
     }
 
     // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see T.81, B.1.1.2)
@@ -233,7 +233,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
             {
                 ostringstream message;
                 message << "JPEG encoding with marker " << static_cast<unsigned int>(marker) << " is not supported.";
-                throw CreateSystemError(ApiResult::UnsupportedEncoding, message.str());
+                throw charls_error(ApiResult::UnsupportedEncoding, message.str());
             }
 
         // Other tags not supported (among which DNL DRI)
@@ -241,7 +241,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
             {
                 ostringstream message;
                 message << "Unknown JPEG marker " << static_cast<unsigned int>(marker) << " encountered.";
-                throw CreateSystemError(ApiResult::UnknownJpegMarker, message.str());
+                throw charls_error(ApiResult::UnknownJpegMarker, message.str());
             }
     }
 }
@@ -273,16 +273,16 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     if (!firstComponent)
     {
         if (ReadByte() != 0xFF)
-            throw system_error(static_cast<int>(ApiResult::MissingJpegMarkerStart), CharLSCategoryInstance());
+            throw charls_error(ApiResult::MissingJpegMarkerStart);
         if (static_cast<JpegMarkerCode>(ReadByte()) != JpegMarkerCode::StartOfScan)
-            throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
+            throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
     }
     int length = ReadByte();
     length = length * 256 + ReadByte(); // TODO: do something with 'length' or remove it.
 
     int componentCount = ReadByte();
     if (componentCount != 1 && componentCount != _params.components)
-        throw system_error(static_cast<int>(ApiResult::ParameterValueNotSupported), CharLSCategoryInstance());
+        throw charls_error(ApiResult::ParameterValueNotSupported);
 
     for (int i = 0; i < componentCount; ++i)
     {
@@ -292,9 +292,9 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     _params.allowedLossyError = ReadByte();
     _params.interleaveMode = static_cast<InterleaveMode>(ReadByte());
     if (!(_params.interleaveMode == InterleaveMode::None || _params.interleaveMode == InterleaveMode::Line || _params.interleaveMode == InterleaveMode::Sample))
-        throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
+        throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
     if (ReadByte() != 0)
-        throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());// TODO: throw more specific error code.
+        throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
 
     if(_params.stride == 0)
     {
@@ -355,7 +355,7 @@ uint8_t JpegStreamReader::ReadByte()
         return static_cast<uint8_t>(_byteStream.rawStream->sbumpc());
 
     if (_byteStream.count == 0)
-        throw system_error(static_cast<int>(ApiResult::CompressedBufferTooSmall), CharLSCategoryInstance());
+        throw charls_error(ApiResult::CompressedBufferTooSmall);
 
     uint8_t value = _byteStream.rawData[0];
     SkipBytes(_byteStream, 1);
@@ -395,8 +395,8 @@ int JpegStreamReader::ReadColorXForm()
             return 5;
         case ColorTransformation::RgbAsYuvLossy:
         case ColorTransformation::Matrix:
-            throw system_error(static_cast<int>(ApiResult::ImageTypeNotSupported), CharLSCategoryInstance());
+            throw charls_error(ApiResult::ImageTypeNotSupported);
         default:
-            throw system_error(static_cast<int>(ApiResult::InvalidCompressedData), CharLSCategoryInstance());
+            throw charls_error(ApiResult::InvalidCompressedData);
     }
 }

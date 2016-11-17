@@ -73,7 +73,7 @@ inline void ByteSwap(unsigned char* data, int count)
     {
         std::ostringstream message;
         message << "An odd number of bytes (" << count << ") cannot be swapped.";
-        throw CreateSystemError(charls::ApiResult::InvalidJlsParameters, message.str());
+        throw charls_error(charls::ApiResult::InvalidJlsParameters, message.str());
     }
 
     unsigned int* data32 = reinterpret_cast<unsigned int*>(data);
@@ -106,12 +106,12 @@ public:
         {
             std::streamsize bytesRead = _rawData->sgetn(static_cast<char*>(dest), bytesToRead);
             if (bytesRead == 0)
-                throw std::system_error(static_cast<int>(charls::ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
+                throw charls_error(charls::ApiResult::UncompressedBufferTooSmall);
 
             bytesToRead = static_cast<std::size_t>(bytesToRead - bytesRead);
         }
 
-        if (_bytesPerPixel == 2 )
+        if (_bytesPerPixel == 2)
         {
             ByteSwap(static_cast<unsigned char*>(dest), 2 * pixelCount);
         }
@@ -127,7 +127,7 @@ public:
         int bytesToWrite = pixelCount * _bytesPerPixel;
         std::streamsize bytesWritten = _rawData->sputn(static_cast<const char*>(pSrc), bytesToWrite);
         if (bytesWritten != bytesToWrite)
-            throw std::system_error(static_cast<int>(charls::ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
+            throw charls_error(charls::ApiResult::UncompressedBufferTooSmall);
     }
 
 private:
@@ -261,7 +261,7 @@ public:
             {
                 std::ostringstream message;
                 message << "No more bytes available in input buffer, still neededing " << read;
-                throw CreateSystemError(charls::ApiResult::UncompressedBufferTooSmall, message.str());
+                throw charls_error(charls::ApiResult::UncompressedBufferTooSmall, message.str());
             }
 
             bytesToRead -= read;
@@ -337,7 +337,7 @@ public:
 
             std::streamsize bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(_buffer.data()), bytesToWrite);
             if (bytesWritten != bytesToWrite)
-                throw std::system_error(static_cast<int>(charls::ApiResult::UncompressedBufferTooSmall), CharLSCategoryInstance());
+                throw charls_error(charls::ApiResult::UncompressedBufferTooSmall);
         }
         else
         {

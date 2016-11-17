@@ -49,7 +49,7 @@ public:
 };
 
 
-const error_category& CharLSCategoryInstance()
+const error_category& charls_error::CharLSCategoryInstance()
 {
     static charls_category instance;
     return instance;
