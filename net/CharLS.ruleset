@@ -5,14 +5,17 @@
     <Rule Id="CA1026" Action="None" />
     <Rule Id="CA1062" Action="None" />
   </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <Rule Id="IDE0018" Action="None" />
+  </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1101" Action="None" />
     <Rule Id="SA1116" Action="None" />
     <Rule Id="SA1117" Action="None" />
     <Rule Id="SA1120" Action="None" />
-    <Rule Id="SA1200" Action="None" />
     <Rule Id="SA1503" Action="None" />
     <Rule Id="SA1600" Action="None" />
     <Rule Id="SA1633" Action="None" />
+    <Rule Id="SX1101" Action="Warning" />
   </Rules>
 </RuleSet>
