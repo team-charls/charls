@@ -14,7 +14,7 @@ public:
     {
     }
 
-    void SetPresets(const JlsCustomParameters&) override
+    void SetPresets(const JpegLSPresetCodingParameters&) override
     {
     }
 

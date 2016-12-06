@@ -141,15 +141,15 @@ namespace CharLSUnitTest
 
         TEST_METHOD(CreateJpegLSExtendedParametersMarkerAndSerialize)
         {
-            JlsCustomParameters params;
+            JpegLSPresetCodingParameters params;
 
-            params.MAXVAL = 2;
-            params.T1 = 1;
-            params.T2 = 2;
-            params.T3 = 3;
-            params.RESET = 7;
+            params.MaximumSampleValue = 2;
+            params.Threshold1 = 1;
+            params.Threshold2 = 2;
+            params.Threshold3 = 3;
+            params.ResetValue = 7;
 
-            auto segment = JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(params);
+            auto segment = JpegMarkerSegment::CreateJpegLSPresetParametersSegment(params);
 
             uint8_t buffer[19];
             auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
@@ -158,23 +158,23 @@ namespace CharLSUnitTest
             // Parameter ID.
             Assert::AreEqual(static_cast<uint8_t>(0x1), buffer[6]);
 
-            // MAXVAL
+            // MaximumSampleValue
             Assert::AreEqual(static_cast<uint8_t>(0), buffer[7]);
             Assert::AreEqual(static_cast<uint8_t>(2), buffer[8]);
 
-            // T1 
+            // Threshold1 
             Assert::AreEqual(static_cast<uint8_t>(0), buffer[9]);
             Assert::AreEqual(static_cast<uint8_t>(1), buffer[10]);
 
-            // T2
+            // Threshold2
             Assert::AreEqual(static_cast<uint8_t>(0), buffer[11]);
             Assert::AreEqual(static_cast<uint8_t>(2), buffer[12]);
 
-            // T3
+            // Threshold3
             Assert::AreEqual(static_cast<uint8_t>(0), buffer[13]);
             Assert::AreEqual(static_cast<uint8_t>(3), buffer[14]);
 
-            // RESET
+            // ResetValue
             Assert::AreEqual(static_cast<uint8_t>(0), buffer[15]);
             Assert::AreEqual(static_cast<uint8_t>(7), buffer[16]);
         }

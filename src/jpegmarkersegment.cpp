@@ -69,20 +69,20 @@ unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateJpegFileInterchangeFormat
 }
 
 
-unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(const JlsCustomParameters& params)
+unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateJpegLSPresetParametersSegment(const JpegLSPresetCodingParameters& params)
 {
     vector<uint8_t> content;
 
     // Parameter ID. 0x01 = JPEG-LS preset coding parameters.
     content.push_back(1);
 
-    push_back(content, static_cast<uint16_t>(params.MAXVAL));
-    push_back(content, static_cast<uint16_t>(params.T1));
-    push_back(content, static_cast<uint16_t>(params.T2));
-    push_back(content, static_cast<uint16_t>(params.T3));
-    push_back(content, static_cast<uint16_t>(params.RESET));
+    push_back(content, static_cast<uint16_t>(params.MaximumSampleValue));
+    push_back(content, static_cast<uint16_t>(params.Threshold1));
+    push_back(content, static_cast<uint16_t>(params.Threshold2));
+    push_back(content, static_cast<uint16_t>(params.Threshold3));
+    push_back(content, static_cast<uint16_t>(params.ResetValue));
 
-    return make_unique<JpegMarkerSegment>(JpegMarkerCode::JpegLSExtendedParameters, move(content));
+    return make_unique<JpegMarkerSegment>(JpegMarkerCode::JpegLSPresetParameters, move(content));
 }
 
 

@@ -34,10 +34,10 @@ public:
     static std::unique_ptr<JpegMarkerSegment> CreateJpegFileInterchangeFormatSegment(const JfifParameters& params);
 
     /// <summary>
-    /// Creates a JPEG-LS extended parameters (LSE) segment.
+    /// Creates a JPEG-LS preset parameters (LSE) segment.
     /// </summary>
-    /// <param name="params">Parameters to write into the JPEG-LS extended segment.</param>
-    static std::unique_ptr<JpegMarkerSegment> CreateJpegLSExtendedParametersSegment(const JlsCustomParameters& params);
+    /// <param name="params">Parameters to write into the JPEG-LS preset segment.</param>
+    static std::unique_ptr<JpegMarkerSegment> CreateJpegLSPresetParametersSegment(const JpegLSPresetCodingParameters& params);
 
     /// <summary>
     /// Creates a color transformation (APP8) segment.

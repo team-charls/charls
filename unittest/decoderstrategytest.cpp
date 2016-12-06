@@ -24,7 +24,7 @@ public:
     }
 
     virtual ~DecoderStrategyTester() {}
-    void SetPresets(const JlsCustomParameters& presets) {}
+    void SetPresets(const JpegLSPresetCodingParameters& presets) {}
 
     virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo)
     {

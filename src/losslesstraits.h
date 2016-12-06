@@ -9,11 +9,9 @@
 
 #include "defaulttraits.h"
 
-//
-// optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
-// This class is assumes MAXVAL correspond to a whole number of bits, and no custom RESET value is set when encoding.
+// Optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
+// This class assumes MaximumSampleValue correspond to a whole number of bits, and no custom ResetValue is set when encoding.
 // The point of this is to have the most optimized code for the most common and most demanding scenario. 
-
 template<typename sample, int32_t bitsperpixel>
 struct LosslessTraitsImplT 
 {

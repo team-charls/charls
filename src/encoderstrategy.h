@@ -39,7 +39,7 @@ public:
 
     void OnLineEnd(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) { }
 
-    virtual void SetPresets(const JlsCustomParameters& presets) = 0;
+    virtual void SetPresets(const JpegLSPresetCodingParameters& presets) = 0;
 
     virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData) = 0;
 

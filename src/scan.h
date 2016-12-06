@@ -125,14 +125,14 @@ public:
         }
     }
 
-    void SetPresets(const JlsCustomParameters& presets)
+    void SetPresets(const JpegLSPresetCodingParameters& presets)
     {
-        JlsCustomParameters presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
+        JpegLSPresetCodingParameters presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
 
-        InitParams(presets.T1 != 0 ? presets.T1 : presetDefault.T1,
-                    presets.T2 != 0 ? presets.T2 : presetDefault.T2,
-                    presets.T3 != 0 ? presets.T3 : presetDefault.T3,
-                    presets.RESET != 0 ? presets.RESET : presetDefault.RESET);
+        InitParams(presets.Threshold1 != 0 ? presets.Threshold1 : presetDefault.Threshold1,
+                   presets.Threshold2 != 0 ? presets.Threshold2 : presetDefault.Threshold2,
+                   presets.Threshold3 != 0 ? presets.Threshold3 : presetDefault.Threshold3,
+                   presets.ResetValue != 0 ? presets.ResetValue : presetDefault.ResetValue);
     }
 
 
@@ -228,7 +228,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t
 {
     int32_t sign = BitWiseSign(Qs);
     JlsContext& ctx = _contexts[ApplySign(Qs, sign)];
-    int32_t k = ctx.GetGolomb();	
+    int32_t k = ctx.GetGolomb();
     int32_t Px = traits.CorrectPrediction(pred + ApplySign(ctx.C, sign));
 
     int32_t ErrVal;
@@ -372,8 +372,8 @@ void JlsCodec<TRAITS, STRATEGY>::InitQuantizationLUT()
     // for lossless mode with default parameters, we have precomputed the luts for bitcounts 8, 10, 12 and 16.
     if (traits.NEAR == 0 && traits.MAXVAL == (1 << traits.bpp) - 1)
     {
-        JlsCustomParameters presets = ComputeDefault(traits.MAXVAL, traits.NEAR);
-        if (presets.T1 == T1 && presets.T2 == T2 && presets.T3 == T3)
+        JpegLSPresetCodingParameters presets = ComputeDefault(traits.MAXVAL, traits.NEAR);
+        if (presets.Threshold1 == T1 && presets.Threshold2 == T2 && presets.Threshold3 == T3)
         {
             if (traits.bpp == 8)
             {
@@ -827,7 +827,7 @@ void JlsCodec<TRAITS, STRATEGY>::DecodeScan(std::unique_ptr<ProcessLine> process
 }
 
 
-// Initialize the codec data structures. Depends on JPEG-LS parameters like T1-T3.
+// Initialize the codec data structures. Depends on JPEG-LS parameters like Threshold1-Threshold3.
 template<typename TRAITS, typename STRATEGY>
 void JlsCodec<TRAITS, STRATEGY>::InitParams(int32_t t1, int32_t t2, int32_t t3, int32_t nReset)
 {

@@ -133,13 +133,38 @@ typedef enum CharlsColorTransformation CharlsColorTransformationType;
 #endif
 
 
-struct JlsCustomParameters
+/// <summary>
+/// Defines the JPEG-LS preset coding parameters as defined in ISO/IEC 14495-1, C.2.4.1.1.
+/// JPEG-LS defines a default set of parameters, but custom parameters can be used.
+/// When used these parameters are written into the encoded bit stream as they are needed for the decoding process.
+/// </summary>
+struct JpegLSPresetCodingParameters
 {
-    int MAXVAL;
-    int T1;
-    int T2;
-    int T3;
-    int RESET;
+    /// <summary>
+    /// Maximum possible value for any image sample in a scan.
+    /// This must be greater than or equal to the actual maximum value for the components in a scan.
+    /// </summary>
+    int MaximumSampleValue;
+
+    /// <summary>
+    /// First quantization threshold value for the local gradients.
+    /// </summary>
+    int Threshold1;
+
+    /// <summary>
+    /// Second quantization threshold value for the local gradients.
+    /// </summary>
+    int Threshold2;
+
+    /// <summary>
+    /// Third quantization threshold value for the local gradients.
+    /// </summary>
+    int Threshold3;
+
+    /// <summary>
+    /// Value at which the counters A, B, and N are halved.
+    /// </summary>
+    int ResetValue;
 };
 
 
@@ -255,7 +280,7 @@ struct JlsParameters
     /// If set to true RGB images will be decoded to BGR. BGR is the standard ordering in MS Windows bitmaps.
     /// </summary>
     char outputBgr;
-    struct JlsCustomParameters custom;
+    struct JpegLSPresetCodingParameters custom;
     struct JfifParameters jfif;
 };
 

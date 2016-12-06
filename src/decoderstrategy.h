@@ -31,7 +31,7 @@ public:
 
     virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 
-    virtual void SetPresets(const JlsCustomParameters& presets) = 0;
+    virtual void SetPresets(const JpegLSPresetCodingParameters& presets) = 0;
     virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo& compressedData) = 0;
 
     void Init(ByteStreamInfo& compressedStream)

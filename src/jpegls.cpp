@@ -59,16 +59,16 @@ const error_category& charls_error::CharLSCategoryInstance()
 namespace
 {
 
-signed char QuantizeGratientOrg(const JlsCustomParameters& preset, int32_t NEAR, int32_t Di)
+signed char QuantizeGratientOrg(const JpegLSPresetCodingParameters& preset, int32_t NEAR, int32_t Di)
 {
-    if (Di <= -preset.T3) return  -4;
-    if (Di <= -preset.T2) return  -3;
-    if (Di <= -preset.T1) return  -2;
+    if (Di <= -preset.Threshold3) return  -4;
+    if (Di <= -preset.Threshold2) return  -3;
+    if (Di <= -preset.Threshold1) return  -2;
     if (Di < -NEAR)  return  -1;
     if (Di <=  NEAR) return   0;
-    if (Di < preset.T1)   return   1;
-    if (Di < preset.T2)   return   2;
-    if (Di < preset.T3)   return   3;
+    if (Di < preset.Threshold1)   return   1;
+    if (Di < preset.Threshold2)   return   2;
+    if (Di < preset.Threshold3)   return   3;
 
     return  4;
 }
@@ -76,8 +76,8 @@ signed char QuantizeGratientOrg(const JlsCustomParameters& preset, int32_t NEAR,
 
 vector<signed char> CreateQLutLossless(int32_t cbit)
 {
-    JlsCustomParameters preset = ComputeDefault((1 << cbit) - 1, 0);
-    int32_t range = preset.MAXVAL + 1;
+    JpegLSPresetCodingParameters preset = ComputeDefault((1 << cbit) - 1, 0);
+    int32_t range = preset.MaximumSampleValue + 1;
 
     vector<signed char> lut(range * 2);
     
@@ -109,14 +109,14 @@ vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
 template<typename STRATEGY>
-unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& params, const JlsCustomParameters& presets)
+unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& params, const JpegLSPresetCodingParameters& presets)
 {
     unique_ptr<STRATEGY> strategy;
 
-    if (presets.RESET != 0 && presets.RESET != BASIC_RESET)
+    if (presets.ResetValue != 0 && presets.ResetValue != BASIC_RESET)
     {
-        DefaultTraitsT<uint8_t, uint8_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.RESET);
-        traits.MAXVAL = presets.MAXVAL;
+        DefaultTraitsT<uint8_t, uint8_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
+        traits.MAXVAL = presets.MaximumSampleValue;
         strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint8_t, uint8_t>, STRATEGY>(traits, params));
     }
     else

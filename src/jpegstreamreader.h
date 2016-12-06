@@ -14,7 +14,7 @@ struct JlsParameters;
 class JpegCustomParameters;
 
 
-JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR);
+JpegLSPresetCodingParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR);
 
 
 //
@@ -30,7 +30,7 @@ public:
         return _params;
     }
 
-    const JlsCustomParameters& GetCustomPreset() const
+    const JpegLSPresetCodingParameters& GetCustomPreset() const
     {
         return _params.custom;
     }

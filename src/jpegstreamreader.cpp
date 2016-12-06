@@ -64,17 +64,17 @@ ApiResult CheckParameterCoherent(const JlsParameters& params)
 } // namespace
 
 
-JlsCustomParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
+JpegLSPresetCodingParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
 {
-    JlsCustomParameters preset = JlsCustomParameters();
+    JpegLSPresetCodingParameters preset = JpegLSPresetCodingParameters();
 
     int32_t FACTOR = (MIN(MAXVAL, 4095) + 128) / 256;
 
-    preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3 * NEAR, NEAR + 1, MAXVAL);
-    preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5 * NEAR, preset.T1, MAXVAL);
-    preset.T3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7 * NEAR, preset.T2, MAXVAL);
-    preset.MAXVAL = MAXVAL;
-    preset.RESET = BASIC_RESET;
+    preset.Threshold1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3 * NEAR, NEAR + 1, MAXVAL);
+    preset.Threshold2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5 * NEAR, preset.Threshold1, MAXVAL);
+    preset.Threshold3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7 * NEAR, preset.Threshold2, MAXVAL);
+    preset.MaximumSampleValue = MAXVAL;
+    preset.ResetValue = BASIC_RESET;
     return preset;
 }
 
@@ -208,7 +208,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         case JpegMarkerCode::Comment:
             return ReadComment();
 
-        case JpegMarkerCode::JpegLSExtendedParameters:
+        case JpegMarkerCode::JpegLSPresetParameters:
             return ReadPresetParameters();
 
         case JpegMarkerCode::ApplicationData0:
@@ -255,11 +255,11 @@ int JpegStreamReader::ReadPresetParameters()
     {
     case 1:
         {
-            _params.custom.MAXVAL = ReadWord();
-            _params.custom.T1 = ReadWord();
-            _params.custom.T2 = ReadWord();
-            _params.custom.T3 = ReadWord();
-            _params.custom.RESET = ReadWord();
+            _params.custom.MaximumSampleValue = ReadWord();
+            _params.custom.Threshold1 = ReadWord();
+            _params.custom.Threshold2 = ReadWord();
+            _params.custom.Threshold3 = ReadWord();
+            _params.custom.ResetValue = ReadWord();
             return 11;
         }
     }

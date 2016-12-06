@@ -17,21 +17,21 @@ using namespace charls;
 
 namespace
 {
-    bool IsDefault(const JlsCustomParameters& custom)
+    bool IsDefault(const JpegLSPresetCodingParameters& custom)
     {
-        if (custom.MAXVAL != 0)
+        if (custom.MaximumSampleValue != 0)
             return false;
 
-        if (custom.T1 != 0)
+        if (custom.Threshold1 != 0)
             return false;
 
-        if (custom.T2 != 0)
+        if (custom.Threshold2 != 0)
             return false;
 
-        if (custom.T3 != 0)
+        if (custom.Threshold3 != 0)
             return false;
 
-        if (custom.RESET != 0)
+        if (custom.ResetValue != 0)
             return false;
 
         return true;
@@ -74,12 +74,12 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
 {
     if (!IsDefault(params.custom))
     {
-        AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(params.custom));
+        AddSegment(JpegMarkerSegment::CreateJpegLSPresetParametersSegment(params.custom));
     }
     else if (params.bitsPerSample > 12)
     {
-        JlsCustomParameters preset = ComputeDefault((1 << params.bitsPerSample) - 1, params.allowedLossyError);
-        AddSegment(JpegMarkerSegment::CreateJpegLSExtendedParametersSegment(preset));
+        JpegLSPresetCodingParameters preset = ComputeDefault((1 << params.bitsPerSample) - 1, params.allowedLossyError);
+        AddSegment(JpegMarkerSegment::CreateJpegLSPresetParametersSegment(preset));
     }
 
     // Note: it is a common practice to start to count components by index 1.
