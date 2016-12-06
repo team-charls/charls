@@ -64,12 +64,12 @@ inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
     // sign trick reduces the number of if statements (branches) 
     int32_t sgn = BitWiseSign(Rb - Ra);
 
-    // is Ra between Rc and Rb? 
+    // is Ra between Rc and Rb?
     if ((sgn ^ (Rc - Ra)) < 0)
     {
         return Rb;
     }
-    else if ((sgn ^ (Rb - Rc)) < 0)
+    if ((sgn ^ (Rb - Rc)) < 0)
     {
         return Ra;
     }
@@ -82,7 +82,6 @@ inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 inlinehint int32_t UnMapErrVal(int32_t mappedError)
 {
-    //int32_t sign = ~((mappedError & 1) - 1);
     int32_t sign = int32_t(mappedError << (INT32_BITCOUNT-1)) >> (INT32_BITCOUNT-1);
     return sign ^ (mappedError >> 1);
 }
@@ -135,7 +134,6 @@ public:
                    presets.ResetValue != 0 ? presets.ResetValue : presetDefault.ResetValue);
     }
 
-
     bool IsInterleaved()
     {
         if (Info().interleaveMode == InterleaveMode::None)
@@ -171,7 +169,9 @@ public:
     }
 
     void DecrementRunIndex()
-      { _RUNindex = MAX(0,_RUNindex - 1); }
+    {
+        _RUNindex = MAX(0,_RUNindex - 1);
+    }
 
     int32_t DecodeRIError(CContextRunMode& ctx);
     Triplet<SAMPLE> DecodeRIPixel(Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb);
@@ -192,9 +192,7 @@ public:
     void DoLine(Triplet<SAMPLE>* pdummy);
     void DoScan();
 
-public:
     ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo);
-    void InitDefault();
     void InitParams(int32_t t1, int32_t t2, int32_t t3, int32_t nReset);
 
     size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData);
@@ -427,7 +425,6 @@ signed char JlsCodec<TRAITS,STRATEGY>::QuantizeGratientOrg(int32_t Di)
 
     return  4;
 }
-
 
 
 // RI = Run interruption: functions that handle the sample terminating a run.
