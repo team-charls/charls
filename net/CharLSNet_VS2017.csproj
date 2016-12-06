@@ -327,13 +327,13 @@
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="JfifParameters.cs" />
-    <Compile Include="JlsCustomParameters.cs" />
     <Compile Include="JlsParameters.cs" />
     <Compile Include="JpegLSBitmapDecoder.cs" />
     <Compile Include="JpegLSCodec.cs" />
     <Compile Include="JpegLSError.cs" />
     <Compile Include="JpegLSInterleaveMode.cs" />
     <Compile Include="JpegLSMetadataInfo.cs" />
+    <Compile Include="JpegLSPresetCodingParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SafeNativeMethods.cs" />
   </ItemGroup>
@@ -345,7 +345,7 @@
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
-  </ItemGroup>  
+  </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
   </ItemGroup>

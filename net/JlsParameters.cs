@@ -18,7 +18,7 @@ namespace CharLS
         internal JpegLSInterleaveMode InterleaveMode;
         internal int ColorTransform;
         internal bool OutputBgr;
-        internal JlsCustomParameters Custom;
+        internal JpegLSPresetCodingParameters Custom;
         internal JfifParameters Jfif;
     }
 }

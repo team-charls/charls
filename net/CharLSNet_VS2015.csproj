@@ -327,7 +327,7 @@
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="JfifParameters.cs" />
-    <Compile Include="JlsCustomParameters.cs" />
+    <Compile Include="JpegLSPresetCodingParameters.cs" />
     <Compile Include="JlsParameters.cs" />
     <Compile Include="JpegLSBitmapDecoder.cs" />
     <Compile Include="JpegLSCodec.cs" />
