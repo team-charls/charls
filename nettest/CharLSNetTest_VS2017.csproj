@@ -249,9 +249,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\net\CharLSNet_VS2015.csproj">
+    <ProjectReference Include="..\net\CharLSNet_VS2017.csproj">
       <Project>{4eded401-1b63-4989-bf3f-2875b6c9203d}</Project>
-      <Name>CharLSNet_VS2013</Name>
+      <Name>CharLSNet_VS2017</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
