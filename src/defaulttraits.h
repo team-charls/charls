@@ -8,6 +8,7 @@
 
 
 #include "util.h"
+#include <algorithm>
 #include <cstdlib>
 
 
@@ -41,7 +42,7 @@ struct DefaultTraitsT
         NEAR(near),
         qbpp(log_2(RANGE)),
         bpp(log_2(max)),
-        LIMIT(2 * (bpp + MAX(8, bpp))),
+        LIMIT(2 * (bpp + std::max(8, bpp))),
         RESET(reset)
     {
     }

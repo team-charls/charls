@@ -23,7 +23,7 @@ struct LosslessTraitsImplT
         qbpp  = bitsperpixel,
         RANGE = (1 << bpp),
         MAXVAL= (1 << bpp) - 1,
-        LIMIT = 2 * (bitsperpixel + MAX(8,bitsperpixel)),
+        LIMIT = 2 * (bitsperpixel + std::max(8, bitsperpixel)),
         RESET = BASIC_RESET
     };
 

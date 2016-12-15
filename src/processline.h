@@ -140,13 +140,12 @@ private:
 template<typename TRANSFORM, typename SAMPLE>
 void TransformLineToQuad(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Quad<SAMPLE>* pbyteBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
-    int cpixel = MIN(pixelStride, pixelStrideIn);
+    int cpixel = std::min(pixelStride, pixelStrideIn);
     Quad<SAMPLE>* ptypeBuffer = pbyteBuffer;
 
     for (int x = 0; x < cpixel; ++x)
     {
-        Quad<SAMPLE> pixel(transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]),ptypeInput[x + 3*pixelStrideIn]) ;
-        
+        Quad<SAMPLE> pixel(transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]), ptypeInput[x + 3 * pixelStrideIn]);
         ptypeBuffer[x] = pixel;
     }
 }
@@ -155,7 +154,7 @@ void TransformLineToQuad(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Quad<S
 template<typename TRANSFORM, typename SAMPLE>
 void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, int32_t pixelStrideIn, SAMPLE* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
-    int cpixel = MIN(pixelStride, pixelStrideIn);
+    int cpixel = std::min(pixelStride, pixelStrideIn);
     const Quad<SAMPLE>* ptypeBufferIn = pbyteInput;
 
     for (int x = 0; x < cpixel; ++x)
@@ -195,7 +194,7 @@ void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixe
 template<typename TRANSFORM, typename SAMPLE>
 void TransformLineToTriplet(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Triplet<SAMPLE>* pbyteBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
-    int cpixel = MIN(pixelStride, pixelStrideIn);
+    int cpixel = std::min(pixelStride, pixelStrideIn);
     Triplet<SAMPLE>* ptypeBuffer = pbyteBuffer;
 
     for (int x = 0; x < cpixel; ++x)
@@ -208,7 +207,7 @@ void TransformLineToTriplet(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Tri
 template<typename TRANSFORM, typename SAMPLE>
 void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, int32_t pixelStrideIn, SAMPLE* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
-    int cpixel = MIN(pixelStride, pixelStrideIn);
+    int cpixel = std::min(pixelStride, pixelStrideIn);
     const Triplet<SAMPLE>* ptypeBufferIn = pbyteInput;
 
     for (int x = 0; x < cpixel; ++x)

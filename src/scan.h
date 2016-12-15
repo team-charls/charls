@@ -165,12 +165,12 @@ public:
 
     void IncrementRunIndex()
     {
-        _RUNindex = MIN(31,_RUNindex + 1);
+        _RUNindex = std::min(31, _RUNindex + 1);
     }
 
     void DecrementRunIndex()
     {
-        _RUNindex = MAX(0,_RUNindex - 1);
+        _RUNindex = std::max(0, _RUNindex - 1);
     }
 
     int32_t DecodeRIError(CContextRunMode& ctx);
@@ -550,7 +550,7 @@ int32_t JlsCodec<TRAITS, STRATEGY>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, i
     int32_t index = 0;
     while (STRATEGY::ReadBit())
     {
-        int count = MIN(1 << J[_RUNindex], int(cpixelMac - index));
+        int count = std::min(1 << J[_RUNindex], int(cpixelMac - index));
         index += count;
         ASSERT(index <= cpixelMac);
 
@@ -834,14 +834,14 @@ void JlsCodec<TRAITS, STRATEGY>::InitParams(int32_t t1, int32_t t2, int32_t t3, 
 
     InitQuantizationLUT();
 
-    int32_t A = MAX(2, (traits.RANGE + 32)/64);
+    int32_t A = std::max(2, (traits.RANGE + 32) / 64);
     for (unsigned int Q = 0; Q < sizeof(_contexts) / sizeof(_contexts[0]); ++Q)
     {
         _contexts[Q] = JlsContext(A);
     }
 
-    _contextRunmode[0] = CContextRunMode(MAX(2, (traits.RANGE + 32)/64), 0, nReset);
-    _contextRunmode[1] = CContextRunMode(MAX(2, (traits.RANGE + 32)/64), 1, nReset);
+    _contextRunmode[0] = CContextRunMode(std::max(2, (traits.RANGE + 32) / 64), 0, nReset);
+    _contextRunmode[1] = CContextRunMode(std::max(2, (traits.RANGE + 32) / 64), 1, nReset);
     _RUNindex = 0;
 }
 

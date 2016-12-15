@@ -68,7 +68,7 @@ JpegLSPresetCodingParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
 {
     JpegLSPresetCodingParameters preset = JpegLSPresetCodingParameters();
 
-    int32_t FACTOR = (MIN(MAXVAL, 4095) + 128) / 256;
+    int32_t FACTOR = (std::min(MAXVAL, 4095) + 128) / 256;
 
     preset.Threshold1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3 * NEAR, NEAR + 1, MAXVAL);
     preset.Threshold2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5 * NEAR, preset.Threshold1, MAXVAL);
