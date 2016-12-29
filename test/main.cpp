@@ -31,7 +31,7 @@ const std::ios_base::openmode mode_input  = std::ios_base::in  | std::ios::binar
 const std::ios_base::openmode mode_output = std::ios_base::out | std::ios::binary;
 
 
-bool ScanFile(SZC strNameEncoded, std::vector<BYTE>* rgbyteFile, JlsParameters* params)
+bool ScanFile(SZC strNameEncoded, std::vector<uint8_t>* rgbyteFile, JlsParameters* params)
 {
     if (!ReadFile(strNameEncoded, rgbyteFile))
     {
@@ -99,15 +99,15 @@ void TestTraits8bit()
 }
 
 
-std::vector<BYTE> MakeSomeNoise(int length, int bitcount, int seed)
+std::vector<uint8_t> MakeSomeNoise(int length, int bitcount, int seed)
 {
     srand(seed);
-    std::vector<BYTE> rgbyteNoise(length);
-    BYTE mask = static_cast<BYTE>((1 << bitcount) - 1);
+    std::vector<uint8_t> rgbyteNoise(length);
+    uint8_t mask = static_cast<uint8_t>((1 << bitcount) - 1);
     for (int icol= 0; icol < length; ++icol)
     {
-        BYTE val = BYTE(rand());
-        rgbyteNoise[icol] = BYTE(val & mask);
+        uint8_t val = uint8_t(rand());
+        rgbyteNoise[icol] = uint8_t(val & mask);
     }
     return rgbyteNoise;
 }
@@ -122,7 +122,7 @@ void TestNoiseImage()
         std::stringstream label;
         label << "noise, bitdepth: " << bitDepth;
 
-        std::vector<BYTE> noiseBytes = MakeSomeNoise(size2.cx * size2.cy, bitDepth, 21344);
+        std::vector<uint8_t> noiseBytes = MakeSomeNoise(size2.cx * size2.cy, bitDepth, 21344);
         TestRoundTrip(label.str().c_str(), noiseBytes, size2, bitDepth, 1);
     }
 }
@@ -140,12 +140,12 @@ void TestFailOnTooSmallOutputBuffer()
     params.width = 8;
 
     // Trigger a "buffer too small"" when writing the header markers.
-    std::vector<BYTE> outputBuffer1(1);
+    std::vector<uint8_t> outputBuffer1(1);
     auto result = JpegLsEncode(outputBuffer1.data(), outputBuffer1.size(), &compressedLength, inputBuffer.data(), inputBuffer.size(), &params, nullptr);
     Assert::IsTrue(result == ApiResult::CompressedBufferTooSmall);
 
     // Trigger a "buffer too small"" when writing the encoded pixel bytes.
-    std::vector<BYTE> outputBuffer2(100);
+    std::vector<uint8_t> outputBuffer2(100);
     result = JpegLsEncode(outputBuffer2.data(), outputBuffer2.size(), &compressedLength, inputBuffer.data(), inputBuffer.size(), &params, nullptr);
     Assert::IsTrue(result == ApiResult::CompressedBufferTooSmall);
 }
@@ -163,9 +163,9 @@ void TestBgra()
 void TestBgr()
 {
     JlsParameters params;
-    std::vector<BYTE> rgbyteEncoded;
+    std::vector<uint8_t> rgbyteEncoded;
     ScanFile("test/conformance/T8C2E3.JLS", &rgbyteEncoded, &params);
-    std::vector<BYTE> rgbyteDecoded(params.width * params.height * params.components);    
+    std::vector<uint8_t> rgbyteDecoded(params.width * params.height * params.components);    
 
     params.outputBgr = static_cast<char>(true);
 
@@ -183,11 +183,11 @@ void TestBgr()
 
 void TestTooSmallOutputBuffer()
 {
-    std::vector<BYTE> rgbyteCompressed;
+    std::vector<uint8_t> rgbyteCompressed;
     if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
         return;
 
-    std::vector<BYTE> rgbyteOut(512 * 511);
+    std::vector<uint8_t> rgbyteOut(512 * 511);
     auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
 
     Assert::IsTrue(error == ApiResult::UncompressedBufferTooSmall);
@@ -196,11 +196,11 @@ void TestTooSmallOutputBuffer()
 
 ////void TestBadImage()
 ////{
-////    std::vector<BYTE> rgbyteCompressed;
+////    std::vector<uint8_t> rgbyteCompressed;
 ////    if (!ReadFile("test/BadCompressedStream.jls", &rgbyteCompressed, 0))
 ////        return;
 ////
-////    std::vector<BYTE> rgbyteOut(2500 * 3000 * 2);
+////    std::vector<uint8_t> rgbyteOut(2500 * 3000 * 2);
 ////    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
 ////
 ////    Assert::IsTrue(error == ApiResult::UncompressedBufferTooSmall);
@@ -209,8 +209,8 @@ void TestTooSmallOutputBuffer()
 
 void TestDecodeBitStreamWithNoMarkerStart()
 {
-    BYTE encodedData[2] = { 0x33, 0x33 };
-    BYTE output[1000];
+    uint8_t encodedData[2] = { 0x33, 0x33 };
+    uint8_t output[1000];
 
     auto error = JpegLsDecode(output, 1000, encodedData, 2, nullptr, nullptr);
     Assert::IsTrue(error == ApiResult::MissingJpegMarkerStart);
@@ -219,11 +219,11 @@ void TestDecodeBitStreamWithNoMarkerStart()
 
 void TestDecodeBitStreamWithUnsupportedEncoding()
 {
-    BYTE encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
+    uint8_t encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
                             0xFF, 0xC3, // Start Of Frame (lossless, huffman) (JPEG_SOF_3)
                             0x00, 0x00  // Lenght of data of the marker
                           };
-    BYTE output[1000];
+    uint8_t output[1000];
 
     auto error = JpegLsDecode(output, 1000, encodedData, 6, nullptr, nullptr);
     Assert::IsTrue(error == ApiResult::UnsupportedEncoding);
@@ -232,11 +232,11 @@ void TestDecodeBitStreamWithUnsupportedEncoding()
 
 void TestDecodeBitStreamWithUnknownJpegMarker()
 {
-    BYTE encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
+    uint8_t encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
         0xFF, 0x01, // Undefined marker
         0x00, 0x00  // Lenght of data of the marker
     };
-    BYTE output[1000];
+    uint8_t output[1000];
 
     auto error = JpegLsDecode(output, 1000, encodedData, 6, nullptr, nullptr);
     Assert::IsTrue(error == ApiResult::UnknownJpegMarker);
@@ -245,17 +245,17 @@ void TestDecodeBitStreamWithUnknownJpegMarker()
 
 void TestDecodeRect()
 {
-    std::vector<BYTE> rgbyteCompressed;
+    std::vector<uint8_t> rgbyteCompressed;
     JlsParameters params;
     if (!ScanFile("test/lena8b.jls", &rgbyteCompressed, &params))
         return;
 
-    std::vector<BYTE> rgbyteOutFull(params.width*params.height*params.components);
+    std::vector<uint8_t> rgbyteOutFull(params.width*params.height*params.components);
     auto error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
     Assert::IsTrue(error == ApiResult::OK);
 
     JlsRect rect = { 128, 128, 256, 1 };
-    std::vector<BYTE> rgbyteOut(rect.Width * rect.Height);
+    std::vector<uint8_t> rgbyteOut(rect.Width * rect.Height);
     rgbyteOut.push_back(0x1f);
     error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), rect, nullptr, nullptr);
     Assert::IsTrue(error == ApiResult::OK);
@@ -274,7 +274,7 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
     myFile.pubseekoff(std::streamoff(offset), std::ios_base::cur);
     ByteStreamInfo rawStreamInfo = {&myFile, nullptr, 0};
 
-    BYTE* compressed = new BYTE[width * height * ccomponent * 2];
+    uint8_t* compressed = new uint8_t[width * height * ccomponent * 2];
     JlsParameters params = JlsParameters();
     params.height = height;
     params.width = width;

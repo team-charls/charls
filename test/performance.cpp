@@ -20,7 +20,7 @@ void TestFile16BitAs12(SZC strName, int ioffs, Size size2, int ccomp, bool littl
 
     FixEndian(&rgbyteUncompressed, littleEndianFile);
 
-    USHORT* pushort = reinterpret_cast<USHORT*>(rgbyteUncompressed.data());
+    uint16_t* pushort = reinterpret_cast<uint16_t*>(rgbyteUncompressed.data());
 
     for (size_t i = 0; i < rgbyteUncompressed.size() / 2; ++i)
     {

@@ -28,7 +28,7 @@ bool IsMachineLittleEndian()
 } // namespace
 
 
-void FixEndian(std::vector<BYTE>* rgbyte, bool littleEndianData)
+void FixEndian(std::vector<uint8_t>* rgbyte, bool littleEndianData)
 { 
     if (littleEndianData == IsMachineLittleEndian())
         return;
@@ -84,11 +84,11 @@ void WriteFile(SZC strName, std::vector<uint8_t>& vec)
 }
 
 
-void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount)
+void TestRoundTrip(const char* strName, std::vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount)
 {
-    std::vector<BYTE> rgbyteCompressed(size.cx *size.cy * ccomp * cbit / 4);
+    std::vector<uint8_t> rgbyteCompressed(size.cx *size.cy * ccomp * cbit / 4);
 
-    std::vector<BYTE> rgbyteOut(size.cx * size.cy * ((cbit + 7) / 8) * ccomp);
+    std::vector<uint8_t> rgbyteOut(size.cx * size.cy * ((cbit + 7) / 8) * ccomp);
 
     JlsParameters params = JlsParameters();
     params.components = ccomp;
@@ -129,7 +129,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
     double decodeTime = (dwtimeDecodeComplete - dwtimeDecodeStart) / loopCount;
     double symbolRate = (ccomp * size.cy * size.cx) / (1000.0 * decodeTime);
     printf("Size:%4dx%4d, Encode time:%7.2f ms, Decode time:%7.2f ms, Bits per sample:%5.2f, Decode rate:%5.1f M/s \n\r", size.cx, size.cy, encodeTime, decodeTime, bitspersample, symbolRate);
-    BYTE* pbyteOut = &rgbyteOut[0];
+    uint8_t* pbyteOut = &rgbyteOut[0];
     for (size_t i = 0; i < rgbyteOut.size(); ++i)
     {
         if (rgbyteRaw[i] != pbyteOut[i])
@@ -144,7 +144,7 @@ void TestRoundTrip(const char* strName, std::vector<BYTE>& rgbyteRaw, Size size,
 void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile, int loopCount)
 {
     int byteCount = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
-    std::vector<BYTE> rgbyteUncompressed;
+    std::vector<uint8_t> rgbyteUncompressed;
 
     if (!ReadFile(strName, &rgbyteUncompressed, ioffs, byteCount))
         return;

@@ -16,7 +16,7 @@
 namespace
 {
 
-int findstring(std::vector<BYTE>& container, BYTE* bytesToFind, unsigned int bytesLength)
+int findstring(std::vector<uint8_t>& container, uint8_t* bytesToFind, unsigned int bytesLength)
 {
     for (unsigned int i=0; i < container.size() - bytesLength; ++i)
     {
@@ -35,12 +35,12 @@ int findstring(std::vector<BYTE>& container, BYTE* bytesToFind, unsigned int byt
 
 void TestDicomSampleImage(const char* name)
 {
-    std::vector<BYTE> data;
+    std::vector<uint8_t> data;
     bool success = ReadFile(name, &data, 9);
 
     Assert::IsTrue(success);
 
-    BYTE pixeldataStart[] =  { 0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7 };
+    uint8_t pixeldataStart[] =  { 0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7 };
 
     int offset = findstring(data, pixeldataStart, COUNT(pixeldataStart));
 
@@ -57,7 +57,7 @@ void TestDicomSampleImage(const char* name)
     Assert::IsTrue(error == charls::ApiResult::OK);
 
 //    0xFE, 0xFF, 0x00, 0xE0, 0x00, 0x00, 0x01, 0x00
-    std::vector<BYTE> dataUnc;
+    std::vector<uint8_t> dataUnc;
     dataUnc.resize(params.stride * params.height);
 
     error = JpegLsDecode(dataUnc.data(), dataUnc.size(), &data[0], data.size(), nullptr, nullptr);

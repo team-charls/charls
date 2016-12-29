@@ -13,9 +13,4 @@
 #define CHARLS_DLL
 #endif
 
-#include <cstdio>
-
-typedef unsigned char BYTE;
-typedef unsigned short USHORT;
-
 #endif

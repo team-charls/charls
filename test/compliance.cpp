@@ -17,9 +17,9 @@ using namespace charls;
 namespace
 {
 
-void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
+void Triplet2Planar(std::vector<uint8_t>& rgbyte, Size size)
 {
-    std::vector<BYTE> rgbytePlanar(rgbyte.size());
+    std::vector<uint8_t> rgbytePlanar(rgbyte.size());
 
     int cbytePlane = size.cx * size.cy;
     for (int index = 0; index < cbytePlane; index++)
@@ -55,7 +55,7 @@ bool VerifyEncodedBytes(const void* uncompressedData, size_t uncompressedLength,
 }
 
 
-void TestCompliance(const BYTE* compressedBytes, size_t compressedLength, const BYTE* rgbyteRaw, size_t cbyteRaw, bool bcheckEncode)
+void TestCompliance(const uint8_t* compressedBytes, size_t compressedLength, const uint8_t* rgbyteRaw, size_t cbyteRaw, bool bcheckEncode)
 {
     JlsParameters info = JlsParameters();
     auto err = JpegLsReadHeader(compressedBytes, compressedLength, &info, nullptr);
@@ -66,7 +66,7 @@ void TestCompliance(const BYTE* compressedBytes, size_t compressedLength, const 
         Assert::IsTrue(VerifyEncodedBytes(rgbyteRaw, cbyteRaw, compressedBytes, compressedLength));
     }
 
-    std::vector<BYTE> rgbyteOut(info.height *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
+    std::vector<uint8_t> rgbyteOut(info.height *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
 
     err = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), compressedBytes, compressedLength, nullptr, nullptr);
     Assert::IsTrue(err == ApiResult::OK);
@@ -88,7 +88,7 @@ void TestCompliance(const BYTE* compressedBytes, size_t compressedLength, const 
 void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEncode = true)
 {
     std::cout << "Conformance test:" << strNameEncoded << "\n\r";
-    std::vector<BYTE> rgbyteFile;
+    std::vector<uint8_t> rgbyteFile;
     if (!ReadFile(strNameEncoded, &rgbyteFile))
         return;
 
@@ -99,7 +99,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
         return;
     }
 
-    std::vector<BYTE> rgbyteRaw;
+    std::vector<uint8_t> rgbyteRaw;
     if (!ReadFile(strNameRaw, &rgbyteRaw, ioffs))
         return;
 
@@ -117,7 +117,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 }
 
 
-////BYTE palettisedDataH10[] = {
+////uint8_t palettisedDataH10[] = {
 ////    0xFF, 0xD8, //Start of image (SOI) marker 
 ////    0xFF, 0xF7, //Start of JPEG-LS frame (SOF 55) marker – marker segment follows 
 ////    0x00, 0x0B, //Length of marker segment = 11 bytes including the length field 
@@ -152,11 +152,11 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 ////};
 
 
-const BYTE rgbyte[] = { 0,   0,  90,  74, 
+const uint8_t rgbyte[] = { 0,   0,  90,  74, 
 68,  50,  43, 205, 
 64, 145, 145, 145, 
 100, 145, 145, 145};
-////const BYTE rgbyteComp[] =   {   0xFF, 0xD8, 0xFF, 0xF7, 0x00, 0x0B, 0x08, 0x00, 0x04, 0x00, 0x04, 0x01, 0x01, 0x11, 0x00, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 
+////const uint8_t rgbyteComp[] =   {   0xFF, 0xD8, 0xFF, 0xF7, 0x00, 0x0B, 0x08, 0x00, 0x04, 0x00, 0x04, 0x01, 0x01, 0x11, 0x00, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 
 ////0xC0, 0x00, 0x00, 0x6C, 0x80, 0x20, 0x8E,
 ////0x01, 0xC0, 0x00, 0x00, 0x57, 0x40, 0x00, 0x00, 0x6E, 0xE6, 0x00, 0x00, 0x01, 0xBC, 0x18, 0x00,
 ////0x00, 0x05, 0xD8, 0x00, 0x00, 0x91, 0x60, 0xFF, 0xD9};
@@ -167,7 +167,7 @@ const BYTE rgbyte[] = { 0,   0,  90,  74,
 void TestSampleAnnexH3()
 {
     ////Size size = Size(4,4);
-    std::vector<BYTE> vecRaw(16);
+    std::vector<uint8_t> vecRaw(16);
     memcpy(vecRaw.data(), rgbyte, 16);
     ////  TestJls(vecRaw, size, 8, 1, ILV_NONE, rgbyteComp, sizeof(rgbyteComp), false);
 }
