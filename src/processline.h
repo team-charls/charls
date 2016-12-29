@@ -9,13 +9,11 @@
 #include <vector>
 #include <sstream>
 #include <cstring>
+#include <algorithm>
 
-#ifdef _MSC_VER 
-#pragma warning(disable: 4996) // 'function': was declared deprecated also 'std::<function name>': Function call with parameters that may be unsafe [VS2012]
-#endif
 
 // TODO: analyze if template code can be improved
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #pragma warning(disable: 4127) // conditional expression is constant [VS2013]
 #endif
 

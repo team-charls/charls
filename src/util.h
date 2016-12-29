@@ -181,7 +181,7 @@ struct FromBigEndian<8>
 class charls_error : public std::system_error
 {
 public:
-    charls_error(charls::ApiResult errorCode)
+    explicit charls_error(charls::ApiResult errorCode)
         : system_error(static_cast<int>(errorCode), CharLSCategoryInstance())
     {
     }

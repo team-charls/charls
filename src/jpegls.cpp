@@ -10,8 +10,6 @@
 #include "defaulttraits.h"
 #include "jlscodecfactory.h"
 #include "jpegstreamreader.h"
-
-#include <cstdio>
 #include <vector>
 
 
@@ -35,9 +33,10 @@ const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6
 #endif
 
 
-class charls_category : public error_category {
+class charls_category : public error_category
+{
 public:
-    virtual const char* name() const noexcept override
+    const char* name() const noexcept override
     {
         return "charls";
     }
