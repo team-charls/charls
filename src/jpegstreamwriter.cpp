@@ -78,13 +78,13 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
     }
     else if (params.bitsPerSample > 12)
     {
-        JpegLSPresetCodingParameters preset = ComputeDefault((1 << params.bitsPerSample) - 1, params.allowedLossyError);
+        const JpegLSPresetCodingParameters preset = ComputeDefault((1 << params.bitsPerSample) - 1, params.allowedLossyError);
         AddSegment(JpegMarkerSegment::CreateJpegLSPresetParametersSegment(preset));
     }
 
     // Note: it is a common practice to start to count components by index 1.
     _lastCompenentIndex += 1;
-    int componentCount = params.interleaveMode == InterleaveMode::None ? 1 : params.components;
+    const int componentCount = params.interleaveMode == InterleaveMode::None ? 1 : params.components;
     AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastCompenentIndex, componentCount, params.allowedLossyError, params.interleaveMode));
 
     AddSegment(make_unique<JpegImageDataSegment>(info, params, componentCount));

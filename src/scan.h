@@ -62,7 +62,7 @@ inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 {
     // sign trick reduces the number of if statements (branches) 
-    int32_t sgn = BitWiseSign(Rb - Ra);
+    const int32_t sgn = BitWiseSign(Rb - Ra);
 
     // is Ra between Rc and Rb?
     if ((sgn ^ (Rc - Ra)) < 0)
@@ -82,13 +82,13 @@ inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 inlinehint int32_t UnMapErrVal(int32_t mappedError)
 {
-    int32_t sign = int32_t(mappedError << (INT32_BITCOUNT-1)) >> (INT32_BITCOUNT-1);
+    const int32_t sign = int32_t(mappedError << (INT32_BITCOUNT-1)) >> (INT32_BITCOUNT-1);
     return sign ^ (mappedError >> 1);
 }
 
 inlinehint int32_t GetMappedErrVal(int32_t Errval)
 {
-    int32_t mappedError = (Errval >> (INT32_BITCOUNT-2)) ^ (2 * Errval);
+    const int32_t mappedError = (Errval >> (INT32_BITCOUNT-2)) ^ (2 * Errval);
     return mappedError;
 }
 
@@ -126,7 +126,7 @@ public:
 
     void SetPresets(const JpegLSPresetCodingParameters& presets)
     {
-        JpegLSPresetCodingParameters presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
+        const JpegLSPresetCodingParameters presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
 
         InitParams(presets.Threshold1 != 0 ? presets.Threshold1 : presetDefault.Threshold1,
                    presets.Threshold2 != 0 ? presets.Threshold2 : presetDefault.Threshold2,
@@ -150,16 +150,16 @@ public:
         return STRATEGY::_params;
     }
 
-    signed char QuantizeGratientOrg(int32_t Di);
+    signed char QuantizeGratientOrg(int32_t Di) const;
 
-    inlinehint int32_t QuantizeGratient(int32_t Di)
+    inlinehint int32_t QuantizeGratient(int32_t Di) const
     {
         ASSERT(QuantizeGratientOrg(Di) == *(_pquant + Di));
         return *(_pquant + Di);
     }
 
     void InitQuantizationLUT();
-    
+
     int32_t DecodeValue(int32_t k, int32_t limit, int32_t qbpp);
     inlinehint void EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit);
 
@@ -224,10 +224,10 @@ protected:
 template<typename TRAITS, typename STRATEGY>
 typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t, int32_t pred, DecoderStrategy*)
 {
-    int32_t sign = BitWiseSign(Qs);
+    const int32_t sign = BitWiseSign(Qs);
     JlsContext& ctx = _contexts[ApplySign(Qs, sign)];
-    int32_t k = ctx.GetGolomb();
-    int32_t Px = traits.CorrectPrediction(pred + ApplySign(ctx.C, sign));
+    const int32_t k = ctx.GetGolomb();
+    const int32_t Px = traits.CorrectPrediction(pred + ApplySign(ctx.C, sign));
 
     int32_t ErrVal;
     const Code& code = decodingTables[k].Get(STRATEGY::PeekByte());
@@ -256,11 +256,11 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t
 template<typename TRAITS, typename STRATEGY>
 typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t x, int32_t pred, EncoderStrategy*)
 {
-    int32_t sign = BitWiseSign(Qs);
+    const int32_t sign = BitWiseSign(Qs);
     JlsContext& ctx = _contexts[ApplySign(Qs, sign)];
-    int32_t k = ctx.GetGolomb();
-    int32_t Px = traits.CorrectPrediction(pred + ApplySign(ctx.C, sign));
-    int32_t ErrVal = traits.ComputeErrVal(ApplySign(x - Px, sign));
+    const int32_t k = ctx.GetGolomb();
+    const int32_t Px = traits.CorrectPrediction(pred + ApplySign(ctx.C, sign));
+    const int32_t ErrVal = traits.ComputeErrVal(ApplySign(x - Px, sign));
 
     EncodeMappedValue(k, GetMappedErrVal(ctx.GetErrorCorrection(k | traits.NEAR) ^ ErrVal), traits.LIMIT);
     ctx.UpdateVariables(ErrVal, traits.NEAR, traits.RESET);
@@ -273,7 +273,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t
 
 inlinehint std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedError)
 {
-    int32_t highbits = mappedError >> k;
+    const int32_t highbits = mappedError >> k;
     return std::make_pair(highbits + k + 1, (int32_t(1) << k) | (mappedError & ((int32_t(1) << k) - 1)));
 }
 
@@ -284,7 +284,7 @@ inline CTable InitTable(int32_t k)
     for (short nerr = 0; ; nerr++)
     {
         // Q is not used when k != 0
-        int32_t merrval = GetMappedErrVal(nerr);//, k, -1);
+        const int32_t merrval = GetMappedErrVal(nerr);
         std::pair<int32_t, int32_t> paircode = CreateEncodedValue(k, merrval);
         if (paircode.first > CTable::cbit)
             break;
@@ -296,7 +296,7 @@ inline CTable InitTable(int32_t k)
     for (short nerr = -1; ; nerr--)
     {
         // Q is not used when k != 0
-        int32_t merrval = GetMappedErrVal(nerr);//, k, -1);
+        const int32_t merrval = GetMappedErrVal(nerr);
         std::pair<int32_t, int32_t> paircode = CreateEncodedValue(k, merrval);
         if (paircode.first > CTable::cbit)
             break;
@@ -314,7 +314,7 @@ inline CTable InitTable(int32_t k)
 template<typename TRAITS, typename STRATEGY>
 int32_t JlsCodec<TRAITS, STRATEGY>::DecodeValue(int32_t k, int32_t limit, int32_t qbpp)
 {
-    int32_t highbits = STRATEGY::ReadHighbits();
+    const int32_t highbits = STRATEGY::ReadHighbits();
 
     if (highbits >= limit - (qbpp + 1))
         return STRATEGY::ReadValue(qbpp) + 1;
@@ -370,7 +370,7 @@ void JlsCodec<TRAITS, STRATEGY>::InitQuantizationLUT()
     // for lossless mode with default parameters, we have precomputed the luts for bitcounts 8, 10, 12 and 16.
     if (traits.NEAR == 0 && traits.MAXVAL == (1 << traits.bpp) - 1)
     {
-        JpegLSPresetCodingParameters presets = ComputeDefault(traits.MAXVAL, traits.NEAR);
+        const JpegLSPresetCodingParameters presets = ComputeDefault(traits.MAXVAL, traits.NEAR);
         if (presets.Threshold1 == T1 && presets.Threshold2 == T2 && presets.Threshold3 == T3)
         {
             if (traits.bpp == 8)
@@ -396,7 +396,7 @@ void JlsCodec<TRAITS, STRATEGY>::InitQuantizationLUT()
         }
     }
 
-    int32_t RANGE = 1 << traits.bpp;
+    const int32_t RANGE = 1 << traits.bpp;
 
     _rgquant.resize(RANGE * 2);
 
@@ -412,7 +412,7 @@ void JlsCodec<TRAITS, STRATEGY>::InitQuantizationLUT()
 #endif
 
 template<typename TRAITS, typename STRATEGY>
-signed char JlsCodec<TRAITS,STRATEGY>::QuantizeGratientOrg(int32_t Di)
+signed char JlsCodec<TRAITS,STRATEGY>::QuantizeGratientOrg(int32_t Di) const
 {
     if (Di <= -T3) return  -4;
     if (Di <= -T2) return  -3;
@@ -432,9 +432,9 @@ signed char JlsCodec<TRAITS,STRATEGY>::QuantizeGratientOrg(int32_t Di)
 template<typename TRAITS, typename STRATEGY>
 int32_t JlsCodec<TRAITS,STRATEGY>::DecodeRIError(CContextRunMode& ctx)
 {
-    int32_t k = ctx.GetGolomb();
-    int32_t EMErrval = DecodeValue(k, traits.LIMIT - J[_RUNindex]-1, traits.qbpp);
-    int32_t Errval = ctx.ComputeErrVal(EMErrval + ctx._nRItype, k);
+    const int32_t k = ctx.GetGolomb();
+    const int32_t EMErrval = DecodeValue(k, traits.LIMIT - J[_RUNindex]-1, traits.qbpp);
+    const int32_t Errval = ctx.ComputeErrVal(EMErrval + ctx._nRItype, k);
     ctx.UpdateVariables(Errval, EMErrval);
     return Errval;
 }
@@ -443,9 +443,9 @@ int32_t JlsCodec<TRAITS,STRATEGY>::DecodeRIError(CContextRunMode& ctx)
 template<typename TRAITS, typename STRATEGY>
 void JlsCodec<TRAITS,STRATEGY>::EncodeRIError(CContextRunMode& ctx, int32_t Errval)
 {
-    int32_t k = ctx.GetGolomb();
-    bool map = ctx.ComputeMap(Errval, k);
-    int32_t EMErrval = 2 * std::abs(Errval) - ctx._nRItype - int32_t(map);
+    const int32_t k = ctx.GetGolomb();
+    const bool map = ctx.ComputeMap(Errval, k);
+    const int32_t EMErrval = 2 * std::abs(Errval) - ctx._nRItype - int32_t(map);
 
     ASSERT(Errval == ctx.ComputeErrVal(EMErrval + ctx._nRItype, k));
     EncodeMappedValue(k, EMErrval, traits.LIMIT-J[_RUNindex]-1);
@@ -456,31 +456,31 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRIError(CContextRunMode& ctx, int32_t Errv
 template<typename TRAITS, typename STRATEGY>
 Triplet<typename TRAITS::SAMPLE> JlsCodec<TRAITS,STRATEGY>::DecodeRIPixel(Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb)
 { 
-    int32_t Errval1 = DecodeRIError(_contextRunmode[0]);
-    int32_t Errval2 = DecodeRIError(_contextRunmode[0]);
-    int32_t Errval3 = DecodeRIError(_contextRunmode[0]);
+    const int32_t Errval1 = DecodeRIError(_contextRunmode[0]);
+    const int32_t Errval2 = DecodeRIError(_contextRunmode[0]);
+    const int32_t Errval3 = DecodeRIError(_contextRunmode[0]);
 
     return Triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, Errval1 * Sign(Rb.v1  - Ra.v1)),
-        traits.ComputeReconstructedSample(Rb.v2, Errval2 * Sign(Rb.v2  - Ra.v2)),
-        traits.ComputeReconstructedSample(Rb.v3, Errval3 * Sign(Rb.v3  - Ra.v3)));
+                           traits.ComputeReconstructedSample(Rb.v2, Errval2 * Sign(Rb.v2  - Ra.v2)),
+                           traits.ComputeReconstructedSample(Rb.v3, Errval3 * Sign(Rb.v3  - Ra.v3)));
 }
 
 
 template<typename TRAITS, typename STRATEGY>
 Triplet<typename TRAITS::SAMPLE> JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(Triplet<SAMPLE> x, Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb)
 {
-    int32_t errval1 = traits.ComputeErrVal(Sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
+    const int32_t errval1 = traits.ComputeErrVal(Sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
     EncodeRIError(_contextRunmode[0], errval1);
 
-    int32_t errval2 = traits.ComputeErrVal(Sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
+    const int32_t errval2 = traits.ComputeErrVal(Sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
     EncodeRIError(_contextRunmode[0], errval2);
 
-    int32_t errval3 = traits.ComputeErrVal(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
+    const int32_t errval3 = traits.ComputeErrVal(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
     EncodeRIError(_contextRunmode[0], errval3);
 
     return Triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errval1 * Sign(Rb.v1  - Ra.v1)),
-        traits.ComputeReconstructedSample(Rb.v2, errval2 * Sign(Rb.v2  - Ra.v2)),
-        traits.ComputeReconstructedSample(Rb.v3, errval3 * Sign(Rb.v3  - Ra.v3)));
+                           traits.ComputeReconstructedSample(Rb.v2, errval2 * Sign(Rb.v2  - Ra.v2)),
+                           traits.ComputeReconstructedSample(Rb.v3, errval3 * Sign(Rb.v3  - Ra.v3)));
 }
 
 
@@ -489,12 +489,12 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DecodeRIPixel(int32_t Ra, int
 {
     if (std::abs(Ra - Rb) <= traits.NEAR)
     {
-        int32_t ErrVal = DecodeRIError(_contextRunmode[1]);
+        const int32_t ErrVal = DecodeRIError(_contextRunmode[1]);
         return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Ra, ErrVal));
     }
     else
     {
-        int32_t ErrVal = DecodeRIError(_contextRunmode[0]);
+        const int32_t ErrVal = DecodeRIError(_contextRunmode[0]);
         return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Rb, ErrVal * Sign(Rb - Ra)));
     }
 }
@@ -505,13 +505,13 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(int32_t x, int3
 {
     if (std::abs(Ra - Rb) <= traits.NEAR)
     {
-        int32_t ErrVal	= traits.ComputeErrVal(x - Ra);
+        const int32_t ErrVal = traits.ComputeErrVal(x - Ra);
         EncodeRIError(_contextRunmode[1], ErrVal);
         return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Ra, ErrVal));
     }
     else
     {
-        int32_t ErrVal	= traits.ComputeErrVal((x - Rb) * Sign(Rb - Ra));
+        const int32_t ErrVal = traits.ComputeErrVal((x - Rb) * Sign(Rb - Ra));
         EncodeRIError(_contextRunmode[0], ErrVal);
         return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Rb, ErrVal * Sign(Rb - Ra)));
     }
@@ -523,18 +523,18 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(int32_t x, int3
 template<typename TRAITS, typename STRATEGY>
 void JlsCodec<TRAITS, STRATEGY>::EncodeRunPixels(int32_t runLength, bool endOfLine)
 {
-    while (runLength >= int32_t(1 << J[_RUNindex])) 
+    while (runLength >= int32_t(1 << J[_RUNindex]))
     {
         STRATEGY::AppendOnesToBitStream(1);
         runLength = runLength - int32_t(1 << J[_RUNindex]);
         IncrementRunIndex();
     }
 
-    if (endOfLine) 
+    if (endOfLine)
     {
         if (runLength != 0) 
         {
-            STRATEGY::AppendOnesToBitStream(1);	
+            STRATEGY::AppendOnesToBitStream(1);
         }
     }
     else
@@ -550,7 +550,7 @@ int32_t JlsCodec<TRAITS, STRATEGY>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, i
     int32_t index = 0;
     while (STRATEGY::ReadBit())
     {
-        int count = std::min(1 << J[_RUNindex], int(cpixelMac - index));
+        const int count = std::min(1 << J[_RUNindex], int(cpixelMac - index));
         index += count;
         ASSERT(index <= cpixelMac);
 
@@ -583,11 +583,11 @@ int32_t JlsCodec<TRAITS, STRATEGY>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, i
 template<typename TRAITS, typename STRATEGY>
 int32_t JlsCodec<TRAITS, STRATEGY>::DoRunMode(int32_t index, EncoderStrategy*)
 {
-    int32_t ctypeRem = _width - index;
+    const int32_t ctypeRem = _width - index;
     PIXEL* ptypeCurX = _currentLine + index;
     PIXEL* ptypePrevX = _previousLine + index;
 
-    PIXEL Ra = ptypeCurX[-1];
+    const PIXEL Ra = ptypeCurX[-1];
 
     int32_t runLength = 0;
 
@@ -614,16 +614,16 @@ int32_t JlsCodec<TRAITS, STRATEGY>::DoRunMode(int32_t index, EncoderStrategy*)
 template<typename TRAITS, typename STRATEGY>
 int32_t JlsCodec<TRAITS, STRATEGY>::DoRunMode(int32_t startIndex, DecoderStrategy*)
 {
-    PIXEL Ra = _currentLine[startIndex-1];
+    const PIXEL Ra = _currentLine[startIndex-1];
 
-    int32_t runLength = DecodeRunPixels(Ra, _currentLine + startIndex, _width - startIndex);
+    const int32_t runLength = DecodeRunPixels(Ra, _currentLine + startIndex, _width - startIndex);
     int32_t endIndex = startIndex + runLength;
 
     if (endIndex == _width)
         return endIndex - startIndex;
 
     // run interruption
-    PIXEL Rb = _previousLine[endIndex];
+    const PIXEL Rb = _previousLine[endIndex];
     _currentLine[endIndex] = DecodeRIPixel(Ra, Rb);
     DecrementRunIndex();
     return endIndex - startIndex + 1;
@@ -639,14 +639,14 @@ void JlsCodec<TRAITS, STRATEGY>::DoLine(SAMPLE*)
     int32_t Rb = _previousLine[index-1];
     int32_t Rd = _previousLine[index];
 
-    while(index < _width)
+    while (index < _width)
     {
-        int32_t Ra = _currentLine[index -1];
-        int32_t Rc = Rb;
+        const int32_t Ra = _currentLine[index -1];
+        const int32_t Rc = Rb;
         Rb = Rd;
         Rd = _previousLine[index + 1];
 
-        int32_t Qs = ComputeContextID(QuantizeGratient(Rd - Rb), QuantizeGratient(Rb - Rc), QuantizeGratient(Rc - Ra));
+        const int32_t Qs = ComputeContextID(QuantizeGratient(Rd - Rb), QuantizeGratient(Rb - Rc), QuantizeGratient(Rc - Ra));
 
         if (Qs != 0)
         {
@@ -671,14 +671,14 @@ void JlsCodec<TRAITS, STRATEGY>::DoLine(Triplet<SAMPLE>*)
     int32_t index = 0;
     while(index < _width)
     {
-        Triplet<SAMPLE> Ra = _currentLine[index - 1];
-        Triplet<SAMPLE> Rc = _previousLine[index - 1];
-        Triplet<SAMPLE> Rb = _previousLine[index];
-        Triplet<SAMPLE> Rd = _previousLine[index + 1];
+        const Triplet<SAMPLE> Ra = _currentLine[index - 1];
+        const Triplet<SAMPLE> Rc = _previousLine[index - 1];
+        const Triplet<SAMPLE> Rb = _previousLine[index];
+        const Triplet<SAMPLE> Rd = _previousLine[index + 1];
 
-        int32_t Qs1 = ComputeContextID(QuantizeGratient(Rd.v1 - Rb.v1), QuantizeGratient(Rb.v1 - Rc.v1), QuantizeGratient(Rc.v1 - Ra.v1));
-        int32_t Qs2 = ComputeContextID(QuantizeGratient(Rd.v2 - Rb.v2), QuantizeGratient(Rb.v2 - Rc.v2), QuantizeGratient(Rc.v2 - Ra.v2));
-        int32_t Qs3 = ComputeContextID(QuantizeGratient(Rd.v3 - Rb.v3), QuantizeGratient(Rb.v3 - Rc.v3), QuantizeGratient(Rc.v3 - Ra.v3));
+        const int32_t Qs1 = ComputeContextID(QuantizeGratient(Rd.v1 - Rb.v1), QuantizeGratient(Rb.v1 - Rc.v1), QuantizeGratient(Rc.v1 - Ra.v1));
+        const int32_t Qs2 = ComputeContextID(QuantizeGratient(Rd.v2 - Rb.v2), QuantizeGratient(Rb.v2 - Rc.v2), QuantizeGratient(Rc.v2 - Ra.v2));
+        const int32_t Qs3 = ComputeContextID(QuantizeGratient(Rd.v3 - Rb.v3), QuantizeGratient(Rb.v3 - Rc.v3), QuantizeGratient(Rc.v3 - Ra.v3));
 
         if (Qs1 == 0 && Qs2 == 0 && Qs3 == 0)
         {
@@ -705,8 +705,8 @@ void JlsCodec<TRAITS, STRATEGY>::DoLine(Triplet<SAMPLE>*)
 template<typename TRAITS, typename STRATEGY>
 void JlsCodec<TRAITS, STRATEGY>::DoScan()
 {
-    int32_t pixelstride = _width + 4;
-    int components = Info().interleaveMode == charls::InterleaveMode::Line ? Info().components : 1;
+    const int32_t pixelstride = _width + 4;
+    const int components = Info().interleaveMode == charls::InterleaveMode::Line ? Info().components : 1;
 
     std::vector<PIXEL> vectmp(2 * components * pixelstride);
     std::vector<int32_t> rgRUNindex(components);
@@ -777,7 +777,7 @@ ProcessLine* JlsCodec<TRAITS, STRATEGY>::CreateProcess(ByteStreamInfo info)
 
     if (Info().bitsPerSample > 8)
     {
-        int shift = 16 - Info().bitsPerSample;
+        const int shift = 16 - Info().bitsPerSample;
         switch (Info().colorTransformation)
         {
             case ColorTransformation::HP1: return new ProcessTransformed<TransformShifted<TransformHp1<uint16_t>>>(info, Info(), TransformShifted<TransformHp1<uint16_t>>(shift));
@@ -834,7 +834,7 @@ void JlsCodec<TRAITS, STRATEGY>::InitParams(int32_t t1, int32_t t2, int32_t t3, 
 
     InitQuantizationLUT();
 
-    int32_t A = std::max(2, (traits.RANGE + 32) / 64);
+    const int32_t A = std::max(2, (traits.RANGE + 32) / 64);
     for (unsigned int Q = 0; Q < sizeof(_contexts) / sizeof(_contexts[0]); ++Q)
     {
         _contexts[Q] = JlsContext(A);

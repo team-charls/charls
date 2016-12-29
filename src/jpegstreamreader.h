@@ -54,7 +54,7 @@ public:
 private:
     JpegMarkerCode ReadNextMarker();
     int ReadPresetParameters();
-    int ReadComment();
+    int ReadComment() const;
     int ReadStartOfFrame();
     int ReadWord();
     void ReadNBytes(std::vector<char>& dst, int byteCount);
@@ -63,7 +63,7 @@ private:
     void ReadJfif();
 
     // Color Transform Application Markers & Code Stream (HP extension)
-    int ReadColorSpace();
+    int ReadColorSpace() const;
     int ReadColorXForm();
 
     ByteStreamInfo _byteStream;

@@ -108,7 +108,7 @@ struct TransformHp3
 
         inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
         {
-            int G = v1 - ((v3 + v2) >> 2) + RANGE / 4;
+            const int G = v1 - ((v3 + v2) >> 2) + RANGE / 4;
             Triplet<SAMPLE> rgb;
             rgb.R  = SAMPLE(v3 + G - RANGE / 2); // new R
             rgb.G  = SAMPLE(G);                  // new G

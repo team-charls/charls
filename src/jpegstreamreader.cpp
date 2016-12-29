@@ -68,7 +68,7 @@ JpegLSPresetCodingParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
 {
     JpegLSPresetCodingParameters preset = JpegLSPresetCodingParameters();
 
-    int32_t FACTOR = (std::min(MAXVAL, 4095) + 128) / 256;
+    const int32_t FACTOR = (std::min(MAXVAL, 4095) + 128) / 256;
 
     preset.Threshold1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3 * NEAR, NEAR + 1, MAXVAL);
     preset.Threshold2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5 * NEAR, preset.Threshold1, MAXVAL);
@@ -86,7 +86,7 @@ void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
     auto codec = JlsCodecFactory<EncoderStrategy>().GetCodec(info, _params.custom);
     unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
     ByteStreamInfo compressedData = streamWriter.OutputStream();
-    size_t cbyteWritten = codec->EncodeScan(move(processLine), compressedData);
+    const size_t cbyteWritten = codec->EncodeScan(move(processLine), compressedData);
     streamWriter.Seek(cbyteWritten);
 }
 
@@ -103,7 +103,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 {
     ReadHeader();
 
-    auto result = CheckParameterCoherent(_params);
+    const auto result = CheckParameterCoherent(_params);
     if (result != ApiResult::OK)
         throw charls_error(result);
 
@@ -113,7 +113,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
         _rect.Height = _params.height;
     }
 
-    int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_params.bitsPerSample + 7)/8);
+    const int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_params.bitsPerSample + 7)/8);
 
     if (rawPixels.rawData && int64_t(rawPixels.count) < bytesPerPlane * _params.components)
         throw charls_error(ApiResult::UncompressedBufferTooSmall);
@@ -153,16 +153,14 @@ void JpegStreamReader::ReadHeader()
 
     for (;;)
     {
-        JpegMarkerCode marker = ReadNextMarker();
+        const JpegMarkerCode marker = ReadNextMarker();
         if (marker == JpegMarkerCode::StartOfScan)
             return;
 
-        int32_t cbyteMarker = ReadWord();
+        const int32_t cbyteMarker = ReadWord();
+        const int bytesRead = ReadMarker(marker) + 2;
 
-        int bytesRead = ReadMarker(marker) + 2;
-
-        int paddingToRead = cbyteMarker - bytesRead;
-
+        const int paddingToRead = cbyteMarker - bytesRead;
         if (paddingToRead < 0)
             throw charls_error(ApiResult::InvalidCompressedData);
 
@@ -249,7 +247,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
 
 int JpegStreamReader::ReadPresetParameters()
 {
-    int type = ReadByte();
+    const int type = ReadByte();
 
     switch (type)
     {
@@ -280,7 +278,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     int length = ReadByte();
     length = length * 256 + ReadByte(); // TODO: do something with 'length' or remove it.
 
-    int componentCount = ReadByte();
+    const int componentCount = ReadByte();
     if (componentCount != 1 && componentCount != _params.components)
         throw charls_error(ApiResult::ParameterValueNotSupported);
 
@@ -298,14 +296,14 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
 
     if(_params.stride == 0)
     {
-        int width = _rect.Width != 0 ? _rect.Width : _params.width;
-        int components = _params.interleaveMode == InterleaveMode::None ? 1 : _params.components;
-        _params.stride = components * width * ((_params.bitsPerSample + 7)/8);
+        const int width = _rect.Width != 0 ? _rect.Width : _params.width;
+        const int components = _params.interleaveMode == InterleaveMode::None ? 1 : _params.components;
+        _params.stride = components * width * ((_params.bitsPerSample + 7) / 8);
     }
 }
 
 
-int JpegStreamReader::ReadComment()
+int JpegStreamReader::ReadComment() const
 {
     return 0;
 }
@@ -340,10 +338,8 @@ void JpegStreamReader::ReadJfif()
 int JpegStreamReader::ReadStartOfFrame()
 {
     _params.bitsPerSample = ReadByte();
-    int cline = ReadWord();
-    int ccol = ReadWord();
-    _params.width = ccol;
-    _params.height = cline;
+    _params.height = ReadWord();
+    _params.width = ReadWord();
     _params.components= ReadByte();
     return 6;
 }
@@ -357,7 +353,7 @@ uint8_t JpegStreamReader::ReadByte()
     if (_byteStream.count == 0)
         throw charls_error(ApiResult::CompressedBufferTooSmall);
 
-    uint8_t value = _byteStream.rawData[0];
+    const uint8_t value = _byteStream.rawData[0];
     SkipBytes(_byteStream, 1);
     return value;
 }
@@ -365,12 +361,12 @@ uint8_t JpegStreamReader::ReadByte()
 
 int JpegStreamReader::ReadWord()
 {
-    int i = ReadByte() * 256;
+    const int i = ReadByte() * 256;
     return i + ReadByte();
 }
 
 
-int JpegStreamReader::ReadColorSpace()
+int JpegStreamReader::ReadColorSpace() const
 {
     return 0;
 }
@@ -384,7 +380,7 @@ int JpegStreamReader::ReadColorXForm()
     if (strncmp(sourceTag.data(), "mrfx", 4) != 0)
         return 4;
 
-    auto xform = static_cast<ColorTransformation>(ReadByte());
+    const auto xform = static_cast<ColorTransformation>(ReadByte());
     switch (xform)
     {
         case ColorTransformation::None:

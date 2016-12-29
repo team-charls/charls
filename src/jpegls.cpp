@@ -75,11 +75,11 @@ signed char QuantizeGratientOrg(const JpegLSPresetCodingParameters& preset, int3
 
 vector<signed char> CreateQLutLossless(int32_t cbit)
 {
-    JpegLSPresetCodingParameters preset = ComputeDefault((1 << cbit) - 1, 0);
-    int32_t range = preset.MaximumSampleValue + 1;
+    const JpegLSPresetCodingParameters preset = ComputeDefault((1 << cbit) - 1, 0);
+    const int32_t range = preset.MaximumSampleValue + 1;
 
     vector<signed char> lut(range * 2);
-    
+
     for (int32_t diff = -range; diff < range; diff++)
     {
         lut[range + diff] = QuantizeGratientOrg(preset, 0,diff);
@@ -169,7 +169,7 @@ unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters
 
 #endif
 
-    int maxval = (1 << params.bitsPerSample) - 1;
+    const int maxval = (1 << params.bitsPerSample) - 1;
 
     if (params.bitsPerSample <= 8)
     {

@@ -37,7 +37,9 @@ public:
         _processLine->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
     }
 
-    void OnLineEnd(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) { }
+    void OnLineEnd(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) const
+    {
+    }
 
     virtual void SetPresets(const JpegLSPresetCodingParameters& presets) = 0;
 
@@ -71,7 +73,7 @@ protected:
         ASSERT(bitCount < 32 && bitCount >= 0);
         ASSERT((!_qdecoder) || (bitCount == 0 && bits == 0) ||( _qdecoder->ReadLongValue(bitCount) == bits));
 #ifndef NDEBUG
-        int mask = (1u << (bitCount)) - 1;
+        const int mask = (1u << (bitCount)) - 1;
         ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
 #endif
 
@@ -122,8 +124,8 @@ protected:
         if (!_compressedStream)
             throw charls_error(charls::ApiResult::CompressedBufferTooSmall);
 
-        std::size_t bytesCount = _position - _buffer.data();
-        std::size_t bytesWritten = static_cast<std::size_t>(_compressedStream->sputn(reinterpret_cast<char*>(_buffer.data()), _position - _buffer.data()));
+        const std::size_t bytesCount = _position - _buffer.data();
+        const std::size_t bytesWritten = static_cast<std::size_t>(_compressedStream->sputn(reinterpret_cast<char*>(_buffer.data()), _position - _buffer.data()));
 
         if (bytesWritten != bytesCount)
             throw charls_error(charls::ApiResult::CompressedBufferTooSmall);

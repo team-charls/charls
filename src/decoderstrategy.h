@@ -63,7 +63,7 @@ public:
         if (!_byteStream || _byteStream->sgetc() == std::char_traits<char>::eof())
             return;
 
-        std::size_t count = _endPosition - _position;
+        const std::size_t count = _endPosition - _position;
 
         if (count > 64)
             return;
@@ -72,13 +72,13 @@ public:
         {
             _buffer[i] = _position[i];
         }
-        std::size_t offset = _buffer.data() - _position;
+        const std::size_t offset = _buffer.data() - _position;
 
         _position += offset;
         _endPosition += offset;
         _nextFFPosition += offset;
 
-        std::streamsize readbytes = _byteStream->sgetn(reinterpret_cast<char*>(_endPosition), _buffer.size() - count);
+        const std::streamsize readbytes = _byteStream->sgetn(reinterpret_cast<char*>(_endPosition), _buffer.size() - count);
         _endPosition += readbytes;
     }
 
@@ -89,7 +89,7 @@ public:
     }
 
 
-    void OnLineBegin(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) 
+    void OnLineBegin(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) const
     {
     }
 
@@ -119,7 +119,7 @@ public:
         if (_position < _nextFFPosition - (sizeof(bufType)-1))
         {
             _readCache |= FromBigEndian<sizeof(bufType)>::Read(_position) >> _validBits;
-            int bytesToRead = (bufferbits - _validBits) >> 3;
+            const int bytesToRead = (bufferbits - _validBits) >> 3;
             _position += bytesToRead;
             _validBits += bytesToRead * 8;
             ASSERT(_validBits >= bufferbits - 8);
@@ -154,7 +154,7 @@ public:
                 return;
             }
 
-            bufType valnew = _position[0];
+            const bufType valnew = _position[0];
 
             if (valnew == 0xFF)
             {
@@ -205,12 +205,12 @@ public:
 
         for (;;)
         {
-            int32_t cbitLast = compressedBytes[-1] == 0xFF ? 7 : 8;
+            const int32_t cbitLast = compressedBytes[-1] == 0xFF ? 7 : 8;
 
-            if (validBits < cbitLast )
+            if (validBits < cbitLast)
                 return compressedBytes;
 
-            validBits -= cbitLast; 
+            validBits -= cbitLast;
             compressedBytes--;
         }
     }
@@ -226,7 +226,7 @@ public:
 
         ASSERT(length != 0 && length <= _validBits);
         ASSERT(length < 32);
-        int32_t result = int32_t(_readCache >> (bufferbits - length));
+        const int32_t result = int32_t(_readCache >> (bufferbits - length));
         Skip(length);
         return result;
     }
@@ -248,7 +248,7 @@ public:
             MakeValid();
         }
 
-        bool bSet = (_readCache & (bufType(1) << (bufferbits - 1))) != 0;
+        const bool bSet = (_readCache & (bufType(1) << (bufferbits - 1))) != 0;
         Skip(1);
         return bSet;
     }
@@ -273,7 +273,7 @@ public:
 
     inlinehint int32_t ReadHighbits()
     {
-        int32_t count = Peek0Bits();
+        const int32_t count = Peek0Bits();
         if (count >= 0)
         {
             Skip(count + 1);

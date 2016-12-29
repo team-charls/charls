@@ -96,8 +96,8 @@ struct JlsContext
 
     inlinehint int32_t GetGolomb() const
     {
-        int32_t Ntest = N;
-        int32_t Atest = A;
+        const int32_t Ntest = N;
+        const int32_t Atest = A;
 
         if (Ntest >= Atest) return 0;
         if (Ntest << 1 >= Atest) return 1;

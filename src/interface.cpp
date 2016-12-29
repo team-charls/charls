@@ -126,7 +126,7 @@ CHARLS_IMEXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInf
 
         if (info.interleaveMode == InterleaveMode::None)
         {
-            int32_t cbyteComp = info.width * info.height * ((info.bitsPerSample + 7) / 8);
+            const int32_t cbyteComp = info.width * info.height * ((info.bitsPerSample + 7) / 8);
             for (int32_t component = 0; component < info.components; ++component)
             {
                 writer.AddScan(rawStreamInfo, info);
@@ -196,8 +196,8 @@ extern "C"
         if (!destination || !bytesWritten || !source || !params)
             return ApiResult::InvalidJlsParameters;
 
-        ByteStreamInfo rawStreamInfo = FromByteArray(source, sourceLength);
-        ByteStreamInfo compressedStreamInfo = FromByteArray(destination, destinationLength);
+        const ByteStreamInfo rawStreamInfo = FromByteArray(source, sourceLength);
+        const ByteStreamInfo compressedStreamInfo = FromByteArray(destination, destinationLength);
 
         return JpegLsEncodeStream(compressedStreamInfo, *bytesWritten, rawStreamInfo, *params, errorMessage);
     }
@@ -211,8 +211,8 @@ extern "C"
 
     CHARLS_IMEXPORT(ApiResult) JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage)
     {
-        ByteStreamInfo compressedStream = FromByteArray(source, sourceLength);
-        ByteStreamInfo rawStreamInfo = FromByteArray(destination, destinationLength);
+        const ByteStreamInfo compressedStream = FromByteArray(source, sourceLength);
+        const ByteStreamInfo rawStreamInfo = FromByteArray(destination, destinationLength);
 
         return JpegLsDecodeStream(rawStreamInfo, compressedStream, params, errorMessage);
     }
@@ -223,10 +223,10 @@ extern "C"
     {
         try
         {
-            ByteStreamInfo compressedStream = FromByteArray(compressedData, compressedLength);
+            const ByteStreamInfo compressedStream = FromByteArray(compressedData, compressedLength);
             JpegStreamReader reader(compressedStream);
 
-            ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
+            const ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
 
             if (info)
             {

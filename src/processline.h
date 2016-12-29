@@ -77,7 +77,7 @@ inline void ByteSwap(unsigned char* data, int count)
     unsigned int* data32 = reinterpret_cast<unsigned int*>(data);
     for(int i = 0; i < count / 4; i++)
     {
-        unsigned int value = data32[i];
+        const unsigned int value = data32[i];
         data32[i] = ((value >> 8) & 0x00FF00FF) | ((value & 0x00FF00FF) << 8);
     }
 
@@ -102,7 +102,7 @@ public:
         std::size_t bytesToRead = pixelCount * _bytesPerPixel;
         while (bytesToRead != 0)
         {
-            std::streamsize bytesRead = _rawData->sgetn(static_cast<char*>(dest), bytesToRead);
+            const std::streamsize bytesRead = _rawData->sgetn(static_cast<char*>(dest), bytesToRead);
             if (bytesRead == 0)
                 throw charls_error(charls::ApiResult::UncompressedBufferTooSmall);
 
@@ -122,8 +122,8 @@ public:
 
     void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/) override
     {
-        int bytesToWrite = pixelCount * _bytesPerPixel;
-        std::streamsize bytesWritten = _rawData->sputn(static_cast<const char*>(pSrc), bytesToWrite);
+        const int bytesToWrite = pixelCount * _bytesPerPixel;
+        const std::streamsize bytesWritten = _rawData->sputn(static_cast<const char*>(pSrc), bytesToWrite);
         if (bytesWritten != bytesToWrite)
             throw charls_error(charls::ApiResult::UncompressedBufferTooSmall);
     }
@@ -138,7 +138,7 @@ private:
 template<typename TRANSFORM, typename SAMPLE>
 void TransformLineToQuad(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Quad<SAMPLE>* pbyteBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
-    int cpixel = std::min(pixelStride, pixelStrideIn);
+    const int cpixel = std::min(pixelStride, pixelStrideIn);
     Quad<SAMPLE>* ptypeBuffer = pbyteBuffer;
 
     for (int x = 0; x < cpixel; ++x)
@@ -152,12 +152,12 @@ void TransformLineToQuad(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Quad<S
 template<typename TRANSFORM, typename SAMPLE>
 void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, int32_t pixelStrideIn, SAMPLE* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
-    int cpixel = std::min(pixelStride, pixelStrideIn);
+    const int cpixel = std::min(pixelStride, pixelStrideIn);
     const Quad<SAMPLE>* ptypeBufferIn = pbyteInput;
 
     for (int x = 0; x < cpixel; ++x)
     {
-        Quad<SAMPLE> color = ptypeBufferIn[x];
+        const Quad<SAMPLE> color = ptypeBufferIn[x];
         Quad<SAMPLE> colorTranformed(transform(color.v1, color.v2, color.v3), color.v4);
 
         ptypeBuffer[x] = colorTranformed.v1;
@@ -192,7 +192,7 @@ void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixe
 template<typename TRANSFORM, typename SAMPLE>
 void TransformLineToTriplet(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Triplet<SAMPLE>* pbyteBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
-    int cpixel = std::min(pixelStride, pixelStrideIn);
+    const int cpixel = std::min(pixelStride, pixelStrideIn);
     Triplet<SAMPLE>* ptypeBuffer = pbyteBuffer;
 
     for (int x = 0; x < cpixel; ++x)
@@ -205,12 +205,12 @@ void TransformLineToTriplet(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Tri
 template<typename TRANSFORM, typename SAMPLE>
 void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, int32_t pixelStrideIn, SAMPLE* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
-    int cpixel = std::min(pixelStride, pixelStrideIn);
+    const int cpixel = std::min(pixelStride, pixelStrideIn);
     const Triplet<SAMPLE>* ptypeBufferIn = pbyteInput;
 
     for (int x = 0; x < cpixel; ++x)
     {
-        Triplet<SAMPLE> color = ptypeBufferIn[x];
+        const Triplet<SAMPLE> color = ptypeBufferIn[x];
         Triplet<SAMPLE> colorTranformed = transform(color.v1, color.v2, color.v3);
 
         ptypeBuffer[x] = colorTranformed.v1;
@@ -253,7 +253,7 @@ public:
         std::streamsize bytesToRead = pixelCount * _params.components * sizeof(SAMPLE);
         while (bytesToRead != 0)
         {
-            std::streamsize read = rawStream->sgetn(reinterpret_cast<char*>(_buffer.data()), bytesToRead);
+            const std::streamsize read = rawStream->sgetn(reinterpret_cast<char*>(_buffer.data()), bytesToRead);
             if (read == 0)
             {
                 std::ostringstream message;
@@ -324,7 +324,7 @@ public:
     {
         if (_rawPixels.rawStream)
         {
-            std::streamsize bytesToWrite = pixelCount * _params.components * sizeof(SAMPLE);
+            const std::streamsize bytesToWrite = pixelCount * _params.components * sizeof(SAMPLE);
             DecodeTransform(pSrc, _buffer.data(), pixelCount, sourceStride);
 
             if (sizeof(SAMPLE) == 2 && _params.colorTransformation == charls::ColorTransformation::BigEndian)
@@ -332,7 +332,7 @@ public:
                 ByteSwap(_buffer.data(), _params.components * sizeof(SAMPLE) * pixelCount);
             }
 
-            std::streamsize bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(_buffer.data()), bytesToWrite);
+            const std::streamsize bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(_buffer.data()), bytesToWrite);
             if (bytesWritten != bytesToWrite)
                 throw charls_error(charls::ApiResult::UncompressedBufferTooSmall);
         }
