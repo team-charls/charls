@@ -380,17 +380,18 @@ int JpegStreamReader::ReadColorXForm()
     if (strncmp(sourceTag.data(), "mrfx", 4) != 0)
         return 4;
 
-    const auto xform = static_cast<ColorTransformation>(ReadByte());
+    const auto xform = ReadByte();
     switch (xform)
     {
-        case ColorTransformation::None:
-        case ColorTransformation::HP1:
-        case ColorTransformation::HP2:
-        case ColorTransformation::HP3:
-            _params.colorTransformation = xform;
+        case static_cast<uint8_t>(ColorTransformation::None):
+        case static_cast<uint8_t>(ColorTransformation::HP1):
+        case static_cast<uint8_t>(ColorTransformation::HP2):
+        case static_cast<uint8_t>(ColorTransformation::HP3):
+            _params.colorTransformation = static_cast<ColorTransformation>(xform);
             return 5;
-        case ColorTransformation::RgbAsYuvLossy:
-        case ColorTransformation::Matrix:
+
+        case 4: // RgbAsYuvLossy (The standard lossy RGB to YCbCr transform used in JPEG.)
+        case 5: // Matrix (transformation is controlled using a matrix that is also stored in the segment.
             throw charls_error(ApiResult::ImageTypeNotSupported);
         default:
             throw charls_error(ApiResult::InvalidCompressedData);

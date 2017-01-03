@@ -12,12 +12,6 @@
 #include <algorithm>
 
 
-// TODO: analyze if template code can be improved
-#ifdef _MSC_VER
-#pragma warning(disable: 4127) // conditional expression is constant [VS2013]
-#endif
-
-
 //
 // This file defines the ProcessLine base class, its derivitives and helper functions.
 // During coding/decoding, CharLS process one line at a time. The different Processline implementations
@@ -263,10 +257,6 @@ public:
 
             bytesToRead -= read;
         }
-        if (sizeof(SAMPLE) == 2 && _params.colorTransformation == charls::ColorTransformation::BigEndian)
-        {
-            ByteSwap(_buffer.data(), _params.components * sizeof(SAMPLE) * pixelCount);
-        }
         Transform(_buffer.data(), dest, pixelCount, destStride);
     }
 
@@ -326,11 +316,6 @@ public:
         {
             const std::streamsize bytesToWrite = pixelCount * _params.components * sizeof(SAMPLE);
             DecodeTransform(pSrc, _buffer.data(), pixelCount, sourceStride);
-
-            if (sizeof(SAMPLE) == 2 && _params.colorTransformation == charls::ColorTransformation::BigEndian)
-            {
-                ByteSwap(_buffer.data(), _params.components * sizeof(SAMPLE) * pixelCount);
-            }
 
             const std::streamsize bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(_buffer.data()), bytesToWrite);
             if (bytesWritten != bytesToWrite)

@@ -20,12 +20,6 @@
 #define ASSERT(t) assert(t)
 #endif
 
-#if defined(_WIN32)
-#ifdef _MSC_VER
-#pragma warning (disable:4512) // assignment operator could not be generated [VS2013]
-#endif
-#endif
-
 #undef  NEAR
 
 #ifndef inlinehint

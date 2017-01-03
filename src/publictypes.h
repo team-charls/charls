@@ -55,22 +55,42 @@ namespace charls
         Sample = 2
     };
 
+    /// <summary>
+    /// Defines color space transformations as defined and implemented by the JPEG-LS library of HP Labs.
+    /// These color space transformation decrease the correlation between the 3 color components, resulting in better encoding ratio.
+    /// These options are only implemented for backwards compatibility and NOT part of the JPEG-LS standard.
+    /// The JPEG-LS ISO/IEC 14495-1:1999 standard provides no capabilities to transport which color space transformation was used.
+    /// </summary>
     enum class ColorTransformation
     {
-        // Default (RGB)
+        /// <summary>
+        /// No color space transformation has been applied.
+        /// </summary>
         None = 0,
 
-        // Color transforms as defined by HP
-        // Not part of the JPEG-LS standard in any way, provided for compatibility with existing streams.
-        HP1,
-        HP2,
-        HP3,
+        /// <summary>
+        /// Defines the reversible lossless color transformation:
+        /// G = G
+        /// R = R - G
+        /// B = B - G
+        /// </summary>
+        HP1 = 1,
 
-        // Defined by HP but not supported by CharLS
-        RgbAsYuvLossy,
-        Matrix,
-        BigEndian = 1 << 29,
-        LittleEndian = 1 << 30
+        /// <summary>
+        /// Defines the reversible lossless color transformation:
+        /// G = G
+        /// B = B - (R + G) / 2
+        /// R = R - G
+        /// </summary>
+        HP2 = 2,
+
+        /// <summary>
+        /// Defines the reversible lossless color transformation of Y-Cb-Cr):
+        /// R = R - G
+        /// B = B - G
+        /// G = G + (R + B) / 4
+        /// </summary>
+        HP3 = 3,
     };
 }
 
@@ -114,13 +134,9 @@ enum CharlsInterleaveMode
 enum CharlsColorTransformation
 {
     CHARLS_COLOR_TRANSFORMATION_NONE = 0,
-    CHARLS_COLOR_TRANSFORMATION_HP1,
-    CHARLS_COLOR_TRANSFORMATION_HP2,
-    CHARLS_COLOR_TRANSFORMATION_HP3,
-    CHARLS_COLOR_TRANSFORMATION_RGB_AS_YUV_LOSSY,
-    CHARLS_COLOR_TRANSFORMATION_MATRIX,
-    CHARLS_COLOR_TRANSFORMATION_BIGENDIAN = 1 << 29,
-    CHARLS_COLOR_TRANSFORMATION_LITTLEENDIAN = 1 << 30
+    CHARLS_COLOR_TRANSFORMATION_HP1 = 1,
+    CHARLS_COLOR_TRANSFORMATION_HP2 = 2,
+    CHARLS_COLOR_TRANSFORMATION_HP3 = 3,
 };
 
 typedef enum CharlsApiResult CharlsApiResultType;
