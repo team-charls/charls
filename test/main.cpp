@@ -329,9 +329,10 @@ bool DecodeToPnm(std::istream& input, std::ostream& output)
 std::vector<int> readPnmHeader(std::istream& pnmFile)
 {
     std::vector<int> readValues;
-    
+
     char first = static_cast<char>(pnmFile.get());
 
+    // All portable anymap format (PNM) start with the character P.
     if (first != 'P')
         return readValues;
 
@@ -355,25 +356,42 @@ std::vector<int> readPnmHeader(std::istream& pnmFile)
 }
 
 
+// Purpose: this function can encode an image stored in the Portable Anymap Format (PNM)
+//          into the JPEG-LS format. The 2 binary formats P5 and P6 are supported:
+//          Portable GrayMap: P5 = binary, extension = .pgm, 0-2^16 (gray scale)
+//          Portable PixMap: P6 = binary, extension.ppm, range 0-255 (RGB)
 bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
 {
     std::vector<int> readValues = readPnmHeader(pnmFile);
     if (readValues.size() !=4)
         return false;
 
-    ByteStreamInfo rawStreamInfo = {pnmFile.rdbuf(), nullptr, 0};
-    ByteStreamInfo jlsStreamInfo = {jlsFileStream.rdbuf(), nullptr, 0};
-
     JlsParameters params = JlsParameters();
-    int componentCount = readValues[0] == 6 ? 3 : 1;
+    params.components = readValues[0] == 6 ? 3 : 1;
     params.width = readValues[1];
     params.height = readValues[2];
-    params.components = componentCount;
-    params.bitsPerSample = log_2(readValues[3]+1);
-    params.interleaveMode = componentCount == 3 ? InterleaveMode::Line : InterleaveMode::None;
-    params.colorTransformation = ColorTransformation::BigEndian;
-    size_t bytesWritten = 0;
+    params.bitsPerSample = log_2(readValues[3] + 1);
+    params.interleaveMode = params.components == 3 ? InterleaveMode::Line : InterleaveMode::None;
 
+    const int bytesPerSample = (params.bitsPerSample + 7) / 8;
+    std::vector<uint8_t> inputBuffer(params.width * params.height * bytesPerSample * params.components);
+    pnmFile.read(reinterpret_cast<char*>(inputBuffer.data()), inputBuffer.size());
+    if (!pnmFile.good())
+        return false;
+
+    // PNM format is stored with most significant byte first (big endian).
+    if (bytesPerSample == 2)
+    {
+        for (auto i = inputBuffer.begin(); i != inputBuffer.end(); i += 2)
+        {
+            std::iter_swap(i, i + 1);
+        }
+    }
+
+    auto rawStreamInfo = FromByteArray(inputBuffer.data(), inputBuffer.size());
+    ByteStreamInfo jlsStreamInfo = {jlsFileStream.rdbuf(), nullptr, 0};
+
+    size_t bytesWritten = 0;
     JpegLsEncodeStream(jlsStreamInfo, bytesWritten, rawStreamInfo, params, nullptr);
     return true;
 }
