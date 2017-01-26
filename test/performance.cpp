@@ -8,6 +8,8 @@
 #include "../src/charls.h"
 
 #include <vector>
+#include <ratio>
+#include <chrono>
 
 namespace
 {
@@ -89,7 +91,10 @@ void DecodePerformanceTests(int loopCount)
 
     std::vector<uint8_t> jpeglsCompressed;
     if (!ReadFile("decodetest.jls", &jpeglsCompressed, 0, 0))
+    {
+        printf("Failed to load the file decodetest.jls\r\n");
         return;
+    }
 
     JlsParameters params;
     auto result = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
@@ -98,6 +103,7 @@ void DecodePerformanceTests(int loopCount)
 
     std::vector<uint8_t> uncompressed(params.height * params.width * 2);
 
+    auto start = std::chrono::steady_clock::now();
     for (int i = 0; i < loopCount; ++i)
     {
 
@@ -105,4 +111,9 @@ void DecodePerformanceTests(int loopCount)
         if (result != charls::ApiResult::OK)
             return;
     }
+
+    auto end = std::chrono::steady_clock::now();
+    auto diff = end - start;
+    std::cout << "Total decoding time is: " << std::chrono::duration <double, std::milli>(diff).count() << " ms" << std::endl;
+    std::cout << "Decoding time per image: " << std::chrono::duration <double, std::milli>(diff).count() / loopCount << " ms" << std::endl;
 }

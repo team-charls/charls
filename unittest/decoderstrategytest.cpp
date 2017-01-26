@@ -24,16 +24,15 @@ public:
     }
 
     virtual ~DecoderStrategyTester() {}
-    void SetPresets(const JpegLSPresetCodingParameters& presets) {}
+    void SetPresets(const JpegLSPresetCodingParameters& presets) override {}
 
-    virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo)
+    ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) override
     {
         return nullptr;
     }
 
-    virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo& compressedData)
+    void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo& compressedData) override
     {
-        return;
     }
 
     int32_t Read(int32_t length) { return ReadLongValue(length); }

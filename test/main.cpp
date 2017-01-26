@@ -578,7 +578,7 @@ int main(int argc, char* argv[])
 {
     if (argc == 1)
     {
-        printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance[:loop count], -dontwait -decoderaw -encodepnm -decodetopnm -comparepnm\r\n");
+        printf("CharLS test runner.\r\nOptions: -unittest, -bitstreamdamage, -performance[:loop-count], -decodeperformance[:loop-count], -dontwait -decoderaw -encodepnm -decodetopnm -comparepnm\r\n");
         return EXIT_FAILURE;
     }
 
