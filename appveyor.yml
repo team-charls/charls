@@ -5,7 +5,7 @@ configuration:
 - Release
 - Checked
 platform:
-- Win32
+- x86
 - x64
 before_build:
 - set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
