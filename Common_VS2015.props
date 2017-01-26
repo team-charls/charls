@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Build to a folder outside the source folders, making it easier to clean. -->
+    <OutDir>$(SolutionDir)bin_2015\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir Condition="'$(Platform)'=='Win32'">$(SolutionDir)bin_2015\$(Configuration)\x86\</OutDir>
+    
+    <!-- C# Projects require the legagy OutputPath variabl. -->
+    <OutputPath>$(OutDir)</OutputPath>
+
+    <!-- C++ temp files can be redirected. -->
+    <!-- C# project files can also be redirected, but this causes rebuilds inside VS2015. -->
+    <IntDir>$(SolutionDir)intermediate_2015\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
+
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>    
+  </PropertyGroup>
+  <ItemGroup />
+</Project>

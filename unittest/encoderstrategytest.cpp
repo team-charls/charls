@@ -63,7 +63,6 @@ namespace CharLSUnitTest
             strategy.FlushForward();
 
             // Verify output.
-            auto y = strategy.GetLengthForward();
             Assert::AreEqual(static_cast<size_t>(13), strategy.GetLengthForward());
             Assert::AreEqual(static_cast<uint8_t>(0x00), data[0]);
             Assert::AreEqual(static_cast<uint8_t>(0x00), data[1]);

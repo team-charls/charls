@@ -5,7 +5,7 @@
 #include "stdafx.h"
 
 #include "CppUnitTest.h"
-#include "..\src\decoderstrategy.h"
+#include "../src/decoderstrategy.h"
 #include "encoderstrategytester.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -14,7 +14,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 class DecoderStrategyTester : public DecoderStrategy
 {
 public:
-    DecoderStrategyTester(const JlsParameters& params, uint8_t* pOutBuf, int nOutBufLen) : DecoderStrategy(params)
+    DecoderStrategyTester(const JlsParameters& params, uint8_t* pOutBuf, size_t nOutBufLen) : DecoderStrategy(params)
     {
         ByteStreamInfo stream;
         stream.rawStream = nullptr;
@@ -24,14 +24,14 @@ public:
     }
 
     virtual ~DecoderStrategyTester() {}
-    void SetPresets(const JpegLSPresetCodingParameters& presets) override {}
+    void SetPresets(const JpegLSPresetCodingParameters& /*presets*/) override {}
 
-    ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) override
+    ProcessLine* CreateProcess(ByteStreamInfo /*rawStreamInfo*/) override
     {
         return nullptr;
     }
 
-    void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo& compressedData) override
+    void DecodeScan(std::unique_ptr<ProcessLine> /*outputData*/, const JlsRect& /*size*/, ByteStreamInfo& /*compressedData*/) override
     {
     }
 
@@ -71,9 +71,9 @@ namespace CharLSUnitTest
             encoder.EndScanForward();
             // Note: Correct encoding is tested in EncoderStrategyTest::AppendToBitStreamFFPattern.
 
-            int length = encoder.GetLengthForward();
+            auto length = encoder.GetLengthForward();
             DecoderStrategyTester dec(params, encBuf, length);
-            for (int i = 0; i < sizeof(inData) / sizeof(inData[0]); i++)
+            for (auto i = 0; i < sizeof(inData) / sizeof(inData[0]); i++)
             {
                 auto actual = dec.Read(inData[i].bits);
                 Assert::AreEqual(inData[i].val, actual);
