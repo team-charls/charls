@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Checked|AnyCPU'" />
+  <ItemGroup>
+    <Compile Include="..\net\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
+    <Compile Include="..\net\JfifParameters.cs" Link="JfifParameters.cs" />
+    <Compile Include="..\net\JlsParameters.cs" Link="JlsParameters.cs" />
+    <Compile Include="..\net\JpegLSCodec.cs" Link="JpegLSCodec.cs" />
+    <Compile Include="..\net\JpegLSError.cs" Link="JpegLSError.cs" />
+    <Compile Include="..\net\JpegLSInterleaveMode.cs" Link="JpegLSInterleaveMode.cs" />
+    <Compile Include="..\net\JpegLSMetadataInfo.cs" Link="JpegLSMetadataInfo.cs" />
+    <Compile Include="..\net\JpegLSPresetCodingParameters.cs" Link="JpegLSPresetCodingParameters.cs" />
+    <Compile Include="..\net\SafeNativeMethods.cs" Link="SafeNativeMethods.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
+  </ItemGroup>
+</Project>
