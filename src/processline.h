@@ -24,7 +24,7 @@
 class ProcessLine
 {
 public:
-    virtual ~ProcessLine() {}
+    virtual ~ProcessLine() = default;
     virtual void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride) = 0;
     virtual void NewLineRequested(void* pDest, int pixelCount, int destStride) = 0;
 };
@@ -33,7 +33,7 @@ public:
 class PostProcesSingleComponent : public ProcessLine
 {
 public:
-    PostProcesSingleComponent(void* rawData, const JlsParameters& params, int bytesPerPixel) :
+    PostProcesSingleComponent(void* rawData, const JlsParameters& params, size_t bytesPerPixel) :
         _rawData(static_cast<uint8_t*>(rawData)),
         _bytesPerPixel(bytesPerPixel),
         _bytesPerLine(params.stride)
@@ -42,20 +42,20 @@ public:
 
     void NewLineRequested(void* dest, int pixelCount, int /*byteStride*/) override
     {
-        ::memcpy(dest, _rawData, pixelCount * _bytesPerPixel);
+        std::memcpy(dest, _rawData, pixelCount * _bytesPerPixel);
         _rawData += _bytesPerLine;
     }
 
     void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/) override
     {
-        ::memcpy(_rawData, pSrc, pixelCount * _bytesPerPixel);
+        std::memcpy(_rawData, pSrc, pixelCount * _bytesPerPixel);
         _rawData += _bytesPerLine;
     }
 
 private:
     uint8_t* _rawData;
-    int _bytesPerPixel;
-    int _bytesPerLine;
+    size_t _bytesPerPixel;
+    size_t _bytesPerLine;
 };
 
 
@@ -68,10 +68,10 @@ inline void ByteSwap(unsigned char* data, int count)
         throw charls_error(charls::ApiResult::InvalidJlsParameters, message.str());
     }
 
-    unsigned int* data32 = reinterpret_cast<unsigned int*>(data);
-    for(int i = 0; i < count / 4; i++)
+    auto data32 = reinterpret_cast<unsigned int*>(data);
+    for(auto i = 0; i < count / 4; i++)
     {
-        const unsigned int value = data32[i];
+        const auto value = data32[i];
         data32[i] = ((value >> 8) & 0x00FF00FF) | ((value & 0x00FF00FF) << 8);
     }
 
@@ -84,7 +84,7 @@ inline void ByteSwap(unsigned char* data, int count)
 class PostProcesSingleStream : public ProcessLine
 {
 public:
-    PostProcesSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& params, int bytesPerPixel) :
+    PostProcesSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& params, size_t bytesPerPixel) :
         _rawData(rawData),
         _bytesPerPixel(bytesPerPixel),
         _bytesPerLine(params.stride)
@@ -93,10 +93,10 @@ public:
 
     void NewLineRequested(void* dest, int pixelCount, int /*destStride*/) override
     {
-        std::size_t bytesToRead = pixelCount * _bytesPerPixel;
+        auto bytesToRead = pixelCount * _bytesPerPixel;
         while (bytesToRead != 0)
         {
-            const std::streamsize bytesRead = _rawData->sgetn(static_cast<char*>(dest), bytesToRead);
+            const auto bytesRead = _rawData->sgetn(static_cast<char*>(dest), bytesToRead);
             if (bytesRead == 0)
                 throw charls_error(charls::ApiResult::UncompressedBufferTooSmall);
 
@@ -116,16 +116,16 @@ public:
 
     void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/) override
     {
-        const int bytesToWrite = pixelCount * _bytesPerPixel;
-        const std::streamsize bytesWritten = _rawData->sputn(static_cast<const char*>(pSrc), bytesToWrite);
+        const auto bytesToWrite = pixelCount * _bytesPerPixel;
+        const auto bytesWritten = static_cast<size_t>(_rawData->sputn(static_cast<const char*>(pSrc), bytesToWrite));
         if (bytesWritten != bytesToWrite)
             throw charls_error(charls::ApiResult::UncompressedBufferTooSmall);
     }
 
 private:
     std::basic_streambuf<char>* _rawData;
-    int _bytesPerPixel;
-    int _bytesPerLine;
+    size_t _bytesPerPixel;
+    size_t _bytesPerLine;
 };
 
 
@@ -135,7 +135,7 @@ void TransformLineToQuad(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Quad<S
     const int cpixel = std::min(pixelStride, pixelStrideIn);
     Quad<SAMPLE>* ptypeBuffer = pbyteBuffer;
 
-    for (int x = 0; x < cpixel; ++x)
+    for (auto x = 0; x < cpixel; ++x)
     {
         Quad<SAMPLE> pixel(transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]), ptypeInput[x + 3 * pixelStrideIn]);
         ptypeBuffer[x] = pixel;
@@ -146,10 +146,10 @@ void TransformLineToQuad(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Quad<S
 template<typename TRANSFORM, typename SAMPLE>
 void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, int32_t pixelStrideIn, SAMPLE* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
-    const int cpixel = std::min(pixelStride, pixelStrideIn);
+    const auto cpixel = std::min(pixelStride, pixelStrideIn);
     const Quad<SAMPLE>* ptypeBufferIn = pbyteInput;
 
-    for (int x = 0; x < cpixel; ++x)
+    for (auto x = 0; x < cpixel; ++x)
     {
         const Quad<SAMPLE> color = ptypeBufferIn[x];
         Quad<SAMPLE> colorTranformed(transform(color.v1, color.v2, color.v3), color.v4);
@@ -165,7 +165,7 @@ void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, int32_t pixelStrideIn, 
 template<typename SAMPLE>
 void TransformRgbToBgr(SAMPLE* pDest, int samplesPerPixel, int pixelCount)
 {
-    for (int i = 0; i < pixelCount; ++i)
+    for (auto i = 0; i < pixelCount; ++i)
     {
         std::swap(pDest[0], pDest[2]);
         pDest += samplesPerPixel;
@@ -176,7 +176,7 @@ void TransformRgbToBgr(SAMPLE* pDest, int samplesPerPixel, int pixelCount)
 template<typename TRANSFORM, typename SAMPLE>
 void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixelCount, TRANSFORM& transform)
 {
-    for (int i = 0; i < pixelCount; ++i)
+    for (auto i = 0; i < pixelCount; ++i)
     {
         pDest[i] = transform(pSrc[i].v1, pSrc[i].v2, pSrc[i].v3);
     }
@@ -186,10 +186,10 @@ void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixe
 template<typename TRANSFORM, typename SAMPLE>
 void TransformLineToTriplet(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Triplet<SAMPLE>* pbyteBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
-    const int cpixel = std::min(pixelStride, pixelStrideIn);
+    const auto cpixel = std::min(pixelStride, pixelStrideIn);
     Triplet<SAMPLE>* ptypeBuffer = pbyteBuffer;
 
-    for (int x = 0; x < cpixel; ++x)
+    for (auto x = 0; x < cpixel; ++x)
     {
         ptypeBuffer[x] = transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]);
     }
@@ -199,10 +199,10 @@ void TransformLineToTriplet(const SAMPLE* ptypeInput, int32_t pixelStrideIn, Tri
 template<typename TRANSFORM, typename SAMPLE>
 void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, int32_t pixelStrideIn, SAMPLE* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform)
 {
-    const int cpixel = std::min(pixelStride, pixelStrideIn);
+    const auto cpixel = std::min(pixelStride, pixelStrideIn);
     const Triplet<SAMPLE>* ptypeBufferIn = pbyteInput;
 
-    for (int x = 0; x < cpixel; ++x)
+    for (auto x = 0; x < cpixel; ++x)
     {
         const Triplet<SAMPLE> color = ptypeBufferIn[x];
         Triplet<SAMPLE> colorTranformed = transform(color.v1, color.v2, color.v3);
@@ -247,7 +247,7 @@ public:
         std::streamsize bytesToRead = pixelCount * _params.components * sizeof(SAMPLE);
         while (bytesToRead != 0)
         {
-            const std::streamsize read = rawStream->sgetn(reinterpret_cast<char*>(_buffer.data()), bytesToRead);
+            const auto read = rawStream->sgetn(reinterpret_cast<char*>(_buffer.data()), bytesToRead);
             if (read == 0)
             {
                 std::ostringstream message;
@@ -317,7 +317,7 @@ public:
             const std::streamsize bytesToWrite = pixelCount * _params.components * sizeof(SAMPLE);
             DecodeTransform(pSrc, _buffer.data(), pixelCount, sourceStride);
 
-            const std::streamsize bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(_buffer.data()), bytesToWrite);
+            const auto bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(_buffer.data()), bytesToWrite);
             if (bytesWritten != bytesToWrite)
                 throw charls_error(charls::ApiResult::UncompressedBufferTooSmall);
         }
