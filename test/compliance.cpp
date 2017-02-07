@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include <vector>
-
+#include <cstring>
 
 
 void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
