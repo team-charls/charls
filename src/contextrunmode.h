@@ -11,91 +11,91 @@
 
 struct CContextRunMode 
 {
-	CContextRunMode(LONG a, LONG nRItype, LONG nReset) :
-		A(a),
-		N(1),	
-		Nn(0),
-		_nRItype(nRItype),
-		_nReset((BYTE)nReset)
-	{
-	}
+    CContextRunMode(LONG a, LONG nRItype, LONG nReset) :
+        A(a),
+        N(1),   
+        Nn(0),
+        _nRItype(nRItype),
+        _nReset((BYTE)nReset)
+    {
+    }
 
-	LONG A;
-	BYTE N;
-	BYTE Nn;
-	LONG _nRItype;
-	BYTE _nReset;
+    LONG A;
+    BYTE N;
+    BYTE Nn;
+    LONG _nRItype;
+    BYTE _nReset;
 
-	CContextRunMode()
-	{}
-
-
-	inlinehint LONG GetGolomb() const
-	{
-		LONG Ntest	= N;
-		LONG TEMP	= A + (N >> 1) * _nRItype;
-		LONG k = 0;
-		for(; Ntest < TEMP; k++) 
-		{ 
-			Ntest <<= 1;
-			ASSERT(k <= 32); 
-		};
-		return k;
-	}
+    CContextRunMode()
+    {}
 
 
-	void UpdateVariables(LONG Errval, LONG EMErrval)
-	{		
-		if (Errval < 0)
-		{
-			Nn = Nn + 1;
-		}
-		A = A + ((EMErrval + 1 - _nRItype) >> 1);
-		if (N == _nReset) 
-		{
-			A = A >> 1;
-			N = N >> 1;
-			Nn = Nn >> 1;
-		}
-		N = N + 1;
-	}
-
-	inlinehint LONG ComputeErrVal(LONG temp, LONG k)
-	{
-		bool map = temp & 1;
-
-		LONG errvalabs = (temp + LONG(map)) / 2;
-
-		if ((k != 0 || (2 * Nn >= N)) == map)
-		{
-			ASSERT(map == ComputeMap(-errvalabs, k));
-			return -errvalabs;
-		}
-
-		ASSERT(map == ComputeMap(errvalabs, k));	
-		return errvalabs;
-	}
+    inlinehint LONG GetGolomb() const
+    {
+        LONG Ntest  = N;
+        LONG TEMP   = A + (N >> 1) * _nRItype;
+        LONG k = 0;
+        for(; Ntest < TEMP; k++) 
+        { 
+            Ntest <<= 1;
+            ASSERT(k <= 32); 
+        };
+        return k;
+    }
 
 
-	bool ComputeMap(LONG Errval, LONG k) const
-	{
-		if ((k == 0) && (Errval > 0) && (2 * Nn < N))
-			return true;
+    void UpdateVariables(LONG Errval, LONG EMErrval)
+    {       
+        if (Errval < 0)
+        {
+            Nn = Nn + 1;
+        }
+        A = A + ((EMErrval + 1 - _nRItype) >> 1);
+        if (N == _nReset) 
+        {
+            A = A >> 1;
+            N = N >> 1;
+            Nn = Nn >> 1;
+        }
+        N = N + 1;
+    }
 
-		if ((Errval < 0) && (2 * Nn >= N))
-			return true;		 
+    inlinehint LONG ComputeErrVal(LONG temp, LONG k)
+    {
+        bool map = temp & 1;
 
-		if ((Errval < 0) && (k != 0))
-			return true;
+        LONG errvalabs = (temp + LONG(map)) / 2;
 
-		return false;
-	}
+        if ((k != 0 || (2 * Nn >= N)) == map)
+        {
+            ASSERT(map == ComputeMap(-errvalabs, k));
+            return -errvalabs;
+        }
+
+        ASSERT(map == ComputeMap(errvalabs, k));    
+        return errvalabs;
+    }
 
 
-	inlinehint bool ComputeMapNegativeE(LONG k) const
-	{
-		return  k != 0 || (2 * Nn >= N );
-	}
+    bool ComputeMap(LONG Errval, LONG k) const
+    {
+        if ((k == 0) && (Errval > 0) && (2 * Nn < N))
+            return true;
+
+        if ((Errval < 0) && (2 * Nn >= N))
+            return true;         
+
+        if ((Errval < 0) && (k != 0))
+            return true;
+
+        return false;
+    }
+
+
+    inlinehint bool ComputeMapNegativeE(LONG k) const
+    {
+        return  k != 0 || (2 * Nn >= N );
+    }
 };
 
 #endif
