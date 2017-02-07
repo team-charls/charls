@@ -7,7 +7,7 @@
 #include "util.h"
 #include "../src/util.h"
 #include <vector>
-
+#include <cstdio>
 
 void TestFile16BitAs12(SZC strName, int ioffs, Size size2, int ccomp, bool littleEndianFile)
 {
