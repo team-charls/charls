@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstring>
 
 #ifdef _MSC_VER 
 #pragma warning(disable: 4996) // disable 'function': was declared deprecated also 'std::<function name>': Function call with parameters that may be unsafe
@@ -42,13 +43,13 @@ public:
 
     void NewLineRequested(void* dest, int pixelCount, int /*byteStride*/)
     {
-        ::memcpy(dest, _rawData, pixelCount * _bytesPerPixel);
+        std::memcpy(dest, _rawData, pixelCount * _bytesPerPixel);
         _rawData += _bytesPerLine;
     }
 
     void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/)
     {
-        ::memcpy(_rawData, pSrc, pixelCount * _bytesPerPixel);
+        std::memcpy(_rawData, pSrc, pixelCount * _bytesPerPixel);
         _rawData += _bytesPerLine;
     }
 
