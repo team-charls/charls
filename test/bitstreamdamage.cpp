@@ -4,13 +4,14 @@
 
 
 #include "config.h"
-#include <iostream>
-#include <vector>
 
 #include "../src/interface.h"
 #include "../src/util.h"
-
 #include "util.h"
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <cstdio>
 
 void TestDamagedBitStream1()
 {
@@ -90,7 +91,7 @@ void TestFileWithRandomHeaderDamage(SZC filename)
             std::cout <<  errors[error] << "x error (" << error << "); ";
         }
 
-        std::cout << "\r\n";        
+        std::cout << "\r\n";
     }
 }
 
