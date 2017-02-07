@@ -9,6 +9,7 @@
 #include "contextrunmode.h"
 #include "context.h"
 #include "colortransform.h"
+#include "processline.h"
 #include <sstream>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
@@ -192,7 +193,7 @@ public:
     void DoLine(Triplet<SAMPLE>* pdummy);
     void DoScan();
 
-    ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo);
+    std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo);
     void InitParams(int32_t t1, int32_t t2, int32_t t3, int32_t nReset);
 
     size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData);
@@ -745,25 +746,25 @@ void JlsCodec<TRAITS, STRATEGY>::DoScan()
 // Factory function for ProcessLine objects to copy/transform unencoded pixels to/from our scanline buffers.
 
 template<typename TRAITS, typename STRATEGY>
-ProcessLine* JlsCodec<TRAITS, STRATEGY>::CreateProcess(ByteStreamInfo info)
+std::unique_ptr<ProcessLine> JlsCodec<TRAITS, STRATEGY>::CreateProcess(ByteStreamInfo info)
 {
     if (!IsInterleaved())
     {
         return info.rawData ?
-            static_cast<ProcessLine*>(new PostProcesSingleComponent(info.rawData, Info(), sizeof(typename TRAITS::PIXEL))) :
-            static_cast<ProcessLine*>(new PostProcesSingleStream(info.rawStream, Info(), sizeof(typename TRAITS::PIXEL)));
+            std::unique_ptr<ProcessLine>(std::make_unique<PostProcesSingleComponent>(info.rawData, Info(), sizeof(typename TRAITS::PIXEL))) :
+            std::unique_ptr<ProcessLine>(std::make_unique<PostProcesSingleStream>(info.rawStream, Info(), sizeof(typename TRAITS::PIXEL)));
     }
 
     if (Info().colorTransformation == ColorTransformation::None)
-        return new ProcessTransformed<TransformNone<typename TRAITS::SAMPLE> >(info, Info(), TransformNone<SAMPLE>()); 
+        return std::make_unique<ProcessTransformed<TransformNone<typename TRAITS::SAMPLE>>>(info, Info(), TransformNone<SAMPLE>());
 
     if (Info().bitsPerSample == sizeof(SAMPLE) * 8)
     {
         switch (Info().colorTransformation)
         {
-            case ColorTransformation::HP1: return new ProcessTransformed<TransformHp1<SAMPLE>>(info, Info(), TransformHp1<SAMPLE>());
-            case ColorTransformation::HP2: return new ProcessTransformed<TransformHp2<SAMPLE>>(info, Info(), TransformHp2<SAMPLE>());
-            case ColorTransformation::HP3: return new ProcessTransformed<TransformHp3<SAMPLE>>(info, Info(), TransformHp3<SAMPLE>());
+            case ColorTransformation::HP1: return std::make_unique<ProcessTransformed<TransformHp1<SAMPLE>>>(info, Info(), TransformHp1<SAMPLE>());
+            case ColorTransformation::HP2: return std::make_unique<ProcessTransformed<TransformHp2<SAMPLE>>>(info, Info(), TransformHp2<SAMPLE>());
+            case ColorTransformation::HP3: return std::make_unique<ProcessTransformed<TransformHp3<SAMPLE>>>(info, Info(), TransformHp3<SAMPLE>());
             default:
                 std::ostringstream message;
                 message << "Color transformation " << Info().colorTransformation << " is not supported.";
@@ -776,9 +777,9 @@ ProcessLine* JlsCodec<TRAITS, STRATEGY>::CreateProcess(ByteStreamInfo info)
         const int shift = 16 - Info().bitsPerSample;
         switch (Info().colorTransformation)
         {
-            case ColorTransformation::HP1: return new ProcessTransformed<TransformShifted<TransformHp1<uint16_t>>>(info, Info(), TransformShifted<TransformHp1<uint16_t>>(shift));
-            case ColorTransformation::HP2: return new ProcessTransformed<TransformShifted<TransformHp2<uint16_t>>>(info, Info(), TransformShifted<TransformHp2<uint16_t>>(shift));
-            case ColorTransformation::HP3: return new ProcessTransformed<TransformShifted<TransformHp3<uint16_t>>>(info, Info(), TransformShifted<TransformHp3<uint16_t>>(shift));
+            case ColorTransformation::HP1: return std::make_unique<ProcessTransformed<TransformShifted<TransformHp1<uint16_t>>>>(info, Info(), TransformShifted<TransformHp1<uint16_t>>(shift));
+            case ColorTransformation::HP2: return std::make_unique<ProcessTransformed<TransformShifted<TransformHp2<uint16_t>>>>(info, Info(), TransformShifted<TransformHp2<uint16_t>>(shift));
+            case ColorTransformation::HP3: return std::make_unique<ProcessTransformed<TransformShifted<TransformHp3<uint16_t>>>>(info, Info(), TransformShifted<TransformHp3<uint16_t>>(shift));
             default:
                 std::ostringstream message;
                 message << "Color transformation " << Info().colorTransformation << " is not supported.";

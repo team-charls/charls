@@ -45,7 +45,7 @@ public:
 
     virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData) = 0;
 
-    virtual ProcessLine* CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
+    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 
 protected:
 

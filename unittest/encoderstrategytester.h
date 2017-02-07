@@ -23,7 +23,7 @@ public:
         return 0;
     }
 
-    ProcessLine* CreateProcess(ByteStreamInfo) override
+    std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo) override
     {
         return nullptr;
     }

@@ -26,7 +26,7 @@ public:
     virtual ~DecoderStrategyTester() {}
     void SetPresets(const JpegLSPresetCodingParameters& /*presets*/) override {}
 
-    ProcessLine* CreateProcess(ByteStreamInfo /*rawStreamInfo*/) override
+    std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo /*rawStreamInfo*/) override
     {
         return nullptr;
     }
