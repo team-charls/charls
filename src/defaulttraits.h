@@ -13,6 +13,7 @@
 // This is to allow the traits class to replace the default implementation here with optimized specific implementations.
 // This is done for lossless coding/decoding: see losslesstraits.h 
 
+#include "header.h"
 #include <cstdlib>
 
 template <class sample, class pixel>
