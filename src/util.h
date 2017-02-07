@@ -7,8 +7,6 @@
 #define CHARLS_UTIL
 
 #include "publictypes.h"
-#include <stdlib.h>
-#include <string.h>
 #include <vector>
 
 #ifndef MAX
@@ -97,7 +95,7 @@ inline bool  operator!=(const Triplet<BYTE>& lhs, const Triplet<BYTE>& rhs)
 
 
 template<class sample>
-struct Quad : public Triplet<sample>
+struct Quad : Triplet<sample>
 {
     Quad() : 
         v4(0)

@@ -30,7 +30,6 @@
 
 #ifdef __cplusplus
 
-#include <iostream>
 
 extern "C" 
 {

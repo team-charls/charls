@@ -24,11 +24,10 @@ struct TransformNoneImpl
 
 
 template<class sample>
-struct TransformNone : public TransformNoneImpl<sample>
+struct TransformNone : TransformNoneImpl<sample>
 {
     typedef struct TransformNoneImpl<sample> INVERSE;
 };
-
 
 
 template<class sample>
@@ -39,7 +38,7 @@ struct TransformHp1
 
     struct INVERSE
     {
-        INVERSE(const TransformHp1&) {};
+        INVERSE(const TransformHp1&) {}
 
         inlinehint Triplet<SAMPLE> operator() (int v1, int v2, int v3)
         { return Triplet<SAMPLE>(v1 + v2 - RANGE/2, v2, v3 + v2 - RANGE/2); }
@@ -64,7 +63,7 @@ struct TransformHp2
 
     struct INVERSE
     {
-        INVERSE(const TransformHp2&) {};
+        INVERSE(const TransformHp2&) {}
 
         inlinehint   Triplet<SAMPLE> operator() (int v1, int v2, int v3)
         {
@@ -94,14 +93,14 @@ struct TransformHp3
 
     struct INVERSE
     {
-        INVERSE(const TransformHp3&) {};
+        INVERSE(const TransformHp3&) {}
 
         inlinehint Triplet<SAMPLE> operator() (int v1, int v2, int v3)
         {
             int G = v1 - ((v3 + v2)>>2) + RANGE/4;
             Triplet<SAMPLE> rgb;
             rgb.R  = SAMPLE(v3 + G - RANGE/2); // new R
-            rgb.G  = SAMPLE(G);             // new G                
+            rgb.G  = SAMPLE(G);                // new G
             rgb.B  = SAMPLE(v2 + G - RANGE/2); // new B
             return rgb;
         }

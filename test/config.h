@@ -20,8 +20,6 @@
 #define CHARLS_DLL
 #endif
 
-#include <stdio.h>
-
 typedef unsigned char BYTE;
 typedef unsigned short USHORT;
 

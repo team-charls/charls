@@ -7,7 +7,6 @@
 #include "header.h"
 #include "jpegmarker.h"
 #include "jpegstreamwriter.h"
-#include "jpegmarkersegment.h"
 #include "jpegimagedatasegment.h"
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"

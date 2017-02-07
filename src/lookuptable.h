@@ -51,10 +51,7 @@ private:
 };
 
 
-//
-// AddEntry
-//
-void CTable::AddEntry(BYTE bvalue, Code c)
+inline void CTable::AddEntry(BYTE bvalue, Code c)
 {
     LONG length = c.GetLength();
     ASSERT(length <= cbit);

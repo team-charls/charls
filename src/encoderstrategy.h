@@ -181,8 +181,6 @@ protected:
 
 
     std::auto_ptr<DecoderStrategy> _qdecoder; 
-
-protected:
     JlsParameters _info;
     std::auto_ptr<ProcessLine> _processLine;
 

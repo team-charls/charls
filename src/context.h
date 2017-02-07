@@ -14,7 +14,6 @@
 //
 struct JlsContext
 {
-public:
     JlsContext()
     {}
 
@@ -59,11 +58,11 @@ public:
             n = n >> 1;
         }
 
-        A = a;      
+        A = a;
         n = n + 1;
         N = (short)n;
 
-        if (b + n <= 0) 
+        if (b + n <= 0)
         {
             b = b + n;
             if (b <= -n)
@@ -72,9 +71,9 @@ public:
             }
             C = C - (C > -128);
         } 
-        else  if (b > 0) 
+        else  if (b > 0)
         {
-            b = b - n;              
+            b = b - n;
             if (b > 0)
             {
                 b = 0;
@@ -85,8 +84,6 @@ public:
         
         ASSERT(N != 0);
     }
-
-
 
     inlinehint LONG GetGolomb() const
     {
@@ -103,7 +100,7 @@ public:
         for(; (Ntest << k) < Atest; k++) 
         { 
             ASSERT(k <= 32); 
-        };
+        }
         return k;
     }
 };

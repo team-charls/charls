@@ -4,19 +4,16 @@
 
 
 #include "config.h"
+#include "util.h"
+#include "../src/interface.h"
+#include "../src/util.h"
+#include "../src/defaulttraits.h"
+#include "../src/losslesstraits.h"
+#include "../src/processline.h"
 #include <sstream>
 #include <fstream>
 #include <vector>
-#include "../src/interface.h"
-#include "../src/util.h"
-#include "../src/header.h"
-#include "../src/defaulttraits.h"
-#include "../src/losslesstraits.h"
-#include "../src/colortransform.h"
-#include "../src/jpegmarker.h"
-#include "../src/processline.h"
 
-#include "util.h"
 
 typedef const char* SZC;
 

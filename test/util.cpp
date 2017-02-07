@@ -4,15 +4,15 @@
 
 
 #include "config.h"
-#include <iostream>
-#include <vector>
-
-#include "../src/interface.h"
-#include "../src/util.h"
-#include "../src/jpegmarker.h"
 
 #include "util.h"
 #include "time.h"
+
+#include "../src/interface.h"
+#include "../src/util.h"
+
+#include <iostream>
+#include <vector>
 
 
 bool IsMachineLittleEndian()

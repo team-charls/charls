@@ -4,10 +4,8 @@
 #ifndef CHARLS_JPEGMARKER
 #define CHARLS_JPEGMARKER
 
-#include <memory>
 #include <vector>
 #include "util.h"
-
 
 // This file defines JPEG-LS markers: The header and the actual pixel data. Header markers have fixed length, the pixeldata not.
 
@@ -50,7 +48,6 @@ public:
     BYTE ReadByte();
 
 private:
-    void ReadScan(ByteStreamInfo rawPixels);    
     int ReadPresetParameters();
     int ReadComment();
     int ReadStartOfFrame();
@@ -64,7 +61,6 @@ private:
     int ReadColorSpace();
     int ReadColorXForm();
 
-private:
     ByteStreamInfo _byteStream;
     bool _bCompare;
     JlsParameters _info;

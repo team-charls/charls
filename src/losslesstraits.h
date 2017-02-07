@@ -1,8 +1,6 @@
-// 
+//
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
-
-
+//
 
 #ifndef CHARLS_LOSSLESSTRAITS
 #define CHARLS_LOSSLESSTRAITS
@@ -54,16 +52,16 @@ struct LosslessTraitsImplT
 
 };
 
+
 template <class SAMPLE, LONG bpp>
-struct LosslessTraitsT : public LosslessTraitsImplT<SAMPLE, bpp> 
+struct LosslessTraitsT : LosslessTraitsImplT<SAMPLE, bpp>
 {
     typedef SAMPLE PIXEL;
 };
 
 
-
 template<>
-struct LosslessTraitsT<BYTE,8> : public LosslessTraitsImplT<BYTE, 8> 
+struct LosslessTraitsT<BYTE,8> : LosslessTraitsImplT<BYTE, 8>
 {
     typedef SAMPLE PIXEL;
 
@@ -71,17 +69,15 @@ struct LosslessTraitsT<BYTE,8> : public LosslessTraitsImplT<BYTE, 8>
         { return (signed char)Errval; }
 
     static inlinehint LONG ComputeErrVal(LONG d)
-    { return (signed char)(d); }
+        { return (signed char)(d); }
 
     static inlinehint BYTE ComputeReconstructedSample(LONG Px, LONG ErrVal)
         { return BYTE(Px + ErrVal);  }
-    
 };
 
 
-
 template<>
-struct LosslessTraitsT<USHORT,16> : public LosslessTraitsImplT<USHORT,16> 
+struct LosslessTraitsT<USHORT,16> : LosslessTraitsImplT<USHORT,16> 
 {
     typedef SAMPLE PIXEL;
 
@@ -93,14 +89,11 @@ struct LosslessTraitsT<USHORT,16> : public LosslessTraitsImplT<USHORT,16>
 
     static inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)
         { return SAMPLE(Px + ErrVal);  }
-
 };
 
 
-
-
 template<class SAMPLE, LONG bpp>
-struct LosslessTraitsT<Triplet<SAMPLE>,bpp> : public LosslessTraitsImplT<SAMPLE,bpp>
+struct LosslessTraitsT<Triplet<SAMPLE>,bpp> : LosslessTraitsImplT<SAMPLE,bpp>
 {
     typedef Triplet<SAMPLE> PIXEL;
 
@@ -110,11 +103,8 @@ struct LosslessTraitsT<Triplet<SAMPLE>,bpp> : public LosslessTraitsImplT<SAMPLE,
     static inlinehint bool IsNear(PIXEL lhs, PIXEL rhs) 
         { return lhs == rhs; }
 
-
     static inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)
         { return SAMPLE(Px + ErrVal);  }
-
-
 };
 
 #endif

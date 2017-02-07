@@ -4,22 +4,14 @@
 
 #include "config.h"
 #include "util.h"
-#include "jpegmarker.h"
 #include "header.h"
-               
-
+#include "decoderstrategy.h"
+#include "encoderstrategy.h"
+#include "lookuptable.h"
 #include <math.h>
-
 #include <vector>
 #include <stdio.h>
 #include <iostream>
-
-#include "decoderstrategy.h"
-#include "encoderstrategy.h"
-#include "context.h"
-#include "contextrunmode.h"
-#include "lookuptable.h"
-
 
 
 // As defined in the JPEG-LS standard 
@@ -87,7 +79,7 @@ std::vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 template<class STRATEGY>
 std::auto_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& info, const JlsCustomParameters& presets)
 {
-    STRATEGY* pstrategy = NULL;
+    STRATEGY* pstrategy;
     if (presets.RESET != 0 && presets.RESET != BASIC_RESET)
     {
         DefaultTraitsT<BYTE,BYTE> traits((1 << info.bitspersample) - 1, info.allowedlossyerror); 
@@ -152,17 +144,19 @@ STRATEGY* JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters& info)
     if (info.bitspersample <= 8)
     {
         if (info.ilv == ILV_SAMPLE)
-            return CreateCodec(DefaultTraitsT<BYTE,Triplet<BYTE> >(maxval, info.allowedlossyerror), s, info);   
+            return CreateCodec(DefaultTraitsT<BYTE,Triplet<BYTE> >(maxval, info.allowedlossyerror), s, info);
         
-        return CreateCodec(DefaultTraitsT<BYTE, BYTE>((1 << info.bitspersample) - 1, info.allowedlossyerror), s, info);     
+        return CreateCodec(DefaultTraitsT<BYTE, BYTE>((1 << info.bitspersample) - 1, info.allowedlossyerror), s, info);
     }
-    else if (info.bitspersample <= 16)
+
+    if (info.bitspersample <= 16)
     {
         if (info.ilv == ILV_SAMPLE)
-            return CreateCodec(DefaultTraitsT<USHORT,Triplet<USHORT> >(maxval, info.allowedlossyerror), s, info);   
+            return CreateCodec(DefaultTraitsT<USHORT,Triplet<USHORT> >(maxval, info.allowedlossyerror), s, info);
 
-        return CreateCodec(DefaultTraitsT<USHORT, USHORT>(maxval, info.allowedlossyerror), s, info);    
+        return CreateCodec(DefaultTraitsT<USHORT, USHORT>(maxval, info.allowedlossyerror), s, info);
     }
+
     return NULL;
 }
 

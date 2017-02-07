@@ -9,8 +9,6 @@
 
 #include "../src/interface.h"
 #include "../src/util.h"
-#include "../src/jpegmarker.h"
-#include "../src/processline.h"
 
 #include "util.h"
 
@@ -23,7 +21,6 @@ void TestDamagedBitStream1()
     std::vector<BYTE> rgbyteOut(256 * 256 * 2); 
     JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
     ASSERT(error == InvalidCompressedData);
-
 }
 
 
@@ -39,7 +36,6 @@ void TestDamagedBitStream2()
     std::vector<BYTE> rgbyteOut(512 * 512); 
     JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
     ASSERT(error == InvalidCompressedData);
-
 }
 
 
@@ -56,7 +52,6 @@ void TestDamagedBitStream3()
     std::vector<BYTE> rgbyteOut(512 * 512); 
     JLS_ERROR error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], int(rgbyteCompressed.size()), NULL);
     ASSERT(error == InvalidCompressedData);
-
 }
 
 
@@ -98,7 +93,6 @@ void TestFileWithRandomHeaderDamage(SZC filename)
         std::cout << "\r\n";        
     }
 }
-
 
 
 void TestRandomMalformedHeader()

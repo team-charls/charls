@@ -5,7 +5,6 @@
 #ifndef CHARLS_DECODERSTATEGY
 #define CHARLS_DECODERSTATEGY
 
-#include "jpegmarker.h"
 #include "processline.h"
 #include "config.h"
 #include "util.h"
@@ -181,7 +180,6 @@ public:
         while (_validBits < bufferbits - 8);
 
         _nextFFPosition = FindNextFF();
-        return;
     }
 
 

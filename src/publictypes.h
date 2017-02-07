@@ -8,7 +8,7 @@
 
 #ifdef __cplusplus
 #include <iostream>
-#include <cstddef>
+#include <cstddef> // for std::size_t
 #endif
 
 enum JLS_ERROR

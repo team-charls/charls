@@ -18,10 +18,9 @@
 template <class sample, class pixel>
 struct DefaultTraitsT 
 {
-public:
     typedef sample SAMPLE;
     typedef pixel PIXEL;
-    
+
     LONG MAXVAL;
     LONG RANGE;
     LONG NEAR;
@@ -52,19 +51,20 @@ public:
         RESET = BASIC_RESET;
     }
 
-    
     inlinehint LONG ComputeErrVal(LONG e) const
     {
         return ModRange(Quantize(e));
     }
-    
+
     inlinehint SAMPLE ComputeReconstructedSample(LONG Px, LONG ErrVal)
     {
         return FixReconstructedValue(Px + DeQuantize(ErrVal)); 
     }
 
     inlinehint bool IsNear(LONG lhs, LONG rhs) const
-        { return std::abs(lhs-rhs) <=NEAR; }
+    {
+        return std::abs(lhs-rhs) <=NEAR;
+    }
 
     bool IsNear(Triplet<SAMPLE> lhs, Triplet<SAMPLE> rhs) const
     {
@@ -99,10 +99,10 @@ public:
 private:
     LONG Quantize(LONG Errval) const
     {
-        if (Errval > 0)
+        if (Errval > 0) 
             return  (Errval + NEAR) / (2 * NEAR + 1);
-        else
-            return - (NEAR - Errval) / (2 * NEAR + 1);      
+
+        return - (NEAR - Errval) / (2 * NEAR + 1);
     }
 
 
@@ -120,7 +120,6 @@ private:
 
         return SAMPLE(CorrectPrediction(val)); 
     }
-
 };
 
 

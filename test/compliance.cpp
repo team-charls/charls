@@ -5,14 +5,14 @@
 
 #include "config.h"
 
+#include "util.h"
+
 #include "../src/interface.h"
 #include "../src/util.h"
-#include "../src/jpegmarker.h"
 
 #include <iostream>
 #include <vector>
 
-#include "util.h"
 
 
 void Triplet2Planar(std::vector<BYTE>& rgbyte, Size size)
@@ -120,7 +120,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 
 BYTE palettisedDataH10[] = {
     0xFF, 0xD8, //Start of image (SOI) marker 
-    0xFF, 0xF7, //Start of JPEG-LS frame (SOF 55) marker – marker segment follows 
+    0xFF, 0xF7, //Start of JPEG-LS frame (SOF 55) marker ï¿½ marker segment follows 
     0x00, 0x0B, //Length of marker segment = 11 bytes including the length field 
     0x02, //P = Precision = 2 bits per sample 
     0x00, 0x04, //Y = Number of lines = 4 
@@ -130,7 +130,7 @@ BYTE palettisedDataH10[] = {
     0x11, //Sub-sampling: H1 = 1, V1 = 1 
     0x00, //Tq1 = 0 (this field is always 0) 
 
-    0xFF, 0xF8, //LSE – JPEG-LS preset parameters marker 
+    0xFF, 0xF8, //LSE ï¿½ JPEG-LS preset parameters marker 
     0x00, 0x11, //Length of marker segment = 17 bytes including the length field 
     0x02, //ID = 2, mapping table  
     0x05, //TID = 5 Table identifier (arbitrary) 
@@ -151,12 +151,6 @@ BYTE palettisedDataH10[] = {
     0xDB, 0x95, 0xF0, //3 bytes of compressed image data 
     0xFF, 0xD9 //End of image (EOI) marker 
 };
-
-
-
-
-
-
 
 
 

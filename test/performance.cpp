@@ -4,17 +4,9 @@
 
 
 #include "config.h"
-#include <iostream>
-#include <vector>
-
-#include "../src/interface.h"
-#include "../src/util.h"
-#include "../src/colortransform.h"
-#include "../src/jpegmarker.h"
-#include "../src/processline.h"
-
 #include "util.h"
-
+#include "../src/util.h"
+#include <vector>
 
 
 void TestFile16BitAs12(SZC strName, int ioffs, Size size2, int ccomp, bool littleEndianFile)

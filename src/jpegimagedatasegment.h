@@ -7,7 +7,6 @@
 #include "util.h"
 #include "jpegsegment.h"
 #include "jpegstreamwriter.h"
-#include <vector>
 
 class JpegImageDataSegment : public JpegSegment
 {

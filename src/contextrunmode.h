@@ -39,7 +39,7 @@ struct CContextRunMode
         { 
             Ntest <<= 1;
             ASSERT(k <= 32); 
-        };
+        }
         return k;
     }
 

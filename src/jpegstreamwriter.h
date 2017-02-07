@@ -29,8 +29,6 @@ public:
 
     void AddScan(ByteStreamInfo info, const JlsParameters* pparams);
 
-    void AddLSE(const JlsCustomParameters* pcustom);
-
     void AddColorTransform(int i);
 
     size_t GetBytesWritten()
@@ -103,7 +101,6 @@ private:
         _byteOffset += byteCount;
     }
 
-private:
     bool _bCompare;
     ByteStreamInfo _data;
     size_t _byteOffset;
