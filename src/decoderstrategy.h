@@ -180,7 +180,6 @@ public:
         while (_validBits < bufferbits - 8);
 
         _nextFFPosition = FindNextFF();
-        return;
     }
 
     uint8_t* FindNextFF() const

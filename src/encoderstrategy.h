@@ -179,7 +179,6 @@ protected:
 
     std::unique_ptr<DecoderStrategy> _qdecoder;
 
-protected:
     JlsParameters _params;
     std::unique_ptr<ProcessLine> _processLine;
 

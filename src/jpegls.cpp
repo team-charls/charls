@@ -163,6 +163,7 @@ unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters
                 case  8: return CreateCodec(LosslessTraitsT<uint8_t, 8>(), s, params);
                 case 12: return CreateCodec(LosslessTraitsT<uint16_t, 12>(), s, params);
                 case 16: return CreateCodec(LosslessTraitsT<uint16_t, 16>(), s, params);
+                default: ;
             }
         }
     }

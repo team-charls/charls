@@ -113,8 +113,8 @@ private:
     {
         if (Errval > 0)
             return  (Errval + NEAR) / (2 * NEAR + 1);
-        else
-            return - (NEAR - Errval) / (2 * NEAR + 1);
+
+        return - (NEAR - Errval) / (2 * NEAR + 1);
     }
 
     inlinehint int32_t DeQuantize(int32_t Errval) const

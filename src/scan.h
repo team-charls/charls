@@ -492,11 +492,9 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DecodeRIPixel(int32_t Ra, int
         const int32_t ErrVal = DecodeRIError(_contextRunmode[1]);
         return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Ra, ErrVal));
     }
-    else
-    {
-        const int32_t ErrVal = DecodeRIError(_contextRunmode[0]);
-        return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Rb, ErrVal * Sign(Rb - Ra)));
-    }
+
+    const int32_t ErrVal = DecodeRIError(_contextRunmode[0]);
+    return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Rb, ErrVal * Sign(Rb - Ra)));
 }
 
 
@@ -509,12 +507,10 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(int32_t x, int3
         EncodeRIError(_contextRunmode[1], ErrVal);
         return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Ra, ErrVal));
     }
-    else
-    {
-        const int32_t ErrVal = traits.ComputeErrVal((x - Rb) * Sign(Rb - Ra));
-        EncodeRIError(_contextRunmode[0], ErrVal);
-        return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Rb, ErrVal * Sign(Rb - Ra)));
-    }
+
+    const int32_t ErrVal = traits.ComputeErrVal((x - Rb) * Sign(Rb - Ra));
+    EncodeRIError(_contextRunmode[0], ErrVal);
+    return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Rb, ErrVal * Sign(Rb - Ra)));
 }
 
 
