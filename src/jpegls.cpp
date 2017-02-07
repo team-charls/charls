@@ -8,9 +8,7 @@
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
 #include "lookuptable.h"
-#include <math.h>
 #include <vector>
-#include <stdio.h>
 #include <iostream>
 
 
@@ -74,8 +72,6 @@ std::vector<signed char> rgquant12Ll = CreateQLutLossless(12);
 std::vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
-
-
 template<class STRATEGY>
 std::auto_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& info, const JlsCustomParameters& presets)
 {
@@ -98,7 +94,6 @@ std::auto_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters&
     }
     return std::auto_ptr<STRATEGY>(pstrategy);
 }
-
 
 
 template<class TRAITS, class STRATEGY>

@@ -16,6 +16,7 @@
 #include "header.h"
 #include "jpegstreamwriter.h"
 #include <sstream>
+#include <cstring>
 
 
 static JLS_ERROR CheckInput(ByteStreamInfo uncompressedStream, const JlsParameters* pparams)
@@ -198,7 +199,7 @@ extern "C"
 
         std::vector<BYTE> rgbyteCompressed(compressedLength + 16);
 
-        memcpy(&rgbyteCompressed[0], compressedData, compressedLength);
+        std::memcpy(&rgbyteCompressed[0], compressedData, compressedLength);
 
         writer.EnableCompare(true);
         writer.Write(FromByteArray(&rgbyteCompressed[0], rgbyteCompressed.size()));
