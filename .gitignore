@@ -5,6 +5,7 @@ bin/
 Win32/
 x64/
 .vscode/
+.vs/
 [Dd]ebug/
 [Rr]elease/
 [Cc]hecked/
