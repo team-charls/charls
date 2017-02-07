@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdio>
 
 
 bool IsMachineLittleEndian()
@@ -45,7 +46,7 @@ bool ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs, int bytes)
         return false;
     }
 
-    fseek(pfile, 0, SEEK_END);  
+    fseek(pfile, 0, SEEK_END);
     int cbyteFile = ftell(pfile);
     if (ioffs < 0)
     {
@@ -57,7 +58,7 @@ bool ReadFile(SZC strName, std::vector<BYTE>* pvec, int ioffs, int bytes)
         bytes = cbyteFile  -ioffs;
     }
 
-    fseek(pfile, ioffs, SEEK_SET);  
+    fseek(pfile, ioffs, SEEK_SET);
     pvec->resize(bytes);
     size_t bytesRead = fread(&(*pvec)[0],1, pvec->size(), pfile);
     fclose(pfile);
