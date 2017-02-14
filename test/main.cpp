@@ -303,7 +303,7 @@ bool DecodeToPnm(std::istream& input, std::ostream& output)
 
     int maxValue = (1 << params.bitsPerSample) - 1;
     int bytesPerSample = maxValue > 255 ? 2 : 1;
-    std::vector<uint8_t> outputBuffer(params.width * params.height * bytesPerSample);
+    std::vector<uint8_t> outputBuffer(params.width * params.height * bytesPerSample * params.components);
     auto outputInfo = FromByteArray(outputBuffer.data(), outputBuffer.size());
     result = JpegLsDecodeStream(outputInfo, inputInfo, &params, nullptr);
     if (result != ApiResult::OK)
@@ -359,7 +359,7 @@ std::vector<int> readPnmHeader(std::istream& pnmFile)
 // Purpose: this function can encode an image stored in the Portable Anymap Format (PNM)
 //          into the JPEG-LS format. The 2 binary formats P5 and P6 are supported:
 //          Portable GrayMap: P5 = binary, extension = .pgm, 0-2^16 (gray scale)
-//          Portable PixMap: P6 = binary, extension.ppm, range 0-255 (RGB)
+//          Portable PixMap: P6 = binary, extension.ppm, range 0-2^16 (RGB)
 bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
 {
     std::vector<int> readValues = readPnmHeader(pnmFile);
