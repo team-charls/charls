@@ -29,7 +29,7 @@ struct JlsContext
     }
 
 
-    JlsContext(int32_t a) :
+    explicit JlsContext(int32_t a) :
         A(a),
         B(0),
         C(0),

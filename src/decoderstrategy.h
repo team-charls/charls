@@ -14,7 +14,7 @@
 class DecoderStrategy
 {
 public:
-    DecoderStrategy(const JlsParameters& params) :
+    explicit DecoderStrategy(const JlsParameters& params) :
         _params(params),
         _byteStream(nullptr),
         _readCache(0),
