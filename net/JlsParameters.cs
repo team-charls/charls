@@ -1,5 +1,5 @@
 ﻿//
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
+// (C) CharLS Team, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 using System.Runtime.InteropServices;
@@ -16,9 +16,9 @@ namespace CharLS
         internal int Components;
         internal int AllowedLossyError;
         internal JpegLSInterleaveMode InterleaveMode;
-        internal int ColorTransform;
+        private readonly int colorTransform; // note: not used in this adapter interface.
         internal bool OutputBgr;
-        internal JpegLSPresetCodingParameters Custom;
+        private readonly JpegLSPresetCodingParameters custom;  // note: not used in this adapter interface.
         internal JfifParameters Jfif;
     }
 }
