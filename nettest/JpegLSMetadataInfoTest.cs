@@ -37,6 +37,9 @@ namespace CharLS.Test
             Assert.AreEqual(2, info.BytesPerLine);
             Assert.AreEqual(JpegLSInterleaveMode.Sample, info.InterleaveMode);
             Assert.IsTrue(info.OutputBgr);
+
+            info.InterleaveMode = JpegLSInterleaveMode.Line;
+            Assert.AreEqual(JpegLSInterleaveMode.Line, info.InterleaveMode);
         }
 
         [Test]
