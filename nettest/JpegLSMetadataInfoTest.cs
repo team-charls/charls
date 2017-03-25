@@ -19,7 +19,24 @@ namespace CharLS.Test
             Assert.AreEqual(1, info.ComponentCount);
             Assert.AreEqual(2, info.BitsPerComponent);
             Assert.AreEqual(0, info.AllowedLossyError);
+            Assert.AreEqual(0, info.BytesPerLine);
+            Assert.IsFalse(info.OutputBgr);
             Assert.AreEqual(JpegLSInterleaveMode.None, info.InterleaveMode);
+        }
+
+        [Test]
+        public void ConstructAndModify()
+        {
+            var info = new JpegLSMetadataInfo
+            {
+                BytesPerLine = 2,
+                InterleaveMode = JpegLSInterleaveMode.Sample,
+                OutputBgr = true
+            };
+
+            Assert.AreEqual(2, info.BytesPerLine);
+            Assert.AreEqual(JpegLSInterleaveMode.Sample, info.InterleaveMode);
+            Assert.IsTrue(info.OutputBgr);
         }
 
         [Test]
