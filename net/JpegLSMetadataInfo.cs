@@ -82,6 +82,7 @@ namespace CharLS
                 throw new InvalidDataException("parameters.BitsPerSample < 2");
             if (parameters.Components < 1)
                 throw new InvalidDataException("parameters.Components < 1");
+            Contract.EndContractBlock();
 
             width = parameters.Width;
             height = parameters.Height;
@@ -274,14 +275,10 @@ namespace CharLS
         {
             unchecked
             {
-                int result = Width;
+                var result = Width;
                 result = (result * 397) ^ Height;
                 result = (result * 397) ^ BitsPerComponent;
-                result = (result * 397) ^ BytesPerLine;
                 result = (result * 397) ^ ComponentCount;
-                result = (result * 397) ^ AllowedLossyError;
-                result = (result * 397) ^ InterleaveMode.GetHashCode();
-                result = (result * 397) ^ OutputBgr.GetHashCode();
                 return result;
             }
         }
@@ -290,10 +287,11 @@ namespace CharLS
         {
             parameters.Width = Width;
             parameters.Height = Height;
-            parameters.Components = ComponentCount;
             parameters.BitsPerSample = BitsPerComponent;
-            parameters.InterleaveMode = InterleaveMode;
+            parameters.BytesPerLine = BytesPerLine;
+            parameters.Components = ComponentCount;
             parameters.AllowedLossyError = AllowedLossyError;
+            parameters.InterleaveMode = InterleaveMode;
             parameters.OutputBgr = OutputBgr;
         }
 
