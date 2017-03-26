@@ -154,6 +154,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Checked|Win32'">
     <CodeAnalysisRuleSet>CharLS.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>..\bin_2017\Checked\x86\CharLSNet.xml</DocumentationFile>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
+    <CodeAnalysisRuleSet>CharLS.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>..\bin_2017\Debug\x86\CharLSNet.xml</DocumentationFile>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -176,6 +185,7 @@
     <Compile Include="SafeNativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CharLS.ruleset" />
     <None Include="CharLSKeyPair.snk" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
