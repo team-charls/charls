@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 
 #ifndef CHARLS_DEFAULTTRAITS
@@ -20,7 +20,7 @@ const int BASIC_RESET = 64; // Default value as defined in ITU T.87, table C.2
 // This traits class is used to initialize a coder/decoder.
 // The coder/decoder also delegates some functions to the traits class.
 // This is to allow the traits class to replace the default implementation here with optimized specific implementations.
-// This is done for lossless coding/decoding: see losslesstraits.h 
+// This is done for lossless coding/decoding: see losslesstraits.h
 
 template<typename sample, typename pixel>
 struct DefaultTraitsT
@@ -65,7 +65,7 @@ struct DefaultTraitsT
 
     inlinehint SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) const
     {
-        return FixReconstructedValue(Px + DeQuantize(ErrVal)); 
+        return FixReconstructedValue(Px + DeQuantize(ErrVal));
     }
 
     inlinehint bool IsNear(int32_t lhs, int32_t rhs) const
@@ -123,7 +123,7 @@ private:
     }
 
     inlinehint SAMPLE FixReconstructedValue(int32_t val) const
-    { 
+    {
         if (val < -NEAR)
         {
             val = val + RANGE * (2 * NEAR + 1);
@@ -133,7 +133,7 @@ private:
             val = val - RANGE * (2 * NEAR + 1);
         }
 
-        return SAMPLE(CorrectPrediction(val));
+        return static_cast<SAMPLE>(CorrectPrediction(val));
     }
 };
 

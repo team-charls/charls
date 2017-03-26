@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 
 #ifndef CHARLS_UTIL
@@ -130,7 +130,7 @@ inline bool operator!=(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
 template<typename sample>
 struct Quad : Triplet<sample>
 {
-    Quad() : 
+    Quad() :
         v4(0)
         {}
 
@@ -189,14 +189,6 @@ public:
 private:
     static const std::error_category& CharLSCategoryInstance();
 };
-
-
-inline ByteStreamInfo FromStream(std::basic_streambuf<char>* stream)
-{
-    ByteStreamInfo info = ByteStreamInfo();
-    info.rawStream = stream;
-    return info;
-}
 
 
 inline void SkipBytes(ByteStreamInfo& streamInfo, std::size_t count)

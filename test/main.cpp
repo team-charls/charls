@@ -1,5 +1,5 @@
 //
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 #include "config.h"
@@ -38,7 +38,7 @@ bool ScanFile(SZC strNameEncoded, std::vector<uint8_t>* rgbyteFile, JlsParameter
         Assert::IsTrue(false);
         return false;
     }
-    std::basic_filebuf<char> jlsFile; 
+    std::basic_filebuf<char> jlsFile;
     jlsFile.open(strNameEncoded, mode_input);
 
     ByteStreamInfo rawStreamInfo = {&jlsFile, nullptr, 0};
@@ -69,7 +69,7 @@ void TestTraits16bit()
     for (int i = -8095; i < 8095; ++i)
     {
         Assert::IsTrue(traits1.CorrectPrediction(i) == traits2.CorrectPrediction(i));
-        Assert::IsTrue(traits1.IsNear(i,2) == traits2.IsNear(i,2)); 
+        Assert::IsTrue(traits1.IsNear(i,2) == traits2.IsNear(i,2));
     }
 }
 
@@ -83,7 +83,7 @@ void TestTraits8bit()
     Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
     Assert::IsTrue(traits1.RESET == traits2.RESET);
     Assert::IsTrue(traits1.bpp == traits2.bpp);
-    Assert::IsTrue(traits1.qbpp == traits2.qbpp);   
+    Assert::IsTrue(traits1.qbpp == traits2.qbpp);
 
     for (int i = -255; i < 255; ++i)
     {
@@ -94,7 +94,7 @@ void TestTraits8bit()
     for (int i = -255; i < 512; ++i)
     {
         Assert::IsTrue(traits1.CorrectPrediction(i) == traits2.CorrectPrediction(i));
-        Assert::IsTrue(traits1.IsNear(i,2) == traits2.IsNear(i,2)); 
+        Assert::IsTrue(traits1.IsNear(i,2) == traits2.IsNear(i,2));
     }
 }
 
@@ -165,7 +165,7 @@ void TestBgr()
     JlsParameters params;
     std::vector<uint8_t> rgbyteEncoded;
     ScanFile("test/conformance/T8C2E3.JLS", &rgbyteEncoded, &params);
-    std::vector<uint8_t> rgbyteDecoded(params.width * params.height * params.components);    
+    std::vector<uint8_t> rgbyteDecoded(params.width * params.height * params.components);
 
     params.outputBgr = static_cast<char>(true);
 
@@ -177,7 +177,7 @@ void TestBgr()
     Assert::IsTrue(rgbyteDecoded[2] == 0xa1);
     Assert::IsTrue(rgbyteDecoded[params.width * 6 + 3] == 0x2d);
     Assert::IsTrue(rgbyteDecoded[params.width * 6 + 4] == 0x43);
-    Assert::IsTrue(rgbyteDecoded[params.width * 6 + 5] == 0x4d);  
+    Assert::IsTrue(rgbyteDecoded[params.width * 6 + 5] == 0x4d);
 }
 
 
@@ -478,7 +478,7 @@ bool ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
 
 ////void TestDecodeFromStream(const char* strNameEncoded)
 ////{
-////    std::basic_filebuf<char> jlsFile; 
+////    std::basic_filebuf<char> jlsFile;
 ////    jlsFile.open(strNameEncoded, mode_input);
 ////    Assert::IsTrue(jlsFile.is_open());
 ////    ByteStreamInfo compressedByteStream = {&jlsFile, nullptr, 0};
@@ -505,7 +505,7 @@ ApiResult DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
     std::fstream jlsFile(strNameEncoded, mode_input);
     ByteStreamInfo compressedByteStream = {jlsFile.rdbuf(), nullptr, 0};
 
-    std::fstream rawFile(strNameOutput, mode_output); 
+    std::fstream rawFile(strNameOutput, mode_output);
     ByteStreamInfo rawStream = {rawFile.rdbuf(), nullptr, 0};
 
     auto value = JpegLsDecodeStream(rawStream, compressedByteStream, nullptr, nullptr);
@@ -609,7 +609,7 @@ int main(int argc, char* argv[])
                 printf("Syntax: -decodetopnm inputfile outputfile \r\n");
                 return 0;
             }
-            std::fstream pnmFile(argv[3], mode_output); 
+            std::fstream pnmFile(argv[3], mode_output);
             std::fstream jlsFile(argv[2], mode_input);
 
             return DecodeToPnm(jlsFile, pnmFile) ? EXIT_SUCCESS : EXIT_FAILURE;
@@ -622,9 +622,9 @@ int main(int argc, char* argv[])
                 printf("Syntax: -encodepnm inputfile outputfile\r\n");
                 return 0;
             }
-            std::fstream pnmFile(argv[2], mode_input); 
-            std::fstream jlsFile(argv[3], mode_output); 
-    
+            std::fstream pnmFile(argv[2], mode_input);
+            std::fstream jlsFile(argv[3], mode_output);
+
             return EncodePnm(pnmFile,jlsFile) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 

@@ -1,5 +1,5 @@
 //
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 #ifndef CHARLS_COLORTRANSFORM
 #define CHARLS_COLORTRANSFORM
@@ -52,9 +52,9 @@ struct TransformHp1
     inlinehint Triplet<SAMPLE> operator()(int R, int G, int B) const
     {
         Triplet<SAMPLE> hp1;
-        hp1.v2 = SAMPLE(G);
-        hp1.v1 = SAMPLE(R - G + RANGE / 2);
-        hp1.v3 = SAMPLE(B - G + RANGE / 2);
+        hp1.v2 = static_cast<SAMPLE>(G);
+        hp1.v1 = static_cast<SAMPLE>(R - G + RANGE / 2);
+        hp1.v3 = static_cast<SAMPLE>(B - G + RANGE / 2);
         return hp1;
     }
 };
@@ -75,9 +75,9 @@ struct TransformHp2
         inlinehint Triplet<SAMPLE> operator() (int v1, int v2, int v3) const
         {
             Triplet<SAMPLE> rgb;
-            rgb.R  = SAMPLE(v1 + v2 - RANGE / 2);                     // new R
-            rgb.G  = SAMPLE(v2);                                    // new G
-            rgb.B  = SAMPLE(v3 + ((rgb.R + rgb.G) >> 1) - RANGE / 2); // new B
+            rgb.R  = static_cast<SAMPLE>(v1 + v2 - RANGE / 2);                     // new R
+            rgb.G  = static_cast<SAMPLE>(v2);                                      // new G
+            rgb.B  = static_cast<SAMPLE>(v3 + ((rgb.R + rgb.G) >> 1) - RANGE / 2); // new B
             return rgb;
         }
     };
@@ -105,9 +105,9 @@ struct TransformHp3
         {
             const int G = v1 - ((v3 + v2) >> 2) + RANGE / 4;
             Triplet<SAMPLE> rgb;
-            rgb.R  = SAMPLE(v3 + G - RANGE / 2); // new R
-            rgb.G  = SAMPLE(G);                  // new G
-            rgb.B  = SAMPLE(v2 + G - RANGE / 2); // new B
+            rgb.R  = static_cast<SAMPLE>(v3 + G - RANGE / 2); // new R
+            rgb.G  = static_cast<SAMPLE>(G);                  // new G
+            rgb.B  = static_cast<SAMPLE>(v2 + G - RANGE / 2); // new B
             return rgb;
         }
     };
@@ -115,9 +115,9 @@ struct TransformHp3
     inlinehint Triplet<SAMPLE> operator() (int R, int G, int B) const
     {
         Triplet<SAMPLE> hp3;
-        hp3.v2 = SAMPLE(B - G + RANGE / 2);
-        hp3.v3 = SAMPLE(R - G + RANGE / 2);
-        hp3.v1 = SAMPLE(G + ((hp3.v2 + hp3.v3)>>2)) - RANGE / 4;
+        hp3.v2 = static_cast<SAMPLE>(B - G + RANGE / 2);
+        hp3.v3 = static_cast<SAMPLE>(R - G + RANGE / 2);
+        hp3.v1 = static_cast<SAMPLE>(G + ((hp3.v2 + hp3.v3)>>2)) - RANGE / 4;
         return hp3;
     }
 };

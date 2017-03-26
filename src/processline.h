@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 #ifndef CHARLS_PROCESSLINE
 #define CHARLS_PROCESSLINE
 
@@ -110,7 +110,7 @@ public:
 
         if (_bytesPerLine - pixelCount * _bytesPerPixel > 0)
         {
-            _rawData->pubseekoff(std::streamoff(_bytesPerLine - bytesToRead), std::ios_base::cur);
+            _rawData->pubseekoff(static_cast<std::streamoff>(_bytesPerLine - bytesToRead), std::ios_base::cur);
         }
     }
 

@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 #ifndef CHARLS_DECODERSTATEGY
 #define CHARLS_DECODERSTATEGY
@@ -85,7 +85,7 @@ public:
     inlinehint void Skip(int32_t length)
     {
         _validBits -= length;
-        _readCache = _readCache << length; 
+        _readCache = _readCache << length;
     }
 
 
@@ -188,7 +188,7 @@ public:
 
         while (positionNextFF < _endPosition)
         {
-            if (*positionNextFF == 0xFF) 
+            if (*positionNextFF == 0xFF)
                 break;
 
             positionNextFF++;
@@ -225,7 +225,7 @@ public:
 
         ASSERT(length != 0 && length <= _validBits);
         ASSERT(length < 32);
-        const int32_t result = int32_t(_readCache >> (bufferbits - length));
+        const int32_t result = static_cast<int32_t>(_readCache >> (bufferbits - length));
         Skip(length);
         return result;
     }
@@ -237,7 +237,7 @@ public:
             MakeValid();
         }
 
-        return _readCache >> (bufferbits - 8); 
+        return _readCache >> (bufferbits - 8);
     }
 
     inlinehint bool ReadBit()

@@ -1,5 +1,5 @@
 //
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 #include "jpegstreamreader.h"
@@ -66,7 +66,7 @@ ApiResult CheckParameterCoherent(const JlsParameters& params)
 
 JpegLSPresetCodingParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
 {
-    JpegLSPresetCodingParameters preset = JpegLSPresetCodingParameters();
+    JpegLSPresetCodingParameters preset;
 
     const int32_t FACTOR = (std::min(MAXVAL, 4095) + 128) / 256;
 
@@ -115,7 +115,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 
     const int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_params.bitsPerSample + 7)/8);
 
-    if (rawPixels.rawData && int64_t(rawPixels.count) < bytesPerPlane * _params.components)
+    if (rawPixels.rawData && static_cast<int64_t>(rawPixels.count) < bytesPerPlane * _params.components)
         throw charls_error(ApiResult::UncompressedBufferTooSmall);
 
     int componentIndex = 0;
@@ -326,9 +326,9 @@ void JpegStreamReader::ReadJfif()
     // thumbnail
     _params.jfif.Xthumbnail = ReadByte();
     _params.jfif.Ythumbnail = ReadByte();
-    if(_params.jfif.Xthumbnail > 0 && _params.jfif.thumbnail) 
+    if(_params.jfif.Xthumbnail > 0 && _params.jfif.thumbnail)
     {
-        vector<char> tempbuff(static_cast<char*>(_params.jfif.thumbnail), 
+        vector<char> tempbuff(static_cast<char*>(_params.jfif.thumbnail),
             static_cast<char*>(_params.jfif.thumbnail)+3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
         ReadNBytes(tempbuff, 3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
     }

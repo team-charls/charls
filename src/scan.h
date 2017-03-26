@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 #ifndef CHARLS_SCAN
 #define CHARLS_SCAN
@@ -62,7 +62,7 @@ inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 {
-    // sign trick reduces the number of if statements (branches) 
+    // sign trick reduces the number of if statements (branches)
     const int32_t sgn = BitWiseSign(Rb - Ra);
 
     // is Ra between Rc and Rb?
@@ -75,7 +75,7 @@ inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
         return Ra;
     }
 
-    // default case, valid if Rc element of [Ra,Rb] 
+    // default case, valid if Rc element of [Ra,Rb]
     return Ra + Rb - Rc;
 }
 
@@ -83,7 +83,7 @@ inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 inlinehint int32_t UnMapErrVal(int32_t mappedError)
 {
-    const int32_t sign = int32_t(mappedError << (INT32_BITCOUNT-1)) >> (INT32_BITCOUNT-1);
+    const int32_t sign = static_cast<int32_t>(mappedError << (INT32_BITCOUNT-1)) >> (INT32_BITCOUNT-1);
     return sign ^ (mappedError >> 1);
 }
 
@@ -206,7 +206,7 @@ protected:
     int _width;
     int32_t T1;
     int32_t T2;
-    int32_t T3; 
+    int32_t T3;
 
     // compression context
     JlsContext _contexts[365];
@@ -235,12 +235,12 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t
     if (code.GetLength() != 0)
     {
         STRATEGY::Skip(code.GetLength());
-        ErrVal = code.GetValue(); 
+        ErrVal = code.GetValue();
         ASSERT(std::abs(ErrVal) < 65535);
     }
     else
     {
-        ErrVal = UnMapErrVal(DecodeValue(k, traits.LIMIT, traits.qbpp)); 
+        ErrVal = UnMapErrVal(DecodeValue(k, traits.LIMIT, traits.qbpp));
         if (std::abs(ErrVal) > 65535)
             throw charls_error(charls::ApiResult::InvalidCompressedData);
     }
@@ -250,7 +250,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t
     }
     ctx.UpdateVariables(ErrVal, traits.NEAR, traits.RESET);
     ErrVal = ApplySign(ErrVal, sign);
-    return traits.ComputeReconstructedSample(Px, ErrVal); 
+    return traits.ComputeReconstructedSample(Px, ErrVal);
 }
 
 
@@ -290,8 +290,8 @@ inline CTable InitTable(int32_t k)
         if (paircode.first > CTable::cbit)
             break;
 
-        Code code = Code( nerr, short(paircode.first) );
-        table.AddEntry(uint8_t(paircode.second), code);
+        Code code(nerr, static_cast<short>(paircode.first));
+        table.AddEntry(static_cast<uint8_t>(paircode.second), code);
     }
 
     for (short nerr = -1; ; nerr--)
@@ -302,7 +302,7 @@ inline CTable InitTable(int32_t k)
         if (paircode.first > CTable::cbit)
             break;
 
-        Code code = Code(nerr, short(paircode.first));
+        Code code = Code(nerr, static_cast<short>(paircode.first));
         table.AddEntry(uint8_t(paircode.second), code);
     }
 
@@ -446,7 +446,7 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRIError(CContextRunMode& ctx, int32_t Errv
 {
     const int32_t k = ctx.GetGolomb();
     const bool map = ctx.ComputeMap(Errval, k);
-    const int32_t EMErrval = 2 * std::abs(Errval) - ctx._nRItype - int32_t(map);
+    const int32_t EMErrval = 2 * std::abs(Errval) - ctx._nRItype - static_cast<int32_t>(map);
 
     ASSERT(Errval == ctx.ComputeErrVal(EMErrval + ctx._nRItype, k));
     EncodeMappedValue(k, EMErrval, traits.LIMIT-J[_RUNindex]-1);
@@ -456,7 +456,7 @@ void JlsCodec<TRAITS,STRATEGY>::EncodeRIError(CContextRunMode& ctx, int32_t Errv
 
 template<typename TRAITS, typename STRATEGY>
 Triplet<typename TRAITS::SAMPLE> JlsCodec<TRAITS,STRATEGY>::DecodeRIPixel(Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb)
-{ 
+{
     const int32_t Errval1 = DecodeRIError(_contextRunmode[0]);
     const int32_t Errval2 = DecodeRIError(_contextRunmode[0]);
     const int32_t Errval3 = DecodeRIError(_contextRunmode[0]);
@@ -520,16 +520,16 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::EncodeRIPixel(int32_t x, int3
 template<typename TRAITS, typename STRATEGY>
 void JlsCodec<TRAITS, STRATEGY>::EncodeRunPixels(int32_t runLength, bool endOfLine)
 {
-    while (runLength >= int32_t(1 << J[_RUNindex]))
+    while (runLength >= static_cast<int32_t>(1 << J[_RUNindex]))
     {
         STRATEGY::AppendOnesToBitStream(1);
-        runLength = runLength - int32_t(1 << J[_RUNindex]);
+        runLength = runLength - static_cast<int32_t>(1 << J[_RUNindex]);
         IncrementRunIndex();
     }
 
     if (endOfLine)
     {
-        if (runLength != 0) 
+        if (runLength != 0)
         {
             STRATEGY::AppendOnesToBitStream(1);
         }
@@ -588,7 +588,7 @@ int32_t JlsCodec<TRAITS, STRATEGY>::DoRunMode(int32_t index, EncoderStrategy*)
 
     int32_t runLength = 0;
 
-    while (traits.IsNear(ptypeCurX[runLength],Ra)) 
+    while (traits.IsNear(ptypeCurX[runLength],Ra))
     {
         ptypeCurX[runLength] = Ra;
         runLength++;
@@ -694,10 +694,10 @@ void JlsCodec<TRAITS, STRATEGY>::DoLine(Triplet<SAMPLE>*)
 }
 
 
-// DoScan: Encodes or decodes a scan. 
+// DoScan: Encodes or decodes a scan.
 // In ILV_SAMPLE mode, multiple components are handled in DoLine
 // In ILV_LINE mode, a call do DoLine is made for every component
-// In ILV_NONE mode, DoScan is called for each component 
+// In ILV_NONE mode, DoScan is called for each component
 
 template<typename TRAITS, typename STRATEGY>
 void JlsCodec<TRAITS, STRATEGY>::DoScan()

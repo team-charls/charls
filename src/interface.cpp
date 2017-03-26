@@ -37,7 +37,7 @@ void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& 
 
     if (uncompressedStream.rawData)
     {
-        if (uncompressedStream.count < size_t(parameters.height * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1)))
+        if (uncompressedStream.count < static_cast<size_t>(parameters.height * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1)))
             throw charls_error(ApiResult::InvalidJlsParameters, "uncompressed size does not match with the other parameters");
     }
 
@@ -196,7 +196,7 @@ extern "C"
         if (!destination || !bytesWritten || !source || !params)
             return ApiResult::InvalidJlsParameters;
 
-        const ByteStreamInfo rawStreamInfo = FromByteArray(source, sourceLength);
+        const ByteStreamInfo rawStreamInfo = FromByteArrayConst(source, sourceLength);
         const ByteStreamInfo compressedStreamInfo = FromByteArray(destination, destinationLength);
 
         return JpegLsEncodeStream(compressedStreamInfo, *bytesWritten, rawStreamInfo, *params, errorMessage);
@@ -205,13 +205,13 @@ extern "C"
 
     CHARLS_IMEXPORT(ApiResult) JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* params, char* errorMessage)
     {
-        return JpegLsReadHeaderStream(FromByteArray(compressedData, compressedLength), params, errorMessage);
+        return JpegLsReadHeaderStream(FromByteArrayConst(compressedData, compressedLength), params, errorMessage);
     }
 
 
     CHARLS_IMEXPORT(ApiResult) JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage)
     {
-        const ByteStreamInfo compressedStream = FromByteArray(source, sourceLength);
+        const ByteStreamInfo compressedStream = FromByteArrayConst(source, sourceLength);
         const ByteStreamInfo rawStreamInfo = FromByteArray(destination, destinationLength);
 
         return JpegLsDecodeStream(rawStreamInfo, compressedStream, params, errorMessage);
@@ -223,7 +223,7 @@ extern "C"
     {
         try
         {
-            const ByteStreamInfo compressedStream = FromByteArray(compressedData, compressedLength);
+            const ByteStreamInfo compressedStream = FromByteArrayConst(compressedData, compressedLength);
             JpegStreamReader reader(compressedStream);
 
             const ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);

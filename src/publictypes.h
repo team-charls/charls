@@ -1,6 +1,6 @@
-/* 
-  (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-*/ 
+/*
+  (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+*/
 #ifndef CHARLS_PUBLICTYPES
 #define CHARLS_PUBLICTYPES
 
@@ -204,7 +204,7 @@ struct JfifParameters
 {
     /// <summary>
     /// Version of the JPEG File Interchange Format.
-    /// Should be set to zero to not write a JFIF header or to 1.02, encoded as: (1 * 256) + 2. 
+    /// Should be set to zero to not write a JFIF header or to 1.02, encoded as: (1 * 256) + 2.
     /// </summary>
     int32_t version;
 
@@ -285,9 +285,9 @@ struct JlsParameters
     CharlsInterleaveModeType interleaveMode;
 
     /// <summary>
-    /// Color transformation used in the compressed stream. The color transformations are all lossless and 
-    /// are an HP proprietary extension of the standard. Do not use the color transformations unless 
-    /// you know the decoder is capable of decoding it. Color transform typically improve compression ratios only 
+    /// Color transformation used in the compressed stream. The color transformations are all lossless and
+    /// are an HP proprietary extension of the standard. Do not use the color transformations unless
+    /// you know the decoder is capable of decoding it. Color transform typically improve compression ratios only
     /// for sythetic images (non - photorealistic computer generated images).
     /// </summary>
     CharlsColorTransformationType colorTransformation;
@@ -325,13 +325,18 @@ struct ByteStreamInfo
 };
 
 
-inline ByteStreamInfo FromByteArray(const void* bytes, std::size_t count)
+inline ByteStreamInfo FromByteArray(void* bytes, std::size_t count)
 {
-    ByteStreamInfo info = ByteStreamInfo();
-    info.rawData = static_cast<uint8_t*>(const_cast<void*>(bytes));
-    info.count = count;
-    return info;
+    return { nullptr, static_cast<uint8_t*>(bytes), count };
 }
+
+
+inline ByteStreamInfo FromByteArrayConst(const void* bytes, std::size_t count)
+{
+    return FromByteArray(const_cast<void*>(bytes), count);
+}
+
+
 
 #endif
 

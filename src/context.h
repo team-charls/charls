@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 
 #ifndef CHARLS_CONTEXT
@@ -53,7 +53,7 @@ struct JlsContext
 
         // For performance work on copies of A,B,N (compiler will use registers).
         int a = A + std::abs(errorValue);
-        int b = B + errorValue * (2 * NEAR + 1); 
+        int b = B + errorValue * (2 * NEAR + 1);
         int n = N;
 
         ASSERT(a < 65536 * 256);
@@ -70,7 +70,7 @@ struct JlsContext
         n = n + 1;
         N = static_cast<int16_t>(n);
 
-        if (b + n <= 0) 
+        if (b + n <= 0)
         {
             b = b + n;
             if (b <= -n)
