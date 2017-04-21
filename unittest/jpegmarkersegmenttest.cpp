@@ -1,10 +1,9 @@
 //
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 #include "stdafx.h"
 
-#include "CppUnitTest.h"
 #include "..\src\jpegmarkersegment.h"
 #include <memory>
 #include <cstdint>
@@ -26,7 +25,7 @@ namespace CharLSUnitTest
 
             Assert::IsTrue(bytesWritten >= 4);
 
-            // write.Write will always serialize a complete byte stream. Check the leading and trailing JPEG Markers SOI and EOI. 
+            // write.Write will always serialize a complete byte stream. Check the leading and trailing JPEG Markers SOI and EOI.
             Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
             Assert::AreEqual(static_cast<uint8_t>(0xD8), buffer[1]); // JPEG_SOI
 
@@ -77,7 +76,7 @@ namespace CharLSUnitTest
         {
             const int32_t bitsPerSample = 2;
             const int32_t componentCount = 1;
-            
+
             auto segment = JpegMarkerSegment::CreateStartOfFrameSegment(0, 0, bitsPerSample, componentCount);
 
             uint8_t buffer[17];
@@ -162,7 +161,7 @@ namespace CharLSUnitTest
             Assert::AreEqual(static_cast<uint8_t>(0), buffer[7]);
             Assert::AreEqual(static_cast<uint8_t>(2), buffer[8]);
 
-            // Threshold1 
+            // Threshold1
             Assert::AreEqual(static_cast<uint8_t>(0), buffer[9]);
             Assert::AreEqual(static_cast<uint8_t>(1), buffer[10]);
 

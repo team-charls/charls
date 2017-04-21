@@ -1,15 +1,12 @@
 ﻿//
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 #include "stdafx.h"
 
-#include "CppUnitTest.h"
 #include "encoderstrategytester.h"
 
-
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 
 namespace CharLSUnitTest
 {
@@ -69,7 +66,7 @@ namespace CharLSUnitTest
             Assert::AreEqual(static_cast<uint8_t>(0x00), data[2]);
             Assert::AreEqual(static_cast<uint8_t>(0xFF), data[3]);
             Assert::AreEqual(static_cast<uint8_t>(0x7F), data[4]); // extra 0 bit.
-            Assert::AreEqual(static_cast<uint8_t>(0xFF), data[5]); 
+            Assert::AreEqual(static_cast<uint8_t>(0xFF), data[5]);
             Assert::AreEqual(static_cast<uint8_t>(0x7F), data[6]); // extra 0 bit.
             Assert::AreEqual(static_cast<uint8_t>(0xFF), data[7]);
             Assert::AreEqual(static_cast<uint8_t>(0x60), data[8]);

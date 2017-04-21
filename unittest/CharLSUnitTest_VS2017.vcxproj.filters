@@ -47,5 +47,8 @@
     <ClCompile Include="defaulttraitstest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="colortransformTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,10 +1,9 @@
 //
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 #include "stdafx.h"
 
-#include "CppUnitTest.h"
 #include "..\src\jpegstreamreader.h"
 #include <vector>
 #include <cstdint>
