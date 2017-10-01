@@ -114,9 +114,16 @@ unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& pa
 
     if (presets.ResetValue != 0 && presets.ResetValue != BASIC_RESET)
     {
-        DefaultTraitsT<uint8_t, uint8_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
-        traits.MAXVAL = presets.MaximumSampleValue;
-        strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint8_t, uint8_t>, STRATEGY>(traits, params));
+		if (params.bitsPerSample <= 8) {
+			DefaultTraitsT<uint8_t, uint8_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
+			traits.MAXVAL = presets.MaximumSampleValue;
+			strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint8_t, uint8_t>, STRATEGY>(traits, params));
+		}
+		if (params.bitsPerSample > 8) {
+			DefaultTraitsT<uint16_t, uint16_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
+			traits.MAXVAL = presets.MaximumSampleValue;
+			strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint16_t, uint16_t>, STRATEGY>(traits, params));
+		}
     }
     else
     {
