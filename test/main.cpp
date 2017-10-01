@@ -113,6 +113,23 @@ std::vector<uint8_t> MakeSomeNoise(int length, int bitcount, int seed)
 }
 
 
+std::vector<uint8_t> MakeSomeNoise16bit(int length, int bitcount, int seed)
+{
+    srand(seed);
+    std::vector<uint8_t> buffer(length * 2);
+    uint16_t mask = static_cast<uint16_t>((1 << bitcount) - 1);
+    for (int i = 0; i < length; i = i + 2)
+    {
+        uint16_t value = static_cast<uint16_t>(rand()) & mask;
+
+        buffer[i] = static_cast<uint8_t>(value);
+        buffer[i] = static_cast<uint8_t>(value >> 8);
+
+    }
+    return buffer;
+}
+
+
 void TestNoiseImage()
 {
     Size size2 = Size(512, 512);
@@ -120,11 +137,38 @@ void TestNoiseImage()
     for (int bitDepth = 8; bitDepth >=2; --bitDepth)
     {
         std::stringstream label;
-        label << "noise, bitdepth: " << bitDepth;
+        label << "noise, bit depth: " << bitDepth;
 
         std::vector<uint8_t> noiseBytes = MakeSomeNoise(size2.cx * size2.cy, bitDepth, 21344);
         TestRoundTrip(label.str().c_str(), noiseBytes, size2, bitDepth, 1);
     }
+
+    for (int bitDepth = 16; bitDepth > 8; --bitDepth)
+    {
+        std::stringstream label;
+        label << "noise, bit depth: " << bitDepth;
+
+        std::vector<uint8_t> noiseBytes = MakeSomeNoise16bit(size2.cx * size2.cy, bitDepth, 21344);
+        TestRoundTrip(label.str().c_str(), noiseBytes, size2, bitDepth, 1);
+    }
+}
+
+
+void TestNoiseImageWithCustomReset()
+{
+    Size size = Size(512, 512);
+    const int bitDepth = 16;
+    std::vector<uint8_t> noiseBytes = MakeSomeNoise16bit(size.cx * size.cy, bitDepth, 21344);
+
+    JlsParameters params = JlsParameters();
+    params.components = 1;
+    params.bitsPerSample = bitDepth;
+    params.height = size.cy;
+    params.width = size.cx;
+    params.custom.MaximumSampleValue = (1 << bitDepth) - 1;
+    params.custom.ResetValue = 63;
+
+    TestRoundTrip("TestNoiseImageWithCustomReset", noiseBytes, params);
 }
 
 
@@ -559,6 +603,7 @@ void UnitTest()
         TestSampleAnnexH3();
 
         TestNoiseImage();
+        TestNoiseImageWithCustomReset();
 
         printf("Test robustness\r\n");
         TestDecodeBitStreamWithNoMarkerStart();

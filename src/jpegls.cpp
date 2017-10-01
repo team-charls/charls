@@ -1,5 +1,5 @@
 //
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 #include "util.h"
@@ -17,9 +17,9 @@ using namespace std;
 using namespace charls;
 
 
-// As defined in the JPEG-LS standard 
+// As defined in the JPEG-LS standard
 
-// used to determine how large runs should be encoded at a time. 
+// used to determine how large runs should be encoded at a time.
 const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 #include "scan.h"
@@ -100,7 +100,7 @@ CTable decodingTables[16] = { InitTable(0), InitTable(1), InitTable(2), InitTabl
                               InitTable(12), InitTable(13), InitTable(14),InitTable(15) };
 
 
-// Lookup tables: sample differences to bin indexes. 
+// Lookup tables: sample differences to bin indexes.
 vector<signed char> rgquant8Ll = CreateQLutLossless(8);
 vector<signed char> rgquant10Ll = CreateQLutLossless(10);
 vector<signed char> rgquant12Ll = CreateQLutLossless(12);
@@ -114,16 +114,18 @@ unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& pa
 
     if (presets.ResetValue != 0 && presets.ResetValue != BASIC_RESET)
     {
-		if (params.bitsPerSample <= 8) {
-			DefaultTraitsT<uint8_t, uint8_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
-			traits.MAXVAL = presets.MaximumSampleValue;
-			strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint8_t, uint8_t>, STRATEGY>(traits, params));
-		}
-		if (params.bitsPerSample > 8) {
-			DefaultTraitsT<uint16_t, uint16_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
-			traits.MAXVAL = presets.MaximumSampleValue;
-			strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint16_t, uint16_t>, STRATEGY>(traits, params));
-		}
+        if (params.bitsPerSample <= 8)
+        {
+            DefaultTraitsT<uint8_t, uint8_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
+            traits.MAXVAL = presets.MaximumSampleValue;
+            strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint8_t, uint8_t>, STRATEGY>(traits, params));
+        }
+        else
+        {
+            DefaultTraitsT<uint16_t, uint16_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
+            traits.MAXVAL = presets.MaximumSampleValue;
+            strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint16_t, uint16_t>, STRATEGY>(traits, params));
+        }
     }
     else
     {

@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 
 #include "config.h"
@@ -29,7 +29,7 @@ bool IsMachineLittleEndian()
 
 
 void FixEndian(std::vector<uint8_t>* rgbyte, bool littleEndianData)
-{ 
+{
     if (littleEndianData == IsMachineLittleEndian())
         return;
 
@@ -73,7 +73,7 @@ bool ReadFile(SZC strName, std::vector<uint8_t>* pvec, int offset, int bytes)
 void WriteFile(SZC strName, std::vector<uint8_t>& vec)
 {
     FILE* pfile = fopen(strName, "wb");
-    if( !pfile ) 
+    if( !pfile )
     {
         fprintf( stderr, "Could not open %s\n", strName );
         return;
@@ -83,24 +83,29 @@ void WriteFile(SZC strName, std::vector<uint8_t>& vec)
     fclose(pfile);
 }
 
-
 void TestRoundTrip(const char* strName, std::vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount)
 {
-    std::vector<uint8_t> rgbyteCompressed(size.cx *size.cy * ccomp * cbit / 4);
-
-    std::vector<uint8_t> rgbyteOut(size.cx * size.cy * ((cbit + 7) / 8) * ccomp);
-
     JlsParameters params = JlsParameters();
     params.components = ccomp;
     params.bitsPerSample = cbit;
     params.height = size.cy;
     params.width = size.cx;
 
-    if (ccomp == 4)
+    TestRoundTrip(strName, rgbyteRaw, params, loopCount);
+}
+
+
+void TestRoundTrip(const char* strName, std::vector<uint8_t>& rgbyteRaw, JlsParameters& params, int loopCount)
+{
+    std::vector<uint8_t> rgbyteCompressed(params.height * params.width * params.components * params.bitsPerSample / 4);
+
+    std::vector<uint8_t> rgbyteOut(params.height * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
+
+    if (params.components == 4)
     {
         params.interleaveMode = InterleaveMode::Line;
     }
-    else if (ccomp == 3)
+    else if (params.components == 3)
     {
         params.interleaveMode = InterleaveMode::Line;
         params.colorTransformation = ColorTransformation::HP1;
@@ -123,12 +128,12 @@ void TestRoundTrip(const char* strName, std::vector<uint8_t>& rgbyteRaw, Size si
     }
     double dwtimeDecodeComplete = getTime();
 
-    double bitspersample = compressedLength * 8 * 1.0 / (ccomp *size.cy * size.cx);
+    double bitspersample = compressedLength * 8 * 1.0 / (params.components * params.height * params.width);
     std::cout << "RoundTrip test for: " << strName << "\n\r";
     double encodeTime = (dwtimeEncodeComplete - dwtimeEncodeStart) / loopCount;
     double decodeTime = (dwtimeDecodeComplete - dwtimeDecodeStart) / loopCount;
-    double symbolRate = (ccomp * size.cy * size.cx) / (1000.0 * decodeTime);
-    printf("Size:%4dx%4d, Encode time:%7.2f ms, Decode time:%7.2f ms, Bits per sample:%5.2f, Decode rate:%5.1f M/s \n\r", size.cx, size.cy, encodeTime, decodeTime, bitspersample, symbolRate);
+    double symbolRate = (params.components * params.height * params.width) / (1000.0 * decodeTime);
+    printf("Size:%4dx%4d, Encode time:%7.2f ms, Decode time:%7.2f ms, Bits per sample:%5.2f, Decode rate:%5.1f M/s \n\r", params.width, params.height, encodeTime, decodeTime, bitspersample, symbolRate);
     uint8_t* pbyteOut = &rgbyteOut[0];
     for (size_t i = 0; i < rgbyteOut.size(); ++i)
     {
