@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Build to a folder outside the source folders, making it easier to clean. -->
+    <OutDir>$(SolutionDir)bin_2017\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir Condition="'$(Platform)'=='Win32'">$(SolutionDir)bin_2017\$(Configuration)\x86\</OutDir>
+    
+    <!-- C# Projects require the legagy OutputPath variabl. -->
+    <OutputPath>$(OutDir)</OutputPath>
+
+    <!-- C++ temp files can be redirected. -->
+    <!-- C# project files can also be redirected, but this causes rebuilds inside VS2015. -->
+    <IntDir>$(SolutionDir)intermediate_2017\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
+
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <PlatformToolset>v141</PlatformToolset>
+
+    <!-- Default character set is Unicode (UTF16), defines _UNICODE and UNICODE. -->
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <!-- To ensure high quality C++ code use Warning level 4 and treat warnings as errors to ensure warnings are fixed promptly. -->
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+
+      <!-- Enable some more level 4 warnings that are disabled by default but are usefull. -->
+      <AdditionalOptions>/w44296 /w44548 /w44555 /w44777 /w44917 %(AdditionalOptions)</AdditionalOptions>
+
+      <!-- Use all cores to speed up the compilation (MS recommended best practice). -->
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      
+      <!-- Explicit define that all projects are compiled according the latest offical C++ standard -->
+      <LanguageStandard>stdcpp14</LanguageStandard>
+
+      <!-- Explicit disable non conforming MSVC compiler options that are not compatible with the C++ standard -->
+      <AdditionalOptions>/permissive- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>
