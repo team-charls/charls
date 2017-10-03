@@ -1,5 +1,5 @@
 version: 1.00.{build}
-os: Visual Studio 2015
+os: Visual Studio 2017
 configuration:
 - Debug
 - Release
@@ -8,7 +8,7 @@ platform:
 - Win32
 - x64
 before_build:
-- set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
+- set PATH=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\15.0\Bin;%PATH%
 build:
-  project: CharLS_VS2015.sln
+  project: CharLS.sln
   verbosity: minimal
