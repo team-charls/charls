@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSTest_VS2017", "test\CharLSTest_VS2017.vcxproj", "{7185AD7F-57BA-42C7-A715-239CEA8ADC31}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSTest", "test\CharLSTest.vcxproj", "{7185AD7F-57BA-42C7-A715-239CEA8ADC31}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{BE733144-010D-4F7F-A619-0B73D8461D60}"
 EndProject
@@ -11,23 +11,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Native", "Native", "{1C1CF6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".NET", ".NET", "{A81B52AC-655D-4D1F-B21B-9BC4529AB447}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLS_VS2017", "src\CharLS_VS2017.vcxproj", "{1E31F9F1-F175-4082-B3E2-B1F0ECA3F44C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLS", "src\CharLS.vcxproj", "{1E31F9F1-F175-4082-B3E2-B1F0ECA3F44C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5F4C6204-36F8-4D63-BF33-ECFCB5D1D114}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharLSNet_VS2017", "net\CharLSNet_VS2017.csproj", "{6F9955C1-A285-4DE0-B3E6-F69EB08BBD7B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharLSNet", "net\CharLSNet.csproj", "{6F9955C1-A285-4DE0-B3E6-F69EB08BBD7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharLSNetTest_VS2017", "nettest\CharLSNetTest_VS2017.csproj", "{002B897F-9D96-4A99-853F-53806C39559D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharLSNetTest", "nettest\CharLSNetTest.csproj", "{002B897F-9D96-4A99-853F-53806C39559D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Convert_VS2017", "samples\convert.c\Convert_VS2017.vcxproj", "{F42C0547-FEB3-40F4-9379-0FF87B44FA0F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Convert", "samples\convert.c\Convert.vcxproj", "{F42C0547-FEB3-40F4-9379-0FF87B44FA0F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1E31F9F1-F175-4082-B3E2-B1F0ECA3F44C} = {1E31F9F1-F175-4082-B3E2-B1F0ECA3F44C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSUnitTest_VS2017", "unittest\CharLSUnitTest_VS2017.vcxproj", "{4A912445-1E83-41FA-8B80-C0A9BD4E9289}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSUnitTest", "unittest\CharLSUnitTest.vcxproj", "{4A912445-1E83-41FA-8B80-C0A9BD4E9289}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CharLSNet_Standard14", "net14\CharLSNet_Standard14.csproj", "{368BA976-8A8A-425C-A082-52FAAD60DEEA}"
 EndProject

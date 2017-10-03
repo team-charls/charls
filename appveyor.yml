@@ -9,7 +9,7 @@ platform:
 - x64
 before_build:
 - set PATH=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\15.0\Bin;%PATH%
-- nuget restore CharLS_VS2017.sln
+- nuget restore CharLS.sln
 build:
-  project: CharLS_VS2017.sln
+  project: CharLS.sln
   verbosity: minimal

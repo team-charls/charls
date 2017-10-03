@@ -198,9 +198,9 @@
     </CodeAnalysisDictionary>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\net\CharLSNet_VS2017.csproj">
+    <ProjectReference Include="..\net\CharLSNet.csproj">
       <Project>{6f9955c1-a285-4de0-b3e6-f69eb08bbd7b}</Project>
-      <Name>CharLSNet_VS2017</Name>
+      <Name>CharLSNet</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
