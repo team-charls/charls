@@ -1,3 +1,4 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/yq0naf3v2m8nfa8r/branch/1.x-master?svg=true)](https://ci.appveyor.com/project/vbaderks/charls/branch/1.x-master)
 [![Build Status](https://travis-ci.org/team-charls/charls.svg?branch=1.x-master)](https://travis-ci.org/team-charls/charls)
 
 # CharLS 1.x, a JPEG-LS library
