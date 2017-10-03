@@ -34,7 +34,7 @@ void TestDicomSampleImage(const char* name)
     bool success = ReadFile(name, &data, 9);
 
     ASSERT(success);
-    
+
         BYTE pixeldataStart[] =  { 0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7 };
 
     int offset = findstring(data, pixeldataStart, COUNT(pixeldataStart));
@@ -44,7 +44,7 @@ void TestDicomSampleImage(const char* name)
     // remove the dicom fragment headers (in the concerned images they occur every 64k)
     for (unsigned int i =  0; i < data.size(); i+= 64 * 1024)
     {
-        data.erase(data.begin() + i, data.begin() + i + 8);     
+        data.erase(data.begin() + i, data.begin() + i + 8);
     }
 
     JlsParameters info;
@@ -63,8 +63,8 @@ void TestDicomSampleImage(const char* name)
 
 void TestDicomWG4Images()
 {
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/XA1_JLSL");   
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/CT2_JLSL");   
+    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/XA1_JLSL");
+    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/CT2_JLSL");
     TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/MG1_JLSL");
     TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/MR1_JLSL");
     TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/MR2_JLSL");
