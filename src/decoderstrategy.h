@@ -89,12 +89,12 @@ public:
     }
 
 
-    void OnLineBegin(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) const
+    static void OnLineBegin(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/)
     {
     }
 
 
-    void OnLineEnd(int32_t pixelCount, const void* ptypeBuffer, int32_t pixelStride)
+    void OnLineEnd(int32_t pixelCount, const void* ptypeBuffer, int32_t pixelStride) const
     {
         _processLine->NewLineDecoded(ptypeBuffer, pixelCount, pixelStride);
     }
