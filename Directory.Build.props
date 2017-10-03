@@ -4,6 +4,7 @@
     <!-- Build to a folder outside the source folders, making it easier to clean. -->
     <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
     <OutDir Condition="'$(Platform)'=='Win32'">$(SolutionDir)bin\$(Configuration)\x86\</OutDir>
+    <OutDir Condition="'$(Platform)'=='AnyCPU'">$(SolutionDir)bin\$(Configuration)\x86\</OutDir>
     
     <!-- C# Projects require the legagy OutputPath variabl. -->
     <OutputPath>$(OutDir)</OutputPath>
