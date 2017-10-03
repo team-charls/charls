@@ -24,15 +24,6 @@ const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6
 
 #include "scan.h"
 
-// MSVC 2013 workarounds
-#ifdef _MSC_VER
-#if _MSC_VER <= 1800
-// noexcept is not understood
-#define noexcept _NOEXCEPT
-#endif
-#endif
-
-
 class charls_category : public error_category
 {
 public:

@@ -212,8 +212,8 @@ protected:
     JlsContext _contexts[365];
     CContextRunMode _contextRunmode[2];
     int32_t _RUNindex;
-    PIXEL* _previousLine; // previous line ptr
-    PIXEL* _currentLine; // current line ptr
+    PIXEL* _previousLine;
+    PIXEL* _currentLine;
 
     // quantization lookup table
     signed char* _pquant;
@@ -221,7 +221,7 @@ protected:
 };
 
 
-// Encode/decode a single sample. Performancewise the #1 important functions
+// Encode/decode a single sample. Performance wise the #1 important functions
 template<typename TRAITS, typename STRATEGY>
 typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t, int32_t pred, DecoderStrategy*)
 {
@@ -270,7 +270,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t
 }
 
 
-// Functions to build tables used to decode short golomb codes.
+// Functions to build tables used to decode short Golomb codes.
 
 inlinehint std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedError)
 {
@@ -310,7 +310,7 @@ inline CTable InitTable(int32_t k)
 }
 
 
-// Encoding/decoding of golomb codes
+// Encoding/decoding of Golomb codes
 
 template<typename TRAITS, typename STRATEGY>
 int32_t JlsCodec<TRAITS, STRATEGY>::DecodeValue(int32_t k, int32_t limit, int32_t qbpp)
@@ -368,7 +368,7 @@ inlinehint void JlsCodec<TRAITS, STRATEGY>::EncodeMappedValue(int32_t k, int32_t
 template<typename TRAITS, typename STRATEGY>
 void JlsCodec<TRAITS, STRATEGY>::InitQuantizationLUT()
 {
-    // for lossless mode with default parameters, we have precomputed the luts for bitcounts 8, 10, 12 and 16.
+    // for lossless mode with default parameters, we have precomputed the look up table for bit counts 8, 10, 12 and 16.
     if (traits.NEAR == 0 && traits.MAXVAL == (1 << traits.bpp) - 1)
     {
         const JpegLSPresetCodingParameters presets = ComputeDefault(traits.MAXVAL, traits.NEAR);
@@ -627,8 +627,7 @@ int32_t JlsCodec<TRAITS, STRATEGY>::DoRunMode(int32_t startIndex, DecoderStrateg
 }
 
 
-// DoLine: Encodes/Decodes a scanline of samples
-
+/// <summary>Encodes/Decodes a scan line of samples</summary>
 template<typename TRAITS, typename STRATEGY>
 void JlsCodec<TRAITS, STRATEGY>::DoLine(SAMPLE*)
 {
@@ -660,8 +659,7 @@ void JlsCodec<TRAITS, STRATEGY>::DoLine(SAMPLE*)
 }
 
 
-// DoLine: Encodes/Decodes a scanline of triplets in ILV_SAMPLE mode
-
+/// <summary>Encodes/Decodes a scan line of triplets in ILV_SAMPLE mode</summary>
 template<typename TRAITS, typename STRATEGY>
 void JlsCodec<TRAITS, STRATEGY>::DoLine(Triplet<SAMPLE>*)
 {
@@ -726,7 +724,7 @@ void JlsCodec<TRAITS, STRATEGY>::DoScan()
             // initialize edge pixels used for prediction
             _previousLine[_width] = _previousLine[_width - 1];
             _currentLine[-1] = _previousLine[0];
-            DoLine(static_cast<PIXEL*>(nullptr)); // dummy arg for overload resolution
+            DoLine(static_cast<PIXEL*>(nullptr)); // dummy argument for overload resolution
 
             rgRUNindex[component] = _RUNindex;
             _previousLine += pixelstride;
@@ -743,8 +741,7 @@ void JlsCodec<TRAITS, STRATEGY>::DoScan()
 }
 
 
-// Factory function for ProcessLine objects to copy/transform unencoded pixels to/from our scanline buffers.
-
+// Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
 template<typename TRAITS, typename STRATEGY>
 std::unique_ptr<ProcessLine> JlsCodec<TRAITS, STRATEGY>::CreateProcess(ByteStreamInfo info)
 {
@@ -792,7 +789,6 @@ std::unique_ptr<ProcessLine> JlsCodec<TRAITS, STRATEGY>::CreateProcess(ByteStrea
 
 
 // Setup codec for encoding and calls DoScan
-
 template<typename TRAITS, typename STRATEGY>
 size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo& compressedData)
 {
@@ -804,9 +800,8 @@ size_t JlsCodec<TRAITS, STRATEGY>::EncodeScan(std::unique_ptr<ProcessLine> proce
     return STRATEGY::GetLength();
 }
 
+
 // Setup codec for decoding and calls DoScan
-
-
 template<typename TRAITS, typename STRATEGY>
 void JlsCodec<TRAITS, STRATEGY>::DecodeScan(std::unique_ptr<ProcessLine> processLine, const JlsRect& rect, ByteStreamInfo& compressedData)
 {

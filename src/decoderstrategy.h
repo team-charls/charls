@@ -115,7 +115,7 @@ public:
 
     inlinehint bool OptimizedRead()
     {
-        // Easy & fast: if there is no 0xFF byte in sight, we can read without bitstuffing
+        // Easy & fast: if there is no 0xFF byte in sight, we can read without bit stuffing
         if (_position < _nextFFPosition - (sizeof(bufType)-1))
         {
             _readCache |= FromBigEndian<sizeof(bufType)>::Read(_position) >> _validBits;
@@ -158,7 +158,7 @@ public:
 
             if (valnew == 0xFF)
             {
-                // JPEG bitstream rule: no FF may be followed by 0x80 or higher
+                // JPEG bit stream rule: no FF may be followed by 0x80 or higher
                 if (_position == _endPosition - 1 || (_position[1] & 0x80) != 0)
                 {
                     if (_validBits <= 0)

@@ -123,7 +123,7 @@ struct TransformHp3
 };
 
 
-// Transform class that shifts bits towards the high bit when bitcount is not 8 or 16
+// Transform class that shifts bits towards the high bit when bit count is not 8 or 16
 // needed to make the HP color transforms work correctly.
 template<typename TRANSFORM>
 struct TransformShifted

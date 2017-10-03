@@ -1,5 +1,5 @@
 //
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 #ifndef CHARLS_JPEGSTREAMWRITER
@@ -14,7 +14,7 @@ enum class JpegMarkerCode : uint8_t;
 
 
 //
-// Purpose: 'Writer'class that can generate JPEG-LS file streams.
+// Purpose: 'Writer' class that can generate JPEG-LS file streams.
 //
 class JpegStreamWriter
 {

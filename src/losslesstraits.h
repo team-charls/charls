@@ -37,7 +37,7 @@ struct LosslessTraitsImplT
         return lhs == rhs;
     }
 
-// The following optimalization is implementation-dependent (works on x86 and ARM, see charlstest).
+// The following optimization is implementation-dependent (works on x86 and ARM, see charlstest).
 #if defined(__clang__)
      __attribute__((no_sanitize("shift")))
 #endif

@@ -23,7 +23,7 @@ namespace charls
         UncompressedBufferTooSmall = 3,      // The uncompressed buffer is too small to hold all the output.
         CompressedBufferTooSmall = 4,        // The compressed buffer too small, more input data was expected.
         InvalidCompressedData = 5,           // This error is returned when the encoded bit stream contains a general structural problem.
-        TooMuchCompressedData = 6,           // Too much compressed data.The decoding proccess is ready but the input buffer still contains encoded data.
+        TooMuchCompressedData = 6,           // Too much compressed data.The decoding process is ready but the input buffer still contains encoded data.
         ImageTypeNotSupported = 7,           // This error is returned when the bit stream is encoded with an option that is not supported by this implementation.
         UnsupportedBitDepthForTransform = 8, // The bit depth for transformation is not supported.
         UnsupportedColorTransform = 9,       // The color transformation is not supported.
@@ -113,7 +113,7 @@ enum CharlsApiResult
     CHARLS_API_RESULT_UNCOMPRESSED_BUFFER_TOO_SMALL       = 3,  // The uncompressed buffer is too small to hold all the output.
     CHARLS_API_RESULT_COMPRESSED_BUFFER_TOO_SMALL         = 4,  // The compressed buffer too small, more input data was expected.
     CHARLS_API_RESULT_INVALID_COMPRESSED_DATA             = 5,  // This error is returned when the encoded bit stream contains a general structural problem.
-    CHARLS_API_RESULT_TOO_MUCH_COMPRESSED_DATA            = 6,  // Too much compressed data.The decoding proccess is ready but the input buffer still contains encoded data.
+    CHARLS_API_RESULT_TOO_MUCH_COMPRESSED_DATA            = 6,  // Too much compressed data.The decoding process is ready but the input buffer still contains encoded data.
     CHARLS_API_RESULT_IMAGE_TYPE_NOT_SUPPORTED            = 7,  // This error is returned when the bit stream is encoded with an option that is not supported by this implementation.
     CHARLS_API_RESULT_UNSUPPORTED_BIT_DEPTH_FOR_TRANSFORM = 8,  // The bit depth for transformation is not supported.
     CHARLS_API_RESULT_UNSUPPORTED_COLOR_TRANSFORM         = 9,  // The color transformation is not supported.
@@ -258,7 +258,7 @@ struct JlsParameters
 
     /// <summary>
     /// The number of valid bits per sample to encode.
-    /// Valid range 2 - 16. When greater than 8, pixels are assumed to stored as two bytes per sampe, otherwise one byte per sample is assumed.
+    /// Valid range 2 - 16. When greater than 8, pixels are assumed to stored as two bytes per sample, otherwise one byte per sample is assumed.
     /// </summary>
     int bitsPerSample;
 
@@ -288,7 +288,7 @@ struct JlsParameters
     /// Color transformation used in the compressed stream. The color transformations are all lossless and
     /// are an HP proprietary extension of the standard. Do not use the color transformations unless
     /// you know the decoder is capable of decoding it. Color transform typically improve compression ratios only
-    /// for sythetic images (non - photorealistic computer generated images).
+    /// for synthetic images (non - photo-realistic computer generated images).
     /// </summary>
     CharlsColorTransformationType colorTransformation;
 
@@ -310,7 +310,7 @@ struct JlsParameters
 // ByteStreamInfo & FromByteArray helper function
 //
 // ByteStreamInfo describes the stream: either set rawStream to a valid stream, or rawData/count, not both.
-// it's possible to decode to memorystreams, but using rawData will always be faster.
+// it's possible to decode to memory streams, but using rawData will always be faster.
 //
 // Example use:
 //     ByteStreamInfo streamInfo = { fileStream.rdbuf() };

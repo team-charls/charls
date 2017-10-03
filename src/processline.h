@@ -13,7 +13,7 @@
 
 
 //
-// This file defines the ProcessLine base class, its derivitives and helper functions.
+// This file defines the ProcessLine base class, its derivatives and helper functions.
 // During coding/decoding, CharLS process one line at a time. The different Processline implementations
 // convert the uncompressed format to and from the internal format for encoding.
 // Conversions include color transforms, line interleaved vs sample interleaved, masking out unused bits,
@@ -251,7 +251,7 @@ public:
             if (read == 0)
             {
                 std::ostringstream message;
-                message << "No more bytes available in input buffer, still neededing " << read;
+                message << "No more bytes available in input buffer, still needing " << read;
                 throw charls_error(charls::ApiResult::UncompressedBufferTooSmall, message.str());
             }
 

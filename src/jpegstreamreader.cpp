@@ -20,7 +20,7 @@ using namespace charls;
 extern template class JlsCodecFactory<EncoderStrategy>;
 extern template class JlsCodecFactory<DecoderStrategy>;
 
-// Default bin sizes for JPEG-LS statistical modeling. Can be overriden at compression time, however this is rarely done.
+// Default bin sizes for JPEG-LS statistical modeling. Can be overridden at compression time, however this is rarely done.
 const int BASIC_T1 = 3;
 const int BASIC_T2 = 7;
 const int BASIC_T3 = 21;

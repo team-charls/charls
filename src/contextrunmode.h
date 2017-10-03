@@ -8,8 +8,8 @@
 
 #include <cstdint>
 
-// Implements statistical modelling for the run mode context.
-// Computes model dependent parameters like the golomb code lengths
+// Implements statistical modeling for the run mode context.
+// Computes model dependent parameters like the Golomb code lengths
 struct CContextRunMode
 {
     // Note: members are sorted based on their size.

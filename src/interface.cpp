@@ -72,7 +72,7 @@ ApiResult ResultAndErrorMessageFromException(char* errorMessage)
 {
     try
     {
-        // retrow the exception.
+        // re-trow the exception.
         throw;
     }
     catch (const charls_error& error)
