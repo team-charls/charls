@@ -1,4 +1,4 @@
-﻿//
+//
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
@@ -84,9 +84,8 @@ namespace CharLS
 
             // Assume compressed size <= uncompressed size (covers 99% of the cases).
             var buffer = new byte[pixels.Length + JpegLSHeaderLength];
-            int compressedCount;
 
-            if (!TryCompress(info, pixels, pixels.Length, jfifHeader, buffer, buffer.Length, out compressedCount))
+            if (!TryCompress(info, pixels, pixels.Length, jfifHeader, buffer, buffer.Length, out var compressedCount))
             {
                 // Increase output buffer to hold compressed data.
                 buffer = new byte[(int)(pixels.Length * 1.5) + JpegLSHeaderLength];
@@ -146,8 +145,7 @@ namespace CharLS
             JpegLSError result;
             if (Is64BitProcess)
             {
-                long count;
-                result = SafeNativeMethods.JpegLsEncode64(destination, destinationLength, out count, pixels, pixelCount, ref parameters, errorMessage);
+                result = SafeNativeMethods.JpegLsEncode64(destination, destinationLength, out var count, pixels, pixelCount, ref parameters, errorMessage);
                 compressedCount = (int)count;
             }
             else
@@ -197,8 +195,7 @@ namespace CharLS
                 throw new ArgumentOutOfRangeException(nameof(count), "count < 0 || count > source.Length");
             Contract.Ensures(Contract.Result<JpegLSMetadataInfo>() != null);
 
-            JlsParameters info;
-            JpegLsReadHeaderThrowWhenError(source, count, out info);
+            JpegLsReadHeaderThrowWhenError(source, count, out var info);
             return new JpegLSMetadataInfo(ref info);
         }
 
@@ -235,8 +232,7 @@ namespace CharLS
                 throw new ArgumentOutOfRangeException(nameof(count), "count < 0 || count > source.Length");
             Contract.Ensures(Contract.Result<byte[]>() != null);
 
-            JlsParameters info;
-            JpegLsReadHeaderThrowWhenError(source, count, out info);
+            JpegLsReadHeaderThrowWhenError(source, count, out var info);
 
             var destination = new byte[GetUncompressedSize(ref info)];
             Decompress(source, count, destination);
