@@ -32,12 +32,12 @@ public:
 
     int32_t PeekByte();
 
-    void OnLineBegin(int32_t cpixel, void* ptypeBuffer, int32_t pixelStride)
+    void OnLineBegin(int32_t cpixel, void* ptypeBuffer, int32_t pixelStride) const
     {
         _processLine->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
     }
 
-    void OnLineEnd(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) const
+    static void OnLineEnd(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/)
     {
     }
 
