@@ -26,7 +26,7 @@ extern std::vector<signed char> rgquant10Ll;
 extern std::vector<signed char> rgquant12Ll;
 extern std::vector<signed char> rgquant16Ll;
 
-force_inline int32_t ApplySign(int32_t i, int32_t sign)
+inline int32_t ApplySign(int32_t i, int32_t sign)
 {
     return (sign ^ i) - sign;
 }
@@ -36,7 +36,7 @@ force_inline int32_t ApplySign(int32_t i, int32_t sign)
 
 #if 0
 
-force_inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
+inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 {
     if (Ra < Rb)
     {
@@ -60,7 +60,7 @@ force_inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 #else
 
-force_inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
+inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 {
     // sign trick reduces the number of if statements (branches)
     const int32_t sgn = BitWiseSign(Rb - Ra);
@@ -81,21 +81,21 @@ force_inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 #endif
 
-force_inline int32_t UnMapErrVal(int32_t mappedError)
+inline int32_t UnMapErrVal(int32_t mappedError)
 {
     const int32_t sign = static_cast<int32_t>(mappedError << (INT32_BITCOUNT-1)) >> (INT32_BITCOUNT-1);
     return sign ^ (mappedError >> 1);
 }
 
-force_inline int32_t GetMappedErrVal(int32_t Errval)
+inline int32_t GetMappedErrVal(int32_t Errval)
 {
     const int32_t mappedError = (Errval >> (INT32_BITCOUNT-2)) ^ (2 * Errval);
     return mappedError;
 }
 
-force_inline  int32_t ComputeContextID(int32_t Q1, int32_t Q2, int32_t Q3)
+inline int32_t ComputeContextID(int32_t Q1, int32_t Q2, int32_t Q3)
 {
-    return (Q1*9 + Q2)*9 + Q3;
+    return (Q1 * 9 + Q2) * 9 + Q3;
 }
 
 
@@ -272,7 +272,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t
 
 // Functions to build tables used to decode short Golomb codes.
 
-force_inline std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedError)
+inline std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedError)
 {
     const int32_t highbits = mappedError >> k;
     return std::make_pair(highbits + k + 1, (int32_t(1) << k) | (mappedError & ((int32_t(1) << k) - 1)));
