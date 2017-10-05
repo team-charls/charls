@@ -237,7 +237,7 @@ public:
             MakeValid();
         }
 
-        return _readCache >> (bufferbits - 8);
+        return static_cast<int32_t>(_readCache >> (bufferbits - 8));
     }
 
     force_inline bool ReadBit()
