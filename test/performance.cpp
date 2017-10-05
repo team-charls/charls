@@ -103,7 +103,7 @@ void TestLargeImagePerformanceRgb8(int loopCount)
     }
     catch (const std::istream::failure& error)
     {
-        printf("Test failed %s\r\n", error.code().message().c_str());
+        printf("Test failed %s\r\n", error.what());
     }
 }
 
