@@ -64,16 +64,18 @@ ApiResult CheckParameterCoherent(const JlsParameters& params)
 } // namespace
 
 
-JpegLSPresetCodingParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR)
+JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t NEAR)
 {
     JpegLSPresetCodingParameters preset;
 
-    const int32_t FACTOR = (std::min(MAXVAL, 4095) + 128) / 256;
+    const int32_t factor = (std::min(maximumSampleValue, 4095) + 128) / 256;
+    const int threshold1 = CLAMP(factor * (BASIC_T1 - 2) + 2 + 3 * NEAR, NEAR + 1, maximumSampleValue);
+    const int threshold2 = CLAMP(factor * (BASIC_T2 - 3) + 3 + 5 * NEAR, threshold1, maximumSampleValue); //-V537
 
-    preset.Threshold1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3 * NEAR, NEAR + 1, MAXVAL);
-    preset.Threshold2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5 * NEAR, preset.Threshold1, MAXVAL);
-    preset.Threshold3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7 * NEAR, preset.Threshold2, MAXVAL);
-    preset.MaximumSampleValue = MAXVAL;
+    preset.Threshold1 = threshold1;
+    preset.Threshold2 = threshold2;
+    preset.Threshold3 = CLAMP(factor * (BASIC_T3 - 4) + 4 + 7 * NEAR, threshold2, maximumSampleValue);
+    preset.MaximumSampleValue = maximumSampleValue;
     preset.ResetValue = BASIC_RESET;
     return preset;
 }

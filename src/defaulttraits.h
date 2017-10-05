@@ -58,6 +58,8 @@ struct DefaultTraitsT
     {
     }
 
+    DefaultTraitsT &operator =(const DefaultTraitsT &a) = delete;
+
     force_inline int32_t ComputeErrVal(int32_t e) const
     {
         return ModuloRange(Quantize(e));
