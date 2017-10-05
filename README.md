@@ -21,8 +21,15 @@ Tip: the ITU makes their version of the JPEG-LS standard (ITU-T.87) freely avail
 
 ## About this software
 
-This project's goal is to provide a full implementation of JPEG-LS. This library is written from scratch in portable C++. The master branch uses modern C++ v11. The 1.x branch is maintained in C++ v03. All mainstream JPEG-LS features are implemented by this library.
+This project's goal is to provide a full implementation of the ISO/IEC 14495-1:1999, "Lossless and near-lossless compression of continuous-tone still images: Baseline" standard. This library is written from scratch in portable C++. The master branch uses modern C++14. The 1.x branch is maintained in C++03. All mainstream JPEG-LS features are implemented by this library.
 According to preliminary test results published on http://imagecompression.info/gralic, CharLS is about *twice as fast* as the original HP code, and beats both JPEG-XR and JPEG 2000 by a factor 3.
+
+### Limitations
+
+* No support for (optional) JPEG restart markers (RST). These markers are rarely used in practice.
+* No support for the SPIFF file header.
+* No support for oversize image dimension. Maximum supported image dimensions are [1, 65535] by [1, 65535].
+* After releasing the original baseline standrd 14495-1:1999, ISO released an extension to the JPEG-LS standard called ISO/IEC 14495-2:2003: "Lossless and near-lossless compression of continuous-tone still images: Extensions". CharLS doesn't support these extensions.
 
 ## Supported platforms
 

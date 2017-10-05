@@ -166,8 +166,10 @@ struct FromBigEndian<8>
 {
     inlinehint static uint64_t Read(const uint8_t* pbyte)
     {
-        return (uint64_t(pbyte[0]) << 56) + (uint64_t(pbyte[1]) << 48) + (uint64_t(pbyte[2]) << 40) + (uint64_t(pbyte[3]) << 32) +
-               (uint64_t(pbyte[4]) << 24) + (uint64_t(pbyte[5]) << 16) + (uint64_t(pbyte[6]) <<  8) + (uint64_t(pbyte[7]) << 0);
+        return (static_cast<uint64_t>(pbyte[0]) << 56) + (static_cast<uint64_t>(pbyte[1]) << 48) +
+               (static_cast<uint64_t>(pbyte[2]) << 40) + (static_cast<uint64_t>(pbyte[3]) << 32) +
+               (static_cast<uint64_t>(pbyte[4]) << 24) + (static_cast<uint64_t>(pbyte[5]) << 16) +
+               (static_cast<uint64_t>(pbyte[6]) <<  8) + (static_cast<uint64_t>(pbyte[7]) << 0);
     }
 };
 

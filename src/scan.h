@@ -303,7 +303,7 @@ inline CTable InitTable(int32_t k)
             break;
 
         Code code = Code(nerr, static_cast<short>(paircode.first));
-        table.AddEntry(uint8_t(paircode.second), code);
+        table.AddEntry(static_cast<uint8_t>(paircode.second), code);
     }
 
     return table;

@@ -109,13 +109,13 @@ unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& pa
         {
             DefaultTraitsT<uint8_t, uint8_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
             traits.MAXVAL = presets.MaximumSampleValue;
-            strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint8_t, uint8_t>, STRATEGY>(traits, params));
+            strategy = std::make_unique<JlsCodec<DefaultTraitsT<uint8_t, uint8_t>, STRATEGY>>(traits, params);
         }
         else
         {
             DefaultTraitsT<uint16_t, uint16_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
             traits.MAXVAL = presets.MaximumSampleValue;
-            strategy = std::unique_ptr<STRATEGY>(new JlsCodec<DefaultTraitsT<uint16_t, uint16_t>, STRATEGY>(traits, params));
+            strategy = std::make_unique<JlsCodec<DefaultTraitsT<uint16_t, uint16_t>, STRATEGY>>(traits, params);
         }
     }
     else
@@ -134,14 +134,14 @@ unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& pa
 template<typename TRAITS, typename STRATEGY>
 unique_ptr<STRATEGY> CreateCodec(const TRAITS& t, const STRATEGY*, const JlsParameters& params)
 {
-    return unique_ptr<STRATEGY>(new JlsCodec<TRAITS, STRATEGY>(t, params));
+    return make_unique<JlsCodec<TRAITS, STRATEGY>>(t, params);
 }
 
 
 template<typename STRATEGY>
 unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters& params)
 {
-    STRATEGY* s = nullptr;
+    const STRATEGY* s = nullptr;
 
     if (params.interleaveMode == InterleaveMode::Sample && params.components != 3)
         return nullptr;
