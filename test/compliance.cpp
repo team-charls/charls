@@ -85,7 +85,7 @@ void TestCompliance(const uint8_t* compressedBytes, size_t compressedLength, con
 }
 
 
-void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEncode = true)
+void DecompressFile(const char* strNameEncoded, const char* strNameRaw, int ioffs, bool bcheckEncode = true)
 {
     std::cout << "Conformance test:" << strNameEncoded << "\n\r";
     std::vector<uint8_t> rgbyteFile;
@@ -119,7 +119,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 
 ////uint8_t palettisedDataH10[] = {
 ////    0xFF, 0xD8, //Start of image (SOI) marker 
-////    0xFF, 0xF7, //Start of JPEG-LS frame (SOF 55) marker – marker segment follows 
+////    0xFF, 0xF7, //Start of JPEG-LS frame (SOF 55) marker â€“ marker segment follows 
 ////    0x00, 0x0B, //Length of marker segment = 11 bytes including the length field 
 ////    0x02, //P = Precision = 2 bits per sample 
 ////    0x00, 0x04, //Y = Number of lines = 4 
@@ -129,7 +129,7 @@ void DecompressFile(SZC strNameEncoded, SZC strNameRaw, int ioffs, bool bcheckEn
 ////    0x11, //Sub-sampling: H1 = 1, V1 = 1 
 ////    0x00, //Tq1 = 0 (this field is always 0) 
 ////
-////    0xFF, 0xF8, //LSE – JPEG-LS preset parameters marker 
+////    0xFF, 0xF8, //LSE â€“ JPEG-LS preset parameters marker 
 ////    0x00, 0x11, //Length of marker segment = 17 bytes including the length field 
 ////    0x02, //ID = 2, mapping table  
 ////    0x05, //TID = 5 Table identifier (arbitrary) 

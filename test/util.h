@@ -9,14 +9,12 @@
 #include <vector>
 #include <exception>
 
-typedef const char* SZC;
-
-void FixEndian(std::vector<uint8_t>* rgbyte, bool littleEndianData);
-bool ReadFile(SZC strName, std::vector<uint8_t>* pvec, int ioffs = 0, int bytes = 0);
-void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile = false, int loopCount = 1);
-void TestRoundTrip(const char* strName, std::vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount = 1);
-void TestRoundTrip(const char* strName, std::vector<uint8_t>& rgbyteRaw, JlsParameters& params, int loopCount = 1);
-void WriteFile(SZC strName, std::vector<uint8_t>& vec);
+void FixEndian(std::vector<uint8_t>* buffer, bool littleEndianData);
+bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, int ioffs = 0, int bytes = 0);
+void TestFile(const char* filename, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile = false, int loopCount = 1);
+void TestRoundTrip(const char* filename, std::vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount = 1);
+void TestRoundTrip(const char* filename, std::vector<uint8_t>& rgbyteRaw, JlsParameters& params, int loopCount = 1);
+void WriteFile(const char* filename, std::vector<uint8_t>& vec);
 
 class UnitTestException : public std::exception {
 public:

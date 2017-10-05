@@ -56,7 +56,7 @@ void TestDamagedBitStream3()
 }
 
 
-void TestFileWithRandomHeaderDamage(SZC filename)
+void TestFileWithRandomHeaderDamage(const char* filename)
 {
     std::vector<uint8_t> rgbyteCompressedOrg;
     if (!ReadFile(filename, &rgbyteCompressedOrg, 0))

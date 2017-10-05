@@ -14,22 +14,22 @@
 namespace
 {
 
-void TestFile16BitAs12(SZC strName, int ioffs, Size size2, int ccomp, bool littleEndianFile)
+void TestFile16BitAs12(const char* filename, int ioffs, Size size2, int ccomp, bool littleEndianFile)
 {
-    std::vector<uint8_t> rgbyteUncompressed;
-    if (!ReadFile(strName, &rgbyteUncompressed, ioffs))
+    std::vector<uint8_t> uncompressedData;
+    if (!ReadFile(filename, &uncompressedData, ioffs))
         return;
 
-    FixEndian(&rgbyteUncompressed, littleEndianFile);
+    FixEndian(&uncompressedData, littleEndianFile);
 
-    uint16_t* pushort = reinterpret_cast<uint16_t*>(rgbyteUncompressed.data());
+    uint16_t* pushort = reinterpret_cast<uint16_t*>(uncompressedData.data());
 
-    for (size_t i = 0; i < rgbyteUncompressed.size() / 2; ++i)
+    for (size_t i = 0; i < uncompressedData.size() / 2; ++i)
     {
         pushort[i] = pushort[i] >> 4;
     }
 
-    TestRoundTrip(strName, rgbyteUncompressed, size2, 12, ccomp);
+    TestRoundTrip(filename, uncompressedData, size2, 12, ccomp);
 }
 
 

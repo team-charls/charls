@@ -40,13 +40,12 @@ void FixEndian(std::vector<uint8_t>* rgbyte, bool littleEndianData)
 }
 
 
-
-bool ReadFile(SZC strName, std::vector<uint8_t>* pvec, int offset, int bytes)
+bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, int offset, int bytes)
 {
-    FILE* pfile = fopen(strName, "rb");
+    FILE* pfile = fopen(filename, "rb");
     if (!pfile)
     {
-        fprintf(stderr, "Could not open %s\n", strName);
+        fprintf(stderr, "Could not open %s\n", filename);
         return false;
     }
 
@@ -70,16 +69,16 @@ bool ReadFile(SZC strName, std::vector<uint8_t>* pvec, int offset, int bytes)
 }
 
 
-void WriteFile(SZC strName, std::vector<uint8_t>& vec)
+void WriteFile(const char* filename, std::vector<uint8_t>& buffer)
 {
-    FILE* pfile = fopen(strName, "wb");
+    FILE* pfile = fopen(filename, "wb");
     if( !pfile )
     {
-        fprintf( stderr, "Could not open %s\n", strName );
+        fprintf( stderr, "Could not open %s\n", filename );
         return;
     }
 
-    fwrite(&vec[0],1, vec.size(), pfile);
+    fwrite(&buffer[0],1, buffer.size(), pfile);
     fclose(pfile);
 }
 
@@ -146,12 +145,12 @@ void TestRoundTrip(const char* strName, std::vector<uint8_t>& rgbyteRaw, JlsPara
 }
 
 
-void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile, int loopCount)
+void TestFile(const char* filename, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile, int loopCount)
 {
     int byteCount = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
     std::vector<uint8_t> rgbyteUncompressed;
 
-    if (!ReadFile(strName, &rgbyteUncompressed, ioffs, byteCount))
+    if (!ReadFile(filename, &rgbyteUncompressed, ioffs, byteCount))
         return;
 
     if (cbit > 8)
@@ -159,6 +158,6 @@ void TestFile(SZC strName, int ioffs, Size size2, int cbit, int ccomp, bool litt
         FixEndian(&rgbyteUncompressed, littleEndianFile);
     }
 
-    TestRoundTrip(strName, rgbyteUncompressed, size2, cbit, ccomp, loopCount);
+    TestRoundTrip(filename, rgbyteUncompressed, size2, cbit, ccomp, loopCount);
 }
 
