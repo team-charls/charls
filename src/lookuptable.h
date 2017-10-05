@@ -63,7 +63,7 @@ public:
         }
     }
 
-    inlinehint const Code& Get(int32_t value) const
+    force_inline const Code& Get(int32_t value) const
     {
         return _rgtype[value];
     }

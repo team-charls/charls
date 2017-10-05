@@ -10,27 +10,24 @@
 #include <vector>
 #include <system_error>
 #include <memory>
-
-#ifdef NDEBUG
-#  ifndef ASSERT
-#    define ASSERT(t) { }
-#  endif
-#else
 #include <cassert>
+
+// Use an uppercase alias for assert to make it clear that it is a pre-processor macro.
 #define ASSERT(t) assert(t)
-#endif
 
-#undef  NEAR
-
-#ifndef inlinehint
+// Only use __forceinline for the Microsoft C++ compiler in release mode (verified scenario)
+// Use the build-in optimizer for all other C++ compilers.
+// Note: usage of force_inline may be reduced in the future as the latest generation of C++ compilers
+// can handle optimization by themselves.
+#ifndef force_inline
 #  ifdef _MSC_VER
 #    ifdef NDEBUG
-#      define inlinehint __forceinline
+#      define force_inline __forceinline
 #    else
-#      define inlinehint inline
+#      define force_inline
 #    endif
 #  else
-#    define inlinehint inline
+#    define force_inline
 #  endif
 #endif
 
@@ -154,7 +151,7 @@ struct FromBigEndian
 template<>
 struct FromBigEndian<4>
 {
-    inlinehint static unsigned int Read(const uint8_t* pbyte)
+    force_inline static unsigned int Read(const uint8_t* pbyte)
     {
         return (pbyte[0] << 24) + (pbyte[1] << 16) + (pbyte[2] << 8) + (pbyte[3] << 0);
     }
@@ -164,7 +161,7 @@ struct FromBigEndian<4>
 template<>
 struct FromBigEndian<8>
 {
-    inlinehint static uint64_t Read(const uint8_t* pbyte)
+    force_inline static uint64_t Read(const uint8_t* pbyte)
     {
         return (static_cast<uint64_t>(pbyte[0]) << 56) + (static_cast<uint64_t>(pbyte[1]) << 48) +
                (static_cast<uint64_t>(pbyte[2]) << 40) + (static_cast<uint64_t>(pbyte[3]) << 32) +

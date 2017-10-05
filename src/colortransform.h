@@ -17,7 +17,7 @@ struct TransformNoneImpl
 {
     typedef sample SAMPLE;
 
-    inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
+    force_inline Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
     {
         return Triplet<SAMPLE>(v1, v2, v3);
     }
@@ -43,13 +43,13 @@ struct TransformHp1
         {
         }
 
-        inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
+        force_inline Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
         {
             return Triplet<SAMPLE>(v1 + v2 - RANGE / 2, v2, v3 + v2 - RANGE / 2);
         }
     };
 
-    inlinehint Triplet<SAMPLE> operator()(int R, int G, int B) const
+    force_inline Triplet<SAMPLE> operator()(int R, int G, int B) const
     {
         Triplet<SAMPLE> hp1;
         hp1.v2 = static_cast<SAMPLE>(G);
@@ -72,7 +72,7 @@ struct TransformHp2
         {
         }
 
-        inlinehint Triplet<SAMPLE> operator() (int v1, int v2, int v3) const
+        force_inline Triplet<SAMPLE> operator() (int v1, int v2, int v3) const
         {
             Triplet<SAMPLE> rgb;
             rgb.R  = static_cast<SAMPLE>(v1 + v2 - RANGE / 2);                     // new R
@@ -82,7 +82,7 @@ struct TransformHp2
         }
     };
 
-    inlinehint Triplet<SAMPLE> operator()(int R, int G, int B) const
+    force_inline Triplet<SAMPLE> operator()(int R, int G, int B) const
     {
         return Triplet<SAMPLE>(R - G + RANGE / 2, G, B - ((R+G )>>1) - RANGE / 2);
     }
@@ -101,7 +101,7 @@ struct TransformHp3
         {
         }
 
-        inlinehint Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
+        force_inline Triplet<SAMPLE> operator()(int v1, int v2, int v3) const
         {
             const int G = v1 - ((v3 + v2) >> 2) + RANGE / 4;
             Triplet<SAMPLE> rgb;
@@ -112,7 +112,7 @@ struct TransformHp3
         }
     };
 
-    inlinehint Triplet<SAMPLE> operator() (int R, int G, int B) const
+    force_inline Triplet<SAMPLE> operator() (int R, int G, int B) const
     {
         Triplet<SAMPLE> hp3;
         hp3.v2 = static_cast<SAMPLE>(B - G + RANGE / 2);
@@ -138,13 +138,13 @@ struct TransformShifted
         {
         }
 
-        inlinehint Triplet<SAMPLE> operator() (int v1, int v2, int v3)
+        force_inline Triplet<SAMPLE> operator() (int v1, int v2, int v3)
         {
             Triplet<SAMPLE> result = _inverseTransform(v1 << _shift, v2 << _shift, v3 << _shift);
             return Triplet<SAMPLE>(result.R >> _shift, result.G >> _shift, result.B >> _shift);
         }
 
-        inlinehint Quad<SAMPLE> operator() (int v1, int v2, int v3, int v4)
+        force_inline Quad<SAMPLE> operator() (int v1, int v2, int v3, int v4)
         {
             Triplet<SAMPLE> result = _inverseTransform(v1 << _shift, v2 << _shift, v3 << _shift);
             return Quad<SAMPLE>(result.R >> _shift, result.G >> _shift, result.B >> _shift, v4);
@@ -160,13 +160,13 @@ struct TransformShifted
     {
     }
 
-    inlinehint Triplet<SAMPLE> operator() (int R, int G, int B)
+    force_inline Triplet<SAMPLE> operator() (int R, int G, int B)
     {
         Triplet<SAMPLE> result = _colortransform(R << _shift, G << _shift, B << _shift);
         return Triplet<SAMPLE>(result.R >> _shift, result.G >> _shift, result.B >> _shift);
     }
 
-    inlinehint Quad<SAMPLE> operator() (int R, int G, int B, int A)
+    force_inline Quad<SAMPLE> operator() (int R, int G, int B, int A)
     {
         Triplet<SAMPLE> result = _colortransform(R << _shift, G << _shift, B << _shift);
         return Quad<SAMPLE>(result.R >> _shift, result.G >> _shift, result.B >> _shift, A);

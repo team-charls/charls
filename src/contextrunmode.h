@@ -39,7 +39,7 @@ struct CContextRunMode
     }
 
 
-    inlinehint int32_t GetGolomb() const
+    force_inline int32_t GetGolomb() const
     {
         const int32_t TEMP = A + (N >> 1) * _nRItype;
         int32_t Ntest = N;
@@ -70,7 +70,7 @@ struct CContextRunMode
     }
 
 
-    inlinehint int32_t ComputeErrVal(int32_t temp, int32_t k) const
+    force_inline int32_t ComputeErrVal(int32_t temp, int32_t k) const
     {
         const bool map = temp & 1;
         const int32_t errvalabs = (temp + static_cast<int32_t>(map)) / 2;
@@ -101,7 +101,7 @@ struct CContextRunMode
     }
 
 
-    inlinehint bool ComputeMapNegativeE(int32_t k) const
+    force_inline bool ComputeMapNegativeE(int32_t k) const
     {
         return  k != 0 || (2 * Nn >= N );
     }

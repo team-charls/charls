@@ -27,12 +27,12 @@ struct LosslessTraitsImplT
         RESET = BASIC_RESET
     };
 
-    static inlinehint int32_t ComputeErrVal(int32_t d)
+    static force_inline int32_t ComputeErrVal(int32_t d)
     {
         return ModuloRange(d);
     }
 
-    static inlinehint bool IsNear(int32_t lhs, int32_t rhs)
+    static force_inline bool IsNear(int32_t lhs, int32_t rhs)
     {
         return lhs == rhs;
     }
@@ -41,17 +41,17 @@ struct LosslessTraitsImplT
 #if defined(__clang__)
      __attribute__((no_sanitize("shift")))
 #endif
-    static inlinehint int32_t ModuloRange(int32_t errorValue)
+    static force_inline int32_t ModuloRange(int32_t errorValue)
     {
         return static_cast<int32_t>(errorValue << (INT32_BITCOUNT - bpp)) >> (INT32_BITCOUNT - bpp);
     }
 
-    static inlinehint SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
+    static force_inline SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
     {
         return static_cast<SAMPLE>(MAXVAL & (Px + ErrVal));
     }
 
-    static inlinehint int32_t CorrectPrediction(int32_t Pxc)
+    static force_inline int32_t CorrectPrediction(int32_t Pxc)
     {
         if ((Pxc & MAXVAL) == Pxc)
             return Pxc;
@@ -73,17 +73,17 @@ struct LosslessTraitsT<uint8_t, 8> : LosslessTraitsImplT<uint8_t, 8>
 {
     typedef SAMPLE PIXEL;
 
-    static inlinehint signed char ModRange(int32_t Errval)
+    static force_inline signed char ModRange(int32_t Errval)
     {
         return static_cast<signed char>(Errval);
     }
 
-    static inlinehint int32_t ComputeErrVal(int32_t d)
+    static force_inline int32_t ComputeErrVal(int32_t d)
     {
         return static_cast<signed char>(d);
     }
 
-    static inlinehint uint8_t ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
+    static force_inline uint8_t ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
     {
         return static_cast<uint8_t>(Px + ErrVal);
     }
@@ -95,17 +95,17 @@ struct LosslessTraitsT<uint16_t, 16> : LosslessTraitsImplT<uint16_t, 16>
 {
     typedef SAMPLE PIXEL;
 
-    static inlinehint short ModRange(int32_t Errval)
+    static force_inline short ModRange(int32_t Errval)
     {
         return static_cast<short>(Errval);
     }
 
-    static inlinehint int32_t ComputeErrVal(int32_t d)
+    static force_inline int32_t ComputeErrVal(int32_t d)
     {
         return static_cast<short>(d);
     }
 
-    static inlinehint SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
+    static force_inline SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
     {
         return static_cast<SAMPLE>(Px + ErrVal);
     }
@@ -117,17 +117,17 @@ struct LosslessTraitsT<Triplet<SAMPLE>, bpp> : LosslessTraitsImplT<SAMPLE, bpp>
 {
     typedef Triplet<SAMPLE> PIXEL;
 
-    static inlinehint bool IsNear(int32_t lhs, int32_t rhs)
+    static force_inline bool IsNear(int32_t lhs, int32_t rhs)
     {
         return lhs == rhs;
     }
 
-    static inlinehint bool IsNear(PIXEL lhs, PIXEL rhs)
+    static force_inline bool IsNear(PIXEL lhs, PIXEL rhs)
     {
         return lhs == rhs;
     }
 
-    static inlinehint SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
+    static force_inline SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
     {
         return static_cast<SAMPLE>(Px + ErrVal);
     }

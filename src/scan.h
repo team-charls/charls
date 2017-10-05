@@ -16,7 +16,7 @@
 
 
 #ifdef _MSC_VER
-#pragma warning (disable: 4127) // conditional expression is constant (caused by some template methods that are not fully specialized) [VS2013]
+#pragma warning (disable: 4127) // conditional expression is constant (caused by some template methods that are not fully specialized) [VS2017]
 #endif
 
 
@@ -26,7 +26,7 @@ extern std::vector<signed char> rgquant10Ll;
 extern std::vector<signed char> rgquant12Ll;
 extern std::vector<signed char> rgquant16Ll;
 
-inlinehint int32_t ApplySign(int32_t i, int32_t sign)
+force_inline int32_t ApplySign(int32_t i, int32_t sign)
 {
     return (sign ^ i) - sign;
 }
@@ -36,7 +36,7 @@ inlinehint int32_t ApplySign(int32_t i, int32_t sign)
 
 #if 0
 
-inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
+force_inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 {
     if (Ra < Rb)
     {
@@ -60,7 +60,7 @@ inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 #else
 
-inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
+force_inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 {
     // sign trick reduces the number of if statements (branches)
     const int32_t sgn = BitWiseSign(Rb - Ra);
@@ -81,19 +81,19 @@ inlinehint int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 #endif
 
-inlinehint int32_t UnMapErrVal(int32_t mappedError)
+force_inline int32_t UnMapErrVal(int32_t mappedError)
 {
     const int32_t sign = static_cast<int32_t>(mappedError << (INT32_BITCOUNT-1)) >> (INT32_BITCOUNT-1);
     return sign ^ (mappedError >> 1);
 }
 
-inlinehint int32_t GetMappedErrVal(int32_t Errval)
+force_inline int32_t GetMappedErrVal(int32_t Errval)
 {
     const int32_t mappedError = (Errval >> (INT32_BITCOUNT-2)) ^ (2 * Errval);
     return mappedError;
 }
 
-inlinehint  int32_t ComputeContextID(int32_t Q1, int32_t Q2, int32_t Q3)
+force_inline  int32_t ComputeContextID(int32_t Q1, int32_t Q2, int32_t Q3)
 {
     return (Q1*9 + Q2)*9 + Q3;
 }
@@ -153,7 +153,7 @@ public:
 
     signed char QuantizeGratientOrg(int32_t Di) const;
 
-    inlinehint int32_t QuantizeGratient(int32_t Di) const
+    force_inline int32_t QuantizeGratient(int32_t Di) const
     {
         ASSERT(QuantizeGratientOrg(Di) == *(_pquant + Di));
         return *(_pquant + Di);
@@ -162,7 +162,7 @@ public:
     void InitQuantizationLUT();
 
     int32_t DecodeValue(int32_t k, int32_t limit, int32_t qbpp);
-    inlinehint void EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit);
+    force_inline void EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit);
 
     void IncrementRunIndex()
     {
@@ -186,8 +186,8 @@ public:
     void EncodeRunPixels(int32_t runLength, bool bEndofline);
     int32_t DoRunMode(int32_t index, EncoderStrategy*);
 
-    inlinehint SAMPLE DoRegular(int32_t Qs, int32_t, int32_t pred, DecoderStrategy*);
-    inlinehint SAMPLE DoRegular(int32_t Qs, int32_t x, int32_t pred, EncoderStrategy*);
+    force_inline SAMPLE DoRegular(int32_t Qs, int32_t, int32_t pred, DecoderStrategy*);
+    force_inline SAMPLE DoRegular(int32_t Qs, int32_t x, int32_t pred, EncoderStrategy*);
 
     void DoLine(SAMPLE* pdummy);
     void DoLine(Triplet<SAMPLE>* pdummy);
@@ -272,7 +272,7 @@ typename TRAITS::SAMPLE JlsCodec<TRAITS,STRATEGY>::DoRegular(int32_t Qs, int32_t
 
 // Functions to build tables used to decode short Golomb codes.
 
-inlinehint std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedError)
+force_inline std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedError)
 {
     const int32_t highbits = mappedError >> k;
     return std::make_pair(highbits + k + 1, (int32_t(1) << k) | (mappedError & ((int32_t(1) << k) - 1)));
@@ -328,7 +328,7 @@ int32_t JlsCodec<TRAITS, STRATEGY>::DecodeValue(int32_t k, int32_t limit, int32_
 
 
 template<typename TRAITS, typename STRATEGY>
-inlinehint void JlsCodec<TRAITS, STRATEGY>::EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit)
+force_inline void JlsCodec<TRAITS, STRATEGY>::EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit)
 {
     int32_t highbits = mappedError >> k;
 
