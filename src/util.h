@@ -68,17 +68,6 @@ inline int32_t BitWiseSign(int32_t i)
 }
 
 
-struct Size
-{
-    Size(int32_t width, int32_t height) :
-        cx(width),
-        cy(height)
-    {}
-    int32_t cx;
-    int32_t cy;
-};
-
-
 template<typename SAMPLE>
 struct Triplet
 {

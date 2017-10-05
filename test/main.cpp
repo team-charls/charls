@@ -712,6 +712,13 @@ int main(int argc, char* argv[])
             continue;
         }
 
+        if (str.compare(0, 17, "-rgb8_performance") == 0)
+        {
+            // See the comments in function, how to prepare this test.
+            TestLargeImagePerformanceRgb8(1);
+            continue;
+        }
+
         if (str.compare(0, 18, "-decodeperformance") == 0)
         {
             int loopCount = 1;

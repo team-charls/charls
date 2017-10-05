@@ -62,27 +62,49 @@ void TestPerformance(int loopCount)
 }
 
 
-void TestLargeImagePerformance(int loopCount)
-{
-    TestFile("test/rgb8bit/artificial.ppm", 17, Size(3072, 2048), 8, 3, false, loopCount);
-    TestFile("test/rgb8bit/bridge.ppm", 17, Size(2749, 4049), 8, 3, false, loopCount);
-    TestFile("test/rgb8bit/flower_foveon.ppm", 17, Size(2268, 1512), 8, 3, false, loopCount);
-    ////TestFile("test/rgb8bit/big_building.ppm", 17, Size(7216,5412),  8, 3);
-    ////TestFile("test/rgb16bit/bridge.ppm", 19, Size(2749,4049),  16, 3, true);
-}
-
 } // namespace
 
 
 void PerformanceTests(int loopCount)
 {
+#ifdef _DEBUG
+    printf("NOTE: running performance test in debug mode, performance may be slow!\r\n");
+#endif
     printf("Test Perf (with loop count %i)\r\n", loopCount);
     TestPerformance(loopCount);
+}
 
-#ifndef _DEBUG
-    printf("Test Large Images Performance\r\n");
-    TestLargeImagePerformance(loopCount);
+void TestLargeImagePerformanceRgb8(int loopCount)
+{
+    // Note: the test images are very large and not included in the repository.
+    //       The images can be downloaded from: http://imagecompression.info/test_images/
+
+#ifdef _DEBUG
+    printf("NOTE: running performance test in debug mode, performance may be slow!\r\n");
 #endif
+    printf("Test Large Images Performance\r\n");
+
+    try
+    {
+        test_portable_anymap_file("test/rgb8bit/artificial.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/big_building.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/big_tree.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/bridge.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/cathedral.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/deer.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/fireworks.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/flower_foveon.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/hdr.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/leaves_iso_200.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/leaves_iso_1600.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/nightshot_iso_100.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/nightshot_iso_1600.ppm", loopCount);
+        test_portable_anymap_file("test/rgb8bit/spider_web.ppm", loopCount);
+    }
+    catch (const std::istream::failure& error)
+    {
+        printf("Test failed %s\r\n", error.code().message().c_str());
+    }
 }
 
 void DecodePerformanceTests(int loopCount)

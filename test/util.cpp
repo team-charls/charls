@@ -6,8 +6,7 @@
 #include "config.h"
 #include "util.h"
 #include "time.h"
-
-#include "../src/charls.h"
+#include "portable_anymap_file.h"
 
 #include <iostream>
 #include <vector>
@@ -82,7 +81,8 @@ void WriteFile(const char* filename, std::vector<uint8_t>& buffer)
     fclose(pfile);
 }
 
-void TestRoundTrip(const char* strName, std::vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount)
+
+void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount)
 {
     JlsParameters params = JlsParameters();
     params.components = ccomp;
@@ -94,7 +94,7 @@ void TestRoundTrip(const char* strName, std::vector<uint8_t>& rgbyteRaw, Size si
 }
 
 
-void TestRoundTrip(const char* strName, std::vector<uint8_t>& rgbyteRaw, JlsParameters& params, int loopCount)
+void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, JlsParameters& params, int loopCount)
 {
     std::vector<uint8_t> rgbyteCompressed(params.height * params.width * params.components * params.bitsPerSample / 4);
 
@@ -161,3 +161,11 @@ void TestFile(const char* filename, int ioffs, Size size2, int cbit, int ccomp, 
     TestRoundTrip(filename, rgbyteUncompressed, size2, cbit, ccomp, loopCount);
 }
 
+
+void test_portable_anymap_file(const char* filename, int loopCount)
+{
+    portable_anymap_file anymapFile(filename);
+
+    TestRoundTrip(filename, anymapFile.image_data(), Size(anymapFile.width(), anymapFile.height()),
+        anymapFile.bits_per_sample(), anymapFile.component_count(), loopCount);
+}

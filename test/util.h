@@ -5,16 +5,28 @@
 #ifndef TEST_UTIL
 #define TEST_UTIL
 
-#include "../src/util.h"
+#include "../src/charls.h"
 #include <vector>
 #include <exception>
+
+struct Size
+{
+    Size(int32_t width, int32_t height) :
+        cx(width),
+        cy(height)
+    {}
+    int32_t cx;
+    int32_t cy;
+};
+
 
 void FixEndian(std::vector<uint8_t>* buffer, bool littleEndianData);
 bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, int ioffs = 0, int bytes = 0);
 void TestFile(const char* filename, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile = false, int loopCount = 1);
-void TestRoundTrip(const char* filename, std::vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount = 1);
-void TestRoundTrip(const char* filename, std::vector<uint8_t>& rgbyteRaw, JlsParameters& params, int loopCount = 1);
+void TestRoundTrip(const char* filename, const std::vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount = 1);
+void TestRoundTrip(const char* filename, const std::vector<uint8_t>& rgbyteRaw, JlsParameters& params, int loopCount = 1);
 void WriteFile(const char* filename, std::vector<uint8_t>& vec);
+void test_portable_anymap_file(const char* filename, int loopCount = 1);
 
 class UnitTestException : public std::exception {
 public:
