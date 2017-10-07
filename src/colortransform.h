@@ -49,7 +49,7 @@ struct TransformHp1
 
         force_inline Triplet<T> operator()(int v0, int v1, int v2) const
         {
-            return Triplet<T>(v0 + v1 - RANGE / 2, v1, v2 + v1 - RANGE / 2);
+            return Triplet<T>(v0 + v1 - Range / 2, v1, v2 + v1 - Range / 2);
         }
     };
 
@@ -57,13 +57,13 @@ struct TransformHp1
     {
         Triplet<T> hp1;
         hp1.v2 = static_cast<T>(green);
-        hp1.v1 = static_cast<T>(red - green + RANGE / 2);
-        hp1.v3 = static_cast<T>(blue - green + RANGE / 2);
+        hp1.v1 = static_cast<T>(red - green + Range / 2);
+        hp1.v3 = static_cast<T>(blue - green + Range / 2);
         return hp1;
     }
 
 private:
-    enum { RANGE = 1 << (sizeof(T) * 8) };
+    constexpr static size_t Range = 1 << (sizeof(T) * 8);
 };
 
 
@@ -83,20 +83,20 @@ struct TransformHp2
         force_inline Triplet<T> operator() (int v1, int v2, int v3) const
         {
             Triplet<T> rgb;
-            rgb.R  = static_cast<T>(v1 + v2 - RANGE / 2);                     // new R
+            rgb.R  = static_cast<T>(v1 + v2 - Range / 2);                     // new R
             rgb.G  = static_cast<T>(v2);                                      // new G
-            rgb.B  = static_cast<T>(v3 + ((rgb.R + rgb.G) >> 1) - RANGE / 2); // new B
+            rgb.B  = static_cast<T>(v3 + ((rgb.R + rgb.G) >> 1) - Range / 2); // new B
             return rgb;
         }
     };
 
     force_inline Triplet<T> operator()(int red, int green, int blue) const
     {
-        return Triplet<T>(red - green + RANGE / 2, green, blue - ((red + green ) >> 1) - RANGE / 2);
+        return Triplet<T>(red - green + Range / 2, green, blue - ((red + green ) >> 1) - Range / 2);
     }
 
 private:
-    enum { RANGE = 1 << (sizeof(T) * 8) };
+    constexpr static size_t Range = 1 << (sizeof(T) * 8);
 };
 
 
@@ -115,11 +115,11 @@ struct TransformHp3
 
         force_inline Triplet<T> operator()(int v1, int v2, int v3) const
         {
-            const int G = v1 - ((v3 + v2) >> 2) + RANGE / 4;
+            const int G = v1 - ((v3 + v2) >> 2) + Range / 4;
             Triplet<T> rgb;
-            rgb.R  = static_cast<T>(v3 + G - RANGE / 2); // new R
+            rgb.R  = static_cast<T>(v3 + G - Range / 2); // new R
             rgb.G  = static_cast<T>(G);                  // new G
-            rgb.B  = static_cast<T>(v2 + G - RANGE / 2); // new B
+            rgb.B  = static_cast<T>(v2 + G - Range / 2); // new B
             return rgb;
         }
     };
@@ -127,14 +127,14 @@ struct TransformHp3
     force_inline Triplet<T> operator() (int red, int green, int blue) const
     {
         Triplet<T> hp3;
-        hp3.v2 = static_cast<T>(blue - green + RANGE / 2);
-        hp3.v3 = static_cast<T>(red - green + RANGE / 2);
-        hp3.v1 = static_cast<T>(green + ((hp3.v2 + hp3.v3) >> 2)) - RANGE / 4;
+        hp3.v2 = static_cast<T>(blue - green + Range / 2);
+        hp3.v3 = static_cast<T>(red - green + Range / 2);
+        hp3.v1 = static_cast<T>(green + ((hp3.v2 + hp3.v3) >> 2)) - Range / 4;
         return hp3;
     }
 
 private:
-    enum { RANGE = 1 << (sizeof(T) * 8) };
+    constexpr static size_t Range = 1 << (sizeof(T) * 8);
 };
 
 

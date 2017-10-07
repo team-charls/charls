@@ -25,9 +25,7 @@ public:
     {
     }
 
-    virtual ~DecoderStrategy()
-    {
-    }
+    virtual ~DecoderStrategy() = default;
 
     virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 
@@ -88,11 +86,9 @@ public:
         _readCache = _readCache << length;
     }
 
-
     static void OnLineBegin(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/)
     {
     }
-
 
     void OnLineEnd(int32_t pixelCount, const void* ptypeBuffer, int32_t pixelStride) const
     {
@@ -132,7 +128,7 @@ public:
 
     enum
     {
-        bufferbits = sizeof( bufType ) * 8
+        bufferbits = sizeof(bufType) * 8
     };
 
     void MakeValid()
