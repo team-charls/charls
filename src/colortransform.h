@@ -14,13 +14,13 @@
 template<typename T>
 struct TransformNoneImpl
 {
-    using size_type = T;
-
     static_assert(std::is_integral<T>::value, "Integral required.");
 
-    force_inline Triplet<T> operator()(int v0, int v1, int v2) const
+    using size_type = T;
+
+    force_inline Triplet<T> operator()(int v1, int v2, int v3) const
     {
-        return Triplet<T>(v0, v1, v2);
+        return Triplet<T>(v1, v2, v3);
     }
 };
 
@@ -28,18 +28,18 @@ struct TransformNoneImpl
 template<typename T>
 struct TransformNone : TransformNoneImpl<T>
 {
-    using Inverse = TransformNoneImpl<T>;
-
     static_assert(std::is_integral<T>::value, "Integral required.");
+
+    using Inverse = TransformNoneImpl<T>;
 };
 
 
 template<typename T>
 struct TransformHp1
 {
-    using size_type = T;
-
     static_assert(std::is_integral<T>::value, "Integral required.");
+
+    using size_type = T;
 
     struct Inverse
     {
@@ -47,9 +47,9 @@ struct TransformHp1
         {
         }
 
-        force_inline Triplet<T> operator()(int v0, int v1, int v2) const
+        force_inline Triplet<T> operator()(int v1, int v2, int v3) const
         {
-            return Triplet<T>(v0 + v1 - Range / 2, v1, v2 + v1 - Range / 2);
+            return Triplet<T>(v1 + v2 - Range / 2, v2, v3 + v2 - Range / 2);
         }
     };
 
@@ -70,9 +70,9 @@ private:
 template<typename T>
 struct TransformHp2
 {
-    using size_type = T;
-
     static_assert(std::is_integral<T>::value, "Integral required.");
+
+    using size_type = T;
 
     struct Inverse
     {
@@ -80,7 +80,7 @@ struct TransformHp2
         {
         }
 
-        force_inline Triplet<T> operator() (int v1, int v2, int v3) const
+        force_inline Triplet<T> operator()(int v1, int v2, int v3) const
         {
             Triplet<T> rgb;
             rgb.R  = static_cast<T>(v1 + v2 - Range / 2);                     // new R
@@ -103,9 +103,9 @@ private:
 template<typename T>
 struct TransformHp3
 {
-    using size_type = T;
-
     static_assert(std::is_integral<T>::value, "Integral required.");
+
+    using size_type = T;
 
     struct Inverse
     {
