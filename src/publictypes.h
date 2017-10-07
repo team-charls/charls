@@ -94,9 +94,9 @@ namespace charls
     };
 }
 
-typedef charls::ApiResult CharlsApiResultType;
-typedef charls::InterleaveMode CharlsInterleaveModeType;
-typedef charls::ColorTransformation CharlsColorTransformationType;
+using CharlsApiResultType = charls::ApiResult;
+using CharlsInterleaveModeType = charls::InterleaveMode;
+using CharlsColorTransformationType = charls::ColorTransformation;
 
 // Defines the size of the char buffer that should be passed to the CharLS API to get the error message text.
 const std::size_t ErrorMessageSize = 256;

@@ -25,13 +25,11 @@ using namespace charls;
 namespace
 {
 
-typedef const char* SZC;
-
 const std::ios_base::openmode mode_input  = std::ios_base::in  | std::ios::binary;
 const std::ios_base::openmode mode_output = std::ios_base::out | std::ios::binary;
 
 
-bool ScanFile(SZC strNameEncoded, std::vector<uint8_t>* rgbyteFile, JlsParameters* params)
+bool ScanFile(const char* strNameEncoded, std::vector<uint8_t>* rgbyteFile, JlsParameters* params)
 {
     if (!ReadFile(strNameEncoded, rgbyteFile))
     {

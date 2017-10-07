@@ -68,7 +68,7 @@ inline int32_t BitWiseSign(int32_t i)
 }
 
 
-template<typename SAMPLE>
+template<typename T>
 struct Triplet
 {
     Triplet() :
@@ -78,25 +78,25 @@ struct Triplet
     {}
 
     Triplet(int32_t x1, int32_t x2, int32_t x3) :
-        v1(static_cast<SAMPLE>(x1)),
-        v2(static_cast<SAMPLE>(x2)),
-        v3(static_cast<SAMPLE>(x3))
+        v1(static_cast<T>(x1)),
+        v2(static_cast<T>(x2)),
+        v3(static_cast<T>(x3))
     {}
 
     union
     {
-        SAMPLE v1;
-        SAMPLE R;
+        T v1;
+        T R;
     };
     union
     {
-        SAMPLE v2;
-        SAMPLE G;
+        T v2;
+        T G;
     };
     union
     {
-        SAMPLE v3;
-        SAMPLE B;
+        T v3;
+        T B;
     };
 };
 

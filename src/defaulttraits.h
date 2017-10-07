@@ -25,8 +25,8 @@ const int BASIC_RESET = 64; // Default value as defined in ITU T.87, table C.2
 template<typename sample, typename pixel>
 struct DefaultTraitsT
 {
-    typedef sample SAMPLE;
-    typedef pixel PIXEL;
+    using SAMPLE = sample;
+    using PIXEL = pixel;
 
     int32_t MAXVAL;
     const int32_t RANGE;

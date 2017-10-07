@@ -128,7 +128,7 @@ public:
         return false;
     }
 
-    typedef std::size_t bufType;
+    using bufType = std::size_t;
 
     enum
     {

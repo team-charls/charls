@@ -103,8 +103,8 @@ template<typename TRAITS, typename STRATEGY>
 class JlsCodec : public STRATEGY
 {
 public:
-    typedef typename TRAITS::PIXEL PIXEL;
-    typedef typename TRAITS::SAMPLE SAMPLE;
+    using PIXEL = typename TRAITS::PIXEL;
+    using SAMPLE = typename TRAITS::SAMPLE;
 
     JlsCodec(const TRAITS& inTraits, const JlsParameters& params) :
         STRATEGY(params),

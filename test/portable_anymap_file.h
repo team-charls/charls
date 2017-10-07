@@ -14,7 +14,7 @@
 class portable_anymap_file
 {
 public:
-    /// <exception cref="ifstream::failure">Thrown when the input file cannot be read.</exception>  
+    /// <exception cref="ifstream::failure">Thrown when the input file cannot be read.</exception>
     explicit portable_anymap_file(const char* filename)
     {
         std::ifstream pnmFile;

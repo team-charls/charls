@@ -15,7 +15,8 @@
 template<typename sample, int32_t bitsperpixel>
 struct LosslessTraitsImplT
 {
-    typedef sample SAMPLE;
+    using SAMPLE = sample;
+
     enum
     {
         NEAR  = 0,
@@ -61,17 +62,17 @@ struct LosslessTraitsImplT
 };
 
 
-template<typename SAMPLE, int32_t bpp>
-struct LosslessTraitsT : LosslessTraitsImplT<SAMPLE, bpp>
+template<typename T, int32_t bpp>
+struct LosslessTraitsT : LosslessTraitsImplT<T, bpp>
 {
-    typedef SAMPLE PIXEL;
+    using PIXEL = T;
 };
 
 
 template<>
 struct LosslessTraitsT<uint8_t, 8> : LosslessTraitsImplT<uint8_t, 8>
 {
-    typedef SAMPLE PIXEL;
+    using PIXEL = SAMPLE;
 
     static force_inline signed char ModRange(int32_t Errval)
     {
@@ -93,7 +94,7 @@ struct LosslessTraitsT<uint8_t, 8> : LosslessTraitsImplT<uint8_t, 8>
 template<>
 struct LosslessTraitsT<uint16_t, 16> : LosslessTraitsImplT<uint16_t, 16>
 {
-    typedef SAMPLE PIXEL;
+    using PIXEL = SAMPLE;
 
     static force_inline short ModRange(int32_t Errval)
     {
@@ -112,10 +113,10 @@ struct LosslessTraitsT<uint16_t, 16> : LosslessTraitsImplT<uint16_t, 16>
 };
 
 
-template<typename SAMPLE, int32_t bpp>
-struct LosslessTraitsT<Triplet<SAMPLE>, bpp> : LosslessTraitsImplT<SAMPLE, bpp>
+template<typename T, int32_t bpp>
+struct LosslessTraitsT<Triplet<T>, bpp> : LosslessTraitsImplT<T, bpp>
 {
-    typedef Triplet<SAMPLE> PIXEL;
+    using PIXEL = Triplet<T>;
 
     static force_inline bool IsNear(int32_t lhs, int32_t rhs)
     {
@@ -127,9 +128,9 @@ struct LosslessTraitsT<Triplet<SAMPLE>, bpp> : LosslessTraitsImplT<SAMPLE, bpp>
         return lhs == rhs;
     }
 
-    static force_inline SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
+    static force_inline T ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
     {
-        return static_cast<SAMPLE>(Px + ErrVal);
+        return static_cast<T>(Px + ErrVal);
     }
 };
 

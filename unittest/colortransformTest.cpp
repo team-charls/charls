@@ -30,7 +30,7 @@ namespace CharLSUnitTest
                     for (uint8_t blue = 0; blue < 255; ++blue)
                     {
                         auto sample = transformation(red, green, blue);
-                        TransformHp3<uint8_t>::INVERSE inverse(transformation);
+                        TransformHp3<uint8_t>::Inverse inverse(transformation);
 
                         auto roundTrip = inverse(sample.v1, sample.v2, sample.v3);
 
