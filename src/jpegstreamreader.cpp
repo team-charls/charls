@@ -10,9 +10,10 @@
 #include "decoderstrategy.h"
 #include "encoderstrategy.h"
 #include "jlscodecfactory.h"
-#include "defaulttraits.h"
+#include "constants.h"
 #include <memory>
 #include <iomanip>
+#include <algorithm>
 
 using namespace std;
 using namespace charls;
@@ -20,22 +21,17 @@ using namespace charls;
 extern template class JlsCodecFactory<EncoderStrategy>;
 extern template class JlsCodecFactory<DecoderStrategy>;
 
-// Default bin sizes for JPEG-LS statistical modeling. Can be overridden at compression time, however this is rarely done.
-const int BASIC_T1 = 3;
-const int BASIC_T2 = 7;
-const int BASIC_T3 = 21;
+namespace {
 
-
-namespace
-{
 
 // JFIF\0
 uint8_t jfifID[] = { 'J', 'F', 'I', 'F', '\0' };
 
 
-int32_t CLAMP(int32_t i, int32_t j, int32_t MAXVAL)
+/// <summary>Clamping function as defined by ISO/IEC 14495-1, Figure C.3</summary>
+int32_t clamp(int32_t i, int32_t j, int32_t maximumSampleValue)
 {
-    if (i > MAXVAL || i < j)
+    if (i > maximumSampleValue || i < j)
         return j;
 
     return i;
@@ -60,23 +56,22 @@ ApiResult CheckParameterCoherent(const JlsParameters& params)
     }
 }
 
-
 } // namespace
 
 
-JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t NEAR)
+JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t allowedLossyError)
 {
     JpegLSPresetCodingParameters preset;
 
     const int32_t factor = (std::min(maximumSampleValue, 4095) + 128) / 256;
-    const int threshold1 = CLAMP(factor * (BASIC_T1 - 2) + 2 + 3 * NEAR, NEAR + 1, maximumSampleValue);
-    const int threshold2 = CLAMP(factor * (BASIC_T2 - 3) + 3 + 5 * NEAR, threshold1, maximumSampleValue); //-V537
+    const int threshold1 = clamp(factor * (DefaultThreshold1 - 2) + 2 + 3 * allowedLossyError, allowedLossyError + 1, maximumSampleValue);
+    const int threshold2 = clamp(factor * (DefaultThreshold2 - 3) + 3 + 5 * allowedLossyError, threshold1, maximumSampleValue); //-V537
 
     preset.Threshold1 = threshold1;
     preset.Threshold2 = threshold2;
-    preset.Threshold3 = CLAMP(factor * (BASIC_T3 - 4) + 4 + 7 * NEAR, threshold2, maximumSampleValue);
+    preset.Threshold3 = clamp(factor * (DefaultThreshold3 - 4) + 4 + 7 * allowedLossyError, threshold2, maximumSampleValue);
     preset.MaximumSampleValue = maximumSampleValue;
-    preset.ResetValue = BASIC_RESET;
+    preset.ResetValue = DefaultResetValue;
     return preset;
 }
 

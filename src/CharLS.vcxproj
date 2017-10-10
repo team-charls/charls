@@ -292,6 +292,7 @@
   <ItemGroup>
     <ClInclude Include="charls.h" />
     <ClInclude Include="colortransform.h" />
+    <ClInclude Include="constants.h" />
     <ClInclude Include="context.h" />
     <ClInclude Include="contextrunmode.h" />
     <ClInclude Include="decoderstrategy.h" />

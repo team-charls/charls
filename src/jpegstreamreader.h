@@ -1,5 +1,5 @@
 //
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 #ifndef CHARLS_JPEGSTREAMREADER
 #define CHARLS_JPEGSTREAMREADER

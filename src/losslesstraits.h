@@ -2,12 +2,10 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-
-
 #ifndef CHARLS_LOSSLESSTRAITS
 #define CHARLS_LOSSLESSTRAITS
 
-#include "defaulttraits.h"
+#include "constants.h"
 
 // Optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
 // This class assumes MaximumSampleValue correspond to a whole number of bits, and no custom ResetValue is set when encoding.
@@ -25,7 +23,7 @@ struct LosslessTraitsImplT
         RANGE = (1 << bpp),
         MAXVAL= (1 << bpp) - 1,
         LIMIT = 2 * (bitsperpixel + std::max(8, bitsperpixel)),
-        RESET = BASIC_RESET
+        RESET = DefaultResetValue
     };
 
     static force_inline int32_t ComputeErrVal(int32_t d)

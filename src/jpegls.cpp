@@ -103,7 +103,7 @@ unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& pa
 {
     unique_ptr<STRATEGY> strategy;
 
-    if (presets.ResetValue != 0 && presets.ResetValue != BASIC_RESET)
+    if (presets.ResetValue != 0 && presets.ResetValue != DefaultResetValue)
     {
         if (params.bitsPerSample <= 8)
         {

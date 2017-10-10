@@ -8,11 +8,9 @@
 
 
 #include "util.h"
+#include "constants.h"
 #include <algorithm>
 #include <cstdlib>
-
-
-const int BASIC_RESET = 64; // Default value as defined in ITU T.87, table C.2
 
 
 // Default traits that support all JPEG LS parameters: custom limit, near, maxval (not power of 2)
@@ -36,7 +34,7 @@ struct DefaultTraitsT
     const int32_t LIMIT;
     const int32_t RESET;
 
-    DefaultTraitsT(int32_t max, int32_t near, int32_t reset = BASIC_RESET) :
+    DefaultTraitsT(int32_t max, int32_t near, int32_t reset = DefaultResetValue) :
         MAXVAL(max),
         RANGE((max + 2 * near) / (2 * near + 1) + 1),
         NEAR(near),
