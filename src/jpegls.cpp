@@ -108,7 +108,11 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const JlsParameters&
 {
     unique_ptr<Strategy> codec;
 
-    if (presets.ResetValue != 0 && presets.ResetValue != DefaultResetValue)
+    if (presets.ResetValue == 0 || presets.ResetValue == DefaultResetValue)
+    {
+        codec = CreateOptimizedCodec(params);
+    }
+    else
     {
         if (params.bitsPerSample <= 8)
         {
@@ -123,15 +127,12 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const JlsParameters&
             codec = std::make_unique<JlsCodec<DefaultTraits<uint16_t, uint16_t>, Strategy>>(traits, params);
         }
     }
-    else
-    {
-        codec = CreateOptimizedCodec(params);
-    }
 
     if (codec)
     {
         codec->SetPresets(presets);
     }
+
     return codec;
 }
 
