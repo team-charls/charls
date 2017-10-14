@@ -49,8 +49,8 @@ bool ScanFile(const char* strNameEncoded, std::vector<uint8_t>* rgbyteFile, JlsP
 
 void TestTraits16bit()
 {
-    auto traits1 = DefaultTraitsT<uint16_t, uint16_t>(4095,0);
-    auto traits2 = LosslessTraitsT<uint16_t, 12>();
+    auto traits1 = DefaultTraits<uint16_t, uint16_t>(4095,0);
+    auto traits2 = LosslessTraits<uint16_t, 12>();
 
     Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
     Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
@@ -74,8 +74,8 @@ void TestTraits16bit()
 
 void TestTraits8bit()
 {
-    auto traits1 = DefaultTraitsT<uint8_t, uint8_t>(255,0);
-    auto traits2 = LosslessTraitsT<uint8_t, 8>();
+    auto traits1 = DefaultTraits<uint8_t, uint8_t>(255,0);
+    auto traits2 = LosslessTraits<uint8_t, 8>();
 
     Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
     Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);

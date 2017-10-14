@@ -11,7 +11,7 @@
 // This class assumes MaximumSampleValue correspond to a whole number of bits, and no custom ResetValue is set when encoding.
 // The point of this is to have the most optimized code for the most common and most demanding scenario.
 template<typename sample, int32_t bitsperpixel>
-struct LosslessTraitsImplT
+struct LosslessTraitsImpl
 {
     using SAMPLE = sample;
 
@@ -61,14 +61,14 @@ struct LosslessTraitsImplT
 
 
 template<typename T, int32_t bpp>
-struct LosslessTraitsT : LosslessTraitsImplT<T, bpp>
+struct LosslessTraits : LosslessTraitsImpl<T, bpp>
 {
     using PIXEL = T;
 };
 
 
 template<>
-struct LosslessTraitsT<uint8_t, 8> : LosslessTraitsImplT<uint8_t, 8>
+struct LosslessTraits<uint8_t, 8> : LosslessTraitsImpl<uint8_t, 8>
 {
     using PIXEL = SAMPLE;
 
@@ -90,7 +90,7 @@ struct LosslessTraitsT<uint8_t, 8> : LosslessTraitsImplT<uint8_t, 8>
 
 
 template<>
-struct LosslessTraitsT<uint16_t, 16> : LosslessTraitsImplT<uint16_t, 16>
+struct LosslessTraits<uint16_t, 16> : LosslessTraitsImpl<uint16_t, 16>
 {
     using PIXEL = SAMPLE;
 
@@ -112,7 +112,7 @@ struct LosslessTraitsT<uint16_t, 16> : LosslessTraitsImplT<uint16_t, 16>
 
 
 template<typename T, int32_t bpp>
-struct LosslessTraitsT<Triplet<T>, bpp> : LosslessTraitsImplT<T, bpp>
+struct LosslessTraits<Triplet<T>, bpp> : LosslessTraitsImpl<T, bpp>
 {
     using PIXEL = Triplet<T>;
 

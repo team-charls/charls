@@ -1,5 +1,5 @@
 //
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 #ifndef CHARLS_JLSCODECFACTORY
@@ -10,13 +10,14 @@
 struct JpegLSPresetCodingParameters;
 struct JlsParameters;
 
-template<typename STRATEGY>
+template<typename Strategy>
 class JlsCodecFactory
 {
 public:
-    std::unique_ptr<STRATEGY> GetCodec(const JlsParameters& params, const JpegLSPresetCodingParameters&);
+    std::unique_ptr<Strategy> GetCodec(const JlsParameters& params, const JpegLSPresetCodingParameters&);
+
 private:
-    std::unique_ptr<STRATEGY> GetCodecImpl(const JlsParameters& params);
+    std::unique_ptr<Strategy> GetCodecImpl(const JlsParameters& params);
 };
 
 #endif

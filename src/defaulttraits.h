@@ -21,7 +21,7 @@
 // This is done for lossless coding/decoding: see losslesstraits.h
 
 template<typename sample, typename pixel>
-struct DefaultTraitsT
+struct DefaultTraits
 {
     using SAMPLE = sample;
     using PIXEL = pixel;
@@ -34,7 +34,7 @@ struct DefaultTraitsT
     const int32_t LIMIT;
     const int32_t RESET;
 
-    DefaultTraitsT(int32_t max, int32_t near, int32_t reset = DefaultResetValue) :
+    DefaultTraits(int32_t max, int32_t near, int32_t reset = DefaultResetValue) :
         MAXVAL(max),
         RANGE((max + 2 * near) / (2 * near + 1) + 1),
         NEAR(near),
@@ -45,7 +45,7 @@ struct DefaultTraitsT
     {
     }
 
-    DefaultTraitsT(const DefaultTraitsT& other) :
+    DefaultTraits(const DefaultTraits& other) :
         MAXVAL(other.MAXVAL),
         RANGE(other.RANGE),
         NEAR(other.NEAR),
@@ -56,7 +56,7 @@ struct DefaultTraitsT
     {
     }
 
-    DefaultTraitsT &operator =(const DefaultTraitsT &a) = delete;
+    DefaultTraits &operator =(const DefaultTraits &a) = delete;
 
     force_inline int32_t ComputeErrVal(int32_t e) const
     {

@@ -24,28 +24,6 @@ const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6
 
 #include "scan.h"
 
-class charls_category : public error_category
-{
-public:
-    const char* name() const noexcept override
-    {
-        return "charls";
-    }
-
-    string message(int /* errval */) const override
-    {
-        return "CharLS error";
-    }
-};
-
-
-const error_category& charls_error::CharLSCategoryInstance()
-{
-    static charls_category instance;
-    return instance;
-}
-
-
 namespace
 {
 
@@ -78,18 +56,44 @@ vector<signed char> CreateQLutLossless(int32_t cbit)
     return lut;
 }
 
+template<typename Traits, typename Strategy>
+unique_ptr<Strategy> CreateCodec(const Traits& t, const Strategy*, const JlsParameters& params)
+{
+    return make_unique<JlsCodec<Traits, Strategy>>(t, params);
+}
+
 } // namespace
+
+
+class charls_category : public error_category
+{
+public:
+    const char* name() const noexcept override
+    {
+        return "charls";
+    }
+
+    string message(int /* errval */) const override
+    {
+        return "CharLS error";
+    }
+};
+
+const error_category& charls_error::CharLSCategoryInstance()
+{
+    static charls_category instance;
+    return instance;
+}
+
 
 // Lookup tables to replace code with lookup tables.
 // To avoid threading issues, all tables are created when the program is loaded.
-
 
 // Lookup table: decode symbols that are smaller or equal to 8 bit (16 tables for each value of k)
 CTable decodingTables[16] = { InitTable(0), InitTable(1), InitTable(2), InitTable(3),
                               InitTable(4), InitTable(5), InitTable(6), InitTable(7),
                               InitTable(8), InitTable(9), InitTable(10), InitTable(11),
                               InitTable(12), InitTable(13), InitTable(14),InitTable(15) };
-
 
 // Lookup tables: sample differences to bin indexes.
 vector<signed char> rgquant8Ll = CreateQLutLossless(8);
@@ -98,24 +102,24 @@ vector<signed char> rgquant12Ll = CreateQLutLossless(12);
 vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
-template<typename STRATEGY>
-unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& params, const JpegLSPresetCodingParameters& presets)
+template<typename Strategy>
+unique_ptr<Strategy> JlsCodecFactory<Strategy>::GetCodec(const JlsParameters& params, const JpegLSPresetCodingParameters& presets)
 {
-    unique_ptr<STRATEGY> strategy;
+    unique_ptr<Strategy> strategy;
 
     if (presets.ResetValue != 0 && presets.ResetValue != DefaultResetValue)
     {
         if (params.bitsPerSample <= 8)
         {
-            DefaultTraitsT<uint8_t, uint8_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
+            DefaultTraits<uint8_t, uint8_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
             traits.MAXVAL = presets.MaximumSampleValue;
-            strategy = std::make_unique<JlsCodec<DefaultTraitsT<uint8_t, uint8_t>, STRATEGY>>(traits, params);
+            strategy = std::make_unique<JlsCodec<DefaultTraits<uint8_t, uint8_t>, Strategy>>(traits, params);
         }
         else
         {
-            DefaultTraitsT<uint16_t, uint16_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
+            DefaultTraits<uint16_t, uint16_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
             traits.MAXVAL = presets.MaximumSampleValue;
-            strategy = std::make_unique<JlsCodec<DefaultTraitsT<uint16_t, uint16_t>, STRATEGY>>(traits, params);
+            strategy = std::make_unique<JlsCodec<DefaultTraits<uint16_t, uint16_t>, Strategy>>(traits, params);
         }
     }
     else
@@ -130,18 +134,10 @@ unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodec(const JlsParameters& pa
     return strategy;
 }
 
-
-template<typename TRAITS, typename STRATEGY>
-unique_ptr<STRATEGY> CreateCodec(const TRAITS& t, const STRATEGY*, const JlsParameters& params)
+template<typename Strategy>
+unique_ptr<Strategy> JlsCodecFactory<Strategy>::GetCodecImpl(const JlsParameters& params)
 {
-    return make_unique<JlsCodec<TRAITS, STRATEGY>>(t, params);
-}
-
-
-template<typename STRATEGY>
-unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters& params)
-{
-    const STRATEGY* s = nullptr;
+    const Strategy* s = nullptr;
 
     if (params.interleaveMode == InterleaveMode::Sample && params.components != 3)
         return nullptr;
@@ -154,16 +150,17 @@ unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters
         if (params.interleaveMode == InterleaveMode::Sample)
         {
             if (params.bitsPerSample == 8)
-                return CreateCodec(LosslessTraitsT<Triplet<uint8_t>, 8>(), s, params);
+                return CreateCodec(LosslessTraits<Triplet<uint8_t>, 8>(), s, params);
         }
         else
         {
             switch (params.bitsPerSample)
             {
-                case  8: return CreateCodec(LosslessTraitsT<uint8_t, 8>(), s, params);
-                case 12: return CreateCodec(LosslessTraitsT<uint16_t, 12>(), s, params);
-                case 16: return CreateCodec(LosslessTraitsT<uint16_t, 16>(), s, params);
-                default: ;
+                case  8: return CreateCodec(LosslessTraits<uint8_t, 8>(), s, params);
+                case 12: return CreateCodec(LosslessTraits<uint16_t, 12>(), s, params);
+                case 16: return CreateCodec(LosslessTraits<uint16_t, 16>(), s, params);
+                default:
+                    break;
             }
         }
     }
@@ -175,16 +172,16 @@ unique_ptr<STRATEGY> JlsCodecFactory<STRATEGY>::GetCodecImpl(const JlsParameters
     if (params.bitsPerSample <= 8)
     {
         if (params.interleaveMode == InterleaveMode::Sample)
-            return CreateCodec(DefaultTraitsT<uint8_t, Triplet<uint8_t> >(maxval, params.allowedLossyError), s, params);
+            return CreateCodec(DefaultTraits<uint8_t, Triplet<uint8_t> >(maxval, params.allowedLossyError), s, params);
 
-        return CreateCodec(DefaultTraitsT<uint8_t, uint8_t>((1 << params.bitsPerSample) - 1, params.allowedLossyError), s, params);
+        return CreateCodec(DefaultTraits<uint8_t, uint8_t>((1 << params.bitsPerSample) - 1, params.allowedLossyError), s, params);
     }
     if (params.bitsPerSample <= 16)
     {
         if (params.interleaveMode == InterleaveMode::Sample)
-            return CreateCodec(DefaultTraitsT<uint16_t,Triplet<uint16_t> >(maxval, params.allowedLossyError), s, params);
+            return CreateCodec(DefaultTraits<uint16_t,Triplet<uint16_t> >(maxval, params.allowedLossyError), s, params);
 
-        return CreateCodec(DefaultTraitsT<uint16_t, uint16_t>(maxval, params.allowedLossyError), s, params);
+        return CreateCodec(DefaultTraits<uint16_t, uint16_t>(maxval, params.allowedLossyError), s, params);
     }
     return nullptr;
 }
