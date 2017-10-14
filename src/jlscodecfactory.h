@@ -7,17 +7,17 @@
 
 #include <memory>
 
-struct JpegLSPresetCodingParameters;
 struct JlsParameters;
+struct JpegLSPresetCodingParameters;
 
 template<typename Strategy>
 class JlsCodecFactory
 {
 public:
-    std::unique_ptr<Strategy> GetCodec(const JlsParameters& params, const JpegLSPresetCodingParameters&);
+    std::unique_ptr<Strategy> CreateCodec(const JlsParameters& params, const JpegLSPresetCodingParameters& presets);
 
 private:
-    std::unique_ptr<Strategy> GetCodecImpl(const JlsParameters& params);
+    std::unique_ptr<Strategy> CreateOptimizedCodec(const JlsParameters& params);
 };
 
 #endif
