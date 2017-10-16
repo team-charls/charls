@@ -15,7 +15,6 @@
 #include <iomanip>
 #include <algorithm>
 
-using namespace std;
 using namespace charls;
 
 extern template class JlsCodecFactory<EncoderStrategy>;
@@ -81,7 +80,7 @@ void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
     JlsParameters info = _params;
     info.components = _componentCount;
     auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, _params.custom);
-    unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
+    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
     ByteStreamInfo compressedData = streamWriter.OutputStream();
     const size_t cbyteWritten = codec->EncodeScan(move(processLine), compressedData);
     streamWriter.Seek(cbyteWritten);
@@ -121,8 +120,8 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
     {
         ReadStartOfScan(componentIndex == 0);
 
-        unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().CreateCodec(_params, _params.custom);
-        unique_ptr<ProcessLine> processLine(qcodec->CreateProcess(rawPixels));
+        std::unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().CreateCodec(_params, _params.custom);
+        std::unique_ptr<ProcessLine> processLine(qcodec->CreateProcess(rawPixels));
         qcodec->DecodeScan(move(processLine), _rect, _byteStream);
         SkipBytes(rawPixels, static_cast<size_t>(bytesPerPlane));
 
@@ -134,7 +133,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 }
 
 
-void JpegStreamReader::ReadNBytes(vector<char>& dst, int byteCount)
+void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 {
     for (int i = 0; i < byteCount; ++i)
     {
@@ -174,9 +173,10 @@ JpegMarkerCode JpegStreamReader::ReadNextMarker()
     auto byte = ReadByte();
     if (byte != 0xFF)
     {
-        ostringstream message;
-        message << setfill('0');
-        message << "Expected JPEG Marker start byte 0xFF but the byte value was 0x" << hex << uppercase << setw(2) << static_cast<unsigned int>(byte);
+        std::ostringstream message;
+        message << std::setfill('0');
+        message << "Expected JPEG Marker start byte 0xFF but the byte value was 0x" << std::hex << std::uppercase
+                << std::setw(2) << static_cast<unsigned int>(byte);
         throw charls_error(ApiResult::MissingJpegMarkerStart, message.str());
     }
 
@@ -226,7 +226,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         case JpegMarkerCode::StartOfFrameProgressiveArithemtic:
         case JpegMarkerCode::StartOfFrameLosslessArithemtic:
             {
-                ostringstream message;
+                std::ostringstream message;
                 message << "JPEG encoding with marker " << static_cast<unsigned int>(marker) << " is not supported.";
                 throw charls_error(ApiResult::UnsupportedEncoding, message.str());
             }
@@ -234,7 +234,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         // Other tags not supported (among which DNL DRI)
         default:
             {
-                ostringstream message;
+                std::ostringstream message;
                 message << "Unknown JPEG marker " << static_cast<unsigned int>(marker) << " encountered.";
                 throw charls_error(ApiResult::UnknownJpegMarker, message.str());
             }
@@ -325,7 +325,7 @@ void JpegStreamReader::ReadJfif()
     _params.jfif.Ythumbnail = ReadByte();
     if(_params.jfif.Xthumbnail > 0 && _params.jfif.thumbnail)
     {
-        vector<char> tempbuff(static_cast<char*>(_params.jfif.thumbnail),
+        std::vector<char> tempbuff(static_cast<char*>(_params.jfif.thumbnail),
             static_cast<char*>(_params.jfif.thumbnail)+3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
         ReadNBytes(tempbuff, 3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
     }
@@ -371,7 +371,7 @@ int JpegStreamReader::ReadColorSpace() const
 
 int JpegStreamReader::ReadColorXForm()
 {
-    vector<char> sourceTag;
+    std::vector<char> sourceTag;
     ReadNBytes(sourceTag, 4);
 
     if (strncmp(sourceTag.data(), "mrfx", 4) != 0)

@@ -1,5 +1,5 @@
 //
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 
@@ -11,9 +11,7 @@
 #include "jpegstreamreader.h"
 #include <vector>
 
-using namespace std;
 using namespace charls;
-
 
 namespace
 {
@@ -87,5 +85,5 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
     const int componentCount = params.interleaveMode == InterleaveMode::None ? 1 : params.components;
     AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastCompenentIndex, componentCount, params.allowedLossyError, params.interleaveMode));
 
-    AddSegment(make_unique<JpegImageDataSegment>(info, params, componentCount));
+    AddSegment(std::make_unique<JpegImageDataSegment>(info, params, componentCount));
 }

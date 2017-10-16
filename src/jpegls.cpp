@@ -12,10 +12,7 @@
 #include "jpegstreamreader.h"
 #include <vector>
 
-
-using namespace std;
 using namespace charls;
-
 
 // As defined in the JPEG-LS standard
 
@@ -42,12 +39,12 @@ signed char QuantizeGratientOrg(const JpegLSPresetCodingParameters& preset, int3
 }
 
 
-vector<signed char> CreateQLutLossless(int32_t cbit)
+std::vector<signed char> CreateQLutLossless(int32_t cbit)
 {
     const JpegLSPresetCodingParameters preset = ComputeDefault((1 << cbit) - 1, 0);
     const int32_t range = preset.MaximumSampleValue + 1;
 
-    vector<signed char> lut(range * 2);
+    std::vector<signed char> lut(range * 2);
 
     for (int32_t diff = -range; diff < range; diff++)
     {
@@ -57,16 +54,16 @@ vector<signed char> CreateQLutLossless(int32_t cbit)
 }
 
 template<typename Strategy, typename Traits>
-unique_ptr<Strategy> create_codec(const Traits& traits, const JlsParameters& params)
+std::unique_ptr<Strategy> create_codec(const Traits& traits, const JlsParameters& params)
 {
-    return make_unique<JlsCodec<Traits, Strategy>>(traits, params);
+    return std::make_unique<JlsCodec<Traits, Strategy>>(traits, params);
 }
 
 
 } // namespace
 
 
-class charls_category : public error_category
+class charls_category : public std::error_category
 {
 public:
     const char* name() const noexcept override
@@ -74,13 +71,13 @@ public:
         return "charls";
     }
 
-    string message(int /* errval */) const override
+    std::string message(int /* errval */) const override
     {
         return "CharLS error";
     }
 };
 
-const error_category& charls_error::CharLSCategoryInstance()
+const std::error_category& charls_error::CharLSCategoryInstance()
 {
     static charls_category instance;
     return instance;
@@ -97,16 +94,16 @@ CTable decodingTables[16] = { InitTable(0), InitTable(1), InitTable(2), InitTabl
                               InitTable(12), InitTable(13), InitTable(14),InitTable(15) };
 
 // Lookup tables: sample differences to bin indexes.
-vector<signed char> rgquant8Ll = CreateQLutLossless(8);
-vector<signed char> rgquant10Ll = CreateQLutLossless(10);
-vector<signed char> rgquant12Ll = CreateQLutLossless(12);
-vector<signed char> rgquant16Ll = CreateQLutLossless(16);
+std::vector<signed char> rgquant8Ll = CreateQLutLossless(8);
+std::vector<signed char> rgquant10Ll = CreateQLutLossless(10);
+std::vector<signed char> rgquant12Ll = CreateQLutLossless(12);
+std::vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
 template<typename Strategy>
-unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const JlsParameters& params, const JpegLSPresetCodingParameters& presets)
+std::unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const JlsParameters& params, const JpegLSPresetCodingParameters& presets)
 {
-    unique_ptr<Strategy> codec;
+    std::unique_ptr<Strategy> codec;
 
     if (presets.ResetValue == 0 || presets.ResetValue == DefaultResetValue)
     {
@@ -137,7 +134,7 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const JlsParameters&
 }
 
 template<typename Strategy>
-unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateOptimizedCodec(const JlsParameters& params)
+std::unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateOptimizedCodec(const JlsParameters& params)
 {
     if (params.interleaveMode == InterleaveMode::Sample && params.components != 3)
         return nullptr;
