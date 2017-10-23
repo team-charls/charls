@@ -172,7 +172,7 @@ protected:
         return _bytesWritten - (_freeBitCount - 32) / 8;
     }
 
-    force_inline void AppendOnesToBitStream(int32_t length)
+    FORCE_INLINE void AppendOnesToBitStream(int32_t length)
     {
         AppendToBitStream((1 << length) - 1, length);
     }

@@ -18,7 +18,7 @@ struct TransformNoneImpl
 
     using size_type = T;
 
-    force_inline Triplet<T> operator()(int v1, int v2, int v3) const
+    FORCE_INLINE Triplet<T> operator()(int v1, int v2, int v3) const
     {
         return Triplet<T>(v1, v2, v3);
     }
@@ -47,13 +47,13 @@ struct TransformHp1
         {
         }
 
-        force_inline Triplet<T> operator()(int v1, int v2, int v3) const
+        FORCE_INLINE Triplet<T> operator()(int v1, int v2, int v3) const
         {
             return Triplet<T>(v1 + v2 - Range / 2, v2, v3 + v2 - Range / 2);
         }
     };
 
-    force_inline Triplet<T> operator()(int red, int green, int blue) const
+    FORCE_INLINE Triplet<T> operator()(int red, int green, int blue) const
     {
         Triplet<T> hp1;
         hp1.v2 = static_cast<T>(green);
@@ -80,7 +80,7 @@ struct TransformHp2
         {
         }
 
-        force_inline Triplet<T> operator()(int v1, int v2, int v3) const
+        FORCE_INLINE Triplet<T> operator()(int v1, int v2, int v3) const
         {
             Triplet<T> rgb;
             rgb.R  = static_cast<T>(v1 + v2 - Range / 2);                     // new R
@@ -90,7 +90,7 @@ struct TransformHp2
         }
     };
 
-    force_inline Triplet<T> operator()(int red, int green, int blue) const
+    FORCE_INLINE Triplet<T> operator()(int red, int green, int blue) const
     {
         return Triplet<T>(red - green + Range / 2, green, blue - ((red + green ) >> 1) - Range / 2);
     }
@@ -113,7 +113,7 @@ struct TransformHp3
         {
         }
 
-        force_inline Triplet<T> operator()(int v1, int v2, int v3) const
+        FORCE_INLINE Triplet<T> operator()(int v1, int v2, int v3) const
         {
             const int G = v1 - ((v3 + v2) >> 2) + Range / 4;
             Triplet<T> rgb;
@@ -124,7 +124,7 @@ struct TransformHp3
         }
     };
 
-    force_inline Triplet<T> operator() (int red, int green, int blue) const
+    FORCE_INLINE Triplet<T> operator() (int red, int green, int blue) const
     {
         Triplet<T> hp3;
         hp3.v2 = static_cast<T>(blue - green + Range / 2);
@@ -153,13 +153,13 @@ struct TransformShifted
         {
         }
 
-        force_inline Triplet<size_type> operator() (int v1, int v2, int v3)
+        FORCE_INLINE Triplet<size_type> operator() (int v1, int v2, int v3)
         {
             Triplet<size_type> result = _inverseTransform(v1 << _shift, v2 << _shift, v3 << _shift);
             return Triplet<size_type>(result.R >> _shift, result.G >> _shift, result.B >> _shift);
         }
 
-        force_inline Quad<size_type> operator() (int v1, int v2, int v3, int v4)
+        FORCE_INLINE Quad<size_type> operator() (int v1, int v2, int v3, int v4)
         {
             Triplet<size_type> result = _inverseTransform(v1 << _shift, v2 << _shift, v3 << _shift);
             return Quad<size_type>(result.R >> _shift, result.G >> _shift, result.B >> _shift, v4);
@@ -175,13 +175,13 @@ struct TransformShifted
     {
     }
 
-    force_inline Triplet<size_type> operator() (int red, int green, int blue)
+    FORCE_INLINE Triplet<size_type> operator() (int red, int green, int blue)
     {
         Triplet<size_type> result = _colortransform(red << _shift, green << _shift, blue << _shift);
         return Triplet<size_type>(result.R >> _shift, result.G >> _shift, result.B >> _shift);
     }
 
-    force_inline Quad<size_type> operator() (int red, int green, int blue, int alpha)
+    FORCE_INLINE Quad<size_type> operator() (int red, int green, int blue, int alpha)
     {
         Triplet<size_type> result = _colortransform(red << _shift, green << _shift, blue << _shift);
         return Quad<size_type>(result.R >> _shift, result.G >> _shift, result.B >> _shift, alpha);

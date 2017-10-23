@@ -38,7 +38,7 @@ struct JlsContext
     }
 
 
-    force_inline int32_t GetErrorCorrection(int32_t k) const
+    FORCE_INLINE int32_t GetErrorCorrection(int32_t k) const
     {
         if (k != 0)
             return 0;
@@ -47,7 +47,7 @@ struct JlsContext
     }
 
 
-    force_inline void UpdateVariables(int32_t errorValue, int32_t NEAR, int32_t NRESET)
+    FORCE_INLINE void UpdateVariables(int32_t errorValue, int32_t NEAR, int32_t NRESET)
     {
         ASSERT(N != 0);
 
@@ -94,7 +94,7 @@ struct JlsContext
     }
 
 
-    force_inline int32_t GetGolomb() const
+    FORCE_INLINE int32_t GetGolomb() const
     {
         const int32_t Ntest = N;
         const int32_t Atest = A;

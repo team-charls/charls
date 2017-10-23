@@ -80,7 +80,7 @@ public:
         _endPosition += readbytes;
     }
 
-    force_inline void Skip(int32_t length)
+    FORCE_INLINE void Skip(int32_t length)
     {
         _validBits -= length;
         _readCache = _readCache << length;
@@ -109,7 +109,7 @@ public:
             throw charls_error(charls::ApiResult::TooMuchCompressedData);
     }
 
-    force_inline bool OptimizedRead()
+    FORCE_INLINE bool OptimizedRead()
     {
         // Easy & fast: if there is no 0xFF byte in sight, we can read without bit stuffing
         if (_position < _nextFFPosition - (sizeof(bufType)-1))
@@ -210,7 +210,7 @@ public:
         }
     }
 
-    force_inline int32_t ReadValue(int32_t length)
+    FORCE_INLINE int32_t ReadValue(int32_t length)
     {
         if (_validBits < length)
         {
@@ -226,7 +226,7 @@ public:
         return result;
     }
 
-    force_inline int32_t PeekByte()
+    FORCE_INLINE int32_t PeekByte()
     {
         if (_validBits < 8)
         {
@@ -236,7 +236,7 @@ public:
         return static_cast<int32_t>(_readCache >> (bufferbits - 8));
     }
 
-    force_inline bool ReadBit()
+    FORCE_INLINE bool ReadBit()
     {
         if (_validBits <= 0)
         {
@@ -248,7 +248,7 @@ public:
         return bSet;
     }
 
-    force_inline int32_t Peek0Bits()
+    FORCE_INLINE int32_t Peek0Bits()
     {
         if (_validBits < 16)
         {
@@ -266,7 +266,7 @@ public:
         return -1;
     }
 
-    force_inline int32_t ReadHighbits()
+    FORCE_INLINE int32_t ReadHighbits()
     {
         const int32_t count = Peek0Bits();
         if (count >= 0)

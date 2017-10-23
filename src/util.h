@@ -17,17 +17,17 @@
 
 // Only use __forceinline for the Microsoft C++ compiler in release mode (verified scenario)
 // Use the build-in optimizer for all other C++ compilers.
-// Note: usage of force_inline may be reduced in the future as the latest generation of C++ compilers
+// Note: usage of FORCE_INLINE may be reduced in the future as the latest generation of C++ compilers
 // can handle optimization by themselves.
-#ifndef force_inline
+#ifndef FORCE_INLINE
 #  ifdef _MSC_VER
 #    ifdef NDEBUG
-#      define force_inline __forceinline
+#      define FORCE_INLINE __forceinline
 #    else
-#      define force_inline
+#      define FORCE_INLINE
 #    endif
 #  else
-#    define force_inline
+#    define FORCE_INLINE
 #  endif
 #endif
 
@@ -140,7 +140,7 @@ struct FromBigEndian
 template<>
 struct FromBigEndian<4>
 {
-    force_inline static unsigned int Read(const uint8_t* pbyte)
+    FORCE_INLINE static unsigned int Read(const uint8_t* pbyte)
     {
         return (pbyte[0] << 24) + (pbyte[1] << 16) + (pbyte[2] << 8) + (pbyte[3] << 0);
     }
@@ -150,7 +150,7 @@ struct FromBigEndian<4>
 template<>
 struct FromBigEndian<8>
 {
-    force_inline static uint64_t Read(const uint8_t* pbyte)
+    FORCE_INLINE static uint64_t Read(const uint8_t* pbyte)
     {
         return (static_cast<uint64_t>(pbyte[0]) << 56) + (static_cast<uint64_t>(pbyte[1]) << 48) +
                (static_cast<uint64_t>(pbyte[2]) << 40) + (static_cast<uint64_t>(pbyte[3]) << 32) +

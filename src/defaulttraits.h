@@ -58,17 +58,17 @@ struct DefaultTraits
 
     DefaultTraits &operator =(const DefaultTraits &a) = delete;
 
-    force_inline int32_t ComputeErrVal(int32_t e) const
+    FORCE_INLINE int32_t ComputeErrVal(int32_t e) const
     {
         return ModuloRange(Quantize(e));
     }
 
-    force_inline SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) const
+    FORCE_INLINE SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) const
     {
         return FixReconstructedValue(Px + DeQuantize(ErrVal));
     }
 
-    force_inline bool IsNear(int32_t lhs, int32_t rhs) const
+    FORCE_INLINE bool IsNear(int32_t lhs, int32_t rhs) const
     {
         return std::abs(lhs - rhs) <= NEAR;
     }
@@ -80,7 +80,7 @@ struct DefaultTraits
                std::abs(lhs.v3 - rhs.v3) <= NEAR;
     }
 
-    force_inline int32_t CorrectPrediction(int32_t Pxc) const
+    FORCE_INLINE int32_t CorrectPrediction(int32_t Pxc) const
     {
         if ((Pxc & MAXVAL) == Pxc)
             return Pxc;
@@ -91,7 +91,7 @@ struct DefaultTraits
     /// <summary>
     /// Returns the value of errorValue modulo RANGE. ITU.T.87, A.4.5 (code segment A.9)
     /// </summary>
-    force_inline int32_t ModuloRange(int32_t errorValue) const
+    FORCE_INLINE int32_t ModuloRange(int32_t errorValue) const
     {
         ASSERT(std::abs(errorValue) <= RANGE);
 
@@ -117,12 +117,12 @@ private:
         return - (NEAR - Errval) / (2 * NEAR + 1);
     }
 
-    force_inline int32_t DeQuantize(int32_t Errval) const
+    FORCE_INLINE int32_t DeQuantize(int32_t Errval) const
     {
         return Errval * (2 * NEAR + 1);
     }
 
-    force_inline SAMPLE FixReconstructedValue(int32_t val) const
+    FORCE_INLINE SAMPLE FixReconstructedValue(int32_t val) const
     {
         if (val < -NEAR)
         {

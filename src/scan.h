@@ -153,7 +153,7 @@ public:
 
     signed char QuantizeGratientOrg(int32_t Di) const;
 
-    force_inline int32_t QuantizeGratient(int32_t Di) const
+    FORCE_INLINE int32_t QuantizeGratient(int32_t Di) const
     {
         ASSERT(QuantizeGratientOrg(Di) == *(_pquant + Di));
         return *(_pquant + Di);
@@ -162,7 +162,7 @@ public:
     void InitQuantizationLUT();
 
     int32_t DecodeValue(int32_t k, int32_t limit, int32_t qbpp);
-    force_inline void EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit);
+    FORCE_INLINE void EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit);
 
     void IncrementRunIndex()
     {
@@ -186,8 +186,8 @@ public:
     void EncodeRunPixels(int32_t runLength, bool bEndofline);
     int32_t DoRunMode(int32_t index, EncoderStrategy*);
 
-    force_inline SAMPLE DoRegular(int32_t Qs, int32_t, int32_t pred, DecoderStrategy*);
-    force_inline SAMPLE DoRegular(int32_t Qs, int32_t x, int32_t pred, EncoderStrategy*);
+    FORCE_INLINE SAMPLE DoRegular(int32_t Qs, int32_t, int32_t pred, DecoderStrategy*);
+    FORCE_INLINE SAMPLE DoRegular(int32_t Qs, int32_t x, int32_t pred, EncoderStrategy*);
 
     void DoLine(SAMPLE* pdummy);
     void DoLine(Triplet<SAMPLE>* pdummy);
@@ -328,7 +328,7 @@ int32_t JlsCodec<Traits, Strategy>::DecodeValue(int32_t k, int32_t limit, int32_
 
 
 template<typename Traits, typename Strategy>
-force_inline void JlsCodec<Traits, Strategy>::EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit)
+FORCE_INLINE void JlsCodec<Traits, Strategy>::EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit)
 {
     int32_t highbits = mappedError >> k;
 
