@@ -32,10 +32,7 @@
 #endif
 
 
-enum constants
-{
-    INT32_BITCOUNT = sizeof(int32_t) * 8
-};
+constexpr size_t int32_t_bit_count = sizeof(int32_t) * 8;
 
 
 inline void push_back(std::vector<uint8_t>& values, uint16_t value)
@@ -58,13 +55,13 @@ inline int32_t log_2(int32_t n)
 
 inline int32_t Sign(int32_t n)
 {
-    return (n >> (INT32_BITCOUNT - 1)) | 1;
+    return (n >> (int32_t_bit_count - 1)) | 1;
 }
 
 
 inline int32_t BitWiseSign(int32_t i)
 {
-    return i >> (INT32_BITCOUNT - 1);
+    return i >> (int32_t_bit_count - 1);
 }
 
 

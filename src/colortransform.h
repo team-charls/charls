@@ -63,7 +63,7 @@ struct TransformHp1
     }
 
 private:
-    constexpr static size_t Range = 1 << (sizeof(T) * 8);
+    static constexpr size_t Range = 1 << (sizeof(T) * 8);
 };
 
 
@@ -96,7 +96,7 @@ struct TransformHp2
     }
 
 private:
-    constexpr static size_t Range = 1 << (sizeof(T) * 8);
+    static constexpr size_t Range = 1 << (sizeof(T) * 8);
 };
 
 
@@ -134,7 +134,7 @@ struct TransformHp3
     }
 
 private:
-    constexpr static size_t Range = 1 << (sizeof(T) * 8);
+    static constexpr size_t Range = 1 << (sizeof(T) * 8);
 };
 
 

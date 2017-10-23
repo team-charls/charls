@@ -83,13 +83,13 @@ inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 inline int32_t UnMapErrVal(int32_t mappedError)
 {
-    const int32_t sign = static_cast<int32_t>(mappedError << (INT32_BITCOUNT-1)) >> (INT32_BITCOUNT-1);
+    const int32_t sign = static_cast<int32_t>(mappedError << (int32_t_bit_count-1)) >> (int32_t_bit_count-1);
     return sign ^ (mappedError >> 1);
 }
 
 inline int32_t GetMappedErrVal(int32_t Errval)
 {
-    const int32_t mappedError = (Errval >> (INT32_BITCOUNT-2)) ^ (2 * Errval);
+    const int32_t mappedError = (Errval >> (int32_t_bit_count-2)) ^ (2 * Errval);
     return mappedError;
 }
 
@@ -287,7 +287,7 @@ inline CTable InitTable(int32_t k)
         // Q is not used when k != 0
         const int32_t merrval = GetMappedErrVal(nerr);
         std::pair<int32_t, int32_t> paircode = CreateEncodedValue(k, merrval);
-        if (paircode.first > CTable::cbit)
+        if (paircode.first > CTable::byte_bit_count)
             break;
 
         Code code(nerr, static_cast<short>(paircode.first));
@@ -299,7 +299,7 @@ inline CTable InitTable(int32_t k)
         // Q is not used when k != 0
         const int32_t merrval = GetMappedErrVal(nerr);
         std::pair<int32_t, int32_t> paircode = CreateEncodedValue(k, merrval);
-        if (paircode.first > CTable::cbit)
+        if (paircode.first > CTable::byte_bit_count)
             break;
 
         Code code = Code(nerr, static_cast<short>(paircode.first));

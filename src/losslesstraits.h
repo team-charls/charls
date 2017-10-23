@@ -42,7 +42,7 @@ struct LosslessTraitsImpl
 #endif
     static FORCE_INLINE int32_t ModuloRange(int32_t errorValue)
     {
-        return static_cast<int32_t>(errorValue << (INT32_BITCOUNT - bpp)) >> (INT32_BITCOUNT - bpp);
+        return static_cast<int32_t>(errorValue << (int32_t_bit_count - bpp)) >> (int32_t_bit_count - bpp);
     }
 
     static FORCE_INLINE SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal)
@@ -55,7 +55,7 @@ struct LosslessTraitsImpl
         if ((Pxc & MAXVAL) == Pxc)
             return Pxc;
 
-        return (~(Pxc >> (INT32_BITCOUNT-1))) & MAXVAL;
+        return (~(Pxc >> (int32_t_bit_count-1))) & MAXVAL;
     }
 };
 

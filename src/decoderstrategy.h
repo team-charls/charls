@@ -115,25 +115,18 @@ public:
         if (_position < _nextFFPosition - (sizeof(bufType)-1))
         {
             _readCache |= FromBigEndian<sizeof(bufType)>::Read(_position) >> _validBits;
-            const int bytesToRead = (bufferbits - _validBits) >> 3;
+            const int bytesToRead = (bufType_bit_count - _validBits) >> 3;
             _position += bytesToRead;
             _validBits += bytesToRead * 8;
-            ASSERT(_validBits >= bufferbits - 8);
+            ASSERT(_validBits >= bufType_bit_count - 8);
             return true;
         }
         return false;
     }
 
-    using bufType = std::size_t;
-
-    enum
-    {
-        bufferbits = sizeof(bufType) * 8
-    };
-
     void MakeValid()
     {
-        ASSERT(_validBits <=bufferbits - 8);
+        ASSERT(_validBits <=bufType_bit_count - 8);
 
         if (OptimizedRead())
             return;
@@ -164,7 +157,7 @@ public:
                 }
             }
 
-            _readCache |= valnew << (bufferbits - 8 - _validBits);
+            _readCache |= valnew << (bufType_bit_count - 8 - _validBits);
             _position += 1;
             _validBits += 8;
 
@@ -173,7 +166,7 @@ public:
                 _validBits--;
             }
         }
-        while (_validBits < bufferbits - 8);
+        while (_validBits < bufType_bit_count - 8);
 
         _nextFFPosition = FindNextFF();
     }
@@ -221,7 +214,7 @@ public:
 
         ASSERT(length != 0 && length <= _validBits);
         ASSERT(length < 32);
-        const int32_t result = static_cast<int32_t>(_readCache >> (bufferbits - length));
+        const int32_t result = static_cast<int32_t>(_readCache >> (bufType_bit_count - length));
         Skip(length);
         return result;
     }
@@ -233,7 +226,7 @@ public:
             MakeValid();
         }
 
-        return static_cast<int32_t>(_readCache >> (bufferbits - 8));
+        return static_cast<int32_t>(_readCache >> (bufType_bit_count - 8));
     }
 
     FORCE_INLINE bool ReadBit()
@@ -243,7 +236,7 @@ public:
             MakeValid();
         }
 
-        const bool bSet = (_readCache & (bufType(1) << (bufferbits - 1))) != 0;
+        const bool bSet = (_readCache & (bufType(1) << (bufType_bit_count - 1))) != 0;
         Skip(1);
         return bSet;
     }
@@ -258,7 +251,7 @@ public:
 
         for (int32_t count = 0; count < 16; count++)
         {
-            if ((valTest & (bufType(1) << (bufferbits - 1))) != 0)
+            if ((valTest & (bufType(1) << (bufType_bit_count - 1))) != 0)
                 return count;
 
             valTest <<= 1;
@@ -296,6 +289,9 @@ protected:
     std::unique_ptr<ProcessLine> _processLine;
 
 private:
+    using bufType = std::size_t;
+    static constexpr size_t bufType_bit_count = sizeof(bufType) * 8;
+
     std::vector<uint8_t> _buffer;
     std::basic_streambuf<char>* _byteStream;
 

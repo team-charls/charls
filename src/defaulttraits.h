@@ -85,7 +85,7 @@ struct DefaultTraits
         if ((Pxc & MAXVAL) == Pxc)
             return Pxc;
 
-        return (~(Pxc >> (INT32_BITCOUNT-1))) & MAXVAL;
+        return (~(Pxc >> (int32_t_bit_count-1))) & MAXVAL;
     }
 
     /// <summary>

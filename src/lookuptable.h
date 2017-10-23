@@ -43,8 +43,7 @@ struct Code
 class CTable
 {
 public:
-
-    enum { cbit = 8 } ;
+    static constexpr size_t byte_bit_count = 8;
 
     CTable()
     {
@@ -54,12 +53,12 @@ public:
     void AddEntry(uint8_t bvalue, Code c)
     {
         int32_t length = c.GetLength();
-        ASSERT(length <= cbit);
+        ASSERT(length <= byte_bit_count);
 
-        for (int32_t i = 0; i < int32_t(1) << (cbit - length); ++i)
+        for (int32_t i = 0; i < int32_t(1) << (byte_bit_count - length); ++i)
         {
-            ASSERT(_rgtype[(bvalue << (cbit - length)) + i].GetLength() == 0);
-            _rgtype[(bvalue << (cbit - length)) + i] = c;
+            ASSERT(_rgtype[(bvalue << (byte_bit_count - length)) + i].GetLength() == 0);
+            _rgtype[(bvalue << (byte_bit_count - length)) + i] = c;
         }
     }
 
@@ -69,7 +68,7 @@ public:
     }
 
 private:
-    Code _rgtype[1 << cbit];
+    Code _rgtype[1 << byte_bit_count];
 };
 
 
