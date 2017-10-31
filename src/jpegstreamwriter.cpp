@@ -4,43 +4,45 @@
 
 
 #include "jpegstreamwriter.h"
-#include "util.h"
-#include "jpegmarkersegment.h"
 #include "jpegimagedatasegment.h"
 #include "jpegmarkercode.h"
+#include "jpegmarkersegment.h"
 #include "jpegstreamreader.h"
+#include "util.h"
 #include <vector>
 
 using namespace charls;
 
 namespace
 {
-    bool IsDefault(const JpegLSPresetCodingParameters& custom)
-    {
-        if (custom.MaximumSampleValue != 0)
-            return false;
 
-        if (custom.Threshold1 != 0)
-            return false;
+bool IsDefault(const JpegLSPresetCodingParameters& custom)
+{
+    if (custom.MaximumSampleValue != 0)
+        return false;
 
-        if (custom.Threshold2 != 0)
-            return false;
+    if (custom.Threshold1 != 0)
+        return false;
 
-        if (custom.Threshold3 != 0)
-            return false;
+    if (custom.Threshold2 != 0)
+        return false;
 
-        if (custom.ResetValue != 0)
-            return false;
+    if (custom.Threshold3 != 0)
+        return false;
 
-        return true;
-    }
+    if (custom.ResetValue != 0)
+        return false;
+
+    return true;
+}
+
 }
 
 
-JpegStreamWriter::JpegStreamWriter() :
-    _data(),
-    _byteOffset(0),
-    _lastCompenentIndex(0)
+JpegStreamWriter::JpegStreamWriter()
+    : _data(),
+      _byteOffset(0),
+      _lastCompenentIndex(0)
 {
 }
 

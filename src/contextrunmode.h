@@ -2,7 +2,6 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-
 #ifndef CHARLS_CONTEXTRUNMODE
 #define CHARLS_CONTEXTRUNMODE
 
@@ -19,22 +18,22 @@ struct CContextRunMode
     uint8_t N;
     uint8_t Nn;
 
-    CContextRunMode() :
-        A(),
-        _nRItype(),
-        _nReset(),
-        N(),
-        Nn()
+    CContextRunMode()
+        : A(),
+          _nRItype(),
+          _nReset(),
+          N(),
+          Nn()
     {
     }
 
 
-    CContextRunMode(int32_t a, int32_t nRItype, int32_t nReset) :
-        A(a),
-        _nRItype(nRItype),
-        _nReset(static_cast<uint8_t>(nReset)),
-        N(1),
-        Nn(0)
+    CContextRunMode(int32_t a, int32_t nRItype, int32_t nReset)
+        : A(a),
+          _nRItype(nRItype),
+          _nReset(static_cast<uint8_t>(nReset)),
+          N(1),
+          Nn(0)
     {
     }
 
@@ -44,7 +43,7 @@ struct CContextRunMode
         const int32_t TEMP = A + (N >> 1) * _nRItype;
         int32_t Ntest = N;
         int32_t k = 0;
-        for(; Ntest < TEMP; k++)
+        for (; Ntest < TEMP; k++)
         {
             Ntest <<= 1;
             ASSERT(k <= 32);
@@ -103,7 +102,7 @@ struct CContextRunMode
 
     FORCE_INLINE bool ComputeMapNegativeE(int32_t k) const
     {
-        return  k != 0 || (2 * Nn >= N );
+        return k != 0 || (2 * Nn >= N);
     }
 };
 

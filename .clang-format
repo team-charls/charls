@@ -1,5 +1,7 @@
 BasedOnStyle: LLVM
 Language: Cpp
+
+# Use features of C++11, C++14 and C++17 (e.g. A<A<int>> instead of A<A<int> >) 
 Standard: Cpp11
 
 UseTab: Never
@@ -10,8 +12,11 @@ PointerAlignment: Left
 BreakBeforeBraces: Allman
 
 AccessModifierOffset: -4
+AlignTrailingComments: true 
 AllowShortFunctionsOnASingleLine: false
 AllowShortIfStatementsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 SpaceAfterTemplateKeyword: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 2 
