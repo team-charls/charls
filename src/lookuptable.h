@@ -52,8 +52,8 @@ public:
 
     void AddEntry(uint8_t bvalue, Code c)
     {
-        int32_t length = c.GetLength();
-        ASSERT(length <= byte_bit_count);
+        const int32_t length = c.GetLength();
+        ASSERT(static_cast<size_t>(length) <= byte_bit_count);
 
         for (int32_t i = 0; i < int32_t(1) << (byte_bit_count - length); ++i)
         {

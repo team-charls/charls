@@ -286,11 +286,11 @@ inline CTable InitTable(int32_t k)
     {
         // Q is not used when k != 0
         const int32_t merrval = GetMappedErrVal(nerr);
-        std::pair<int32_t, int32_t> paircode = CreateEncodedValue(k, merrval);
-        if (paircode.first > CTable::byte_bit_count)
+        const std::pair<int32_t, int32_t> paircode = CreateEncodedValue(k, merrval);
+        if (static_cast<size_t>(paircode.first) > CTable::byte_bit_count)
             break;
 
-        Code code(nerr, static_cast<short>(paircode.first));
+        const Code code(nerr, static_cast<short>(paircode.first));
         table.AddEntry(static_cast<uint8_t>(paircode.second), code);
     }
 
@@ -298,11 +298,11 @@ inline CTable InitTable(int32_t k)
     {
         // Q is not used when k != 0
         const int32_t merrval = GetMappedErrVal(nerr);
-        std::pair<int32_t, int32_t> paircode = CreateEncodedValue(k, merrval);
-        if (paircode.first > CTable::byte_bit_count)
+        const std::pair<int32_t, int32_t> paircode = CreateEncodedValue(k, merrval);
+        if (static_cast<size_t>(paircode.first) > CTable::byte_bit_count)
             break;
 
-        Code code = Code(nerr, static_cast<short>(paircode.first));
+        const Code code = Code(nerr, static_cast<short>(paircode.first));
         table.AddEntry(static_cast<uint8_t>(paircode.second), code);
     }
 

@@ -118,7 +118,7 @@ public:
             const int bytesToRead = (bufType_bit_count - _validBits) >> 3;
             _position += bytesToRead;
             _validBits += bytesToRead * 8;
-            ASSERT(_validBits >= bufType_bit_count - 8);
+            ASSERT(static_cast<size_t>(_validBits) >= bufType_bit_count - 8);
             return true;
         }
         return false;
@@ -126,7 +126,7 @@ public:
 
     void MakeValid()
     {
-        ASSERT(_validBits <=bufType_bit_count - 8);
+        ASSERT(static_cast<size_t>(_validBits) <=bufType_bit_count - 8);
 
         if (OptimizedRead())
             return;
@@ -166,7 +166,7 @@ public:
                 _validBits--;
             }
         }
-        while (_validBits < bufType_bit_count - 8);
+        while (static_cast<size_t>(_validBits) < bufType_bit_count - 8);
 
         _nextFFPosition = FindNextFF();
     }
