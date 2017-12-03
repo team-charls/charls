@@ -257,9 +257,22 @@ int JpegStreamReader::ReadPresetParameters()
             _params.custom.ResetValue = ReadWord();
             return 11;
         }
-    }
 
-    return 1;
+    case 2: // mapping table specification
+    case 3: // mapping table continuation
+    case 4: // X and Y parameters greater than 16 bits are defined.
+        {
+            std::ostringstream message;
+            message << "JPEG-LS preset parameters with type " << static_cast<unsigned int>(type) << " are not supported.";
+            throw charls_error(ApiResult::UnsupportedEncoding, message.str());
+        }
+    default:
+        {
+            std::ostringstream message;
+            message << "JPEG-LS preset parameters with invalid type " << static_cast<unsigned int>(type) << " encountered.";
+            throw charls_error(ApiResult::InvalidJlsParameters, message.str());
+        }
+    }
 }
 
 

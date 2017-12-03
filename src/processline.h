@@ -61,18 +61,18 @@ private:
 
 inline void ByteSwap(unsigned char* data, int count)
 {
-    if (count & 1)
+    if (static_cast<unsigned int>(count) & 1u)
     {
         std::ostringstream message;
         message << "An odd number of bytes (" << count << ") cannot be swapped.";
         throw charls_error(charls::ApiResult::InvalidJlsParameters, message.str());
     }
 
-    auto data32 = reinterpret_cast<unsigned int*>(data);
+    const auto data32 = reinterpret_cast<unsigned int*>(data);
     for(auto i = 0; i < count / 4; i++)
     {
         const auto value = data32[i];
-        data32[i] = ((value >> 8) & 0x00FF00FF) | ((value & 0x00FF00FF) << 8);
+        data32[i] = ((value >> 8u) & 0x00FF00FFu) | ((value & 0x00FF00FFu) << 8u);
     }
 
     if ((count % 4) != 0)
