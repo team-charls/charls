@@ -41,7 +41,7 @@ signed char QuantizeGratientOrg(const JpegLSPresetCodingParameters& preset, int3
 
 std::vector<signed char> CreateQLutLossless(int32_t cbit)
 {
-    const JpegLSPresetCodingParameters preset = ComputeDefault((1 << cbit) - 1, 0);
+    const JpegLSPresetCodingParameters preset = ComputeDefault((1u << static_cast<uint32_t>(cbit)) - 1, 0);
     const int32_t range = preset.MaximumSampleValue + 1;
 
     std::vector<signed char> lut(range * 2);
@@ -109,7 +109,8 @@ std::unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const JlsParame
     {
         codec = CreateOptimizedCodec(params);
     }
-    else
+
+    if (!codec)
     {
         if (params.bitsPerSample <= 8)
         {
@@ -125,11 +126,7 @@ std::unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const JlsParame
         }
     }
 
-    if (codec)
-    {
-        codec->SetPresets(presets);
-    }
-
+    codec->SetPresets(presets);
     return codec;
 }
 
@@ -164,14 +161,14 @@ std::unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateOptimizedCodec(const 
 
 #endif
 
-    const int maxval = (1 << params.bitsPerSample) - 1;
+    const int maxval = (1u << static_cast<unsigned int>(params.bitsPerSample)) - 1;
 
     if (params.bitsPerSample <= 8)
     {
         if (params.interleaveMode == InterleaveMode::Sample)
             return create_codec<Strategy>(DefaultTraits<uint8_t, Triplet<uint8_t> >(maxval, params.allowedLossyError), params);
 
-        return create_codec<Strategy>(DefaultTraits<uint8_t, uint8_t>((1 << params.bitsPerSample) - 1, params.allowedLossyError), params);
+        return create_codec<Strategy>(DefaultTraits<uint8_t, uint8_t>((1u << params.bitsPerSample) - 1, params.allowedLossyError), params);
     }
     if (params.bitsPerSample <= 16)
     {
