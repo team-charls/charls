@@ -614,7 +614,7 @@ int32_t JlsCodec<Traits, Strategy>::DoRunMode(int32_t startIndex, DecoderStrateg
     const PIXEL Ra = _currentLine[startIndex-1];
 
     const int32_t runLength = DecodeRunPixels(Ra, _currentLine + startIndex, _width - startIndex);
-    int32_t endIndex = startIndex + runLength;
+    const int32_t endIndex = startIndex + runLength;
 
     if (endIndex == _width)
         return endIndex - startIndex;

@@ -10,6 +10,8 @@
 #include <vector>
 #include <system_error>
 #include <memory>
+
+// ReSharper disable once CppUnusedIncludeDirective
 #include <cassert>
 
 // Use an uppercase alias for assert to make it clear that it is a pre-processor macro.
@@ -139,7 +141,7 @@ struct FromBigEndian<4>
 {
     FORCE_INLINE static unsigned int Read(const uint8_t* pbyte)
     {
-        return (pbyte[0] << 24) + (pbyte[1] << 16) + (pbyte[2] << 8) + (pbyte[3] << 0);
+        return (pbyte[0] << 24u) + (pbyte[1] << 16u) + (pbyte[2] << 8u) + (pbyte[3] << 0u);
     }
 };
 
@@ -149,10 +151,10 @@ struct FromBigEndian<8>
 {
     FORCE_INLINE static uint64_t Read(const uint8_t* pbyte)
     {
-        return (static_cast<uint64_t>(pbyte[0]) << 56) + (static_cast<uint64_t>(pbyte[1]) << 48) +
-               (static_cast<uint64_t>(pbyte[2]) << 40) + (static_cast<uint64_t>(pbyte[3]) << 32) +
-               (static_cast<uint64_t>(pbyte[4]) << 24) + (static_cast<uint64_t>(pbyte[5]) << 16) +
-               (static_cast<uint64_t>(pbyte[6]) <<  8) + (static_cast<uint64_t>(pbyte[7]) << 0);
+        return (static_cast<uint64_t>(pbyte[0]) << 56u) + (static_cast<uint64_t>(pbyte[1]) << 48u) +
+               (static_cast<uint64_t>(pbyte[2]) << 40u) + (static_cast<uint64_t>(pbyte[3]) << 32u) +
+               (static_cast<uint64_t>(pbyte[4]) << 24u) + (static_cast<uint64_t>(pbyte[5]) << 16u) +
+               (static_cast<uint64_t>(pbyte[6]) <<  8u) + (static_cast<uint64_t>(pbyte[7]) << 0u);
     }
 };
 

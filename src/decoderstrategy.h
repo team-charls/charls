@@ -214,7 +214,7 @@ public:
 
         ASSERT(length != 0 && length <= _validBits);
         ASSERT(length < 32);
-        const int32_t result = static_cast<int32_t>(_readCache >> (bufType_bit_count - length));
+        const auto result = static_cast<int32_t>(_readCache >> (bufType_bit_count - length));
         Skip(length);
         return result;
     }

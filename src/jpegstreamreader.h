@@ -14,7 +14,7 @@ struct JlsParameters;
 class JpegCustomParameters;
 
 
-JpegLSPresetCodingParameters ComputeDefault(int32_t MAXVAL, int32_t NEAR);
+JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t allowedLossyError);
 
 
 //
@@ -35,7 +35,7 @@ public:
         return _params.custom;
     }
 
-    void Read(ByteStreamInfo info);
+    void Read(ByteStreamInfo rawPixels);
     void ReadHeader();
 
     void SetInfo(const JlsParameters& params)
@@ -54,7 +54,7 @@ public:
 private:
     JpegMarkerCode ReadNextMarker();
     int ReadPresetParameters();
-    int ReadComment() const;
+    static int ReadComment();
     int ReadStartOfFrame();
     int ReadWord();
     void ReadNBytes(std::vector<char>& dst, int byteCount);

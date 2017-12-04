@@ -313,7 +313,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
 }
 
 
-int JpegStreamReader::ReadComment() const
+int JpegStreamReader::ReadComment()
 {
     return 0;
 }

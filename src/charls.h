@@ -10,7 +10,7 @@
 
 // Windows and building CharLS DLL itself.
 #if defined(WIN32) && defined(CHARLS_DLL_BUILD)
-#define CHARLS_IMEXPORT(returntype) __declspec(dllexport) returntype __stdcall
+#define CHARLS_IMEXPORT(returntype) __declspec(dllexport) returntype __stdcall  // NOLINT
 #endif
 
 // Non-windows (static linking)
@@ -77,14 +77,14 @@ CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecode(void* destination, size_t dest
 
 CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength,
     const void* compressedData, size_t compressedLength,
-    struct JlsRect rect, struct JlsParameters* params, char* errorMessage);
+    struct JlsRect roi, struct JlsParameters* info, char* errorMessage);
 
 #ifdef __cplusplus
 }
 
-CHARLS_IMEXPORT(CharlsApiResultType) JpegLsEncodeStream(ByteStreamInfo rawStream, size_t& bytesWritten, ByteStreamInfo inputStream, const JlsParameters& info, char* errorMessage);
-CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecodeStream(ByteStreamInfo output, ByteStreamInfo input, const JlsParameters* info, char* errorMessage);
-CHARLS_IMEXPORT(CharlsApiResultType) JpegLsReadHeaderStream(ByteStreamInfo input, JlsParameters* params, char* errorMessage);
+CHARLS_IMEXPORT(CharlsApiResultType) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& pcbyteWritten, ByteStreamInfo rawStreamInfo, const JlsParameters& params, char* errorMessage);
+CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info, char* errorMessage);
+CHARLS_IMEXPORT(CharlsApiResultType) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params, char* errorMessage);
 
 #endif
 
