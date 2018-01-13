@@ -6,7 +6,7 @@
 #include "config.h"
 #include "util.h"
 #include "portable_anymap_file.h"
-#include "time.h"
+#include "gettime.h"
 #include <iostream>
 #include <vector>
 

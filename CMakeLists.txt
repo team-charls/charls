@@ -19,8 +19,8 @@ ENDIF ()
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     # Define clang C++ defines for both Debug and Release
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Weverything")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat")            # Ignore, CharLS targets C++11, ignore C++98 compatibility. 
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat-pedantic")   # Ignore, CharLS targets C++11, ignore C++98 compatibility.
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat")            # Ignore, CharLS 2.x targets C++14, ignore C++98 compatibility. 
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++98-compat-pedantic")   # Ignore, CharLS 2.x targets C++14, ignore C++98 compatibility.
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-conversion")         # Ignore, would just introduce ugly static_asserts.
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-padded")                  # Ignore, padding optimization is not needed.
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-switch-enum")             # Ignore, cases are handled by default.
@@ -62,6 +62,6 @@ install (TARGETS CharLS RUNTIME DESTINATION bin
 install (FILES ${charls_PUBLIC_HEADERS} DESTINATION include/CharLS)
 
 if (BUILD_TESTING)
-  add_executable(charlstest test/main.cpp test/time.cpp test/util.cpp test/bitstreamdamage.cpp test/compliance.cpp test/performance.cpp test/dicomsamples.cpp)
+  add_executable(charlstest test/main.cpp test/gettime.cpp test/util.cpp test/bitstreamdamage.cpp test/compliance.cpp test/performance.cpp test/dicomsamples.cpp)
   target_link_libraries (charlstest CharLS)
 endif ()

@@ -235,7 +235,7 @@
     <ClCompile Include="dicomsamples.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="performance.cpp" />
-    <ClCompile Include="time.cpp" />
+    <ClCompile Include="gettime.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -245,7 +245,7 @@
     <ClInclude Include="dicomsamples.h" />
     <ClInclude Include="portable_anymap_file.h" />
     <ClInclude Include="performance.h" />
-    <ClInclude Include="time.h" />
+    <ClInclude Include="gettime.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
