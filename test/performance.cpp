@@ -3,7 +3,6 @@
 //
 
 #include "performance.h"
-#include "config.h"
 #include "util.h"
 #include "../src/charls.h"
 
@@ -131,7 +130,11 @@ void DecodePerformanceTests(int loopCount)
 
         result = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
         if (result != charls::ApiResult::OK)
-        {            std::cout << "Decode failure: " << static_cast<int>(result) << "\n";            return;        }    }
+        {
+            std::cout << "Decode failure: " << static_cast<int>(result) << "\n";
+            return;
+        }
+    }
 
     const auto end = std::chrono::steady_clock::now();
     const auto diff = end - start;

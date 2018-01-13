@@ -3,7 +3,6 @@
 //
 
 #include "dicomsamples.h"
-#include "config.h"
 #include "util.h"
 #include "../src/charls.h"
 #include <iostream>

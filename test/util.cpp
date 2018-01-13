@@ -3,7 +3,6 @@
 //
 
 
-#include "config.h"
 #include "util.h"
 #include "portable_anymap_file.h"
 #include "gettime.h"

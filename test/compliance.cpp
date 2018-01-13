@@ -3,7 +3,6 @@
 //
 
 #include "compliance.h"
-#include "config.h"
 #include "util.h"
 
 #include "../src/charls.h"
