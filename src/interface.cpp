@@ -218,7 +218,7 @@ extern "C"
 
 
     CHARLS_IMEXPORT(ApiResult) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength,
-        JlsRect roi, JlsParameters* info, char* errorMessage)
+        JlsRect roi, const JlsParameters* info, char* errorMessage)
     {
         try
         {

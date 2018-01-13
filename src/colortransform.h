@@ -155,7 +155,7 @@ struct TransformShifted
 
         FORCE_INLINE Triplet<size_type> operator()(int v1, int v2, int v3)
         {
-            Triplet<size_type> result = _inverseTransform(v1 << _shift, v2 << _shift, v3 << _shift);
+            const Triplet<size_type> result = _inverseTransform(v1 << _shift, v2 << _shift, v3 << _shift);
             return Triplet<size_type>(result.R >> _shift, result.G >> _shift, result.B >> _shift);
         }
 
@@ -177,7 +177,7 @@ struct TransformShifted
 
     FORCE_INLINE Triplet<size_type> operator()(int red, int green, int blue)
     {
-        Triplet<size_type> result = _colortransform(red << _shift, green << _shift, blue << _shift);
+        const Triplet<size_type> result = _colortransform(red << _shift, green << _shift, blue << _shift);
         return Triplet<size_type>(result.R >> _shift, result.G >> _shift, result.B >> _shift);
     }
 

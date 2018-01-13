@@ -268,7 +268,6 @@
     <Rule Id="C26471" Action="Error" />
     <Rule Id="C26483" Action="Error" />
     <Rule Id="C26491" Action="Error" />
-    <Rule Id="C26492" Action="Error" />
     <Rule Id="C26493" Action="Error" />
     <Rule Id="C26496" Action="Error" />
     <Rule Id="C26498" Action="Error" />

@@ -137,7 +137,7 @@ void TransformLineToQuad(const T* ptypeInput, int32_t pixelStrideIn, Quad<T>* pb
 
     for (auto x = 0; x < cpixel; ++x)
     {
-        Quad<T> pixel(transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]), ptypeInput[x + 3 * pixelStrideIn]);
+        const Quad<T> pixel(transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]), ptypeInput[x + 3 * pixelStrideIn]);
         ptypeBuffer[x] = pixel;
     }
 }
@@ -152,7 +152,7 @@ void TransformQuadToLine(const Quad<T>* pbyteInput, int32_t pixelStrideIn, T* pt
     for (auto x = 0; x < cpixel; ++x)
     {
         const Quad<T> color = ptypeBufferIn[x];
-        Quad<T> colorTranformed(transform(color.v1, color.v2, color.v3), color.v4);
+        const Quad<T> colorTranformed(transform(color.v1, color.v2, color.v3), color.v4);
 
         ptypeBuffer[x] = colorTranformed.v1;
         ptypeBuffer[x + pixelStride] = colorTranformed.v2;
@@ -205,7 +205,7 @@ void TransformTripletToLine(const Triplet<T>* pbyteInput, int32_t pixelStrideIn,
     for (auto x = 0; x < cpixel; ++x)
     {
         const Triplet<T> color = ptypeBufferIn[x];
-        Triplet<T> colorTranformed = transform(color.v1, color.v2, color.v3);
+        const Triplet<T> colorTranformed = transform(color.v1, color.v2, color.v3);
 
         ptypeBuffer[x] = colorTranformed.v1;
         ptypeBuffer[x + pixelStride] = colorTranformed.v2;

@@ -77,7 +77,7 @@ CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecode(void* destination, size_t dest
 
 CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength,
     const void* compressedData, size_t compressedLength,
-    struct JlsRect roi, struct JlsParameters* info, char* errorMessage);
+    struct JlsRect roi, const struct JlsParameters* info, char* errorMessage);
 
 #ifdef __cplusplus
 }
