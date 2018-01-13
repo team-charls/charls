@@ -1,4 +1,4 @@
-﻿//
+//
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
@@ -30,6 +30,9 @@ namespace CharLS.Test
             var info = JpegLSCodec.GetMetadataInfo(source);
             var expected = new JpegLSMetadataInfo { Height = 256, Width = 256, BitsPerComponent = 8, ComponentCount = 3, AllowedLossyError = 3 };
 
+            Assert.AreEqual(expected, info);
+
+            info = JpegLSCodec.GetMetadataInfo(source, source.Length);
             Assert.AreEqual(expected, info);
         }
 
@@ -69,6 +72,27 @@ namespace CharLS.Test
             Assert.AreEqual(uncompressedOriginal, uncompressed);
         }
 
+
+        [Test]
+        public void CompressPartOfInputBuffer()
+        {
+            var info = new JpegLSMetadataInfo(256, 256, 8, 3);
+
+            var uncompressedOriginal = ReadAllBytes("TEST8.PPM", 15);
+            uncompressedOriginal = TripletToPlanar(uncompressedOriginal, info.Width, info.Height);
+
+            var compressedSegment = JpegLSCodec.Compress(info, uncompressedOriginal, uncompressedOriginal.Length);
+            var compressed = new byte[compressedSegment.Count];
+            Array.Copy(compressedSegment.Array, compressed, compressed.Length);
+
+            var compressedInfo = JpegLSCodec.GetMetadataInfo(compressed);
+            Assert.AreEqual(info, compressedInfo);
+
+            var uncompressed = JpegLSCodec.Decompress(compressed);
+            Assert.AreEqual(info.UncompressedSize, uncompressed.Length);
+            Assert.AreEqual(uncompressedOriginal, uncompressed);
+        }
+
         [Test]
         public void CompressOneByOneColor()
         {
@@ -85,10 +109,9 @@ namespace CharLS.Test
         }
 
         [Test]
-        [Ignore("unit test needs to be upgraded to monochrome with at least 2 bits")]
-        public void CompressOneByOneBlackAndWhite()
+        public void Compress2BitMonochrome()
         {
-            var info = new JpegLSMetadataInfo(1, 1, 1, 1);
+            var info = new JpegLSMetadataInfo(1, 1, 2, 1);
             var uncompressedOriginal = new byte[] { 1 };
 
             var compressedSegment = JpegLSCodec.Compress(info, uncompressedOriginal);
@@ -129,7 +152,7 @@ namespace CharLS.Test
                 {
                     0xFF, 0xD8, // Start Of Image (JPEG_SOI)
                     0xFF, 0x01, // Undefined marker
-                    0x00, 0x00 // Lenght of data of the marker
+                    0x00, 0x00 // Length of data of the marker
                 };
 
             var exception = Assert.Throws<InvalidDataException>(() => JpegLSCodec.Decompress(compressed));

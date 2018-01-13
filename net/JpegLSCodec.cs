@@ -19,14 +19,10 @@ namespace CharLS
     /// </remarks>
     public static class JpegLSCodec
     {
-        /* Design notes:
-           - The words compress/decompress are used as these are the terms used by the .NET BCLs (System.IO.Compression namespace)
-             The CharLS C API uses the terms encode/decode.
-           - The input/output buffers parameters are using the common .NET order, which is different the CharLS C API.
-        */
-
-        // Note: Environment.Is64BitProcess is not available in .NET Standard 1.4 (scheduled for 2.0)
-        private static bool Is64BitProcess => IntPtr.Size == 8;
+        // Design notes:
+        //  - The words compress/decompress are used as these are the terms used by the .NET BCLs (System.IO.Compression namespace)
+        //    The CharLS C API uses the terms encode/decode.
+        //  - The input/output buffers parameters are using the common .NET order, which is different the CharLS C API.
 
         /// <summary>
         /// Compresses the specified image passed in the source pixel buffer.
@@ -66,7 +62,7 @@ namespace CharLS
         /// <exception cref="ArgumentNullException">info -or- pixels is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">info.Width -or- info.Height -or- pixelCount contains an invalid value.</exception>
         /// <exception cref="InvalidDataException">The compressed output doesn't fit into the maximum defined output buffer.</exception>
-        public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, bool jfifHeader)
+        public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, int pixelCount, bool jfifHeader = false)
         {
             if (info == null)
                 throw new ArgumentNullException(nameof(info));
@@ -143,7 +139,7 @@ namespace CharLS
 
             var errorMessage = new StringBuilder(256);
             JpegLSError result;
-            if (Is64BitProcess)
+            if (Environment.Is64BitProcess)
             {
                 result = SafeNativeMethods.JpegLsEncode64(destination, destinationLength, out var count, pixels, pixelCount, ref parameters, errorMessage);
                 compressedCount = (int)count;
@@ -260,7 +256,7 @@ namespace CharLS
             Contract.EndContractBlock();
 
             var errorMessage = new StringBuilder(256);
-            JpegLSError error = Is64BitProcess ?
+            var error = Environment.Is64BitProcess ?
                 SafeNativeMethods.JpegLsDecode64(pixels, pixels.Length, source, count, IntPtr.Zero, errorMessage) :
                 SafeNativeMethods.JpegLsDecode(pixels, pixels.Length, source, count, IntPtr.Zero, errorMessage);
             HandleResult(error, errorMessage);
@@ -271,7 +267,7 @@ namespace CharLS
             Contract.Requires(source != null);
 
             var errorMessage = new StringBuilder(256);
-            JpegLSError result = Is64BitProcess ?
+            var result = Environment.Is64BitProcess ?
                 SafeNativeMethods.JpegLsReadHeader64(source, length, out info, errorMessage) :
                 SafeNativeMethods.JpegLsReadHeader(source, length, out info, errorMessage);
             HandleResult(result, errorMessage);
@@ -326,6 +322,8 @@ namespace CharLS
 
             var data = exception.Data;
             Contract.Assume(data != null);
+
+            // ReSharper disable once PossibleNullReferenceException
             data.Add("JpegLSError", result);
             throw exception;
         }

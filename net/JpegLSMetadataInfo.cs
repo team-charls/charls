@@ -1,4 +1,4 @@
-﻿//
+//
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
@@ -9,6 +9,7 @@ using System.IO;
 
 namespace CharLS
 {
+    /// <inheritdoc />
     /// <summary>
     /// Contains meta information about a compressed JPEG-LS stream or info how to compress.
     /// </summary>
@@ -27,11 +28,12 @@ namespace CharLS
         private int bitsPerComponent;
         private int componentCount;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="JpegLSMetadataInfo"/> class.
+        /// Initializes a new instance of the <see cref="T:CharLS.JpegLSMetadataInfo" /> class.
         /// </summary>
         /// <remarks>
-        /// Initializes a minimal <see cref="JpegLSMetadataInfo"/> instance with:
+        /// Initializes a minimal <see cref="T:CharLS.JpegLSMetadataInfo" /> instance with:
         /// Width = 1
         /// Height = 1
         /// BitsPerComponent = 2
@@ -243,12 +245,13 @@ namespace CharLS
             return Equals(obj as JpegLSMetadataInfo);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Determines whether the specified <see cref="JpegLSMetadataInfo"/> is equal to this instance.
+        /// Determines whether the specified <see cref="T:CharLS.JpegLSMetadataInfo" /> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="JpegLSMetadataInfo"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="T:CharLS.JpegLSMetadataInfo" /> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="T:System.Object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [Pure]
         public bool Equals(JpegLSMetadataInfo other)
@@ -295,6 +298,7 @@ namespace CharLS
             parameters.OutputBgr = OutputBgr;
         }
 
+        // ReSharper disable once UnusedMember.Local
         [ContractInvariantMethod]
         private void ObjectInvariant()
         {
