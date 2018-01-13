@@ -5,9 +5,8 @@
 
 #include "config.h"
 #include "util.h"
-#include "time.h"
 #include "portable_anymap_file.h"
-
+#include "time.h"
 #include <iostream>
 #include <vector>
 
@@ -20,7 +19,7 @@ namespace
 bool IsMachineLittleEndian()
 {
     int a = 0xFF000001;
-    char* chars = reinterpret_cast<char*>(&a);
+    const auto chars = reinterpret_cast<char*>(&a);
     return chars[0] == 0x01;
 }
 
@@ -49,7 +48,7 @@ bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, int offset, int 
     }
 
     fseek(pfile, 0, SEEK_END);
-    int cbyteFile = static_cast<int>(ftell(pfile));
+    const auto cbyteFile = static_cast<int>(ftell(pfile));
     if (offset < 0)
     {
         Assert::IsTrue(bytes != 0);
@@ -62,7 +61,7 @@ bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, int offset, int 
 
     fseek(pfile, offset, SEEK_SET);
     pvec->resize(bytes);
-    size_t bytesRead = fread(&(*pvec)[0],1, pvec->size(), pfile);
+    const size_t bytesRead = fread(&(*pvec)[0],1, pvec->size(), pfile);
     fclose(pfile);
     return bytesRead == pvec->size();
 }
@@ -111,29 +110,29 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, J
     }
 
     size_t compressedLength = 0;
-    double dwtimeEncodeStart = getTime();
+    const double dwtimeEncodeStart = getTime();
     for (int i = 0; i < loopCount; ++i)
     {
-        auto err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &params, nullptr);
+        const auto err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &params, nullptr);
         Assert::IsTrue(err == ApiResult::OK);
     }
-    double dwtimeEncodeComplete = getTime();
+    const double dwtimeEncodeComplete = getTime();
 
-    double dwtimeDecodeStart = getTime();
+    const double dwtimeDecodeStart = getTime();
     for (int i = 0; i < loopCount; ++i)
     {
-        auto err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], compressedLength, nullptr, nullptr);
+        const auto err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], compressedLength, nullptr, nullptr);
         Assert::IsTrue(err == ApiResult::OK);
     }
-    double dwtimeDecodeComplete = getTime();
+    const double dwtimeDecodeComplete = getTime();
 
-    double bitspersample = compressedLength * 8 * 1.0 / (params.components * params.height * params.width);
+    const double bitspersample = compressedLength * 8 * 1.0 / (params.components * params.height * params.width);
     std::cout << "RoundTrip test for: " << strName << "\n\r";
-    double encodeTime = (dwtimeEncodeComplete - dwtimeEncodeStart) / loopCount;
-    double decodeTime = (dwtimeDecodeComplete - dwtimeDecodeStart) / loopCount;
-    double symbolRate = (params.components * params.height * params.width) / (1000.0 * decodeTime);
+    const double encodeTime = (dwtimeEncodeComplete - dwtimeEncodeStart) / loopCount;
+    const double decodeTime = (dwtimeDecodeComplete - dwtimeDecodeStart) / loopCount;
+    const double symbolRate = (params.components * params.height * params.width) / (1000.0 * decodeTime);
     printf("Size:%4dx%4d, Encode time:%7.2f ms, Decode time:%7.2f ms, Bits per sample:%5.2f, Decode rate:%5.1f M/s \n\r", params.width, params.height, encodeTime, decodeTime, bitspersample, symbolRate);
-    uint8_t* pbyteOut = &rgbyteOut[0];
+    uint8_t* pbyteOut = rgbyteOut.data();
     for (size_t i = 0; i < rgbyteOut.size(); ++i)
     {
         if (rgbyteRaw[i] != pbyteOut[i])
@@ -147,7 +146,7 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, J
 
 void TestFile(const char* filename, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile, int loopCount)
 {
-    int byteCount = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
+    const int byteCount = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
     std::vector<uint8_t> rgbyteUncompressed;
 
     if (!ReadFile(filename, &rgbyteUncompressed, ioffs, byteCount))

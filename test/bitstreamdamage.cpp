@@ -1,6 +1,6 @@
-// 
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
-// 
+//
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
+//
 
 #include "bitstreamdamage.h"
 #include "config.h"
@@ -21,7 +21,7 @@ void TestDamagedBitStream1()
         return;
 
     std::vector<uint8_t> rgbyteOut(256 * 256 * 2);
-    auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
+    const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
     Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
 }
 
@@ -36,7 +36,7 @@ void TestDamagedBitStream2()
     rgbyteCompressed.resize(40000,3);
 
     std::vector<uint8_t> rgbyteOut(512 * 512);
-    auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
+    const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
     Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
 }
 
@@ -51,7 +51,7 @@ void TestDamagedBitStream3()
     rgbyteCompressed[301] = 0xFF;
 
     std::vector<uint8_t> rgbyteOut(512 * 512);
-    auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
+    const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
     Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
 }
 

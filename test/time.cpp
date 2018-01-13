@@ -1,5 +1,5 @@
 //
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 #include "time.h"
@@ -12,13 +12,13 @@
 
 #include <windows.h>
 
-// returns a point in time in milli seconds (can only be used for time differences, not an absolute time)
+// returns a point in time in milliseconds (can only be used for time differences, not an absolute time)
 double getTime()
 {
     LARGE_INTEGER time;
-    ::QueryPerformanceCounter(&time);
+    QueryPerformanceCounter(&time);
     LARGE_INTEGER freq;
-    ::QueryPerformanceFrequency(&freq);
+    QueryPerformanceFrequency(&freq);
 
     return (double(time.LowPart) * 1000.0) / double(freq.LowPart);
 }
@@ -26,10 +26,10 @@ double getTime()
 #else
 
 #include <sys/time.h>
-double getTime() 
+double getTime()
 {
     timeval t;
-    gettimeofday(&t, 0);
+    gettimeofday(&t, nullptr);
 
     return (t.tv_sec * 1000000.0 + t.tv_usec) / 1000.0;
 }

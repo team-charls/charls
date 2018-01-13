@@ -46,7 +46,7 @@ private:
     {
         std::vector<int> readValues;
 
-        char first = static_cast<char>(pnmFile.get());
+        const auto first = static_cast<char>(pnmFile.get());
 
         // All portable anymap format (PNM) start with the character P.
         if (first != 'P')
