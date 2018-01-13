@@ -197,8 +197,18 @@ public:
 
     void InitParams(int32_t t1, int32_t t2, int32_t t3, int32_t nReset);
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
+
+    // Note: depending on the base class EncodeScan OR DecodeScan will be virtual and abstract, cannot use override in all cases.
     size_t EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo& compressedData);
     void DecodeScan(std::unique_ptr<ProcessLine> processLine, const JlsRect& rect, ByteStreamInfo& compressedData);
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 protected:
     // codec parameters
