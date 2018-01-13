@@ -125,7 +125,7 @@ public:
         }
     }
 
-    void SetPresets(const JpegLSPresetCodingParameters& presets)
+    void SetPresets(const JpegLSPresetCodingParameters& presets) override
     {
         const JpegLSPresetCodingParameters presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
 
@@ -134,6 +134,8 @@ public:
                    presets.Threshold3 != 0 ? presets.Threshold3 : presetDefault.Threshold3,
                    presets.ResetValue != 0 ? presets.ResetValue : presetDefault.ResetValue);
     }
+
+    std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo info) override;
 
     bool IsInterleaved()
     {
@@ -177,13 +179,13 @@ public:
     int32_t DecodeRIError(CContextRunMode& ctx);
     Triplet<SAMPLE> DecodeRIPixel(Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb);
     SAMPLE DecodeRIPixel(int32_t Ra, int32_t Rb);
-    int32_t DecodeRunPixels(PIXEL Ra, PIXEL* ptype, int32_t cpixelMac);
-    int32_t DoRunMode(int32_t index, DecoderStrategy*);
+    int32_t DecodeRunPixels(PIXEL Ra, PIXEL* startPos, int32_t cpixelMac);
+    int32_t DoRunMode(int32_t startIndex, DecoderStrategy*);
 
     void EncodeRIError(CContextRunMode& ctx, int32_t Errval);
     SAMPLE EncodeRIPixel(int32_t x, int32_t Ra, int32_t Rb);
     Triplet<SAMPLE> EncodeRIPixel(Triplet<SAMPLE> x, Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb);
-    void EncodeRunPixels(int32_t runLength, bool bEndofline);
+    void EncodeRunPixels(int32_t runLength, bool endOfLine);
     int32_t DoRunMode(int32_t index, EncoderStrategy*);
 
     FORCE_INLINE SAMPLE DoRegular(int32_t Qs, int32_t, int32_t pred, DecoderStrategy*);
@@ -193,11 +195,10 @@ public:
     void DoLine(Triplet<SAMPLE>* pdummy);
     void DoScan();
 
-    std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo);
     void InitParams(int32_t t1, int32_t t2, int32_t t3, int32_t nReset);
 
-    size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData);
-    void DecodeScan(std::unique_ptr<ProcessLine> rawData, const JlsRect& size, ByteStreamInfo& compressedData);
+    size_t EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo& compressedData);
+    void DecodeScan(std::unique_ptr<ProcessLine> processLine, const JlsRect& rect, ByteStreamInfo& compressedData);
 
 protected:
     // codec parameters

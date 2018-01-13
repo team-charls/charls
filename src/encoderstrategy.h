@@ -28,6 +28,10 @@ public:
 
     virtual ~EncoderStrategy() = default;
 
+    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
+    virtual void SetPresets(const JpegLSPresetCodingParameters& presets) = 0;
+    virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData) = 0;
+
     int32_t PeekByte();
 
     void OnLineBegin(int32_t cpixel, void* ptypeBuffer, int32_t pixelStride) const
@@ -38,12 +42,6 @@ public:
     static void OnLineEnd(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/)
     {
     }
-
-    virtual void SetPresets(const JpegLSPresetCodingParameters& presets) = 0;
-
-    virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData) = 0;
-
-    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
 
 protected:
 
