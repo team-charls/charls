@@ -80,7 +80,6 @@
     <TargetName>CharLS</TargetName>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <LinkIncremental>true</LinkIncremental>
-    <CodeAnalysisRuleSet>..\default.ruleset</CodeAnalysisRuleSet>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -95,7 +94,6 @@
     <TargetName>CharLS64</TargetName>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <LinkIncremental>true</LinkIncremental>
-    <CodeAnalysisRuleSet>..\default.ruleset</CodeAnalysisRuleSet>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

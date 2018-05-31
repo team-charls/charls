@@ -30,6 +30,7 @@
     <ProjectGuid>{F42C0547-FEB3-40F4-9379-0FF87B44FA0F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Convert</RootNamespace>
+    <VcpkgConfiguration Condition="'$(Configuration)' == 'Checked'">Debug</VcpkgConfiguration>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
