@@ -26,7 +26,7 @@ double getTime() noexcept
 #else
 
 #include <sys/time.h>
-double getTime()
+double getTime() noexcept
 {
     timeval t;
     gettimeofday(&t, nullptr);
