@@ -37,7 +37,7 @@ void FixEndian(std::vector<uint8_t>* rgbyte, bool littleEndianData)
 }
 
 
-bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, int offset, int bytes)
+bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, long offset, size_t bytes)
 {
     FILE* pfile = fopen(filename, "rb");
     if (!pfile)
@@ -51,11 +51,11 @@ bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, int offset, int 
     if (offset < 0)
     {
         Assert::IsTrue(bytes != 0);
-        offset = cbyteFile - bytes;
+        offset = static_cast<long>(cbyteFile - bytes);
     }
     if (bytes == 0)
     {
-        bytes = cbyteFile - offset;
+        bytes = static_cast<size_t>(cbyteFile) - offset;
     }
 
     fseek(pfile, offset, SEEK_SET);
@@ -85,8 +85,8 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, S
     JlsParameters params = JlsParameters();
     params.components = ccomp;
     params.bitsPerSample = cbit;
-    params.height = size.cy;
-    params.width = size.cx;
+    params.height = static_cast<int>(size.cy);
+    params.width = static_cast<int>(size.cx);
 
     TestRoundTrip(strName, rgbyteRaw, params, loopCount);
 }
@@ -96,7 +96,7 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, J
 {
     std::vector<uint8_t> rgbyteCompressed(params.height * params.width * params.components * params.bitsPerSample / 4);
 
-    std::vector<uint8_t> rgbyteOut(params.height * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
+    std::vector<uint8_t> rgbyteOut(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
 
     if (params.components == 4)
     {
@@ -145,7 +145,7 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, J
 
 void TestFile(const char* filename, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile, int loopCount)
 {
-    const int byteCount = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
+    const size_t byteCount = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
     std::vector<uint8_t> rgbyteUncompressed;
 
     if (!ReadFile(filename, &rgbyteUncompressed, ioffs, byteCount))

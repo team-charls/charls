@@ -44,11 +44,11 @@ std::vector<signed char> CreateQLutLossless(int32_t cbit)
     const JpegLSPresetCodingParameters preset = ComputeDefault((1u << static_cast<uint32_t>(cbit)) - 1, 0);
     const int32_t range = preset.MaximumSampleValue + 1;
 
-    std::vector<signed char> lut(range * 2);
+    std::vector<signed char> lut(static_cast<size_t>(range) * 2);
 
     for (int32_t diff = -range; diff < range; diff++)
     {
-        lut[range + diff] = QuantizeGratientOrg(preset, 0,diff);
+        lut[static_cast<size_t>(range) + diff] = QuantizeGratientOrg(preset, 0,diff);
     }
     return lut;
 }

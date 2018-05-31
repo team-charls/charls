@@ -65,7 +65,7 @@ void TestFileWithRandomHeaderDamage(const char* filename)
 
     std::vector<uint8_t> rgbyteOut(512 * 512);
 
-    for (int i = 0; i < 40; ++i)
+    for (size_t i = 0; i < 40; ++i)
     {
         std::vector<uint8_t> rgbyteCompressedTest(rgbyteCompressedOrg);
         std::vector<int> errors(10, 0);

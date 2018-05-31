@@ -412,7 +412,7 @@ void JlsCodec<Traits, Strategy>::InitQuantizationLUT()
 
     const int32_t RANGE = 1 << traits.bpp;
 
-    _rgquant.resize(RANGE * 2);
+    _rgquant.resize(static_cast<size_t>(RANGE) * 2);
 
     _pquant = &_rgquant[RANGE];
     for (int32_t i = -RANGE; i < RANGE; ++i)
@@ -716,13 +716,13 @@ void JlsCodec<Traits, Strategy>::DoScan()
     const int32_t pixelstride = _width + 4;
     const int components = Info().interleaveMode == charls::InterleaveMode::Line ? Info().components : 1;
 
-    std::vector<PIXEL> vectmp(2 * components * pixelstride);
+    std::vector<PIXEL> vectmp(static_cast<size_t>(2) * components * pixelstride);
     std::vector<int32_t> rgRUNindex(components);
 
     for (int32_t line = 0; line < Info().height; ++line)
     {
         _previousLine = &vectmp[1];
-        _currentLine = &vectmp[1 + components * pixelstride];
+        _currentLine = &vectmp[1 + static_cast<size_t>(components) * pixelstride];
         if ((line & 1) == 1)
         {
             std::swap(_previousLine, _currentLine);
@@ -746,7 +746,7 @@ void JlsCodec<Traits, Strategy>::DoScan()
 
         if (_rect.Y <= line && line < _rect.Y + _rect.Height)
         {
-            Strategy::OnLineEnd(_rect.Width, _currentLine + _rect.X - (components * pixelstride), pixelstride);
+            Strategy::OnLineEnd(_rect.Width, _currentLine + _rect.X - (static_cast<size_t>(components) * pixelstride), pixelstride);
         }
     }
 

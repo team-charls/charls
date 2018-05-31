@@ -61,7 +61,7 @@ std::unique_ptr<JpegMarkerSegment> JpegMarkerSegment::CreateJpegFileInterchangeF
             throw charls_error(ApiResult::InvalidJlsParameters, "params.Xthumbnail is > 0 but params.thumbnail == null_ptr");
 
         content.insert(content.end(), static_cast<uint8_t*>(params.thumbnail),
-            static_cast<uint8_t*>(params.thumbnail) + 3 * params.Xthumbnail * params.Ythumbnail);
+            static_cast<uint8_t*>(params.thumbnail) + static_cast<size_t>(3) * params.Xthumbnail * params.Ythumbnail);
     }
 
     return std::make_unique<JpegMarkerSegment>(JpegMarkerCode::ApplicationData0, move(content));

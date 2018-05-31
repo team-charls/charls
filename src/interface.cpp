@@ -36,7 +36,7 @@ void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& 
 
     if (uncompressedStream.rawData)
     {
-        if (uncompressedStream.count < static_cast<size_t>(parameters.height * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1)))
+        if (uncompressedStream.count < static_cast<size_t>(parameters.height) * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1))
             throw charls_error(ApiResult::InvalidJlsParameters, "uncompressed size does not match with the other parameters");
     }
 

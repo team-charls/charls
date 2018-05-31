@@ -339,7 +339,7 @@ void JpegStreamReader::ReadJfif()
     if(_params.jfif.Xthumbnail > 0 && _params.jfif.thumbnail)
     {
         std::vector<char> tempbuff(static_cast<char*>(_params.jfif.thumbnail),
-            static_cast<char*>(_params.jfif.thumbnail)+3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
+            static_cast<char*>(_params.jfif.thumbnail) + static_cast<size_t>(3) * _params.jfif.Xthumbnail * _params.jfif.Ythumbnail);
         ReadNBytes(tempbuff, 3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
     }
 }

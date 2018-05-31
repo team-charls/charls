@@ -11,17 +11,18 @@
 
 struct Size
 {
-    Size(int32_t width, int32_t height) noexcept :
+    Size(size_t width, size_t height) noexcept
+        :
         cx(width),
         cy(height)
     {}
-    int32_t cx;
-    int32_t cy;
+    size_t cx;
+    size_t cy;
 };
 
 
 void FixEndian(std::vector<uint8_t>* rgbyte, bool littleEndianData);
-bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, int offset = 0, int bytes = 0);
+bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, long offset = 0, size_t bytes = 0);
 void TestFile(const char* filename, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile = false, int loopCount = 1);
 void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount = 1);
 void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, JlsParameters& params, int loopCount = 1);

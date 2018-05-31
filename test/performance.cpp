@@ -122,7 +122,7 @@ void DecodePerformanceTests(int loopCount)
     if (result != charls::ApiResult::OK)
         return;
 
-    std::vector<uint8_t> uncompressed(params.height * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
+    std::vector<uint8_t> uncompressed(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
 
     const auto start = std::chrono::steady_clock::now();
     for (int i = 0; i < loopCount; ++i)

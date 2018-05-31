@@ -231,8 +231,8 @@ class ProcessTransformed : public ProcessLine
 public:
     ProcessTransformed(ByteStreamInfo rawStream, const JlsParameters& info, TRANSFORM transform) :
         _params(info),
-        _templine(info.width * info.components),
-        _buffer(info.width * info.components * sizeof(size_type)),
+        _templine(static_cast<size_t>(info.width) * info.components),
+        _buffer(static_cast<size_t>(info.width) * info.components * sizeof(size_type)),
         _transform(transform),
         _inverseTransform(transform),
         _rawPixels(rawStream)

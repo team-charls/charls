@@ -61,7 +61,7 @@ void TestDicomSampleImage(const char* name)
     Assert::IsTrue(error == charls::ApiResult::OK);
 
     std::vector<uint8_t> dataUnc;
-    dataUnc.resize(params.stride * params.height);
+    dataUnc.resize(static_cast<size_t>(params.stride) * params.height);
 
     error = JpegLsDecode(dataUnc.data(), dataUnc.size(), &data[0], data.size(), nullptr, nullptr);
     Assert::IsTrue(error == charls::ApiResult::OK);

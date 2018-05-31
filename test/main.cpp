@@ -96,7 +96,7 @@ void TestTraits8bit()
 }
 
 
-std::vector<uint8_t> MakeSomeNoise(int length, int bitcount, int seed)
+std::vector<uint8_t> MakeSomeNoise(size_t length, size_t bitcount, int seed)
 {
     srand(seed);
     std::vector<uint8_t> rgbyteNoise(length);
@@ -110,7 +110,7 @@ std::vector<uint8_t> MakeSomeNoise(int length, int bitcount, int seed)
 }
 
 
-std::vector<uint8_t> MakeSomeNoise16bit(int length, int bitcount, int seed)
+std::vector<uint8_t> MakeSomeNoise16bit(size_t length, int bitcount, int seed)
 {
     srand(seed);
     std::vector<uint8_t> buffer(length * 2);
@@ -131,13 +131,13 @@ void TestNoiseImage()
 {
     const Size size2 = Size(512, 512);
 
-    for (int bitDepth = 8; bitDepth >=2; --bitDepth)
+    for (size_t bitDepth = 8; bitDepth >=2; --bitDepth)
     {
         std::stringstream label;
         label << "noise, bit depth: " << bitDepth;
 
         const std::vector<uint8_t> noiseBytes = MakeSomeNoise(size2.cx * size2.cy, bitDepth, 21344);
-        TestRoundTrip(label.str().c_str(), noiseBytes, size2, bitDepth, 1);
+        TestRoundTrip(label.str().c_str(), noiseBytes, size2, static_cast<int>(bitDepth), 1);
     }
 
     for (int bitDepth = 16; bitDepth > 8; --bitDepth)
@@ -160,8 +160,8 @@ void TestNoiseImageWithCustomReset()
     JlsParameters params{};
     params.components = 1;
     params.bitsPerSample = bitDepth;
-    params.height = size.cy;
-    params.width = size.cx;
+    params.height = static_cast<int>(size.cy);
+    params.width = static_cast<int>(size.cx);
     params.custom.MaximumSampleValue = (1 << bitDepth) - 1;
     params.custom.ResetValue = 63;
 
@@ -206,7 +206,7 @@ void TestBgr()
     JlsParameters params{};
     std::vector<uint8_t> rgbyteEncoded;
     ScanFile("test/conformance/T8C2E3.JLS", &rgbyteEncoded, &params);
-    std::vector<uint8_t> rgbyteDecoded(params.width * params.height * params.components);
+    std::vector<uint8_t> rgbyteDecoded(static_cast<size_t>(params.width) * params.height * params.components);
 
     params.outputBgr = static_cast<char>(true);
 
@@ -216,9 +216,9 @@ void TestBgr()
     Assert::IsTrue(rgbyteDecoded[0] == 0x69);
     Assert::IsTrue(rgbyteDecoded[1] == 0x77);
     Assert::IsTrue(rgbyteDecoded[2] == 0xa1);
-    Assert::IsTrue(rgbyteDecoded[params.width * 6 + 3] == 0x2d);
-    Assert::IsTrue(rgbyteDecoded[params.width * 6 + 4] == 0x43);
-    Assert::IsTrue(rgbyteDecoded[params.width * 6 + 5] == 0x4d);
+    Assert::IsTrue(rgbyteDecoded[static_cast<size_t>(params.width) * 6 + 3] == 0x2d);
+    Assert::IsTrue(rgbyteDecoded[static_cast<size_t>(params.width) * 6 + 4] == 0x43);
+    Assert::IsTrue(rgbyteDecoded[static_cast<size_t>(params.width) * 6 + 5] == 0x4d);
 }
 
 
@@ -291,18 +291,18 @@ void TestDecodeRect()
     if (!ScanFile("test/lena8b.jls", &rgbyteCompressed, &params))
         return;
 
-    std::vector<uint8_t> rgbyteOutFull(params.width*params.height*params.components);
+    std::vector<uint8_t> rgbyteOutFull(static_cast<size_t>(params.width) * params.height*params.components);
     auto error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
     Assert::IsTrue(error == ApiResult::OK);
 
     const JlsRect rect = { 128, 128, 256, 1 };
-    std::vector<uint8_t> rgbyteOut(rect.Width * rect.Height);
+    std::vector<uint8_t> rgbyteOut(static_cast<size_t>(rect.Width) * rect.Height);
     rgbyteOut.push_back(0x1f);
     error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), rect, nullptr, nullptr);
     Assert::IsTrue(error == ApiResult::OK);
 
-    Assert::IsTrue(memcmp(&rgbyteOutFull[rect.X + rect.Y*512], &rgbyteOut[0], rect.Width * rect.Height) == 0);
-    Assert::IsTrue(rgbyteOut[rect.Width * rect.Height] == 0x1f);
+    Assert::IsTrue(memcmp(&rgbyteOutFull[rect.X + static_cast<size_t>(rect.Y) * 512], &rgbyteOut[0], static_cast<size_t>(rect.Width) * rect.Height) == 0);
+    Assert::IsTrue(rgbyteOut[static_cast<size_t>(rect.Width) * rect.Height] == 0x1f);
 }
 
 
@@ -315,7 +315,7 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
     myFile.pubseekoff(static_cast<std::streamoff>(offset), std::ios_base::cur);
     const ByteStreamInfo rawStreamInfo = {&myFile, nullptr, 0};
 
-    std::vector<uint8_t> compressed(width * height * ccomponent * 2);
+    std::vector<uint8_t> compressed(static_cast<size_t>(width) * height * ccomponent * 2);
     JlsParameters params = JlsParameters();
     params.height = height;
     params.width = width;
@@ -324,7 +324,7 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
     params.interleaveMode = ilv;
     size_t bytesWritten = 0;
 
-    JpegLsEncodeStream(FromByteArray(compressed.data(), width * height * ccomponent * 2), bytesWritten, rawStreamInfo, params, nullptr);
+    JpegLsEncodeStream(FromByteArray(compressed.data(), static_cast<size_t>(width) * height * ccomponent * 2), bytesWritten, rawStreamInfo, params, nullptr);
     Assert::IsTrue(bytesWritten == expectedLength);
 
     myFile.close();
@@ -343,7 +343,7 @@ bool DecodeToPnm(std::istream& input, std::ostream& output)
 
     const int maxValue = (1 << params.bitsPerSample) - 1;
     const int bytesPerSample = maxValue > 255 ? 2 : 1;
-    std::vector<uint8_t> outputBuffer(params.width * params.height * bytesPerSample * params.components);
+    std::vector<uint8_t> outputBuffer(static_cast<size_t>(params.width) * params.height * bytesPerSample * params.components);
     const auto outputInfo = FromByteArray(outputBuffer.data(), outputBuffer.size());
     result = JpegLsDecodeStream(outputInfo, inputInfo, &params, nullptr);
     if (result != ApiResult::OK)
@@ -414,7 +414,7 @@ bool EncodePnm(std::istream& pnmFile, const std::ostream& jlsFileStream)
     params.interleaveMode = params.components == 3 ? InterleaveMode::Line : InterleaveMode::None;
 
     const int bytesPerSample = (params.bitsPerSample + 7) / 8;
-    std::vector<uint8_t> inputBuffer(params.width * params.height * bytesPerSample * params.components);
+    std::vector<uint8_t> inputBuffer(static_cast<size_t>(params.width) * params.height * bytesPerSample * params.components);
     pnmFile.read(reinterpret_cast<char*>(inputBuffer.data()), inputBuffer.size());
     if (!pnmFile.good())
         return false;
@@ -459,17 +459,17 @@ bool ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
         return false;
     }
 
-    const auto width = header1[1];
+    const size_t width = header1[1];
     if (width != header2[1])
     {
-        printf("Width %i is not equal with width %i\r\n", width, header2[1]);
+        printf("Width %zu is not equal with width %i\r\n", width, header2[1]);
         return false;
     }
 
-    const auto height = header1[2];
+    const size_t height = header1[2];
     if (height != header2[2])
     {
-        printf("Height %i is not equal with height %i\r\n", height, header2[2]);
+        printf("Height %zu is not equal with height %i\r\n", height, header2[2]);
         return false;
     }
 
@@ -487,15 +487,15 @@ bool ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
     pnmFile1.read(reinterpret_cast<char*>(&bytes1[0]), byteCount);
     pnmFile2.read(reinterpret_cast<char*>(&bytes2[0]), byteCount);
 
-    for (auto x = 0; x < height; ++x)
+    for (size_t x = 0; x < height; ++x)
     {
-        for (auto y = 0; y < width; y += bytesPerSample)
+        for (size_t y = 0; y < width; y += bytesPerSample)
         {
             if (bytesPerSample == 1)
             {
                 if (bytes1[(x * width) + y] != bytes2[(x * width) + y])
                 {
-                    printf("Values of the 2 files are different, height:%i, width:%i\r\n", x, y);
+                    printf("Values of the 2 files are different, height:%zu, width:%zu\r\n", x, y);
                     return false;
                 }
             }
@@ -504,7 +504,7 @@ bool ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
                 if (bytes1[(x * width) + y] != bytes2[(x * width) + y] ||
                     bytes1[(x * width) + (y + 1)] != bytes2[(x * width) + (y + 1)])
                 {
-                    printf("Values of the 2 files are different, height:%i, width:%i\r\n", x, y);
+                    printf("Values of the 2 files are different, height:%zu, width:%zu\r\n", x, y);
                     return false;
                 }
             }

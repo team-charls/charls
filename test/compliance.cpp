@@ -20,12 +20,12 @@ void Triplet2Planar(std::vector<uint8_t>& rgbyte, Size size)
 {
     std::vector<uint8_t> rgbytePlanar(rgbyte.size());
 
-    const int cbytePlane = size.cx * size.cy;
-    for (int index = 0; index < cbytePlane; index++)
+    const size_t cbytePlane = static_cast<size_t>(size.cx) * size.cy;
+    for (size_t index = 0; index < cbytePlane; index++)
     {
-        rgbytePlanar[index]                 = rgbyte[index * 3 + 0];
-        rgbytePlanar[index + 1*cbytePlane]  = rgbyte[index * 3 + 1];
-        rgbytePlanar[index + 2*cbytePlane]  = rgbyte[index * 3 + 2];
+        rgbytePlanar[index] = rgbyte[index * 3 + 0];
+        rgbytePlanar[index + 1 * cbytePlane] = rgbyte[index * 3 + 1];
+        rgbytePlanar[index + 2 * cbytePlane] = rgbyte[index * 3 + 2];
     }
     std::swap(rgbyte, rgbytePlanar);
 }
@@ -67,7 +67,7 @@ void TestCompliance(const uint8_t* compressedBytes, size_t compressedLength, con
         Assert::IsTrue(VerifyEncodedBytes(rgbyteRaw, cbyteRaw, compressedBytes, compressedLength));
     }
 
-    std::vector<uint8_t> rgbyteOut(info.height *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
+    std::vector<uint8_t> rgbyteOut(static_cast<size_t>(info.height) *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
 
     err = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), compressedBytes, compressedLength, nullptr, nullptr);
     Assert::IsTrue(err == ApiResult::OK);

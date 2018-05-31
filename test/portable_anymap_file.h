@@ -30,7 +30,7 @@ public:
         m_bitsPerSample = log_2(headerInfo[3] + 1);
 
         const int bytesPerSample = (m_bitsPerSample + 7) / 8;
-        m_inputBuffer.resize(m_width * m_height * bytesPerSample * m_componentCount);
+        m_inputBuffer.resize(static_cast<size_t>(m_width) * m_height * bytesPerSample * m_componentCount);
         pnmFile.read(reinterpret_cast<char*>(m_inputBuffer.data()), m_inputBuffer.size());
     }
 
