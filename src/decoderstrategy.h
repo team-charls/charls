@@ -27,6 +27,11 @@ public:
 
     virtual ~DecoderStrategy() = default;
 
+    DecoderStrategy(const DecoderStrategy&) = delete;
+    DecoderStrategy(DecoderStrategy&&) = delete;
+    DecoderStrategy& operator=(const DecoderStrategy&) = delete;
+    DecoderStrategy& operator=(DecoderStrategy&&) = delete;
+
     virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
     virtual void SetPresets(const JpegLSPresetCodingParameters& presets) = 0;
     virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo& compressedData) = 0;

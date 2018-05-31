@@ -28,6 +28,11 @@ public:
 
     virtual ~EncoderStrategy() = default;
 
+    EncoderStrategy(const EncoderStrategy&) = delete;
+    EncoderStrategy(EncoderStrategy&&) = delete;
+    EncoderStrategy& operator=(const EncoderStrategy&) = delete;
+    EncoderStrategy& operator=(EncoderStrategy&&) = delete;
+
     virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
     virtual void SetPresets(const JpegLSPresetCodingParameters& presets) = 0;
     virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData) = 0;

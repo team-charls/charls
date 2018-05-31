@@ -25,8 +25,17 @@ class ProcessLine
 {
 public:
     virtual ~ProcessLine() = default;
+
+    ProcessLine(const ProcessLine&) = delete;
+    ProcessLine(ProcessLine&&) = delete;
+    ProcessLine& operator=(const ProcessLine&) = delete;
+    ProcessLine& operator=(ProcessLine&&) = delete;
+
     virtual void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride) = 0;
     virtual void NewLineRequested(void* pDest, int pixelCount, int destStride) = 0;
+
+protected:
+    ProcessLine() = default;
 };
 
 
