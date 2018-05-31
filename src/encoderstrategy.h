@@ -39,7 +39,7 @@ public:
         _processLine->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
     }
 
-    static void OnLineEnd(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/)
+    static void OnLineEnd(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) noexcept
     {
     }
 
@@ -163,7 +163,7 @@ protected:
         }
     }
 
-    std::size_t GetLength() const
+    std::size_t GetLength() const noexcept
     {
         return _bytesWritten - (_freeBitCount - 32) / 8;
     }

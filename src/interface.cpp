@@ -56,7 +56,7 @@ void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& 
 }
 
 
-ApiResult ResultAndErrorMessage(ApiResult result, char* errorMessage)
+ApiResult ResultAndErrorMessage(ApiResult result, char* errorMessage) noexcept
 {
     if (errorMessage)
     {

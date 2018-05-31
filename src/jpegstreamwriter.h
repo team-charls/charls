@@ -22,7 +22,7 @@ class JpegStreamWriter
     friend class JpegImageDataSegment;
 
 public:
-    JpegStreamWriter();
+    JpegStreamWriter() noexcept;
 
     void AddSegment(std::unique_ptr<JpegSegment> segment)
     {
@@ -33,12 +33,12 @@ public:
 
     void AddColorTransform(charls::ColorTransformation transformation);
 
-    std::size_t GetBytesWritten() const
+    std::size_t GetBytesWritten() const noexcept
     {
         return _byteOffset;
     }
 
-    std::size_t GetLength() const
+    std::size_t GetLength() const noexcept
     {
         return _data.count - _byteOffset;
     }
@@ -46,12 +46,12 @@ public:
     std::size_t Write(const ByteStreamInfo& info);
 
 private:
-    uint8_t* GetPos() const
+    uint8_t* GetPos() const noexcept
     {
         return _data.rawData + _byteOffset;
     }
 
-    ByteStreamInfo OutputStream() const
+    ByteStreamInfo OutputStream() const noexcept
     {
         ByteStreamInfo data = _data;
         data.count -= _byteOffset;
@@ -94,7 +94,7 @@ private:
         WriteByte(static_cast<uint8_t>(marker));
     }
 
-    void Seek(std::size_t byteCount)
+    void Seek(std::size_t byteCount) noexcept
     {
         if (_data.rawStream)
             return;

@@ -325,13 +325,13 @@ struct ByteStreamInfo
 };
 
 
-inline ByteStreamInfo FromByteArray(void* bytes, std::size_t count)
+inline ByteStreamInfo FromByteArray(void* bytes, std::size_t count) noexcept
 {
     return { nullptr, static_cast<uint8_t*>(bytes), count };
 }
 
 
-inline ByteStreamInfo FromByteArrayConst(const void* bytes, std::size_t count)
+inline ByteStreamInfo FromByteArrayConst(const void* bytes, std::size_t count) noexcept
 {
     return FromByteArray(const_cast<void*>(bytes), count);
 }

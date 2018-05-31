@@ -16,7 +16,7 @@ using namespace charls;
 namespace
 {
 
-bool IsDefault(const JpegLSPresetCodingParameters& custom)
+bool IsDefault(const JpegLSPresetCodingParameters& custom) noexcept
 {
     if (custom.MaximumSampleValue != 0)
         return false;
@@ -39,7 +39,7 @@ bool IsDefault(const JpegLSPresetCodingParameters& custom)
 }
 
 
-JpegStreamWriter::JpegStreamWriter()
+JpegStreamWriter::JpegStreamWriter() noexcept
     : _data(),
       _byteOffset(0),
       _lastCompenentIndex(0)

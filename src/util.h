@@ -33,6 +33,14 @@
 #  endif
 #endif
 
+#ifdef _MSC_VER
+#define WARNING_SUPPRESS(x) __pragma(warning(push)) __pragma(warning(disable : x))
+#define WARNING_UNSUPPRESS() __pragma(warning(pop))
+#else
+#define WARNING_SUPPRESS(x)
+#define WARNING_UNSUPPRESS()
+#endif
+
 
 constexpr size_t int32_t_bit_count = sizeof(int32_t) * 8;
 
@@ -44,10 +52,10 @@ inline void push_back(std::vector<uint8_t>& values, uint16_t value)
 }
 
 
-inline int32_t log_2(int32_t n)
+inline int32_t log_2(int32_t n) noexcept
 {
     int32_t x = 0;
-    while (n > (int32_t(1) << x))
+    while (n > (static_cast<int32_t>(1) << x))
     {
         ++x;
     }
@@ -55,13 +63,13 @@ inline int32_t log_2(int32_t n)
 }
 
 
-inline int32_t Sign(int32_t n)
+inline int32_t Sign(int32_t n) noexcept
 {
     return (n >> (int32_t_bit_count - 1)) | 1;
 }
 
 
-inline int32_t BitWiseSign(int32_t i)
+inline int32_t BitWiseSign(int32_t i) noexcept
 {
     return i >> (int32_t_bit_count - 1);
 }
@@ -70,13 +78,13 @@ inline int32_t BitWiseSign(int32_t i)
 template<typename T>
 struct Triplet
 {
-    Triplet() :
+    Triplet() noexcept :
         v1(0),
         v2(0),
         v3(0)
     {}
 
-    Triplet(int32_t x1, int32_t x2, int32_t x3) :
+    Triplet(int32_t x1, int32_t x2, int32_t x3) noexcept :
         v1(static_cast<T>(x1)),
         v2(static_cast<T>(x2)),
         v3(static_cast<T>(x3))
@@ -100,13 +108,13 @@ struct Triplet
 };
 
 
-inline bool operator==(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
+inline bool operator==(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs) noexcept
 {
     return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3;
 }
 
 
-inline bool operator!=(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
+inline bool operator!=(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs) noexcept
 {
     return !(lhs == rhs);
 }
@@ -119,7 +127,9 @@ struct Quad : Triplet<sample>
         v4(0)
         {}
 
-    Quad(Triplet<sample> triplet, int32_t alpha) : Triplet<sample>(triplet), A(static_cast<sample>(alpha))
+    Quad(Triplet<sample> triplet, int32_t alpha) noexcept :
+        Triplet<sample>(triplet),
+        A(static_cast<sample>(alpha))
         {}
 
     union
@@ -139,7 +149,7 @@ struct FromBigEndian
 template<>
 struct FromBigEndian<4>
 {
-    FORCE_INLINE static unsigned int Read(const uint8_t* pbyte)
+    FORCE_INLINE static unsigned int Read(const uint8_t* pbyte) noexcept
     {
         return (pbyte[0] << 24u) + (pbyte[1] << 16u) + (pbyte[2] << 8u) + (pbyte[3] << 0u);
     }
@@ -149,7 +159,7 @@ struct FromBigEndian<4>
 template<>
 struct FromBigEndian<8>
 {
-    FORCE_INLINE static uint64_t Read(const uint8_t* pbyte)
+    FORCE_INLINE static uint64_t Read(const uint8_t* pbyte) noexcept
     {
         return (static_cast<uint64_t>(pbyte[0]) << 56u) + (static_cast<uint64_t>(pbyte[1]) << 48u) +
                (static_cast<uint64_t>(pbyte[2]) << 40u) + (static_cast<uint64_t>(pbyte[3]) << 32u) +
@@ -174,11 +184,11 @@ public:
     }
 
 private:
-    static const std::error_category& CharLSCategoryInstance();
+    static const std::error_category& CharLSCategoryInstance() noexcept;
 };
 
 
-inline void SkipBytes(ByteStreamInfo& streamInfo, std::size_t count)
+inline void SkipBytes(ByteStreamInfo& streamInfo, std::size_t count) noexcept
 {
     if (!streamInfo.rawData)
         return;

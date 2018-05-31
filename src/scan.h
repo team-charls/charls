@@ -26,7 +26,7 @@ extern std::vector<signed char> rgquant10Ll;
 extern std::vector<signed char> rgquant12Ll;
 extern std::vector<signed char> rgquant16Ll;
 
-inline int32_t ApplySign(int32_t i, int32_t sign)
+inline int32_t ApplySign(int32_t i, int32_t sign) noexcept
 {
     return (sign ^ i) - sign;
 }
@@ -60,7 +60,7 @@ inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 #else
 
-inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
+inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc) noexcept
 {
     // sign trick reduces the number of if statements (branches)
     const int32_t sgn = BitWiseSign(Rb - Ra);
@@ -81,19 +81,19 @@ inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 #endif
 
-inline int32_t UnMapErrVal(int32_t mappedError)
+inline int32_t UnMapErrVal(int32_t mappedError) noexcept
 {
     const int32_t sign = static_cast<int32_t>(mappedError << (int32_t_bit_count-1)) >> (int32_t_bit_count-1);
     return sign ^ (mappedError >> 1);
 }
 
-inline int32_t GetMappedErrVal(int32_t Errval)
+inline int32_t GetMappedErrVal(int32_t Errval) noexcept
 {
     const int32_t mappedError = (Errval >> (int32_t_bit_count-2)) ^ (2 * Errval);
     return mappedError;
 }
 
-inline int32_t ComputeContextID(int32_t Q1, int32_t Q2, int32_t Q3)
+inline int32_t ComputeContextID(int32_t Q1, int32_t Q2, int32_t Q3) noexcept
 {
     return (Q1 * 9 + Q2) * 9 + Q3;
 }
@@ -137,7 +137,7 @@ public:
 
     std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo info) override;
 
-    bool IsInterleaved()
+    bool IsInterleaved() noexcept
     {
         if (Info().interleaveMode == InterleaveMode::None)
             return false;
@@ -148,14 +148,14 @@ public:
         return true;
     }
 
-    JlsParameters& Info()
+    JlsParameters& Info() noexcept
     {
         return Strategy::_params;
     }
 
-    signed char QuantizeGratientOrg(int32_t Di) const;
+    signed char QuantizeGratientOrg(int32_t Di) const noexcept;
 
-    FORCE_INLINE int32_t QuantizeGratient(int32_t Di) const
+    FORCE_INLINE int32_t QuantizeGratient(int32_t Di) const noexcept
     {
         ASSERT(QuantizeGratientOrg(Di) == *(_pquant + Di));
         return *(_pquant + Di);
@@ -166,12 +166,12 @@ public:
     int32_t DecodeValue(int32_t k, int32_t limit, int32_t qbpp);
     FORCE_INLINE void EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit);
 
-    void IncrementRunIndex()
+    void IncrementRunIndex() noexcept
     {
         _RUNindex = std::min(31, _RUNindex + 1);
     }
 
-    void DecrementRunIndex()
+    void DecrementRunIndex() noexcept
     {
         _RUNindex = std::max(0, _RUNindex - 1);
     }
@@ -283,14 +283,14 @@ typename Traits::SAMPLE JlsCodec<Traits,Strategy>::DoRegular(int32_t Qs, int32_t
 
 // Functions to build tables used to decode short Golomb codes.
 
-inline std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedError)
+inline std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedError) noexcept
 {
     const int32_t highbits = mappedError >> k;
-    return std::make_pair(highbits + k + 1, (int32_t(1) << k) | (mappedError & ((int32_t(1) << k) - 1)));
+    return std::make_pair(highbits + k + 1, (static_cast<int32_t>(1) << k) | (mappedError & ((static_cast<int32_t>(1) << k) - 1)));
 }
 
 
-inline CTable InitTable(int32_t k)
+inline CTable InitTable(int32_t k) noexcept
 {
     CTable table;
     for (short nerr = 0; ; nerr++)
@@ -424,7 +424,7 @@ void JlsCodec<Traits, Strategy>::InitQuantizationLUT()
 #endif
 
 template<typename Traits, typename Strategy>
-signed char JlsCodec<Traits,Strategy>::QuantizeGratientOrg(int32_t Di) const
+signed char JlsCodec<Traits,Strategy>::QuantizeGratientOrg(int32_t Di) const noexcept
 {
     if (Di <= -T3) return  -4;
     if (Di <= -T2) return  -3;

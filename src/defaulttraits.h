@@ -34,7 +34,7 @@ struct DefaultTraits
     const int32_t LIMIT;
     const int32_t RESET;
 
-    DefaultTraits(int32_t max, int32_t near, int32_t reset = DefaultResetValue) :
+    DefaultTraits(int32_t max, int32_t near, int32_t reset = DefaultResetValue) noexcept :
         MAXVAL(max),
         RANGE((max + 2 * near) / (2 * near + 1) + 1),
         NEAR(near),
@@ -45,7 +45,7 @@ struct DefaultTraits
     {
     }
 
-    DefaultTraits(const DefaultTraits& other) :
+    DefaultTraits(const DefaultTraits& other) noexcept :
         MAXVAL(other.MAXVAL),
         RANGE(other.RANGE),
         NEAR(other.NEAR),
@@ -58,29 +58,29 @@ struct DefaultTraits
 
     DefaultTraits &operator =(const DefaultTraits &a) = delete;
 
-    FORCE_INLINE int32_t ComputeErrVal(int32_t e) const
+    FORCE_INLINE int32_t ComputeErrVal(int32_t e) const noexcept
     {
         return ModuloRange(Quantize(e));
     }
 
-    FORCE_INLINE SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) const
+    FORCE_INLINE SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) const noexcept
     {
         return FixReconstructedValue(Px + DeQuantize(ErrVal));
     }
 
-    FORCE_INLINE bool IsNear(int32_t lhs, int32_t rhs) const
+    FORCE_INLINE bool IsNear(int32_t lhs, int32_t rhs) const noexcept
     {
         return std::abs(lhs - rhs) <= NEAR;
     }
 
-    bool IsNear(Triplet<SAMPLE> lhs, Triplet<SAMPLE> rhs) const
+    bool IsNear(Triplet<SAMPLE> lhs, Triplet<SAMPLE> rhs) const noexcept
     {
         return std::abs(lhs.v1 - rhs.v1) <= NEAR &&
                std::abs(lhs.v2 - rhs.v2) <= NEAR &&
                std::abs(lhs.v3 - rhs.v3) <= NEAR;
     }
 
-    FORCE_INLINE int32_t CorrectPrediction(int32_t Pxc) const
+    FORCE_INLINE int32_t CorrectPrediction(int32_t Pxc) const noexcept
     {
         if ((Pxc & MAXVAL) == Pxc)
             return Pxc;
@@ -91,7 +91,7 @@ struct DefaultTraits
     /// <summary>
     /// Returns the value of errorValue modulo RANGE. ITU.T.87, A.4.5 (code segment A.9)
     /// </summary>
-    FORCE_INLINE int32_t ModuloRange(int32_t errorValue) const
+    FORCE_INLINE int32_t ModuloRange(int32_t errorValue) const noexcept
     {
         ASSERT(std::abs(errorValue) <= RANGE);
 
@@ -109,7 +109,7 @@ struct DefaultTraits
     }
 
 private:
-    int32_t Quantize(int32_t Errval) const
+    int32_t Quantize(int32_t Errval) const noexcept
     {
         if (Errval > 0)
             return  (Errval + NEAR) / (2 * NEAR + 1);
@@ -117,12 +117,12 @@ private:
         return - (NEAR - Errval) / (2 * NEAR + 1);
     }
 
-    FORCE_INLINE int32_t DeQuantize(int32_t Errval) const
+    FORCE_INLINE int32_t DeQuantize(int32_t Errval) const noexcept
     {
         return Errval * (2 * NEAR + 1);
     }
 
-    FORCE_INLINE SAMPLE FixReconstructedValue(int32_t val) const
+    FORCE_INLINE SAMPLE FixReconstructedValue(int32_t val) const noexcept
     {
         if (val < -NEAR)
         {

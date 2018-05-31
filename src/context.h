@@ -20,7 +20,7 @@ struct JlsContext
     int16_t C;
     int16_t N;
 
-    JlsContext() :
+    JlsContext() noexcept :
         A(),
         B(),
         C(),
@@ -29,7 +29,7 @@ struct JlsContext
     }
 
 
-    explicit JlsContext(int32_t a) :
+    explicit JlsContext(int32_t a) noexcept :
         A(a),
         B(0),
         C(0),
@@ -38,7 +38,7 @@ struct JlsContext
     }
 
 
-    FORCE_INLINE int32_t GetErrorCorrection(int32_t k) const
+    FORCE_INLINE int32_t GetErrorCorrection(int32_t k) const noexcept
     {
         if (k != 0)
             return 0;
@@ -47,7 +47,7 @@ struct JlsContext
     }
 
 
-    FORCE_INLINE void UpdateVariables(int32_t errorValue, int32_t NEAR, int32_t NRESET)
+    FORCE_INLINE void UpdateVariables(int32_t errorValue, int32_t NEAR, int32_t NRESET) noexcept
     {
         ASSERT(N != 0);
 
@@ -94,7 +94,7 @@ struct JlsContext
     }
 
 
-    FORCE_INLINE int32_t GetGolomb() const
+    FORCE_INLINE int32_t GetGolomb() const noexcept
     {
         const int32_t Ntest = N;
         const int32_t Atest = A;

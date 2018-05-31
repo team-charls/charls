@@ -24,7 +24,7 @@ const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6
 namespace
 {
 
-signed char QuantizeGratientOrg(const JpegLSPresetCodingParameters& preset, int32_t NEAR, int32_t Di)
+signed char QuantizeGratientOrg(const JpegLSPresetCodingParameters& preset, int32_t NEAR, int32_t Di) noexcept
 {
     if (Di <= -preset.Threshold3) return  -4;
     if (Di <= -preset.Threshold2) return  -3;
@@ -77,7 +77,7 @@ public:
     }
 };
 
-const std::error_category& charls_error::CharLSCategoryInstance()
+const std::error_category& charls_error::CharLSCategoryInstance() noexcept
 {
     static charls_category instance;
     return instance;
