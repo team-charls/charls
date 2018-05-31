@@ -1,0 +1,13 @@
+//
+// cpp.hint: What is this thing?
+//
+// This file is used solely to aid Visual Studio Intellisense while editing.
+// It is not used as part of any build. See Microsoft docs for more info about this file.
+// 
+
+
+#define CHARLS_IMEXPORT(returntype) returntype
+#define FORCE_INLINE
+#define WARNING_SUPPRESS(x)
+#define WARNING_UNSUPPRESS()
+
