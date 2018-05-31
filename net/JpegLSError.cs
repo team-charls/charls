@@ -1,11 +1,11 @@
-﻿//
+//
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
 namespace CharLS
 {
     /// <summary>
-    /// Defines the result codes that the native CharLS implementation can return (see enumeration JLS_ERROR in publicTypes.h)
+    /// Defines the result codes that the native CharLS implementation can return (see enumeration JLS_ERROR in publicTypes.h).
     /// </summary>
     public enum JpegLSError
     {

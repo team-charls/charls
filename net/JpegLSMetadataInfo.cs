@@ -28,16 +28,15 @@ namespace CharLS
         private int bitsPerComponent;
         private int componentCount;
 
-        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:CharLS.JpegLSMetadataInfo" /> class.
+        /// Initializes a new instance of the <see cref="JpegLSMetadataInfo"/> class.
         /// </summary>
         /// <remarks>
         /// Initializes a minimal <see cref="T:CharLS.JpegLSMetadataInfo" /> instance with:
         /// Width = 1
         /// Height = 1
         /// BitsPerComponent = 2
-        /// ComponentCount = 1
+        /// ComponentCount = 1.
         /// </remarks>
         public JpegLSMetadataInfo()
             : this(1, 1, 2, 1)
