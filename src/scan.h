@@ -106,6 +106,7 @@ public:
     using PIXEL = typename Traits::PIXEL;
     using SAMPLE = typename Traits::SAMPLE;
 
+    WARNING_SUPPRESS(26495) // false warning that _contextRunmode is unintialized
     JlsCodec(const Traits& inTraits, const JlsParameters& params) :
         Strategy(params),
         traits(inTraits),
@@ -124,6 +125,7 @@ public:
             Info().components = 1;
         }
     }
+    WARNING_UNSUPPRESS()
 
     void SetPresets(const JpegLSPresetCodingParameters& presets) override
     {
@@ -593,7 +595,7 @@ int32_t JlsCodec<Traits, Strategy>::DoRunMode(int32_t index, EncoderStrategy*)
 {
     const int32_t ctypeRem = _width - index;
     PIXEL* ptypeCurX = _currentLine + index;
-    PIXEL* ptypePrevX = _previousLine + index;
+    const PIXEL* ptypePrevX = _previousLine + index;
 
     const PIXEL Ra = ptypeCurX[-1];
 
@@ -800,6 +802,7 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
 
 
 // Setup codec for encoding and calls DoScan
+WARNING_SUPPRESS(26433)
 template<typename Traits, typename Strategy>
 size_t JlsCodec<Traits, Strategy>::EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo& compressedData)
 {
@@ -818,14 +821,14 @@ void JlsCodec<Traits, Strategy>::DecodeScan(std::unique_ptr<ProcessLine> process
 {
     Strategy::_processLine = std::move(processLine);
 
-    uint8_t* compressedBytes = const_cast<uint8_t*>(static_cast<const uint8_t*>(compressedData.rawData));
+    const uint8_t* compressedBytes = compressedData.rawData;
     _rect = rect;
 
     Strategy::Init(compressedData);
     DoScan();
     SkipBytes(compressedData, Strategy::GetCurBytePos() - compressedBytes);
 }
-
+WARNING_UNSUPPRESS()
 
 // Initialize the codec data structures. Depends on JPEG-LS parameters like Threshold1-Threshold3.
 template<typename Traits, typename Strategy>

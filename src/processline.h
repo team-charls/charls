@@ -253,7 +253,7 @@ public:
 
     void Transform(std::basic_streambuf<char>* rawStream, void* dest, int pixelCount, int destStride)
     {
-        std::streamsize bytesToRead = pixelCount * _params.components * sizeof(size_type);
+        std::streamsize bytesToRead = static_cast<std::streamsize>(pixelCount) * _params.components * sizeof(size_type);
         while (bytesToRead != 0)
         {
             const auto read = rawStream->sgetn(reinterpret_cast<char*>(_buffer.data()), bytesToRead);
@@ -323,7 +323,7 @@ public:
     {
         if (_rawPixels.rawStream)
         {
-            const std::streamsize bytesToWrite = pixelCount * _params.components * sizeof(size_type);
+            const std::streamsize bytesToWrite = static_cast<std::streamsize>(pixelCount) * _params.components * sizeof(size_type);
             DecodeTransform(pSrc, _buffer.data(), pixelCount, sourceStride);
 
             const auto bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(_buffer.data()), bytesToWrite);

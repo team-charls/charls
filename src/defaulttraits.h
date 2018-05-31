@@ -59,7 +59,7 @@ struct DefaultTraits
     }
 
     DefaultTraits() = delete;
-    DefaultTraits(DefaultTraits&&) = delete;
+    DefaultTraits(DefaultTraits&&) = default;
     DefaultTraits& operator=(const DefaultTraits&) = delete;
     DefaultTraits& operator=(DefaultTraits&&) = delete;
 

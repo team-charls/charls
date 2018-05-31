@@ -127,10 +127,13 @@ struct Quad : Triplet<sample>
         v4(0)
         {}
 
-    Quad(Triplet<sample> triplet, int32_t alpha) noexcept :
+    WARNING_SUPPRESS(26495) // false warning that v4 is unintialized
+    Quad(Triplet<sample> triplet, int32_t alpha) noexcept
+            :
         Triplet<sample>(triplet),
         A(static_cast<sample>(alpha))
         {}
+    WARNING_UNSUPPRESS()
 
     union
     {
