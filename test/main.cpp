@@ -101,7 +101,7 @@ std::vector<uint8_t> MakeSomeNoise(size_t length, size_t bitcount, int seed)
     srand(seed);
     std::vector<uint8_t> rgbyteNoise(length);
     const auto mask = static_cast<uint8_t>((1 << bitcount) - 1);
-    for (int icol= 0; icol < length; ++icol)
+    for (size_t icol = 0; icol < length; ++icol)
     {
         const auto val = static_cast<uint8_t>(rand());
         rgbyteNoise[icol] = static_cast<uint8_t>(val & mask);
@@ -115,7 +115,7 @@ std::vector<uint8_t> MakeSomeNoise16bit(size_t length, int bitcount, int seed)
     srand(seed);
     std::vector<uint8_t> buffer(length * 2);
     const auto mask = static_cast<uint16_t>((1 << bitcount) - 1);
-    for (int i = 0; i < length; i = i + 2)
+    for (size_t i = 0; i < length; i = i + 2)
     {
         const uint16_t value = static_cast<uint16_t>(rand()) & mask;
 
@@ -460,14 +460,14 @@ bool ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
     }
 
     const size_t width = header1[1];
-    if (width != header2[1])
+    if (width != static_cast<size_t>(header2[1]))
     {
         printf("Width %zu is not equal with width %i\r\n", width, header2[1]);
         return false;
     }
 
     const size_t height = header1[2];
-    if (height != header2[2])
+    if (height != static_cast<size_t>(header2[2]))
     {
         printf("Height %zu is not equal with height %i\r\n", height, header2[2]);
         return false;
