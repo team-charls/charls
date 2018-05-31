@@ -16,7 +16,7 @@
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
     <Copyright>Copyright 2017 Team CharLS</Copyright>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>AnyCPU</Platforms>
     <Configurations>Debug;Release;Checked</Configurations>
     <CodeAnalysisRuleSet>CharLS.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>$(OutDir)CharLSNet.xml</DocumentationFile>
