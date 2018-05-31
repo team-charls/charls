@@ -34,11 +34,30 @@ public:
         pnmFile.read(reinterpret_cast<char*>(m_inputBuffer.data()), m_inputBuffer.size());
     }
 
-    int width() const { return m_width; }
-    int height() const { return m_height; }
-    int component_count() const { return m_componentCount; }
-    int bits_per_sample() const { return m_bitsPerSample; }
-    const std::vector<uint8_t>& image_data() const { return m_inputBuffer; }
+    int width() const noexcept
+    {
+        return m_width;
+    }
+
+    int height() const noexcept
+    {
+        return m_height;
+    }
+
+    int component_count() const noexcept
+    {
+        return m_componentCount;
+    }
+
+    int bits_per_sample() const noexcept
+    {
+        return m_bitsPerSample;
+    }
+
+    const std::vector<uint8_t>& image_data() const noexcept
+    {
+        return m_inputBuffer;
+    }
 
 private:
     static std::vector<int> read_header(std::istream& pnmFile)

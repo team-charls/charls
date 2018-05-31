@@ -15,7 +15,7 @@ namespace CharLSUnitTest
     public:
         TEST_METHOD(Create)
         {
-            DefaultTraits<uint8_t, uint8_t> traits((1 << 8) - 1, 0);
+            const DefaultTraits<uint8_t, uint8_t> traits((1 << 8) - 1, 0);
 
             Assert::AreEqual(255, traits.MAXVAL);
             Assert::AreEqual(256, traits.RANGE);

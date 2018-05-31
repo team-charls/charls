@@ -29,7 +29,7 @@ namespace CharLSUnitTest
                     {
                         const TransformHp1<uint8_t> transform;
                         const auto sample = transform(red, green, blue);
-                        TransformHp1<uint8_t>::Inverse inverse(transform);
+                        const TransformHp1<uint8_t>::Inverse inverse(transform);
 
                         const auto roundTrip = inverse(sample.v1, sample.v2, sample.v3);
 
@@ -56,7 +56,7 @@ namespace CharLSUnitTest
                     {
                         const TransformHp2<uint8_t> transform;
                         const auto sample = transform(red, green, blue);
-                        TransformHp2<uint8_t>::Inverse inverse(transform);
+                        const TransformHp2<uint8_t>::Inverse inverse(transform);
 
                         const auto roundTrip = inverse(sample.v1, sample.v2, sample.v3);
 
@@ -83,10 +83,9 @@ namespace CharLSUnitTest
                 {
                     for (int blue = 0; blue < 255; ++blue)
                     {
-                        auto sample = transformation(red, green, blue);
-                        TransformHp3<uint8_t>::Inverse inverse(transformation);
-
-                        auto roundTrip = inverse(sample.v1, sample.v2, sample.v3);
+                        const auto sample = transformation(red, green, blue);
+                        const TransformHp3<uint8_t>::Inverse inverse(transformation);
+                        const auto roundTrip = inverse(sample.v1, sample.v2, sample.v3);
 
                         Assert::AreEqual(static_cast<uint8_t>(red), roundTrip.R);
                         Assert::AreEqual(static_cast<uint8_t>(green), roundTrip.G);

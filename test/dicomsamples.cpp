@@ -15,18 +15,23 @@
 namespace
 {
 
+bool contains_string(const uint8_t* container, const uint8_t* bytesToFind, unsigned int bytesLength) noexcept
+{
+    for (unsigned int j = 0; j < bytesLength; ++j)
+    {
+        if (bytesToFind[j] != container[j])
+            return false;
+    }
+
+    return true;
+}
+
 int findstring(std::vector<uint8_t>& container, const uint8_t* bytesToFind, unsigned int bytesLength)
 {
     for (unsigned int i=0; i < container.size() - bytesLength; ++i)
     {
-        for (unsigned int j=0; j < bytesLength; ++j)
-        {
-            if (bytesToFind[j] != container[i + j])
-                goto next;
-        }
-        return i;
-
-        next:;
+        if (contains_string(&container[i], bytesToFind, bytesLength))
+            return i;
     }
     return -1;
 }
@@ -39,7 +44,7 @@ void TestDicomSampleImage(const char* name)
 
     Assert::IsTrue(success);
 
-    uint8_t pixeldataStart[] =  { 0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7 };
+    const uint8_t pixeldataStart[] =  { 0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7 };
 
     const int offset = findstring(data, pixeldataStart, COUNT(pixeldataStart));
 

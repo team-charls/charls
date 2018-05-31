@@ -15,10 +15,10 @@ using namespace charls;
 namespace
 {
 
-bool IsMachineLittleEndian()
+bool IsMachineLittleEndian() noexcept
 {
-    int a = 0xFF000001;
-    const auto chars = reinterpret_cast<char*>(&a);
+    const int a = 0xFF000001;
+    const char* chars = reinterpret_cast<const char*>(&a);
     return chars[0] == 0x01;
 }
 
@@ -125,13 +125,13 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, J
     }
     const double dwtimeDecodeComplete = getTime();
 
-    const double bitspersample = compressedLength * 8 * 1.0 / (params.components * params.height * params.width);
+    const double bitspersample = 1.0 * compressedLength * 8 / (static_cast<double>(params.components) * params.height * params.width);
     std::cout << "RoundTrip test for: " << strName << "\n\r";
     const double encodeTime = (dwtimeEncodeComplete - dwtimeEncodeStart) / loopCount;
     const double decodeTime = (dwtimeDecodeComplete - dwtimeDecodeStart) / loopCount;
-    const double symbolRate = (params.components * params.height * params.width) / (1000.0 * decodeTime);
+    const double symbolRate = (static_cast<double>(params.components) * params.height * params.width) / (1000.0 * decodeTime);
     printf("Size:%4dx%4d, Encode time:%7.2f ms, Decode time:%7.2f ms, Bits per sample:%5.2f, Decode rate:%5.1f M/s \n\r", params.width, params.height, encodeTime, decodeTime, bitspersample, symbolRate);
-    uint8_t* pbyteOut = rgbyteOut.data();
+    const uint8_t* pbyteOut = rgbyteOut.data();
     for (size_t i = 0; i < rgbyteOut.size(); ++i)
     {
         if (rgbyteRaw[i] != pbyteOut[i])

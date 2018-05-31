@@ -48,8 +48,8 @@ bool ScanFile(const char* strNameEncoded, std::vector<uint8_t>* rgbyteFile, JlsP
 
 void TestTraits16bit()
 {
-    auto traits1 = DefaultTraits<uint16_t, uint16_t>(4095,0);
-    auto traits2 = LosslessTraits<uint16_t, 12>();
+    const auto traits1 = DefaultTraits<uint16_t, uint16_t>(4095,0);
+    const auto traits2 = LosslessTraits<uint16_t, 12>();
 
     Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
     Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
@@ -73,8 +73,8 @@ void TestTraits16bit()
 
 void TestTraits8bit()
 {
-    auto traits1 = DefaultTraits<uint8_t, uint8_t>(255,0);
-    auto traits2 = LosslessTraits<uint8_t, 8>();
+    const auto traits1 = DefaultTraits<uint8_t, uint8_t>(255,0);
+    const auto traits2 = LosslessTraits<uint8_t, 8>();
 
     Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
     Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
@@ -195,7 +195,7 @@ void TestFailOnTooSmallOutputBuffer()
 void TestBgra()
 {
     char rgbyteTest[] = "RGBARGBARGBARGBA1234";
-    char rgbyteComp[] = "BGRABGRABGRABGRA1234";
+    const char rgbyteComp[] = "BGRABGRABGRABGRA1234";
     TransformRgbToBgr(rgbyteTest, 4, 4);
     Assert::IsTrue(strcmp(rgbyteTest, rgbyteComp) == 0);
 }
@@ -250,7 +250,7 @@ void TestTooSmallOutputBuffer()
 
 void TestDecodeBitStreamWithNoMarkerStart()
 {
-    uint8_t encodedData[2] = { 0x33, 0x33 };
+    const uint8_t encodedData[2] = { 0x33, 0x33 };
     uint8_t output[1000];
 
     const auto error = JpegLsDecode(output, 1000, encodedData, 2, nullptr, nullptr);
@@ -260,7 +260,7 @@ void TestDecodeBitStreamWithNoMarkerStart()
 
 void TestDecodeBitStreamWithUnsupportedEncoding()
 {
-    uint8_t encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
+    const uint8_t encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
                             0xFF, 0xC3, // Start Of Frame (lossless, Huffman) (JPEG_SOF_3)
                             0x00, 0x00  // Length of data of the marker
                           };
@@ -273,7 +273,7 @@ void TestDecodeBitStreamWithUnsupportedEncoding()
 
 void TestDecodeBitStreamWithUnknownJpegMarker()
 {
-    uint8_t encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
+    const uint8_t encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
         0xFF, 0x01, // Undefined marker
         0x00, 0x00  // Length of data of the marker
     };
@@ -312,10 +312,10 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
     myFile.open(file, mode_input);
     Assert::IsTrue(myFile.is_open());
 
-    myFile.pubseekoff(std::streamoff(offset), std::ios_base::cur);
+    myFile.pubseekoff(static_cast<std::streamoff>(offset), std::ios_base::cur);
     const ByteStreamInfo rawStreamInfo = {&myFile, nullptr, 0};
 
-    uint8_t* compressed = new uint8_t[width * height * ccomponent * 2];
+    std::vector<uint8_t> compressed(width * height * ccomponent * 2);
     JlsParameters params = JlsParameters();
     params.height = height;
     params.width = width;
@@ -324,10 +324,9 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
     params.interleaveMode = ilv;
     size_t bytesWritten = 0;
 
-    JpegLsEncodeStream(FromByteArray(compressed, width * height * ccomponent * 2), bytesWritten, rawStreamInfo, params, nullptr);
+    JpegLsEncodeStream(FromByteArray(compressed.data(), width * height * ccomponent * 2), bytesWritten, rawStreamInfo, params, nullptr);
     Assert::IsTrue(bytesWritten == expectedLength);
 
-    delete[] compressed;
     myFile.close();
 }
 
@@ -401,7 +400,7 @@ std::vector<int> readPnmHeader(std::istream& pnmFile)
 //          into the JPEG-LS format. The 2 binary formats P5 and P6 are supported:
 //          Portable GrayMap: P5 = binary, extension = .pgm, 0-2^16 (gray scale)
 //          Portable PixMap: P6 = binary, extension.ppm, range 0-2^16 (RGB)
-bool EncodePnm(std::istream& pnmFile, std::ostream& jlsFileStream)
+bool EncodePnm(std::istream& pnmFile, const std::ostream& jlsFileStream)
 {
     std::vector<int> readValues = readPnmHeader(pnmFile);
     if (readValues.size() !=4)

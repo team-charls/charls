@@ -21,7 +21,7 @@ namespace CharLSUnitTest
         {
             uint8_t buffer[1];
 
-            ByteStreamInfo byteStream = FromByteArray(buffer, 0);
+            const ByteStreamInfo byteStream = FromByteArray(buffer, 0);
             JpegStreamReader reader(byteStream);
 
             try
@@ -47,10 +47,10 @@ namespace CharLSUnitTest
             buffer.push_back(0xFF);
             buffer.push_back(0xDA); // SOS: Marks the start of scan.
 
-            ByteStreamInfo byteStream = FromByteArray(&(buffer[0]), 6);
+            const ByteStreamInfo byteStream = FromByteArray(&(buffer[0]), 6);
             JpegStreamReader reader(byteStream);
 
-            reader.ReadHeader(); // if it doesn´t throw test is passed.
+            reader.ReadHeader(); // if it doesnÂ´t throw test is passed.
         }
 
         TEST_METHOD(ReadHeaderFromBufferNotStartingWithFFShouldThrow)
@@ -63,7 +63,7 @@ namespace CharLSUnitTest
             buffer.push_back(0xFF);
             buffer.push_back(0xDA); // SOS: Marks the start of scan.
 
-            ByteStreamInfo byteStream = FromByteArray(&(buffer[0]), 6);
+            const ByteStreamInfo byteStream = FromByteArray(&(buffer[0]), 6);
             JpegStreamReader reader(byteStream);
 
             try

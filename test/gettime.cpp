@@ -13,14 +13,14 @@
 #include <windows.h>
 
 // returns a point in time in milliseconds (can only be used for time differences, not an absolute time)
-double getTime()
+double getTime() noexcept
 {
     LARGE_INTEGER time;
     QueryPerformanceCounter(&time);
     LARGE_INTEGER freq;
     QueryPerformanceFrequency(&freq);
 
-    return (double(time.LowPart) * 1000.0) / double(freq.LowPart);
+    return (static_cast<double>(time.LowPart) * 1000.0) / static_cast<double>(freq.LowPart);
 }
 
 #else

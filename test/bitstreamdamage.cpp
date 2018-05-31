@@ -77,7 +77,7 @@ void TestFileWithRandomHeaderDamage(const char* filename)
             rgbyteCompressedTest[i+2] = static_cast<uint8_t>(rand());
             rgbyteCompressedTest[i+3] = static_cast<uint8_t>(rand());
 
-            auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), &rgbyteCompressedTest[0], rgbyteCompressedTest.size(), nullptr, nullptr);
+            const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), &rgbyteCompressedTest[0], rgbyteCompressedTest.size(), nullptr, nullptr);
             errors[static_cast<int>(error)]++;
         }
 

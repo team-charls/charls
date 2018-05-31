@@ -11,7 +11,7 @@
 
 struct Size
 {
-    Size(int32_t width, int32_t height) :
+    Size(int32_t width, int32_t height) noexcept :
         cx(width),
         cy(height)
     {}

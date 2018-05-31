@@ -18,10 +18,10 @@ namespace CharLSUnitTest
     {
         static size_t SerializeSegment(unique_ptr<JpegSegment> segment, uint8_t* buffer, size_t count)
         {
-            ByteStreamInfo info = FromByteArray(buffer, count);
+            const ByteStreamInfo info = FromByteArray(buffer, count);
             JpegStreamWriter writer;
             writer.AddSegment(move(segment));
-            auto bytesWritten = writer.Write(info);
+            const auto bytesWritten = writer.Write(info);
 
             Assert::IsTrue(bytesWritten >= 4);
 
@@ -38,13 +38,13 @@ namespace CharLSUnitTest
     public:
         TEST_METHOD(CreateStartOfFrameMarkerAndSerialize)
         {
-            int32_t bitsPerSample = 8;
-            int32_t componentCount = 3;
+            const int32_t bitsPerSample = 8;
+            const int32_t componentCount = 3;
 
             auto segment = JpegMarkerSegment::CreateStartOfFrameSegment(100, UINT16_MAX, bitsPerSample, componentCount);
 
             uint8_t buffer[23];
-            auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
+            const auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
 
             Assert::AreEqual(static_cast<size_t>(23), bytesWritten);
 
@@ -80,7 +80,7 @@ namespace CharLSUnitTest
             auto segment = JpegMarkerSegment::CreateStartOfFrameSegment(0, 0, bitsPerSample, componentCount);
 
             uint8_t buffer[17];
-            auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
+            const auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
             Assert::AreEqual(static_cast<size_t>(17), bytesWritten);
             Assert::AreEqual(static_cast<uint8_t>(bitsPerSample), buffer[6]);
             Assert::AreEqual(static_cast<uint8_t>(componentCount), buffer[11]);
@@ -91,7 +91,7 @@ namespace CharLSUnitTest
             auto segment = JpegMarkerSegment::CreateStartOfFrameSegment(UINT16_MAX, UINT16_MAX, UINT8_MAX, UINT8_MAX - 1);
 
             uint8_t buffer[776];
-            auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
+            const auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
 
             Assert::AreEqual(static_cast<size_t>(776), bytesWritten);
             Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[6]);
@@ -112,7 +112,7 @@ namespace CharLSUnitTest
             auto segment = JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(params);
 
             uint8_t buffer[22];
-            auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
+            const auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
 
             Assert::AreEqual(static_cast<size_t>(22), bytesWritten);
 
@@ -151,7 +151,7 @@ namespace CharLSUnitTest
             auto segment = JpegMarkerSegment::CreateJpegLSPresetParametersSegment(params);
 
             uint8_t buffer[19];
-            auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
+            const auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
             Assert::AreEqual(static_cast<size_t>(19), bytesWritten);
 
             // Parameter ID.
@@ -180,12 +180,12 @@ namespace CharLSUnitTest
 
         TEST_METHOD(CreateColorTransformMarkerAndSerialize)
         {
-            ColorTransformation transformation = ColorTransformation::HP1;
+            const ColorTransformation transformation = ColorTransformation::HP1;
 
             auto segment = JpegMarkerSegment::CreateColorTransformSegment(transformation);
 
             uint8_t buffer[13];
-            auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
+            const auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
             Assert::AreEqual(static_cast<size_t>(13), bytesWritten);
 
             // Verify mrfx identifier string.
@@ -202,7 +202,7 @@ namespace CharLSUnitTest
             auto segment = JpegMarkerSegment::CreateStartOfScanSegment(6, 1, 2, InterleaveMode::None);
 
             uint8_t buffer[14];
-            auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
+            const auto bytesWritten = SerializeSegment(move(segment), buffer, _countof(buffer));
             Assert::AreEqual(static_cast<size_t>(14), bytesWritten);
 
             Assert::AreEqual(static_cast<uint8_t>(1), buffer[6]); // component count.

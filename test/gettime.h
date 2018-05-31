@@ -5,6 +5,6 @@
 #ifndef TEST_TIME
 #define TEST_TIME
 
-double getTime();
+double getTime() noexcept;
 
 #endif

@@ -46,7 +46,7 @@ bool VerifyEncodedBytes(const void* uncompressedData, size_t uncompressedLength,
 
     for (size_t i = 0; i < compressedLength; ++i)
     {
-        if (reinterpret_cast<const uint8_t*>(compressedData)[i] != ourEncodedBytes[i])
+        if (static_cast<const uint8_t*>(compressedData)[i] != ourEncodedBytes[i])
         {
             return false;
         }
