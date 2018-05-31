@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
 
     <TargetFramework>netstandard2.0</TargetFramework>
+    <NetStandardImplicitPackageVersion>2.0.3</NetStandardImplicitPackageVersion>
     <!--
       At the moment pure .NET Standard is targeted, as CharLSNET is a library
       <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
@@ -22,7 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta007" PrivateAssets="All" />
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
