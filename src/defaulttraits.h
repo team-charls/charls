@@ -3,8 +3,8 @@
 //
 
 
-#ifndef CHARLS_DEFAULTTRAITS
-#define CHARLS_DEFAULTTRAITS
+#ifndef CHARLS_DEFAULT_TRAITS
+#define CHARLS_DEFAULT_TRAITS
 
 
 #include "util.h"
@@ -20,7 +20,9 @@
 // This is to allow the traits class to replace the default implementation here with optimized specific implementations.
 // This is done for lossless coding/decoding: see losslesstraits.h
 
-WARNING_SUPPRESS(26432)
+WARNING_SUPPRESS(26432 26495)
+
+// TODO: report false warning 26495
 
 template<typename sample, typename pixel>
 struct DefaultTraits

@@ -22,8 +22,7 @@
 #include <vector>
 
 #ifdef _MSC_VER
-#define WARNING_SUPPRESS(x) __pragma(warning(push)) __pragma(warning(disable \
-                                                                     : x))
+#define WARNING_SUPPRESS(x) __pragma(warning(push)) __pragma(warning(disable : x))  // NOLINT(misc-macro-parentheses)
 #define WARNING_UNSUPPRESS() __pragma(warning(pop))
 #else
 #define WARNING_SUPPRESS(x)
