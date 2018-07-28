@@ -3,8 +3,8 @@
 //
 
 
-#ifndef CHARLS_LOOKUPTABLE
-#define CHARLS_LOOKUPTABLE
+#ifndef CHARLS_LOOKUP_TABLE
+#define CHARLS_LOOKUP_TABLE
 
 
 #include <cstring>

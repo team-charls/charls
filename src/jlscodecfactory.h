@@ -2,8 +2,8 @@
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-#ifndef CHARLS_JLSCODECFACTORY
-#define CHARLS_JLSCODECFACTORY
+#ifndef CHARLS_JLS_CODEC_FACTORY
+#define CHARLS_JLS_CODEC_FACTORY
 
 #include <memory>
 

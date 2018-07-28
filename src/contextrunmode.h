@@ -2,8 +2,8 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-#ifndef CHARLS_CONTEXTRUNMODE
-#define CHARLS_CONTEXTRUNMODE
+#ifndef CHARLS_CONTEXT_RUN_MODE
+#define CHARLS_CONTEXT_RUN_MODE
 
 #include <cstdint>
 

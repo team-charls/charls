@@ -2,13 +2,13 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-#ifndef CHARLS_COLORTRANSFORM
-#define CHARLS_COLORTRANSFORM
+#ifndef CHARLS_COLOR_TRANSFORM
+#define CHARLS_COLOR_TRANSFORM
 
 #include "util.h"
 
 // This file defines simple classes that define (lossless) color transforms.
-// They are invoked in processline.h to convert between decoded values and the internal line buffers.
+// They are invoked in process_line.h to convert between decoded values and the internal line buffers.
 // Color transforms work best for computer generated images, but are outside the official JPEG-LS specifications.
 
 template<typename T>

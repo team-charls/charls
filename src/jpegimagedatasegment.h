@@ -2,8 +2,8 @@
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-#ifndef CHARLS_JPEGIMAGEDATASEGMENT
-#define CHARLS_JPEGIMAGEDATASEGMENT
+#ifndef CHARLS_JPEG_IMAGE_DATA_SEGMENT
+#define CHARLS_JPEG_IMAGE_DATA_SEGMENT
 
 #include "jpegsegment.h"
 #include "jpegstreamwriter.h"

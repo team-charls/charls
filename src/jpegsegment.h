@@ -2,8 +2,8 @@
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-#ifndef CHARLS_JPEGSEGMENT
-#define CHARLS_JPEGSEGMENT
+#ifndef CHARLS_JPEG_SEGMENT
+#define CHARLS_JPEG_SEGMENT
 
 class JpegStreamWriter;
 

@@ -1,8 +1,8 @@
 //
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
-#ifndef CHARLS_PROCESSLINE
-#define CHARLS_PROCESSLINE
+#ifndef CHARLS_PROCESS_LINE
+#define CHARLS_PROCESS_LINE
 
 #include "util.h"
 #include "publictypes.h"
@@ -14,7 +14,7 @@
 
 //
 // This file defines the ProcessLine base class, its derivatives and helper functions.
-// During coding/decoding, CharLS process one line at a time. The different Processline implementations
+// During coding/decoding, CharLS process one line at a time. The different ProcessLine implementations
 // convert the uncompressed format to and from the internal format for encoding.
 // Conversions include color transforms, line interleaved vs sample interleaved, masking out unused bits,
 // accounting for line padding etc.

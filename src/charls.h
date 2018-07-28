@@ -10,26 +10,26 @@
 
 // Windows and building CharLS DLL itself.
 #if defined(WIN32) && defined(CHARLS_DLL_BUILD)
-#define CHARLS_IMEXPORT(returntype) __declspec(dllexport) returntype __stdcall  // NOLINT
+#define CHARLS_DLL_IMPORT_EXPORT(returntype) __declspec(dllexport) returntype __stdcall  // NOLINT
 #endif
 
 // Non-windows (static linking)
-#if !defined(CHARLS_IMEXPORT) && !defined(_WIN32)
-#define CHARLS_IMEXPORT(returntype) returntype
+#if !defined(CHARLS_DLL_IMPORT_EXPORT) && !defined(_WIN32)
+#define CHARLS_DLL_IMPORT_EXPORT(returntype) returntype
 #endif
 
 // Windows static linking
-#if !defined(CHARLS_IMEXPORT) && defined(CHARLS_STATIC)
-#define CHARLS_IMEXPORT(returntype) returntype
+#if !defined(CHARLS_DLL_IMPORT_EXPORT) && defined(CHARLS_STATIC)
+#define CHARLS_DLL_IMPORT_EXPORT(returntype) returntype
 #endif
 
 // Windows DLL
-#if !defined(CHARLS_IMEXPORT) && defined(CHARLS_DLL)
-#define CHARLS_IMEXPORT(returntype) __declspec(dllimport) returntype __stdcall
+#if !defined(CHARLS_DLL_IMPORT_EXPORT) && defined(CHARLS_DLL)
+#define CHARLS_DLL_IMPORT_EXPORT(returntype) __declspec(dllimport) returntype __stdcall
 #endif
 
-#if !defined(CHARLS_IMEXPORT)
-#error Please #define CHARLS_STATIC or CHARLS_DLL before including "charls.h" to indicate if CharLS is built as a static library or as a dll.
+#if !defined(CHARLS_DLL_IMPORT_EXPORT)
+#error Please #define CHARLS_STATIC or CHARLS_DLL before including "charls.h" to indicate if CharLS is built as a static library or as a DLL.
 #endif
 
 
@@ -50,7 +50,7 @@ extern "C"
 /// <param name="sourceLength">Length of the array in bytes.</param>
 /// <param name="params">Parameter object that describes the pixel data and how to encode it.</param>
 /// <param name="errorMessage">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
-CHARLS_IMEXPORT(CharlsApiResultType) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten,
+CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten,
     const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage);
 
 /// <summary>
@@ -60,7 +60,7 @@ CHARLS_IMEXPORT(CharlsApiResultType) JpegLsEncode(void* destination, size_t dest
 /// <param name="compressedLength">Length of the array in bytes.</param>
 /// <param name="params">Parameter object that describes how the pixel data is encoded.</param>
 /// <param name="errorMessage">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
-CHARLS_IMEXPORT(CharlsApiResultType) JpegLsReadHeader(const void* compressedData, size_t compressedLength,
+ CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsReadHeader(const void* compressedData, size_t compressedLength,
     struct JlsParameters* params, char* errorMessage);
 
 /// <summary>
@@ -72,19 +72,19 @@ CHARLS_IMEXPORT(CharlsApiResultType) JpegLsReadHeader(const void* compressedData
 /// <param name="sourceLength">Length of the array in bytes.</param>
 /// <param name="params">Parameter object that describes the pixel data and how to decode it.</param>
 /// <param name="errorMessage">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
-CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecode(void* destination, size_t destinationLength,
+CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsDecode(void* destination, size_t destinationLength,
     const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage);
 
-CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength,
+CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength,
     const void* compressedData, size_t compressedLength,
     struct JlsRect roi, const struct JlsParameters* info, char* errorMessage);
 
 #ifdef __cplusplus
 }
 
-CHARLS_IMEXPORT(CharlsApiResultType) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& pcbyteWritten, ByteStreamInfo rawStreamInfo, const JlsParameters& params, char* errorMessage);
-CHARLS_IMEXPORT(CharlsApiResultType) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info, char* errorMessage);
-CHARLS_IMEXPORT(CharlsApiResultType) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params, char* errorMessage);
+CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& pcbyteWritten, ByteStreamInfo rawStreamInfo, const JlsParameters& params, char* errorMessage);
+CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info, char* errorMessage);
+CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params, char* errorMessage);
 
 #endif
 

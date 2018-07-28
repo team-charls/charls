@@ -2,8 +2,8 @@
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-#ifndef CHARLS_JPEGSTREAMWRITER
-#define CHARLS_JPEGSTREAMWRITER
+#ifndef CHARLS_JPEG_STREAM_WRITER
+#define CHARLS_JPEG_STREAM_WRITER
 
 #include "util.h"
 #include "jpegsegment.h"

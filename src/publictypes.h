@@ -1,8 +1,8 @@
 /*
   (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 */
-#ifndef CHARLS_PUBLICTYPES
-#define CHARLS_PUBLICTYPES
+#ifndef CHARLS_PUBLIC_TYPES
+#define CHARLS_PUBLIC_TYPES
 
 
 #ifdef __cplusplus
@@ -198,7 +198,7 @@ struct JlsRect
 /// The format is defined in the JPEG File Interchange Format v1.02 document by Eric Hamilton.
 /// </summary>
 /// <remarks>
-/// The JPEG File Interchange Format is the de-facto standard JPEG interchange format.
+/// The JPEG File Interchange Format is the de facto standard JPEG interchange format.
 /// </remarks>
 struct JfifParameters
 {
@@ -296,6 +296,7 @@ struct JlsParameters
     /// If set to true RGB images will be decoded to BGR. BGR is the standard ordering in MS Windows bitmaps.
     /// </summary>
     char outputBgr;
+
     struct JpegLSPresetCodingParameters custom;
     struct JfifParameters jfif;
 };
@@ -311,12 +312,6 @@ struct JlsParameters
 //
 // ByteStreamInfo describes the stream: either set rawStream to a valid stream, or rawData/count, not both.
 // it's possible to decode to memory streams, but using rawData will always be faster.
-//
-// Example use:
-//     ByteStreamInfo streamInfo = { fileStream.rdbuf() };
-// or
-//     ByteStreamInfo streamInfo = FromByteArray( bytePtr, byteCount);
-//
 struct ByteStreamInfo
 {
     std::basic_streambuf<char>* rawStream;
@@ -335,7 +330,6 @@ inline ByteStreamInfo FromByteArrayConst(const void* bytes, std::size_t count) n
 {
     return FromByteArray(const_cast<void*>(bytes), count);
 }
-
 
 
 #endif

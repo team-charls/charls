@@ -2,8 +2,8 @@
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-#ifndef CHARLS_JPEGMARKERSEGMENT
-#define CHARLS_JPEGMARKERSEGMENT
+#ifndef CHARLS_JPEG_MARKER_SEGMENT
+#define CHARLS_JPEG_MARKER_SEGMENT
 
 #include "jpegsegment.h"
 #include "jpegstreamwriter.h"

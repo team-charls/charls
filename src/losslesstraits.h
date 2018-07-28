@@ -2,8 +2,8 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-#ifndef CHARLS_LOSSLESSTRAITS
-#define CHARLS_LOSSLESSTRAITS
+#ifndef CHARLS_LOSSLESS_TRAITS
+#define CHARLS_LOSSLESS_TRAITS
 
 #include "constants.h"
 

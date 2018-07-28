@@ -71,7 +71,7 @@ public:
         return "charls";
     }
 
-    std::string message(int /* errval */) const override
+    std::string message(int /* error_value */) const override
     {
         return "CharLS error";
     }

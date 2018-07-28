@@ -2,8 +2,8 @@
 // (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
-#ifndef CHARLS_ENCODERSTRATEGY
-#define CHARLS_ENCODERSTRATEGY
+#ifndef CHARLS_ENCODER_STRATEGY
+#define CHARLS_ENCODER_STRATEGY
 
 #include "processline.h"
 #include "decoderstrategy.h"
