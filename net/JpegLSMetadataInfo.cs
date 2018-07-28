@@ -32,7 +32,7 @@ namespace CharLS
         /// Initializes a new instance of the <see cref="JpegLSMetadataInfo"/> class.
         /// </summary>
         /// <remarks>
-        /// Initializes a minimal <see cref="T:CharLS.JpegLSMetadataInfo" /> instance with:
+        /// Initializes a minimal <see cref="JpegLSMetadataInfo" /> instance with:
         /// Width = 1
         /// Height = 1
         /// BitsPerComponent = 2
@@ -246,11 +246,11 @@ namespace CharLS
 
         /// <inheritdoc />
         /// <summary>
-        /// Determines whether the specified <see cref="T:CharLS.JpegLSMetadataInfo" /> is equal to this instance.
+        /// Determines whether the specified <see cref="JpegLSMetadataInfo" /> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="T:CharLS.JpegLSMetadataInfo" /> to compare with this instance.</param>
+        /// <param name="other">The <see cref="JpegLSMetadataInfo" /> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="T:System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [Pure]
         public bool Equals(JpegLSMetadataInfo other)
