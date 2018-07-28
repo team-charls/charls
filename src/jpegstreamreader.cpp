@@ -222,9 +222,9 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         case JpegMarkerCode::StartOfFrameDifferentialSequential:
         case JpegMarkerCode::StartOfFrameDifferentialProgressive:
         case JpegMarkerCode::StartOfFrameDifferentialLossless:
-        case JpegMarkerCode::StartOfFrameExtendedArithemtic:
-        case JpegMarkerCode::StartOfFrameProgressiveArithemtic:
-        case JpegMarkerCode::StartOfFrameLosslessArithemtic:
+        case JpegMarkerCode::StartOfFrameExtendedArithmetic:
+        case JpegMarkerCode::StartOfFrameProgressiveArithmetic:
+        case JpegMarkerCode::StartOfFrameLosslessArithmetic:
             {
                 std::ostringstream message;
                 message << "JPEG encoding with marker " << static_cast<unsigned int>(marker) << " is not supported.";
