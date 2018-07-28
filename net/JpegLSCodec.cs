@@ -244,7 +244,7 @@ namespace CharLS
         /// <exception cref="ArgumentNullException">source -or- pixels is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">count contains an invalid value.</exception>
         /// <exception cref="ArgumentException">Thrown when the destination array is too small to hold the decompressed pixel data.</exception>
-        /// <exception cref="InvalidDataException">Thrown when the source array contains an invalid encodeded JPEG-LS bit stream.</exception>
+        /// <exception cref="InvalidDataException">Thrown when the source array contains an invalid encoded JPEG-LS bit stream.</exception>
         public static void Decompress(byte[] source, int count, byte[] pixels)
         {
             if (source == null)

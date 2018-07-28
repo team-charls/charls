@@ -1,4 +1,4 @@
-﻿//
+//
 // (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
 //
 
@@ -37,8 +37,8 @@ namespace CharLS
         /// </summary>
         internal int DensityY;
 
-        private readonly int thumbX; // note: passing a thumbnail to add to the bytestream is currently not supported in the .NET layer.
+        private readonly int thumbX; // note: passing a thumbnail to add to the byte stream is currently not supported in the .NET layer.
         private readonly int thumbY;
-        private readonly IntPtr dataThumbnail; // user must set buffer which size is Xthumb*Ythumb*3(RGB) before JpegLsDecode()
+        private readonly IntPtr dataThumbnail; // user must set buffer which size is thumbX * thumbY * 3(RGB) before JpegLsDecode()
     }
 }
