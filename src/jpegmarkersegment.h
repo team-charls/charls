@@ -30,7 +30,7 @@ public:
     /// <summary>
     /// Creates a JPEG File Interchange (APP1 + jfif) segment.
     /// </summary>
-    /// <param name="jfif">Parameters to write into the JFIF segment.</param>
+    /// <param name="params">Parameters to write into the JFIF segment.</param>
     static std::unique_ptr<JpegMarkerSegment> CreateJpegFileInterchangeFormatSegment(const JfifParameters& params);
 
     /// <summary>
@@ -42,7 +42,7 @@ public:
     /// <summary>
     /// Creates a color transformation (APP8) segment.
     /// </summary>
-    /// <param name="jfif">Parameters to write into the JFIF segment.</param>
+    /// <param name="transformation">Parameters to write into the JFIF segment.</param>
     static std::unique_ptr<JpegMarkerSegment> CreateColorTransformSegment(charls::ColorTransformation transformation);
 
     /// <summary>
