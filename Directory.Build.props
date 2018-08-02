@@ -21,12 +21,51 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <!-- To ensure high quality C++ code use Warning level 4 and treat warnings as errors to ensure warnings are fixed promptly. -->
-      <WarningLevel>Level4</WarningLevel>
+      <!-- To ensure high quality C++ code use Warning level All and treat warnings as errors to ensure warnings are fixed promptly. -->
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
 
-      <!-- Enable some more level 4 warnings that are disabled by default but are usefull. -->
-      <AdditionalOptions>/we4296 /we4548 /we4555 /we4777 /we4917 %(AdditionalOptions)</AdditionalOptions>
+      <!--
+        __cplusplus = Use the correct value for the __cplusplus macro
+        throwingNew = Communicate with the compiler that only the throwing variant of operator new is used.
+        Disable level All warnings that are not useful:
+        C4061 = enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label
+        C4191 = operator/operation' : unsafe conversion from 'type of expression' to 'type required'
+        C4263 = function' : member function does not override any base class virtual member function
+        C4264 = virtual_function' : no override available for virtual member function from base 'class'; function is hidden
+        C4265 = class' : class has virtual functions, but destructor is not virtual
+        C4266 = function' : no override available for virtual member function from base 'type'; function is hidden
+        C4365 = action' : conversion from 'type_1' to 'type_2', signed/unsigned mismatch
+        C4464 = A #include directive has a path that includes a '..' parent directory specifier.
+        C4514 = function' : unreferenced inline function has been removed [Just informational]
+        C4571 = Informational: catch(...) semantics changed since Visual C++ 7.1; structured exceptions (SEH) are no longer caught [Just informational]
+        C4599 = 'flag path': command line argument number number does not match precompiled header
+        C4623 = derived class`' : default constructor was implicitly defined as deleted because a base class default constructor is inaccessible or deleted
+        C4625 = derived class' : copy constructor was implicitly defined as deleted because a base class copy constructor is inaccessible or deleted
+        C4626 = derived class' : assignment operator was implicitly defined as deleted because a base class assignment operator is inaccessible or deleted
+        C4668 = symbol' is not defined as a preprocessor macro, replacing with '0' for 'directives'
+        C4710 = function '' function not inlined [Just informational]
+        C4711 = function '' selected for automatic inline expansion [Just informational]
+        C4738 = storing 32-bit float result in memory, possible loss of performance [Just informational]
+        C4774 = ‘<function>’ : format string expected in argument <position> is not a string literal
+        C4820 = bytes' bytes padding added after construct 'member_name' [Just informational]
+        C5026 = 'type': move constructor was implicitly defined as deleted
+        C5027 = 'type': move assignment operator was implicitly defined as deleted
+        C5039 = 'function': pointer or reference to potentially throwing function passed to extern C function under -EHc.
+        C5042 = 'declaration': function declarations at block scope cannot be specified 'inline' in standard C++; remove 'inline' specifier
+        C5045 = Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
+      -->
+      <AdditionalOptions>
+        /Zc:__cplusplus /Zc:throwingNew
+        /wd4061 /wd4191
+        /wd4263 /wd4264 /wd4265 /wd4266
+        /wd4365
+        /wd4464
+        /wd4514 /wd4571 /wd4599
+        /wd4623 /wd4625 /wd4626 /wd4668
+        /wd4710 /wd4711 /wd4738 /wd4774 /wd4820
+        /wd5026 /wd5027 /wd5039 /wd5042 /wd5045
+      </AdditionalOptions>
 
       <!-- Use all cores to speed up the compilation (MS recommended best practice). -->
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
