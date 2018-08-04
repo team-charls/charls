@@ -107,9 +107,9 @@ public:
     using SAMPLE = typename Traits::SAMPLE;
 
     WARNING_SUPPRESS(26495) // false warning that _contextRunmode is uninitialized
-    JlsCodec(const Traits& inTraits, const JlsParameters& params) :
+    JlsCodec(Traits inTraits, const JlsParameters& params) :
         Strategy(params),
-        traits(inTraits),
+        traits(std::move(inTraits)),
         _rect(),
         _width(params.width),
         T1(0),
