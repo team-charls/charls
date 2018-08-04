@@ -8,7 +8,6 @@
 #include "jpegmarkercode.h"
 #include "jpegmarkersegment.h"
 #include "jpegstreamreader.h"
-#include "util.h"
 #include <vector>
 
 using namespace charls;

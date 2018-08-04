@@ -9,7 +9,6 @@
 #include "publictypes.h"
 #include <vector>
 #include <system_error>
-#include <memory>
 
 // ReSharper disable once CppUnusedIncludeDirective
 #include <cassert>
