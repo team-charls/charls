@@ -62,8 +62,6 @@ private:
 
     void ReadJfif();
 
-    // Color Transform Application Markers & Code Stream (HP extension)
-    int ReadColorSpace() const noexcept;
     int ReadColorXForm();
 
     ByteStreamInfo _byteStream;

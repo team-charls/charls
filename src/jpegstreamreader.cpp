@@ -213,6 +213,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         case JpegMarkerCode::ApplicationData4:
         case JpegMarkerCode::ApplicationData5:
         case JpegMarkerCode::ApplicationData6:
+        case JpegMarkerCode::ApplicationData7:
         case JpegMarkerCode::ApplicationData9:
         case JpegMarkerCode::ApplicationData10:
         case JpegMarkerCode::ApplicationData11:
@@ -221,9 +222,6 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         case JpegMarkerCode::ApplicationData14:
         case JpegMarkerCode::ApplicationData15:
             return 0;
-
-        case JpegMarkerCode::ApplicationData7:
-            return ReadColorSpace();
 
         case JpegMarkerCode::ApplicationData8:
             return ReadColorXForm();
@@ -386,12 +384,6 @@ int JpegStreamReader::ReadWord()
 {
     const int i = ReadByte() * 256;
     return i + ReadByte();
-}
-
-
-int JpegStreamReader::ReadColorSpace() const noexcept
-{
-    return 0;
 }
 
 
