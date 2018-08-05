@@ -144,19 +144,19 @@ void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 
 void JpegStreamReader::ReadHeader()
 {
-    if (ReadNextMarker() != JpegMarkerCode::StartOfImage)
+    if (ReadNextMarkerCode() != JpegMarkerCode::StartOfImage)
         throw charls_error(ApiResult::InvalidCompressedData);
 
     for (;;)
     {
-        const JpegMarkerCode marker = ReadNextMarker();
-        if (marker == JpegMarkerCode::StartOfScan)
+        const JpegMarkerCode markerCode = ReadNextMarkerCode();
+        if (markerCode == JpegMarkerCode::StartOfScan)
             return;
 
-        const int32_t cbyteMarker = ReadWord();
-        const int bytesRead = ReadMarker(marker) + 2;
+        const int32_t segmentSize = ReadWord();
+        const int bytesRead = ReadMarkerSegment(markerCode, segmentSize - 2) + 2;
 
-        const int paddingToRead = cbyteMarker - bytesRead;
+        const int paddingToRead = segmentSize - bytesRead;
         if (paddingToRead < 0)
             throw charls_error(ApiResult::InvalidCompressedData);
 
@@ -168,7 +168,7 @@ void JpegStreamReader::ReadHeader()
 }
 
 
-JpegMarkerCode JpegStreamReader::ReadNextMarker()
+JpegMarkerCode JpegStreamReader::ReadNextMarkerCode()
 {
     auto byte = ReadByte();
     if (byte != 0xFF)
@@ -190,12 +190,12 @@ JpegMarkerCode JpegStreamReader::ReadNextMarker()
 }
 
 
-int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
+int JpegStreamReader::ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segmentSize)
 {
     // ISO/IEC 14495-1, ITU-T Recommendation T.87, C.1.1. defines the following markers valid for a JPEG-LS byte stream:
     // SOF55, LSE, SOI, EOI, SOS, DNL, DRI, RSTm, APPn and COM.
     // All other markers shall not be present.
-    switch (marker)
+    switch (markerCode)
     {
         case JpegMarkerCode::StartOfFrameJpegLS:
             return ReadStartOfFrame();
@@ -224,7 +224,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
             return 0;
 
         case JpegMarkerCode::ApplicationData8:
-            return ReadColorXForm();
+            return TryReadHPColorTransformSegment(segmentSize);
 
         case JpegMarkerCode::StartOfFrameBaselineJpeg:
         case JpegMarkerCode::StartOfFrameExtendedSequential:
@@ -238,7 +238,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         case JpegMarkerCode::StartOfFrameLosslessArithmetic:
             {
                 std::ostringstream message;
-                message << "JPEG encoding with marker " << static_cast<unsigned int>(marker) << " is not supported.";
+                message << "JPEG encoding with marker " << static_cast<unsigned int>(markerCode) << " is not supported.";
                 throw charls_error(ApiResult::UnsupportedEncoding, message.str());
             }
 
@@ -246,7 +246,7 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
         default:
             {
                 std::ostringstream message;
-                message << "Unknown JPEG marker " << static_cast<unsigned int>(marker) << " encountered.";
+                message << "Unknown JPEG marker " << static_cast<unsigned int>(markerCode) << " encountered.";
                 throw charls_error(ApiResult::UnknownJpegMarker, message.str());
             }
     }
@@ -387,27 +387,30 @@ int JpegStreamReader::ReadWord()
 }
 
 
-int JpegStreamReader::ReadColorXForm()
+int JpegStreamReader::TryReadHPColorTransformSegment(int32_t segmentSize)
 {
+    if (segmentSize < 5)
+        return 0;
+
     std::vector<char> sourceTag;
     ReadNBytes(sourceTag, 4);
-
     if (strncmp(sourceTag.data(), "mrfx", 4) != 0)
         return 4;
 
-    const auto xform = ReadByte();
-    switch (xform)
+    const auto colorTransformation = ReadByte();
+    switch (colorTransformation)
     {
         case static_cast<uint8_t>(ColorTransformation::None):
         case static_cast<uint8_t>(ColorTransformation::HP1):
         case static_cast<uint8_t>(ColorTransformation::HP2):
         case static_cast<uint8_t>(ColorTransformation::HP3):
-            _params.colorTransformation = static_cast<ColorTransformation>(xform);
+            _params.colorTransformation = static_cast<ColorTransformation>(colorTransformation);
             return 5;
 
         case 4: // RgbAsYuvLossy (The standard lossy RGB to YCbCr transform used in JPEG.)
         case 5: // Matrix (transformation is controlled using a matrix that is also stored in the segment.
             throw charls_error(ApiResult::ImageTypeNotSupported);
+
         default:
             throw charls_error(ApiResult::InvalidCompressedData);
     }

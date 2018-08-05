@@ -52,17 +52,17 @@ public:
     uint8_t ReadByte();
 
 private:
-    JpegMarkerCode ReadNextMarker();
+    JpegMarkerCode ReadNextMarkerCode();
     int ReadPresetParameters();
     static int ReadComment() noexcept;
     int ReadStartOfFrame();
     int ReadWord();
     void ReadNBytes(std::vector<char>& dst, int byteCount);
-    int ReadMarker(JpegMarkerCode marker);
+    int ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segmentSize);
 
     void ReadJfif();
 
-    int ReadColorXForm();
+    int TryReadHPColorTransformSegment(int32_t segmentSize);
 
     ByteStreamInfo _byteStream;
     JlsParameters _params;

@@ -107,7 +107,7 @@ namespace CharLSUnitTest
             ReadHeaderWithApplicationData(5);
             ReadHeaderWithApplicationData(6);
             ReadHeaderWithApplicationData(7);
-            ////ReadHeaderWithApplicationData(8);
+            ReadHeaderWithApplicationData(8);
             ReadHeaderWithApplicationData(9);
             ReadHeaderWithApplicationData(10);
             ReadHeaderWithApplicationData(11);
