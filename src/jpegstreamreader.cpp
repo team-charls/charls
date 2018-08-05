@@ -193,7 +193,7 @@ JpegMarkerCode JpegStreamReader::ReadNextMarker()
 int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
 {
     // ISO/IEC 14495-1, ITU-T Recommendation T.87, C.1.1. defines the following markers valid for a JPEG-LS byte stream:
-    // SOF55, LSE, SOI, EOI, SOS, DNL, DRI, RSTm, APPn, COM.
+    // SOF55, LSE, SOI, EOI, SOS, DNL, DRI, RSTm, APPn and COM.
     // All other markers shall not be present.
     switch (marker)
     {
@@ -207,6 +207,19 @@ int JpegStreamReader::ReadMarker(JpegMarkerCode marker)
             return ReadPresetParameters();
 
         case JpegMarkerCode::ApplicationData0:
+        case JpegMarkerCode::ApplicationData1:
+        case JpegMarkerCode::ApplicationData2:
+        case JpegMarkerCode::ApplicationData3:
+        case JpegMarkerCode::ApplicationData4:
+        case JpegMarkerCode::ApplicationData5:
+        case JpegMarkerCode::ApplicationData6:
+        case JpegMarkerCode::ApplicationData9:
+        case JpegMarkerCode::ApplicationData10:
+        case JpegMarkerCode::ApplicationData11:
+        case JpegMarkerCode::ApplicationData12:
+        case JpegMarkerCode::ApplicationData13:
+        case JpegMarkerCode::ApplicationData14:
+        case JpegMarkerCode::ApplicationData15:
             return 0;
 
         case JpegMarkerCode::ApplicationData7:

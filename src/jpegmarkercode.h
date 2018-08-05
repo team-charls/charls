@@ -34,7 +34,20 @@ enum class JpegMarkerCode : uint8_t
     JpegLSPresetParameters = 0xF8,              // LSE:    Marks the start of a JPEG-LS preset parameters segment.
 
     ApplicationData0 = 0xE0,                    // APP0: Application data 0: used for JFIF header.
-    ApplicationData7 = 0xE7,                    // APP7: Application data 7: color-space.
-    ApplicationData8 = 0xE8,                    // APP8: Application data 8: colorXForm.
+    ApplicationData1 = 0xE1,                    // APP1: Application data 1: used for EXIF or XMP header.
+    ApplicationData2 = 0xE2,                    // APP2: Application data 2: used for ICC profile.
+    ApplicationData3 = 0xE3,                    // APP3: Application data 3: used for meta info
+    ApplicationData4 = 0xE4,                    // APP4: Application data 4.
+    ApplicationData5 = 0xE5,                    // APP5: Application data 5.
+    ApplicationData6 = 0xE6,                    // APP6: Application data 6.
+    ApplicationData7 = 0xE7,                    // APP7: Application data 7: used for HP color-space info.
+    ApplicationData8 = 0xE8,                    // APP8: Application data 8: used for HP color-transformation info or SPIFF header.
+    ApplicationData9 = 0xE9,                    // APP9: Application data 9.
+    ApplicationData10 = 0xEA,                   // APP10: Application data 10.
+    ApplicationData11 = 0xEB,                   // APP11: Application data 11.
+    ApplicationData12 = 0xEC,                   // APP12: Application data 12: used for Picture info.
+    ApplicationData13 = 0xEE,                   // APP13: Application data 13: used by PhotoShop IRB
+    ApplicationData14 = 0xED,                   // APP14: Application data 14: used by Adobe 
+    ApplicationData15 = 0xEF,                   // APP15: Application data 15.
     Comment = 0xFE                              // COM:  Comment block.
 };
