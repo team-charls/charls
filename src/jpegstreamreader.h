@@ -56,7 +56,7 @@ private:
     int ReadPresetParameters();
     static int ReadComment() noexcept;
     int ReadStartOfFrame();
-    int ReadWord();
+    int ReadUInt16();
     void ReadNBytes(std::vector<char>& dst, int byteCount);
     int ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segmentSize);
 

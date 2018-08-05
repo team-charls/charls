@@ -153,7 +153,7 @@ void JpegStreamReader::ReadHeader()
         if (markerCode == JpegMarkerCode::StartOfScan)
             return;
 
-        const int32_t segmentSize = ReadWord();
+        const int32_t segmentSize = ReadUInt16();
         const int bytesRead = ReadMarkerSegment(markerCode, segmentSize - 2) + 2;
 
         const int paddingToRead = segmentSize - bytesRead;
@@ -261,11 +261,11 @@ int JpegStreamReader::ReadPresetParameters()
     {
     case 1:
         {
-            _params.custom.MaximumSampleValue = ReadWord();
-            _params.custom.Threshold1 = ReadWord();
-            _params.custom.Threshold2 = ReadWord();
-            _params.custom.Threshold3 = ReadWord();
-            _params.custom.ResetValue = ReadWord();
+            _params.custom.MaximumSampleValue = ReadUInt16();
+            _params.custom.Threshold1 = ReadUInt16();
+            _params.custom.Threshold2 = ReadUInt16();
+            _params.custom.Threshold3 = ReadUInt16();
+            _params.custom.ResetValue = ReadUInt16();
             return 11;
         }
 
@@ -337,12 +337,12 @@ void JpegStreamReader::ReadJfif()
         if(jfifID[i] != ReadByte())
             return;
     }
-    _params.jfif.version   = ReadWord();
+    _params.jfif.version   = ReadUInt16();
 
     // DPI or DPcm
     _params.jfif.units = ReadByte();
-    _params.jfif.Xdensity = ReadWord();
-    _params.jfif.Ydensity = ReadWord();
+    _params.jfif.Xdensity = ReadUInt16();
+    _params.jfif.Ydensity = ReadUInt16();
 
     // thumbnail
     _params.jfif.Xthumbnail = ReadByte();
@@ -359,8 +359,8 @@ void JpegStreamReader::ReadJfif()
 int JpegStreamReader::ReadStartOfFrame()
 {
     _params.bitsPerSample = ReadByte();
-    _params.height = ReadWord();
-    _params.width = ReadWord();
+    _params.height = ReadUInt16();
+    _params.width = ReadUInt16();
     _params.components= ReadByte();
     return 6;
 }
@@ -380,7 +380,7 @@ uint8_t JpegStreamReader::ReadByte()
 }
 
 
-int JpegStreamReader::ReadWord()
+int JpegStreamReader::ReadUInt16()
 {
     const int i = ReadByte() * 256;
     return i + ReadByte();
