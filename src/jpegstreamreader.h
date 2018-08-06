@@ -53,6 +53,8 @@ public:
 
 private:
     JpegMarkerCode ReadNextMarkerCode();
+    void ValidateMarkerCode(JpegMarkerCode markerCode) const;
+
     int ReadPresetParameters();
     static int ReadComment() noexcept;
     int ReadStartOfFrame();

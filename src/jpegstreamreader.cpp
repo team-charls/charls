@@ -150,6 +150,7 @@ void JpegStreamReader::ReadHeader()
     for (;;)
     {
         const JpegMarkerCode markerCode = ReadNextMarkerCode();
+        ValidateMarkerCode(markerCode);
         if (markerCode == JpegMarkerCode::StartOfScan)
             return;
 
@@ -190,11 +191,61 @@ JpegMarkerCode JpegStreamReader::ReadNextMarkerCode()
 }
 
 
-int JpegStreamReader::ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segmentSize)
+void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode) const
 {
     // ISO/IEC 14495-1, ITU-T Recommendation T.87, C.1.1. defines the following markers valid for a JPEG-LS byte stream:
     // SOF55, LSE, SOI, EOI, SOS, DNL, DRI, RSTm, APPn and COM.
     // All other markers shall not be present.
+    switch (markerCode)
+    {
+        case JpegMarkerCode::StartOfFrameJpegLS:
+        case JpegMarkerCode::Comment:
+        case JpegMarkerCode::ApplicationData0:
+        case JpegMarkerCode::ApplicationData1:
+        case JpegMarkerCode::ApplicationData2:
+        case JpegMarkerCode::ApplicationData3:
+        case JpegMarkerCode::ApplicationData4:
+        case JpegMarkerCode::ApplicationData5:
+        case JpegMarkerCode::ApplicationData6:
+        case JpegMarkerCode::ApplicationData7:
+        case JpegMarkerCode::ApplicationData9:
+        case JpegMarkerCode::ApplicationData10:
+        case JpegMarkerCode::ApplicationData11:
+        case JpegMarkerCode::ApplicationData12:
+        case JpegMarkerCode::ApplicationData13:
+        case JpegMarkerCode::ApplicationData14:
+        case JpegMarkerCode::ApplicationData15:
+            break;
+
+        case JpegMarkerCode::StartOfFrameBaselineJpeg:
+        case JpegMarkerCode::StartOfFrameExtendedSequential:
+        case JpegMarkerCode::StartOfFrameProgressive:
+        case JpegMarkerCode::StartOfFrameLossless:
+        case JpegMarkerCode::StartOfFrameDifferentialSequential:
+        case JpegMarkerCode::StartOfFrameDifferentialProgressive:
+        case JpegMarkerCode::StartOfFrameDifferentialLossless:
+        case JpegMarkerCode::StartOfFrameExtendedArithmetic:
+        case JpegMarkerCode::StartOfFrameProgressiveArithmetic:
+        case JpegMarkerCode::StartOfFrameLosslessArithmetic:
+        case JpegMarkerCode::StartOfFrameJpegLSExtended:
+            {
+                std::ostringstream message;
+                message << "JPEG encoding with marker " << static_cast<unsigned int>(markerCode) << " is not supported.";
+                throw charls_error(ApiResult::UnsupportedEncoding, message.str());
+            }
+
+        default:
+            {
+                std::ostringstream message;
+                message << "Unknown JPEG marker " << static_cast<unsigned int>(markerCode) << " encountered.";
+                throw charls_error(ApiResult::UnknownJpegMarker, message.str());
+            }
+    }
+}
+
+
+int JpegStreamReader::ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segmentSize)
+{
     switch (markerCode)
     {
         case JpegMarkerCode::StartOfFrameJpegLS:
@@ -226,29 +277,10 @@ int JpegStreamReader::ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segme
         case JpegMarkerCode::ApplicationData8:
             return TryReadHPColorTransformSegment(segmentSize);
 
-        case JpegMarkerCode::StartOfFrameBaselineJpeg:
-        case JpegMarkerCode::StartOfFrameExtendedSequential:
-        case JpegMarkerCode::StartOfFrameProgressive:
-        case JpegMarkerCode::StartOfFrameLossless:
-        case JpegMarkerCode::StartOfFrameDifferentialSequential:
-        case JpegMarkerCode::StartOfFrameDifferentialProgressive:
-        case JpegMarkerCode::StartOfFrameDifferentialLossless:
-        case JpegMarkerCode::StartOfFrameExtendedArithmetic:
-        case JpegMarkerCode::StartOfFrameProgressiveArithmetic:
-        case JpegMarkerCode::StartOfFrameLosslessArithmetic:
-            {
-                std::ostringstream message;
-                message << "JPEG encoding with marker " << static_cast<unsigned int>(markerCode) << " is not supported.";
-                throw charls_error(ApiResult::UnsupportedEncoding, message.str());
-            }
-
         // Other tags not supported (among which DNL DRI)
         default:
-            {
-                std::ostringstream message;
-                message << "Unknown JPEG marker " << static_cast<unsigned int>(markerCode) << " encountered.";
-                throw charls_error(ApiResult::UnknownJpegMarker, message.str());
-            }
+            ASSERT(false);
+            return 0;
     }
 }
 

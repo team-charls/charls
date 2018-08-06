@@ -116,5 +116,30 @@ namespace CharLSUnitTest
             ReadHeaderWithApplicationData(14);
             ReadHeaderWithApplicationData(15);
         }
+
+        TEST_METHOD(ReadHeaderWithJpegLSExtendedFrameShouldThrow)
+        {
+            vector<uint8_t> buffer;
+            buffer.push_back(0xFF);
+            buffer.push_back(0xD8);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xF9); // SOF_59: Marks the start of JPEG-LS extended scan.
+
+            const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+            JpegStreamReader reader(byteStream);
+
+            try
+            {
+                reader.ReadHeader();
+            }
+            catch (const system_error& error)
+            {
+                Assert::AreEqual(static_cast<int>(ApiResult::UnsupportedEncoding), error.code().value());
+                return;
+            }
+
+            Assert::Fail();
+        }
+
     };
 }

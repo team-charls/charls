@@ -33,6 +33,11 @@ enum class JpegMarkerCode : uint8_t
     StartOfFrameJpegLS = 0xF7,                  // SOF_55: Marks the start of a JPEG-LS encoded frame.
     JpegLSPresetParameters = 0xF8,              // LSE:    Marks the start of a JPEG-LS preset parameters segment.
 
+    /// <summary>
+    /// SOF_57: Marks the start of a JPEG-LS extended (ISO/IEC 14495-2) encoded frame.
+    /// </summary>
+    StartOfFrameJpegLSExtended = 0xF9,
+
     ApplicationData0 = 0xE0,                    // APP0: Application data 0: used for JFIF header.
     ApplicationData1 = 0xE1,                    // APP1: Application data 1: used for EXIF or XMP header.
     ApplicationData2 = 0xE2,                    // APP2: Application data 2: used for ICC profile.
