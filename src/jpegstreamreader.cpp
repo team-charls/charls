@@ -199,6 +199,8 @@ void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode) const
     switch (markerCode)
     {
         case JpegMarkerCode::StartOfFrameJpegLS:
+        case JpegMarkerCode::JpegLSPresetParameters:
+        case JpegMarkerCode::StartOfScan:
         case JpegMarkerCode::Comment:
         case JpegMarkerCode::ApplicationData0:
         case JpegMarkerCode::ApplicationData1:
@@ -208,6 +210,7 @@ void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode) const
         case JpegMarkerCode::ApplicationData5:
         case JpegMarkerCode::ApplicationData6:
         case JpegMarkerCode::ApplicationData7:
+        case JpegMarkerCode::ApplicationData8:
         case JpegMarkerCode::ApplicationData9:
         case JpegMarkerCode::ApplicationData10:
         case JpegMarkerCode::ApplicationData11:
@@ -291,7 +294,7 @@ int JpegStreamReader::ReadPresetParameters()
 
     switch (type)
     {
-    case 1:
+    case 0x1:
         {
             _params.custom.MaximumSampleValue = ReadUInt16();
             _params.custom.Threshold1 = ReadUInt16();
@@ -301,14 +304,29 @@ int JpegStreamReader::ReadPresetParameters()
             return 11;
         }
 
-    case 2: // mapping table specification
-    case 3: // mapping table continuation
-    case 4: // X and Y parameters greater than 16 bits are defined.
+    case 0x2: // mapping table specification
+    case 0x3: // mapping table continuation
+    case 0x4: // X and Y parameters greater than 16 bits are defined.
         {
             std::ostringstream message;
-            message << "JPEG-LS preset parameters with type " << static_cast<unsigned int>(type) << " are not supported.";
+            message << "JPEG-LS preset parameters with type " << static_cast<unsigned int>(type) << " is not supported.";
             throw charls_error(ApiResult::UnsupportedEncoding, message.str());
         }
+
+    case 0x5: // JPEG-LS Extended (ISO/IEC 14495-2): Coding method specification
+    case 0x6: // JPEG-LS Extended (ISO/IEC 14495-2): NEAR value re-specification
+    case 0x7: // JPEG-LS Extended (ISO/IEC 14495-2): Visually oriented quantization specification
+    case 0x8: // JPEG-LS Extended (ISO/IEC 14495-2): Extended prediction specification
+    case 0x9: // JPEG-LS Extended (ISO/IEC 14495-2): Specification of the start of fixed length coding
+    case 0xA: // JPEG-LS Extended (ISO/IEC 14495-2): Specification of the end of fixed length coding
+    case 0xC: // JPEG-LS Extended (ISO/IEC 14495-2): JPEG-LS preset coding parameters
+    case 0xD: // JPEG-LS Extended (ISO/IEC 14495-2): Inverse color transform specification
+        {
+            std::ostringstream message;
+            message << "JPEG-LS Extended (ISO/IEC 14495-2) preset parameter with type " << static_cast<unsigned int>(type) << " is not supported.";
+            throw charls_error(ApiResult::UnsupportedEncoding, message.str());
+        }
+
     default:
         {
             std::ostringstream message;
