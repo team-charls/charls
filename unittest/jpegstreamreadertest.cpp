@@ -47,7 +47,7 @@ namespace CharLSUnitTest
             buffer.push_back(0xFF);
             buffer.push_back(0xDA); // SOS: Marks the start of scan.
 
-            const ByteStreamInfo byteStream = FromByteArray(&(buffer[0]), 6);
+            const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
             JpegStreamReader reader(byteStream);
 
             reader.ReadHeader(); // if it doesn't throw test is passed.
@@ -63,7 +63,7 @@ namespace CharLSUnitTest
             buffer.push_back(0xFF);
             buffer.push_back(0xDA); // SOS: Marks the start of scan.
 
-            const ByteStreamInfo byteStream = FromByteArray(&(buffer[0]), 6);
+            const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
             JpegStreamReader reader(byteStream);
 
             try
@@ -178,6 +178,34 @@ namespace CharLSUnitTest
             ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(0xA);
             ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(0xC);
             ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(0xD);
+        }
+
+        TEST_METHOD(ReadHeaderWithTooSmallSegmentSizeShouldThrow)
+        {
+            vector<uint8_t> buffer;
+            buffer.push_back(0xFF);
+            buffer.push_back(0xD8);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xF7); // SOF_55: Marks the start of JPEG-LS extended scan.
+            buffer.push_back(0x00);
+            buffer.push_back(0x01);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xDA); // SOS: Marks the start of scan.
+
+            const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+            JpegStreamReader reader(byteStream);
+
+            try
+            {
+                reader.ReadHeader();
+            }
+            catch (const system_error& error)
+            {
+                Assert::AreEqual(static_cast<int>(ApiResult::InvalidCompressedData), error.code().value());
+                return;
+            }
+
+            Assert::Fail();
         }
     };
 }

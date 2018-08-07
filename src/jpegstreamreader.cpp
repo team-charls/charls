@@ -145,18 +145,23 @@ void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 void JpegStreamReader::ReadHeader()
 {
     if (ReadNextMarkerCode() != JpegMarkerCode::StartOfImage)
-        throw charls_error(ApiResult::InvalidCompressedData);
+        throw charls_error(ApiResult::InvalidCompressedData,
+            "Invalid JPEG stream, first marker code is not SOI");
 
     for (;;)
     {
         const JpegMarkerCode markerCode = ReadNextMarkerCode();
         ValidateMarkerCode(markerCode);
+
         if (markerCode == JpegMarkerCode::StartOfScan)
             return;
 
         const int32_t segmentSize = ReadUInt16();
-        const int bytesRead = ReadMarkerSegment(markerCode, segmentSize - 2) + 2;
+        if (segmentSize < 2)
+            throw charls_error(ApiResult::InvalidCompressedData,
+                "Invalid segment size, segment size needs to be at least 2");
 
+        const int bytesRead = ReadMarkerSegment(markerCode, segmentSize - 2) + 2;
         const int paddingToRead = segmentSize - bytesRead;
         if (paddingToRead < 0)
             throw charls_error(ApiResult::InvalidCompressedData);
