@@ -257,7 +257,7 @@ int JpegStreamReader::ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segme
     switch (markerCode)
     {
         case JpegMarkerCode::StartOfFrameJpegLS:
-            return ReadStartOfFrame();
+            return ReadStartOfFrameSegment(segmentSize);
 
         case JpegMarkerCode::Comment:
             return ReadComment();
@@ -411,12 +411,19 @@ void JpegStreamReader::ReadJfif()
 }
 
 
-int JpegStreamReader::ReadStartOfFrame()
+int JpegStreamReader::ReadStartOfFrameSegment(int32_t segmentSize)
 {
+    if (segmentSize < 6)
+        throw charls_error(ApiResult::InvalidCompressedData,
+                           "Invalid segment size, SOF_55 segment size needs to be at least 6");
+
     _params.bitsPerSample = ReadByte();
     _params.height = ReadUInt16();
     _params.width = ReadUInt16();
     _params.components= ReadByte();
+
+    // Note: component specific parameters are currently not verified.
+
     return 6;
 }
 
