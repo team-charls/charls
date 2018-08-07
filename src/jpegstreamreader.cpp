@@ -60,18 +60,18 @@ ApiResult CheckParameterCoherent(const JlsParameters& params) noexcept
 
 JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t allowedLossyError) noexcept
 {
-    JpegLSPresetCodingParameters preset;
-
     const int32_t factor = (std::min(maximumSampleValue, 4095) + 128) / 256;
     const int threshold1 = clamp(factor * (DefaultThreshold1 - 2) + 2 + 3 * allowedLossyError, allowedLossyError + 1, maximumSampleValue);
     const int threshold2 = clamp(factor * (DefaultThreshold2 - 3) + 3 + 5 * allowedLossyError, threshold1, maximumSampleValue); //-V537
 
-    preset.Threshold1 = threshold1;
-    preset.Threshold2 = threshold2;
-    preset.Threshold3 = clamp(factor * (DefaultThreshold3 - 4) + 4 + 7 * allowedLossyError, threshold2, maximumSampleValue);
-    preset.MaximumSampleValue = maximumSampleValue;
-    preset.ResetValue = DefaultResetValue;
-    return preset;
+    return
+    {
+        maximumSampleValue,
+        threshold1,
+        threshold2,
+        clamp(factor * (DefaultThreshold3 - 4) + 4 + 7 * allowedLossyError, threshold2, maximumSampleValue),
+        DefaultResetValue
+    };
 }
 
 
