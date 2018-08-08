@@ -257,5 +257,30 @@ namespace CharLSUnitTest
 
             Assert::Fail();
         }
+
+        TEST_METHOD(ReadHeaderWithDuplicateStartOfImageShouldThrow)
+        {
+            vector<uint8_t> buffer;
+            buffer.push_back(0xFF);
+            buffer.push_back(0xD8);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xD8); // SOI.
+
+            const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+            JpegStreamReader reader(byteStream);
+
+            try
+            {
+                reader.ReadHeader();
+            }
+            catch (const system_error& error)
+            {
+                Assert::AreEqual(static_cast<int>(ApiResult::InvalidCompressedData), error.code().value());
+                return;
+            }
+
+            Assert::Fail();
+        }
+
     };
 }

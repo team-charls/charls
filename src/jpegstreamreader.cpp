@@ -242,6 +242,7 @@ void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode) const
                 throw charls_error(ApiResult::UnsupportedEncoding, message.str());
             }
 
+        case JpegMarkerCode::StartOfImage:
         case JpegMarkerCode::EndOfImage:
             {
                 std::ostringstream message;
