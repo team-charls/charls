@@ -350,9 +350,8 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
 {
     if (!firstComponent)
     {
-        if (ReadByte() != 0xFF)
-            throw charls_error(ApiResult::MissingJpegMarkerStart);
-        if (static_cast<JpegMarkerCode>(ReadByte()) != JpegMarkerCode::StartOfScan)
+        const JpegMarkerCode markerCode = ReadNextMarkerCode();
+        if (markerCode != JpegMarkerCode::StartOfScan)
             throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
     }
 
