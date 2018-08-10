@@ -156,11 +156,7 @@ void JpegStreamReader::ReadHeader()
         if (markerCode == JpegMarkerCode::StartOfScan)
             return;
 
-        const int32_t segmentSize = ReadUInt16();
-        if (segmentSize < 2)
-            throw charls_error(ApiResult::InvalidCompressedData,
-                "Invalid segment size, segment size needs to be at least 2");
-
+        const int32_t segmentSize = ReadSegmentSize();
         const int bytesRead = ReadMarkerSegment(markerCode, segmentSize - 2) + 2;
         const int paddingToRead = segmentSize - bytesRead;
         if (paddingToRead < 0)
@@ -359,23 +355,31 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
         if (static_cast<JpegMarkerCode>(ReadByte()) != JpegMarkerCode::StartOfScan)
             throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
     }
-    int length = ReadByte();
-    length = length * 256 + ReadByte(); // TODO: do something with 'length' or remove it.
 
-    const int componentCount = ReadByte();
-    if (componentCount != 1 && componentCount != _params.components)
+    const int32_t segmentSize = ReadSegmentSize();
+    if (segmentSize < 6)
+        throw charls_error(ApiResult::InvalidCompressedData,
+                           "Invalid segment size, SOS segment size needs to be at least 6");
+
+    const int componentCountInScan = ReadByte();
+    if (componentCountInScan != 1 && componentCountInScan != _params.components)
         throw charls_error(ApiResult::ParameterValueNotSupported);
 
-    for (int i = 0; i < componentCount; ++i)
+    if (segmentSize < 6 + (2 * componentCountInScan))
+        throw charls_error(ApiResult::InvalidCompressedData,
+                           "Invalid segment size, SOS segment size needs to be at least 6 + 2 * Ns");
+
+    for (int i = 0; i < componentCountInScan; ++i)
     {
-        ReadByte();
-        ReadByte();
+        ReadByte(); // Read Scan component selector
+        ReadByte(); // Read Mapping table selector
     }
-    _params.allowedLossyError = ReadByte();
-    _params.interleaveMode = static_cast<InterleaveMode>(ReadByte());
+
+    _params.allowedLossyError = ReadByte(); // Read NEAR parameter
+    _params.interleaveMode = static_cast<InterleaveMode>(ReadByte()); // Read ILV parameter
     if (!(_params.interleaveMode == InterleaveMode::None || _params.interleaveMode == InterleaveMode::Line || _params.interleaveMode == InterleaveMode::Sample))
         throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
-    if (ReadByte() != 0)
+    if (ReadByte() != 0) // Read Ah and Al.
         throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
 
     if(_params.stride == 0)
@@ -454,6 +458,16 @@ int JpegStreamReader::ReadUInt16()
 {
     const int i = ReadByte() * 256;
     return i + ReadByte();
+}
+
+int32_t JpegStreamReader::ReadSegmentSize()
+{
+    const int32_t segmentSize = ReadUInt16();
+    if (segmentSize < 2)
+        throw charls_error(ApiResult::InvalidCompressedData,
+                           "Invalid segment size, segment size needs to be at least 2");
+
+    return segmentSize;
 }
 
 

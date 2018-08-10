@@ -53,6 +53,7 @@ public:
 
 private:
     int ReadUInt16();
+    int32_t ReadSegmentSize();
     void ReadNBytes(std::vector<char>& dst, int byteCount);
     JpegMarkerCode ReadNextMarkerCode();
     void ValidateMarkerCode(JpegMarkerCode markerCode) const;

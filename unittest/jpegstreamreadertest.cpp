@@ -234,6 +234,84 @@ namespace CharLSUnitTest
             Assert::Fail();
         }
 
+        TEST_METHOD(ReadHeaderWithTooSmallStartOfScanShouldThrow)
+        {
+            vector<uint8_t> buffer;
+            buffer.push_back(0xFF);
+            buffer.push_back(0xD8);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xF7); // SOF_55: Marks the start of JPEG-LS extended scan.
+            buffer.push_back(0x00);
+            buffer.push_back(0x08); // size
+            buffer.push_back(0x08); // bits per sample
+            buffer.push_back(0x00);
+            buffer.push_back(0x01); // width
+            buffer.push_back(0x00);
+            buffer.push_back(0x01); // height
+            buffer.push_back(0x01); // component count
+            buffer.push_back(0xFF);
+            buffer.push_back(0xDA); // SOS
+            buffer.push_back(0x00);
+            buffer.push_back(0x03);
+
+            const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+            JpegStreamReader reader(byteStream);
+
+            try
+            {
+                vector<uint8_t> outputBuffer;
+
+                const ByteStreamInfo destination = FromByteArray(outputBuffer.data(), outputBuffer.size());
+                reader.Read(destination);
+            }
+            catch (const system_error& error)
+            {
+                Assert::AreEqual(static_cast<int>(ApiResult::InvalidCompressedData), error.code().value());
+                return;
+            }
+
+            Assert::Fail();
+        }
+
+        TEST_METHOD(ReadHeaderWithTooSmallStartOfScanComponentCountShouldThrow)
+        {
+            vector<uint8_t> buffer;
+            buffer.push_back(0xFF);
+            buffer.push_back(0xD8);
+            buffer.push_back(0xFF);
+            buffer.push_back(0xF7); // SOF_55: Marks the start of JPEG-LS extended scan.
+            buffer.push_back(0x00);
+            buffer.push_back(0x08); // size
+            buffer.push_back(0x08); // bits per sample
+            buffer.push_back(0x00);
+            buffer.push_back(0x01); // width
+            buffer.push_back(0x00);
+            buffer.push_back(0x01); // height
+            buffer.push_back(0x01); // component count
+            buffer.push_back(0xFF);
+            buffer.push_back(0xDA); // SOS
+            buffer.push_back(0x00);
+            buffer.push_back(0x07);
+            buffer.push_back(0x01);
+
+            const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+            JpegStreamReader reader(byteStream);
+
+            try
+            {
+                vector<uint8_t> outputBuffer;
+
+                const ByteStreamInfo destination = FromByteArray(outputBuffer.data(), outputBuffer.size());
+                reader.Read(destination);
+            }
+            catch (const system_error& error)
+            {
+                Assert::AreEqual(static_cast<int>(ApiResult::InvalidCompressedData), error.code().value());
+                return;
+            }
+
+            Assert::Fail();
+        }
         TEST_METHOD(ReadHeaderWithDirectlyEndOfImageShouldThrow)
         {
             vector<uint8_t> buffer;
