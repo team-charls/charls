@@ -20,7 +20,7 @@
 // This is to allow the traits class to replace the default implementation here with optimized specific implementations.
 // This is done for lossless coding/decoding: see losslesstraits.h
 
-WARNING_SUPPRESS(26432 26495)
+MSVC_WARNING_SUPPRESS(26432 26495)
 
 // TODO: report false warning 26495
 
@@ -144,6 +144,6 @@ private:
     }
 };
 
-WARNING_UNSUPPRESS()
+MSVC_WARNING_UNSUPPRESS()
 
 #endif

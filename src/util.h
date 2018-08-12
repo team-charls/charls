@@ -33,11 +33,11 @@
 #endif
 
 #ifdef _MSC_VER
-#define WARNING_SUPPRESS(x) __pragma(warning(push)) __pragma(warning(disable : x))  // NOLINT(misc-macro-parentheses)
-#define WARNING_UNSUPPRESS() __pragma(warning(pop))
+#define MSVC_WARNING_SUPPRESS(x) __pragma(warning(push)) __pragma(warning(disable : x))  // NOLINT(misc-macro-parentheses)
+#define MSVC_WARNING_UNSUPPRESS() __pragma(warning(pop))
 #else
-#define WARNING_SUPPRESS(x)
-#define WARNING_UNSUPPRESS()
+#define MSVC_WARNING_SUPPRESS(x)
+#define MSVC_WARNING_UNSUPPRESS()
 #endif
 
 
@@ -126,13 +126,13 @@ struct Quad : Triplet<sample>
         v4(0)
         {}
 
-    WARNING_SUPPRESS(26495) // false warning that v4 is uninitialized
+    MSVC_WARNING_SUPPRESS(26495) // false warning that v4 is uninitialized
     Quad(Triplet<sample> triplet, int32_t alpha) noexcept
             :
         Triplet<sample>(triplet),
         A(static_cast<sample>(alpha))
         {}
-    WARNING_UNSUPPRESS()
+    MSVC_WARNING_UNSUPPRESS()
 
     union
     {

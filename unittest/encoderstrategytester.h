@@ -4,7 +4,7 @@
 #pragma once
 
 
-#include "..\src\encoderstrategy.h"
+#include "../src/encoderstrategy.h"
 
 
 class EncoderStrategyTester : EncoderStrategy
@@ -14,7 +14,7 @@ public:
     {
     }
 
-    WARNING_SUPPRESS(26440)
+    MSVC_WARNING_SUPPRESS(26440)
     void SetPresets(const JpegLSPresetCodingParameters&) override
     {
     }
@@ -28,7 +28,7 @@ public:
     {
         return nullptr;
     }
-    WARNING_UNSUPPRESS()
+    MSVC_WARNING_UNSUPPRESS()
 
     void InitForward(ByteStreamInfo& info)
     {

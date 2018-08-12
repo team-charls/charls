@@ -106,7 +106,7 @@ public:
     using PIXEL = typename Traits::PIXEL;
     using SAMPLE = typename Traits::SAMPLE;
 
-    WARNING_SUPPRESS(26495) // false warning that _contextRunmode is uninitialized
+    MSVC_WARNING_SUPPRESS(26495) // false warning that _contextRunmode is uninitialized
     JlsCodec(Traits inTraits, const JlsParameters& params) :
         Strategy(params),
         traits(std::move(inTraits)),
@@ -125,7 +125,7 @@ public:
             Info().components = 1;
         }
     }
-    WARNING_UNSUPPRESS()
+    MSVC_WARNING_UNSUPPRESS()
 
     void SetPresets(const JpegLSPresetCodingParameters& presets) override
     {
@@ -802,7 +802,7 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
 
 
 // Setup codec for encoding and calls DoScan
-WARNING_SUPPRESS(26433)
+MSVC_WARNING_SUPPRESS(26433)
 template<typename Traits, typename Strategy>
 size_t JlsCodec<Traits, Strategy>::EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo& compressedData)
 {
@@ -828,7 +828,7 @@ void JlsCodec<Traits, Strategy>::DecodeScan(std::unique_ptr<ProcessLine> process
     DoScan();
     SkipBytes(compressedData, Strategy::GetCurBytePos() - compressedBytes);
 }
-WARNING_UNSUPPRESS()
+MSVC_WARNING_UNSUPPRESS()
 
 // Initialize the codec data structures. Depends on JPEG-LS parameters like Threshold1-Threshold3.
 template<typename Traits, typename Strategy>

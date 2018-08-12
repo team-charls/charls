@@ -22,7 +22,7 @@ public:
         Init(stream);
     }
 
-    WARNING_SUPPRESS(26440)
+    MSVC_WARNING_SUPPRESS(26440)
     void SetPresets(const JpegLSPresetCodingParameters& /*presets*/) override
     {
     }
@@ -35,7 +35,7 @@ public:
     void DecodeScan(std::unique_ptr<ProcessLine> /*outputData*/, const JlsRect& /*size*/, ByteStreamInfo& /*compressedData*/) override
     {
     }
-    WARNING_UNSUPPRESS()
+    MSVC_WARNING_UNSUPPRESS()
 
     int32_t Read(int32_t length) { return ReadLongValue(length); }
     void Finish() { EndScan(); }

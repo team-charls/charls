@@ -49,7 +49,7 @@ public:
     {
     }
 
-    WARNING_SUPPRESS(26440)
+    MSVC_WARNING_SUPPRESS(26440)
     void NewLineRequested(void* dest, int pixelCount, int /*byteStride*/) override
     {
         std::memcpy(dest, _rawData, pixelCount * _bytesPerPixel);
@@ -61,7 +61,7 @@ public:
         std::memcpy(_rawData, pSrc, pixelCount * _bytesPerPixel);
         _rawData += _bytesPerLine;
     }
-    WARNING_UNSUPPRESS()
+    MSVC_WARNING_UNSUPPRESS()
 
 private:
     uint8_t* _rawData;

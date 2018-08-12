@@ -6,8 +6,8 @@
 // 
 
 
-#define CHARLS_IMEXPORT(returntype) returntype
+#define CHARLS_DLL_IMPORT_EXPORT(returntype) returntype
 #define FORCE_INLINE
-#define WARNING_SUPPRESS(x)
-#define WARNING_UNSUPPRESS()
+#define MSVC_WARNING_SUPPRESS(x)
+#define MSVC_WARNING_UNSUPPRESS()
 
