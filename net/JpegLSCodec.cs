@@ -302,6 +302,11 @@ namespace CharLS
                 case JpegLSError.UnknownJpegMarker:
                 case JpegLSError.MissingJpegMarkerStart:
                 case JpegLSError.UnspecifiedFailure:
+                case JpegLSError.StartOfImageMarkerNotFound:
+                case JpegLSError.StartOfFrameMarkerNotFound:
+                case JpegLSError.InvalidMarkerSegmentSize:
+                case JpegLSError.DuplicateStartOfImageMarker:
+                case JpegLSError.DuplicateStartOfFrameMarker:
                     exception = new InvalidDataException(errorMessage.ToString());
                     break;
 
@@ -324,7 +329,7 @@ namespace CharLS
             Contract.Assume(data != null);
 
             // ReSharper disable once PossibleNullReferenceException
-            data.Add("JpegLSError", result);
+            data.Add(nameof(JpegLSError), result);
             throw exception;
         }
     }

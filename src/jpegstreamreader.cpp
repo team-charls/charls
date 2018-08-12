@@ -145,7 +145,7 @@ void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 void JpegStreamReader::ReadHeader()
 {
     if (ReadNextMarkerCode() != JpegMarkerCode::StartOfImage)
-        throw charls_error(ApiResult::InvalidCompressedData,
+        throw charls_error(ApiResult::StartOfImageMarkerNotFound,
             "Invalid JPEG stream, first marker code is not SOI");
 
     for (;;)
@@ -239,6 +239,8 @@ void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode) const
             }
 
         case JpegMarkerCode::StartOfImage:
+            throw charls_error(ApiResult::DuplicateStartOfImageMarker, "Invalid duplicate SOI marker detected.");
+
         case JpegMarkerCode::EndOfImage:
             {
                 std::ostringstream message;
@@ -357,7 +359,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
 
     const int32_t segmentSize = ReadSegmentSize();
     if (segmentSize < 6)
-        throw charls_error(ApiResult::InvalidCompressedData,
+        throw charls_error(ApiResult::InvalidMarkerSegmentSize,
                            "Invalid segment size, SOS segment size needs to be at least 6");
 
     const int componentCountInScan = ReadByte();
@@ -365,7 +367,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
         throw charls_error(ApiResult::ParameterValueNotSupported);
 
     if (segmentSize < 6 + (2 * componentCountInScan))
-        throw charls_error(ApiResult::InvalidCompressedData,
+        throw charls_error(ApiResult::InvalidMarkerSegmentSize,
                            "Invalid segment size, SOS segment size needs to be at least 6 + 2 * Ns");
 
     for (int i = 0; i < componentCountInScan; ++i)
@@ -425,7 +427,7 @@ void JpegStreamReader::ReadJfif()
 int JpegStreamReader::ReadStartOfFrameSegment(int32_t segmentSize)
 {
     if (segmentSize < 6)
-        throw charls_error(ApiResult::InvalidCompressedData,
+        throw charls_error(ApiResult::InvalidMarkerSegmentSize,
                            "Invalid segment size, SOF_55 segment size needs to be at least 6");
 
     _params.bitsPerSample = ReadByte();
@@ -463,7 +465,7 @@ int32_t JpegStreamReader::ReadSegmentSize()
 {
     const int32_t segmentSize = ReadUInt16();
     if (segmentSize < 2)
-        throw charls_error(ApiResult::InvalidCompressedData,
+        throw charls_error(ApiResult::InvalidMarkerSegmentSize,
                            "Invalid segment size, segment size needs to be at least 2");
 
     return segmentSize;

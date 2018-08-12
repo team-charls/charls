@@ -17,62 +17,62 @@ namespace CharLS
         /// <summary>
         /// One of the JLS parameters is invalid.
         /// </summary>
-        InvalidJlsParameters,
+        InvalidJlsParameters = 1,
 
         /// <summary>
         /// The parameter value not supported.
         /// </summary>
-        ParameterValueNotSupported,
+        ParameterValueNotSupported = 2,
 
         /// <summary>
         /// The uncompressed buffer is too small to hold all the output.
         /// </summary>
-        UncompressedBufferTooSmall,
+        UncompressedBufferTooSmall = 3,
 
         /// <summary>
         /// The compressed buffer too small, more input data was expected.
         /// </summary>
-        CompressedBufferTooSmall,
+        CompressedBufferTooSmall = 4,
 
         /// <summary>
         /// This error is returned when the encoded bit stream contains a general structural problem.
         /// </summary>
-        InvalidCompressedData,
+        InvalidCompressedData = 5,
 
         /// <summary>
-        /// Too much compressed data. The decoding proccess is ready but the input buffer still contains encoded data.
+        /// Too much compressed data. The decoding process is ready but the input buffer still contains encoded data.
         /// </summary>
-        TooMuchCompressedData,
+        TooMuchCompressedData = 6,
 
         /// <summary>
         /// This error is returned when the bit stream is encoded with an option that is not supported by this implementation.
         /// </summary>
-        ImageTypeNotSupported,
+        ImageTypeNotSupported = 7,
 
         /// <summary>
         /// The bit depth for transformation is not supported.
         /// </summary>
-        UnsupportedBitDepthForTransform,
+        UnsupportedBitDepthForTransform = 8,
 
         /// <summary>
-        /// The color transformation is not supported.
+        /// The color transform is not supported.
         /// </summary>
-        UnsupportedColorTransform,
+        UnsupportedColorTransform = 9,
 
         /// <summary>
         /// This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
         /// </summary>
-        UnsupportedEncoding,
+        UnsupportedEncoding = 10,
 
         /// <summary>
         /// This error is returned when an unknown JPEG marker code is detected in the encoded bit stream.
         /// </summary>
-        UnknownJpegMarker,
+        UnknownJpegMarker = 11,
 
         /// <summary>
         /// This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
         /// </summary>
-        MissingJpegMarkerStart,
+        MissingJpegMarkerStart = 12,
 
         /// <summary>
         /// This error is returned when the implementation detected a failure, but no specific error is available.
@@ -82,6 +82,31 @@ namespace CharLS
         /// <summary>
         /// This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
         /// </summary>
-        UnexpectedFailure = 14
+        UnexpectedFailure = 14,
+
+        /// <summary>
+        /// This error is returned when the first JPEG marker is not the SOI (Start Of Image) marker.
+        /// </summary>
+        StartOfImageMarkerNotFound = 15,
+
+        /// <summary>
+        /// This error is returned when the SOF JPEG marker is not found before the SOS (Start of Scan) marker.
+        /// </summary>
+        StartOfFrameMarkerNotFound = 16,
+
+        /// <summary>
+        /// This error is returned when the segment size of a marker segment is invalid.
+        /// </summary>
+        InvalidMarkerSegmentSize = 17,
+
+        /// <summary>
+        /// This error is returned when the stream contains more then one SOI (Start Of Image) marker.
+        /// </summary>
+        DuplicateStartOfImageMarker = 18,
+
+        /// <summary>
+        /// This error is returned when the stream contains more then one SOF (Start Of Frame) marker.
+        /// </summary>
+        DuplicateStartOfFrameMarker = 19
     }
 }

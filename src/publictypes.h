@@ -26,12 +26,17 @@ namespace charls
         TooMuchCompressedData = 6,           // Too much compressed data.The decoding process is ready but the input buffer still contains encoded data.
         ImageTypeNotSupported = 7,           // This error is returned when the bit stream is encoded with an option that is not supported by this implementation.
         UnsupportedBitDepthForTransform = 8, // The bit depth for transformation is not supported.
-        UnsupportedColorTransform = 9,       // The color transformation is not supported.
+        UnsupportedColorTransform = 9,       // The color transform is not supported.
         UnsupportedEncoding = 10,            // This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
         UnknownJpegMarker = 11,              // This error is returned when an unknown JPEG marker code is detected in the encoded bit stream.
         MissingJpegMarkerStart = 12,         // This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
         UnspecifiedFailure = 13,             // This error is returned when the implementation detected a failure, but no specific error is available.
-        UnexpectedFailure = 14               // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
+        UnexpectedFailure = 14,              // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
+        StartOfImageMarkerNotFound = 15,     // This error is returned when the first JPEG marker is not the SOI marker.
+        StartOfFrameMarkerNotFound = 16,     // This error is returned when the SOF JPEG marker is not found before the SOS marker.
+        InvalidMarkerSegmentSize = 17,       // This error is returned when the segment size of a marker segment is invalid.
+        DuplicateStartOfImageMarker = 18,    // This error is returned when the stream contains more then one SOI marker.
+        DuplicateStartOfFrameMarker = 19     // This error is returned when the stream contains more then one SOF marker.
     };
 
     /// <summary>
@@ -116,12 +121,17 @@ enum CharlsApiResult
     CHARLS_API_RESULT_TOO_MUCH_COMPRESSED_DATA            = 6,  // Too much compressed data.The decoding process is ready but the input buffer still contains encoded data.
     CHARLS_API_RESULT_IMAGE_TYPE_NOT_SUPPORTED            = 7,  // This error is returned when the bit stream is encoded with an option that is not supported by this implementation.
     CHARLS_API_RESULT_UNSUPPORTED_BIT_DEPTH_FOR_TRANSFORM = 8,  // The bit depth for transformation is not supported.
-    CHARLS_API_RESULT_UNSUPPORTED_COLOR_TRANSFORM         = 9,  // The color transformation is not supported.
+    CHARLS_API_RESULT_UNSUPPORTED_COLOR_TRANSFORM         = 9,  // The color transform is not supported.
     CHARLS_API_RESULT_UNSUPPORTED_ENCODING                = 10, // This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
     CHARLS_API_RESULT_UNKNOWN_JPEG_MARKER                 = 11, // This error is returned when an unknown JPEG marker code is detected in the encoded bit stream.
     CHARLS_API_RESULT_MISSING_JPEG_MARKER_START           = 12, // This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
     CHARLS_API_RESULT_UNSPECIFIED_FAILURE                 = 13, // This error is returned when the implementation detected a failure, but no specific error is available.
     CHARLS_API_RESULT_UNEXPECTED_FAILURE                  = 14, // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
+    CHARLS_API_RESULT_START_OF_IMAGE_MARKER_NOT_FOUND     = 15, // This error is returned when the first JPEG marker is not the SOI marker.
+    CHARLS_API_RESULT_START_OF_FRAME_MARKER_NOT_FOUND     = 16, // This error is returned when the SOF JPEG marker is not found before the SOS marker.
+    CHARLS_API_RESULT_INVALID_MARKER_SEGMENT_SIZE         = 17, // This error is returned when the segment size of a marker segment is invalid.
+    CHARLS_API_RESULT_DUPLICATE_START_OF_IMAGE_MARKER     = 18, // This error is returned when the stream contains more then one SOI marker.
+    CHARLS_API_RESULT_DUPLICATE_START_OF_FRAME_MARKER     = 19  // This error is returned when the stream contains more then one SOF marker.
 };
 
 enum CharlsInterleaveMode
