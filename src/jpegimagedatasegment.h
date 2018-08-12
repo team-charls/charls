@@ -6,15 +6,15 @@
 #define CHARLS_JPEG_IMAGE_DATA_SEGMENT
 
 #include "jpegsegment.h"
-#include "jpegstreamwriter.h"
+#include "publictypes.h"
 
 class JpegImageDataSegment : public JpegSegment
 {
 public:
-    JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& params, int componentCount) noexcept :
-        _componentCount(componentCount),
-        _rawStreamInfo(rawStream),
-        _params(params)
+    JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& params, int componentCount) noexcept
+        : _componentCount(componentCount),
+          _rawStreamInfo(rawStream),
+          _params(params)
     {
     }
 

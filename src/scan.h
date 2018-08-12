@@ -255,7 +255,7 @@ typename Traits::SAMPLE JlsCodec<Traits,Strategy>::DoRegular(int32_t Qs, int32_t
     {
         ErrVal = UnMapErrVal(DecodeValue(k, traits.LIMIT, traits.qbpp));
         if (std::abs(ErrVal) > 65535)
-            throw charls_error(charls::ApiResult::InvalidCompressedData);
+            throw charls_error(ApiResult::InvalidCompressedData);
     }
     if (k == 0)
     {
@@ -343,16 +343,16 @@ int32_t JlsCodec<Traits, Strategy>::DecodeValue(int32_t k, int32_t limit, int32_
 template<typename Traits, typename Strategy>
 FORCE_INLINE void JlsCodec<Traits, Strategy>::EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit)
 {
-    int32_t highbits = mappedError >> k;
+    int32_t highBits = mappedError >> k;
 
-    if (highbits < limit - traits.qbpp - 1)
+    if (highBits < limit - traits.qbpp - 1)
     {
-        if (highbits + 1 > 31)
+        if (highBits + 1 > 31)
         {
-            Strategy::AppendToBitStream(0, highbits / 2);
-            highbits = highbits - highbits / 2;
+            Strategy::AppendToBitStream(0, highBits / 2);
+            highBits = highBits - highBits / 2;
         }
-        Strategy::AppendToBitStream(1, highbits + 1);
+        Strategy::AppendToBitStream(1, highBits + 1);
         Strategy::AppendToBitStream((mappedError & ((1 << k) - 1)), k);
         return;
     }
@@ -580,7 +580,7 @@ int32_t JlsCodec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, i
     }
 
     if (index > cpixelMac)
-        throw charls_error(charls::ApiResult::InvalidCompressedData);
+        throw charls_error(ApiResult::InvalidCompressedData);
 
     for (int32_t i = 0; i < index; ++i)
     {
@@ -714,7 +714,7 @@ template<typename Traits, typename Strategy>
 void JlsCodec<Traits, Strategy>::DoScan()
 {
     const int32_t pixelStride = _width + 4;
-    const int components = Info().interleaveMode == charls::InterleaveMode::Line ? Info().components : 1;
+    const int components = Info().interleaveMode == InterleaveMode::Line ? Info().components : 1;
 
     std::vector<PIXEL> vectmp(static_cast<size_t>(2) * components * pixelStride);
     std::vector<int32_t> rgRUNindex(components);
