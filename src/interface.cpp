@@ -26,7 +26,7 @@ void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& 
         throw charls_error(ApiResult::InvalidJlsParameters, "height needs to be in the range [1, 65535]");
 
     if (parameters.bitsPerSample < 2 || parameters.bitsPerSample > 16)
-        throw charls_error(ApiResult::InvalidJlsParameters, "bitspersample needs to be in the range [2, 16]");
+        throw charls_error(ApiResult::InvalidJlsParameters, "bits per sample needs to be in the range [2, 16]");
 
     if (!(parameters.interleaveMode == InterleaveMode::None || parameters.interleaveMode == InterleaveMode::Sample || parameters.interleaveMode == InterleaveMode::Line))
         throw charls_error(ApiResult::InvalidJlsParameters, "interleaveMode needs to be set to a value of {None, Sample, Line}");
@@ -93,7 +93,7 @@ ApiResult ResultAndErrorMessageFromException(char* errorMessage)
 } // namespace
 
 
-CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& pcbyteWritten,
+CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& bytesWritten,
     ByteStreamInfo rawStreamInfo, const struct JlsParameters& params, char* errorMessage)
 {
     try
@@ -125,11 +125,11 @@ CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressed
 
         if (info.interleaveMode == InterleaveMode::None)
         {
-            const int32_t cbyteComp = info.width * info.height * ((info.bitsPerSample + 7) / 8);
+            const int32_t byteCountComponent = info.width * info.height * ((info.bitsPerSample + 7) / 8);
             for (int32_t component = 0; component < info.components; ++component)
             {
                 writer.AddScan(rawStreamInfo, info);
-                SkipBytes(rawStreamInfo, cbyteComp);
+                SkipBytes(rawStreamInfo, byteCountComponent);
             }
         }
         else
@@ -138,7 +138,7 @@ CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressed
         }
 
         writer.Write(compressedStreamInfo);
-        pcbyteWritten = writer.GetBytesWritten();
+        bytesWritten = writer.GetBytesWritten();
 
         return ResultAndErrorMessage(ApiResult::OK, errorMessage);
     }

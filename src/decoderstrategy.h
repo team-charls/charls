@@ -79,8 +79,8 @@ public:
         _endPosition += offset;
         _nextFFPosition += offset;
 
-        const std::streamsize readbytes = _byteStream->sgetn(reinterpret_cast<char*>(_endPosition), _buffer.size() - count);
-        _endPosition += readbytes;
+        const std::streamsize readBytes = _byteStream->sgetn(reinterpret_cast<char*>(_endPosition), _buffer.size() - count);
+        _endPosition += readBytes;
     }
 
     FORCE_INLINE void Skip(int32_t length) noexcept
@@ -146,9 +146,9 @@ public:
                 return;
             }
 
-            const bufType valnew = _position[0];
+            const bufType valueNew = _position[0];
 
-            if (valnew == 0xFF)
+            if (valueNew == 0xFF)
             {
                 // JPEG bit stream rule: no FF may be followed by 0x80 or higher
                 if (_position == _endPosition - 1 || (_position[1] & 0x80) != 0)
@@ -160,11 +160,11 @@ public:
                 }
             }
 
-            _readCache |= valnew << (bufType_bit_count - 8 - _validBits);
+            _readCache |= valueNew << (bufType_bit_count - 8 - _validBits);
             _position += 1;
             _validBits += 8;
 
-            if (valnew == 0xFF)
+            if (valueNew == 0xFF)
             {
                 _validBits--;
             }
@@ -196,12 +196,12 @@ public:
 
         for (;;)
         {
-            const int32_t cbitLast = compressedBytes[-1] == 0xFF ? 7 : 8;
+            const int32_t lastBitsCount = compressedBytes[-1] == 0xFF ? 7 : 8;
 
-            if (validBits < cbitLast)
+            if (validBits < lastBitsCount)
                 return compressedBytes;
 
-            validBits -= cbitLast;
+            validBits -= lastBitsCount;
             compressedBytes--;
         }
     }
@@ -262,7 +262,7 @@ public:
         return -1;
     }
 
-    FORCE_INLINE int32_t ReadHighbits()
+    FORCE_INLINE int32_t ReadHighBits()
     {
         const int32_t count = Peek0Bits();
         if (count >= 0)
@@ -272,10 +272,10 @@ public:
         }
         Skip(15);
 
-        for (int32_t highbits = 15; ; highbits++)
+        for (int32_t highBitsCount = 15; ; highBitsCount++)
         {
             if (ReadBit())
-                return highbits;
+                return highBitsCount;
         }
     }
 

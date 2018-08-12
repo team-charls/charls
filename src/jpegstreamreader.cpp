@@ -79,8 +79,8 @@ void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
     auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, _params.custom);
     std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
     ByteStreamInfo compressedData = streamWriter.OutputStream();
-    const size_t cbyteWritten = codec->EncodeScan(move(processLine), compressedData);
-    streamWriter.Seek(cbyteWritten);
+    const size_t bytesWritten = codec->EncodeScan(move(processLine), compressedData);
+    streamWriter.Seek(bytesWritten);
 }
 
 
@@ -117,9 +117,9 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
     {
         ReadStartOfScan(componentIndex == 0);
 
-        std::unique_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().CreateCodec(_params, _params.custom);
-        std::unique_ptr<ProcessLine> processLine(qcodec->CreateProcess(rawPixels));
-        qcodec->DecodeScan(move(processLine), _rect, _byteStream);
+        std::unique_ptr<DecoderStrategy> codec = JlsCodecFactory<DecoderStrategy>().CreateCodec(_params, _params.custom);
+        std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(rawPixels));
+        codec->DecodeScan(move(processLine), _rect, _byteStream);
         SkipBytes(rawPixels, static_cast<size_t>(bytesPerPlane));
 
         if (_params.interleaveMode != InterleaveMode::None)
@@ -414,9 +414,9 @@ void JpegStreamReader::ReadJfif()
     _params.jfif.Ythumbnail = ReadByte();
     if(_params.jfif.Xthumbnail > 0 && _params.jfif.thumbnail)
     {
-        std::vector<char> tempbuff(static_cast<char*>(_params.jfif.thumbnail),
+        std::vector<char> tempBuffer(static_cast<char*>(_params.jfif.thumbnail),
             static_cast<char*>(_params.jfif.thumbnail) + static_cast<size_t>(3) * _params.jfif.Xthumbnail * _params.jfif.Ythumbnail);
-        ReadNBytes(tempbuff, 3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
+        ReadNBytes(tempBuffer, 3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
     }
 }
 

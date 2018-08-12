@@ -41,7 +41,7 @@ bool IsDefault(const JpegLSPresetCodingParameters& custom) noexcept
 JpegStreamWriter::JpegStreamWriter() noexcept
     : _data(),
       _byteOffset(0),
-      _lastCompenentIndex(0)
+      _lastComponentIndex(0)
 {
 }
 
@@ -82,9 +82,9 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
     }
 
     // Note: it is a common practice to start to count components by index 1.
-    _lastCompenentIndex += 1;
+    _lastComponentIndex += 1;
     const int componentCount = params.interleaveMode == InterleaveMode::None ? 1 : params.components;
-    AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastCompenentIndex, componentCount, params.allowedLossyError, params.interleaveMode));
+    AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastComponentIndex, componentCount, params.allowedLossyError, params.interleaveMode));
 
     AddSegment(std::make_unique<JpegImageDataSegment>(info, params, componentCount));
 }

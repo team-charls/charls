@@ -39,10 +39,10 @@ protected:
 };
 
 
-class PostProcesSingleComponent : public ProcessLine
+class PostProcessSingleComponent : public ProcessLine
 {
 public:
-    PostProcesSingleComponent(void* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
+    PostProcessSingleComponent(void* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
         _rawData(static_cast<uint8_t*>(rawData)),
         _bytesPerPixel(bytesPerPixel),
         _bytesPerLine(params.stride)
@@ -92,10 +92,10 @@ inline void ByteSwap(unsigned char* data, int count)
     }
 }
 
-class PostProcesSingleStream : public ProcessLine
+class PostProcessSingleStream : public ProcessLine
 {
 public:
-    PostProcesSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
+    PostProcessSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
         _rawData(rawData),
         _bytesPerPixel(bytesPerPixel),
         _bytesPerLine(params.stride)
@@ -141,10 +141,10 @@ private:
 
 
 template<typename TRANSFORM, typename T>
-void TransformLineToQuad(const T* ptypeInput, int32_t pixelStrideIn, Quad<T>* pbyteBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformLineToQuad(const T* ptypeInput, int32_t pixelStrideIn, Quad<T>* byteBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const int cpixel = std::min(pixelStride, pixelStrideIn);
-    Quad<T>* ptypeBuffer = pbyteBuffer;
+    Quad<T>* ptypeBuffer = byteBuffer;
 
     for (auto x = 0; x < cpixel; ++x)
     {
@@ -155,20 +155,20 @@ void TransformLineToQuad(const T* ptypeInput, int32_t pixelStrideIn, Quad<T>* pb
 
 
 template<typename TRANSFORM, typename T>
-void TransformQuadToLine(const Quad<T>* pbyteInput, int32_t pixelStrideIn, T* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformQuadToLine(const Quad<T>* byteInput, int32_t pixelStrideIn, T* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto cpixel = std::min(pixelStride, pixelStrideIn);
-    const Quad<T>* ptypeBufferIn = pbyteInput;
+    const Quad<T>* ptypeBufferIn = byteInput;
 
     for (auto x = 0; x < cpixel; ++x)
     {
         const Quad<T> color = ptypeBufferIn[x];
-        const Quad<T> colorTranformed(transform(color.v1, color.v2, color.v3), color.v4);
+        const Quad<T> colorTransformed(transform(color.v1, color.v2, color.v3), color.v4);
 
-        ptypeBuffer[x] = colorTranformed.v1;
-        ptypeBuffer[x + pixelStride] = colorTranformed.v2;
-        ptypeBuffer[x + 2 * pixelStride] = colorTranformed.v3;
-        ptypeBuffer[x + 3 * pixelStride] = colorTranformed.v4;
+        ptypeBuffer[x] = colorTransformed.v1;
+        ptypeBuffer[x + pixelStride] = colorTransformed.v2;
+        ptypeBuffer[x + 2 * pixelStride] = colorTransformed.v3;
+        ptypeBuffer[x + 3 * pixelStride] = colorTransformed.v4;
     }
 }
 
@@ -195,10 +195,10 @@ void TransformLine(Triplet<T>* pDest, const Triplet<T>* pSrc, int pixelCount, TR
 
 
 template<typename TRANSFORM, typename T>
-void TransformLineToTriplet(const T* ptypeInput, int32_t pixelStrideIn, Triplet<T>* pbyteBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformLineToTriplet(const T* ptypeInput, int32_t pixelStrideIn, Triplet<T>* byteBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto cpixel = std::min(pixelStride, pixelStrideIn);
-    Triplet<T>* ptypeBuffer = pbyteBuffer;
+    Triplet<T>* ptypeBuffer = byteBuffer;
 
     for (auto x = 0; x < cpixel; ++x)
     {
@@ -208,19 +208,19 @@ void TransformLineToTriplet(const T* ptypeInput, int32_t pixelStrideIn, Triplet<
 
 
 template<typename TRANSFORM, typename T>
-void TransformTripletToLine(const Triplet<T>* pbyteInput, int32_t pixelStrideIn, T* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformTripletToLine(const Triplet<T>* byteInput, int32_t pixelStrideIn, T* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto cpixel = std::min(pixelStride, pixelStrideIn);
-    const Triplet<T>* ptypeBufferIn = pbyteInput;
+    const Triplet<T>* ptypeBufferIn = byteInput;
 
     for (auto x = 0; x < cpixel; ++x)
     {
         const Triplet<T> color = ptypeBufferIn[x];
-        const Triplet<T> colorTranformed = transform(color.v1, color.v2, color.v3);
+        const Triplet<T> colorTransformed = transform(color.v1, color.v2, color.v3);
 
-        ptypeBuffer[x] = colorTranformed.v1;
-        ptypeBuffer[x + pixelStride] = colorTranformed.v2;
-        ptypeBuffer[x + 2 *pixelStride] = colorTranformed.v3;
+        ptypeBuffer[x] = colorTransformed.v1;
+        ptypeBuffer[x + pixelStride] = colorTransformed.v2;
+        ptypeBuffer[x + 2 *pixelStride] = colorTransformed.v3;
     }
 }
 
@@ -231,7 +231,7 @@ class ProcessTransformed : public ProcessLine
 public:
     ProcessTransformed(ByteStreamInfo rawStream, const JlsParameters& info, TRANSFORM transform) :
         _params(info),
-        _templine(static_cast<size_t>(info.width) * info.components),
+        _tempLine(static_cast<size_t>(info.width) * info.components),
         _buffer(static_cast<size_t>(info.width) * info.components * sizeof(size_type)),
         _transform(transform),
         _inverseTransform(transform),
@@ -273,9 +273,9 @@ public:
     {
         if (_params.outputBgr)
         {
-            memcpy(_templine.data(), source, sizeof(Triplet<size_type>) * pixelCount);
-            TransformRgbToBgr(_templine.data(), _params.components, pixelCount);
-            source = _templine.data();
+            memcpy(_tempLine.data(), source, sizeof(Triplet<size_type>) * pixelCount);
+            TransformRgbToBgr(_tempLine.data(), _params.components, pixelCount);
+            source = _tempLine.data();
         }
 
         if (_params.components == 3)
@@ -341,7 +341,7 @@ private:
     using size_type = typename TRANSFORM::size_type;
 
     const JlsParameters& _params;
-    std::vector<size_type> _templine;
+    std::vector<size_type> _tempLine;
     std::vector<uint8_t> _buffer;
     TRANSFORM _transform;
     typename TRANSFORM::Inverse _inverseTransform;

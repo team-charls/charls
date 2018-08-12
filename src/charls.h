@@ -82,7 +82,7 @@ CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsDecodeRect(void* uncompresse
 #ifdef __cplusplus
 }
 
-CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& pcbyteWritten, ByteStreamInfo rawStreamInfo, const JlsParameters& params, char* errorMessage);
+CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& bytesWritten, ByteStreamInfo rawStreamInfo, const JlsParameters& params, char* errorMessage);
 CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info, char* errorMessage);
 CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params, char* errorMessage);
 

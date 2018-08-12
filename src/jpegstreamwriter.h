@@ -104,7 +104,7 @@ private:
 
     ByteStreamInfo _data;
     std::size_t _byteOffset;
-    int32_t _lastCompenentIndex;
+    int32_t _lastComponentIndex;
     std::vector<std::unique_ptr<JpegSegment>> _segments;
 };
 

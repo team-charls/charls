@@ -11,7 +11,7 @@
 // Optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
 // This class assumes MaximumSampleValue correspond to a whole number of bits, and no custom ResetValue is set when encoding.
 // The point of this is to have the most optimized code for the most common and most demanding scenario.
-template<typename sample, int32_t bitsperpixel>
+template<typename sample, int32_t bitsPerPixel>
 struct LosslessTraitsImpl
 {
     using SAMPLE = sample;
@@ -19,11 +19,11 @@ struct LosslessTraitsImpl
     enum
     {
         NEAR  = 0,
-        bpp   = bitsperpixel,
-        qbpp  = bitsperpixel,
+        bpp   = bitsPerPixel,
+        qbpp  = bitsPerPixel,
         RANGE = (1 << bpp),
         MAXVAL= (1 << bpp) - 1,
-        LIMIT = 2 * (bitsperpixel + std::max(8, bitsperpixel)),
+        LIMIT = 2 * (bitsPerPixel + std::max(8, bitsPerPixel)),
         RESET = DefaultResetValue
     };
 
@@ -73,9 +73,9 @@ struct LosslessTraits<uint8_t, 8> : LosslessTraitsImpl<uint8_t, 8>
 {
     using PIXEL = SAMPLE;
 
-    static FORCE_INLINE signed char ModRange(int32_t Errval) noexcept
+    static FORCE_INLINE signed char ModRange(int32_t errorValue) noexcept
     {
-        return static_cast<signed char>(Errval);
+        return static_cast<signed char>(errorValue);
     }
 
     static FORCE_INLINE int32_t ComputeErrVal(int32_t d) noexcept
@@ -95,9 +95,9 @@ struct LosslessTraits<uint16_t, 16> : LosslessTraitsImpl<uint16_t, 16>
 {
     using PIXEL = SAMPLE;
 
-    static FORCE_INLINE short ModRange(int32_t Errval) noexcept
+    static FORCE_INLINE short ModRange(int32_t errorValue) noexcept
     {
-        return static_cast<short>(Errval);
+        return static_cast<short>(errorValue);
     }
 
     static FORCE_INLINE int32_t ComputeErrVal(int32_t d) noexcept

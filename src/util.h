@@ -151,9 +151,9 @@ struct FromBigEndian
 template<>
 struct FromBigEndian<4>
 {
-    FORCE_INLINE static unsigned int Read(const uint8_t* pbyte) noexcept
+    FORCE_INLINE static unsigned int Read(const uint8_t* buffer) noexcept
     {
-        return (pbyte[0] << 24u) + (pbyte[1] << 16u) + (pbyte[2] << 8u) + (pbyte[3] << 0u);
+        return (buffer[0] << 24u) + (buffer[1] << 16u) + (buffer[2] << 8u) + (buffer[3] << 0u);
     }
 };
 
@@ -161,12 +161,12 @@ struct FromBigEndian<4>
 template<>
 struct FromBigEndian<8>
 {
-    FORCE_INLINE static uint64_t Read(const uint8_t* pbyte) noexcept
+    FORCE_INLINE static uint64_t Read(const uint8_t* buffer) noexcept
     {
-        return (static_cast<uint64_t>(pbyte[0]) << 56u) + (static_cast<uint64_t>(pbyte[1]) << 48u) +
-               (static_cast<uint64_t>(pbyte[2]) << 40u) + (static_cast<uint64_t>(pbyte[3]) << 32u) +
-               (static_cast<uint64_t>(pbyte[4]) << 24u) + (static_cast<uint64_t>(pbyte[5]) << 16u) +
-               (static_cast<uint64_t>(pbyte[6]) <<  8u) + (static_cast<uint64_t>(pbyte[7]) << 0u);
+        return (static_cast<uint64_t>(buffer[0]) << 56u) + (static_cast<uint64_t>(buffer[1]) << 48u) +
+               (static_cast<uint64_t>(buffer[2]) << 40u) + (static_cast<uint64_t>(buffer[3]) << 32u) +
+               (static_cast<uint64_t>(buffer[4]) << 24u) + (static_cast<uint64_t>(buffer[5]) << 16u) +
+               (static_cast<uint64_t>(buffer[6]) <<  8u) + (static_cast<uint64_t>(buffer[7]) << 0u);
     }
 };
 

@@ -47,28 +47,28 @@ public:
 
     CTable() noexcept
     {
-        std::memset(_rgtype, 0, sizeof(_rgtype));
+        std::memset(_types, 0, sizeof(_types));
     }
 
-    void AddEntry(uint8_t bvalue, Code c) noexcept
+    void AddEntry(uint8_t value, Code c) noexcept
     {
         const int32_t length = c.GetLength();
         ASSERT(static_cast<size_t>(length) <= byte_bit_count);
 
         for (int32_t i = 0; i < static_cast<int32_t>(1) << (byte_bit_count - length); ++i)
         {
-            ASSERT(_rgtype[(bvalue << (byte_bit_count - length)) + i].GetLength() == 0);
-            _rgtype[(bvalue << (byte_bit_count - length)) + i] = c;
+            ASSERT(_types[(value << (byte_bit_count - length)) + i].GetLength() == 0);
+            _types[(value << (byte_bit_count - length)) + i] = c;
         }
     }
 
     FORCE_INLINE const Code& Get(int32_t value) const noexcept
     {
-        return _rgtype[value];
+        return _types[value];
     }
 
 private:
-    Code _rgtype[1 << byte_bit_count];
+    Code _types[1 << byte_bit_count];
 };
 
 

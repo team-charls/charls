@@ -24,7 +24,7 @@ const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6
 namespace
 {
 
-signed char QuantizeGratientOrg(const JpegLSPresetCodingParameters& preset, int32_t NEAR, int32_t Di) noexcept
+signed char QuantizeGradientOrg(const JpegLSPresetCodingParameters& preset, int32_t NEAR, int32_t Di) noexcept
 {
     if (Di <= -preset.Threshold3) return  -4;
     if (Di <= -preset.Threshold2) return  -3;
@@ -39,16 +39,16 @@ signed char QuantizeGratientOrg(const JpegLSPresetCodingParameters& preset, int3
 }
 
 
-std::vector<signed char> CreateQLutLossless(int32_t cbit)
+std::vector<signed char> CreateQLutLossless(int32_t bitCount)
 {
-    const JpegLSPresetCodingParameters preset = ComputeDefault((1u << static_cast<uint32_t>(cbit)) - 1, 0);
+    const JpegLSPresetCodingParameters preset = ComputeDefault((1u << static_cast<uint32_t>(bitCount)) - 1, 0);
     const int32_t range = preset.MaximumSampleValue + 1;
 
     std::vector<signed char> lut(static_cast<size_t>(range) * 2);
 
     for (int32_t diff = -range; diff < range; diff++)
     {
-        lut[static_cast<size_t>(range) + diff] = QuantizeGratientOrg(preset, 0,diff);
+        lut[static_cast<size_t>(range) + diff] = QuantizeGradientOrg(preset, 0,diff);
     }
     return lut;
 }

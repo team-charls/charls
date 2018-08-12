@@ -149,7 +149,7 @@ struct TransformShifted
     {
         explicit Inverse(const TransformShifted& transform) noexcept
             : _shift(transform._shift),
-              _inverseTransform(transform._colortransform)
+              _inverseTransform(transform._colorTransform)
         {
         }
 
@@ -177,19 +177,19 @@ struct TransformShifted
 
     FORCE_INLINE Triplet<size_type> operator()(int red, int green, int blue) noexcept
     {
-        const Triplet<size_type> result = _colortransform(red << _shift, green << _shift, blue << _shift);
+        const Triplet<size_type> result = _colorTransform(red << _shift, green << _shift, blue << _shift);
         return Triplet<size_type>(result.R >> _shift, result.G >> _shift, result.B >> _shift);
     }
 
     FORCE_INLINE Quad<size_type> operator()(int red, int green, int blue, int alpha)
     {
-        Triplet<size_type> result = _colortransform(red << _shift, green << _shift, blue << _shift);
+        Triplet<size_type> result = _colorTransform(red << _shift, green << _shift, blue << _shift);
         return Quad<size_type>(result.R >> _shift, result.G >> _shift, result.B >> _shift, alpha);
     }
 
 private:
     int _shift;
-    Transform _colortransform;
+    Transform _colorTransform;
 };
 
 

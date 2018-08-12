@@ -96,17 +96,17 @@ struct JlsContext
 
     FORCE_INLINE int32_t GetGolomb() const noexcept
     {
-        const int32_t Ntest = N;
-        const int32_t Atest = A;
+        const int32_t nTest = N;
+        const int32_t aTest = A;
 
-        if (Ntest >= Atest) return 0;
-        if (Ntest << 1 >= Atest) return 1;
-        if (Ntest << 2 >= Atest) return 2;
-        if (Ntest << 3 >= Atest) return 3;
-        if (Ntest << 4 >= Atest) return 4;
+        if (nTest >= aTest) return 0;
+        if (nTest << 1 >= aTest) return 1;
+        if (nTest << 2 >= aTest) return 2;
+        if (nTest << 3 >= aTest) return 3;
+        if (nTest << 4 >= aTest) return 4;
 
         int32_t k = 5;
-        for(; (Ntest << k) < Atest; k++)
+        for(; (nTest << k) < aTest; k++)
         {
             ASSERT(k <= 32);
         }

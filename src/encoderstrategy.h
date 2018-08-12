@@ -72,7 +72,7 @@ protected:
     void AppendToBitStream(int32_t bits, int32_t bitCount)
     {
         ASSERT(bitCount < 32 && bitCount >= 0);
-        ASSERT((!_qdecoder) || (bitCount == 0 && bits == 0) ||( _qdecoder->ReadLongValue(bitCount) == bits));
+        ASSERT((!_decoder) || (bitCount == 0 && bits == 0) ||( _decoder->ReadLongValue(bitCount) == bits));
 #ifndef NDEBUG
         const int mask = (1u << (bitCount)) - 1;
         ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
@@ -178,7 +178,7 @@ protected:
         AppendToBitStream((1 << length) - 1, length);
     }
 
-    std::unique_ptr<DecoderStrategy> _qdecoder;
+    std::unique_ptr<DecoderStrategy> _decoder;
 
     JlsParameters _params;
     std::unique_ptr<ProcessLine> _processLine;

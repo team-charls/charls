@@ -116,17 +116,17 @@ struct DefaultTraits
     }
 
 private:
-    int32_t Quantize(int32_t Errval) const noexcept
+    int32_t Quantize(int32_t errorValue) const noexcept
     {
-        if (Errval > 0)
-            return  (Errval + NEAR) / (2 * NEAR + 1);
+        if (errorValue > 0)
+            return  (errorValue + NEAR) / (2 * NEAR + 1);
 
-        return - (NEAR - Errval) / (2 * NEAR + 1);
+        return - (NEAR - errorValue) / (2 * NEAR + 1);
     }
 
-    FORCE_INLINE int32_t DeQuantize(int32_t Errval) const noexcept
+    FORCE_INLINE int32_t DeQuantize(int32_t ErrorValue) const noexcept
     {
-        return Errval * (2 * NEAR + 1);
+        return ErrorValue * (2 * NEAR + 1);
     }
 
     FORCE_INLINE SAMPLE FixReconstructedValue(int32_t val) const noexcept
