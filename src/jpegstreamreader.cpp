@@ -17,9 +17,6 @@
 
 using namespace charls;
 
-extern template class JlsCodecFactory<EncoderStrategy>;
-extern template class JlsCodecFactory<DecoderStrategy>;
-
 namespace {
 
 

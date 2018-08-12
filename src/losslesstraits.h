@@ -6,6 +6,7 @@
 #define CHARLS_LOSSLESS_TRAITS
 
 #include "constants.h"
+#include <cstdint>
 
 // Optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
 // This class assumes MaximumSampleValue correspond to a whole number of bits, and no custom ResetValue is set when encoding.
