@@ -70,7 +70,7 @@ private:
 };
 
 
-inline void ByteSwap(unsigned char* data, int count)
+inline void ByteSwap(void* data, int count)
 {
     if (static_cast<unsigned int>(count) & 1u)
     {
@@ -79,16 +79,17 @@ inline void ByteSwap(unsigned char* data, int count)
         throw charls_error(charls::ApiResult::InvalidJlsParameters, message.str());
     }
 
-    const auto data32 = reinterpret_cast<unsigned int*>(data);
+    const auto data32 = static_cast<unsigned int*>(data);
     for(auto i = 0; i < count / 4; i++)
     {
         const auto value = data32[i];
         data32[i] = ((value >> 8u) & 0x00FF00FFu) | ((value & 0x00FF00FFu) << 8u);
     }
 
+    const auto data8 = static_cast<unsigned char*>(data);
     if ((count % 4) != 0)
     {
-        std::swap(data[count-2], data[count-1]);
+        std::swap(data8[count-2], data8[count-1]);
     }
 }
 
