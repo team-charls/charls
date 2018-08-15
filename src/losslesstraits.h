@@ -27,12 +27,12 @@ struct LosslessTraitsImpl
         RESET = DefaultResetValue
     };
 
-    static FORCE_INLINE int32_t ComputeErrVal(int32_t d) noexcept
+    FORCE_INLINE constexpr static int32_t ComputeErrVal(int32_t d) noexcept
     {
         return ModuloRange(d);
     }
 
-    static FORCE_INLINE bool IsNear(int32_t lhs, int32_t rhs) noexcept
+    FORCE_INLINE constexpr static bool IsNear(int32_t lhs, int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
@@ -41,17 +41,17 @@ struct LosslessTraitsImpl
 #if defined(__clang__)
      __attribute__((no_sanitize("shift")))
 #endif
-    static FORCE_INLINE int32_t ModuloRange(int32_t errorValue) noexcept
+    FORCE_INLINE constexpr static int32_t ModuloRange(int32_t errorValue) noexcept
     {
         return static_cast<int32_t>(errorValue << (int32_t_bit_count - bpp)) >> (int32_t_bit_count - bpp);
     }
 
-    static FORCE_INLINE SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
+    FORCE_INLINE static SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
     {
         return static_cast<SAMPLE>(MAXVAL & (Px + ErrVal));
     }
 
-    static FORCE_INLINE int32_t CorrectPrediction(int32_t Pxc) noexcept
+    FORCE_INLINE static int32_t CorrectPrediction(int32_t Pxc) noexcept
     {
         if ((Pxc & MAXVAL) == Pxc)
             return Pxc;
@@ -73,17 +73,17 @@ struct LosslessTraits<uint8_t, 8> : LosslessTraitsImpl<uint8_t, 8>
 {
     using PIXEL = SAMPLE;
 
-    static FORCE_INLINE signed char ModRange(int32_t errorValue) noexcept
+    FORCE_INLINE constexpr static signed char ModRange(int32_t errorValue) noexcept
     {
         return static_cast<signed char>(errorValue);
     }
 
-    static FORCE_INLINE int32_t ComputeErrVal(int32_t d) noexcept
+    FORCE_INLINE constexpr static int32_t ComputeErrVal(int32_t d) noexcept
     {
         return static_cast<signed char>(d);
     }
 
-    static FORCE_INLINE uint8_t ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
+    FORCE_INLINE constexpr static uint8_t ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
     {
         return static_cast<uint8_t>(Px + ErrVal);
     }
@@ -95,17 +95,17 @@ struct LosslessTraits<uint16_t, 16> : LosslessTraitsImpl<uint16_t, 16>
 {
     using PIXEL = SAMPLE;
 
-    static FORCE_INLINE short ModRange(int32_t errorValue) noexcept
+    FORCE_INLINE constexpr static short ModRange(int32_t errorValue) noexcept
     {
         return static_cast<short>(errorValue);
     }
 
-    static FORCE_INLINE int32_t ComputeErrVal(int32_t d) noexcept
+    FORCE_INLINE constexpr static int32_t ComputeErrVal(int32_t d) noexcept
     {
         return static_cast<short>(d);
     }
 
-    static FORCE_INLINE SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
+    FORCE_INLINE constexpr static SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
     {
         return static_cast<SAMPLE>(Px + ErrVal);
     }
@@ -117,17 +117,17 @@ struct LosslessTraits<Triplet<T>, bpp> : LosslessTraitsImpl<T, bpp>
 {
     using PIXEL = Triplet<T>;
 
-    static FORCE_INLINE bool IsNear(int32_t lhs, int32_t rhs) noexcept
+    FORCE_INLINE constexpr static bool IsNear(int32_t lhs, int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
 
-    static FORCE_INLINE bool IsNear(PIXEL lhs, PIXEL rhs) noexcept
+    FORCE_INLINE static bool IsNear(PIXEL lhs, PIXEL rhs) noexcept
     {
         return lhs == rhs;
     }
 
-    static FORCE_INLINE T ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
+    FORCE_INLINE static T ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
     {
         return static_cast<T>(Px + ErrVal);
     }

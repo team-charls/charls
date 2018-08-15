@@ -27,7 +27,7 @@ extern std::vector<signed char> rgquant10Ll;
 extern std::vector<signed char> rgquant12Ll;
 extern std::vector<signed char> rgquant16Ll;
 
-inline int32_t ApplySign(int32_t i, int32_t sign) noexcept
+constexpr int32_t ApplySign(int32_t i, int32_t sign) noexcept
 {
     return (sign ^ i) - sign;
 }
@@ -82,19 +82,19 @@ inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc) noexcept
 
 #endif
 
-inline int32_t UnMapErrVal(int32_t mappedError) noexcept
+constexpr int32_t UnMapErrVal(int32_t mappedError) noexcept
 {
     const int32_t sign = static_cast<int32_t>(mappedError << (int32_t_bit_count-1)) >> (int32_t_bit_count-1);
     return sign ^ (mappedError >> 1);
 }
 
-inline int32_t GetMappedErrVal(int32_t errorValue) noexcept
+constexpr int32_t GetMappedErrVal(int32_t errorValue) noexcept
 {
     const int32_t mappedError = (errorValue >> (int32_t_bit_count-2)) ^ (2 * errorValue);
     return mappedError;
 }
 
-inline int32_t ComputeContextID(int32_t Q1, int32_t Q2, int32_t Q3) noexcept
+constexpr int32_t ComputeContextID(int32_t Q1, int32_t Q2, int32_t Q3) noexcept
 {
     return (Q1 * 9 + Q2) * 9 + Q3;
 }

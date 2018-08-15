@@ -51,7 +51,7 @@ inline void push_back(std::vector<uint8_t>& values, uint16_t value)
 }
 
 
-inline int32_t log_2(int32_t n) noexcept
+constexpr int32_t log_2(int32_t n) noexcept
 {
     int32_t x = 0;
     while (n > (static_cast<int32_t>(1) << x))
@@ -62,13 +62,13 @@ inline int32_t log_2(int32_t n) noexcept
 }
 
 
-inline int32_t Sign(int32_t n) noexcept
+constexpr int32_t Sign(int32_t n) noexcept
 {
     return (n >> (int32_t_bit_count - 1)) | 1;
 }
 
 
-inline int32_t BitWiseSign(int32_t i) noexcept
+constexpr int32_t BitWiseSign(int32_t i) noexcept
 {
     return i >> (int32_t_bit_count - 1);
 }
