@@ -26,9 +26,9 @@ bool contains_string(const uint8_t* container, const uint8_t* bytesToFind, unsig
     return true;
 }
 
-int findstring(std::vector<uint8_t>& container, const uint8_t* bytesToFind, unsigned int bytesLength)
+int FindString(std::vector<uint8_t>& container, const uint8_t* bytesToFind, size_t bytesLength)
 {
-    for (unsigned int i=0; i < container.size() - bytesLength; ++i)
+    for (size_t i = 0; i < container.size() - bytesLength; ++i)
     {
         if (contains_string(&container[i], bytesToFind, bytesLength))
             return i;
@@ -46,7 +46,7 @@ void TestDicomSampleImage(const char* name)
 
     const std::array<uint8_t, 8> pixeldataStart = {0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7};
 
-    const int offset = findstring(data, pixeldataStart.data(), pixeldataStart.size());
+    const int offset = FindString(data, pixeldataStart.data(), pixeldataStart.size());
 
     data.erase(data.begin(), data.begin() + offset - 4);
 

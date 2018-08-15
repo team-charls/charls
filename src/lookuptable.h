@@ -58,8 +58,8 @@ public:
 
         for (int32_t i = 0; i < static_cast<int32_t>(1) << (byte_bit_count - length); ++i)
         {
-            ASSERT(_types[(value << (byte_bit_count - length)) + i].GetLength() == 0);
-            _types[(value << (byte_bit_count - length)) + i] = c;
+            ASSERT(_types[(static_cast<size_t>(value) << (byte_bit_count - length)) + i].GetLength() == 0);
+            _types[(static_cast<size_t>(value) << (byte_bit_count - length)) + i] = c;
         }
     }
 
