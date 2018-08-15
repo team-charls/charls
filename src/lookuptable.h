@@ -8,6 +8,7 @@
 
 
 #include <cstring>
+#include <array>
 
 
 // Tables for fast decoding of short Golomb Codes.
@@ -47,7 +48,7 @@ public:
 
     CTable() noexcept
     {
-        std::memset(_types, 0, sizeof(_types));
+        std::memset(_types.data(), 0, sizeof(_types)); // TODO: analyze if needed
     }
 
     void AddEntry(uint8_t value, Code c) noexcept
@@ -68,7 +69,7 @@ public:
     }
 
 private:
-    Code _types[1 << byte_bit_count];
+    std::array<Code, 1 << byte_bit_count> _types;
 };
 
 

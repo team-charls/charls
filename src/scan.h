@@ -11,6 +11,7 @@
 #include "colortransform.h"
 #include "processline.h"
 #include <sstream>
+#include <array>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
 
@@ -222,8 +223,8 @@ protected:
     int32_t T3;
 
     // compression context
-    JlsContext _contexts[365];
-    CContextRunMode _contextRunmode[2];
+    std::array<JlsContext, 365> _contexts;
+    std::array<CContextRunMode, 2> _contextRunmode;
     int32_t _RUNindex;
     PIXEL* _previousLine;
     PIXEL* _currentLine;
