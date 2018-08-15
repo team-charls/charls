@@ -15,9 +15,9 @@
 namespace
 {
 
-bool contains_string(const uint8_t* container, const uint8_t* bytesToFind, unsigned int bytesLength) noexcept
+bool ContainsString(const uint8_t* container, const uint8_t* bytesToFind, size_t bytesLength) noexcept
 {
-    for (unsigned int j = 0; j < bytesLength; ++j)
+    for (size_t j = 0; j < bytesLength; ++j)
     {
         if (bytesToFind[j] != container[j])
             return false;
@@ -30,8 +30,8 @@ int FindString(std::vector<uint8_t>& container, const uint8_t* bytesToFind, size
 {
     for (size_t i = 0; i < container.size() - bytesLength; ++i)
     {
-        if (contains_string(&container[i], bytesToFind, bytesLength))
-            return i;
+        if (ContainsString(&container[i], bytesToFind, bytesLength))
+            return static_cast<int>(i);
     }
     return -1;
 }
