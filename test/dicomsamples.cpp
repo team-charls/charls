@@ -7,7 +7,7 @@
 #include "../src/charls.h"
 #include <iostream>
 #include <vector>
-
+#include <array>
 
 #define COUNT(x) (sizeof(x)/sizeof((x)[0]))
 
@@ -44,9 +44,9 @@ void TestDicomSampleImage(const char* name)
 
     Assert::IsTrue(success);
 
-    const uint8_t pixeldataStart[] =  { 0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7 };
+    const std::array<uint8_t, 8> pixeldataStart = {0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7};
 
-    const int offset = findstring(data, pixeldataStart, COUNT(pixeldataStart));
+    const int offset = findstring(data, pixeldataStart.data(), pixeldataStart.size());
 
     data.erase(data.begin(), data.begin() + offset - 4);
 
@@ -63,7 +63,7 @@ void TestDicomSampleImage(const char* name)
     std::vector<uint8_t> dataUnc;
     dataUnc.resize(static_cast<size_t>(params.stride) * params.height);
 
-    error = JpegLsDecode(dataUnc.data(), dataUnc.size(), &data[0], data.size(), nullptr, nullptr);
+    error = JpegLsDecode(dataUnc.data(), dataUnc.size(), data.data(), data.size(), nullptr, nullptr);
     Assert::IsTrue(error == charls::ApiResult::OK);
     std::cout << ".";
 }

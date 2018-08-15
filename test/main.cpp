@@ -18,6 +18,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <array>
 
 using namespace charls;
 
@@ -250,36 +251,38 @@ void TestTooSmallOutputBuffer()
 
 void TestDecodeBitStreamWithNoMarkerStart()
 {
-    const uint8_t encodedData[2] = { 0x33, 0x33 };
-    uint8_t output[1000];
+    const std::array<uint8_t, 2> encodedData = {0x33, 0x33};
+    std::array<uint8_t, 1000> output{};
 
-    const auto error = JpegLsDecode(output, 1000, encodedData, 2, nullptr, nullptr);
+    const auto error = JpegLsDecode(output.data(), output.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
     Assert::IsTrue(error == ApiResult::MissingJpegMarkerStart);
 }
 
 
 void TestDecodeBitStreamWithUnsupportedEncoding()
 {
-    const uint8_t encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
-                            0xFF, 0xC3, // Start Of Frame (lossless, Huffman) (JPEG_SOF_3)
-                            0x00, 0x00  // Length of data of the marker
-                          };
-    uint8_t output[1000];
+    const std::array<uint8_t, 6> encodedData = {
+        0xFF, 0xD8, // Start Of Image (JPEG_SOI)
+        0xFF, 0xC3, // Start Of Frame (lossless, Huffman) (JPEG_SOF_3)
+        0x00, 0x00  // Length of data of the marker
+    };
+    std::array<uint8_t, 1000> output{};
 
-    const auto error = JpegLsDecode(output, 1000, encodedData, 6, nullptr, nullptr);
+    const auto error = JpegLsDecode(output.data(), output.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
     Assert::IsTrue(error == ApiResult::UnsupportedEncoding);
 }
 
 
 void TestDecodeBitStreamWithUnknownJpegMarker()
 {
-    const uint8_t encodedData[6] = { 0xFF, 0xD8, // Start Of Image (JPEG_SOI)
+    const std::array<uint8_t, 6> encodedData = {
+        0xFF, 0xD8, // Start Of Image (JPEG_SOI)
         0xFF, 0x01, // Undefined marker
         0x00, 0x00  // Length of data of the marker
     };
-    uint8_t output[1000];
+    std::array<uint8_t, 1000> output{};
 
-    const auto error = JpegLsDecode(output, 1000, encodedData, 6, nullptr, nullptr);
+    const auto error = JpegLsDecode(output.data(), output.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
     Assert::IsTrue(error == ApiResult::UnknownJpegMarker);
 }
 

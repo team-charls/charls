@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include <array>
 
 using namespace charls;
 
@@ -153,7 +154,7 @@ void DecompressFile(const char* strNameEncoded, const char* strNameRaw, int ioff
 ////};
 
 
-const uint8_t rgbyte[] = { 0,   0,  90,  74,
+const std::array<uint8_t, 16> rgbyte = { 0,   0,  90,  74,
 68,  50,  43, 205,
 64, 145, 145, 145,
 100, 145, 145, 145};
@@ -169,7 +170,7 @@ void TestSampleAnnexH3()
 {
     ////Size size = Size(4,4);
     std::vector<uint8_t> vecRaw(16);
-    memcpy(vecRaw.data(), rgbyte, 16);
+    memcpy(vecRaw.data(), rgbyte.data(), rgbyte.size());
     ////  TestJls(vecRaw, size, 8, 1, ILV_NONE, rgbyteComp, sizeof(rgbyteComp), false);
 }
 
