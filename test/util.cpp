@@ -15,12 +15,17 @@ using namespace charls;
 namespace
 {
 
+MSVC_WARNING_SUPPRESS(26497) // cannot be marked constexpr, check must be executed at runtime.
+
 bool IsMachineLittleEndian() noexcept
 {
     const int a = 0xFF000001;
-    const char* chars = reinterpret_cast<const char*>(&a);
+    const auto* chars = reinterpret_cast<const char*>(&a);
     return chars[0] == 0x01;
 }
+
+MSVC_WARNING_UNSUPPRESS()
+
 
 } // namespace
 

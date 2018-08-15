@@ -44,4 +44,12 @@ public:
     }
 };
 
+#ifdef _MSC_VER
+#define MSVC_WARNING_SUPPRESS(x) __pragma(warning(push)) __pragma(warning(disable : x))  // NOLINT(misc-macro-parentheses)
+#define MSVC_WARNING_UNSUPPRESS() __pragma(warning(pop))
+#else
+#define MSVC_WARNING_SUPPRESS(x)
+#define MSVC_WARNING_UNSUPPRESS()
+#endif
+
 #endif
