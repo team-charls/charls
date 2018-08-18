@@ -16,7 +16,7 @@ enum class JpegMarkerCode : uint8_t;
 //
 // Purpose: 'Writer' class that can generate JPEG-LS file streams.
 //
-class JpegStreamWriter
+class JpegStreamWriter final
 {
     friend class JpegMarkerSegment;
     friend class JpegImageDataSegment;

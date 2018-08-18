@@ -9,7 +9,7 @@
 
 // Implements statistical modeling for the run mode context.
 // Computes model dependent parameters like the Golomb code lengths
-struct CContextRunMode
+struct CContextRunMode final
 {
     // Note: members are sorted based on their size.
     int32_t A;

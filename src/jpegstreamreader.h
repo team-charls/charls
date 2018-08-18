@@ -20,7 +20,7 @@ JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t 
 //
 // JpegStreamReader: minimal implementation to read a JPEG byte stream.
 //
-class JpegStreamReader
+class JpegStreamReader final
 {
 public:
     explicit JpegStreamReader(ByteStreamInfo byteStreamInfo) noexcept;

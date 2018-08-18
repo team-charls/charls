@@ -39,7 +39,7 @@ protected:
 };
 
 
-class PostProcessSingleComponent : public ProcessLine
+class PostProcessSingleComponent final : public ProcessLine
 {
 public:
     PostProcessSingleComponent(void* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
@@ -93,7 +93,7 @@ inline void ByteSwap(void* data, int count)
     }
 }
 
-class PostProcessSingleStream : public ProcessLine
+class PostProcessSingleStream final : public ProcessLine
 {
 public:
     PostProcessSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
@@ -227,7 +227,7 @@ void TransformTripletToLine(const Triplet<T>* byteInput, int32_t pixelStrideIn, 
 
 
 template<typename TRANSFORM>
-class ProcessTransformed : public ProcessLine
+class ProcessTransformed final : public ProcessLine
 {
 public:
     ProcessTransformed(ByteStreamInfo rawStream, const JlsParameters& info, TRANSFORM transform) :

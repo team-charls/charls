@@ -62,14 +62,14 @@ struct LosslessTraitsImpl
 
 
 template<typename T, int32_t bpp>
-struct LosslessTraits : LosslessTraitsImpl<T, bpp>
+struct LosslessTraits final : LosslessTraitsImpl<T, bpp>
 {
     using PIXEL = T;
 };
 
 
 template<>
-struct LosslessTraits<uint8_t, 8> : LosslessTraitsImpl<uint8_t, 8>
+struct LosslessTraits<uint8_t, 8> final : LosslessTraitsImpl<uint8_t, 8>
 {
     using PIXEL = SAMPLE;
 
@@ -91,7 +91,7 @@ struct LosslessTraits<uint8_t, 8> : LosslessTraitsImpl<uint8_t, 8>
 
 
 template<>
-struct LosslessTraits<uint16_t, 16> : LosslessTraitsImpl<uint16_t, 16>
+struct LosslessTraits<uint16_t, 16> final : LosslessTraitsImpl<uint16_t, 16>
 {
     using PIXEL = SAMPLE;
 
@@ -113,7 +113,7 @@ struct LosslessTraits<uint16_t, 16> : LosslessTraitsImpl<uint16_t, 16>
 
 
 template<typename T, int32_t bpp>
-struct LosslessTraits<Triplet<T>, bpp> : LosslessTraitsImpl<T, bpp>
+struct LosslessTraits<Triplet<T>, bpp> final : LosslessTraitsImpl<T, bpp>
 {
     using PIXEL = Triplet<T>;
 

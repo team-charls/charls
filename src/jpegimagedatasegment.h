@@ -8,7 +8,7 @@
 #include "jpegsegment.h"
 #include "publictypes.h"
 
-class JpegImageDataSegment : public JpegSegment
+class JpegImageDataSegment final : public JpegSegment
 {
 public:
     JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& params, int componentCount) noexcept

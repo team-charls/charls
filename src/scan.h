@@ -101,7 +101,7 @@ constexpr int32_t ComputeContextID(int32_t Q1, int32_t Q2, int32_t Q3) noexcept
 
 
 template<typename Traits, typename Strategy>
-class JlsCodec : public Strategy
+class JlsCodec final : public Strategy
 {
 public:
     using PIXEL = typename Traits::PIXEL;

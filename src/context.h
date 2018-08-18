@@ -13,7 +13,7 @@
 //
 // Purpose: a JPEG-LS context with it's current statistics.
 //
-struct JlsContext
+struct JlsContext final
 {
     int32_t A;
     int32_t B;

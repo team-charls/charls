@@ -26,7 +26,7 @@ struct TransformNoneImpl
 
 
 template<typename T>
-struct TransformNone : TransformNoneImpl<T>
+struct TransformNone final : TransformNoneImpl<T>
 {
     static_assert(std::is_integral<T>::value, "Integral required.");
 
@@ -35,7 +35,7 @@ struct TransformNone : TransformNoneImpl<T>
 
 
 template<typename T>
-struct TransformHp1
+struct TransformHp1 final
 {
     static_assert(std::is_integral<T>::value, "Integral required.");
 
@@ -68,7 +68,7 @@ private:
 
 
 template<typename T>
-struct TransformHp2
+struct TransformHp2 final
 {
     static_assert(std::is_integral<T>::value, "Integral required.");
 
@@ -101,7 +101,7 @@ private:
 
 
 template<typename T>
-struct TransformHp3
+struct TransformHp3 final
 {
     static_assert(std::is_integral<T>::value, "Integral required.");
 
@@ -141,7 +141,7 @@ private:
 // Transform class that shifts bits towards the high bit when bit count is not 8 or 16
 // needed to make the HP color transformations work correctly.
 template<typename Transform>
-struct TransformShifted
+struct TransformShifted final
 {
     using size_type = typename Transform::size_type;
 

@@ -25,7 +25,7 @@ MSVC_WARNING_SUPPRESS(26432 26495)
 // TODO: report false warning 26495
 
 template<typename sample, typename pixel>
-struct DefaultTraits
+struct DefaultTraits final
 {
     using SAMPLE = sample;
     using PIXEL = pixel;

@@ -15,7 +15,7 @@
 enum class JpegMarkerCode : uint8_t;
 
 
-class JpegMarkerSegment : public JpegSegment
+class JpegMarkerSegment final : public JpegSegment
 {
 public:
     /// <summary>

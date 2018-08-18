@@ -11,7 +11,7 @@ struct JlsParameters;
 struct JpegLSPresetCodingParameters;
 
 template<typename Strategy>
-class JlsCodecFactory
+class JlsCodecFactory final
 {
 public:
     std::unique_ptr<Strategy> CreateCodec(const JlsParameters& params, const JpegLSPresetCodingParameters& presets);

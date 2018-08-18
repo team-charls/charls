@@ -12,7 +12,7 @@
 
 
 // Tables for fast decoding of short Golomb Codes.
-struct Code
+struct Code final
 {
     Code() noexcept :
         _value(),
@@ -41,7 +41,7 @@ struct Code
 };
 
 
-class CTable
+class CTable final
 {
 public:
     static constexpr size_t byte_bit_count = 8;
