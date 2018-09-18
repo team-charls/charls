@@ -1,6 +1,4 @@
-//
-// Copyright CharLS Team, all rights reserved. See the accompanying "License.txt" for licensed use.
-//
+// Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #ifndef CHARLS_CONSTANTS
 #define CHARLS_CONSTANTS

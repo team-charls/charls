@@ -1,6 +1,4 @@
-﻿//
-// (C) CharLS Team, all rights reserved. See the accompanying "License.txt" for licensed use.
-//
+﻿// Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 using System.Runtime.InteropServices;
 

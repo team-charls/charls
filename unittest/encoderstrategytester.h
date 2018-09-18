@@ -1,8 +1,6 @@
-//
-// (C) CharLS Team 2016, all rights reserved. See the accompanying "License.txt" for licensed use. 
-//
-#pragma once
+// Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
+#pragma once
 
 #include "../src/encoderstrategy.h"
 

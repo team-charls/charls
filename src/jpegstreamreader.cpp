@@ -1,6 +1,4 @@
-//
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
-//
+// Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #include "jpegstreamreader.h"
 #include "util.h"
@@ -33,7 +31,7 @@ int32_t clamp(int32_t i, int32_t j, int32_t maximumSampleValue) noexcept
     return i;
 }
 
- 
+
 ApiResult CheckParameterCoherent(const JlsParameters& params) noexcept
 {
     if (params.bitsPerSample < 2 || params.bitsPerSample > 16)

@@ -1,6 +1,4 @@
-//
-// (C) CharLS Team 2014, all rights reserved. See the accompanying "License.txt" for licensed use.
-//
+// Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #pragma once
 
@@ -52,7 +50,7 @@ enum class JpegMarkerCode : uint8_t
     ApplicationData11 = 0xEB,                   // APP11: Application data 11.
     ApplicationData12 = 0xEC,                   // APP12: Application data 12: used for Picture info.
     ApplicationData13 = 0xEE,                   // APP13: Application data 13: used by PhotoShop IRB
-    ApplicationData14 = 0xED,                   // APP14: Application data 14: used by Adobe 
+    ApplicationData14 = 0xED,                   // APP14: Application data 14: used by Adobe
     ApplicationData15 = 0xEF,                   // APP15: Application data 15.
     Comment = 0xFE                              // COM:  Comment block.
 };

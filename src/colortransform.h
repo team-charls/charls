@@ -1,6 +1,4 @@
-//
-// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use.
-//
+// Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #ifndef CHARLS_COLOR_TRANSFORM
 #define CHARLS_COLOR_TRANSFORM
