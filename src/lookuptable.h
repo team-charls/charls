@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_LOOKUP_TABLE
-#define CHARLS_LOOKUP_TABLE
+#pragma once
 
 #include <cstring>
 #include <array>
@@ -67,6 +66,3 @@ public:
 private:
     std::array<Code, 1 << byte_bit_count> _types;
 };
-
-
-#endif

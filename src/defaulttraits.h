@@ -1,8 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_DEFAULT_TRAITS
-#define CHARLS_DEFAULT_TRAITS
-
+#pragma once
 
 #include "util.h"
 #include "constants.h"
@@ -142,5 +140,3 @@ private:
 };
 
 MSVC_WARNING_UNSUPPRESS()
-
-#endif

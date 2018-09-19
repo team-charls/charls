@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_DECODER_STRATEGY
-#define CHARLS_DECODER_STRATEGY
+#pragma once
 
 #include "util.h"
 #include "processline.h"
@@ -303,6 +302,3 @@ private:
     uint8_t* _nextFFPosition;
     uint8_t* _endPosition;
 };
-
-
-#endif

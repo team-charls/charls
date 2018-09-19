@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef TEST_UTIL
-#define TEST_UTIL
+#pragma once
 
 #include "../src/charls.h"
 #include <vector>
@@ -48,6 +47,4 @@ public:
 #else
 #define MSVC_WARNING_SUPPRESS(x)
 #define MSVC_WARNING_UNSUPPRESS()
-#endif
-
 #endif

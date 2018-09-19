@@ -1,8 +1,5 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_JPEG_IMAGE_DATA_SEGMENT
-#define CHARLS_JPEG_IMAGE_DATA_SEGMENT
-
 #include "jpegsegment.h"
 #include "publictypes.h"
 
@@ -23,5 +20,3 @@ private:
     ByteStreamInfo _rawStreamInfo;
     JlsParameters _params;
 };
-
-#endif

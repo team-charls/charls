@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_JLS_CODEC_FACTORY
-#define CHARLS_JLS_CODEC_FACTORY
+#pragma once
 
 #include <memory>
 
@@ -17,5 +16,3 @@ public:
 private:
     std::unique_ptr<Strategy> CreateOptimizedCodec(const JlsParameters& params);
 };
-
-#endif

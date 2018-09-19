@@ -1,8 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-
-#ifndef CHARLS_UTIL
-#define CHARLS_UTIL
+#pragma once
 
 #include "publictypes.h"
 
@@ -204,5 +202,3 @@ std::ostream& operator<<(typename std::enable_if<std::is_enum<T>::value, std::os
 {
     return stream << static_cast<typename std::underlying_type<T>::type>(e);
 }
-
-#endif

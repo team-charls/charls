@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_LOSSLESS_TRAITS
-#define CHARLS_LOSSLESS_TRAITS
+#pragma once
 
 #include "constants.h"
 #include <cstdint>
@@ -130,5 +129,3 @@ struct LosslessTraits<Triplet<T>, bpp> final : LosslessTraitsImpl<T, bpp>
         return static_cast<T>(Px + ErrVal);
     }
 };
-
-#endif

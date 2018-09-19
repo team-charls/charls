@@ -1,13 +1,10 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_JPEG_SEGMENT
-#define CHARLS_JPEG_SEGMENT
+#pragma once
 
 class JpegStreamWriter;
 
-//
 // Purpose: base class for segments that can be written to JPEG streams.
-//
 class JpegSegment
 {
 public:
@@ -22,5 +19,3 @@ public:
 protected:
     JpegSegment() = default;
 };
-
-#endif

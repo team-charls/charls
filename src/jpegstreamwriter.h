@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_JPEG_STREAM_WRITER
-#define CHARLS_JPEG_STREAM_WRITER
+#pragma once
 
 #include "util.h"
 #include "jpegsegment.h"
@@ -11,9 +10,7 @@
 enum class JpegMarkerCode : uint8_t;
 
 
-//
 // Purpose: 'Writer' class that can generate JPEG-LS file streams.
-//
 class JpegStreamWriter final
 {
     friend class JpegMarkerSegment;
@@ -105,5 +102,3 @@ private:
     int32_t _lastComponentIndex;
     std::vector<std::unique_ptr<JpegSegment>> _segments;
 };
-
-#endif

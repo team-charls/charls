@@ -1,15 +1,11 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_CONTEXT
-#define CHARLS_CONTEXT
-
+#pragma once
 
 #include <cstdint>
 
 
-//
 // Purpose: a JPEG-LS context with it's current statistics.
-//
 struct JlsContext final
 {
     int32_t A;
@@ -110,5 +106,3 @@ struct JlsContext final
         return k;
     }
 };
-
-#endif

@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_JPEG_STREAM_READER
-#define CHARLS_JPEG_STREAM_READER
+#pragma once
 
 #include "publictypes.h"
 #include <cstdint>
@@ -16,9 +15,7 @@ class JpegCustomParameters;
 JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t allowedLossyError) noexcept;
 
 
-//
-// JpegStreamReader: minimal implementation to read a JPEG byte stream.
-//
+// Purpose: minimal implementation to read a JPEG byte stream.
 class JpegStreamReader final
 {
 public:
@@ -68,6 +65,3 @@ private:
     JlsParameters _params;
     JlsRect _rect;
 };
-
-
-#endif

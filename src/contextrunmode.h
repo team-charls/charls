@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_CONTEXT_RUN_MODE
-#define CHARLS_CONTEXT_RUN_MODE
+#pragma once
 
 #include <cstdint>
 
@@ -103,5 +102,3 @@ struct CContextRunMode final
         return k != 0 || 2 * Nn >= N;
     }
 };
-
-#endif

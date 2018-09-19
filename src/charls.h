@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_CHARLS
-#define CHARLS_CHARLS
+#pragma once
 
 #include "publictypes.h"
 
@@ -82,7 +81,5 @@ CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsDecodeRect(void* uncompresse
 CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& bytesWritten, ByteStreamInfo rawStreamInfo, const JlsParameters& params, char* errorMessage);
 CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info, char* errorMessage);
 CHARLS_DLL_IMPORT_EXPORT(CharlsApiResultType) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params, char* errorMessage);
-
-#endif
 
 #endif

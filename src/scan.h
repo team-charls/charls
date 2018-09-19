@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_SCAN
-#define CHARLS_SCAN
+#pragma once
 
 #include "lookuptable.h"
 #include "contextrunmode.h"
@@ -849,5 +848,3 @@ void JlsCodec<Traits, Strategy>::InitParams(int32_t t1, int32_t t2, int32_t t3, 
     _contextRunmode[1] = CContextRunMode(std::max(2, (traits.RANGE + 32) / 64), 1, nReset);
     _RUNindex = 0;
 }
-
-#endif

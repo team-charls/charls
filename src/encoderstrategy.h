@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_ENCODER_STRATEGY
-#define CHARLS_ENCODER_STRATEGY
+#pragma once
 
 #include "processline.h"
 #include "decoderstrategy.h"
@@ -193,5 +192,3 @@ private:
     std::vector<uint8_t> _buffer;
     std::basic_streambuf<char>* _compressedStream;
 };
-
-#endif

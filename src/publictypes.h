@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_PUBLIC_TYPES
-#define CHARLS_PUBLIC_TYPES
+#pragma once
 
 #ifdef __cplusplus
 
@@ -339,7 +338,5 @@ inline ByteStreamInfo FromByteArrayConst(const void* bytes, std::size_t count) n
     return FromByteArray(const_cast<void*>(bytes), count);
 }
 
-
-#endif
 
 #endif

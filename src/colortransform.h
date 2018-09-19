@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_COLOR_TRANSFORM
-#define CHARLS_COLOR_TRANSFORM
+#pragma once
 
 #include "util.h"
 
@@ -189,6 +188,3 @@ private:
     int _shift;
     Transform _colorTransform;
 };
-
-
-#endif

@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#ifndef CHARLS_PROCESS_LINE
-#define CHARLS_PROCESS_LINE
+#pragma once
 
 #include "util.h"
 #include "publictypes.h"
@@ -347,6 +346,3 @@ private:
     typename TRANSFORM::Inverse _inverseTransform;
     ByteStreamInfo _rawPixels;
 };
-
-
-#endif
