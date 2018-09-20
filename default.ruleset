@@ -4,7 +4,7 @@
   <Rules AnalyzerId="Microsoft.Analyzers.NativeCodeAnalysis" RuleNamespace="Microsoft.Rules.Native">
     <Rule Id="C26426" Action="None" />
     <Rule Id="C26429" Action="None" />
-    <Rule Id="C26444" Action="None" />
+    <Rule Id="C26440" Action="None" />
     <Rule Id="C26446" Action="None" />
     <Rule Id="C26472" Action="None" />
     <Rule Id="C26481" Action="None" />
@@ -15,6 +15,5 @@
     <Rule Id="C26490" Action="None" />
     <Rule Id="C26492" Action="None" />
     <Rule Id="C26494" Action="None" />
-    <Rule Id="C26497" Action="None" />
   </Rules>
 </RuleSet>

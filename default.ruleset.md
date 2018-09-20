@@ -6,8 +6,8 @@ C26426: Global initializer calls a non-constexpr function 'xxx'
 C26429: Symbol 'xxx' is never tested for nullness, it can be marked as not_null (f.23).
 -> Rationale: Prefast attributes are better.
 
-C26440 can be declared noexcept
- => Rationale: generates false warnings for virtual functions, can be enabled for analysis purposes.
+C26440 Function can be declared noexcept
+ => Rationale: generates false warnings for virtual functions (known defect in VS 2017 15.8.0)
 
 C26446: Prefer to use gsl::at() instead of unchecked subscript operator.
  -> Rationale: CharLS require good performance, gsl:at() cannot be used. debug STL already checks.
@@ -21,7 +21,7 @@ C26481: Do not pass an array as a single pointer.
 C26482:Only index into arrays using constant expressions.
 -> Rationale: static analysis can verify access, std::array during runtime (debug)
 
-C26486: Lifetime problem.
+C26485: Lifetime problem.
 -> Rationale: many false warnings, rule checker has problems.
 
 C26486: Lifetime problem.
