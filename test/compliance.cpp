@@ -19,7 +19,7 @@ void Triplet2Planar(std::vector<uint8_t>& rgbyte, Size size)
 {
     std::vector<uint8_t> rgbytePlanar(rgbyte.size());
 
-    const size_t cbytePlane = static_cast<size_t>(size.cx) * size.cy;
+    const size_t cbytePlane = size.cx * size.cy;
     for (size_t index = 0; index < cbytePlane; index++)
     {
         rgbytePlanar[index] = rgbyte[index * 3 + 0];
