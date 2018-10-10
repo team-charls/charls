@@ -81,7 +81,7 @@ inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc) noexcept
 
 constexpr int32_t UnMapErrVal(int32_t mappedError) noexcept
 {
-    const int32_t sign = static_cast<int32_t>(mappedError << (int32_t_bit_count-1)) >> (int32_t_bit_count-1);
+    const int32_t sign = mappedError << (int32_t_bit_count - 1) >> (int32_t_bit_count - 1);
     return sign ^ (mappedError >> 1);
 }
 
