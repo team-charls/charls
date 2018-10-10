@@ -286,7 +286,7 @@ typename Traits::SAMPLE JlsCodec<Traits,Strategy>::DoRegular(int32_t Qs, int32_t
 inline std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedError) noexcept
 {
     const int32_t highBits = mappedError >> k;
-    return std::make_pair(highBits + k + 1, (static_cast<int32_t>(1) << k) | (mappedError & ((static_cast<int32_t>(1) << k) - 1)));
+    return std::make_pair(highBits + k + 1, (1 << k) | (mappedError & ((1 << k) - 1)));
 }
 
 

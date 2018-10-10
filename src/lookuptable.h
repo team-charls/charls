@@ -51,7 +51,7 @@ public:
         const int32_t length = c.GetLength();
         ASSERT(static_cast<size_t>(length) <= byte_bit_count);
 
-        for (int32_t i = 0; i < static_cast<int32_t>(1) << (byte_bit_count - length); ++i)
+        for (int32_t i = 0; i < 1 << (byte_bit_count - length); ++i)
         {
             ASSERT(_types[(static_cast<size_t>(value) << (byte_bit_count - length)) + i].GetLength() == 0);
             _types[(static_cast<size_t>(value) << (byte_bit_count - length)) + i] = c;

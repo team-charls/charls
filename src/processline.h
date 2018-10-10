@@ -103,14 +103,14 @@ public:
 
     void NewLineRequested(void* dest, int pixelCount, int /*destStride*/) override
     {
-        auto bytesToRead = pixelCount * _bytesPerPixel;
+        auto bytesToRead = static_cast<std::streamsize>(pixelCount) * _bytesPerPixel;
         while (bytesToRead != 0)
         {
             const auto bytesRead = _rawData->sgetn(static_cast<char*>(dest), bytesToRead);
             if (bytesRead == 0)
                 throw charls_error(charls::ApiResult::UncompressedBufferTooSmall);
 
-            bytesToRead = static_cast<std::size_t>(bytesToRead - bytesRead);
+            bytesToRead = bytesToRead - bytesRead;
         }
 
         if (_bytesPerPixel == 2)
