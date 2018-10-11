@@ -1,4 +1,4 @@
-﻿// Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
+// Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 using NUnit.Framework;
 
@@ -67,9 +67,8 @@ namespace CharLS.Test
         public void EquatableWithNull()
         {
             var a = new JpegLSMetadataInfo();
-            JpegLSMetadataInfo b = null;
 
-            Assert.IsFalse(a.Equals(b));
+            Assert.IsFalse(a.Equals(null));
             Assert.IsFalse(a.Equals((object)null));
         }
     }

@@ -664,9 +664,9 @@ int main(int argc, char* argv[])
                 return 0;
             }
             std::fstream pnmFile(argv[2], mode_input);
-            std::fstream jlsFile(argv[3], mode_output);
+            const std::fstream jlsFile(argv[3], mode_output);
 
-            return EncodePnm(pnmFile,jlsFile) ? EXIT_SUCCESS : EXIT_FAILURE;
+            return EncodePnm(pnmFile, jlsFile) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         if (str == "-comparepnm")

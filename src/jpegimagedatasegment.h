@@ -1,6 +1,9 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
+#pragma once
+
 #include "jpegsegment.h"
+
 #include <charls/publictypes.h>
 
 class JpegImageDataSegment final : public JpegSegment

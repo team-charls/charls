@@ -18,7 +18,7 @@ void TestFile16BitAs12(const char* filename, int ioffs, Size size2, int ccomp, b
 
     FixEndian(&uncompressedData, littleEndianFile);
 
-    uint16_t* pushort = reinterpret_cast<uint16_t*>(uncompressedData.data());
+    auto pushort = reinterpret_cast<uint16_t*>(uncompressedData.data());
 
     for (size_t i = 0; i < uncompressedData.size() / 2; ++i)
     {
@@ -114,7 +114,7 @@ void DecodePerformanceTests(int loopCount)
         return;
     }
 
-    JlsParameters params;
+    JlsParameters params{};
     auto result = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
     if (result != charls::ApiResult::OK)
         return;

@@ -8,7 +8,7 @@
 
 #if defined(_WIN32)
 
-#include <windows.h>
+#include <Windows.h>
 
 // returns a point in time in milliseconds (can only be used for time differences, not an absolute time)
 double getTime() noexcept
