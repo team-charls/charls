@@ -9,8 +9,8 @@
 
 #define _CRT_SECURE_NO_DEPRECATE
 
+#include <charls/charls.h>
 
-#include "../../src/charls.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>

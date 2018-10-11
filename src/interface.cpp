@@ -1,6 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#include "charls.h"
+#include <charls/charls.h>
 #include "util.h"
 #include "jpegstreamreader.h"
 #include "jpegstreamwriter.h"

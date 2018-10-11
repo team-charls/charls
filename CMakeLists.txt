@@ -47,7 +47,7 @@ if (WIN32)
    endif()
 endif()
 
-set (charls_PUBLIC_HEADERS src/charls.h src/publictypes.h)
+set (charls_PUBLIC_HEADERS include/charls/charls.h include/charls/publictypes.h)
 
 add_library(CharLS src/interface.cpp src/jpegls.cpp src/jpegmarkersegment.cpp src/jpegstreamreader.cpp src/jpegstreamwriter.cpp)
 set (CHARLS_LIB_MAJOR_VERSION 2)
@@ -62,6 +62,7 @@ install (TARGETS CharLS RUNTIME DESTINATION bin
 install (FILES ${charls_PUBLIC_HEADERS} DESTINATION include/CharLS)
 
 if (BUILD_TESTING)
+  include_directories(include)
   add_executable(charlstest test/main.cpp test/gettime.cpp test/util.cpp test/bitstreamdamage.cpp test/compliance.cpp test/performance.cpp test/dicomsamples.cpp)
   target_link_libraries (charlstest CharLS)
 endif ()

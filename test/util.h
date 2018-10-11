@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../src/charls.h"
+#include <charls/charls.h>
 #include <vector>
 #include <exception>
 

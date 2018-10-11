@@ -45,9 +45,6 @@
     <ClInclude Include="processline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="publictypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="scan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -72,13 +69,16 @@
     <ClInclude Include="jpegstreamreader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="charls.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="jlscodecfactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\charls\charls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\charls\publictypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

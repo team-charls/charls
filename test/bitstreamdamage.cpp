@@ -3,8 +3,6 @@
 #include "bitstreamdamage.h"
 #include "util.h"
 
-#include "../src/charls.h"
-
 #include <iostream>
 #include <vector>
 

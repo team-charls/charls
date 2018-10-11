@@ -2,7 +2,6 @@
 
 #include "performance.h"
 #include "util.h"
-#include "../src/charls.h"
 
 #include <vector>
 #include <ratio>

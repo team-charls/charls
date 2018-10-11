@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #include "util.h"
-#include "../src/charls.h"
 
 #include "../src/defaulttraits.h"
 #include "../src/losslesstraits.h"

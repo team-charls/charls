@@ -2,7 +2,7 @@
 
 #include "dicomsamples.h"
 #include "util.h"
-#include "../src/charls.h"
+
 #include <iostream>
 #include <vector>
 #include <array>

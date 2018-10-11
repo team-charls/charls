@@ -75,6 +75,8 @@
 
       <!-- Explicit disable non conforming MSVC compiler options that are not compatible with the C++ standard -->
       <ConformanceMode>true</ConformanceMode>
+
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include</AdditionalIncludeDirectories>      
     </ClCompile>
   </ItemDefinitionGroup>
 
