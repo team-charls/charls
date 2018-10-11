@@ -1,13 +1,8 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-// Use the CharLS DLL on windows, the static library on other platforms.
-#ifdef WIN32
-#define CHARLS_DLL 1
-#else
+#ifndef CHARLS_DLL
 #define CHARLS_STATIC 1
 #endif
-
-#define _CRT_SECURE_NO_DEPRECATE
 
 #include <charls/charls.h>
 
@@ -16,7 +11,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
-
 
 
 typedef struct {
