@@ -7,9 +7,6 @@
 #include <vector>
 #include <system_error>
 
-// ReSharper disable once CppUnusedIncludeDirective
-#include <cassert>
-
 // Use an uppercase alias for assert to make it clear that it is a pre-processor macro.
 #define ASSERT(t) assert(t)
 

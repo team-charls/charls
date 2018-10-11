@@ -4,7 +4,9 @@
 
 #include "util.h"
 #include "processline.h"
+
 #include <memory>
+#include <cassert>
 
 // Purpose: Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
 class DecoderStrategy

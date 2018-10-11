@@ -4,9 +4,10 @@
 
 #include "util.h"
 #include "constants.h"
+
 #include <algorithm>
 #include <cstdlib>
-
+#include <cassert>
 
 // Default traits that support all JPEG LS parameters: custom limit, near, maxval (not power of 2)
 

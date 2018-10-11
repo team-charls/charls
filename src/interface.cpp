@@ -1,11 +1,14 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #include <charls/charls.h>
+
 #include "util.h"
 #include "jpegstreamreader.h"
 #include "jpegstreamwriter.h"
 #include "jpegmarkersegment.h"
+
 #include <cstring>
+#include <cassert>
 
 using namespace charls;
 

@@ -3,8 +3,10 @@
 #include "jpegmarkersegment.h"
 #include "jpegmarkercode.h"
 #include "util.h"
+
 #include <vector>
 #include <cstdint>
+#include <cassert>
 
 using namespace charls;
 

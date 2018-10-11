@@ -4,7 +4,7 @@
 
 #include <cstring>
 #include <array>
-
+#include <cassert>
 
 // Tables for fast decoding of short Golomb Codes.
 struct Code final
