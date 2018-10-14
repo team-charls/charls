@@ -16,9 +16,8 @@
 // This is to allow the traits class to replace the default implementation here with optimized specific implementations.
 // This is done for lossless coding/decoding: see losslesstraits.h
 
-MSVC_WARNING_SUPPRESS(26432 26495)
-
-// TODO: report false warning 26495
+// Note: false warning C26495 has been resolved in MSVC 15.9.0 Preview 3.
+MSVC_WARNING_SUPPRESS(26495)
 
 template<typename sample, typename pixel>
 struct DefaultTraits final
@@ -58,6 +57,7 @@ struct DefaultTraits final
 
     DefaultTraits() = delete;
     DefaultTraits(DefaultTraits&&) = default;
+    ~DefaultTraits() = default;
     DefaultTraits& operator=(const DefaultTraits&) = delete;
     DefaultTraits& operator=(DefaultTraits&&) = delete;
 
