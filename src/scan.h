@@ -838,10 +838,10 @@ void JlsCodec<Traits, Strategy>::InitParams(int32_t t1, int32_t t2, int32_t t3, 
 
     InitQuantizationLUT();
 
-    const int32_t A = std::max(2, (traits.RANGE + 32) / 64);
-    for (unsigned int Q = 0; Q < sizeof(_contexts) / sizeof(_contexts[0]); ++Q)
+    const JlsContext contextInitValue(std::max(2, (traits.RANGE + 32) / 64));
+    for (auto& context : _contexts)
     {
-        _contexts[Q] = JlsContext(A);
+        context = contextInitValue;
     }
 
     _contextRunmode[0] = CContextRunMode(std::max(2, (traits.RANGE + 32) / 64), 0, nReset);
