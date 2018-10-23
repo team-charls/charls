@@ -7,9 +7,6 @@
 #include <vector>
 #include <array>
 
-#define COUNT(x) (sizeof(x)/sizeof((x)[0]))
-
-
 namespace
 {
 

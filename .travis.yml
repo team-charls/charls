@@ -23,6 +23,6 @@ sudo: false
 before_script:
   - mkdir debug
   - cd debug
-  - cmake -DCMAKE_BUILD_TYPE=Debug ..
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DCHARLS_PEDANTIC_WARNINGS=On -DCHARLS_THREAT_WARNINGS_AS_ERRORS=On ..
 
 script: make

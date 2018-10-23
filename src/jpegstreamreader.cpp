@@ -214,7 +214,7 @@ void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode) const
         case JpegMarkerCode::ApplicationData13:
         case JpegMarkerCode::ApplicationData14:
         case JpegMarkerCode::ApplicationData15:
-            break;
+            return;
 
         case JpegMarkerCode::StartOfFrameBaselineJpeg:
         case JpegMarkerCode::StartOfFrameExtendedSequential:
@@ -242,14 +242,11 @@ void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode) const
                 message << "Invalid JPEG stream, marker " << static_cast<unsigned int>(markerCode) << " invalid in current state.";
                 throw charls_error(ApiResult::InvalidCompressedData, message.str());
             }
-
-        default:
-            {
-                std::ostringstream message;
-                message << "Unknown JPEG marker " << static_cast<unsigned int>(markerCode) << " encountered.";
-                throw charls_error(ApiResult::UnknownJpegMarker, message.str());
-            }
     }
+
+    std::ostringstream message;
+    message << "Unknown JPEG marker " << static_cast<unsigned int>(markerCode) << " encountered.";
+    throw charls_error(ApiResult::UnknownJpegMarker, message.str());
 }
 
 

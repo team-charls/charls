@@ -1,5 +1,22 @@
-# test for charlls
+# Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#add_library(CharLS STATIC IMPORTED)
+add_executable(charlstest "")
 
-link_directories (..)
+target_sources(charlstest
+  PRIVATE
+    bitstreamdamage.cpp
+    bitstreamdamage.h
+    compliance.cpp
+    compliance.h
+    dicomsamples.cpp
+    dicomsamples.h
+    main.cpp
+    performance.cpp
+    performance.h
+    gettime.cpp
+    gettime.h
+    util.cpp
+    util.h
+)
+
+target_link_libraries(charlstest PRIVATE charls)

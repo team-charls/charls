@@ -67,6 +67,9 @@
         /wd5026 /wd5027 /wd5039 /wd5042 /wd5045
       </AdditionalOptions>
 
+      <!--  CharLS is cross-platform and cannot use the MSVC only secure CRT library functions. -->
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+
       <!-- Use all cores to speed up the compilation (MS recommended best practice). -->
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       

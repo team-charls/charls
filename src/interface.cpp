@@ -94,7 +94,7 @@ ApiResult ResultAndErrorMessageFromException(char* errorMessage)
 } // namespace
 
 
-CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& bytesWritten,
+ApiResult JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& bytesWritten,
     ByteStreamInfo rawStreamInfo, const struct JlsParameters& params, char* errorMessage)
 {
     try
@@ -150,7 +150,7 @@ CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsEncodeStream(ByteStreamInfo compressed
 }
 
 
-CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info, char* errorMessage)
+ApiResult JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info, char* errorMessage)
 {
     try
     {
@@ -172,7 +172,7 @@ CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsDecodeStream(ByteStreamInfo rawStream,
 }
 
 
-CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params, char* errorMessage)
+ApiResult JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params, char* errorMessage)
 {
     try
     {
@@ -191,7 +191,8 @@ CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsReadHeaderStream(ByteStreamInfo rawStr
 
 extern "C" {
 
-CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage)
+ApiResult CHARLS_API_CALLING_CONVENTION
+JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage)
 {
     if (!destination || !bytesWritten || !source || !params)
         return ApiResult::InvalidJlsParameters;
@@ -203,13 +204,15 @@ CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsEncode(void* destination, size_t desti
 }
 
 
-CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* params, char* errorMessage)
+ApiResult CHARLS_API_CALLING_CONVENTION
+JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* params, char* errorMessage)
 {
     return JpegLsReadHeaderStream(FromByteArrayConst(compressedData, compressedLength), params, errorMessage);
 }
 
 
-CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage)
+ApiResult CHARLS_API_CALLING_CONVENTION
+JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage)
 {
     const ByteStreamInfo compressedStream = FromByteArrayConst(source, sourceLength);
     const ByteStreamInfo rawStreamInfo = FromByteArray(destination, destinationLength);
@@ -218,8 +221,9 @@ CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsDecode(void* destination, size_t desti
 }
 
 
-CHARLS_DLL_IMPORT_EXPORT(ApiResult) JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength,
-    JlsRect roi, const JlsParameters* info, char* errorMessage)
+ApiResult CHARLS_API_CALLING_CONVENTION
+JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength,
+                 JlsRect roi, const JlsParameters* info, char* errorMessage)
 {
     try
     {
