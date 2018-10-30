@@ -107,7 +107,7 @@ struct DefaultTraits final
             errorValue -= RANGE;
         }
 
-        ASSERT(-RANGE / 2 <= errorValue && errorValue <= (RANGE / 2) - 1);
+        ASSERT(-RANGE / 2 <= errorValue && errorValue <= static_cast<int32_t>(ceil(static_cast<double>(RANGE) / 2)) - 1);
         return errorValue;
     }
 
