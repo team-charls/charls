@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <cmath>
 #include <cassert>
 
 // Default traits that support all JPEG LS parameters: custom limit, near, maxval (not power of 2)
