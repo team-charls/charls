@@ -92,16 +92,20 @@ static void *bmp_read_pixel_data(FILE *fp, uint32_t offset, const bmp_dib_header
 }
 
 
-static void *encode_bmp_to_jpegls(const void *pixel_data, size_t pixel_data_size, const bmp_dib_header_t *header, size_t *bytes_written)
+static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size, const bmp_dib_header_t* header, int allowed_lossy_error, size_t* bytes_written)
 {
-    // This function only supports 24-bit BMP pixel data.
-    // 24-BMP pixel data is stored by pixel as RGB. JPEG-LS 
-    struct JlsParameters params = { .allowedLossyError = 0, .interleaveMode = CHARLS_IM_SAMPLE };
+    assert(header->depth == 24); // This function only supports 24-bit BMP pixel data.
+    assert(header->compress_type == 0); // Data needs to be stored by pixel as RGB.
 
+    struct JlsParameters params =
+    {
+        .interleaveMode = CHARLS_IM_SAMPLE,
+        .bitsPerSample = 8,
+        .components = 3
+    };
+    params.allowedLossyError = allowed_lossy_error;
     params.width = header->width;
     params.height = header->height;
-    params.bitsPerSample = 8;
-    params.components = 3;
 
     // Assume that compressed pixels are smaller or equal to uncompressed pixels and reserve some room for JPEG header.
     const size_t encoded_buffer_size = pixel_data_size + 1024;
@@ -141,8 +145,19 @@ static bool save_jpegls_file(const char *filename, const void *buffer, size_t bu
 int main(int argc, char* argv[])
 {
     if (argc < 3) {
-        printf("Usage: input_file_name output_file_name\n");
+        printf("Usage: input_file_name output_file_name [allowed_lossy_error, default=0 (lossless)]\n");
         return EXIT_FAILURE;
+    }
+
+    int allowed_lossy_error = 0;
+    if (argc > 3)
+    {
+        allowed_lossy_error = strtol(argv[3], NULL, 10);
+        if (allowed_lossy_error < 0 || allowed_lossy_error > 255)
+        {
+            printf("allowed_lossy_error needs to be in the range [0,255]\n");
+            return EXIT_FAILURE;
+        }
     }
 
     FILE *input_stream = fopen(argv[1], "rb");
@@ -179,7 +194,7 @@ int main(int argc, char* argv[])
     }
 
     size_t encoded_size;
-    void *encoded_data = encode_bmp_to_jpegls(pixel_data, buffer_size, &dib_header, &encoded_size);
+    void* encoded_data = encode_bmp_to_jpegls(pixel_data, buffer_size, &dib_header, allowed_lossy_error, & encoded_size);
     free(pixel_data);
     if (!encoded_data)
         return EXIT_FAILURE; // error already printed.
