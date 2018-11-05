@@ -32,21 +32,21 @@ int32_t clamp(int32_t i, int32_t j, int32_t maximumSampleValue) noexcept
 }
 
 
-ApiResult CheckParameterCoherent(const JlsParameters& params) noexcept
+jpegls_errc CheckParameterCoherent(const JlsParameters& params) noexcept
 {
     if (params.bitsPerSample < 2 || params.bitsPerSample > 16)
-        return ApiResult::ParameterValueNotSupported;
+        return jpegls_errc::ParameterValueNotSupported;
 
     if (params.interleaveMode < InterleaveMode::None || params.interleaveMode > InterleaveMode::Sample)
-        return ApiResult::InvalidCompressedData;
+        return jpegls_errc::InvalidCompressedData;
 
     switch (params.components)
     {
-        case 4: return params.interleaveMode == InterleaveMode::Sample ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
-        case 3: return ApiResult::OK;
-        case 0: return ApiResult::InvalidJlsParameters;
+        case 4: return params.interleaveMode == InterleaveMode::Sample ? jpegls_errc::ParameterValueNotSupported : jpegls_errc::OK;
+        case 3: return jpegls_errc::OK;
+        case 0: return jpegls_errc::InvalidJlsParameters;
 
-        default: return params.interleaveMode != InterleaveMode::None ? ApiResult::ParameterValueNotSupported : ApiResult::OK;
+        default: return params.interleaveMode != InterleaveMode::None ? jpegls_errc::ParameterValueNotSupported : jpegls_errc::OK;
     }
 }
 
@@ -95,7 +95,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
     ReadHeader();
 
     const auto result = CheckParameterCoherent(_params);
-    if (result != ApiResult::OK)
+    if (result != jpegls_errc::OK)
         throw charls_error(result);
 
     if (_rect.Width <= 0)
@@ -107,7 +107,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
     const int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_params.bitsPerSample + 7)/8);
 
     if (rawPixels.rawData && static_cast<int64_t>(rawPixels.count) < bytesPerPlane * _params.components)
-        throw charls_error(ApiResult::UncompressedBufferTooSmall);
+        throw charls_error(jpegls_errc::UncompressedBufferTooSmall);
 
     int componentIndex = 0;
 
@@ -140,7 +140,7 @@ void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 void JpegStreamReader::ReadHeader()
 {
     if (ReadNextMarkerCode() != JpegMarkerCode::StartOfImage)
-        throw charls_error(ApiResult::StartOfImageMarkerNotFound,
+        throw charls_error(jpegls_errc::StartOfImageMarkerNotFound,
             "Invalid JPEG stream, first marker code is not SOI");
 
     for (;;)
@@ -155,7 +155,7 @@ void JpegStreamReader::ReadHeader()
         const int bytesRead = ReadMarkerSegment(markerCode, segmentSize - 2) + 2;
         const int paddingToRead = segmentSize - bytesRead;
         if (paddingToRead < 0)
-            throw charls_error(ApiResult::InvalidCompressedData);
+            throw charls_error(jpegls_errc::InvalidCompressedData);
 
         for (int i = 0; i < paddingToRead; ++i)
         {
@@ -174,7 +174,7 @@ JpegMarkerCode JpegStreamReader::ReadNextMarkerCode()
         message << std::setfill('0');
         message << "Expected JPEG Marker start byte 0xFF but the byte value was 0x" << std::hex << std::uppercase
                 << std::setw(2) << static_cast<unsigned int>(byte);
-        throw charls_error(ApiResult::MissingJpegMarkerStart, message.str());
+        throw charls_error(jpegls_errc::MissingJpegMarkerStart, message.str());
     }
 
     // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see T.81, B.1.1.2)
@@ -230,23 +230,23 @@ void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode) const
             {
                 std::ostringstream message;
                 message << "JPEG encoding with marker " << static_cast<unsigned int>(markerCode) << " is not supported.";
-                throw charls_error(ApiResult::UnsupportedEncoding, message.str());
+                throw charls_error(jpegls_errc::UnsupportedEncoding, message.str());
             }
 
         case JpegMarkerCode::StartOfImage:
-            throw charls_error(ApiResult::DuplicateStartOfImageMarker, "Invalid duplicate SOI marker detected.");
+            throw charls_error(jpegls_errc::DuplicateStartOfImageMarker, "Invalid duplicate SOI marker detected.");
 
         case JpegMarkerCode::EndOfImage:
             {
                 std::ostringstream message;
                 message << "Invalid JPEG stream, marker " << static_cast<unsigned int>(markerCode) << " invalid in current state.";
-                throw charls_error(ApiResult::InvalidCompressedData, message.str());
+                throw charls_error(jpegls_errc::InvalidCompressedData, message.str());
             }
     }
 
     std::ostringstream message;
     message << "Unknown JPEG marker " << static_cast<unsigned int>(markerCode) << " encountered.";
-    throw charls_error(ApiResult::UnknownJpegMarker, message.str());
+    throw charls_error(jpegls_errc::UnknownJpegMarker, message.str());
 }
 
 
@@ -313,7 +313,7 @@ int JpegStreamReader::ReadPresetParameters()
         {
             std::ostringstream message;
             message << "JPEG-LS preset parameters with type " << static_cast<unsigned int>(type) << " is not supported.";
-            throw charls_error(ApiResult::UnsupportedEncoding, message.str());
+            throw charls_error(jpegls_errc::UnsupportedEncoding, message.str());
         }
 
     case 0x5: // JPEG-LS Extended (ISO/IEC 14495-2): Coding method specification
@@ -327,14 +327,14 @@ int JpegStreamReader::ReadPresetParameters()
         {
             std::ostringstream message;
             message << "JPEG-LS Extended (ISO/IEC 14495-2) preset parameter with type " << static_cast<unsigned int>(type) << " is not supported.";
-            throw charls_error(ApiResult::UnsupportedEncoding, message.str());
+            throw charls_error(jpegls_errc::UnsupportedEncoding, message.str());
         }
 
     default:
         {
             std::ostringstream message;
             message << "JPEG-LS preset parameters with invalid type " << static_cast<unsigned int>(type) << " encountered.";
-            throw charls_error(ApiResult::InvalidJlsParameters, message.str());
+            throw charls_error(jpegls_errc::InvalidJlsParameters, message.str());
         }
     }
 }
@@ -346,20 +346,20 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     {
         const JpegMarkerCode markerCode = ReadNextMarkerCode();
         if (markerCode != JpegMarkerCode::StartOfScan)
-            throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
+            throw charls_error(jpegls_errc::InvalidCompressedData);// TODO: throw more specific error code.
     }
 
     const int32_t segmentSize = ReadSegmentSize();
     if (segmentSize < 6)
-        throw charls_error(ApiResult::InvalidMarkerSegmentSize,
+        throw charls_error(jpegls_errc::InvalidMarkerSegmentSize,
                            "Invalid segment size, SOS segment size needs to be at least 6");
 
     const int componentCountInScan = ReadByte();
     if (componentCountInScan != 1 && componentCountInScan != _params.components)
-        throw charls_error(ApiResult::ParameterValueNotSupported);
+        throw charls_error(jpegls_errc::ParameterValueNotSupported);
 
     if (segmentSize < 6 + (2 * componentCountInScan))
-        throw charls_error(ApiResult::InvalidMarkerSegmentSize,
+        throw charls_error(jpegls_errc::InvalidMarkerSegmentSize,
                            "Invalid segment size, SOS segment size needs to be at least 6 + 2 * Ns");
 
     for (int i = 0; i < componentCountInScan; ++i)
@@ -371,9 +371,9 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     _params.allowedLossyError = ReadByte(); // Read NEAR parameter
     _params.interleaveMode = static_cast<InterleaveMode>(ReadByte()); // Read ILV parameter
     if (!(_params.interleaveMode == InterleaveMode::None || _params.interleaveMode == InterleaveMode::Line || _params.interleaveMode == InterleaveMode::Sample))
-        throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
+        throw charls_error(jpegls_errc::InvalidCompressedData);// TODO: throw more specific error code.
     if (ReadByte() != 0) // Read Ah and Al.
-        throw charls_error(ApiResult::InvalidCompressedData);// TODO: throw more specific error code.
+        throw charls_error(jpegls_errc::InvalidCompressedData);// TODO: throw more specific error code.
 
     if(_params.stride == 0)
     {
@@ -419,7 +419,7 @@ void JpegStreamReader::ReadJfif()
 int JpegStreamReader::ReadStartOfFrameSegment(int32_t segmentSize)
 {
     if (segmentSize < 6)
-        throw charls_error(ApiResult::InvalidMarkerSegmentSize,
+        throw charls_error(jpegls_errc::InvalidMarkerSegmentSize,
                            "Invalid segment size, SOF_55 segment size needs to be at least 6");
 
     _params.bitsPerSample = ReadByte();
@@ -439,7 +439,7 @@ uint8_t JpegStreamReader::ReadByte()
         return static_cast<uint8_t>(_byteStream.rawStream->sbumpc());
 
     if (_byteStream.count == 0)
-        throw charls_error(ApiResult::CompressedBufferTooSmall);
+        throw charls_error(jpegls_errc::CompressedBufferTooSmall);
 
     const uint8_t value = _byteStream.rawData[0];
     SkipBytes(_byteStream, 1);
@@ -457,7 +457,7 @@ int32_t JpegStreamReader::ReadSegmentSize()
 {
     const int32_t segmentSize = ReadUInt16();
     if (segmentSize < 2)
-        throw charls_error(ApiResult::InvalidMarkerSegmentSize,
+        throw charls_error(jpegls_errc::InvalidMarkerSegmentSize,
                            "Invalid segment size, segment size needs to be at least 2");
 
     return segmentSize;
@@ -486,9 +486,9 @@ int JpegStreamReader::TryReadHPColorTransformSegment(int32_t segmentSize)
 
         case 4: // RgbAsYuvLossy (The standard lossy RGB to YCbCr transform used in JPEG.)
         case 5: // Matrix (transformation is controlled using a matrix that is also stored in the segment.
-            throw charls_error(ApiResult::ImageTypeNotSupported);
+            throw charls_error(jpegls_errc::ImageTypeNotSupported);
 
         default:
-            throw charls_error(ApiResult::InvalidCompressedData);
+            throw charls_error(jpegls_errc::InvalidCompressedData);
     }
 }

@@ -12,7 +12,7 @@ namespace charls
     /// <summary>
     /// Defines the result values that are returned by the CharLS API functions.
     /// </summary>
-    enum class ApiResult
+    enum class jpegls_errc
     {
         OK = 0,                              // The operation completed without errors.
         InvalidJlsParameters = 1,            // One of the JLS parameters is invalid.
@@ -35,6 +35,8 @@ namespace charls
         DuplicateStartOfImageMarker = 18,    // This error is returned when the stream contains more then one SOI marker.
         DuplicateStartOfFrameMarker = 19     // This error is returned when the stream contains more then one SOF marker.
     };
+
+    using ApiResult [[deprecated("Name has been replaced to follow the standard C++ naming convention")]] = jpegls_errc;
 
     /// <summary>
     /// Defines the interleave mode for multi-component (color) pixel data.
@@ -96,7 +98,7 @@ namespace charls
     };
 }
 
-using CharlsApiResultType = charls::ApiResult;
+using CharlsApiResultType = charls::jpegls_errc;
 using CharlsInterleaveModeType = charls::InterleaveMode;
 using CharlsColorTransformationType = charls::ColorTransformation;
 

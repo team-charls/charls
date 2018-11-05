@@ -168,13 +168,13 @@ struct FromBigEndian<8>
 class charls_error : public std::system_error
 {
 public:
-    explicit charls_error(charls::ApiResult errorCode)
+    explicit charls_error(charls::jpegls_errc errorCode)
         : system_error(static_cast<int>(errorCode), CharLSCategoryInstance())
     {
     }
 
 
-    charls_error(charls::ApiResult errorCode, const std::string& message)
+    charls_error(charls::jpegls_errc errorCode, const std::string& message)
         : system_error(static_cast<int>(errorCode), CharLSCategoryInstance(), message)
     {
     }

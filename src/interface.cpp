@@ -18,27 +18,27 @@ namespace
 void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& parameters)
 {
     if (!uncompressedStream.rawStream && !uncompressedStream.rawData)
-        throw charls_error(ApiResult::InvalidJlsParameters, "rawStream or rawData needs to reference to something");
+        throw charls_error(jpegls_errc::InvalidJlsParameters, "rawStream or rawData needs to reference to something");
 
     if (parameters.width < 1 || parameters.width > 65535)
-        throw charls_error(ApiResult::InvalidJlsParameters, "width needs to be in the range [1, 65535]");
+        throw charls_error(jpegls_errc::InvalidJlsParameters, "width needs to be in the range [1, 65535]");
 
     if (parameters.height < 1 || parameters.height > 65535)
-        throw charls_error(ApiResult::InvalidJlsParameters, "height needs to be in the range [1, 65535]");
+        throw charls_error(jpegls_errc::InvalidJlsParameters, "height needs to be in the range [1, 65535]");
 
     if (parameters.bitsPerSample < 2 || parameters.bitsPerSample > 16)
-        throw charls_error(ApiResult::InvalidJlsParameters, "bits per sample needs to be in the range [2, 16]");
+        throw charls_error(jpegls_errc::InvalidJlsParameters, "bits per sample needs to be in the range [2, 16]");
 
     if (!(parameters.interleaveMode == InterleaveMode::None || parameters.interleaveMode == InterleaveMode::Sample || parameters.interleaveMode == InterleaveMode::Line))
-        throw charls_error(ApiResult::InvalidJlsParameters, "interleaveMode needs to be set to a value of {None, Sample, Line}");
+        throw charls_error(jpegls_errc::InvalidJlsParameters, "interleaveMode needs to be set to a value of {None, Sample, Line}");
 
     if (parameters.components < 1 || parameters.components > 255)
-        throw charls_error(ApiResult::InvalidJlsParameters, "components needs to be in the range [1, 255]");
+        throw charls_error(jpegls_errc::InvalidJlsParameters, "components needs to be in the range [1, 255]");
 
     if (uncompressedStream.rawData)
     {
         if (uncompressedStream.count < static_cast<size_t>(parameters.height) * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1))
-            throw charls_error(ApiResult::InvalidJlsParameters, "uncompressed size does not match with the other parameters");
+            throw charls_error(jpegls_errc::InvalidJlsParameters, "uncompressed size does not match with the other parameters");
     }
 
     switch (parameters.components)
@@ -47,17 +47,17 @@ void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& 
         break;
     case 4:
         if (parameters.interleaveMode == InterleaveMode::Sample)
-            throw charls_error(ApiResult::InvalidJlsParameters, "interleaveMode cannot be set to Sample in combination with components = 4");
+            throw charls_error(jpegls_errc::InvalidJlsParameters, "interleaveMode cannot be set to Sample in combination with components = 4");
         break;
     default:
         if (parameters.interleaveMode != InterleaveMode::None)
-            throw charls_error(ApiResult::InvalidJlsParameters, "interleaveMode can only be set to None in combination with components = 1");
+            throw charls_error(jpegls_errc::InvalidJlsParameters, "interleaveMode can only be set to None in combination with components = 1");
         break;
     }
 }
 
 
-ApiResult ResultAndErrorMessage(ApiResult result, char* errorMessage) noexcept
+jpegls_errc ResultAndErrorMessage(jpegls_errc result, char* errorMessage) noexcept
 {
     if (errorMessage)
     {
@@ -68,7 +68,7 @@ ApiResult ResultAndErrorMessage(ApiResult result, char* errorMessage) noexcept
 }
 
 
-ApiResult ResultAndErrorMessageFromException(char* errorMessage)
+jpegls_errc ResultAndErrorMessageFromException(char* errorMessage)
 {
     try
     {
@@ -83,18 +83,18 @@ ApiResult ResultAndErrorMessageFromException(char* errorMessage)
             strcpy(errorMessage, error.what());
         }
 
-        return static_cast<ApiResult>(error.code().value());
+        return static_cast<jpegls_errc>(error.code().value());
     }
     catch (...)
     {
-        return ResultAndErrorMessage(ApiResult::UnexpectedFailure, errorMessage);
+        return ResultAndErrorMessage(jpegls_errc::UnexpectedFailure, errorMessage);
     }
 }
 
 } // namespace
 
 
-ApiResult JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& bytesWritten,
+jpegls_errc JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& bytesWritten,
     ByteStreamInfo rawStreamInfo, const struct JlsParameters& params, char* errorMessage)
 {
     try
@@ -141,7 +141,7 @@ ApiResult JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& bytesW
         writer.Write(compressedStreamInfo);
         bytesWritten = writer.GetBytesWritten();
 
-        return ResultAndErrorMessage(ApiResult::OK, errorMessage);
+        return ResultAndErrorMessage(jpegls_errc::OK, errorMessage);
     }
     catch (...)
     {
@@ -150,7 +150,7 @@ ApiResult JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& bytesW
 }
 
 
-ApiResult JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info, char* errorMessage)
+jpegls_errc JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info, char* errorMessage)
 {
     try
     {
@@ -163,7 +163,7 @@ ApiResult JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressed
 
         reader.Read(rawStream);
 
-        return ResultAndErrorMessage(ApiResult::OK, errorMessage);
+        return ResultAndErrorMessage(jpegls_errc::OK, errorMessage);
     }
     catch (...)
     {
@@ -172,7 +172,7 @@ ApiResult JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressed
 }
 
 
-ApiResult JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params, char* errorMessage)
+jpegls_errc JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params, char* errorMessage)
 {
     try
     {
@@ -181,7 +181,7 @@ ApiResult JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* pa
         reader.ReadStartOfScan(true);
         *params = reader.GetMetadata();
 
-        return ResultAndErrorMessage(ApiResult::OK, errorMessage);
+        return ResultAndErrorMessage(jpegls_errc::OK, errorMessage);
     }
     catch (...)
     {
@@ -191,11 +191,11 @@ ApiResult JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* pa
 
 extern "C" {
 
-ApiResult CHARLS_API_CALLING_CONVENTION
+jpegls_errc CHARLS_API_CALLING_CONVENTION
 JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage)
 {
     if (!destination || !bytesWritten || !source || !params)
-        return ApiResult::InvalidJlsParameters;
+        return jpegls_errc::InvalidJlsParameters;
 
     const ByteStreamInfo rawStreamInfo = FromByteArrayConst(source, sourceLength);
     const ByteStreamInfo compressedStreamInfo = FromByteArray(destination, destinationLength);
@@ -204,14 +204,14 @@ JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, 
 }
 
 
-ApiResult CHARLS_API_CALLING_CONVENTION
+jpegls_errc CHARLS_API_CALLING_CONVENTION
 JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* params, char* errorMessage)
 {
     return JpegLsReadHeaderStream(FromByteArrayConst(compressedData, compressedLength), params, errorMessage);
 }
 
 
-ApiResult CHARLS_API_CALLING_CONVENTION
+jpegls_errc CHARLS_API_CALLING_CONVENTION
 JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* params, char* errorMessage)
 {
     const ByteStreamInfo compressedStream = FromByteArrayConst(source, sourceLength);
@@ -221,7 +221,7 @@ JpegLsDecode(void* destination, size_t destinationLength, const void* source, si
 }
 
 
-ApiResult CHARLS_API_CALLING_CONVENTION
+jpegls_errc CHARLS_API_CALLING_CONVENTION
 JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength,
                  JlsRect roi, const JlsParameters* info, char* errorMessage)
 {
@@ -240,7 +240,7 @@ JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* 
         reader.SetRect(roi);
         reader.Read(rawStreamInfo);
 
-        return ResultAndErrorMessage(ApiResult::OK, errorMessage);
+        return ResultAndErrorMessage(jpegls_errc::OK, errorMessage);
     }
     catch (...)
     {

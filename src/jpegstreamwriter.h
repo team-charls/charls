@@ -63,7 +63,7 @@ private:
         else
         {
             if (_byteOffset >= _data.count)
-                throw charls_error(charls::ApiResult::CompressedBufferTooSmall);
+                throw charls_error(charls::jpegls_errc::CompressedBufferTooSmall);
 
             _data.rawData[_byteOffset++] = val;
         }

@@ -540,7 +540,7 @@ bool ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
 ////}
 
 
-ApiResult DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
+jpegls_errc DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
 {
     std::fstream jlsFile(strNameEncoded, mode_input);
     const ByteStreamInfo compressedByteStream{jlsFile.rdbuf(), nullptr, 0};

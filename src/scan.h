@@ -253,7 +253,7 @@ typename Traits::SAMPLE JlsCodec<Traits,Strategy>::DoRegular(int32_t Qs, int32_t
     {
         ErrVal = UnMapErrVal(DecodeValue(k, traits.LIMIT, traits.qbpp));
         if (std::abs(ErrVal) > 65535)
-            throw charls_error(ApiResult::InvalidCompressedData);
+            throw charls_error(jpegls_errc::InvalidCompressedData);
     }
     if (k == 0)
     {
@@ -578,7 +578,7 @@ int32_t JlsCodec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, i
     }
 
     if (index > cpixelMac)
-        throw charls_error(ApiResult::InvalidCompressedData);
+        throw charls_error(jpegls_errc::InvalidCompressedData);
 
     for (int32_t i = 0; i < index; ++i)
     {
@@ -776,7 +776,7 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
             default:
                 std::ostringstream message;
                 message << "Color transformation " << Info().colorTransformation << " is not supported.";
-                throw charls_error(ApiResult::UnsupportedColorTransform, message.str());
+                throw charls_error(jpegls_errc::UnsupportedColorTransform, message.str());
         }
     }
 
@@ -791,11 +791,11 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
             default:
                 std::ostringstream message;
                 message << "Color transformation " << Info().colorTransformation << " is not supported.";
-                throw charls_error(ApiResult::UnsupportedColorTransform, message.str());
+                throw charls_error(jpegls_errc::UnsupportedColorTransform, message.str());
         }
     }
 
-    throw charls_error(ApiResult::UnsupportedBitDepthForTransform);
+    throw charls_error(jpegls_errc::UnsupportedBitDepthForTransform);
 }
 
 
