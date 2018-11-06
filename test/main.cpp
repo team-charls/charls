@@ -39,8 +39,8 @@ bool ScanFile(const char* strNameEncoded, std::vector<uint8_t>* rgbyteFile, JlsP
     const ByteStreamInfo rawStreamInfo = {&jlsFile, nullptr, 0};
 
     const auto err = JpegLsReadHeaderStream(rawStreamInfo, params, nullptr);
-    Assert::IsTrue(err == ApiResult::OK);
-    return err == ApiResult::OK;
+    Assert::IsTrue(err == jpegls_errc::OK);
+    return err == jpegls_errc::OK;
 }
 
 
@@ -181,12 +181,12 @@ void TestFailOnTooSmallOutputBuffer()
     // Trigger a "buffer too small"" when writing the header markers.
     std::vector<uint8_t> outputBuffer1(1);
     auto result = JpegLsEncode(outputBuffer1.data(), outputBuffer1.size(), &compressedLength, inputBuffer.data(), inputBuffer.size(), &params, nullptr);
-    Assert::IsTrue(result == ApiResult::CompressedBufferTooSmall);
+    Assert::IsTrue(result == jpegls_errc::CompressedBufferTooSmall);
 
     // Trigger a "buffer too small"" when writing the encoded pixel bytes.
     std::vector<uint8_t> outputBuffer2(100);
     result = JpegLsEncode(outputBuffer2.data(), outputBuffer2.size(), &compressedLength, inputBuffer.data(), inputBuffer.size(), &params, nullptr);
-    Assert::IsTrue(result == ApiResult::CompressedBufferTooSmall);
+    Assert::IsTrue(result == jpegls_errc::CompressedBufferTooSmall);
 }
 
 
@@ -209,7 +209,7 @@ void TestBgr()
     params.outputBgr = static_cast<char>(true);
 
     const auto err = JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &params, nullptr);
-    Assert::IsTrue(err == ApiResult::OK);
+    Assert::IsTrue(err == jpegls_errc::OK);
 
     Assert::IsTrue(rgbyteDecoded[0] == 0x69);
     Assert::IsTrue(rgbyteDecoded[1] == 0x77);
@@ -229,7 +229,7 @@ void TestTooSmallOutputBuffer()
     std::vector<uint8_t> rgbyteOut(512 * 511);
     const auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
 
-    Assert::IsTrue(error == ApiResult::UncompressedBufferTooSmall);
+    Assert::IsTrue(error == jpegls_errc::UncompressedBufferTooSmall);
 }
 
 
@@ -242,7 +242,7 @@ void TestTooSmallOutputBuffer()
 ////    std::vector<uint8_t> rgbyteOut(2500 * 3000 * 2);
 ////    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
 ////
-////    Assert::IsTrue(error == ApiResult::UncompressedBufferTooSmall);
+////    Assert::IsTrue(error == jpegls_errc::UncompressedBufferTooSmall);
 ////}
 
 
@@ -252,7 +252,7 @@ void TestDecodeBitStreamWithNoMarkerStart()
     std::array<uint8_t, 1000> output{};
 
     const auto error = JpegLsDecode(output.data(), output.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
-    Assert::IsTrue(error == ApiResult::MissingJpegMarkerStart);
+    Assert::IsTrue(error == jpegls_errc::MissingJpegMarkerStart);
 }
 
 
@@ -266,7 +266,7 @@ void TestDecodeBitStreamWithUnsupportedEncoding()
     std::array<uint8_t, 1000> output{};
 
     const auto error = JpegLsDecode(output.data(), output.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
-    Assert::IsTrue(error == ApiResult::UnsupportedEncoding);
+    Assert::IsTrue(error == jpegls_errc::UnsupportedEncoding);
 }
 
 
@@ -280,7 +280,7 @@ void TestDecodeBitStreamWithUnknownJpegMarker()
     std::array<uint8_t, 1000> output{};
 
     const auto error = JpegLsDecode(output.data(), output.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
-    Assert::IsTrue(error == ApiResult::UnknownJpegMarker);
+    Assert::IsTrue(error == jpegls_errc::UnknownJpegMarker);
 }
 
 
@@ -293,13 +293,13 @@ void TestDecodeRect()
 
     std::vector<uint8_t> rgbyteOutFull(static_cast<size_t>(params.width) * params.height*params.components);
     auto error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
-    Assert::IsTrue(error == ApiResult::OK);
+    Assert::IsTrue(error == jpegls_errc::OK);
 
     const JlsRect rect = { 128, 128, 256, 1 };
     std::vector<uint8_t> rgbyteOut(static_cast<size_t>(rect.Width) * rect.Height);
     rgbyteOut.push_back(0x1f);
     error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), rect, nullptr, nullptr);
-    Assert::IsTrue(error == ApiResult::OK);
+    Assert::IsTrue(error == jpegls_errc::OK);
 
     Assert::IsTrue(memcmp(&rgbyteOutFull[rect.X + static_cast<size_t>(rect.Y) * 512], &rgbyteOut[0], static_cast<size_t>(rect.Width) * rect.Height) == 0);
     Assert::IsTrue(rgbyteOut[static_cast<size_t>(rect.Width) * rect.Height] == 0x1f);
@@ -337,7 +337,7 @@ bool DecodeToPnm(std::istream& input, std::ostream& output)
 
     auto params = JlsParameters();
     auto result = JpegLsReadHeaderStream(inputInfo, &params, nullptr);
-    if (result != ApiResult::OK)
+    if (result != jpegls_errc::OK)
         return false;
     input.seekg(0);
 
@@ -346,7 +346,7 @@ bool DecodeToPnm(std::istream& input, std::ostream& output)
     std::vector<uint8_t> outputBuffer(static_cast<size_t>(params.width) * params.height * bytesPerSample * params.components);
     const auto outputInfo = FromByteArray(outputBuffer.data(), outputBuffer.size());
     result = JpegLsDecodeStream(outputInfo, inputInfo, &params, nullptr);
-    if (result != ApiResult::OK)
+    if (result != jpegls_errc::OK)
         return false;
 
     // PNM format requires most significant byte first (big endian).
@@ -525,7 +525,7 @@ bool ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
 ////
 ////    auto params = JlsParameters();
 ////    auto err = JpegLsReadHeaderStream(compressedByteStream, &params, nullptr);
-////    Assert::IsTrue(err == ApiResult::OK);
+////    Assert::IsTrue(err == jpegls_errc::OK);
 ////
 ////    jlsFile.pubseekpos(std::ios::beg, std::ios_base::in);
 ////
@@ -535,7 +535,7 @@ bool ComparePnm(std::istream& pnmFile1, std::istream& pnmFile2)
 ////    err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, nullptr, nullptr);
 ////    ////size_t outputCount = buf.str().size();
 ////
-////    Assert::IsTrue(err == ApiResult::OK);
+////    Assert::IsTrue(err == jpegls_errc::OK);
 ////    //Assert::IsTrue(outputCount == 512 * 512);
 ////}
 
@@ -640,7 +640,7 @@ int main(int argc, char* argv[])
                 printf("Syntax: -decoderaw inputfile outputfile \r\n");
                 return EXIT_FAILURE;
             }
-            return DecodeRaw(argv[2], argv[3]) == ApiResult::OK ? EXIT_SUCCESS : EXIT_FAILURE;
+            return DecodeRaw(argv[2], argv[3]) == jpegls_errc::OK ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         if (str == "-decodetopnm")

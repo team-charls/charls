@@ -32,13 +32,13 @@ bool VerifyEncodedBytes(const void* uncompressedData, size_t uncompressedLength,
 {
     JlsParameters info = JlsParameters();
     auto error = JpegLsReadHeader(compressedData, compressedLength, &info, nullptr);
-    if (error != ApiResult::OK)
+    if (error != jpegls_errc::OK)
         return false;
 
     std::vector<uint8_t> ourEncodedBytes(compressedLength + 16);
-    size_t bytesWriten;
-    error = JpegLsEncode(ourEncodedBytes.data(), ourEncodedBytes.size(), &bytesWriten, uncompressedData, uncompressedLength, &info, nullptr);
-    if (error != ApiResult::OK)
+    size_t bytesWritten;
+    error = JpegLsEncode(ourEncodedBytes.data(), ourEncodedBytes.size(), &bytesWritten, uncompressedData, uncompressedLength, &info, nullptr);
+    if (error != jpegls_errc::OK)
         return false;
 
     for (size_t i = 0; i < compressedLength; ++i)
@@ -57,7 +57,7 @@ void TestCompliance(const uint8_t* compressedBytes, size_t compressedLength, con
 {
     JlsParameters info{};
     auto err = JpegLsReadHeader(compressedBytes, compressedLength, &info, nullptr);
-    Assert::IsTrue(err == ApiResult::OK);
+    Assert::IsTrue(err == jpegls_errc::OK);
 
     if (bcheckEncode)
     {
@@ -67,7 +67,7 @@ void TestCompliance(const uint8_t* compressedBytes, size_t compressedLength, con
     std::vector<uint8_t> rgbyteOut(static_cast<size_t>(info.height) *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
 
     err = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), compressedBytes, compressedLength, nullptr, nullptr);
-    Assert::IsTrue(err == ApiResult::OK);
+    Assert::IsTrue(err == jpegls_errc::OK);
 
     if (info.allowedLossyError == 0)
     {
@@ -91,7 +91,7 @@ void DecompressFile(const char* strNameEncoded, const char* strNameRaw, int ioff
         return;
 
     JlsParameters params{};
-    if (JpegLsReadHeader(rgbyteFile.data(), rgbyteFile.size(), &params, nullptr) != ApiResult::OK)
+    if (JpegLsReadHeader(rgbyteFile.data(), rgbyteFile.size(), &params, nullptr) != jpegls_errc::OK)
     {
         Assert::IsTrue(false);
         return;

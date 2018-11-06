@@ -28,7 +28,7 @@ namespace CharLSUnitTest
             }
             catch (const system_error &error)
             {
-                Assert::AreEqual(static_cast<int>(ApiResult::CompressedBufferTooSmall), error.code().value());
+                Assert::AreEqual(static_cast<int>(jpegls_errc::CompressedBufferTooSmall), error.code().value());
                 return;
             }
 
@@ -70,7 +70,7 @@ namespace CharLSUnitTest
             }
             catch (const system_error &error)
             {
-                Assert::AreEqual(static_cast<int>(ApiResult::MissingJpegMarkerStart), error.code().value());
+                Assert::AreEqual(static_cast<int>(jpegls_errc::MissingJpegMarkerStart), error.code().value());
                 return;
             }
 
@@ -132,7 +132,7 @@ namespace CharLSUnitTest
             }
             catch (const system_error& error)
             {
-                Assert::AreEqual(static_cast<int>(ApiResult::UnsupportedEncoding), error.code().value());
+                Assert::AreEqual(static_cast<int>(jpegls_errc::UnsupportedEncoding), error.code().value());
                 return;
             }
 
@@ -159,7 +159,7 @@ namespace CharLSUnitTest
             }
             catch (const system_error& error)
             {
-                Assert::AreEqual(static_cast<int>(ApiResult::UnsupportedEncoding), error.code().value());
+                Assert::AreEqual(static_cast<int>(jpegls_errc::UnsupportedEncoding), error.code().value());
                 return;
             }
 
@@ -199,7 +199,7 @@ namespace CharLSUnitTest
             }
             catch (const system_error& error)
             {
-                Assert::AreEqual(static_cast<int>(ApiResult::InvalidMarkerSegmentSize), error.code().value());
+                Assert::AreEqual(static_cast<int>(jpegls_errc::InvalidMarkerSegmentSize), error.code().value());
                 return;
             }
 
@@ -225,7 +225,7 @@ namespace CharLSUnitTest
             }
             catch (const system_error& error)
             {
-                Assert::AreEqual(static_cast<int>(ApiResult::InvalidMarkerSegmentSize), error.code().value());
+                Assert::AreEqual(static_cast<int>(jpegls_errc::InvalidMarkerSegmentSize), error.code().value());
                 return;
             }
 
@@ -264,7 +264,7 @@ namespace CharLSUnitTest
             }
             catch (const system_error& error)
             {
-                Assert::AreEqual(static_cast<int>(ApiResult::InvalidMarkerSegmentSize), error.code().value());
+                Assert::AreEqual(static_cast<int>(jpegls_errc::InvalidMarkerSegmentSize), error.code().value());
                 return;
             }
 
@@ -304,7 +304,7 @@ namespace CharLSUnitTest
             }
             catch (const system_error& error)
             {
-                Assert::AreEqual(static_cast<int>(ApiResult::InvalidMarkerSegmentSize), error.code().value());
+                Assert::AreEqual(static_cast<int>(jpegls_errc::InvalidMarkerSegmentSize), error.code().value());
                 return;
             }
 
@@ -327,7 +327,7 @@ namespace CharLSUnitTest
             }
             catch (const system_error& error)
             {
-                Assert::AreEqual(static_cast<int>(ApiResult::InvalidCompressedData), error.code().value());
+                Assert::AreEqual(static_cast<int>(jpegls_errc::InvalidCompressedData), error.code().value());
                 return;
             }
 
@@ -351,7 +351,7 @@ namespace CharLSUnitTest
             }
             catch (const system_error& error)
             {
-                Assert::AreEqual(static_cast<int>(ApiResult::DuplicateStartOfImageMarker), error.code().value());
+                Assert::AreEqual(static_cast<int>(jpegls_errc::DuplicateStartOfImageMarker), error.code().value());
                 return;
             }
 

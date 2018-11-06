@@ -116,7 +116,7 @@ void DecodePerformanceTests(int loopCount)
 
     JlsParameters params{};
     auto result = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
-    if (result != charls::ApiResult::OK)
+    if (result != charls::jpegls_errc::OK)
         return;
 
     std::vector<uint8_t> uncompressed(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
@@ -126,7 +126,7 @@ void DecodePerformanceTests(int loopCount)
     {
 
         result = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
-        if (result != charls::ApiResult::OK)
+        if (result != charls::jpegls_errc::OK)
         {
             std::cout << "Decode failure: " << static_cast<int>(result) << "\n";
             return;

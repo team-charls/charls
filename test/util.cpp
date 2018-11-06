@@ -115,7 +115,7 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, J
     for (int i = 0; i < loopCount; ++i)
     {
         const auto err = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength, &rgbyteRaw[0], rgbyteOut.size(), &params, nullptr);
-        Assert::IsTrue(err == ApiResult::OK);
+        Assert::IsTrue(err == jpegls_errc::OK);
     }
     const double dwtimeEncodeComplete = getTime();
 
@@ -123,7 +123,7 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, J
     for (int i = 0; i < loopCount; ++i)
     {
         const auto err = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], compressedLength, nullptr, nullptr);
-        Assert::IsTrue(err == ApiResult::OK);
+        Assert::IsTrue(err == jpegls_errc::OK);
     }
     const double dwtimeDecodeComplete = getTime();
 
