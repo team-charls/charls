@@ -2,6 +2,8 @@
 
 #pragma once
 
+namespace charls {
+
 class JpegStreamWriter;
 
 // Purpose: base class for segments that can be written to JPEG streams.
@@ -19,3 +21,5 @@ public:
 protected:
     JpegSegment() = default;
 };
+
+} // namespace charls

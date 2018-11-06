@@ -52,6 +52,8 @@ jpegls_errc CheckParameterCoherent(const JlsParameters& params) noexcept
 
 } // namespace
 
+namespace charls
+{
 
 JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t allowedLossyError) noexcept
 {
@@ -491,4 +493,6 @@ int JpegStreamReader::TryReadHPColorTransformSegment(int32_t segmentSize)
         default:
             throw jpegls_error(jpegls_errc::InvalidCompressedData);
     }
+}
+
 }

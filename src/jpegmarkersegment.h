@@ -8,9 +8,9 @@
 #include <cstdint>
 #include <memory>
 
+namespace charls {
 
 enum class JpegMarkerCode : uint8_t;
-
 
 class JpegMarkerSegment final : public JpegSegment
 {
@@ -69,3 +69,5 @@ private:
     JpegMarkerCode _markerCode;
     std::vector<uint8_t> _content;
 };
+
+} // namespace charls

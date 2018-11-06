@@ -10,6 +10,8 @@
 #include <memory>
 #include <cassert>
 
+namespace charls {
+
 // Purpose: Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
 class DecoderStrategy
 {
@@ -101,16 +103,16 @@ public:
 
     void EndScan()
     {
-        if ((*_position) != 0xFF)
+        if (*_position != 0xFF)
         {
             ReadBit();
 
-            if ((*_position) != 0xFF)
-                throw charls::jpegls_error(charls::jpegls_errc::TooMuchCompressedData);
+            if (*_position != 0xFF)
+                throw jpegls_error(jpegls_errc::TooMuchCompressedData);
         }
 
         if (_readCache != 0)
-            throw charls::jpegls_error(charls::jpegls_errc::TooMuchCompressedData);
+            throw jpegls_error(jpegls_errc::TooMuchCompressedData);
     }
 
     FORCE_INLINE bool OptimizedRead() noexcept
@@ -142,7 +144,7 @@ public:
             if (_position >= _endPosition)
             {
                 if (_validBits <= 0)
-                    throw charls::jpegls_error(charls::jpegls_errc::InvalidCompressedData);
+                    throw jpegls_error(jpegls_errc::InvalidCompressedData);
 
                 return;
             }
@@ -155,7 +157,7 @@ public:
                 if (_position == _endPosition - 1 || (_position[1] & 0x80) != 0)
                 {
                     if (_validBits <= 0)
-                        throw charls::jpegls_error(charls::jpegls_errc::InvalidCompressedData);
+                        throw jpegls_error(jpegls_errc::InvalidCompressedData);
 
                     return;
                 }
@@ -213,7 +215,7 @@ public:
         {
             MakeValid();
             if (_validBits < length)
-                throw charls::jpegls_error(charls::jpegls_errc::InvalidCompressedData);
+                throw jpegls_error(jpegls_errc::InvalidCompressedData);
         }
 
         ASSERT(length != 0 && length <= _validBits);
@@ -306,3 +308,5 @@ private:
     uint8_t* _nextFFPosition;
     uint8_t* _endPosition;
 };
+
+} // namespace charls

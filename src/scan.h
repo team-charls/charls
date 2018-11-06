@@ -17,6 +17,8 @@
 #pragma warning (disable: 4127) // conditional expression is constant (caused by some template methods that are not fully specialized) [VS2017]
 #endif
 
+namespace charls
+{
 
 extern CTable decodingTables[16];
 extern std::vector<signed char> rgquant8Ll;
@@ -848,3 +850,5 @@ void JlsCodec<Traits, Strategy>::InitParams(int32_t t1, int32_t t2, int32_t t3, 
     _contextRunmode[1] = CContextRunMode(std::max(2, (traits.RANGE + 32) / 64), 1, nReset);
     _RUNindex = 0;
 }
+
+} // namespace charls

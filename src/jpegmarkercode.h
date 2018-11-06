@@ -4,6 +4,9 @@
 
 #include <cstdint>
 
+namespace charls
+{
+
 // JPEG Marker codes have the pattern 0xFFaa in a JPEG byte stream.
 // The valid 'aa' options are defined by several ITU / IEC standards:
 // 0x00, 0x01, 0xFE, 0xC0-0xDF are defined in ITU T.81/IEC 10918-1
@@ -28,29 +31,31 @@ enum class JpegMarkerCode : uint8_t
     StartOfFrameProgressiveArithmetic = 0xCA,   // SOF_10: Marks the start of a progressive arithmetic encoded frame.
     StartOfFrameLosslessArithmetic = 0xCB,      // SOF_11: Marks the start of a lossless arithmetic encoded frame.
 
-    StartOfFrameJpegLS = 0xF7,                  // SOF_55: Marks the start of a JPEG-LS encoded frame.
-    JpegLSPresetParameters = 0xF8,              // LSE:    Marks the start of a JPEG-LS preset parameters segment.
+    StartOfFrameJpegLS = 0xF7,     // SOF_55: Marks the start of a JPEG-LS encoded frame.
+    JpegLSPresetParameters = 0xF8, // LSE:    Marks the start of a JPEG-LS preset parameters segment.
 
     /// <summary>
     /// SOF_57: Marks the start of a JPEG-LS extended (ISO/IEC 14495-2) encoded frame.
     /// </summary>
     StartOfFrameJpegLSExtended = 0xF9,
 
-    ApplicationData0 = 0xE0,                    // APP0: Application data 0: used for JFIF header.
-    ApplicationData1 = 0xE1,                    // APP1: Application data 1: used for EXIF or XMP header.
-    ApplicationData2 = 0xE2,                    // APP2: Application data 2: used for ICC profile.
-    ApplicationData3 = 0xE3,                    // APP3: Application data 3: used for meta info
-    ApplicationData4 = 0xE4,                    // APP4: Application data 4.
-    ApplicationData5 = 0xE5,                    // APP5: Application data 5.
-    ApplicationData6 = 0xE6,                    // APP6: Application data 6.
-    ApplicationData7 = 0xE7,                    // APP7: Application data 7: used for HP color-space info.
-    ApplicationData8 = 0xE8,                    // APP8: Application data 8: used for HP color-transformation info or SPIFF header.
-    ApplicationData9 = 0xE9,                    // APP9: Application data 9.
-    ApplicationData10 = 0xEA,                   // APP10: Application data 10.
-    ApplicationData11 = 0xEB,                   // APP11: Application data 11.
-    ApplicationData12 = 0xEC,                   // APP12: Application data 12: used for Picture info.
-    ApplicationData13 = 0xEE,                   // APP13: Application data 13: used by PhotoShop IRB
-    ApplicationData14 = 0xED,                   // APP14: Application data 14: used by Adobe
-    ApplicationData15 = 0xEF,                   // APP15: Application data 15.
-    Comment = 0xFE                              // COM:  Comment block.
+    ApplicationData0 = 0xE0,  // APP0: Application data 0: used for JFIF header.
+    ApplicationData1 = 0xE1,  // APP1: Application data 1: used for EXIF or XMP header.
+    ApplicationData2 = 0xE2,  // APP2: Application data 2: used for ICC profile.
+    ApplicationData3 = 0xE3,  // APP3: Application data 3: used for meta info
+    ApplicationData4 = 0xE4,  // APP4: Application data 4.
+    ApplicationData5 = 0xE5,  // APP5: Application data 5.
+    ApplicationData6 = 0xE6,  // APP6: Application data 6.
+    ApplicationData7 = 0xE7,  // APP7: Application data 7: used for HP color-space info.
+    ApplicationData8 = 0xE8,  // APP8: Application data 8: used for HP color-transformation info or SPIFF header.
+    ApplicationData9 = 0xE9,  // APP9: Application data 9.
+    ApplicationData10 = 0xEA, // APP10: Application data 10.
+    ApplicationData11 = 0xEB, // APP11: Application data 11.
+    ApplicationData12 = 0xEC, // APP12: Application data 12: used for Picture info.
+    ApplicationData13 = 0xEE, // APP13: Application data 13: used by PhotoShop IRB
+    ApplicationData14 = 0xED, // APP14: Application data 14: used by Adobe
+    ApplicationData15 = 0xEF, // APP15: Application data 15.
+    Comment = 0xFE            // COM:  Comment block.
 };
+
+} // namespace charls

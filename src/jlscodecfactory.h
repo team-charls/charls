@@ -7,6 +7,9 @@
 struct JlsParameters;
 struct JpegLSPresetCodingParameters;
 
+namespace charls
+{
+
 template<typename Strategy>
 class JlsCodecFactory final
 {
@@ -16,3 +19,5 @@ public:
 private:
     std::unique_ptr<Strategy> CreateOptimizedCodec(const JlsParameters& params);
 };
+
+} // namespace charls

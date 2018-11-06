@@ -20,6 +20,9 @@
 // Note: false warning C26495 has been resolved in MSVC 15.9.0 Preview 3.
 MSVC_WARNING_SUPPRESS(26495)
 
+namespace charls
+{
+
 template<typename sample, typename pixel>
 struct DefaultTraits final
 {
@@ -140,5 +143,7 @@ private:
         return static_cast<SAMPLE>(CorrectPrediction(val));
     }
 };
+
+} // namespace charls
 
 MSVC_WARNING_UNSUPPRESS()

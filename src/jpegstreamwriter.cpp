@@ -7,7 +7,7 @@
 #include "jpegstreamreader.h"
 #include <vector>
 
-using namespace charls;
+using std::make_unique;
 
 namespace
 {
@@ -34,6 +34,8 @@ bool IsDefault(const JpegLSPresetCodingParameters& custom) noexcept
 
 }
 
+namespace charls
+{
 
 JpegStreamWriter::JpegStreamWriter() noexcept
     : _data(),
@@ -83,5 +85,7 @@ void JpegStreamWriter::AddScan(const ByteStreamInfo& info, const JlsParameters& 
     const int componentCount = params.interleaveMode == InterleaveMode::None ? 1 : params.components;
     AddSegment(JpegMarkerSegment::CreateStartOfScanSegment(_lastComponentIndex, componentCount, params.allowedLossyError, params.interleaveMode));
 
-    AddSegment(std::make_unique<JpegImageDataSegment>(info, params, componentCount));
+    AddSegment(make_unique<JpegImageDataSegment>(info, params, componentCount));
+}
+
 }

@@ -5,6 +5,8 @@
 #include "processline.h"
 #include "decoderstrategy.h"
 
+namespace charls
+{
 
 // Purpose: Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
 class EncoderStrategy
@@ -119,13 +121,13 @@ protected:
     void OverFlow()
     {
         if (!_compressedStream)
-            throw charls::jpegls_error(charls::jpegls_errc::CompressedBufferTooSmall);
+            throw jpegls_error(jpegls_errc::CompressedBufferTooSmall);
 
         const std::size_t bytesCount = _position - _buffer.data();
         const auto bytesWritten = static_cast<std::size_t>(_compressedStream->sputn(reinterpret_cast<char*>(_buffer.data()), _position - _buffer.data()));
 
         if (bytesWritten != bytesCount)
-            throw charls::jpegls_error(charls::jpegls_errc::CompressedBufferTooSmall);
+            throw jpegls_error(jpegls_errc::CompressedBufferTooSmall);
 
         _position = _buffer.data();
         _compressedLength = _buffer.size();
@@ -192,3 +194,5 @@ private:
     std::vector<uint8_t> _buffer;
     std::basic_streambuf<char>* _compressedStream;
 };
+
+} // namespace charls

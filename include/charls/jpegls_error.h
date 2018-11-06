@@ -22,12 +22,12 @@ namespace charls {
 class jpegls_error : public std::system_error
 {
 public:
-    explicit jpegls_error(charls::jpegls_errc error_value)
+    explicit jpegls_error(jpegls_errc error_value)
         : system_error(static_cast<int>(error_value), get_error_category())
     {
     }
 
-    jpegls_error(charls::jpegls_errc error_value, const std::string& message)
+    jpegls_error(jpegls_errc error_value, const std::string& message)
         : system_error(static_cast<int>(error_value), get_error_category(), message)
     {
     }
@@ -40,7 +40,7 @@ public:
 
 inline std::error_code make_error_code(jpegls_errc error_value)
 {
-    return std::error_code(static_cast<int>(error_value), jpegls_error::get_error_category());
+    return {static_cast<int>(error_value), jpegls_error::get_error_category()};
 }
 
 } // namespace

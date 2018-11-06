@@ -4,6 +4,8 @@
 
 #include <cstdint>
 
+namespace charls
+{
 
 // Purpose: a JPEG-LS context with it's current statistics.
 struct JlsContext final
@@ -106,3 +108,5 @@ struct JlsContext final
         return k;
     }
 };
+
+} // namespace charls

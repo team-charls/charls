@@ -8,7 +8,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 
-class DecoderStrategyTester : public DecoderStrategy
+class DecoderStrategyTester : public charls::DecoderStrategy
 {
 public:
     DecoderStrategyTester(const JlsParameters& params, uint8_t* pOutBuf, size_t nOutBufLen) : DecoderStrategy(params)
@@ -25,12 +25,12 @@ public:
     {
     }
 
-    std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo /*rawStreamInfo*/) override
+    std::unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo /*rawStreamInfo*/) override
     {
         return nullptr;
     }
 
-    void DecodeScan(std::unique_ptr<ProcessLine> /*outputData*/, const JlsRect& /*size*/, ByteStreamInfo& /*compressedData*/) override
+    void DecodeScan(std::unique_ptr<charls::ProcessLine> /*outputData*/, const JlsRect& /*size*/, ByteStreamInfo& /*compressedData*/) override
     {
     }
     MSVC_WARNING_UNSUPPRESS()

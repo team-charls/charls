@@ -10,9 +10,10 @@
 #include <vector>
 #include <memory>
 
+namespace charls
+{
 
 enum class JpegMarkerCode : uint8_t;
-
 
 // Purpose: 'Writer' class that can generate JPEG-LS file streams.
 class JpegStreamWriter final
@@ -106,3 +107,5 @@ private:
     int32_t _lastComponentIndex;
     std::vector<std::unique_ptr<JpegSegment>> _segments;
 };
+
+} // namespace charls

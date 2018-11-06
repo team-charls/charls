@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#include "..\src\jpegstreamwriter.h"
+#include "../src/jpegstreamwriter.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -13,7 +13,7 @@ namespace CharLSUnitTest
     public:
         TEST_METHOD(LengthWillbeZeroAfterCreate)
         {
-            JpegStreamWriter writer;
+            charls::JpegStreamWriter writer;
             Assert::AreEqual(static_cast<size_t>(0), writer.GetLength());
         }
     };

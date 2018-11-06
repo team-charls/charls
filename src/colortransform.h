@@ -4,6 +4,9 @@
 
 #include "util.h"
 
+namespace charls
+{
+
 // This file defines simple classes that define (lossless) color transforms.
 // They are invoked in process_line.h to convert between decoded values and the internal line buffers.
 // Color transforms work best for computer generated images, but are outside the official JPEG-LS specifications.
@@ -188,3 +191,5 @@ private:
     int _shift;
     Transform _colorTransform;
 };
+
+} // namespace charls

@@ -5,6 +5,9 @@
 #include "constants.h"
 #include <cstdint>
 
+namespace charls
+{
+
 // Optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
 // This class assumes MaximumSampleValue correspond to a whole number of bits, and no custom ResetValue is set when encoding.
 // The point of this is to have the most optimized code for the most common and most demanding scenario.
@@ -129,3 +132,5 @@ struct LosslessTraits<Triplet<T>, bpp> final : LosslessTraitsImpl<T, bpp>
         return static_cast<T>(Px + ErrVal);
     }
 };
+
+} // namespace charls

@@ -6,6 +6,9 @@
 #include <array>
 #include <cassert>
 
+namespace charls
+{
+
 // Tables for fast decoding of short Golomb Codes.
 struct Code final
 {
@@ -66,3 +69,5 @@ public:
 private:
     std::array<Code, 1 << byte_bit_count> _types;
 };
+
+} // namespace charls

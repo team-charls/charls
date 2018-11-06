@@ -25,9 +25,9 @@ namespace CharLSUnitTest
                 {
                     for (int blue = 0; blue < 255; ++blue)
                     {
-                        const TransformHp1<uint8_t> transform;
+                        const charls::TransformHp1<uint8_t> transform;
                         const auto sample = transform(red, green, blue);
-                        const TransformHp1<uint8_t>::Inverse inverse(transform);
+                        const charls::TransformHp1<uint8_t>::Inverse inverse(transform);
 
                         const auto roundTrip = inverse(sample.v1, sample.v2, sample.v3);
 
@@ -52,9 +52,9 @@ namespace CharLSUnitTest
                 {
                     for (int blue = 0; blue < 255; ++blue)
                     {
-                        const TransformHp2<uint8_t> transform;
+                        const charls::TransformHp2<uint8_t> transform;
                         const auto sample = transform(red, green, blue);
-                        const TransformHp2<uint8_t>::Inverse inverse(transform);
+                        const charls::TransformHp2<uint8_t>::Inverse inverse(transform);
 
                         const auto roundTrip = inverse(sample.v1, sample.v2, sample.v3);
 
@@ -73,7 +73,7 @@ namespace CharLSUnitTest
             const uint8_t startValue = 123;
             const uint8_t endValue = 124;
 
-            TransformHp3<uint8_t> transformation;
+            charls::TransformHp3<uint8_t> transformation;
 
             for (int red = startValue; red < endValue; ++red)
             {
@@ -82,7 +82,7 @@ namespace CharLSUnitTest
                     for (int blue = 0; blue < 255; ++blue)
                     {
                         const auto sample = transformation(red, green, blue);
-                        const TransformHp3<uint8_t>::Inverse inverse(transformation);
+                        const charls::TransformHp3<uint8_t>::Inverse inverse(transformation);
                         const auto roundTrip = inverse(sample.v1, sample.v2, sample.v3);
 
                         Assert::AreEqual(static_cast<uint8_t>(red), roundTrip.R);

@@ -6,14 +6,12 @@
 #include <cstdint>
 #include <vector>
 
+namespace charls
+{
 
 enum class JpegMarkerCode : uint8_t;
-struct JlsParameters;
-class JpegCustomParameters;
-
 
 JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t allowedLossyError) noexcept;
-
 
 // Purpose: minimal implementation to read a JPEG byte stream.
 class JpegStreamReader final
@@ -65,3 +63,5 @@ private:
     JlsParameters _params;
     JlsRect _rect;
 };
+
+} // namespace charls

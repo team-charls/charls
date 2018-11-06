@@ -2,9 +2,12 @@
 
 #pragma once
 
+#include <charls/publictypes.h>
+
 #include "jpegsegment.h"
 
-#include <charls/publictypes.h>
+namespace charls
+{
 
 class JpegImageDataSegment final : public JpegSegment
 {
@@ -23,3 +26,5 @@ private:
     ByteStreamInfo _rawStreamInfo;
     JlsParameters _params;
 };
+
+} // namespace charls

@@ -3,9 +3,7 @@
 #pragma once
 
 #include <charls/publictypes.h>
-
 #include <vector>
-#include <system_error>
 
 // Use an uppercase alias for assert to make it clear that it is a pre-processor macro.
 #define ASSERT(t) assert(t)
@@ -27,13 +25,15 @@
 #endif
 
 #ifdef _MSC_VER
-#define MSVC_WARNING_SUPPRESS(x) __pragma(warning(push)) __pragma(warning(disable : x))  // NOLINT(misc-macro-parentheses)
+#define MSVC_WARNING_SUPPRESS(x) __pragma(warning(push)) __pragma(warning(disable : x))  // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses)
 #define MSVC_WARNING_UNSUPPRESS() __pragma(warning(pop))
 #else
 #define MSVC_WARNING_SUPPRESS(x)
 #define MSVC_WARNING_UNSUPPRESS()
 #endif
 
+namespace charls
+{
 
 constexpr size_t int32_t_bit_count = sizeof(int32_t) * 8;
 
@@ -180,3 +180,5 @@ std::ostream& operator<<(typename std::enable_if<std::is_enum<T>::value, std::os
 {
     return stream << static_cast<typename std::underlying_type<T>::type>(e);
 }
+
+} // namespace charls

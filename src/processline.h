@@ -21,6 +21,9 @@
 // This mechanism could be used to encode/decode images as they are received.
 //
 
+namespace charls
+{
+
 class ProcessLine
 {
 public:
@@ -348,3 +351,5 @@ private:
     typename TRANSFORM::Inverse _inverseTransform;
     ByteStreamInfo _rawPixels;
 };
+
+} // namespace charls

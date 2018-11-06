@@ -5,7 +5,7 @@
 #include "../src/encoderstrategy.h"
 
 
-class EncoderStrategyTester : EncoderStrategy
+class EncoderStrategyTester : charls::EncoderStrategy
 {
 public:
     explicit EncoderStrategyTester(const JlsParameters& params) : EncoderStrategy(params)
@@ -17,12 +17,12 @@ public:
     {
     }
 
-    size_t EncodeScan(std::unique_ptr<ProcessLine>, ByteStreamInfo&) override
+    size_t EncodeScan(std::unique_ptr<charls::ProcessLine>, ByteStreamInfo&) override
     {
         return 0;
     }
 
-    std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo) override
+    std::unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo) override
     {
         return nullptr;
     }

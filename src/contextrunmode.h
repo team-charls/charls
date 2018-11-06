@@ -4,6 +4,9 @@
 
 #include <cstdint>
 
+namespace charls
+{
+
 // Implements statistical modeling for the run mode context.
 // Computes model dependent parameters like the Golomb code lengths
 struct CContextRunMode final
@@ -102,3 +105,5 @@ struct CContextRunMode final
         return k != 0 || 2 * Nn >= N;
     }
 };
+
+} // namespace charls
