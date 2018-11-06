@@ -17,7 +17,7 @@ void TestDamagedBitStream1()
 
     std::vector<uint8_t> rgbyteOut(256 * 256 * 2);
     const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
-    Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
+    Assert::IsTrue(error == charls::jpegls_errc::InvalidCompressedData);
 }
 
 
@@ -32,7 +32,7 @@ void TestDamagedBitStream2()
 
     std::vector<uint8_t> rgbyteOut(512 * 512);
     const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
-    Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
+    Assert::IsTrue(error == charls::jpegls_errc::InvalidCompressedData);
 }
 
 
@@ -47,7 +47,7 @@ void TestDamagedBitStream3()
 
     std::vector<uint8_t> rgbyteOut(512 * 512);
     const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
-    Assert::IsTrue(error == charls::ApiResult::InvalidCompressedData);
+    Assert::IsTrue(error == charls::jpegls_errc::InvalidCompressedData);
 }
 
 
