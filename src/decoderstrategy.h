@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <charls/jpegls_error.h>
+
 #include "util.h"
 #include "processline.h"
 
@@ -104,11 +106,11 @@ public:
             ReadBit();
 
             if ((*_position) != 0xFF)
-                throw charls_error(charls::jpegls_errc::TooMuchCompressedData);
+                throw charls::jpegls_error(charls::jpegls_errc::TooMuchCompressedData);
         }
 
         if (_readCache != 0)
-            throw charls_error(charls::jpegls_errc::TooMuchCompressedData);
+            throw charls::jpegls_error(charls::jpegls_errc::TooMuchCompressedData);
     }
 
     FORCE_INLINE bool OptimizedRead() noexcept
@@ -140,7 +142,7 @@ public:
             if (_position >= _endPosition)
             {
                 if (_validBits <= 0)
-                    throw charls_error(charls::jpegls_errc::InvalidCompressedData);
+                    throw charls::jpegls_error(charls::jpegls_errc::InvalidCompressedData);
 
                 return;
             }
@@ -153,7 +155,7 @@ public:
                 if (_position == _endPosition - 1 || (_position[1] & 0x80) != 0)
                 {
                     if (_validBits <= 0)
-                        throw charls_error(charls::jpegls_errc::InvalidCompressedData);
+                        throw charls::jpegls_error(charls::jpegls_errc::InvalidCompressedData);
 
                     return;
                 }
@@ -211,7 +213,7 @@ public:
         {
             MakeValid();
             if (_validBits < length)
-                throw charls_error(charls::jpegls_errc::InvalidCompressedData);
+                throw charls::jpegls_error(charls::jpegls_errc::InvalidCompressedData);
         }
 
         ASSERT(length != 0 && length <= _validBits);

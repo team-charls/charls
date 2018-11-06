@@ -165,25 +165,6 @@ struct FromBigEndian<8>
 };
 
 
-class charls_error : public std::system_error
-{
-public:
-    explicit charls_error(charls::jpegls_errc errorCode)
-        : system_error(static_cast<int>(errorCode), CharLSCategoryInstance())
-    {
-    }
-
-
-    charls_error(charls::jpegls_errc errorCode, const std::string& message)
-        : system_error(static_cast<int>(errorCode), CharLSCategoryInstance(), message)
-    {
-    }
-
-private:
-    static const std::error_category& CharLSCategoryInstance() noexcept;
-};
-
-
 inline void SkipBytes(ByteStreamInfo& streamInfo, std::size_t count) noexcept
 {
     if (!streamInfo.rawData)

@@ -113,10 +113,10 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size
     void *encoded_buffer = malloc(encoded_buffer_size);
 
     char errorMessage[CHARLS_ERROR_MESSAGE_SIZE];
-    const CharlsApiResultType result = JpegLsEncode(encoded_buffer, encoded_buffer_size, bytes_written, pixel_data, pixel_data_size, &params, errorMessage);
-    if (result != CHARLS_API_RESULT_OK)
+    const int error = JpegLsEncode(encoded_buffer, encoded_buffer_size, bytes_written, pixel_data, pixel_data_size, &params, errorMessage);
+    if (error)
     {
-        printf("Failed to encode pixel data: %i, %s\n", result, errorMessage);
+        printf("Failed to encode pixel data: %i, %s\n", error, errorMessage);
         free(encoded_buffer);
         encoded_buffer = NULL;
     }

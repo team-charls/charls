@@ -16,6 +16,9 @@
     <ClCompile Include="jpegstreamreader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="jpegls_error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="colortransform.h">
@@ -79,6 +82,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\charls\publictypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\charls\jpegls_error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\charls\api_abi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,10 +2,14 @@
 
 #pragma once
 
+#include <charls/jpegls_error.h>
+
 #include "util.h"
 #include "jpegsegment.h"
+
 #include <vector>
 #include <memory>
+
 
 enum class JpegMarkerCode : uint8_t;
 
@@ -63,7 +67,7 @@ private:
         else
         {
             if (_byteOffset >= _data.count)
-                throw charls_error(charls::jpegls_errc::CompressedBufferTooSmall);
+                throw charls::jpegls_error(charls::jpegls_errc::CompressedBufferTooSmall);
 
             _data.rawData[_byteOffset++] = val;
         }

@@ -243,12 +243,15 @@
   <ItemGroup>
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="jpegls.cpp" />
+    <ClCompile Include="jpegls_error.cpp" />
     <ClCompile Include="jpegmarkersegment.cpp" />
     <ClCompile Include="jpegstreamreader.cpp" />
     <ClCompile Include="jpegstreamwriter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\charls\api_abi.h" />
     <ClInclude Include="..\include\charls\charls.h" />
+    <ClInclude Include="..\include\charls\jpegls_error.h" />
     <ClInclude Include="..\include\charls\publictypes.h" />
     <ClInclude Include="colortransform.h" />
     <ClInclude Include="constants.h" />

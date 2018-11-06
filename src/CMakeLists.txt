@@ -15,7 +15,9 @@ target_compile_definitions(charls PRIVATE CHARLS_LIBRARY_BUILD)
 
 target_sources(charls
   PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/api_abi.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/charls.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/jpegls_error.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/publictypes.h"
   PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/colortransform.h"
@@ -28,6 +30,7 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/interface.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/jlscodecfactory.h"
     "${CMAKE_CURRENT_LIST_DIR}/jpegimagedatasegment.h"
+    "${CMAKE_CURRENT_LIST_DIR}/jpegls_error.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/jpegls.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/jpegmarkercode.h"
     "${CMAKE_CURRENT_LIST_DIR}/jpegmarkersegment.cpp"

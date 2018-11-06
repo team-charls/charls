@@ -5,9 +5,8 @@
 // It is not used as part of any build. See Microsoft docs for more info about this file.
 // 
 
-
-#define CHARLS_DLL_IMPORT_EXPORT(returntype) returntype
+#define CHARLS_API_IMPORT_EXPORT
+#define CHARLS_API_CALLING_CONVENTION
 #define FORCE_INLINE
 #define MSVC_WARNING_SUPPRESS(x)
 #define MSVC_WARNING_UNSUPPRESS()
-

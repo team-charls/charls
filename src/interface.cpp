@@ -1,6 +1,7 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #include <charls/charls.h>
+#include <charls/jpegls_error.h>
 
 #include "util.h"
 #include "jpegstreamreader.h"
@@ -18,27 +19,27 @@ namespace
 void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& parameters)
 {
     if (!uncompressedStream.rawStream && !uncompressedStream.rawData)
-        throw charls_error(jpegls_errc::InvalidJlsParameters, "rawStream or rawData needs to reference to something");
+        throw jpegls_error(jpegls_errc::InvalidJlsParameters, "rawStream or rawData needs to reference to something");
 
     if (parameters.width < 1 || parameters.width > 65535)
-        throw charls_error(jpegls_errc::InvalidJlsParameters, "width needs to be in the range [1, 65535]");
+        throw jpegls_error(jpegls_errc::InvalidJlsParameters, "width needs to be in the range [1, 65535]");
 
     if (parameters.height < 1 || parameters.height > 65535)
-        throw charls_error(jpegls_errc::InvalidJlsParameters, "height needs to be in the range [1, 65535]");
+        throw jpegls_error(jpegls_errc::InvalidJlsParameters, "height needs to be in the range [1, 65535]");
 
     if (parameters.bitsPerSample < 2 || parameters.bitsPerSample > 16)
-        throw charls_error(jpegls_errc::InvalidJlsParameters, "bits per sample needs to be in the range [2, 16]");
+        throw jpegls_error(jpegls_errc::InvalidJlsParameters, "bits per sample needs to be in the range [2, 16]");
 
     if (!(parameters.interleaveMode == InterleaveMode::None || parameters.interleaveMode == InterleaveMode::Sample || parameters.interleaveMode == InterleaveMode::Line))
-        throw charls_error(jpegls_errc::InvalidJlsParameters, "interleaveMode needs to be set to a value of {None, Sample, Line}");
+        throw jpegls_error(jpegls_errc::InvalidJlsParameters, "interleaveMode needs to be set to a value of {None, Sample, Line}");
 
     if (parameters.components < 1 || parameters.components > 255)
-        throw charls_error(jpegls_errc::InvalidJlsParameters, "components needs to be in the range [1, 255]");
+        throw jpegls_error(jpegls_errc::InvalidJlsParameters, "components needs to be in the range [1, 255]");
 
     if (uncompressedStream.rawData)
     {
         if (uncompressedStream.count < static_cast<size_t>(parameters.height) * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1))
-            throw charls_error(jpegls_errc::InvalidJlsParameters, "uncompressed size does not match with the other parameters");
+            throw jpegls_error(jpegls_errc::InvalidJlsParameters, "uncompressed size does not match with the other parameters");
     }
 
     switch (parameters.components)
@@ -47,11 +48,11 @@ void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& 
         break;
     case 4:
         if (parameters.interleaveMode == InterleaveMode::Sample)
-            throw charls_error(jpegls_errc::InvalidJlsParameters, "interleaveMode cannot be set to Sample in combination with components = 4");
+            throw jpegls_error(jpegls_errc::InvalidJlsParameters, "interleaveMode cannot be set to Sample in combination with components = 4");
         break;
     default:
         if (parameters.interleaveMode != InterleaveMode::None)
-            throw charls_error(jpegls_errc::InvalidJlsParameters, "interleaveMode can only be set to None in combination with components = 1");
+            throw jpegls_error(jpegls_errc::InvalidJlsParameters, "interleaveMode can only be set to None in combination with components = 1");
         break;
     }
 }
@@ -75,7 +76,7 @@ jpegls_errc ResultAndErrorMessageFromException(char* errorMessage)
         // re-trow the exception.
         throw;
     }
-    catch (const charls_error& error)
+    catch (const jpegls_error& error)
     {
         if (errorMessage)
         {

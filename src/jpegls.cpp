@@ -61,27 +61,6 @@ std::unique_ptr<Strategy> create_codec(const Traits& traits, const JlsParameters
 } // namespace
 
 
-class charls_category : public std::error_category
-{
-public:
-    const char* name() const noexcept override
-    {
-        return "charls";
-    }
-
-    std::string message(int /* error_value */) const override
-    {
-        return "CharLS error";
-    }
-};
-
-const std::error_category& charls_error::CharLSCategoryInstance() noexcept
-{
-    static charls_category instance;
-    return instance;
-}
-
-
 // Lookup tables to replace code with lookup tables.
 // To avoid threading issues, all tables are created when the program is loaded.
 

@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <system_error>
 
 namespace charls
 {
@@ -97,6 +98,13 @@ namespace charls
         HP3 = 3,
     };
 }
+
+namespace std {
+
+template<> struct is_error_code_enum<charls::jpegls_errc> : public true_type {};
+
+} // namespace std
+
 
 using CharlsApiResultType = charls::jpegls_errc;
 using CharlsInterleaveModeType = charls::InterleaveMode;
