@@ -37,7 +37,7 @@ namespace charls
         DuplicateStartOfFrameMarker = 19     // This error is returned when the stream contains more then one SOF marker.
     };
 
-    using ApiResult [[deprecated("Name has been replaced to follow the standard C++ naming convention")]] = jpegls_errc;
+    [[deprecated("Name has been replaced to follow the standard C++ naming convention")]] typedef jpegls_errc ApiResult;
 
     /// <summary>
     /// Defines the interleave mode for multi-component (color) pixel data.
