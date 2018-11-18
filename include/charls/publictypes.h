@@ -229,36 +229,36 @@ struct JpegLSPresetCodingParameters
     /// Maximum possible value for any image sample in a scan.
     /// This must be greater than or equal to the actual maximum value for the components in a scan.
     /// </summary>
-    int MaximumSampleValue;
+    int32_t MaximumSampleValue;
 
     /// <summary>
     /// First quantization threshold value for the local gradients.
     /// </summary>
-    int Threshold1;
+    int32_t Threshold1;
 
     /// <summary>
     /// Second quantization threshold value for the local gradients.
     /// </summary>
-    int Threshold2;
+    int32_t Threshold2;
 
     /// <summary>
     /// Third quantization threshold value for the local gradients.
     /// </summary>
-    int Threshold3;
+    int32_t Threshold3;
 
     /// <summary>
     /// Value at which the counters A, B, and N are halved.
     /// </summary>
-    int ResetValue;
+    int32_t ResetValue;
 };
 
 
 struct JlsRect
 {
-    int X;
-    int Y;
-    int Width;
-    int Height;
+    int32_t X;
+    int32_t Y;
+    int32_t Width;
+    int32_t Height;
 };
 
 
@@ -319,38 +319,38 @@ struct JlsParameters
     /// Width of the image in pixels.
     /// This parameter is called "Number of samples per line" in the JPEG-LS standard.
     /// </summary>
-    int width;
+    int32_t width;
 
     /// <summary>
     /// Height of the image in pixels.
     /// This parameter is called "Number of lines" in the JPEG-LS standard.
     /// </summary>
-    int height;
+    int32_t height;
 
     /// <summary>
     /// The number of valid bits per sample to encode.
     /// Valid range 2 - 16. When greater than 8, pixels are assumed to stored as two bytes per sample, otherwise one byte per sample is assumed.
     /// This parameter is called "Sample precision" in the JPEG-LS standard, often also called "Bit Depth".
     /// </summary>
-    int bitsPerSample;
+    int32_t bitsPerSample;
 
     /// <summary>
     /// The stride is the number of bytes from one row of pixels in memory to the next row of pixels in memory.
     /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
     /// </summary>
-    int stride;
+    int32_t stride;
 
     /// <summary>
     /// The number of components.
     /// Typical 1 for monochrome images and 3 for color images or 4 if an alpha channel is present.
     /// Up to 255 components are supported by the JPEG-LS standard.
     /// </summary>
-    int components;
+    int32_t components;
 
     /// <summary>
     /// Defines the allowed lossy error. Value 0 defines lossless.
     /// </summary>
-    int allowedLossyError;
+    int32_t allowedLossyError;
 
     /// <summary>
     /// Determines the order of the color components in the compressed stream.
