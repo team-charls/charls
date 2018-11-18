@@ -2,9 +2,9 @@
 <RuleSet Name="Default Rules for CharLS code" Description="These rules are for the VS static analyzer." ToolsVersion="15.0">
   <IncludeAll Action="Error" />
   <Rules AnalyzerId="Microsoft.Analyzers.NativeCodeAnalysis" RuleNamespace="Microsoft.Rules.Native">
+    <Rule Id="C26050" Action="None" />
     <Rule Id="C26426" Action="None" />
     <Rule Id="C26429" Action="None" />
-    <Rule Id="C26440" Action="None" />
     <Rule Id="C26446" Action="None" />
     <Rule Id="C26472" Action="None" />
     <Rule Id="C26481" Action="None" />

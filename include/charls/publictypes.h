@@ -8,6 +8,15 @@
 #include <cstddef>
 #include <system_error>
 
+
+// GCC 5.0 cannot handle [[deprecated]] on enum values
+#if defined(__GNUC__) && !defined(__clang__)
+#define CHARLS_ENUM_DEPRECATED
+#else
+#define CHARLS_ENUM_DEPRECATED [[deprecated]]
+#endif
+
+
 namespace charls
 {
     /// <summary>
@@ -15,29 +24,59 @@ namespace charls
     /// </summary>
     enum class jpegls_errc
     {
-        OK = 0,                              // The operation completed without errors.
-        InvalidJlsParameters = 1,            // One of the JLS parameters is invalid.
-        ParameterValueNotSupported = 2,      // The parameter value not supported.
-        UncompressedBufferTooSmall = 3,      // The uncompressed buffer is too small to hold all the output.
-        CompressedBufferTooSmall = 4,        // The compressed buffer too small, more input data was expected.
-        InvalidCompressedData = 5,           // This error is returned when the encoded bit stream contains a general structural problem.
-        TooMuchCompressedData = 6,           // Too much compressed data.The decoding process is ready but the input buffer still contains encoded data.
-        ImageTypeNotSupported = 7,           // This error is returned when the bit stream is encoded with an option that is not supported by this implementation.
-        UnsupportedBitDepthForTransform = 8, // The bit depth for transformation is not supported.
-        UnsupportedColorTransform = 9,       // The color transform is not supported.
-        UnsupportedEncoding = 10,            // This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
-        UnknownJpegMarker = 11,              // This error is returned when an unknown JPEG marker code is detected in the encoded bit stream.
-        MissingJpegMarkerStart = 12,         // This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
-        UnspecifiedFailure = 13,             // This error is returned when the implementation detected a failure, but no specific error is available.
-        UnexpectedFailure = 14,              // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
-        StartOfImageMarkerNotFound = 15,     // This error is returned when the first JPEG marker is not the SOI marker.
-        StartOfFrameMarkerNotFound = 16,     // This error is returned when the SOF JPEG marker is not found before the SOS marker.
-        InvalidMarkerSegmentSize = 17,       // This error is returned when the segment size of a marker segment is invalid.
-        DuplicateStartOfImageMarker = 18,    // This error is returned when the stream contains more then one SOI marker.
-        DuplicateStartOfFrameMarker = 19     // This error is returned when the stream contains more then one SOF marker.
+        success = 0,                             // The operation completed without errors.
+        invalid_argument = 1,                    // This error is returned when one of the arguments is invalid and no specific reason is available.
+        parameter_value_not_supported = 2,       // This error is returned when the JPEG stream contains a parameter value that is not supported by this implementation.
+        destination_buffer_too_small = 3,        // The destination buffer is too small to hold all the output.
+        source_buffer_too_small = 4,             // The source buffer is too small, more input data was expected.
+        invalid_encoded_data = 5,                // This error is returned when the encoded bit stream contains a general structural problem.
+        too_much_encoded_data = 6,               // Too much compressed data.The decoding process is ready but the input buffer still contains encoded data.
+        bit_depth_for_transform_not_supported = 8, // The bit depth for transformation is not supported.
+        color_transform_not_supported = 9,       // The color transform is not supported.
+        encoding_not_supported = 10,             // This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
+        unknown_jpeg_marker_found = 11,          // This error is returned when an unknown JPEG marker code is found in the encoded bit stream.
+        jpeg_marker_start_byte_not_found = 12,   // This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
+        not_enough_memory = 13,                  // This error is returned when the implementation could not allocate memory for its internal buffers.
+        unexpected_failure = 14,                 // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
+        start_of_image_marker_not_found = 15,    // This error is returned when the first JPEG marker is not the SOI marker.
+        start_of_frame_marker_not_found = 16,    // This error is returned when the SOF JPEG marker is not found before the SOS marker.
+        invalid_marker_segment_size = 17,        // This error is returned when the segment size of a marker segment is invalid.
+        duplicate_start_of_image_marker = 18,    // This error is returned when the stream contains more then one SOI marker.
+        duplicate_start_of_frame_marker = 19,    // This error is returned when the stream contains more then one SOF marker.
+        unexpected_end_of_image_marker = 20,     // This error is returned when the stream contains an unexpected EOI marker.
+        invalid_jpegls_preset_parameter_type = 21, // This error is returned when the stream contains an invalid type parameter in the JPEG-LS segment.
+        jpegls_preset_extended_parameter_type_not_supported = 22, // This error is returned when the stream contains an unsupported type parameter in the JPEG-LS segment.
+        invalid_argument_width = 100,            // The argument for the width parameter is outside the range [1, 65535].
+        invalid_argument_height = 101,           // The argument for the height parameter is outside the range [1, 65535].
+        invalid_argument_component_count = 102,  // The argument for the component count parameter is outside the range [1, 255].
+        invalid_argument_bits_per_sample = 103,  // The argument for the bit per sample parameter is outside the range [2, 16].
+        invalid_argument_interleave_mode = 104,  // The argument for the interleave mode is not (None, Sample, Line) or invalid in combination with component count.
+        invalid_argument_destination = 105,      // The destination buffer or stream is not set.
+        invalid_argument_source = 106,           // The source buffer or stream is not set.
+        invalid_argument_thumbnail = 107,        // The arguments for the thumbnail and the dimensions don't match.
+        invalid_parameter_width = 200,           // This error is returned when the stream contains a width parameter defined more then once or in an incompatible way.
+        invalid_parameter_height = 201,          // This error is returned when the stream contains a height parameter defined more then once in an incompatible way.
+        invalid_parameter_component_count = 202, // This error is returned when the stream contains a component count parameter outside the range [1,255]
+        invalid_parameter_bits_per_sample = 203, // This error is returned when the stream contains a bits per sample (sample precision) parameter outside the range [2,16]
+        invalid_parameter_interleave_mode = 204, // This error is returned when the stream contains an interleave mode (ILV) parameter outside the range [0, 2]
+
+        // Legacy enum names, will be removed in a future release.
+        OK CHARLS_ENUM_DEPRECATED = success,
+        InvalidJlsParameters CHARLS_ENUM_DEPRECATED = invalid_argument,
+        ParameterValueNotSupported CHARLS_ENUM_DEPRECATED = invalid_encoded_data,
+        UncompressedBufferTooSmall CHARLS_ENUM_DEPRECATED = destination_buffer_too_small,
+        CompressedBufferTooSmall CHARLS_ENUM_DEPRECATED = source_buffer_too_small,
+        InvalidCompressedData CHARLS_ENUM_DEPRECATED = invalid_encoded_data,
+        TooMuchCompressedData CHARLS_ENUM_DEPRECATED = too_much_encoded_data,
+        UnsupportedColorTransform CHARLS_ENUM_DEPRECATED = color_transform_not_supported,
+        UnsupportedEncoding CHARLS_ENUM_DEPRECATED = encoding_not_supported,
+        UnknownJpegMarker CHARLS_ENUM_DEPRECATED = unknown_jpeg_marker_found,
+        MissingJpegMarkerStart CHARLS_ENUM_DEPRECATED = jpeg_marker_start_byte_not_found,
+        UnexpectedFailure CHARLS_ENUM_DEPRECATED = unexpected_failure
     };
 
-    [[deprecated("Name has been replaced to follow the standard C++ naming convention")]] typedef jpegls_errc ApiResult;
+    [[deprecated]]
+    typedef charls::jpegls_errc ApiResult;
 
     /// <summary>
     /// Defines the interleave mode for multi-component (color) pixel data.
@@ -101,7 +140,7 @@ namespace charls
 
 namespace std {
 
-template<> struct is_error_code_enum<charls::jpegls_errc> : public true_type {};
+template<> struct is_error_code_enum<charls::jpegls_errc> : true_type {};
 
 } // namespace std
 
@@ -110,35 +149,50 @@ using CharlsApiResultType = charls::jpegls_errc;
 using CharlsInterleaveModeType = charls::InterleaveMode;
 using CharlsColorTransformationType = charls::ColorTransformation;
 
-// Defines the size of the char buffer that should be passed to the CharLS API to get the error message text.
-const std::size_t ErrorMessageSize = 256;
-
 #else
 
 #include <stdint.h>
 
+// This API return code table is a copy of the C++ table. For additional info see the C++ table.
+// 2 tables are defined to prevent global namespace pollution.
 enum CharlsApiResult
 {
-    CHARLS_API_RESULT_OK                                  = 0,  // The operation completed without errors.
-    CHARLS_API_RESULT_INVALID_JLS_PARAMETERS              = 1,  // One of the JLS parameters is invalid.
-    CHARLS_API_RESULT_PARAMETER_VALUE_NOT_SUPPORTED       = 2,  // The parameter value not supported.
-    CHARLS_API_RESULT_UNCOMPRESSED_BUFFER_TOO_SMALL       = 3,  // The uncompressed buffer is too small to hold all the output.
-    CHARLS_API_RESULT_COMPRESSED_BUFFER_TOO_SMALL         = 4,  // The compressed buffer too small, more input data was expected.
-    CHARLS_API_RESULT_INVALID_COMPRESSED_DATA             = 5,  // This error is returned when the encoded bit stream contains a general structural problem.
-    CHARLS_API_RESULT_TOO_MUCH_COMPRESSED_DATA            = 6,  // Too much compressed data.The decoding process is ready but the input buffer still contains encoded data.
-    CHARLS_API_RESULT_IMAGE_TYPE_NOT_SUPPORTED            = 7,  // This error is returned when the bit stream is encoded with an option that is not supported by this implementation.
-    CHARLS_API_RESULT_UNSUPPORTED_BIT_DEPTH_FOR_TRANSFORM = 8,  // The bit depth for transformation is not supported.
-    CHARLS_API_RESULT_UNSUPPORTED_COLOR_TRANSFORM         = 9,  // The color transform is not supported.
-    CHARLS_API_RESULT_UNSUPPORTED_ENCODING                = 10, // This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
-    CHARLS_API_RESULT_UNKNOWN_JPEG_MARKER                 = 11, // This error is returned when an unknown JPEG marker code is detected in the encoded bit stream.
-    CHARLS_API_RESULT_MISSING_JPEG_MARKER_START           = 12, // This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
-    CHARLS_API_RESULT_UNSPECIFIED_FAILURE                 = 13, // This error is returned when the implementation detected a failure, but no specific error is available.
-    CHARLS_API_RESULT_UNEXPECTED_FAILURE                  = 14, // This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
-    CHARLS_API_RESULT_START_OF_IMAGE_MARKER_NOT_FOUND     = 15, // This error is returned when the first JPEG marker is not the SOI marker.
-    CHARLS_API_RESULT_START_OF_FRAME_MARKER_NOT_FOUND     = 16, // This error is returned when the SOF JPEG marker is not found before the SOS marker.
-    CHARLS_API_RESULT_INVALID_MARKER_SEGMENT_SIZE         = 17, // This error is returned when the segment size of a marker segment is invalid.
-    CHARLS_API_RESULT_DUPLICATE_START_OF_IMAGE_MARKER     = 18, // This error is returned when the stream contains more then one SOI marker.
-    CHARLS_API_RESULT_DUPLICATE_START_OF_FRAME_MARKER     = 19  // This error is returned when the stream contains more then one SOF marker.
+    CHARLS_API_RESULT_SUCCESS                               = 0,
+    CHARLS_API_RESULT_INVALID_ARGUMENT                      = 1,
+    CHARLS_API_RESULT_PARAMETER_VALUE_NOT_SUPPORTED         = 2,
+    CHARLS_API_RESULT_DESTINATION_BUFFER_TOO_SMALL          = 3,
+    CHARLS_API_RESULT_SOURCE_BUFFER_TOO_SMALL               = 4,
+    CHARLS_API_RESULT_INVALID_ENCODED_DATA                  = 5,
+    CHARLS_API_RESULT_TOO_MUCH_ENCODED_DATA                 = 6,
+    CHARLS_API_RESULT_IMAGE_TYPE_NOT_SUPPORTED              = 7,
+    CHARLS_API_RESULT_BIT_DEPTH_FOR_TRANSFORM_NOT_SUPPORTED = 8,
+    CHARLS_API_RESULT_COLOR_TRANSFORM_NOT_SUPPORTED         = 9,
+    CHARLS_API_RESULT_ENCODING_NOT_SUPPORTED                = 10,
+    CHARLS_API_RESULT_UNKNOWN_JPEG_MARKER_FOUND             = 11,
+    CHARLS_API_RESULT_JPEG_MARKER_START_BYTE_NOT_FOUND      = 12,
+    CHARLS_API_RESULT_NOT_ENOUGH_MEMORY                     = 13,
+    CHARLS_API_RESULT_UNEXPECTED_FAILURE                    = 14,
+    CHARLS_API_RESULT_START_OF_IMAGE_MARKER_NOT_FOUND       = 15,
+    CHARLS_API_RESULT_START_OF_FRAME_MARKER_NOT_FOUND       = 16,
+    CHARLS_API_RESULT_INVALID_MARKER_SEGMENT_SIZE           = 17,
+    CHARLS_API_RESULT_DUPLICATE_START_OF_IMAGE_MARKER       = 18,
+    CHARLS_API_RESULT_DUPLICATE_START_OF_FRAME_MARKER       = 19,
+    CHARLS_API_RESULT_UNEXPECTED_END_OF_IMAGE_MARKER        = 20,
+    CHARLS_API_RESULT_INVALID_JPEGLS_PRESET_PARAMETER_TYPE  = 21,
+    CHARLS_API_RESULT_JPEGLS_PRESET_EXTENDED_PARAMETER_TYPE_NOT_SUPPORTED = 22,
+    CHARLS_API_RESULT_INVALID_ARGUMENT_WIDTH                = 100,
+    CHARLS_API_RESULT_INVALID_ARGUMENT_HEIGHT               = 101,
+    CHARLS_API_RESULT_INVALID_ARGUMENT_COMPONENT_COUNT      = 102,
+    CHARLS_API_RESULT_INVALID_ARGUMENT_BITS_PER_SAMPLE      = 103,
+    CHARLS_API_RESULT_INVALID_ARGUMENT_INTERLEAVE_MODE      = 104,
+    CHARLS_API_RESULT_INVALID_ARGUMENT_DESTINATION          = 105,
+    CHARLS_API_RESULT_INVALID_ARGUMENT_SOURCE               = 106,
+    CHARLS_API_RESULT_INVALID_ARGUMENT_THUMBNAIL            = 107,
+    CHARLS_API_RESULT_INVALID_PARAMETER_WIDTH               = 200,
+    CHARLS_API_RESULT_INVALID_PARAMETER_HEIGHT              = 201,
+    CHARLS_API_RESULT_INVALID_PARAMETER_COMPONENT_COUNT     = 202,
+    CHARLS_API_RESULT_INVALID_PARAMETER_BITS_PER_SAMPLE     = 203,
+    CHARLS_API_RESULT_INVALID_PARAMETER_INTERLEAVE_MODE     = 204,
 };
 
 enum CharlsInterleaveMode
@@ -160,8 +214,6 @@ typedef enum CharlsApiResult CharlsApiResultType;
 typedef enum CharlsInterleaveMode CharlsInterleaveModeType;
 typedef enum CharlsColorTransformation CharlsColorTransformationType;
 
-// Defines the size of the char buffer that should be passed to the CharLS API to get the error message text.
-#define CHARLS_ERROR_MESSAGE_SIZE 256
 
 #endif
 
@@ -265,17 +317,20 @@ struct JlsParameters
 {
     /// <summary>
     /// Width of the image in pixels.
+    /// This parameter is called "Number of samples per line" in the JPEG-LS standard.
     /// </summary>
     int width;
 
     /// <summary>
     /// Height of the image in pixels.
+    /// This parameter is called "Number of lines" in the JPEG-LS standard.
     /// </summary>
     int height;
 
     /// <summary>
     /// The number of valid bits per sample to encode.
     /// Valid range 2 - 16. When greater than 8, pixels are assumed to stored as two bytes per sample, otherwise one byte per sample is assumed.
+    /// This parameter is called "Sample precision" in the JPEG-LS standard, often also called "Bit Depth".
     /// </summary>
     int bitsPerSample;
 
@@ -287,7 +342,8 @@ struct JlsParameters
 
     /// <summary>
     /// The number of components.
-    /// Typical 1 for monochrome images and 3 for color images or 4 if alpha channel is present.
+    /// Typical 1 for monochrome images and 3 for color images or 4 if an alpha channel is present.
+    /// Up to 255 components are supported by the JPEG-LS standard.
     /// </summary>
     int components;
 

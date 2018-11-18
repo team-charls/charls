@@ -76,11 +76,7 @@ private:
 inline void ByteSwap(void* data, int count)
 {
     if (static_cast<unsigned int>(count) & 1u)
-    {
-        std::ostringstream message;
-        message << "An odd number of bytes (" << count << ") cannot be swapped.";
-        throw charls::jpegls_error(charls::jpegls_errc::InvalidJlsParameters, message.str());
-    }
+        throw jpegls_error(jpegls_errc::invalid_encoded_data);
 
     const auto data32 = static_cast<unsigned int*>(data);
     for(auto i = 0; i < count / 4; i++)
@@ -113,7 +109,7 @@ public:
         {
             const auto bytesRead = _rawData->sgetn(static_cast<char*>(dest), bytesToRead);
             if (bytesRead == 0)
-                throw charls::jpegls_error(charls::jpegls_errc::UncompressedBufferTooSmall);
+                throw jpegls_error(jpegls_errc::destination_buffer_too_small);
 
             bytesToRead = bytesToRead - bytesRead;
         }
@@ -134,7 +130,7 @@ public:
         const auto bytesToWrite = pixelCount * _bytesPerPixel;
         const auto bytesWritten = static_cast<size_t>(_rawData->sputn(static_cast<const char*>(pSrc), bytesToWrite));
         if (bytesWritten != bytesToWrite)
-            throw charls::jpegls_error(charls::jpegls_errc::UncompressedBufferTooSmall);
+            throw jpegls_error(jpegls_errc::destination_buffer_too_small);
     }
 
 private:
@@ -262,11 +258,7 @@ public:
         {
             const auto read = rawStream->sgetn(reinterpret_cast<char*>(_buffer.data()), bytesToRead);
             if (read == 0)
-            {
-                std::ostringstream message;
-                message << "No more bytes available in input buffer, still needing " << read;
-                throw charls::jpegls_error(charls::jpegls_errc::UncompressedBufferTooSmall, message.str());
-            }
+                throw jpegls_error(jpegls_errc::source_buffer_too_small);
 
             bytesToRead -= read;
         }
@@ -332,7 +324,7 @@ public:
 
             const auto bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(_buffer.data()), bytesToWrite);
             if (bytesWritten != bytesToWrite)
-                throw charls::jpegls_error(charls::jpegls_errc::UncompressedBufferTooSmall);
+                throw jpegls_error(jpegls_errc::destination_buffer_too_small);
         }
         else
         {

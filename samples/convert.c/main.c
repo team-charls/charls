@@ -1,6 +1,7 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #include <charls/charls.h>
+#include <charls/jpegls_error.h>
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -112,11 +113,10 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size
     const size_t encoded_buffer_size = pixel_data_size + 1024;
     void *encoded_buffer = malloc(encoded_buffer_size);
 
-    char errorMessage[CHARLS_ERROR_MESSAGE_SIZE];
-    const int error = JpegLsEncode(encoded_buffer, encoded_buffer_size, bytes_written, pixel_data, pixel_data_size, &params, errorMessage);
-    if (error)
+    const int error_value = JpegLsEncode(encoded_buffer, encoded_buffer_size, bytes_written, pixel_data, pixel_data_size, &params, NULL);
+    if (error_value)
     {
-        printf("Failed to encode pixel data: %i, %s\n", error, errorMessage);
+        printf("Failed to encode pixel data: %i, %s\n", error_value, charls_get_error_message(error_value));
         free(encoded_buffer);
         encoded_buffer = NULL;
     }
@@ -195,7 +195,7 @@ int main(int argc, char* argv[])
     }
 
     size_t encoded_size;
-    void* encoded_data = encode_bmp_to_jpegls(pixel_data, buffer_size, &dib_header, allowed_lossy_error, & encoded_size);
+    void* encoded_data = encode_bmp_to_jpegls(pixel_data, buffer_size, &dib_header, allowed_lossy_error, &encoded_size);
     free(pixel_data);
     if (!encoded_data)
         return EXIT_FAILURE; // error already printed.

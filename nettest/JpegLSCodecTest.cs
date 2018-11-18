@@ -127,7 +127,7 @@ namespace CharLS.Test
             var compressed = new byte[] { 0x33, 0x33 };
 
             var exception = Assert.Throws<InvalidDataException>(() => JpegLSCodec.Decompress(compressed));
-            Assert.AreEqual(JpegLSError.MissingJpegMarkerStart, exception.Data["JpegLSError"]);
+            Assert.AreEqual(JpegLSError.JpegMarkerStartByteNotFound, exception.Data["JpegLSError"]);
         }
 
         [Test]
@@ -140,7 +140,7 @@ namespace CharLS.Test
                     0x00, 0x00 // Length of data of the marker
                 };
             var exception = Assert.Throws<InvalidDataException>(() => JpegLSCodec.Decompress(compressed));
-            Assert.AreEqual(JpegLSError.UnsupportedEncoding, exception.Data["JpegLSError"]);
+            Assert.AreEqual(JpegLSError.EncodingNotSupported, exception.Data["JpegLSError"]);
         }
 
         [Test]
@@ -154,7 +154,7 @@ namespace CharLS.Test
                 };
 
             var exception = Assert.Throws<InvalidDataException>(() => JpegLSCodec.Decompress(compressed));
-            Assert.AreEqual(JpegLSError.UnknownJpegMarker, exception.Data["JpegLSError"]);
+            Assert.AreEqual(JpegLSError.UnknownJpegMarkerFound, exception.Data["JpegLSError"]);
         }
 
         private static byte[] TripletToPlanar(IList<byte> buffer, int width, int height)

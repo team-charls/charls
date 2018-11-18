@@ -121,13 +121,13 @@ protected:
     void OverFlow()
     {
         if (!_compressedStream)
-            throw jpegls_error(jpegls_errc::CompressedBufferTooSmall);
+            throw jpegls_error(jpegls_errc::destination_buffer_too_small);
 
         const std::size_t bytesCount = _position - _buffer.data();
         const auto bytesWritten = static_cast<std::size_t>(_compressedStream->sputn(reinterpret_cast<char*>(_buffer.data()), _position - _buffer.data()));
 
         if (bytesWritten != bytesCount)
-            throw jpegls_error(jpegls_errc::CompressedBufferTooSmall);
+            throw jpegls_error(jpegls_errc::destination_buffer_too_small);
 
         _position = _buffer.data();
         _compressedLength = _buffer.size();

@@ -53,9 +53,9 @@ private:
     void ValidateMarkerCode(JpegMarkerCode markerCode) const;
 
     int ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segmentSize);
-    int ReadPresetParameters();
-    static int ReadComment() noexcept;
     int ReadStartOfFrameSegment(int32_t segmentSize);
+    static int ReadComment() noexcept;
+    int ReadPresetParameters();
     void ReadJfif();
     int TryReadHPColorTransformSegment(int32_t segmentSize);
 

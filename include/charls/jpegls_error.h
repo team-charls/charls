@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-CHARLS_API_IMPORT_EXPORT const void* CHARLS_API_CALLING_CONVENTION charls_get_error_category();
+CHARLS_API_IMPORT_EXPORT const void* CHARLS_API_CALLING_CONVENTION charls_jpegls_category(void);
 CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(int32_t error_value);
 
 #ifdef __cplusplus
@@ -19,30 +19,31 @@ CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION charls_get_er
 
 namespace charls {
 
+CHARLS_NO_DISCARD inline const std::error_category& jpegls_category() noexcept
+{
+    return *static_cast<const std::error_category*>(charls_jpegls_category());
+}
+
+CHARLS_NO_DISCARD inline std::error_code make_error_code(jpegls_errc error_value) noexcept
+{
+    return {static_cast<int>(error_value), jpegls_category()};
+}
+
+
 class jpegls_error : public std::system_error
 {
 public:
+    explicit jpegls_error(std::error_code ec)
+        : system_error(ec)
+    {
+    }
+
     explicit jpegls_error(jpegls_errc error_value)
-        : system_error(static_cast<int>(error_value), get_error_category())
+        : system_error(make_error_code(error_value))
     {
-    }
-
-    jpegls_error(jpegls_errc error_value, const std::string& message)
-        : system_error(static_cast<int>(error_value), get_error_category(), message)
-    {
-    }
-
-    static const std::error_category& get_error_category() noexcept
-    {
-        return *static_cast<const std::error_category*>(charls_get_error_category());
     }
 };
 
-inline std::error_code make_error_code(jpegls_errc error_value)
-{
-    return {static_cast<int>(error_value), jpegls_error::get_error_category()};
-}
-
-} // namespace
+} // namespace charls
 
 #endif

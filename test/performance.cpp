@@ -7,6 +7,8 @@
 #include <ratio>
 #include <chrono>
 
+using namespace charls;
+
 namespace
 {
 
@@ -115,8 +117,8 @@ void DecodePerformanceTests(int loopCount)
     }
 
     JlsParameters params{};
-    auto result = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
-    if (result != charls::jpegls_errc::OK)
+    std::error_code error = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
+    if (error)
         return;
 
     std::vector<uint8_t> uncompressed(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
@@ -125,10 +127,10 @@ void DecodePerformanceTests(int loopCount)
     for (int i = 0; i < loopCount; ++i)
     {
 
-        result = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
-        if (result != charls::jpegls_errc::OK)
+        error = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
+        if (error)
         {
-            std::cout << "Decode failure: " << static_cast<int>(result) << "\n";
+            std::cout << "Decode failure: " << error.value() << "\n";
             return;
         }
     }

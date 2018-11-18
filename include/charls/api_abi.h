@@ -41,3 +41,9 @@
 #endif
 
 #endif
+
+#if defined(__cplusplus) && __cplusplus >= 201703
+#define CHARLS_NO_DISCARD [[nodiscard]]
+#else
+#define CHARLS_NO_DISCARD
+#endif

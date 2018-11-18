@@ -30,15 +30,15 @@ void Triplet2Planar(std::vector<uint8_t>& rgbyte, Size size)
 
 bool VerifyEncodedBytes(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength)
 {
-    JlsParameters info = JlsParameters();
-    auto error = JpegLsReadHeader(compressedData, compressedLength, &info, nullptr);
-    if (error != jpegls_errc::OK)
+    JlsParameters info{};
+    std::error_code error = JpegLsReadHeader(compressedData, compressedLength, &info, nullptr);
+    if (error)
         return false;
 
     std::vector<uint8_t> ourEncodedBytes(compressedLength + 16);
     size_t bytesWritten;
     error = JpegLsEncode(ourEncodedBytes.data(), ourEncodedBytes.size(), &bytesWritten, uncompressedData, uncompressedLength, &info, nullptr);
-    if (error != jpegls_errc::OK)
+    if (error)
         return false;
 
     for (size_t i = 0; i < compressedLength; ++i)
@@ -56,8 +56,8 @@ bool VerifyEncodedBytes(const void* uncompressedData, size_t uncompressedLength,
 void TestCompliance(const uint8_t* compressedBytes, size_t compressedLength, const uint8_t* rgbyteRaw, size_t cbyteRaw, bool bcheckEncode)
 {
     JlsParameters info{};
-    auto err = JpegLsReadHeader(compressedBytes, compressedLength, &info, nullptr);
-    Assert::IsTrue(err == jpegls_errc::OK);
+    std::error_code error = JpegLsReadHeader(compressedBytes, compressedLength, &info, nullptr);
+    Assert::IsTrue(!error);
 
     if (bcheckEncode)
     {
@@ -66,8 +66,8 @@ void TestCompliance(const uint8_t* compressedBytes, size_t compressedLength, con
 
     std::vector<uint8_t> rgbyteOut(static_cast<size_t>(info.height) *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
 
-    err = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), compressedBytes, compressedLength, nullptr, nullptr);
-    Assert::IsTrue(err == jpegls_errc::OK);
+    error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), compressedBytes, compressedLength, nullptr, nullptr);
+    Assert::IsTrue(!error);
 
     if (info.allowedLossyError == 0)
     {
@@ -91,7 +91,7 @@ void DecompressFile(const char* strNameEncoded, const char* strNameRaw, int ioff
         return;
 
     JlsParameters params{};
-    if (JpegLsReadHeader(rgbyteFile.data(), rgbyteFile.size(), &params, nullptr) != jpegls_errc::OK)
+    if (make_error_code(JpegLsReadHeader(rgbyteFile.data(), rgbyteFile.size(), &params, nullptr)))
     {
         Assert::IsTrue(false);
         return;

@@ -1,10 +1,10 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 using System.IO;
-using System.Text;
+using System.Runtime.InteropServices;
 
 namespace CharLS
 {
@@ -34,12 +34,6 @@ namespace CharLS
         /// <exception cref="InvalidDataException">The compressed output doesn't fit into the maximum defined output buffer.</exception>
         public static ArraySegment<byte> Compress(JpegLSMetadataInfo info, byte[] pixels, bool jfifHeader = false)
         {
-            if (info == null)
-                throw new ArgumentNullException(nameof(info));
-            if (info.Width <= 0 || info.Width > 65535)
-                throw new ArgumentOutOfRangeException(nameof(info), "info.Width property needs to be in the range <0, 65535>");
-            if (info.Height <= 0 || info.Height > 65535)
-                throw new ArgumentOutOfRangeException(nameof(info), "info.Height property needs to be in the range <0, 65535>");
             if (pixels == null)
                 throw new ArgumentNullException(nameof(pixels));
             Contract.EndContractBlock();
@@ -64,10 +58,6 @@ namespace CharLS
         {
             if (info == null)
                 throw new ArgumentNullException(nameof(info));
-            if (info.Width <= 0 || info.Width > 65535)
-                throw new ArgumentOutOfRangeException(nameof(info), "info.Width property needs to be in the range <0, 65535>");
-            if (info.Height <= 0 || info.Height > 65535)
-                throw new ArgumentOutOfRangeException(nameof(info), "info.Height property needs to be in the range <0, 65535>");
             if (pixels == null)
                 throw new ArgumentNullException(nameof(pixels));
             if (pixelCount <= 0 || pixelCount > pixels.Length)
@@ -111,10 +101,6 @@ namespace CharLS
         {
             if (info == null)
                 throw new ArgumentNullException(nameof(info));
-            if (info.Width <= 0 || info.Width > 65535)
-                throw new ArgumentOutOfRangeException(nameof(info), "info.Width property needs to be in the range <0, 65535>");
-            if (info.Height <= 0 || info.Height > 65535)
-                throw new ArgumentOutOfRangeException(nameof(info), "info.Height property needs to be in the range <0, 65535>");
             if (pixels == null)
                 throw new ArgumentNullException(nameof(pixels));
             if (pixelCount <= 0 || pixelCount > pixels.Length)
@@ -135,24 +121,23 @@ namespace CharLS
                 parameters.Jfif.DensityY = 1;
             }
 
-            var errorMessage = new StringBuilder(256);
             JpegLSError result;
             if (Environment.Is64BitProcess)
             {
-                result = SafeNativeMethods.JpegLsEncode64(destination, destinationLength, out var count, pixels, pixelCount, ref parameters, errorMessage);
+                result = SafeNativeMethods.JpegLsEncode64(destination, destinationLength, out var count, pixels, pixelCount, ref parameters, IntPtr.Zero);
                 compressedCount = (int)count;
             }
             else
             {
-                result = SafeNativeMethods.JpegLsEncode(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters, errorMessage);
+                result = SafeNativeMethods.JpegLsEncode(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters, IntPtr.Zero);
             }
 
             Contract.Assume(compressedCount >= 0);
 
-            if (result == JpegLSError.CompressedBufferTooSmall)
+            if (result == JpegLSError.SourceBufferTooSmall)
                 return false;
 
-            HandleResult(result, errorMessage);
+            HandleResult(result);
             return true;
         }
 
@@ -253,22 +238,20 @@ namespace CharLS
                 throw new ArgumentNullException(nameof(pixels));
             Contract.EndContractBlock();
 
-            var errorMessage = new StringBuilder(256);
             var error = Environment.Is64BitProcess ?
-                SafeNativeMethods.JpegLsDecode64(pixels, pixels.Length, source, count, IntPtr.Zero, errorMessage) :
-                SafeNativeMethods.JpegLsDecode(pixels, pixels.Length, source, count, IntPtr.Zero, errorMessage);
-            HandleResult(error, errorMessage);
+                SafeNativeMethods.JpegLsDecode64(pixels, pixels.Length, source, count, IntPtr.Zero, IntPtr.Zero) :
+                SafeNativeMethods.JpegLsDecode(pixels, pixels.Length, source, count, IntPtr.Zero, IntPtr.Zero);
+            HandleResult(error);
         }
 
         private static void JpegLsReadHeaderThrowWhenError(byte[] source, int length, out JlsParameters info)
         {
             Contract.Requires(source != null);
 
-            var errorMessage = new StringBuilder(256);
             var result = Environment.Is64BitProcess ?
-                SafeNativeMethods.JpegLsReadHeader64(source, length, out info, errorMessage) :
-                SafeNativeMethods.JpegLsReadHeader(source, length, out info, errorMessage);
-            HandleResult(result, errorMessage);
+                SafeNativeMethods.JpegLsReadHeader64(source, length, out info, IntPtr.Zero) :
+                SafeNativeMethods.JpegLsReadHeader(source, length, out info, IntPtr.Zero);
+            HandleResult(result);
         }
 
         private static int GetUncompressedSize(ref JlsParameters info)
@@ -280,7 +263,7 @@ namespace CharLS
             return size;
         }
 
-        private static void HandleResult(JpegLSError result, StringBuilder errorMessage)
+        private static void HandleResult(JpegLSError result)
         {
             Exception exception;
 
@@ -289,37 +272,53 @@ namespace CharLS
                 case JpegLSError.None:
                     return;
 
-                case JpegLSError.TooMuchCompressedData:
-                case JpegLSError.InvalidJlsParameters:
-                case JpegLSError.InvalidCompressedData:
-                case JpegLSError.CompressedBufferTooSmall:
-                case JpegLSError.ImageTypeNotSupported:
-                case JpegLSError.UnsupportedBitDepthForTransform:
-                case JpegLSError.UnsupportedColorTransform:
-                case JpegLSError.UnsupportedEncoding:
-                case JpegLSError.UnknownJpegMarker:
-                case JpegLSError.MissingJpegMarkerStart:
-                case JpegLSError.UnspecifiedFailure:
+                case JpegLSError.TooMuchEncodedData:
+                case JpegLSError.ParameterValueNotSupported:
+                case JpegLSError.InvalidEncodedData:
+                case JpegLSError.SourceBufferTooSmall:
+                case JpegLSError.BitDepthForTransformNotSupported:
+                case JpegLSError.ColorTransformNotSupported:
+                case JpegLSError.EncodingNotSupported:
+                case JpegLSError.UnknownJpegMarkerFound:
+                case JpegLSError.JpegMarkerStartByteNotFound:
                 case JpegLSError.StartOfImageMarkerNotFound:
                 case JpegLSError.StartOfFrameMarkerNotFound:
                 case JpegLSError.InvalidMarkerSegmentSize:
                 case JpegLSError.DuplicateStartOfImageMarker:
                 case JpegLSError.DuplicateStartOfFrameMarker:
-                    exception = new InvalidDataException(errorMessage.ToString());
+                case JpegLSError.UnexpectedEndOfImageMarker:
+                case JpegLSError.InvalidJpeglsPresetParameterType:
+                case JpegLSError.JpeglsPresetExtendedParameterTypeNotSupported:
+                case JpegLSError.InvalidParameterWidth:
+                case JpegLSError.InvalidParameterHeight:
+                case JpegLSError.InvalidParameterComponentCount:
+                case JpegLSError.InvalidParameterBitsPerSample:
+                case JpegLSError.InvalidParameterInterleaveMode:
+                    exception = new InvalidDataException(GetErrorMessage(result));
                     break;
 
-                case JpegLSError.UncompressedBufferTooSmall:
-                case JpegLSError.ParameterValueNotSupported:
-                    exception = new ArgumentException(errorMessage.ToString());
+                case JpegLSError.InvalidArgument:
+                case JpegLSError.DestinationBufferTooSmall:
+                case JpegLSError.InvalidArgumentWidth:
+                case JpegLSError.InvalidArgumentHeight:
+                case JpegLSError.InvalidArgumentComponentCount:
+                case JpegLSError.InvalidArgumentBitsPerSample:
+                case JpegLSError.InvalidArgumentInterleaveMode:
+                case JpegLSError.InvalidArgumentDestination:
+                case JpegLSError.InvalidArgumentSource:
+                case JpegLSError.InvalidArgumentThumbnail:
+                    exception = new ArgumentException(GetErrorMessage(result));
                     break;
 
                 case JpegLSError.UnexpectedFailure:
-                    exception = new InvalidOperationException("Unexpected failure. The state of the implementation may be invalid.");
+                    exception = new InvalidOperationException(GetErrorMessage(result));
                     break;
 
                 default:
-                    exception = new NotImplementedException(string.Format(CultureInfo.InvariantCulture,
-                        "The native codec has returned an unexpected result value: {0}", result));
+                    Debug.Assert(false, "C# and native implementation mismatch");
+
+                    // ReSharper disable once HeuristicUnreachableCode
+                    exception = new InvalidOperationException(GetErrorMessage(result));
                     break;
             }
 
@@ -329,6 +328,14 @@ namespace CharLS
             // ReSharper disable once PossibleNullReferenceException
             data.Add(nameof(JpegLSError), result);
             throw exception;
+        }
+
+        private static string GetErrorMessage(JpegLSError result)
+        {
+            var message = Environment.Is64BitProcess ?
+                SafeNativeMethods.CharLSGetErrorMessage64((int)result) :
+                SafeNativeMethods.CharLSGetErrorMessage((int)result);
+            return Marshal.PtrToStringAnsi(message);
         }
     }
 }

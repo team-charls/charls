@@ -7,3 +7,5 @@ EXPORTS
     JpegLsEncodeStream
     JpegLsDecodeStream
     JpegLsReadHeaderStream
+    charls_jpegls_category
+    charls_get_error_message

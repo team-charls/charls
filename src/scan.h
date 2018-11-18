@@ -255,7 +255,7 @@ typename Traits::SAMPLE JlsCodec<Traits,Strategy>::DoRegular(int32_t Qs, int32_t
     {
         ErrVal = UnMapErrVal(DecodeValue(k, traits.LIMIT, traits.qbpp));
         if (std::abs(ErrVal) > 65535)
-            throw jpegls_error(jpegls_errc::InvalidCompressedData);
+            throw jpegls_error(jpegls_errc::invalid_encoded_data);
     }
     if (k == 0)
     {
@@ -580,7 +580,7 @@ int32_t JlsCodec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, i
     }
 
     if (index > cpixelMac)
-        throw jpegls_error(jpegls_errc::InvalidCompressedData);
+        throw jpegls_error(jpegls_errc::invalid_encoded_data);
 
     for (int32_t i = 0; i < index; ++i)
     {
@@ -776,9 +776,7 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
             case ColorTransformation::HP2: return std::make_unique<ProcessTransformed<TransformHp2<SAMPLE>>>(info, Info(), TransformHp2<SAMPLE>());
             case ColorTransformation::HP3: return std::make_unique<ProcessTransformed<TransformHp3<SAMPLE>>>(info, Info(), TransformHp3<SAMPLE>());
             default:
-                std::ostringstream message;
-                message << "Color transformation " << Info().colorTransformation << " is not supported.";
-                throw jpegls_error(jpegls_errc::UnsupportedColorTransform, message.str());
+                throw jpegls_error(jpegls_errc::color_transform_not_supported);
         }
     }
 
@@ -791,13 +789,11 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
             case ColorTransformation::HP2: return std::make_unique<ProcessTransformed<TransformShifted<TransformHp2<uint16_t>>>>(info, Info(), TransformShifted<TransformHp2<uint16_t>>(shift));
             case ColorTransformation::HP3: return std::make_unique<ProcessTransformed<TransformShifted<TransformHp3<uint16_t>>>>(info, Info(), TransformShifted<TransformHp3<uint16_t>>(shift));
             default:
-                std::ostringstream message;
-                message << "Color transformation " << Info().colorTransformation << " is not supported.";
-                throw jpegls_error(jpegls_errc::UnsupportedColorTransform, message.str());
+                throw jpegls_error(jpegls_errc::color_transform_not_supported);
         }
     }
 
-    throw jpegls_error(jpegls_errc::UnsupportedBitDepthForTransform);
+    throw jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
 }
 
 

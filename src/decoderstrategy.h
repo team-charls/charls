@@ -108,11 +108,11 @@ public:
             ReadBit();
 
             if (*_position != 0xFF)
-                throw jpegls_error(jpegls_errc::TooMuchCompressedData);
+                throw jpegls_error(jpegls_errc::too_much_encoded_data);
         }
 
         if (_readCache != 0)
-            throw jpegls_error(jpegls_errc::TooMuchCompressedData);
+            throw jpegls_error(jpegls_errc::too_much_encoded_data);
     }
 
     FORCE_INLINE bool OptimizedRead() noexcept
@@ -144,7 +144,7 @@ public:
             if (_position >= _endPosition)
             {
                 if (_validBits <= 0)
-                    throw jpegls_error(jpegls_errc::InvalidCompressedData);
+                    throw jpegls_error(jpegls_errc::invalid_encoded_data);
 
                 return;
             }
@@ -157,7 +157,7 @@ public:
                 if (_position == _endPosition - 1 || (_position[1] & 0x80) != 0)
                 {
                     if (_validBits <= 0)
-                        throw jpegls_error(jpegls_errc::InvalidCompressedData);
+                        throw jpegls_error(jpegls_errc::invalid_encoded_data);
 
                     return;
                 }
@@ -215,7 +215,7 @@ public:
         {
             MakeValid();
             if (_validBits < length)
-                throw jpegls_error(jpegls_errc::InvalidCompressedData);
+                throw jpegls_error(jpegls_errc::invalid_encoded_data);
         }
 
         ASSERT(length != 0 && length <= _validBits);

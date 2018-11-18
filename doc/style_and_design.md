@@ -33,3 +33,20 @@ There are 2 methods to prevent double include:
 * An english error text that describes the problem is extreme usefull.
 
 => Design: std::system_error is the standard solution to throw exceptions from libraries (CharLS is a library)
+
+## Jpeg-LS Design decisions
+
+### Width and Height
+
+The Jpeg-LS standards support a height and weight up to 2^32-1. This means that at least an 32-bit unsigned integer is
+needed to support the complete range. Using unsigned integers has however the drawback that the interoperability with other languages is poort:
+
+C# : supports unsigned 32 bit integers (but .NET marks them as not CLS compliant)
+VB.NET : supports unsigned 32 bit integers (but .NET marks them as not CLS compliant)
+Java : by default integers are signed
+Javascript: only signed integers
+Python: only signed integers
+
+Given the practical applications that 2^31 * 2^31 (max signed integer) will be sufficient for the coming 10 years, the API should use signed integers.
+References: 
+8K Images = (7680×4320)
