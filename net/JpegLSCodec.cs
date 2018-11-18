@@ -2,7 +2,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -36,10 +35,8 @@ namespace CharLS
         {
             if (pixels == null)
                 throw new ArgumentNullException(nameof(pixels));
-            Contract.EndContractBlock();
 
             var pixelCount = pixels.Length;
-            Contract.Assume(pixelCount > 0 && pixelCount <= pixels.Length);
             return Compress(info, pixels, pixelCount, jfifHeader);
         }
 
@@ -62,7 +59,6 @@ namespace CharLS
                 throw new ArgumentNullException(nameof(pixels));
             if (pixelCount <= 0 || pixelCount > pixels.Length)
                 throw new ArgumentOutOfRangeException(nameof(pixelCount), "pixelCount <= 0 || pixelCount > pixels.Length");
-            Contract.EndContractBlock();
 
             const int JpegLSHeaderLength = 100;
 
@@ -74,13 +70,10 @@ namespace CharLS
                 // Increase output buffer to hold compressed data.
                 buffer = new byte[(int)(pixels.Length * 1.5) + JpegLSHeaderLength];
 
-                Contract.Assume(info.Width <= 65535);
-                Contract.Assume(info.Height <= 65535);
                 if (!TryCompress(info, pixels, pixels.Length, jfifHeader, buffer, buffer.Length, out compressedCount))
                     throw new InvalidDataException("Compression failed: compressed output larger then 1.5 * input.");
             }
 
-            Contract.Assume(buffer.Length >= compressedCount);
             return new ArraySegment<byte>(buffer, 0, compressedCount);
         }
 
@@ -109,7 +102,6 @@ namespace CharLS
                 throw new ArgumentNullException(nameof(destination));
             if (destinationLength <= 0 || destinationLength > destination.Length)
                 throw new ArgumentOutOfRangeException(nameof(destinationLength), "destination <= 0 || destinationCount > destination.Length");
-            Contract.Ensures(Contract.ValueAtReturn(out compressedCount) >= 0);
 
             var parameters = default(JlsParameters);
             info.CopyTo(ref parameters);
@@ -132,8 +124,6 @@ namespace CharLS
                 result = SafeNativeMethods.JpegLsEncode(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters, IntPtr.Zero);
             }
 
-            Contract.Assume(compressedCount >= 0);
-
             if (result == JpegLSError.SourceBufferTooSmall)
                 return false;
 
@@ -152,7 +142,6 @@ namespace CharLS
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            Contract.Ensures(Contract.Result<JpegLSMetadataInfo>() != null);
 
             return GetMetadataInfo(source, source.Length);
         }
@@ -172,7 +161,6 @@ namespace CharLS
                 throw new ArgumentNullException(nameof(source));
             if (count < 0 || count > source.Length)
                 throw new ArgumentOutOfRangeException(nameof(count), "count < 0 || count > source.Length");
-            Contract.Ensures(Contract.Result<JpegLSMetadataInfo>() != null);
 
             JpegLsReadHeaderThrowWhenError(source, count, out var info);
             return new JpegLSMetadataInfo(ref info);
@@ -189,7 +177,6 @@ namespace CharLS
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            Contract.Ensures(Contract.Result<byte[]>() != null);
 
             return Decompress(source, source.Length);
         }
@@ -209,7 +196,6 @@ namespace CharLS
                 throw new ArgumentNullException(nameof(source));
             if (count < 0 || count > source.Length)
                 throw new ArgumentOutOfRangeException(nameof(count), "count < 0 || count > source.Length");
-            Contract.Ensures(Contract.Result<byte[]>() != null);
 
             JpegLsReadHeaderThrowWhenError(source, count, out var info);
 
@@ -236,7 +222,6 @@ namespace CharLS
                 throw new ArgumentOutOfRangeException(nameof(count), "count < 0 || count > source.Length");
             if (pixels == null)
                 throw new ArgumentNullException(nameof(pixels));
-            Contract.EndContractBlock();
 
             var error = Environment.Is64BitProcess ?
                 SafeNativeMethods.JpegLsDecode64(pixels, pixels.Length, source, count, IntPtr.Zero, IntPtr.Zero) :
@@ -246,8 +231,6 @@ namespace CharLS
 
         private static void JpegLsReadHeaderThrowWhenError(byte[] source, int length, out JlsParameters info)
         {
-            Contract.Requires(source != null);
-
             var result = Environment.Is64BitProcess ?
                 SafeNativeMethods.JpegLsReadHeader64(source, length, out info, IntPtr.Zero) :
                 SafeNativeMethods.JpegLsReadHeader(source, length, out info, IntPtr.Zero);
@@ -256,10 +239,7 @@ namespace CharLS
 
         private static int GetUncompressedSize(ref JlsParameters info)
         {
-            Contract.Ensures(Contract.Result<int>() > 0);
-
             var size = info.Width * info.Height * info.Components * ((info.BitsPerSample + 7) / 8);
-            Contract.Assume(size > 0);
             return size;
         }
 
@@ -323,7 +303,6 @@ namespace CharLS
             }
 
             var data = exception.Data;
-            Contract.Assume(data != null);
 
             // ReSharper disable once PossibleNullReferenceException
             data.Add(nameof(JpegLSError), result);
