@@ -14,4 +14,8 @@ const int DefaultThreshold3 = 21; // BASIC_T3
 
 const int DefaultResetValue = 64; // Default RESET value as defined in  ISO/IEC 14495-1, table C.2
 
+const int MaximumComponentCount = 255;
+const int MinimumBitsPerSample = 2;
+const int MaximumBitsPerSample = 16;
+
 } // namespace charls

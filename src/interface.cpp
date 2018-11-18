@@ -7,6 +7,7 @@
 #include "jpegstreamreader.h"
 #include "jpegstreamwriter.h"
 #include "util.h"
+#include "constants.h"
 
 using namespace charls;
 
@@ -17,13 +18,13 @@ void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& 
     if (!uncompressedStream.rawStream && !uncompressedStream.rawData)
         throw jpegls_error(jpegls_errc::invalid_argument_destination);
 
-    if (parameters.bitsPerSample < 2 || parameters.bitsPerSample > 16)
+    if (parameters.bitsPerSample < MinimumBitsPerSample || parameters.bitsPerSample > MaximumBitsPerSample)
         throw jpegls_error(jpegls_errc::invalid_argument_bits_per_sample);
 
     if (!(parameters.interleaveMode == InterleaveMode::None || parameters.interleaveMode == InterleaveMode::Sample || parameters.interleaveMode == InterleaveMode::Line))
         throw jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
 
-    if (parameters.components < 1 || parameters.components > 255)
+    if (parameters.components < 1 || parameters.components > MaximumComponentCount)
         throw jpegls_error(jpegls_errc::invalid_argument_component_count);
 
     if (uncompressedStream.rawData)
@@ -48,7 +49,7 @@ void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& 
 }
 
 
-jpegls_errc ResultAndErrorMessageFromException()
+jpegls_errc to_jpegls_errc() noexcept
 {
     try
     {
@@ -129,7 +130,7 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& byte
     }
     catch (...)
     {
-        return ResultAndErrorMessageFromException();
+        return to_jpegls_errc();
     }
 }
 
@@ -151,7 +152,7 @@ jpegls_errc JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compress
     }
     catch (...)
     {
-        return ResultAndErrorMessageFromException();
+        return to_jpegls_errc();
     }
 }
 
@@ -169,7 +170,7 @@ jpegls_errc JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* 
     }
     catch (...)
     {
-        return ResultAndErrorMessageFromException();
+        return to_jpegls_errc();
     }
 }
 
@@ -228,7 +229,7 @@ extern "C"
         }
         catch (...)
         {
-            return ResultAndErrorMessageFromException();
+            return to_jpegls_errc();
         }
     }
 }

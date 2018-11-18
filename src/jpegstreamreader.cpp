@@ -32,16 +32,22 @@ int32_t clamp(int32_t i, int32_t j, int32_t maximumSampleValue) noexcept
 }
 
 
-jpegls_errc CheckParameterCoherent(const JlsParameters& params) noexcept
+void CheckParameterCoherent(const JlsParameters& params)
 {
     switch (params.components)
     {
     case 4:
-        return params.interleaveMode == InterleaveMode::Sample ? jpegls_errc::parameter_value_not_supported : jpegls_errc::success;
+        if (params.interleaveMode == InterleaveMode::Sample)
+            throw jpegls_error(jpegls_errc::parameter_value_not_supported);
+
+        break;
     case 3:
-        return jpegls_errc::success;
+        break;
     default:
-        return params.interleaveMode == InterleaveMode::None ? jpegls_errc::success : jpegls_errc::parameter_value_not_supported;
+        if (params.interleaveMode != InterleaveMode::None)
+            throw jpegls_error(jpegls_errc::parameter_value_not_supported);
+
+        break;
     }
 }
 
@@ -90,10 +96,7 @@ JpegStreamReader::JpegStreamReader(ByteStreamInfo byteStreamInfo) noexcept :
 void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 {
     ReadHeader();
-
-    const auto result = CheckParameterCoherent(_params);
-    if (result != jpegls_errc::success)
-        throw jpegls_error(result);
+    CheckParameterCoherent(_params);
 
     if (_rect.Width <= 0)
     {
@@ -282,7 +285,7 @@ int JpegStreamReader::ReadStartOfFrameSegment(int32_t segmentSize)
         throw jpegls_error(make_error_code(jpegls_errc::invalid_marker_segment_size));
 
     _params.bitsPerSample = ReadByte();
-    if (_params.bitsPerSample < 2 || _params.bitsPerSample > 16)
+    if (_params.bitsPerSample < MinimumBitsPerSample || _params.bitsPerSample > MaximumBitsPerSample)
         throw jpegls_error(make_error_code(jpegls_errc::invalid_parameter_bits_per_sample));
 
     _params.height = ReadUInt16();
