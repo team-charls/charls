@@ -1,8 +1,12 @@
+
+<img src="https://raw.githubusercontent.com/team-charls/charls/master/doc/jpeg_ls_logo.png" alt="JPEG-LS Logo" width="100"/>
+
+# CharLS
+
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/team-charls/charls/master/LICENSE.md)
 [![Build status](https://ci.appveyor.com/api/projects/status/yq0naf3v2m8nfa8r/branch/master?svg=true)](https://ci.appveyor.com/project/vbaderks/charls/branch/master)
 [![Build Status](https://travis-ci.org/team-charls/charls.svg?branch=master)](https://travis-ci.org/team-charls/charls)
 [![Vcpkg package](https://repology.org/badge/version-for-repo/vcpkg/charls.svg)](https://repology.org/metapackage/charls)
-
-# CharLS
 
 CharLS is a C++ implementation of the JPEG-LS standard for lossless and near-lossless image compression and decompression.
 JPEG-LS is a low-complexity image compression standard that matches JPEG 2000 compression ratios.
