@@ -6,7 +6,7 @@
     <OutDir Condition="'$(Platform)'=='Win32'">$(SolutionDir)bin\$(Configuration)\x86\</OutDir>
     <OutDir Condition="'$(Platform)'=='AnyCPU'">$(SolutionDir)bin\$(Configuration)\x86\</OutDir>
     
-    <!-- C# Projects require the legagy OutputPath variabl. -->
+    <!-- C# Projects require the legagy OutputPath variable. -->
     <OutputPath>$(OutDir)</OutputPath>
 
     <!-- C++ temp files can be redirected. -->
@@ -18,6 +18,9 @@
 
     <!-- Default character set is Unicode (UTF16), defines _UNICODE and UNICODE. -->
     <CharacterSet>Unicode</CharacterSet>
+
+    <!-- Define treat warnings as errors for C# projects -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
