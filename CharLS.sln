@@ -18,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CharLSNetTest", "nettest\CharLSNetTest.csproj", "{002B897F-9D96-4A99-853F-53806C39559D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CharLSNetTest", "dotnet\test\CharLSNetTest.csproj", "{002B897F-9D96-4A99-853F-53806C39559D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Convert", "samples\convert.c\Convert.vcxproj", "{F42C0547-FEB3-40F4-9379-0FF87B44FA0F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -27,7 +27,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Convert", "samples\convert.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSUnitTest", "unittest\CharLSUnitTest.vcxproj", "{4A912445-1E83-41FA-8B80-C0A9BD4E9289}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CharLSNet", "net\CharLSNet.csproj", "{CFC22FDD-A405-486A-AEFE-4231424B0AE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CharLSNet", "dotnet\src\CharLSNet.csproj", "{CFC22FDD-A405-486A-AEFE-4231424B0AE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

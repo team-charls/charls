@@ -23,90 +23,90 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\test\conformance\T16E0.JLS">
+    <None Include="..\..\test\conformance\T16E0.JLS">
       <Link>DataFiles\T16E0.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T16E3.JLS">
+    <None Include="..\..\test\conformance\T16E3.JLS">
       <Link>DataFiles\T16E3.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T16E3.pgm">
+    <None Include="..\..\test\conformance\T16E3.pgm">
       <Link>DataFiles\T16E3.pgm</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T8C0E0.JLS">
+    <None Include="..\..\test\conformance\T8C0E0.JLS">
       <Link>DataFiles\T8C0E0.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T8C0E3.JLS">
+    <None Include="..\..\test\conformance\T8C0E3.JLS">
       <Link>DataFiles\T8C0E3.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T8C1E0.JLS">
+    <None Include="..\..\test\conformance\T8C1E0.JLS">
       <Link>DataFiles\T8C1E0.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T8C1E3.JLS">
+    <None Include="..\..\test\conformance\T8C1E3.JLS">
       <Link>DataFiles\T8C1E3.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T8C2E0.JLS">
+    <None Include="..\..\test\conformance\T8C2E0.JLS">
       <Link>DataFiles\T8C2E0.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T8C2E3.JLS">
+    <None Include="..\..\test\conformance\T8C2E3.JLS">
       <Link>DataFiles\T8C2E3.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T8NDE0.JLS">
+    <None Include="..\..\test\conformance\T8NDE0.JLS">
       <Link>DataFiles\T8NDE0.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T8NDE3.JLS">
+    <None Include="..\..\test\conformance\T8NDE3.JLS">
       <Link>DataFiles\T8NDE3.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T8SSE0.JLS">
+    <None Include="..\..\test\conformance\T8SSE0.JLS">
       <Link>DataFiles\T8SSE0.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\T8SSE3.JLS">
+    <None Include="..\..\test\conformance\T8SSE3.JLS">
       <Link>DataFiles\T8SSE3.JLS</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\TEST16.PGM">
+    <None Include="..\..\test\conformance\TEST16.PGM">
       <Link>DataFiles\TEST16.PGM</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\TEST8.PPM">
+    <None Include="..\..\test\conformance\TEST8.PPM">
       <Link>DataFiles\TEST8.PPM</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\TEST8B.PGM">
+    <None Include="..\..\test\conformance\TEST8B.PGM">
       <Link>DataFiles\TEST8B.PGM</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\TEST8BS2.PGM">
+    <None Include="..\..\test\conformance\TEST8BS2.PGM">
       <Link>DataFiles\TEST8BS2.PGM</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\TEST8G.PGM">
+    <None Include="..\..\test\conformance\TEST8G.PGM">
       <Link>DataFiles\TEST8G.PGM</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\TEST8GR4.PGM">
+    <None Include="..\..\test\conformance\TEST8GR4.PGM">
       <Link>DataFiles\TEST8GR4.PGM</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\test\conformance\TEST8R.PGM">
+    <None Include="..\..\test\conformance\TEST8R.PGM">
       <Link>DataFiles\TEST8R.PGM</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\net\CharLSNet.csproj">
+    <ProjectReference Include="..\src\CharLSNet.csproj">
       <Project>{6f9955c1-a285-4de0-b3e6-f69eb08bbd7b}</Project>
       <Name>CharLSNet</Name>
     </ProjectReference>
