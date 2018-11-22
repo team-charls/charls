@@ -2,9 +2,9 @@
 
 #include "util.h"
 
-#include "../src/defaulttraits.h"
-#include "../src/losslesstraits.h"
-#include "../src/processline.h"
+#include "../src/default_traits.h"
+#include "../src/lossless_traits.h"
+#include "../src/process_line.h"
 
 #include "bitstreamdamage.h"
 #include "compliance.h"

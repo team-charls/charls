@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#include "../src/jpegstreamreader.h"
+#include "../src/jpeg_stream_reader.h"
 #include <vector>
 #include <cstdint>
 

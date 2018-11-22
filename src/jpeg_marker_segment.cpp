@@ -1,7 +1,7 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#include "jpegmarkersegment.h"
-#include "jpegmarkercode.h"
+#include "jpeg_marker_segment.h"
+#include "jpeg_marker_code.h"
 #include "util.h"
 
 #include <vector>

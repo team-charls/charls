@@ -3,9 +3,9 @@
 #include <charls/charls.h>
 #include <charls/jpegls_error.h>
 
-#include "jpegmarkersegment.h"
-#include "jpegstreamreader.h"
-#include "jpegstreamwriter.h"
+#include "jpeg_marker_segment.h"
+#include "jpeg_stream_reader.h"
+#include "jpeg_stream_writer.h"
 #include "util.h"
 #include "constants.h"
 

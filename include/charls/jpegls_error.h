@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "publictypes.h"
+#include "public_types.h"
 #include "api_abi.h"
 
 #ifdef __cplusplus

@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#include "..\src\colortransform.h"
+#include "../src/color_transform.h"
 
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

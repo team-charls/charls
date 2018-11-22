@@ -1,13 +1,13 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#include "jpegstreamreader.h"
+#include "jpeg_stream_reader.h"
 #include "util.h"
-#include "jpegstreamwriter.h"
-#include "jpegimagedatasegment.h"
-#include "jpegmarkercode.h"
-#include "decoderstrategy.h"
-#include "encoderstrategy.h"
-#include "jlscodecfactory.h"
+#include "jpeg_stream_writer.h"
+#include "jpeg_image_data_segment.h"
+#include "jpeg_marker_code.h"
+#include "decoder_strategy.h"
+#include "encoder_strategy.h"
+#include "jls_codec_factory.h"
 #include "constants.h"
 #include <memory>
 #include <iomanip>

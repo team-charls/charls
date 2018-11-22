@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#include "..\src\jpegmarkersegment.h"
+#include "../src/jpeg_marker_segment.h"
 #include <memory>
 #include <cstdint>
 

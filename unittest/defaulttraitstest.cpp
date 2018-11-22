@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#include "../src/defaulttraits.h"
+#include "../src/default_traits.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

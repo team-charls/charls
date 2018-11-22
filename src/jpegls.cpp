@@ -1,13 +1,13 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #include "util.h"
-#include "decoderstrategy.h"
-#include "encoderstrategy.h"
-#include "lookuptable.h"
-#include "losslesstraits.h"
-#include "defaulttraits.h"
-#include "jlscodecfactory.h"
-#include "jpegstreamreader.h"
+#include "decoder_strategy.h"
+#include "encoder_strategy.h"
+#include "lookup_table.h"
+#include "lossless_traits.h"
+#include "default_traits.h"
+#include "jls_codec_factory.h"
+#include "jpeg_stream_reader.h"
 #include <vector>
 
 // As defined in the JPEG-LS standard

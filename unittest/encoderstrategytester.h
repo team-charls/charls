@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../src/encoderstrategy.h"
+#include "../src/encoder_strategy.h"
 
 
 class EncoderStrategyTester : charls::EncoderStrategy

@@ -5,7 +5,7 @@
 #include <charls/jpegls_error.h>
 
 #include "util.h"
-#include "jpegsegment.h"
+#include "jpeg_segment.h"
 
 #include <vector>
 #include <memory>

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <charls/publictypes.h>
+#include <charls/public_types.h>
 #include <vector>
 
 // Use an uppercase alias for assert to make it clear that it is a pre-processor macro.

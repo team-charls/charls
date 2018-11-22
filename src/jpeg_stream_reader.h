@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <charls/publictypes.h>
+#include <charls/public_types.h>
 #include <cstdint>
 #include <vector>
 

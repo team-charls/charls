@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <charls/publictypes.h>
+#include <charls/public_types.h>
 
-#include "jpegsegment.h"
+#include "jpeg_segment.h"
 
 namespace charls
 {

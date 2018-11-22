@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#include "../src/jpegstreamwriter.h"
+#include "../src/jpeg_stream_writer.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

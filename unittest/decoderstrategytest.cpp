@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#include "../src/decoderstrategy.h"
+#include "../src/decoder_strategy.h"
 #include "encoderstrategytester.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

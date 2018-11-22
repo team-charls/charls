@@ -1,10 +1,10 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#include "jpegstreamwriter.h"
-#include "jpegimagedatasegment.h"
-#include "jpegmarkercode.h"
-#include "jpegmarkersegment.h"
-#include "jpegstreamreader.h"
+#include "jpeg_stream_writer.h"
+#include "jpeg_image_data_segment.h"
+#include "jpeg_marker_code.h"
+#include "jpeg_marker_segment.h"
+#include "jpeg_stream_reader.h"
 #include <vector>
 
 using std::make_unique;

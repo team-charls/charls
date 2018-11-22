@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "lookuptable.h"
-#include "contextrunmode.h"
+#include "lookup_table.h"
+#include "context_run_mode.h"
 #include "context.h"
-#include "colortransform.h"
-#include "processline.h"
+#include "color_transform.h"
+#include "process_line.h"
 #include <sstream>
 #include <array>
 

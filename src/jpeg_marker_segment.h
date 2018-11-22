@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "jpegsegment.h"
-#include "jpegstreamwriter.h"
+#include "jpeg_segment.h"
+#include "jpeg_stream_writer.h"
 #include <vector>
 #include <cstdint>
 #include <memory>

@@ -7,45 +7,21 @@
     <ClCompile Include="jpegls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="jpegmarkersegment.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="jpegstreamwriter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="jpegstreamreader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="jpegls_error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg_marker_segment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg_stream_reader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg_stream_writer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="colortransform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="contextrunmode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="decoderstrategy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="defaulttraits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="encoderstrategy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lookuptable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="losslesstraits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="processline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scan.h">
@@ -54,40 +30,64 @@
     <ClInclude Include="util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jpegstreamwriter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="jpegsegment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="jpegmarkersegment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="jpegimagedatasegment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="jpegmarkercode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="jpegstreamreader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="jlscodecfactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\charls\charls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\charls\publictypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\charls\jpegls_error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\charls\api_abi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="color_transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="context_run_mode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder_strategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="default_traits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="encoder_strategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jls_codec_factory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg_image_data_segment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg_marker_code.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg_marker_segment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg_segment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg_stream_reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg_stream_writer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lookup_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lossless_traits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="process_line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\charls\public_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
