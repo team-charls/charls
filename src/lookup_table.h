@@ -13,29 +13,29 @@ namespace charls
 struct Code final
 {
     Code() noexcept :
-        _value(),
-        _length()
+        value_(),
+        length_()
     {
     }
 
     Code(int32_t value, int32_t length) noexcept :
-        _value(value),
-        _length(length)
+        value_(value),
+        length_(length)
     {
     }
 
     int32_t GetValue() const noexcept
     {
-        return _value;
+        return value_;
     }
 
     int32_t GetLength() const noexcept
     {
-        return _length;
+        return length_;
     }
 
-    int32_t _value;
-    int32_t _length;
+    int32_t value_;
+    int32_t length_;
 };
 
 
@@ -46,7 +46,7 @@ public:
 
     CTable() noexcept
     {
-        std::memset(_types.data(), 0, sizeof(_types)); // TODO: analyze if needed
+        std::memset(types_.data(), 0, sizeof(types_)); // TODO: analyze if needed
     }
 
     void AddEntry(uint8_t value, Code c) noexcept
@@ -56,18 +56,18 @@ public:
 
         for (int32_t i = 0; i < 1 << (byte_bit_count - length); ++i)
         {
-            ASSERT(_types[(static_cast<size_t>(value) << (byte_bit_count - length)) + i].GetLength() == 0);
-            _types[(static_cast<size_t>(value) << (byte_bit_count - length)) + i] = c;
+            ASSERT(types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i].GetLength() == 0);
+            types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i] = c;
         }
     }
 
     FORCE_INLINE const Code& Get(int32_t value) const noexcept
     {
-        return _types[value];
+        return types_[value];
     }
 
 private:
-    std::array<Code, 1 << byte_bit_count> _types;
+    std::array<Code, 1 << byte_bit_count> types_;
 };
 
 } // namespace charls

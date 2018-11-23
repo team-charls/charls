@@ -46,30 +46,30 @@ class PostProcessSingleComponent final : public ProcessLine
 {
 public:
     PostProcessSingleComponent(void* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
-        _rawData(static_cast<uint8_t*>(rawData)),
-        _bytesPerPixel(bytesPerPixel),
-        _bytesPerLine(params.stride)
+        rawData_(static_cast<uint8_t*>(rawData)),
+        bytesPerPixel_(bytesPerPixel),
+        bytesPerLine_(params.stride)
     {
     }
 
     MSVC_WARNING_SUPPRESS(26440)
     void NewLineRequested(void* dest, int pixelCount, int /*byteStride*/) override
     {
-        std::memcpy(dest, _rawData, pixelCount * _bytesPerPixel);
-        _rawData += _bytesPerLine;
+        std::memcpy(dest, rawData_, pixelCount * bytesPerPixel_);
+        rawData_ += bytesPerLine_;
     }
 
     void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/) override
     {
-        std::memcpy(_rawData, pSrc, pixelCount * _bytesPerPixel);
-        _rawData += _bytesPerLine;
+        std::memcpy(rawData_, pSrc, pixelCount * bytesPerPixel_);
+        rawData_ += bytesPerLine_;
     }
     MSVC_WARNING_UNSUPPRESS()
 
 private:
-    uint8_t* _rawData;
-    size_t _bytesPerPixel;
-    size_t _bytesPerLine;
+    uint8_t* rawData_;
+    size_t bytesPerPixel_;
+    size_t bytesPerLine_;
 };
 
 
@@ -96,47 +96,47 @@ class PostProcessSingleStream final : public ProcessLine
 {
 public:
     PostProcessSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
-        _rawData(rawData),
-        _bytesPerPixel(bytesPerPixel),
-        _bytesPerLine(params.stride)
+        rawData_(rawData),
+        bytesPerPixel_(bytesPerPixel),
+        bytesPerLine_(params.stride)
     {
     }
 
     void NewLineRequested(void* dest, int pixelCount, int /*destStride*/) override
     {
-        auto bytesToRead = static_cast<std::streamsize>(pixelCount) * _bytesPerPixel;
+        auto bytesToRead = static_cast<std::streamsize>(pixelCount) * bytesPerPixel_;
         while (bytesToRead != 0)
         {
-            const auto bytesRead = _rawData->sgetn(static_cast<char*>(dest), bytesToRead);
+            const auto bytesRead = rawData_->sgetn(static_cast<char*>(dest), bytesToRead);
             if (bytesRead == 0)
                 throw jpegls_error(jpegls_errc::destination_buffer_too_small);
 
             bytesToRead = bytesToRead - bytesRead;
         }
 
-        if (_bytesPerPixel == 2)
+        if (bytesPerPixel_ == 2)
         {
             ByteSwap(static_cast<unsigned char*>(dest), 2 * pixelCount);
         }
 
-        if (_bytesPerLine - pixelCount * _bytesPerPixel > 0)
+        if (bytesPerLine_ - pixelCount * bytesPerPixel_ > 0)
         {
-            _rawData->pubseekoff(static_cast<std::streamoff>(_bytesPerLine - bytesToRead), std::ios_base::cur);
+            rawData_->pubseekoff(static_cast<std::streamoff>(bytesPerLine_ - bytesToRead), std::ios_base::cur);
         }
     }
 
     void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/) override
     {
-        const auto bytesToWrite = pixelCount * _bytesPerPixel;
-        const auto bytesWritten = static_cast<size_t>(_rawData->sputn(static_cast<const char*>(pSrc), bytesToWrite));
+        const auto bytesToWrite = pixelCount * bytesPerPixel_;
+        const auto bytesWritten = static_cast<size_t>(rawData_->sputn(static_cast<const char*>(pSrc), bytesToWrite));
         if (bytesWritten != bytesToWrite)
             throw jpegls_error(jpegls_errc::destination_buffer_too_small);
     }
 
 private:
-    std::basic_streambuf<char>* _rawData;
-    size_t _bytesPerPixel;
-    size_t _bytesPerLine;
+    std::basic_streambuf<char>* rawData_;
+    size_t bytesPerPixel_;
+    size_t bytesPerLine_;
 };
 
 
@@ -230,118 +230,118 @@ class ProcessTransformed final : public ProcessLine
 {
 public:
     ProcessTransformed(ByteStreamInfo rawStream, const JlsParameters& info, TRANSFORM transform) :
-        _params(info),
-        _tempLine(static_cast<size_t>(info.width) * info.components),
-        _buffer(static_cast<size_t>(info.width) * info.components * sizeof(size_type)),
-        _transform(transform),
-        _inverseTransform(transform),
-        _rawPixels(rawStream)
+        params_(info),
+        tempLine_(static_cast<size_t>(info.width) * info.components),
+        buffer_(static_cast<size_t>(info.width) * info.components * sizeof(size_type)),
+        transform_(transform),
+        inverseTransform_(transform),
+        rawPixels_(rawStream)
     {
     }
 
     void NewLineRequested(void* dest, int pixelCount, int destStride) override
     {
-        if (!_rawPixels.rawStream)
+        if (!rawPixels_.rawStream)
         {
-            Transform(_rawPixels.rawData, dest, pixelCount, destStride);
-            _rawPixels.rawData += _params.stride;
+            Transform(rawPixels_.rawData, dest, pixelCount, destStride);
+            rawPixels_.rawData += params_.stride;
             return;
         }
 
-        Transform(_rawPixels.rawStream, dest, pixelCount, destStride);
+        Transform(rawPixels_.rawStream, dest, pixelCount, destStride);
     }
 
     void Transform(std::basic_streambuf<char>* rawStream, void* dest, int pixelCount, int destStride)
     {
-        std::streamsize bytesToRead = static_cast<std::streamsize>(pixelCount) * _params.components * sizeof(size_type);
+        std::streamsize bytesToRead = static_cast<std::streamsize>(pixelCount) * params_.components * sizeof(size_type);
         while (bytesToRead != 0)
         {
-            const auto read = rawStream->sgetn(reinterpret_cast<char*>(_buffer.data()), bytesToRead);
+            const auto read = rawStream->sgetn(reinterpret_cast<char*>(buffer_.data()), bytesToRead);
             if (read == 0)
                 throw jpegls_error(jpegls_errc::source_buffer_too_small);
 
             bytesToRead -= read;
         }
-        Transform(_buffer.data(), dest, pixelCount, destStride);
+        Transform(buffer_.data(), dest, pixelCount, destStride);
     }
 
     void Transform(const void* source, void* dest, int pixelCount, int destStride) noexcept
     {
-        if (_params.outputBgr)
+        if (params_.outputBgr)
         {
-            memcpy(_tempLine.data(), source, sizeof(Triplet<size_type>) * pixelCount);
-            TransformRgbToBgr(_tempLine.data(), _params.components, pixelCount);
-            source = _tempLine.data();
+            memcpy(tempLine_.data(), source, sizeof(Triplet<size_type>) * pixelCount);
+            TransformRgbToBgr(tempLine_.data(), params_.components, pixelCount);
+            source = tempLine_.data();
         }
 
-        if (_params.components == 3)
+        if (params_.components == 3)
         {
-            if (_params.interleaveMode == charls::InterleaveMode::Sample)
+            if (params_.interleaveMode == charls::InterleaveMode::Sample)
             {
-                TransformLine(static_cast<Triplet<size_type>*>(dest), static_cast<const Triplet<size_type>*>(source), pixelCount, _transform);
+                TransformLine(static_cast<Triplet<size_type>*>(dest), static_cast<const Triplet<size_type>*>(source), pixelCount, transform_);
             }
             else
             {
-                TransformTripletToLine(static_cast<const Triplet<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, _transform);
+                TransformTripletToLine(static_cast<const Triplet<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, transform_);
             }
         }
-        else if (_params.components == 4 && _params.interleaveMode == charls::InterleaveMode::Line)
+        else if (params_.components == 4 && params_.interleaveMode == charls::InterleaveMode::Line)
         {
-            TransformQuadToLine(static_cast<const Quad<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, _transform);
+            TransformQuadToLine(static_cast<const Quad<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, transform_);
         }
     }
 
     void DecodeTransform(const void* pSrc, void* rawData, int pixelCount, int byteStride) noexcept
     {
-        if (_params.components == 3)
+        if (params_.components == 3)
         {
-            if (_params.interleaveMode == charls::InterleaveMode::Sample)
+            if (params_.interleaveMode == charls::InterleaveMode::Sample)
             {
-                TransformLine(static_cast<Triplet<size_type>*>(rawData), static_cast<const Triplet<size_type>*>(pSrc), pixelCount, _inverseTransform);
+                TransformLine(static_cast<Triplet<size_type>*>(rawData), static_cast<const Triplet<size_type>*>(pSrc), pixelCount, inverseTransform_);
             }
             else
             {
-                TransformLineToTriplet(static_cast<const size_type*>(pSrc), byteStride, static_cast<Triplet<size_type>*>(rawData), pixelCount, _inverseTransform);
+                TransformLineToTriplet(static_cast<const size_type*>(pSrc), byteStride, static_cast<Triplet<size_type>*>(rawData), pixelCount, inverseTransform_);
             }
         }
-        else if (_params.components == 4 && _params.interleaveMode == charls::InterleaveMode::Line)
+        else if (params_.components == 4 && params_.interleaveMode == charls::InterleaveMode::Line)
         {
-            TransformLineToQuad(static_cast<const size_type*>(pSrc), byteStride, static_cast<Quad<size_type>*>(rawData), pixelCount, _inverseTransform);
+            TransformLineToQuad(static_cast<const size_type*>(pSrc), byteStride, static_cast<Quad<size_type>*>(rawData), pixelCount, inverseTransform_);
         }
 
-        if (_params.outputBgr)
+        if (params_.outputBgr)
         {
-            TransformRgbToBgr(static_cast<size_type*>(rawData), _params.components, pixelCount);
+            TransformRgbToBgr(static_cast<size_type*>(rawData), params_.components, pixelCount);
         }
     }
 
     void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride) override
     {
-        if (_rawPixels.rawStream)
+        if (rawPixels_.rawStream)
         {
-            const std::streamsize bytesToWrite = static_cast<std::streamsize>(pixelCount) * _params.components * sizeof(size_type);
-            DecodeTransform(pSrc, _buffer.data(), pixelCount, sourceStride);
+            const std::streamsize bytesToWrite = static_cast<std::streamsize>(pixelCount) * params_.components * sizeof(size_type);
+            DecodeTransform(pSrc, buffer_.data(), pixelCount, sourceStride);
 
-            const auto bytesWritten = _rawPixels.rawStream->sputn(reinterpret_cast<char*>(_buffer.data()), bytesToWrite);
+            const auto bytesWritten = rawPixels_.rawStream->sputn(reinterpret_cast<char*>(buffer_.data()), bytesToWrite);
             if (bytesWritten != bytesToWrite)
                 throw jpegls_error(jpegls_errc::destination_buffer_too_small);
         }
         else
         {
-            DecodeTransform(pSrc, _rawPixels.rawData, pixelCount, sourceStride);
-            _rawPixels.rawData += _params.stride;
+            DecodeTransform(pSrc, rawPixels_.rawData, pixelCount, sourceStride);
+            rawPixels_.rawData += params_.stride;
         }
     }
 
 private:
     using size_type = typename TRANSFORM::size_type;
 
-    const JlsParameters& _params;
-    std::vector<size_type> _tempLine;
-    std::vector<uint8_t> _buffer;
-    TRANSFORM _transform;
-    typename TRANSFORM::Inverse _inverseTransform;
-    ByteStreamInfo _rawPixels;
+    const JlsParameters& params_;
+    std::vector<size_type> tempLine_;
+    std::vector<uint8_t> buffer_;
+    TRANSFORM transform_;
+    typename TRANSFORM::Inverse inverseTransform_;
+    ByteStreamInfo rawPixels_;
 };
 
 } // namespace charls

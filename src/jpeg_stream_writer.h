@@ -2,16 +2,14 @@
 
 #pragma once
 
-#include <charls/jpegls_error.h>
-
-#include "util.h"
 #include "jpeg_segment.h"
+
+#include <charls/jpegls_error.h>
 
 #include <vector>
 #include <memory>
 
-namespace charls
-{
+namespace charls {
 
 enum class JpegMarkerCode : uint8_t;
 
@@ -26,7 +24,7 @@ public:
 
     void AddSegment(std::unique_ptr<JpegSegment> segment)
     {
-        _segments.push_back(std::move(segment));
+        segments_.push_back(std::move(segment));
     }
 
     void AddScan(const ByteStreamInfo& info, const JlsParameters& params);
@@ -35,12 +33,12 @@ public:
 
     std::size_t GetBytesWritten() const noexcept
     {
-        return _byteOffset;
+        return byteOffset_;
     }
 
     std::size_t GetLength() const noexcept
     {
-        return _data.count - _byteOffset;
+        return data_.count - byteOffset_;
     }
 
     std::size_t Write(const ByteStreamInfo& info);
@@ -48,29 +46,29 @@ public:
 private:
     uint8_t* GetPos() const noexcept
     {
-        return _data.rawData + _byteOffset;
+        return data_.rawData + byteOffset_;
     }
 
     ByteStreamInfo OutputStream() const noexcept
     {
-        ByteStreamInfo data = _data;
-        data.count -= _byteOffset;
-        data.rawData += _byteOffset;
+        ByteStreamInfo data = data_;
+        data.count -= byteOffset_;
+        data.rawData += byteOffset_;
         return data;
     }
 
     void WriteByte(uint8_t val)
     {
-        if (_data.rawStream)
+        if (data_.rawStream)
         {
-            _data.rawStream->sputc(val);
+            data_.rawStream->sputc(val);
         }
         else
         {
-            if (_byteOffset >= _data.count)
+            if (byteOffset_ >= data_.count)
                 throw jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-            _data.rawData[_byteOffset++] = val;
+            data_.rawData[byteOffset_++] = val;
         }
     }
 
@@ -96,16 +94,16 @@ private:
 
     void Seek(std::size_t byteCount) noexcept
     {
-        if (_data.rawStream)
+        if (data_.rawStream)
             return;
 
-        _byteOffset += byteCount;
+        byteOffset_ += byteCount;
     }
 
-    ByteStreamInfo _data;
-    std::size_t _byteOffset;
-    int32_t _lastComponentIndex;
-    std::vector<std::unique_ptr<JpegSegment>> _segments;
+    ByteStreamInfo data_;
+    std::size_t byteOffset_;
+    int32_t lastComponentIndex_;
+    std::vector<std::unique_ptr<JpegSegment>> segments_;
 };
 
 } // namespace charls

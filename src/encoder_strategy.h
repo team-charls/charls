@@ -13,14 +13,14 @@ class EncoderStrategy
 {
 public:
     explicit EncoderStrategy(const JlsParameters& params) :
-        _params(params),
-        _bitBuffer(0),
-        _freeBitCount(sizeof(_bitBuffer) * 8),
-        _compressedLength(0),
-        _position(nullptr),
-        _isFFWritten(false),
-        _bytesWritten(0),
-        _compressedStream(nullptr)
+        params_(params),
+        bitBuffer_(0),
+        freeBitCount_(sizeof(bitBuffer_) * 8),
+        compressedLength_(0),
+        position_(nullptr),
+        isFFWritten_(false),
+        bytesWritten_(0),
+        compressedStream_(nullptr)
     {
     }
 
@@ -39,7 +39,7 @@ public:
 
     void OnLineBegin(int32_t cpixel, void* ptypeBuffer, int32_t pixelStride) const
     {
-        _processLine->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
+        processLine_->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
     }
 
     static void OnLineEnd(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) noexcept
@@ -50,52 +50,52 @@ protected:
 
     void Init(ByteStreamInfo& compressedStream)
     {
-        _freeBitCount = sizeof(_bitBuffer) * 8;
-        _bitBuffer = 0;
+        freeBitCount_ = sizeof(bitBuffer_) * 8;
+        bitBuffer_ = 0;
 
         if (compressedStream.rawStream)
         {
-            _compressedStream = compressedStream.rawStream;
-            _buffer.resize(4000);
-            _position = _buffer.data();
-            _compressedLength = _buffer.size();
+            compressedStream_ = compressedStream.rawStream;
+            buffer_.resize(4000);
+            position_ = buffer_.data();
+            compressedLength_ = buffer_.size();
         }
         else
         {
-            _position = compressedStream.rawData;
-            _compressedLength = compressedStream.count;
+            position_ = compressedStream.rawData;
+            compressedLength_ = compressedStream.count;
         }
     }
 
     void AppendToBitStream(int32_t bits, int32_t bitCount)
     {
         ASSERT(bitCount < 32 && bitCount >= 0);
-        ASSERT((!_decoder) || (bitCount == 0 && bits == 0) ||( _decoder->ReadLongValue(bitCount) == bits));
+        ASSERT((!decoder_) || (bitCount == 0 && bits == 0) ||( decoder_->ReadLongValue(bitCount) == bits));
 #ifndef NDEBUG
         const int mask = (1u << (bitCount)) - 1;
         ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
 #endif
 
-        _freeBitCount -= bitCount;
-        if (_freeBitCount >= 0)
+        freeBitCount_ -= bitCount;
+        if (freeBitCount_ >= 0)
         {
-            _bitBuffer |= bits << _freeBitCount;
+            bitBuffer_ |= bits << freeBitCount_;
         }
         else
         {
             // Add as much bits in the remaining space as possible and flush.
-            _bitBuffer |= bits >> -_freeBitCount;
+            bitBuffer_ |= bits >> -freeBitCount_;
             Flush();
 
             // A second flush may be required if extra marker detect bits were needed and not all bits could be written.
-            if (_freeBitCount < 0)
+            if (freeBitCount_ < 0)
             {
-                _bitBuffer |= bits >> -_freeBitCount;
+                bitBuffer_ |= bits >> -freeBitCount_;
                 Flush();
             }
 
-            ASSERT(_freeBitCount >= 0);
-            _bitBuffer |= bits << _freeBitCount;
+            ASSERT(freeBitCount_ >= 0);
+            bitBuffer_ |= bits << freeBitCount_;
         }
     }
 
@@ -104,15 +104,15 @@ protected:
         Flush();
 
         // if a 0xff was written, Flush() will force one unset bit anyway
-        if (_isFFWritten)
-            AppendToBitStream(0, (_freeBitCount - 1) % 8);
+        if (isFFWritten_)
+            AppendToBitStream(0, (freeBitCount_ - 1) % 8);
         else
-            AppendToBitStream(0, _freeBitCount % 8);
+            AppendToBitStream(0, freeBitCount_ % 8);
 
         Flush();
-        ASSERT(_freeBitCount == 0x20);
+        ASSERT(freeBitCount_ == 0x20);
 
-        if (_compressedStream)
+        if (compressedStream_)
         {
             OverFlow();
         }
@@ -120,55 +120,55 @@ protected:
 
     void OverFlow()
     {
-        if (!_compressedStream)
+        if (!compressedStream_)
             throw jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-        const std::size_t bytesCount = _position - _buffer.data();
-        const auto bytesWritten = static_cast<std::size_t>(_compressedStream->sputn(reinterpret_cast<char*>(_buffer.data()), _position - _buffer.data()));
+        const std::size_t bytesCount = position_ - buffer_.data();
+        const auto bytesWritten = static_cast<std::size_t>(compressedStream_->sputn(reinterpret_cast<char*>(buffer_.data()), position_ - buffer_.data()));
 
         if (bytesWritten != bytesCount)
             throw jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-        _position = _buffer.data();
-        _compressedLength = _buffer.size();
+        position_ = buffer_.data();
+        compressedLength_ = buffer_.size();
     }
 
     void Flush()
     {
-        if (_compressedLength < 4)
+        if (compressedLength_ < 4)
         {
             OverFlow();
         }
 
         for (int i = 0; i < 4; ++i)
         {
-            if (_freeBitCount >= 32)
+            if (freeBitCount_ >= 32)
                 break;
 
-            if (_isFFWritten)
+            if (isFFWritten_)
             {
                 // JPEG-LS requirement (T.87, A.1) to detect markers: after a xFF value a single 0 bit needs to be inserted.
-                *_position = static_cast<uint8_t>(_bitBuffer >> 25);
-                _bitBuffer = _bitBuffer << 7;
-                _freeBitCount += 7;
+                *position_ = static_cast<uint8_t>(bitBuffer_ >> 25);
+                bitBuffer_ = bitBuffer_ << 7;
+                freeBitCount_ += 7;
             }
             else
             {
-                *_position = static_cast<uint8_t>(_bitBuffer >> 24);
-                _bitBuffer = _bitBuffer << 8;
-                _freeBitCount += 8;
+                *position_ = static_cast<uint8_t>(bitBuffer_ >> 24);
+                bitBuffer_ = bitBuffer_ << 8;
+                freeBitCount_ += 8;
             }
 
-            _isFFWritten = *_position == 0xFF;
-            _position++;
-            _compressedLength--;
-            _bytesWritten++;
+            isFFWritten_ = *position_ == 0xFF;
+            position_++;
+            compressedLength_--;
+            bytesWritten_++;
         }
     }
 
     std::size_t GetLength() const noexcept
     {
-        return _bytesWritten - (_freeBitCount - 32) / 8;
+        return bytesWritten_ - (freeBitCount_ - 32) / 8;
     }
 
     FORCE_INLINE void AppendOnesToBitStream(int32_t length)
@@ -176,23 +176,23 @@ protected:
         AppendToBitStream((1 << length) - 1, length);
     }
 
-    std::unique_ptr<DecoderStrategy> _decoder;
+    std::unique_ptr<DecoderStrategy> decoder_;
 
-    JlsParameters _params;
-    std::unique_ptr<ProcessLine> _processLine;
+    JlsParameters params_;
+    std::unique_ptr<ProcessLine> processLine_;
 
 private:
-    unsigned int _bitBuffer;
-    int32_t _freeBitCount;
-    std::size_t _compressedLength;
+    unsigned int bitBuffer_;
+    int32_t freeBitCount_;
+    std::size_t compressedLength_;
 
     // encoding
-    uint8_t* _position;
-    bool _isFFWritten;
-    std::size_t _bytesWritten;
+    uint8_t* position_;
+    bool isFFWritten_;
+    std::size_t bytesWritten_;
 
-    std::vector<uint8_t> _buffer;
-    std::basic_streambuf<char>* _compressedStream;
+    std::vector<uint8_t> buffer_;
+    std::basic_streambuf<char>* compressedStream_;
 };
 
 } // namespace charls

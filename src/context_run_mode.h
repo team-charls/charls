@@ -13,15 +13,15 @@ struct CContextRunMode final
 {
     // Note: members are sorted based on their size.
     int32_t A;
-    int32_t _nRItype;
-    uint8_t _nReset;
+    int32_t nRItype_;
+    uint8_t nReset_;
     uint8_t N;
     uint8_t Nn;
 
     CContextRunMode() noexcept
         : A(),
-          _nRItype(),
-          _nReset(),
+          nRItype_(),
+          nReset_(),
           N(),
           Nn()
     {
@@ -30,8 +30,8 @@ struct CContextRunMode final
 
     CContextRunMode(int32_t a, int32_t nRItype, int32_t nReset) noexcept
         : A(a),
-          _nRItype(nRItype),
-          _nReset(static_cast<uint8_t>(nReset)),
+          nRItype_(nRItype),
+          nReset_(static_cast<uint8_t>(nReset)),
           N(1),
           Nn(0)
     {
@@ -40,7 +40,7 @@ struct CContextRunMode final
 
     FORCE_INLINE int32_t GetGolomb() const noexcept
     {
-        const int32_t TEMP = A + (N >> 1) * _nRItype;
+        const int32_t TEMP = A + (N >> 1) * nRItype_;
         int32_t nTest = N;
         int32_t k = 0;
         for (; nTest < TEMP; k++)
@@ -58,8 +58,8 @@ struct CContextRunMode final
         {
             Nn = Nn + 1;
         }
-        A = A + ((EMErrval + 1 - _nRItype) >> 1);
-        if (N == _nReset)
+        A = A + ((EMErrval + 1 - nRItype_) >> 1);
+        if (N == nReset_)
         {
             A = A >> 1;
             N = N >> 1;

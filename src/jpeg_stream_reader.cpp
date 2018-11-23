@@ -75,10 +75,10 @@ JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t 
 
 void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
 {
-    JlsParameters info = _params;
-    info.components = _componentCount;
-    auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, _params.custom);
-    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(_rawStreamInfo));
+    JlsParameters info = params_;
+    info.components = componentCount_;
+    auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, params_.custom);
+    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(rawStreamInfo_));
     ByteStreamInfo compressedData = streamWriter.OutputStream();
     const size_t bytesWritten = codec->EncodeScan(move(processLine), compressedData);
     streamWriter.Seek(bytesWritten);
@@ -86,9 +86,9 @@ void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
 
 
 JpegStreamReader::JpegStreamReader(ByteStreamInfo byteStreamInfo) noexcept :
-    _byteStream(byteStreamInfo),
-    _params(),
-    _rect()
+    byteStream_(byteStreamInfo),
+    params_(),
+    rect_()
 {
 }
 
@@ -96,31 +96,31 @@ JpegStreamReader::JpegStreamReader(ByteStreamInfo byteStreamInfo) noexcept :
 void JpegStreamReader::Read(ByteStreamInfo rawPixels)
 {
     ReadHeader();
-    CheckParameterCoherent(_params);
+    CheckParameterCoherent(params_);
 
-    if (_rect.Width <= 0)
+    if (rect_.Width <= 0)
     {
-        _rect.Width = _params.width;
-        _rect.Height = _params.height;
+        rect_.Width = params_.width;
+        rect_.Height = params_.height;
     }
 
-    const int64_t bytesPerPlane = static_cast<int64_t>(_rect.Width) * _rect.Height * ((_params.bitsPerSample + 7)/8);
+    const int64_t bytesPerPlane = static_cast<int64_t>(rect_.Width) * rect_.Height * ((params_.bitsPerSample + 7)/8);
 
-    if (rawPixels.rawData && static_cast<int64_t>(rawPixels.count) < bytesPerPlane * _params.components)
+    if (rawPixels.rawData && static_cast<int64_t>(rawPixels.count) < bytesPerPlane * params_.components)
         throw jpegls_error(jpegls_errc::destination_buffer_too_small);
 
     int componentIndex = 0;
 
-    while (componentIndex < _params.components)
+    while (componentIndex < params_.components)
     {
         ReadStartOfScan(componentIndex == 0);
 
-        std::unique_ptr<DecoderStrategy> codec = JlsCodecFactory<DecoderStrategy>().CreateCodec(_params, _params.custom);
+        std::unique_ptr<DecoderStrategy> codec = JlsCodecFactory<DecoderStrategy>().CreateCodec(params_, params_.custom);
         std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(rawPixels));
-        codec->DecodeScan(move(processLine), _rect, _byteStream);
+        codec->DecodeScan(move(processLine), rect_, byteStream_);
         SkipBytes(rawPixels, static_cast<size_t>(bytesPerPlane));
 
-        if (_params.interleaveMode != InterleaveMode::None)
+        if (params_.interleaveMode != InterleaveMode::None)
             return;
 
         componentIndex += 1;
@@ -284,20 +284,20 @@ int JpegStreamReader::ReadStartOfFrameSegment(int32_t segmentSize)
     if (segmentSize < 6)
         throw jpegls_error(make_error_code(jpegls_errc::invalid_marker_segment_size));
 
-    _params.bitsPerSample = ReadByte();
-    if (_params.bitsPerSample < MinimumBitsPerSample || _params.bitsPerSample > MaximumBitsPerSample)
+    params_.bitsPerSample = ReadByte();
+    if (params_.bitsPerSample < MinimumBitsPerSample || params_.bitsPerSample > MaximumBitsPerSample)
         throw jpegls_error(make_error_code(jpegls_errc::invalid_parameter_bits_per_sample));
 
-    _params.height = ReadUInt16();
-    if (_params.height < 1)
+    params_.height = ReadUInt16();
+    if (params_.height < 1)
         throw jpegls_error(make_error_code(jpegls_errc::parameter_value_not_supported));
 
-    _params.width = ReadUInt16();
-    if (_params.width < 1)
+    params_.width = ReadUInt16();
+    if (params_.width < 1)
         throw jpegls_error(make_error_code(jpegls_errc::parameter_value_not_supported));
 
-    _params.components = ReadByte();
-    if (_params.components < 1)
+    params_.components = ReadByte();
+    if (params_.components < 1)
         throw jpegls_error(make_error_code(jpegls_errc::invalid_parameter_component_count));
 
     // Note: component specific parameters are currently not verified.
@@ -320,11 +320,11 @@ int JpegStreamReader::ReadPresetParameters()
     {
     case 0x1:
         {
-            _params.custom.MaximumSampleValue = ReadUInt16();
-            _params.custom.Threshold1 = ReadUInt16();
-            _params.custom.Threshold2 = ReadUInt16();
-            _params.custom.Threshold3 = ReadUInt16();
-            _params.custom.ResetValue = ReadUInt16();
+            params_.custom.MaximumSampleValue = ReadUInt16();
+            params_.custom.Threshold1 = ReadUInt16();
+            params_.custom.Threshold2 = ReadUInt16();
+            params_.custom.Threshold3 = ReadUInt16();
+            params_.custom.ResetValue = ReadUInt16();
             return 11;
         }
 
@@ -363,7 +363,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
         throw jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
     const int componentCountInScan = ReadByte();
-    if (componentCountInScan != 1 && componentCountInScan != _params.components)
+    if (componentCountInScan != 1 && componentCountInScan != params_.components)
         throw jpegls_error(jpegls_errc::parameter_value_not_supported);
 
     if (segmentSize < 6 + (2 * componentCountInScan))
@@ -375,19 +375,19 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
         ReadByte(); // Read Mapping table selector
     }
 
-    _params.allowedLossyError = ReadByte(); // Read NEAR parameter
-    _params.interleaveMode = static_cast<InterleaveMode>(ReadByte()); // Read ILV parameter
-    if (!(_params.interleaveMode == InterleaveMode::None || _params.interleaveMode == InterleaveMode::Line || _params.interleaveMode == InterleaveMode::Sample))
+    params_.allowedLossyError = ReadByte(); // Read NEAR parameter
+    params_.interleaveMode = static_cast<InterleaveMode>(ReadByte()); // Read ILV parameter
+    if (!(params_.interleaveMode == InterleaveMode::None || params_.interleaveMode == InterleaveMode::Line || params_.interleaveMode == InterleaveMode::Sample))
         throw jpegls_error(jpegls_errc::invalid_parameter_interleave_mode);
 
     if ((ReadByte() & 0xF) != 0) // Read Ah (no meaning) and Al (point transform).
         throw jpegls_error(jpegls_errc::parameter_value_not_supported);
 
-    if(_params.stride == 0)
+    if(params_.stride == 0)
     {
-        const int width = _rect.Width != 0 ? _rect.Width : _params.width;
-        const int components = _params.interleaveMode == InterleaveMode::None ? 1 : _params.components;
-        _params.stride = components * width * ((_params.bitsPerSample + 7) / 8);
+        const int width = rect_.Width != 0 ? rect_.Width : params_.width;
+        const int components = params_.interleaveMode == InterleaveMode::None ? 1 : params_.components;
+        params_.stride = components * width * ((params_.bitsPerSample + 7) / 8);
     }
 }
 
@@ -399,35 +399,35 @@ void JpegStreamReader::ReadJfif()
         if(jfifID[i] != ReadByte())
             return;
     }
-    _params.jfif.version   = ReadUInt16();
+    params_.jfif.version   = ReadUInt16();
 
     // DPI or DPcm
-    _params.jfif.units = ReadByte();
-    _params.jfif.Xdensity = ReadUInt16();
-    _params.jfif.Ydensity = ReadUInt16();
+    params_.jfif.units = ReadByte();
+    params_.jfif.Xdensity = ReadUInt16();
+    params_.jfif.Ydensity = ReadUInt16();
 
     // thumbnail
-    _params.jfif.Xthumbnail = ReadByte();
-    _params.jfif.Ythumbnail = ReadByte();
-    if(_params.jfif.Xthumbnail > 0 && _params.jfif.thumbnail)
+    params_.jfif.Xthumbnail = ReadByte();
+    params_.jfif.Ythumbnail = ReadByte();
+    if(params_.jfif.Xthumbnail > 0 && params_.jfif.thumbnail)
     {
-        std::vector<char> tempBuffer(static_cast<char*>(_params.jfif.thumbnail),
-            static_cast<char*>(_params.jfif.thumbnail) + static_cast<size_t>(3) * _params.jfif.Xthumbnail * _params.jfif.Ythumbnail);
-        ReadNBytes(tempBuffer, 3*_params.jfif.Xthumbnail*_params.jfif.Ythumbnail);
+        std::vector<char> tempBuffer(static_cast<char*>(params_.jfif.thumbnail),
+            static_cast<char*>(params_.jfif.thumbnail) + static_cast<size_t>(3) * params_.jfif.Xthumbnail * params_.jfif.Ythumbnail);
+        ReadNBytes(tempBuffer, 3*params_.jfif.Xthumbnail*params_.jfif.Ythumbnail);
     }
 }
 
 
 uint8_t JpegStreamReader::ReadByte()
 {
-    if (_byteStream.rawStream)
-        return static_cast<uint8_t>(_byteStream.rawStream->sbumpc());
+    if (byteStream_.rawStream)
+        return static_cast<uint8_t>(byteStream_.rawStream->sbumpc());
 
-    if (_byteStream.count == 0)
+    if (byteStream_.count == 0)
         throw jpegls_error(jpegls_errc::source_buffer_too_small);
 
-    const uint8_t value = _byteStream.rawData[0];
-    SkipBytes(_byteStream, 1);
+    const uint8_t value = byteStream_.rawData[0];
+    SkipBytes(byteStream_, 1);
     return value;
 }
 
@@ -466,7 +466,7 @@ int JpegStreamReader::TryReadHPColorTransformSegment(int32_t segmentSize)
         case static_cast<uint8_t>(ColorTransformation::HP1):
         case static_cast<uint8_t>(ColorTransformation::HP2):
         case static_cast<uint8_t>(ColorTransformation::HP3):
-            _params.colorTransformation = static_cast<ColorTransformation>(colorTransformation);
+            params_.colorTransformation = static_cast<ColorTransformation>(colorTransformation);
             return 5;
 
         case 4: // RgbAsYuvLossy (The standard lossy RGB to YCbCr transform used in JPEG.)

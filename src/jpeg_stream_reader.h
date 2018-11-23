@@ -21,12 +21,12 @@ public:
 
     const JlsParameters& GetMetadata() const noexcept
     {
-        return _params;
+        return params_;
     }
 
     const JpegLSPresetCodingParameters& GetCustomPreset() const noexcept
     {
-        return _params.custom;
+        return params_.custom;
     }
 
     void Read(ByteStreamInfo rawPixels);
@@ -34,12 +34,12 @@ public:
 
     void SetInfo(const JlsParameters& params) noexcept
     {
-        _params = params;
+        params_ = params;
     }
 
     void SetRect(const JlsRect& rect) noexcept
     {
-        _rect = rect;
+        rect_ = rect;
     }
 
     void ReadStartOfScan(bool firstComponent);
@@ -59,9 +59,9 @@ private:
     void ReadJfif();
     int TryReadHPColorTransformSegment(int32_t segmentSize);
 
-    ByteStreamInfo _byteStream;
-    JlsParameters _params;
-    JlsRect _rect;
+    ByteStreamInfo byteStream_;
+    JlsParameters params_;
+    JlsRect rect_;
 };
 
 } // namespace charls

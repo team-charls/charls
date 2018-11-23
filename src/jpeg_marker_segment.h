@@ -52,22 +52,22 @@ public:
     static std::unique_ptr<JpegMarkerSegment> CreateStartOfScanSegment(int componentIndex, int componentCount, int allowedLossyError, charls::InterleaveMode interleaveMode);
 
     JpegMarkerSegment(JpegMarkerCode markerCode, std::vector<uint8_t>&& content) :
-        _markerCode(markerCode),
-        _content(content)
+        markerCode_(markerCode),
+        content_(content)
     {
     }
 
     void Serialize(JpegStreamWriter& streamWriter) override
     {
         streamWriter.WriteByte(0xFF);
-        streamWriter.WriteByte(static_cast<uint8_t>(_markerCode));
-        streamWriter.WriteWord(static_cast<uint16_t>(_content.size() + 2));
-        streamWriter.WriteBytes(_content);
+        streamWriter.WriteByte(static_cast<uint8_t>(markerCode_));
+        streamWriter.WriteWord(static_cast<uint16_t>(content_.size() + 2));
+        streamWriter.WriteBytes(content_);
     }
 
 private:
-    JpegMarkerCode _markerCode;
-    std::vector<uint8_t> _content;
+    JpegMarkerCode markerCode_;
+    std::vector<uint8_t> content_;
 };
 
 } // namespace charls

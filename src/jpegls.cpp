@@ -8,6 +8,7 @@
 #include "default_traits.h"
 #include "jls_codec_factory.h"
 #include "jpeg_stream_reader.h"
+
 #include <vector>
 
 // As defined in the JPEG-LS standard

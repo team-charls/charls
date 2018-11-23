@@ -13,18 +13,18 @@ class JpegImageDataSegment final : public JpegSegment
 {
 public:
     JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& params, int componentCount) noexcept
-        : _componentCount(componentCount),
-          _rawStreamInfo(rawStream),
-          _params(params)
+        : componentCount_(componentCount),
+          rawStreamInfo_(rawStream),
+          params_(params)
     {
     }
 
     void Serialize(JpegStreamWriter& streamWriter) override;
 
 private:
-    int _componentCount;
-    ByteStreamInfo _rawStreamInfo;
-    JlsParameters _params;
+    int componentCount_;
+    ByteStreamInfo rawStreamInfo_;
+    JlsParameters params_;
 };
 
 } // namespace charls
