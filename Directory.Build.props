@@ -3,9 +3,8 @@
   <PropertyGroup>
     <!-- Build to a folder outside the source folders, making it easier to clean. -->
     <OutDir>$(MSBuildThisFileDirectory)bin\$(Configuration)\$(Platform)\</OutDir>
-    <OutDir Condition="'$(Platform)'=='Win32'">$(SolutionDir)bin\$(Configuration)\x86\</OutDir>
-    <OutDir Condition="'$(Platform)'=='AnyCPU'">$(SolutionDir)bin\$(Configuration)\x86\</OutDir>
-    
+    <OutDir Condition="'$(Platform)'=='Win32'">$(MSBuildThisFileDirectory)bin\$(Configuration)\x86\</OutDir>
+
     <!-- C# Projects require the legagy OutputPath variable. -->
     <OutputPath>$(OutDir)</OutputPath>
 
@@ -13,6 +12,9 @@
     <!-- C# project files can also be redirected, but this causes rebuilds inside VS2015. -->
     <IntDir>$(MSBuildThisFileDirectory)intermediate\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
 
+    <!-- The C runtime is provided by the OS on the Windows platform (Universal C Runtime (CRT)),
+         it is necesarry to explicitly define which version to use.
+         At the momement there is no way to specify to use just the latest version. -->
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <PlatformToolset>v141</PlatformToolset>
 
