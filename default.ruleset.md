@@ -18,8 +18,11 @@ C26472: Don't use static_cast for arithmetic conversios
 C26481: Do not pass an array as a single pointer.
 -> Rationale: gsl::span is not available.
 
-C26482:Only index into arrays using constant expressions.
+C26482: Only index into arrays using constant expressions.
 -> Rationale: static analysis can verify access, std::array during runtime (debug)
+
+C26487: Don't return a pointer that may be invalid (lifetime.4).
+-> Rationale: many false warnings (VS 2019 16.0.0 Preview 1)
 
 C26489: Don't dereference a pointer that may be invalid
 -> Rationale: many false warnings (known defect in VS 2017 15.9.0)
