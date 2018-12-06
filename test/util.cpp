@@ -3,11 +3,21 @@
 #include "util.h"
 #include "portable_anymap_file.h"
 #include "gettime.h"
+
 #include <iostream>
 #include <vector>
+#include <iomanip>
 
+using std::cout;
+using std::cerr;
+using std::setw;
+using std::setprecision;
+using std::vector;
+using std::error_code;
+using std::swap;
+using charls::InterleaveMode;
+using charls::ColorTransformation;
 
-using namespace charls;
 
 namespace
 {
@@ -27,24 +37,24 @@ MSVC_WARNING_UNSUPPRESS()
 } // namespace
 
 
-void FixEndian(std::vector<uint8_t>* rgbyte, bool littleEndianData)
+void FixEndian(vector<uint8_t>* rgbyte, bool littleEndianData)
 {
     if (littleEndianData == IsMachineLittleEndian())
         return;
 
     for (size_t i = 0; i < rgbyte->size()-1; i += 2)
     {
-        std::swap((*rgbyte)[i], (*rgbyte)[i + 1]);
+        swap((*rgbyte)[i], (*rgbyte)[i + 1]);
     }
 }
 
 
-bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, long offset, size_t bytes)
+bool ReadFile(const char* filename, vector<uint8_t>* pvec, long offset, size_t bytes)
 {
     FILE* pfile = fopen(filename, "rb");
     if (!pfile)
     {
-        fprintf(stderr, "Could not open %s\n", filename);
+        cerr << "Could not open %s\n" << filename << "\n";
         return false;
     }
 
@@ -68,12 +78,12 @@ bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, long offset, siz
 }
 
 
-void WriteFile(const char* filename, std::vector<uint8_t>& buffer)
+void WriteFile(const char* filename, vector<uint8_t>& buffer)
 {
     FILE* pfile = fopen(filename, "wb");
     if( !pfile )
     {
-        fprintf( stderr, "Could not open %s\n", filename );
+        cerr << "Could not open " << filename << "\n";
         return;
     }
 
@@ -82,7 +92,7 @@ void WriteFile(const char* filename, std::vector<uint8_t>& buffer)
 }
 
 
-void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount)
+void TestRoundTrip(const char* strName, const vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount)
 {
     JlsParameters params = JlsParameters();
     params.components = ccomp;
@@ -94,11 +104,11 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, S
 }
 
 
-void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, JlsParameters& params, int loopCount)
+void TestRoundTrip(const char* strName, const vector<uint8_t>& rgbyteRaw, JlsParameters& params, int loopCount)
 {
-    std::vector<uint8_t> rgbyteCompressed(params.height * params.width * params.components * params.bitsPerSample / 4);
+    vector<uint8_t> rgbyteCompressed(params.height * params.width * params.components * params.bitsPerSample / 4);
 
-    std::vector<uint8_t> rgbyteOut(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
+    vector<uint8_t> rgbyteOut(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
 
     if (params.components == 4)
     {
@@ -114,7 +124,7 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, J
     const double dwtimeEncodeStart = getTime();
     for (int i = 0; i < loopCount; ++i)
     {
-        const std::error_code error = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength,
+        const error_code error = JpegLsEncode(&rgbyteCompressed[0], rgbyteCompressed.size(), &compressedLength,
             &rgbyteRaw[0], rgbyteOut.size(), &params, nullptr);
         Assert::IsTrue(!error);
     }
@@ -123,17 +133,21 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, J
     const double dwtimeDecodeStart = getTime();
     for (int i = 0; i < loopCount; ++i)
     {
-        const std::error_code error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], compressedLength, nullptr, nullptr);
+        const error_code error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], compressedLength, nullptr, nullptr);
         Assert::IsTrue(!error);
     }
     const double dwtimeDecodeComplete = getTime();
 
     const double bitspersample = 1.0 * compressedLength * 8 / (static_cast<double>(params.components) * params.height * params.width);
-    std::cout << "RoundTrip test for: " << strName << "\n\r";
+    cout << "RoundTrip test for: " << strName << "\n\r";
     const double encodeTime = (dwtimeEncodeComplete - dwtimeEncodeStart) / loopCount;
     const double decodeTime = (dwtimeDecodeComplete - dwtimeDecodeStart) / loopCount;
     const double symbolRate = (static_cast<double>(params.components) * params.height * params.width) / (1000.0 * decodeTime);
-    printf("Size:%4dx%4d, Encode time:%7.2f ms, Decode time:%7.2f ms, Bits per sample:%5.2f, Decode rate:%5.1f M/s \n\r", params.width, params.height, encodeTime, decodeTime, bitspersample, symbolRate);
+
+    cout << "Size:" << setw(10) << params.width << "x" << params.height << setw(7) << setprecision(2) <<
+        ", Encode time:" << encodeTime << " ms, Decode time:" << decodeTime <<
+        " ms, Bits per sample:" << bitspersample << ", Decode rate:" << symbolRate << " M/s\n";
+
     const uint8_t* pbyteOut = rgbyteOut.data();
     for (size_t i = 0; i < rgbyteOut.size(); ++i)
     {
@@ -149,7 +163,7 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, J
 void TestFile(const char* filename, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile, int loopCount)
 {
     const size_t byteCount = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
-    std::vector<uint8_t> rgbyteUncompressed;
+    vector<uint8_t> rgbyteUncompressed;
 
     if (!ReadFile(filename, &rgbyteUncompressed, ioffs, byteCount))
         return;

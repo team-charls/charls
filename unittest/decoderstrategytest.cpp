@@ -6,6 +6,7 @@
 #include "encoderstrategytester.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using std::unique_ptr;
 
 
 class DecoderStrategyTester : public charls::DecoderStrategy
@@ -25,12 +26,12 @@ public:
     {
     }
 
-    std::unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo /*rawStreamInfo*/) override
+    unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo /*rawStreamInfo*/) override
     {
         return nullptr;
     }
 
-    void DecodeScan(std::unique_ptr<charls::ProcessLine> /*outputData*/, const JlsRect& /*size*/, ByteStreamInfo& /*compressedData*/) override
+    void DecodeScan(unique_ptr<charls::ProcessLine> /*outputData*/, const JlsRect& /*size*/, ByteStreamInfo& /*compressedData*/) override
     {
     }
     MSVC_WARNING_UNSUPPRESS()

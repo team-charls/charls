@@ -6,65 +6,69 @@
 #include <iostream>
 #include <vector>
 
+using std::cout;
+using std::vector;
+using charls::jpegls_errc;
+
 namespace
 {
 
 void TestDamagedBitStream1()
 {
-    std::vector<uint8_t> rgbyteCompressed;
+    vector<uint8_t> rgbyteCompressed;
     if (!ReadFile("test/incorrect_images/InfiniteLoopFFMPEG.jls", &rgbyteCompressed, 0))
         return;
 
-    std::vector<uint8_t> rgbyteOut(256 * 256 * 2);
+    vector<uint8_t> rgbyteOut(256 * 256 * 2);
     const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
-    Assert::IsTrue(error == charls::jpegls_errc::invalid_encoded_data);
+    Assert::IsTrue(error == jpegls_errc::invalid_encoded_data);
 }
 
 
 void TestDamagedBitStream2()
 {
-    std::vector<uint8_t> rgbyteCompressed;
+    vector<uint8_t> rgbyteCompressed;
     if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
         return;
 
     rgbyteCompressed.resize(900);
     rgbyteCompressed.resize(40000,3);
 
-    std::vector<uint8_t> rgbyteOut(512 * 512);
+    vector<uint8_t> rgbyteOut(512 * 512);
     const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
-    Assert::IsTrue(error == charls::jpegls_errc::invalid_encoded_data);
+    Assert::IsTrue(error == jpegls_errc::invalid_encoded_data);
 }
 
 
 void TestDamagedBitStream3()
 {
-    std::vector<uint8_t> rgbyteCompressed;
+    vector<uint8_t> rgbyteCompressed;
     if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
         return;
 
     rgbyteCompressed[300] = 0xFF;
     rgbyteCompressed[301] = 0xFF;
 
-    std::vector<uint8_t> rgbyteOut(512 * 512);
+    vector<uint8_t> rgbyteOut(512 * 512);
     const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
-    Assert::IsTrue(error == charls::jpegls_errc::invalid_encoded_data);
+    Assert::IsTrue(error == jpegls_errc::invalid_encoded_data);
 }
 
 
 void TestFileWithRandomHeaderDamage(const char* filename)
 {
-    std::vector<uint8_t> rgbyteCompressedOrg;
+    vector<uint8_t> rgbyteCompressedOrg;
     if (!ReadFile(filename, &rgbyteCompressedOrg, 0))
         return;
 
     srand(102347325);
 
-    std::vector<uint8_t> rgbyteOut(512 * 512);
+    vector<uint8_t> rgbyteOut(512 * 512);
 
     for (size_t i = 0; i < 40; ++i)
     {
-        std::vector<uint8_t> rgbyteCompressedTest(rgbyteCompressedOrg);
-        std::vector<int> errors(10, 0);
+        vector<uint8_t> rgbyteCompressedTest(rgbyteCompressedOrg);
+        vector<int> errors(10, 0);
 
         for (int j = 0; j < 20; ++j)
         {
@@ -77,16 +81,16 @@ void TestFileWithRandomHeaderDamage(const char* filename)
             errors[static_cast<int>(error)]++;
         }
 
-        std::cout << "With garbage input at index " << i << ": ";
+        cout << "With garbage input at index " << i << ": ";
         for(unsigned int error = 0; error < errors.size(); ++error)
         {
             if (errors[error] == 0)
                 continue;
 
-            std::cout <<  errors[error] << "x error (" << error << "); ";
+            cout <<  errors[error] << "x error (" << error << "); ";
         }
 
-        std::cout << "\r\n";
+        cout << "\r\n";
     }
 }
 
@@ -104,12 +108,12 @@ void TestRandomMalformedHeader()
 
 void DamagedBitstreamTests()
 {
-    printf("Test Damaged bitstream\r\n");
+    cout << "Test Damaged bitstream\r\n";
     TestDamagedBitStream1();
     TestDamagedBitStream2();
     TestDamagedBitStream3();
 
-    printf("Begin random malformed bitstream tests: \r\n");
+    cout << "Begin random malformed bitstream tests:\n";
     TestRandomMalformedHeader();
-    printf("End randommalformed bitstream tests: \r\n");
+    cout << "End randommalformed bitstream tests:\n";
 }

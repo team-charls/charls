@@ -7,14 +7,20 @@
 #include <ratio>
 #include <chrono>
 
-using namespace charls;
+using std::vector;
+using std::cout;
+using std::error_code;
+using std::istream;
+using std::chrono::steady_clock;
+using std::chrono::duration;
+using std::milli;
 
 namespace
 {
 
 void TestFile16BitAs12(const char* filename, int ioffs, Size size2, int ccomp, bool littleEndianFile)
 {
-    std::vector<uint8_t> uncompressedData;
+    vector<uint8_t> uncompressedData;
     if (!ReadFile(filename, &uncompressedData, ioffs))
         return;
 
@@ -66,9 +72,9 @@ void TestPerformance(int loopCount)
 void PerformanceTests(int loopCount)
 {
 #ifdef _DEBUG
-    printf("NOTE: running performance test in debug mode, performance may be slow!\r\n");
+    cout << "NOTE: running performance test in debug mode, performance may be slow!\n";
 #endif
-    printf("Test Perf (with loop count %i)\r\n", loopCount);
+    cout << "Test Perf (with loop count "<< loopCount << ")\n";
     TestPerformance(loopCount);
 }
 
@@ -78,9 +84,9 @@ void TestLargeImagePerformanceRgb8(int loopCount)
     //       The images can be downloaded from: http://imagecompression.info/test_images/
 
 #ifdef _DEBUG
-    printf("NOTE: running performance test in debug mode, performance may be slow!\r\n");
+    cout << "NOTE: running performance test in debug mode, performance may be slow!\n";
 #endif
-    printf("Test Large Images Performance\r\n");
+    cout << "Test Large Images Performance\n";
 
     try
     {
@@ -99,44 +105,44 @@ void TestLargeImagePerformanceRgb8(int loopCount)
         test_portable_anymap_file("test/rgb8bit/nightshot_iso_1600.ppm", loopCount);
         test_portable_anymap_file("test/rgb8bit/spider_web.ppm", loopCount);
     }
-    catch (const std::istream::failure& error)
+    catch (const istream::failure& error)
     {
-        printf("Test failed %s\r\n", error.what());
+        cout << "Test failed " << error.what() << "\n";
     }
 }
 
 void DecodePerformanceTests(int loopCount)
 {
-    printf("Test decode Perf (with loop count %i)\r\n", loopCount);
+    cout << "Test decode Perf (with loop count " << loopCount << ")\n";
 
-    std::vector<uint8_t> jpeglsCompressed;
+    vector<uint8_t> jpeglsCompressed;
     if (!ReadFile("decodetest.jls", &jpeglsCompressed, 0, 0))
     {
-        printf("Failed to load the file decodetest.jls\r\n");
+        cout << "Failed to load the file decodetest.jls\n";
         return;
     }
 
     JlsParameters params{};
-    std::error_code error = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
+    error_code error = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
     if (error)
         return;
 
-    std::vector<uint8_t> uncompressed(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
+    vector<uint8_t> uncompressed(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
 
-    const auto start = std::chrono::steady_clock::now();
+    const auto start = steady_clock::now();
     for (int i = 0; i < loopCount; ++i)
     {
 
         error = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
         if (error)
         {
-            std::cout << "Decode failure: " << error.value() << "\n";
+            cout << "Decode failure: " << error.value() << "\n";
             return;
         }
     }
 
-    const auto end = std::chrono::steady_clock::now();
+    const auto end = steady_clock::now();
     const auto diff = end - start;
-    std::cout << "Total decoding time is: " << std::chrono::duration <double, std::milli>(diff).count() << " ms" << std::endl;
-    std::cout << "Decoding time per image: " << std::chrono::duration <double, std::milli>(diff).count() / loopCount << " ms" << std::endl;
+    cout << "Total decoding time is: " << duration<double, milli>(diff).count() << " ms\n";
+    cout << "Decoding time per image: " << duration<double, milli>(diff).count() / loopCount << " ms\n";
 }

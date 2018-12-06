@@ -7,6 +7,11 @@
 #include <vector>
 #include <array>
 
+using std::cout;
+using std::vector;
+using std::array;
+using std::error_code;
+
 namespace
 {
 
@@ -21,7 +26,7 @@ bool ContainsString(const uint8_t* container, const uint8_t* bytesToFind, size_t
     return true;
 }
 
-int FindString(std::vector<uint8_t>& container, const uint8_t* bytesToFind, size_t bytesLength)
+int FindString(vector<uint8_t>& container, const uint8_t* bytesToFind, size_t bytesLength)
 {
     for (size_t i = 0; i < container.size() - bytesLength; ++i)
     {
@@ -34,12 +39,12 @@ int FindString(std::vector<uint8_t>& container, const uint8_t* bytesToFind, size
 
 void TestDicomSampleImage(const char* name)
 {
-    std::vector<uint8_t> data;
+    vector<uint8_t> data;
     const bool success = ReadFile(name, &data, 9);
 
     Assert::IsTrue(success);
 
-    const std::array<uint8_t, 8> pixeldataStart = {0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7};
+    const array<uint8_t, 8> pixeldataStart = {0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7};
 
     const int offset = FindString(data, pixeldataStart.data(), pixeldataStart.size());
 
@@ -52,15 +57,15 @@ void TestDicomSampleImage(const char* name)
     }
 
     JlsParameters params{};
-    std::error_code error = JpegLsReadHeader(data.data(), data.size(), &params, nullptr);
+    error_code error = JpegLsReadHeader(data.data(), data.size(), &params, nullptr);
     Assert::IsTrue(!error);
 
-    std::vector<uint8_t> dataUnc;
+    vector<uint8_t> dataUnc;
     dataUnc.resize(static_cast<size_t>(params.stride) * params.height);
 
     error = JpegLsDecode(dataUnc.data(), dataUnc.size(), data.data(), data.size(), nullptr, nullptr);
     Assert::IsTrue(!error);
-    std::cout << ".";
+    cout << ".";
 }
 
 } // namespace
