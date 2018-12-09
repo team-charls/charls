@@ -19,7 +19,7 @@ struct Size
 
 
 void FixEndian(std::vector<uint8_t>* rgbyte, bool littleEndianData);
-bool ReadFile(const char* filename, std::vector<uint8_t>* pvec, long offset = 0, size_t bytes = 0);
+std::vector<uint8_t> ReadFile(const char* filename, long offset = 0, size_t bytes = 0);
 void TestFile(const char* filename, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile = false, int loopCount = 1);
 void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, Size size, int cbit, int ccomp, int loopCount = 1);
 void TestRoundTrip(const char* strName, const std::vector<uint8_t>& rgbyteRaw, JlsParameters& params, int loopCount = 1);

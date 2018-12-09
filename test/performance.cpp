@@ -18,11 +18,9 @@ using std::milli;
 namespace
 {
 
-void TestFile16BitAs12(const char* filename, int ioffs, Size size2, int ccomp, bool littleEndianFile)
+void TestFile16BitAs12(const char* filename, int offset, Size size2, int ccomp, bool littleEndianFile)
 {
-    vector<uint8_t> uncompressedData;
-    if (!ReadFile(filename, &uncompressedData, ioffs))
-        return;
+    vector<uint8_t> uncompressedData = ReadFile(filename, offset);
 
     FixEndian(&uncompressedData, littleEndianFile);
 
@@ -115,12 +113,7 @@ void DecodePerformanceTests(int loopCount)
 {
     cout << "Test decode Perf (with loop count " << loopCount << ")\n";
 
-    vector<uint8_t> jpeglsCompressed;
-    if (!ReadFile("decodetest.jls", &jpeglsCompressed, 0, 0))
-    {
-        cout << "Failed to load the file decodetest.jls\n";
-        return;
-    }
+    vector<uint8_t> jpeglsCompressed = ReadFile("decodetest.jls");
 
     JlsParameters params{};
     error_code error = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);

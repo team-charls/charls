@@ -49,17 +49,19 @@ void FixEndian(vector<uint8_t>* rgbyte, bool littleEndianData)
 }
 
 
-bool ReadFile(const char* filename, vector<uint8_t>* pvec, long offset, size_t bytes)
+vector<uint8_t> ReadFile(const char* filename, long offset, size_t bytes)
 {
     FILE* pfile = fopen(filename, "rb");
     if (!pfile)
     {
         cerr << "Could not open %s\n" << filename << "\n";
-        return false;
+        throw UnitTestException();
     }
 
     fseek(pfile, 0, SEEK_END);
     const auto cbyteFile = static_cast<int>(ftell(pfile));
+    fseek(pfile, offset, SEEK_SET);
+
     if (offset < 0)
     {
         Assert::IsTrue(bytes != 0);
@@ -70,11 +72,13 @@ bool ReadFile(const char* filename, vector<uint8_t>* pvec, long offset, size_t b
         bytes = static_cast<size_t>(cbyteFile) - offset;
     }
 
-    fseek(pfile, offset, SEEK_SET);
-    pvec->resize(bytes);
-    const size_t bytesRead = fread(&(*pvec)[0],1, pvec->size(), pfile);
+    vector<uint8_t> buffer(bytes);
+    const size_t bytesRead = fread(buffer.data(), 1, buffer.size(), pfile);
     fclose(pfile);
-    return bytesRead == pvec->size();
+    if (bytesRead != buffer.size())
+        throw UnitTestException();
+
+    return buffer;
 }
 
 
@@ -163,17 +167,14 @@ void TestRoundTrip(const char* strName, const vector<uint8_t>& rgbyteRaw, JlsPar
 void TestFile(const char* filename, int ioffs, Size size2, int cbit, int ccomp, bool littleEndianFile, int loopCount)
 {
     const size_t byteCount = size2.cx * size2.cy * ccomp * ((cbit + 7)/8);
-    vector<uint8_t> rgbyteUncompressed;
-
-    if (!ReadFile(filename, &rgbyteUncompressed, ioffs, byteCount))
-        return;
+    vector<uint8_t> uncompressedBuffer = ReadFile(filename, ioffs, byteCount);
 
     if (cbit > 8)
     {
-        FixEndian(&rgbyteUncompressed, littleEndianFile);
+        FixEndian(&uncompressedBuffer, littleEndianFile);
     }
 
-    TestRoundTrip(filename, rgbyteUncompressed, size2, cbit, ccomp, loopCount);
+    TestRoundTrip(filename, uncompressedBuffer, size2, cbit, ccomp, loopCount);
 }
 
 

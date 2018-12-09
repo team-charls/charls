@@ -49,21 +49,20 @@ const ios_base::openmode mode_input  = ios_base::in  | ios::binary;
 const ios_base::openmode mode_output = ios_base::out | ios::binary;
 
 
-bool ScanFile(const char* strNameEncoded, vector<uint8_t>* rgbyteFile, JlsParameters* params)
+vector<uint8_t> ScanFile(const char* strNameEncoded, JlsParameters* params)
 {
-    if (!ReadFile(strNameEncoded, rgbyteFile))
-    {
-        Assert::IsTrue(false);
-        return false;
-    }
+    vector<uint8_t> buffer = ReadFile(strNameEncoded);
+
     basic_filebuf<char> jlsFile;
     jlsFile.open(strNameEncoded, mode_input);
 
-    const ByteStreamInfo rawStreamInfo = {&jlsFile, nullptr, 0};
+    const ByteStreamInfo rawStreamInfo {&jlsFile, nullptr, 0};
 
     const error_code error = JpegLsReadHeaderStream(rawStreamInfo, params);
-    Assert::IsTrue(!error);
-    return !error;
+    if (error)
+        throw UnitTestException();
+
+    return buffer;
 }
 
 
@@ -225,32 +224,29 @@ void TestBgra()
 void TestBgr()
 {
     JlsParameters params{};
-    vector<uint8_t> rgbyteEncoded;
-    ScanFile("test/conformance/T8C2E3.JLS", &rgbyteEncoded, &params);
-    vector<uint8_t> rgbyteDecoded(static_cast<size_t>(params.width) * params.height * params.components);
+    vector<uint8_t> encodedBuffer = ScanFile("test/conformance/T8C2E3.JLS", &params);
+    vector<uint8_t> decodedBuffer(static_cast<size_t>(params.width) * params.height * params.components);
 
     params.outputBgr = static_cast<char>(true);
 
-    const error_code error = JpegLsDecode(&rgbyteDecoded[0], rgbyteDecoded.size(), &rgbyteEncoded[0], rgbyteEncoded.size(), &params, nullptr);
+    const error_code error = JpegLsDecode(decodedBuffer.data(), decodedBuffer.size(), encodedBuffer.data(), encodedBuffer.size(), &params, nullptr);
     Assert::IsTrue(!error);
 
-    Assert::IsTrue(rgbyteDecoded[0] == 0x69);
-    Assert::IsTrue(rgbyteDecoded[1] == 0x77);
-    Assert::IsTrue(rgbyteDecoded[2] == 0xa1);
-    Assert::IsTrue(rgbyteDecoded[static_cast<size_t>(params.width) * 6 + 3] == 0x2d);
-    Assert::IsTrue(rgbyteDecoded[static_cast<size_t>(params.width) * 6 + 4] == 0x43);
-    Assert::IsTrue(rgbyteDecoded[static_cast<size_t>(params.width) * 6 + 5] == 0x4d);
+    Assert::IsTrue(decodedBuffer[0] == 0x69);
+    Assert::IsTrue(decodedBuffer[1] == 0x77);
+    Assert::IsTrue(decodedBuffer[2] == 0xa1);
+    Assert::IsTrue(decodedBuffer[static_cast<size_t>(params.width) * 6 + 3] == 0x2d);
+    Assert::IsTrue(decodedBuffer[static_cast<size_t>(params.width) * 6 + 4] == 0x43);
+    Assert::IsTrue(decodedBuffer[static_cast<size_t>(params.width) * 6 + 5] == 0x4d);
 }
 
 
 void TestTooSmallOutputBuffer()
 {
-    vector<uint8_t> rgbyteCompressed;
-    if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
-        return;
+    vector<uint8_t> rgbyteCompressed = ReadFile("test/lena8b.jls");
 
     vector<uint8_t> rgbyteOut(512 * 511);
-    const auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
+    const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
 
     Assert::IsTrue(error == jpegls_errc::destination_buffer_too_small);
 }
@@ -309,23 +305,21 @@ void TestDecodeBitStreamWithUnknownJpegMarker()
 
 void TestDecodeRect()
 {
-    vector<uint8_t> rgbyteCompressed;
     JlsParameters params{};
-    if (!ScanFile("test/lena8b.jls", &rgbyteCompressed, &params))
-        return;
+    vector<uint8_t> encodedData = ScanFile("test/lena8b.jls", &params);
+    vector<uint8_t> decodedBuffer(static_cast<size_t>(params.width) * params.height*params.components);
 
-    vector<uint8_t> rgbyteOutFull(static_cast<size_t>(params.width) * params.height*params.components);
-    error_code error = JpegLsDecode(&rgbyteOutFull[0], rgbyteOutFull.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
+    error_code error = JpegLsDecode(decodedBuffer.data(), decodedBuffer.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
     Assert::IsTrue(!error);
 
     const JlsRect rect = { 128, 128, 256, 1 };
-    vector<uint8_t> rgbyteOut(static_cast<size_t>(rect.Width) * rect.Height);
-    rgbyteOut.push_back(0x1f);
-    error = JpegLsDecodeRect(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), rect, nullptr, nullptr);
+    vector<uint8_t> decodedData(static_cast<size_t>(rect.Width) * rect.Height);
+    decodedData.push_back(0x1f);
+    error = JpegLsDecodeRect(decodedData.data(), decodedData.size(), encodedData.data(), encodedData.size(), rect, nullptr, nullptr);
     Assert::IsTrue(!error);
 
-    Assert::IsTrue(memcmp(&rgbyteOutFull[rect.X + static_cast<size_t>(rect.Y) * 512], &rgbyteOut[0], static_cast<size_t>(rect.Width) * rect.Height) == 0);
-    Assert::IsTrue(rgbyteOut[static_cast<size_t>(rect.Width) * rect.Height] == 0x1f);
+    Assert::IsTrue(memcmp(&decodedBuffer[rect.X + static_cast<size_t>(rect.Y) * 512], decodedData.data(), static_cast<size_t>(rect.Width) * rect.Height) == 0);
+    Assert::IsTrue(decodedData[static_cast<size_t>(rect.Width) * rect.Height] == 0x1f);
 }
 
 

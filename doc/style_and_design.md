@@ -50,3 +50,26 @@ Python: only signed integers
 Given the practical applications that 2^31 * 2^31 (max signed integer) will be sufficient for the coming 10 years, the API should use signed integers.
 References: 
 8K Images = (7680×4320)
+
+### Supported C++ language
+
+CharLS currently targets C++14 on the main branch. This will be done until December 2020 (3 years after the release of C++17)
+
+#### Features currently not available (C++17)
+
+* nodiscard attribute
+* maybe_unused attribute
+* Inline variables
+* Guaranteed copy elision
+* constexpr if-statements
+* __has_include
+* std::byte
+* clamp ?
+
+#### Features currently not available (C++20)
+
+The following features are available in C++20 (usable after 2023), or in dual language support mode.
+
+* endian
+* <span>
+* modules

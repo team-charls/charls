@@ -15,9 +15,7 @@ namespace
 
 void TestDamagedBitStream1()
 {
-    vector<uint8_t> rgbyteCompressed;
-    if (!ReadFile("test/incorrect_images/InfiniteLoopFFMPEG.jls", &rgbyteCompressed, 0))
-        return;
+    vector<uint8_t> rgbyteCompressed = ReadFile("test/incorrect_images/InfiniteLoopFFMPEG.jls");
 
     vector<uint8_t> rgbyteOut(256 * 256 * 2);
     const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
@@ -27,12 +25,10 @@ void TestDamagedBitStream1()
 
 void TestDamagedBitStream2()
 {
-    vector<uint8_t> rgbyteCompressed;
-    if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
-        return;
-
+    vector<uint8_t> rgbyteCompressed = ReadFile("test/lena8b.jls");
+    
     rgbyteCompressed.resize(900);
-    rgbyteCompressed.resize(40000,3);
+    rgbyteCompressed.resize(40000, 3);
 
     vector<uint8_t> rgbyteOut(512 * 512);
     const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
@@ -42,9 +38,7 @@ void TestDamagedBitStream2()
 
 void TestDamagedBitStream3()
 {
-    vector<uint8_t> rgbyteCompressed;
-    if (!ReadFile("test/lena8b.jls", &rgbyteCompressed, 0))
-        return;
+    vector<uint8_t> rgbyteCompressed = ReadFile("test/lena8b.jls");
 
     rgbyteCompressed[300] = 0xFF;
     rgbyteCompressed[301] = 0xFF;
@@ -57,9 +51,7 @@ void TestDamagedBitStream3()
 
 void TestFileWithRandomHeaderDamage(const char* filename)
 {
-    vector<uint8_t> rgbyteCompressedOrg;
-    if (!ReadFile(filename, &rgbyteCompressedOrg, 0))
-        return;
+    vector<uint8_t> rgbyteCompressedOrg = ReadFile(filename);
 
     srand(102347325);
 

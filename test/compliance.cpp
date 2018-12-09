@@ -88,35 +88,31 @@ void TestCompliance(const uint8_t* compressedBytes, size_t compressedLength, con
 }
 
 
-void DecompressFile(const char* strNameEncoded, const char* strNameRaw, int ioffs, bool bcheckEncode = true)
+void DecompressFile(const char* strNameEncoded, const char* strNameRaw, int offset, bool checkEncode = true)
 {
     cout << "Conformance test:" << strNameEncoded << "\n\r";
-    vector<uint8_t> rgbyteFile;
-    if (!ReadFile(strNameEncoded, &rgbyteFile))
-        return;
+    vector<uint8_t> encodedBuffer = ReadFile(strNameEncoded);
 
     JlsParameters params{};
-    if (make_error_code(JpegLsReadHeader(rgbyteFile.data(), rgbyteFile.size(), &params, nullptr)))
+    if (make_error_code(JpegLsReadHeader(encodedBuffer.data(), encodedBuffer.size(), &params, nullptr)))
     {
         Assert::IsTrue(false);
         return;
     }
 
-    vector<uint8_t> rgbyteRaw;
-    if (!ReadFile(strNameRaw, &rgbyteRaw, ioffs))
-        return;
+    vector<uint8_t> rawBuffer = ReadFile(strNameRaw, offset);
 
     if (params.bitsPerSample > 8)
     {
-        FixEndian(&rgbyteRaw, false);
+        FixEndian(&rawBuffer, false);
     }
 
     if (params.interleaveMode == InterleaveMode::None && params.components == 3)
     {
-        Triplet2Planar(rgbyteRaw, Size(params.width, params.height));
+        Triplet2Planar(rawBuffer, Size(params.width, params.height));
     }
 
-    TestCompliance(rgbyteFile.data(), rgbyteFile.size(), rgbyteRaw.data(), rgbyteRaw.size(), bcheckEncode);
+    TestCompliance(encodedBuffer.data(), encodedBuffer.size(), rawBuffer.data(), rawBuffer.size(), checkEncode);
 }
 
 
