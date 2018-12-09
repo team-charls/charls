@@ -116,25 +116,25 @@ void TestTraits8bit()
 }
 
 
-vector<uint8_t> MakeSomeNoise(size_t length, size_t bitcount, int seed)
+vector<uint8_t> MakeSomeNoise(size_t length, size_t bitCount, int seed)
 {
     srand(seed);
-    vector<uint8_t> rgbyteNoise(length);
-    const auto mask = static_cast<uint8_t>((1 << bitcount) - 1);
-    for (size_t icol = 0; icol < length; ++icol)
+    vector<uint8_t> buffer(length);
+    const auto mask = static_cast<uint8_t>((1 << bitCount) - 1);
+    for (size_t i = 0; i < length; ++i)
     {
         const auto val = static_cast<uint8_t>(rand());
-        rgbyteNoise[icol] = static_cast<uint8_t>(val & mask);
+        buffer[i] = static_cast<uint8_t>(val & mask);
     }
-    return rgbyteNoise;
+    return buffer;
 }
 
 
-vector<uint8_t> MakeSomeNoise16bit(size_t length, int bitcount, int seed)
+vector<uint8_t> MakeSomeNoise16bit(size_t length, int bitCount, int seed)
 {
     srand(seed);
     vector<uint8_t> buffer(length * 2);
-    const auto mask = static_cast<uint16_t>((1 << bitcount) - 1);
+    const auto mask = static_cast<uint16_t>((1 << bitCount) - 1);
     for (size_t i = 0; i < length; i = i + 2)
     {
         const uint16_t value = static_cast<uint16_t>(rand()) & mask;
@@ -214,10 +214,10 @@ void TestFailOnTooSmallOutputBuffer()
 
 void TestBgra()
 {
-    char rgbyteTest[] = "RGBARGBARGBARGBA1234";
-    const char rgbyteComp[] = "BGRABGRABGRABGRA1234";
-    TransformRgbToBgr(rgbyteTest, 4, 4);
-    Assert::IsTrue(strcmp(rgbyteTest, rgbyteComp) == 0);
+    char input[] = "RGBARGBARGBARGBA1234";
+    const char expected[] = "BGRABGRABGRABGRA1234";
+    TransformRgbToBgr(input, 4, 4);
+    Assert::IsTrue(strcmp(input, expected) == 0);
 }
 
 
@@ -243,10 +243,10 @@ void TestBgr()
 
 void TestTooSmallOutputBuffer()
 {
-    vector<uint8_t> rgbyteCompressed = ReadFile("test/lena8b.jls");
+    vector<uint8_t> encoded = ReadFile("test/lena8b.jls");
 
-    vector<uint8_t> rgbyteOut(512 * 511);
-    const auto error = JpegLsDecode(rgbyteOut.data(), rgbyteOut.size(), rgbyteCompressed.data(), rgbyteCompressed.size(), nullptr, nullptr);
+    vector<uint8_t> destination(512 * 511);
+    const auto error = JpegLsDecode(destination.data(), destination.size(), encoded.data(), encoded.size(), nullptr, nullptr);
 
     Assert::IsTrue(error == jpegls_errc::destination_buffer_too_small);
 }
@@ -323,7 +323,7 @@ void TestDecodeRect()
 }
 
 
-void TestEncodeFromStream(const char* file, int offset, int width, int height, int bpp, int ccomponent, InterleaveMode ilv, size_t expectedLength)
+void TestEncodeFromStream(const char* file, int offset, int width, int height, int bpp, int componentCount, InterleaveMode ilv, size_t expectedLength)
 {
     basic_filebuf<char> myFile; // On the stack
     myFile.open(file, mode_input);
@@ -332,16 +332,16 @@ void TestEncodeFromStream(const char* file, int offset, int width, int height, i
     myFile.pubseekoff(static_cast<streamoff>(offset), ios_base::cur);
     const ByteStreamInfo rawStreamInfo = {&myFile, nullptr, 0};
 
-    vector<uint8_t> compressed(static_cast<size_t>(width) * height * ccomponent * 2);
+    vector<uint8_t> compressed(static_cast<size_t>(width) * height * componentCount * 2);
     JlsParameters params = JlsParameters();
     params.height = height;
     params.width = width;
-    params.components = ccomponent;
+    params.components = componentCount;
     params.bitsPerSample = bpp;
     params.interleaveMode = ilv;
     size_t bytesWritten = 0;
 
-    JpegLsEncodeStream(FromByteArray(compressed.data(), static_cast<size_t>(width) * height * ccomponent * 2), bytesWritten, rawStreamInfo, params);
+    JpegLsEncodeStream(FromByteArray(compressed.data(), static_cast<size_t>(width) * height * componentCount * 2), bytesWritten, rawStreamInfo, params);
     Assert::IsTrue(bytesWritten == expectedLength);
 
     myFile.close();
@@ -702,7 +702,7 @@ int main(const int argc, const char * const argv[])
 
         if (str == "-bitstreamdamage")
         {
-            DamagedBitstreamTests();
+            DamagedBitStreamTests();
             continue;
         }
 

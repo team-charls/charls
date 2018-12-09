@@ -41,9 +41,9 @@ void TestDicomSampleImage(const char* name)
 {
     vector<uint8_t> data = ReadFile(name);
 
-    const array<uint8_t, 8> pixeldataStart = {0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7};
+    const array<uint8_t, 8> pixelDataStart = {0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7};
 
-    const int offset = FindString(data, pixeldataStart.data(), pixeldataStart.size());
+    const int offset = FindString(data, pixelDataStart.data(), pixelDataStart.size());
 
     data.erase(data.begin(), data.begin() + offset - 4);
 

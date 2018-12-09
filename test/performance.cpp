@@ -18,20 +18,20 @@ using std::milli;
 namespace
 {
 
-void TestFile16BitAs12(const char* filename, int offset, Size size2, int ccomp, bool littleEndianFile)
+void TestFile16BitAs12(const char* filename, int offset, Size size2, int componentCount, bool littleEndianFile)
 {
     vector<uint8_t> uncompressedData = ReadFile(filename, offset);
 
     FixEndian(&uncompressedData, littleEndianFile);
 
-    auto pushort = reinterpret_cast<uint16_t*>(uncompressedData.data());
+    const auto p = reinterpret_cast<uint16_t*>(uncompressedData.data());
 
     for (size_t i = 0; i < uncompressedData.size() / 2; ++i)
     {
-        pushort[i] = pushort[i] >> 4;
+        p[i] = p[i] >> 4;
     }
 
-    TestRoundTrip(filename, uncompressedData, size2, 12, ccomp);
+    TestRoundTrip(filename, uncompressedData, size2, 12, componentCount);
 }
 
 
