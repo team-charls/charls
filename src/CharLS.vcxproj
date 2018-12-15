@@ -237,6 +237,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="..\doc\style_and_design.md" />
     <None Include="charls.def" />
     <None Include="JpegStreamWriter.cd" />
   </ItemGroup>
@@ -275,9 +276,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="styleanddesign.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

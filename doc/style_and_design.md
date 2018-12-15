@@ -28,11 +28,30 @@ There are 2 methods to prevent double include:
 
 ## Exceptions and Error Handling
 
-* C++ Exceptions should be derived from std::exception. (Common accepted idom)
+* C++ exceptions should be derived from `std::exception`. (Common accepted idom)
 * The exception should be convertible to an error code to support the C API
 * An english error text that describes the problem is extreme usefull.
 
 => Design: std::system_error is the standard solution to throw exceptions from libraries (CharLS is a library)
+
+By deriving an exception type from `std::system_error` user code can catch CharLS exceptions by type.
+It make sense to support this common pattern. The alternative is
+
+``` cpp
+catch (const std::system_error& e)
+{
+    if (e.code.category() == charls::jpegls_category())
+    {
+        // Handle JPEG-LS errors.
+    }
+
+    // Note that checking for a single error can be done directly.
+    if (e.code == charls::jpegls_invalid_argument_width)
+    {
+        // ...
+    }
+}
+```
 
 ## Jpeg-LS Design decisions
 
@@ -73,3 +92,8 @@ The following features are available in C++20 (usable after 2023), or in dual la
 * endian
 * <span>
 * modules
+
+### Supported C# language
+
+CharLS currently targets C# 7.3 on the main branch. This will be done until C# 8.0 becomes available.
+Client code in C# 7.3 calling the CharLS assembly will be supported up to 3 years after the release of C# 8.0.

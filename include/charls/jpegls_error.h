@@ -30,6 +30,9 @@ CHARLS_NO_DISCARD inline std::error_code make_error_code(jpegls_errc error_value
 }
 
 
+/// <summary>
+/// Exception that will be thrown when a called charls method cannot succeed and is allowed to throw.
+/// </summary>
 class jpegls_error : public std::system_error
 {
 public:
@@ -39,7 +42,7 @@ public:
     }
 
     explicit jpegls_error(jpegls_errc error_value)
-        : system_error(make_error_code(error_value))
+        : system_error(error_value)
     {
     }
 };

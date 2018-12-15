@@ -140,7 +140,7 @@ void JpegStreamReader::ReadNBytes(std::vector<char>& dst, int byteCount)
 void JpegStreamReader::ReadHeader()
 {
     if (ReadNextMarkerCode() != JpegMarkerCode::StartOfImage)
-        throw jpegls_error(make_error_code(jpegls_errc::start_of_image_marker_not_found));
+        throw jpegls_error(jpegls_errc::start_of_image_marker_not_found);
 
     for (;;)
     {
@@ -182,7 +182,7 @@ JpegMarkerCode JpegStreamReader::ReadNextMarkerCode()
 
 void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode) const
 {
-    // ISO/IEC 14495-1, C.1.1. defines the following markers valid for a JPEG-LS byte stream:
+    // ISO/IEC 14495-1, C.1.1. defines the following markers as valid for a JPEG-LS byte stream:
     // SOF55, LSE, SOI, EOI, SOS, DNL, DRI, RSTm, APPn and COM.
     // All other markers shall not be present.
     switch (markerCode)
@@ -221,16 +221,16 @@ void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode) const
         case JpegMarkerCode::StartOfFrameProgressiveArithmetic:
         case JpegMarkerCode::StartOfFrameLosslessArithmetic:
         case JpegMarkerCode::StartOfFrameJpegLSExtended:
-            throw jpegls_error(make_error_code(jpegls_errc::encoding_not_supported));
+            throw jpegls_error(jpegls_errc::encoding_not_supported);
 
         case JpegMarkerCode::StartOfImage:
-            throw jpegls_error(make_error_code(jpegls_errc::duplicate_start_of_image_marker));
+            throw jpegls_error(jpegls_errc::duplicate_start_of_image_marker);
 
         case JpegMarkerCode::EndOfImage:
-            throw jpegls_error(make_error_code(jpegls_errc::unexpected_end_of_image_marker));
+            throw jpegls_error(jpegls_errc::unexpected_end_of_image_marker);
     }
 
-    throw jpegls_error(make_error_code(jpegls_errc::unknown_jpeg_marker_found));
+    throw jpegls_error(jpegls_errc::unknown_jpeg_marker_found);
 }
 
 
@@ -282,23 +282,23 @@ int JpegStreamReader::ReadStartOfFrameSegment(int32_t segmentSize)
     // with some modifications.
 
     if (segmentSize < 6)
-        throw jpegls_error(make_error_code(jpegls_errc::invalid_marker_segment_size));
+        throw jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
     params_.bitsPerSample = ReadByte();
     if (params_.bitsPerSample < MinimumBitsPerSample || params_.bitsPerSample > MaximumBitsPerSample)
-        throw jpegls_error(make_error_code(jpegls_errc::invalid_parameter_bits_per_sample));
+        throw jpegls_error(jpegls_errc::invalid_parameter_bits_per_sample);
 
     params_.height = ReadUInt16();
     if (params_.height < 1)
-        throw jpegls_error(make_error_code(jpegls_errc::parameter_value_not_supported));
+        throw jpegls_error(jpegls_errc::parameter_value_not_supported);
 
     params_.width = ReadUInt16();
     if (params_.width < 1)
-        throw jpegls_error(make_error_code(jpegls_errc::parameter_value_not_supported));
+        throw jpegls_error(jpegls_errc::parameter_value_not_supported);
 
     params_.components = ReadByte();
     if (params_.components < 1)
-        throw jpegls_error(make_error_code(jpegls_errc::invalid_parameter_component_count));
+        throw jpegls_error(jpegls_errc::invalid_parameter_component_count);
 
     // Note: component specific parameters are currently not verified.
 
@@ -443,7 +443,7 @@ int32_t JpegStreamReader::ReadSegmentSize()
 {
     const int32_t segmentSize = ReadUInt16();
     if (segmentSize < 2)
-        throw jpegls_error(make_error_code(jpegls_errc::invalid_marker_segment_size));
+        throw jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
     return segmentSize;
 }
