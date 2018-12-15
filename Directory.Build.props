@@ -87,7 +87,10 @@
       <!-- Explicit disable non conforming MSVC compiler options that are not compatible with the C++ standard -->
       <ConformanceMode>true</ConformanceMode>
 
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include</AdditionalIncludeDirectories>      
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include</AdditionalIncludeDirectories>
+
+      <!-- Use by default precompiled headers with the modern name pch.h -->
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
   </ItemDefinitionGroup>
 

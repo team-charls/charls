@@ -15,39 +15,36 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="encoderstrategytester.h">
+    <ClInclude Include="encoder_strategy_tester.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JpegStreamWriterTest.cpp">
+    <ClCompile Include="color_transform_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="jpegmarkersegmenttest.cpp">
+    <ClCompile Include="decoder_strategy_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="jpegstreamreadertest.cpp">
+    <ClCompile Include="default_traits_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="encoderstrategytest.cpp">
+    <ClCompile Include="encoder_strategy_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="decoderstrategytest.cpp">
+    <ClCompile Include="jpeg_marker_segment_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="defaulttraitstest.cpp">
+    <ClCompile Include="jpeg_stream_reader_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="colortransformTest.cpp">
+    <ClCompile Include="jpeg_stream_writer_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,14 +1,19 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#include "stdafx.h"
+#include "pch.h"
 
 #include "../src/jpeg_marker_segment.h"
+
 #include <memory>
 #include <cstdint>
 
-using namespace std;
-using namespace charls;
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using std::unique_ptr;
+using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
+using charls::JpegSegment;
+using charls::JpegStreamWriter;
+using charls::JpegMarkerSegment;
+using charls::ColorTransformation;
+using charls::InterleaveMode;
 
 namespace CharLSUnitTest
 {

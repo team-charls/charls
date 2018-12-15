@@ -1,14 +1,17 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#include "stdafx.h"
+#include "pch.h"
 
 #include "../src/jpeg_stream_reader.h"
+
 #include <vector>
 #include <cstdint>
 
-using namespace std;
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using namespace charls;
+using std::system_error;
+using std::vector;
+using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
+using charls::JpegStreamReader;
+using charls::jpegls_errc;
 
 namespace CharLSUnitTest
 {

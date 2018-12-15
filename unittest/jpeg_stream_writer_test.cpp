@@ -1,10 +1,10 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#include "stdafx.h"
+#include "pch.h"
 
 #include "../src/jpeg_stream_writer.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 
 namespace CharLSUnitTest
 {

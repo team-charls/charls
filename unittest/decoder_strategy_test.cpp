@@ -1,13 +1,13 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#include "stdafx.h"
+#include "pch.h"
 
 #include "../src/decoder_strategy.h"
-#include "encoderstrategytester.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include "encoder_strategy_tester.h"
+
 using std::unique_ptr;
-
+using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 
 class DecoderStrategyTester : public charls::DecoderStrategy
 {
