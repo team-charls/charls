@@ -9,6 +9,7 @@ x64/
 [Dd]ebug/
 [Rr]elease/
 [Cc]hecked/
+build/
 
 # Ignore files created by Visual Studio
 *.suo
@@ -19,10 +20,3 @@ x64/
 *.opendb
 *.VC.db
 *.aps
-
-# NuGet Packages
-*.nupkg
-# The packages folder can be ignored because of Package Restore
-**/packages/*
-# except build/, which is used as an MSBuild target.
-!**/packages/build/
