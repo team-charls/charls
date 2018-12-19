@@ -13,8 +13,6 @@ target_sources(charlstest
     main.cpp
     performance.cpp
     performance.h
-    gettime.cpp
-    gettime.h
     util.cpp
     util.h
 )

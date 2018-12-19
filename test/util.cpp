@@ -1,12 +1,13 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #include "util.h"
+
 #include "portable_anymap_file.h"
-#include "gettime.h"
 
 #include <iostream>
 #include <vector>
 #include <iomanip>
+#include <chrono>
 
 using std::cout;
 using std::cerr;
@@ -15,6 +16,11 @@ using std::setprecision;
 using std::vector;
 using std::error_code;
 using std::swap;
+using std::vector;
+using std::chrono::duration;
+using std::chrono::steady_clock;
+using std::milli;
+
 using charls::InterleaveMode;
 using charls::ColorTransformation;
 
@@ -125,27 +131,29 @@ void TestRoundTrip(const char* strName, const vector<uint8_t>& originalBuffer, J
     }
 
     size_t compressedLength = 0;
-    const double timeEncodeStart = getTime();
+    auto start = steady_clock::now();
     for (int i = 0; i < loopCount; ++i)
     {
         const error_code error = JpegLsEncode(encodedBuffer.data(), encodedBuffer.size(), &compressedLength,
             originalBuffer.data(), decodedBuffer.size(), &params, nullptr);
         Assert::IsTrue(!error);
     }
-    const double timeEncodeComplete = getTime();
 
-    const double timeDecodeStart = getTime();
+    const auto totalEncodeDuration = steady_clock::now() - start;
+
+    start = steady_clock::now();
     for (int i = 0; i < loopCount; ++i)
     {
         const error_code error = JpegLsDecode(&decodedBuffer[0], decodedBuffer.size(), &encodedBuffer[0], compressedLength, nullptr, nullptr);
         Assert::IsTrue(!error);
     }
-    const double timeDecodeComplete = getTime();
+
+    const auto totalDecodeDuration = steady_clock::now() - start;
 
     const double bitsPerSample = 1.0 * compressedLength * 8 / (static_cast<double>(params.components) * params.height * params.width);
     cout << "RoundTrip test for: " << strName << "\n\r";
-    const double encodeTime = (timeEncodeComplete - timeEncodeStart) / loopCount;
-    const double decodeTime = (timeDecodeComplete - timeDecodeStart) / loopCount;
+    const double encodeTime = duration<double, milli>(totalEncodeDuration).count() / loopCount;
+    const double decodeTime = duration<double, milli>(totalDecodeDuration).count() / loopCount;
     const double symbolRate = (static_cast<double>(params.components) * params.height * params.width) / (1000.0 * decodeTime);
 
     cout << "Size:" << setw(10) << params.width << "x" << params.height << setw(7) << setprecision(2) <<
