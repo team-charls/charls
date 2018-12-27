@@ -32,13 +32,13 @@ CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegL
 /// <summary>
 /// Retrieves the JPEG-LS header. This info can be used to pre-allocate the uncompressed output buffer.
 /// </summary>
-/// <param name="compressedData">Byte array that holds the JPEG-LS encoded data of which the header should be extracted.</param>
-/// <param name="compressedLength">Length of the array in bytes.</param>
+/// <param name="source">Byte array that holds the JPEG-LS encoded data of which the header should be extracted.</param>
+/// <param name="sourceLength">Length of the array in bytes.</param>
 /// <param name="params">Parameter object that describes how the pixel data is encoded.</param>
 /// <param name="reserved">Reserved, pass NULL pointer  (will be removed in next ABI update).</param>
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsReadHeader(
-    const void* compressedData,
-    size_t compressedLength,
+    const void* source,
+    size_t sourceLength,
     struct JlsParameters* params,
     const void* reserved);
 
@@ -60,19 +60,19 @@ CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegL
     const void* reserved);
 
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsDecodeRect(
-    void* uncompressedData,
-    size_t uncompressedLength,
-    const void* compressedData,
-    size_t compressedLength,
+    void* destination,
+    size_t destinationLength,
+    const void* source,
+    size_t sourceLength,
     struct JlsRect roi,
-    const struct JlsParameters* info,
+    const struct JlsParameters* params,
     const void* reserved);
 
 #ifdef __cplusplus
 }
 
-CHARLS_API_IMPORT_EXPORT CharlsApiResultType JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& bytesWritten, ByteStreamInfo rawStreamInfo, const JlsParameters& params);
-CHARLS_API_IMPORT_EXPORT CharlsApiResultType JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info);
-CHARLS_API_IMPORT_EXPORT CharlsApiResultType JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params);
+CHARLS_API_IMPORT_EXPORT CharlsApiResultType JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten, ByteStreamInfo source, const JlsParameters& params);
+CHARLS_API_IMPORT_EXPORT CharlsApiResultType JpegLsDecodeStream(ByteStreamInfo destination, ByteStreamInfo source, const JlsParameters* params);
+CHARLS_API_IMPORT_EXPORT CharlsApiResultType JpegLsReadHeaderStream(ByteStreamInfo source, JlsParameters* params);
 
 #endif

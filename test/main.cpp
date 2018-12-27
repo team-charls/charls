@@ -200,12 +200,12 @@ void TestFailOnTooSmallOutputBuffer()
     params.height = 8;
     params.width = 8;
 
-    // Trigger a "buffer too small"" when writing the header markers.
+    // Trigger a "destination buffer too small" when writing the header markers.
     vector<uint8_t> outputBuffer1(1);
     auto result = JpegLsEncode(outputBuffer1.data(), outputBuffer1.size(), &compressedLength, inputBuffer.data(), inputBuffer.size(), &params, nullptr);
     Assert::IsTrue(result == jpegls_errc::destination_buffer_too_small);
 
-    // Trigger a "buffer too small"" when writing the encoded pixel bytes.
+    // Trigger a "destination buffer too small" when writing the encoded pixel bytes.
     vector<uint8_t> outputBuffer2(100);
     result = JpegLsEncode(outputBuffer2.data(), outputBuffer2.size(), &compressedLength, inputBuffer.data(), inputBuffer.size(), &params, nullptr);
     Assert::IsTrue(result == jpegls_errc::destination_buffer_too_small);

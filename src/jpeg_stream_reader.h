@@ -60,8 +60,8 @@ private:
     int TryReadHPColorTransformSegment(int32_t segmentSize);
 
     ByteStreamInfo byteStream_;
-    JlsParameters params_;
-    JlsRect rect_;
+    JlsParameters params_{};
+    JlsRect rect_{};
 };
 
 } // namespace charls

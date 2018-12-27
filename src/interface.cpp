@@ -3,19 +3,21 @@
 #include <charls/charls.h>
 #include <charls/jpegls_error.h>
 
-#include "jpeg_marker_segment.h"
 #include "jpeg_stream_reader.h"
 #include "jpeg_stream_writer.h"
+#include "jpegls_preset_coding_parameters.h"
+#include "encoder_strategy.h"
+#include "jls_codec_factory.h"
 #include "util.h"
 #include "constants.h"
 
 using namespace charls;
 
-namespace
+namespace {
+
+void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& parameters)
 {
-void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& parameters)
-{
-    if (!uncompressedStream.rawStream && !uncompressedStream.rawData)
+    if (!destination.rawStream && !destination.rawData)
         throw jpegls_error(jpegls_errc::invalid_argument_destination);
 
     if (parameters.bitsPerSample < MinimumBitsPerSample || parameters.bitsPerSample > MaximumBitsPerSample)
@@ -27,9 +29,9 @@ void VerifyInput(const ByteStreamInfo& uncompressedStream, const JlsParameters& 
     if (parameters.components < 1 || parameters.components > MaximumComponentCount)
         throw jpegls_error(jpegls_errc::invalid_argument_component_count);
 
-    if (uncompressedStream.rawData)
+    if (destination.rawData)
     {
-        if (uncompressedStream.count < static_cast<size_t>(parameters.height) * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1))
+        if (destination.count < static_cast<size_t>(parameters.height) * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1))
             throw jpegls_error(jpegls_errc::destination_buffer_too_small);
     }
 
@@ -70,11 +72,25 @@ jpegls_errc to_jpegls_errc() noexcept
     }
 }
 
+void EncodeScan(const JlsParameters& params, int componentCount, ByteStreamInfo source, JpegStreamWriter& writer)
+{
+    JlsParameters info{params};
+    info.components = componentCount;
+
+    auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, info.custom);
+    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(source));
+    ByteStreamInfo destination = writer.OutputStream();
+    const size_t bytesWritten = codec->EncodeScan(move(processLine), destination);
+
+    // Synchronize the destination encapsulated in the writer (EncodeScan works on a local copy)
+    writer.Seek(bytesWritten);
+}
+
 } // namespace
 
 
-jpegls_errc JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& bytesWritten,
-                               ByteStreamInfo rawStreamInfo, const struct JlsParameters& params)
+jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten,
+                               ByteStreamInfo source, const JlsParameters& params)
 {
     if (params.width < 1 || params.width > 65535)
         return jpegls_errc::invalid_argument_width;
@@ -84,7 +100,7 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& byte
 
     try
     {
-        VerifyInput(rawStreamInfo, params);
+        VerifyInput(source, params);
 
         JlsParameters info = params;
         if (info.stride == 0)
@@ -96,17 +112,30 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& byte
             }
         }
 
-        JpegStreamWriter writer;
-        if (info.jfif.version)
+        JpegStreamWriter writer{destination};
+
+        writer.WriteStartOfImage();
+
+        if (info.jfif.version != 0)
         {
-            writer.AddSegment(JpegMarkerSegment::CreateJpegFileInterchangeFormatSegment(info.jfif));
+            writer.WriteJpegFileInterchangeFormatSegment(info.jfif);
         }
 
-        writer.AddSegment(JpegMarkerSegment::CreateStartOfFrameSegment(info.width, info.height, info.bitsPerSample, info.components));
+        writer.WriteStartOfFrameSegment(info.width, info.height, info.bitsPerSample, info.components);
 
         if (info.colorTransformation != ColorTransformation::None)
         {
-            writer.AddColorTransform(info.colorTransformation);
+            writer.WriteColorTransformSegment(info.colorTransformation);
+        }
+
+        if (!IsDefault(info.custom))
+        {
+            writer.WriteJpegLSPresetParametersSegment(info.custom);
+        }
+        else if (info.bitsPerSample > 12)
+        {
+            const JpegLSPresetCodingParameters preset = ComputeDefault((1 << info.bitsPerSample) - 1, info.allowedLossyError);
+            writer.WriteJpegLSPresetParametersSegment(preset);
         }
 
         if (info.interleaveMode == InterleaveMode::None)
@@ -114,16 +143,21 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& byte
             const int32_t byteCountComponent = info.width * info.height * ((info.bitsPerSample + 7) / 8);
             for (int32_t component = 0; component < info.components; ++component)
             {
-                writer.AddScan(rawStreamInfo, info);
-                SkipBytes(rawStreamInfo, byteCountComponent);
+                writer.WriteStartOfScanSegment(1, info.allowedLossyError, info.interleaveMode);
+                EncodeScan(info, 1, source, writer);
+
+                // Synchronize the source stream (EncodeScan works on a local copy)
+                SkipBytes(source, byteCountComponent);
             }
         }
         else
         {
-            writer.AddScan(rawStreamInfo, info);
+            writer.WriteStartOfScanSegment(info.components, info.allowedLossyError, info.interleaveMode);
+            EncodeScan(info, info.components, source, writer);
         }
 
-        writer.Write(compressedStreamInfo);
+        writer.WriteEndOfImage();
+
         bytesWritten = writer.GetBytesWritten();
 
         return jpegls_errc::success;
@@ -135,18 +169,18 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo compressedStreamInfo, size_t& byte
 }
 
 
-jpegls_errc JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compressedStream, const JlsParameters* info)
+jpegls_errc JpegLsDecodeStream(ByteStreamInfo destination, ByteStreamInfo source, const JlsParameters* params)
 {
     try
     {
-        JpegStreamReader reader(compressedStream);
+        JpegStreamReader reader(source);
 
-        if (info)
+        if (params)
         {
-            reader.SetInfo(*info);
+            reader.SetInfo(*params);
         }
 
-        reader.Read(rawStream);
+        reader.Read(destination);
 
         return jpegls_errc::success;
     }
@@ -157,11 +191,11 @@ jpegls_errc JpegLsDecodeStream(ByteStreamInfo rawStream, ByteStreamInfo compress
 }
 
 
-jpegls_errc JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* params)
+jpegls_errc JpegLsReadHeaderStream(ByteStreamInfo source, JlsParameters* params)
 {
     try
     {
-        JpegStreamReader reader(rawStreamInfo);
+        JpegStreamReader reader(source);
         reader.ReadHeader();
         reader.ReadStartOfScan(true);
         *params = reader.GetMetadata();
@@ -174,62 +208,63 @@ jpegls_errc JpegLsReadHeaderStream(ByteStreamInfo rawStreamInfo, JlsParameters* 
     }
 }
 
-extern "C"
+extern "C" {
+
+jpegls_errc CHARLS_API_CALLING_CONVENTION
+JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, const void* source, size_t sourceLength, const struct JlsParameters* params, const void* /*reserved*/)
 {
-    jpegls_errc CHARLS_API_CALLING_CONVENTION
-    JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, const void* source, size_t sourceLength, const struct JlsParameters* params, const void* /*reserved*/)
+    if (!destination || !bytesWritten || !source || !params)
+        return jpegls_errc::invalid_argument;
+
+    const ByteStreamInfo sourceInfo = FromByteArrayConst(source, sourceLength);
+    const ByteStreamInfo destinationInfo = FromByteArray(destination, destinationLength);
+
+    return JpegLsEncodeStream(destinationInfo, *bytesWritten, sourceInfo, *params);
+}
+
+
+jpegls_errc CHARLS_API_CALLING_CONVENTION
+JpegLsReadHeader(const void* source, size_t sourceLength, JlsParameters* params, const void* /*reserved*/)
+{
+    return JpegLsReadHeaderStream(FromByteArrayConst(source, sourceLength), params);
+}
+
+
+jpegls_errc CHARLS_API_CALLING_CONVENTION
+JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* params, const void* /*reserved*/)
+{
+    const ByteStreamInfo compressedStream = FromByteArrayConst(source, sourceLength);
+    const ByteStreamInfo rawStreamInfo = FromByteArray(destination, destinationLength);
+
+    return JpegLsDecodeStream(rawStreamInfo, compressedStream, params);
+}
+
+
+jpegls_errc CHARLS_API_CALLING_CONVENTION
+JpegLsDecodeRect(void* destination, size_t destinationLength, const void* source, size_t sourceLength,
+                 JlsRect roi, const JlsParameters* params, const void* /*reserved*/)
+{
+    try
     {
-        if (!destination || !bytesWritten || !source || !params)
-            return jpegls_errc::invalid_argument;
+        const ByteStreamInfo sourceInfo = FromByteArrayConst(source, sourceLength);
+        JpegStreamReader reader(sourceInfo);
 
-        const ByteStreamInfo rawStreamInfo = FromByteArrayConst(source, sourceLength);
-        const ByteStreamInfo compressedStreamInfo = FromByteArray(destination, destinationLength);
+        const ByteStreamInfo destinationInfo = FromByteArray(destination, destinationLength);
 
-        return JpegLsEncodeStream(compressedStreamInfo, *bytesWritten, rawStreamInfo, *params);
-    }
-
-
-    jpegls_errc CHARLS_API_CALLING_CONVENTION
-    JpegLsReadHeader(const void* compressedData, size_t compressedLength, JlsParameters* params, const void* /*reserved*/)
-    {
-        return JpegLsReadHeaderStream(FromByteArrayConst(compressedData, compressedLength), params);
-    }
-
-
-    jpegls_errc CHARLS_API_CALLING_CONVENTION
-    JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* params, const void* /*reserved*/)
-    {
-        const ByteStreamInfo compressedStream = FromByteArrayConst(source, sourceLength);
-        const ByteStreamInfo rawStreamInfo = FromByteArray(destination, destinationLength);
-
-        return JpegLsDecodeStream(rawStreamInfo, compressedStream, params);
-    }
-
-
-    jpegls_errc CHARLS_API_CALLING_CONVENTION
-    JpegLsDecodeRect(void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength,
-                     JlsRect roi, const JlsParameters* info, const void* /*reserved*/)
-    {
-        try
+        if (params)
         {
-            const ByteStreamInfo compressedStream = FromByteArrayConst(compressedData, compressedLength);
-            JpegStreamReader reader(compressedStream);
-
-            const ByteStreamInfo rawStreamInfo = FromByteArray(uncompressedData, uncompressedLength);
-
-            if (info)
-            {
-                reader.SetInfo(*info);
-            }
-
-            reader.SetRect(roi);
-            reader.Read(rawStreamInfo);
-
-            return jpegls_errc::success;
+            reader.SetInfo(*params);
         }
-        catch (...)
-        {
-            return to_jpegls_errc();
-        }
+
+        reader.SetRect(roi);
+        reader.Read(destinationInfo);
+
+        return jpegls_errc::success;
     }
+    catch (...)
+    {
+        return to_jpegls_errc();
+    }
+}
+
 }

@@ -1,14 +1,14 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #include "jpeg_stream_reader.h"
+
 #include "util.h"
-#include "jpeg_stream_writer.h"
-#include "jpeg_image_data_segment.h"
 #include "jpeg_marker_code.h"
 #include "decoder_strategy.h"
 #include "encoder_strategy.h"
 #include "jls_codec_factory.h"
 #include "constants.h"
+
 #include <memory>
 #include <iomanip>
 #include <algorithm>
@@ -17,19 +17,8 @@ using namespace charls;
 
 namespace {
 
-
 // JFIF\0
 uint8_t jfifID[] = { 'J', 'F', 'I', 'F', '\0' };
-
-
-/// <summary>Clamping function as defined by ISO/IEC 14495-1, Figure C.3</summary>
-int32_t clamp(int32_t i, int32_t j, int32_t maximumSampleValue) noexcept
-{
-    if (i > maximumSampleValue || i < j)
-        return j;
-
-    return i;
-}
 
 
 void CheckParameterCoherent(const JlsParameters& params)
@@ -56,39 +45,8 @@ void CheckParameterCoherent(const JlsParameters& params)
 namespace charls
 {
 
-JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t allowedLossyError) noexcept
-{
-    const int32_t factor = (std::min(maximumSampleValue, 4095) + 128) / 256;
-    const int threshold1 = clamp(factor * (DefaultThreshold1 - 2) + 2 + 3 * allowedLossyError, allowedLossyError + 1, maximumSampleValue);
-    const int threshold2 = clamp(factor * (DefaultThreshold2 - 3) + 3 + 5 * allowedLossyError, threshold1, maximumSampleValue); //-V537
-
-    return
-    {
-        maximumSampleValue,
-        threshold1,
-        threshold2,
-        clamp(factor * (DefaultThreshold3 - 4) + 4 + 7 * allowedLossyError, threshold2, maximumSampleValue),
-        DefaultResetValue
-    };
-}
-
-
-void JpegImageDataSegment::Serialize(JpegStreamWriter& streamWriter)
-{
-    JlsParameters info = params_;
-    info.components = componentCount_;
-    auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, params_.custom);
-    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(rawStreamInfo_));
-    ByteStreamInfo compressedData = streamWriter.OutputStream();
-    const size_t bytesWritten = codec->EncodeScan(move(processLine), compressedData);
-    streamWriter.Seek(bytesWritten);
-}
-
-
 JpegStreamReader::JpegStreamReader(ByteStreamInfo byteStreamInfo) noexcept :
-    byteStream_(byteStreamInfo),
-    params_(),
-    rect_()
+    byteStream_{byteStreamInfo}
 {
 }
 

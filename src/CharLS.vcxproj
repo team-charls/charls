@@ -245,7 +245,6 @@
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="jpegls.cpp" />
     <ClCompile Include="jpegls_error.cpp" />
-    <ClCompile Include="jpeg_marker_segment.cpp" />
     <ClCompile Include="jpeg_stream_reader.cpp" />
     <ClCompile Include="jpeg_stream_writer.cpp" />
   </ItemGroup>
@@ -262,10 +261,8 @@
     <ClInclude Include="default_traits.h" />
     <ClInclude Include="encoder_strategy.h" />
     <ClInclude Include="jls_codec_factory.h" />
-    <ClInclude Include="jpeg_image_data_segment.h" />
+    <ClInclude Include="jpegls_preset_coding_parameters.h" />
     <ClInclude Include="jpeg_marker_code.h" />
-    <ClInclude Include="jpeg_marker_segment.h" />
-    <ClInclude Include="jpeg_segment.h" />
     <ClInclude Include="jpeg_stream_reader.h" />
     <ClInclude Include="jpeg_stream_writer.h" />
     <ClInclude Include="lookup_table.h" />

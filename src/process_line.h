@@ -276,7 +276,7 @@ public:
 
         if (params_.components == 3)
         {
-            if (params_.interleaveMode == charls::InterleaveMode::Sample)
+            if (params_.interleaveMode == InterleaveMode::Sample)
             {
                 TransformLine(static_cast<Triplet<size_type>*>(dest), static_cast<const Triplet<size_type>*>(source), pixelCount, transform_);
             }
@@ -285,7 +285,7 @@ public:
                 TransformTripletToLine(static_cast<const Triplet<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, transform_);
             }
         }
-        else if (params_.components == 4 && params_.interleaveMode == charls::InterleaveMode::Line)
+        else if (params_.components == 4 && params_.interleaveMode == InterleaveMode::Line)
         {
             TransformQuadToLine(static_cast<const Quad<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, transform_);
         }
@@ -295,7 +295,7 @@ public:
     {
         if (params_.components == 3)
         {
-            if (params_.interleaveMode == charls::InterleaveMode::Sample)
+            if (params_.interleaveMode == InterleaveMode::Sample)
             {
                 TransformLine(static_cast<Triplet<size_type>*>(rawData), static_cast<const Triplet<size_type>*>(pSrc), pixelCount, inverseTransform_);
             }
@@ -304,7 +304,7 @@ public:
                 TransformLineToTriplet(static_cast<const size_type*>(pSrc), byteStride, static_cast<Triplet<size_type>*>(rawData), pixelCount, inverseTransform_);
             }
         }
-        else if (params_.components == 4 && params_.interleaveMode == charls::InterleaveMode::Line)
+        else if (params_.components == 4 && params_.interleaveMode == InterleaveMode::Line)
         {
             TransformLineToQuad(static_cast<const size_type*>(pSrc), byteStride, static_cast<Quad<size_type>*>(rawData), pixelCount, inverseTransform_);
         }

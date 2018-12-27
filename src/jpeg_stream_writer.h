@@ -2,12 +2,9 @@
 
 #pragma once
 
-#include "jpeg_segment.h"
-
 #include <charls/jpegls_error.h>
 
 #include <vector>
-#include <memory>
 
 namespace charls {
 
@@ -16,20 +13,48 @@ enum class JpegMarkerCode : uint8_t;
 // Purpose: 'Writer' class that can generate JPEG-LS file streams.
 class JpegStreamWriter final
 {
-    friend class JpegMarkerSegment;
-    friend class JpegImageDataSegment;
-
 public:
     JpegStreamWriter() noexcept;
+    explicit JpegStreamWriter(const ByteStreamInfo& info) noexcept;
 
-    void AddSegment(std::unique_ptr<JpegSegment> segment)
-    {
-        segments_.push_back(std::move(segment));
-    }
+    void WriteStartOfImage();
 
-    void AddScan(const ByteStreamInfo& info, const JlsParameters& params);
+    /// <summary>
+    /// Write a JPEG File Interchange (APP1 + jfif) segment.
+    /// </summary>
+    /// <param name="params">Parameters to write into the JFIF segment.</param>
+    void WriteJpegFileInterchangeFormatSegment(const JfifParameters& params);
 
-    void AddColorTransform(charls::ColorTransformation transformation);
+    /// <summary>
+    /// Writes a HP color transformation (APP8) segment.
+    /// </summary>
+    /// <param name="transformation">Color transformation to put into the segment.</param>
+    void WriteColorTransformSegment(ColorTransformation transformation);
+
+    /// <summary>
+    /// Writes a JPEG-LS preset parameters (LSE) segment.
+    /// </summary>
+    /// <param name="params">Parameters to write into the JPEG-LS preset segment.</param>
+    void WriteJpegLSPresetParametersSegment(const JpegLSPresetCodingParameters& params);
+
+    /// <summary>
+    /// Writes a JPEG-LS Start Of Frame (SOF-55) segment.
+    /// </summary>
+    /// <param name="width">The width of the frame.</param>
+    /// <param name="height">The height of the frame.</param>
+    /// <param name="bitsPerSample">The bits per sample.</param>
+    /// <param name="componentCount">The component count.</param>
+    void WriteStartOfFrameSegment(int width, int height, int bitsPerSample, int componentCount);
+
+    /// <summary>
+    /// Writes a JPEG-LS Start Of Scan (SOS) segment.
+    /// </summary>
+    /// <param name="componentCount">The number of components in the scan segment. Can only be > 1 when the components are interleaved.</param>
+    /// <param name="allowedLossyError">The allowed lossy error. 0 means lossless.</param>
+    /// <param name="interleaveMode">The interleave mode of the components.</param>
+    void WriteStartOfScanSegment(int componentCount, int allowedLossyError, InterleaveMode interleaveMode);
+
+    void WriteEndOfImage();
 
     std::size_t GetBytesWritten() const noexcept
     {
@@ -41,14 +66,6 @@ public:
         return data_.count - byteOffset_;
     }
 
-    std::size_t Write(const ByteStreamInfo& info);
-
-private:
-    uint8_t* GetPos() const noexcept
-    {
-        return data_.rawData + byteOffset_;
-    }
-
     ByteStreamInfo OutputStream() const noexcept
     {
         ByteStreamInfo data = data_;
@@ -57,24 +74,50 @@ private:
         return data;
     }
 
-    void WriteByte(uint8_t val)
+    void Seek(std::size_t byteCount) noexcept
+    {
+        if (data_.rawStream)
+            return;
+
+        byteOffset_ += byteCount;
+    }
+
+private:
+    uint8_t* GetPos() const noexcept
+    {
+        return data_.rawData + byteOffset_;
+    }
+
+    void WriteSegment(JpegMarkerCode markerCode, const void* data, size_t dataSize);
+
+    void WriteByte(uint8_t value)
     {
         if (data_.rawStream)
         {
-            data_.rawStream->sputc(val);
+            data_.rawStream->sputc(value);
         }
         else
         {
             if (byteOffset_ >= data_.count)
                 throw jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-            data_.rawData[byteOffset_++] = val;
+            data_.rawData[byteOffset_++] = value;
         }
     }
 
     void WriteBytes(const std::vector<uint8_t>& bytes)
     {
         for (std::size_t i = 0; i < bytes.size(); ++i)
+        {
+            WriteByte(bytes[i]);
+        }
+    }
+
+    void WriteBytes(const void* data, const size_t dataSize)
+    {
+        const auto bytes = static_cast<const uint8_t*>(data);
+
+        for (std::size_t i = 0; i < dataSize; ++i)
         {
             WriteByte(bytes[i]);
         }
@@ -92,18 +135,9 @@ private:
         WriteByte(static_cast<uint8_t>(marker));
     }
 
-    void Seek(std::size_t byteCount) noexcept
-    {
-        if (data_.rawStream)
-            return;
-
-        byteOffset_ += byteCount;
-    }
-
     ByteStreamInfo data_;
-    std::size_t byteOffset_;
-    int32_t lastComponentIndex_;
-    std::vector<std::unique_ptr<JpegSegment>> segments_;
+    std::size_t byteOffset_{};
+    int8_t componentId_{1};
 };
 
 } // namespace charls

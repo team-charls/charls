@@ -76,7 +76,7 @@ namespace charls
     };
 
     [[deprecated]]
-    typedef charls::jpegls_errc ApiResult;
+    typedef jpegls_errc ApiResult;
 
     /// <summary>
     /// Defines the interleave mode for multi-component (color) pixel data.

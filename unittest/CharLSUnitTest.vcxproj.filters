@@ -38,9 +38,6 @@
     <ClCompile Include="encoder_strategy_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="jpeg_marker_segment_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="jpeg_stream_reader_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
