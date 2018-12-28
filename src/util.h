@@ -137,13 +137,13 @@ struct Quad : Triplet<sample>
 
 
 template<int size>
-struct FromBigEndian
+struct FromBigEndian final
 {
 };
 
 
 template<>
-struct FromBigEndian<4>
+struct FromBigEndian<4> final
 {
     FORCE_INLINE static unsigned int Read(const uint8_t* buffer) noexcept
     {
@@ -153,7 +153,7 @@ struct FromBigEndian<4>
 
 
 template<>
-struct FromBigEndian<8>
+struct FromBigEndian<8> final
 {
     FORCE_INLINE static uint64_t Read(const uint8_t* buffer) noexcept
     {

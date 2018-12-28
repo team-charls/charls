@@ -46,22 +46,22 @@ class PostProcessSingleComponent final : public ProcessLine
 {
 public:
     PostProcessSingleComponent(void* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
-        rawData_(static_cast<uint8_t*>(rawData)),
-        bytesPerPixel_(bytesPerPixel),
-        bytesPerLine_(params.stride)
+        rawData_{static_cast<uint8_t*>(rawData)},
+        bytesPerPixel_{static_cast<size_t>(bytesPerPixel)},
+        bytesPerLine_{static_cast<size_t>(params.stride)}
     {
     }
 
     MSVC_WARNING_SUPPRESS(26440)
-    void NewLineRequested(void* dest, int pixelCount, int /*byteStride*/) override
+    void NewLineRequested(void* destination, int pixelCount, int /*byteStride*/) override
     {
-        std::memcpy(dest, rawData_, pixelCount * bytesPerPixel_);
+        std::memcpy(destination, rawData_, pixelCount * bytesPerPixel_);
         rawData_ += bytesPerLine_;
     }
 
-    void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/) override
+    void NewLineDecoded(const void* source, int pixelCount, int /*sourceStride*/) override
     {
-        std::memcpy(rawData_, pSrc, pixelCount * bytesPerPixel_);
+        std::memcpy(rawData_, source, pixelCount * bytesPerPixel_);
         rawData_ += bytesPerLine_;
     }
     MSVC_WARNING_UNSUPPRESS()
@@ -76,7 +76,7 @@ private:
 inline void ByteSwap(void* data, int count)
 {
     if (static_cast<unsigned int>(count) & 1u)
-        throw jpegls_error(jpegls_errc::invalid_encoded_data);
+        throw jpegls_error{jpegls_errc::invalid_encoded_data};
 
     const auto data32 = static_cast<unsigned int*>(data);
     for(auto i = 0; i < count / 4; i++)
@@ -102,21 +102,21 @@ public:
     {
     }
 
-    void NewLineRequested(void* dest, int pixelCount, int /*destStride*/) override
+    void NewLineRequested(void* destination, int pixelCount, int /*destStride*/) override
     {
         auto bytesToRead = static_cast<std::streamsize>(pixelCount) * bytesPerPixel_;
         while (bytesToRead != 0)
         {
-            const auto bytesRead = rawData_->sgetn(static_cast<char*>(dest), bytesToRead);
+            const auto bytesRead = rawData_->sgetn(static_cast<char*>(destination), bytesToRead);
             if (bytesRead == 0)
-                throw jpegls_error(jpegls_errc::destination_buffer_too_small);
+                throw jpegls_error{jpegls_errc::destination_buffer_too_small};
 
             bytesToRead = bytesToRead - bytesRead;
         }
 
         if (bytesPerPixel_ == 2)
         {
-            ByteSwap(static_cast<unsigned char*>(dest), 2 * pixelCount);
+            ByteSwap(static_cast<unsigned char*>(destination), 2 * pixelCount);
         }
 
         if (bytesPerLine_ - pixelCount * bytesPerPixel_ > 0)
@@ -125,12 +125,12 @@ public:
         }
     }
 
-    void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/) override
+    void NewLineDecoded(const void* source, int pixelCount, int /*sourceStride*/) override
     {
         const auto bytesToWrite = pixelCount * bytesPerPixel_;
-        const auto bytesWritten = static_cast<size_t>(rawData_->sputn(static_cast<const char*>(pSrc), bytesToWrite));
+        const auto bytesWritten = static_cast<size_t>(rawData_->sputn(static_cast<const char*>(source), bytesToWrite));
         if (bytesWritten != bytesToWrite)
-            throw jpegls_error(jpegls_errc::destination_buffer_too_small);
+            throw jpegls_error{jpegls_errc::destination_buffer_too_small};
     }
 
 private:
@@ -251,18 +251,18 @@ public:
         Transform(rawPixels_.rawStream, dest, pixelCount, destStride);
     }
 
-    void Transform(std::basic_streambuf<char>* rawStream, void* dest, int pixelCount, int destStride)
+    void Transform(std::basic_streambuf<char>* rawStream, void* destination, int pixelCount, int destinationStride)
     {
         std::streamsize bytesToRead = static_cast<std::streamsize>(pixelCount) * params_.components * sizeof(size_type);
         while (bytesToRead != 0)
         {
             const auto read = rawStream->sgetn(reinterpret_cast<char*>(buffer_.data()), bytesToRead);
             if (read == 0)
-                throw jpegls_error(jpegls_errc::source_buffer_too_small);
+                throw jpegls_error{jpegls_errc::source_buffer_too_small};
 
             bytesToRead -= read;
         }
-        Transform(buffer_.data(), dest, pixelCount, destStride);
+        Transform(buffer_.data(), destination, pixelCount, destinationStride);
     }
 
     void Transform(const void* source, void* dest, int pixelCount, int destStride) noexcept
@@ -324,7 +324,7 @@ public:
 
             const auto bytesWritten = rawPixels_.rawStream->sputn(reinterpret_cast<char*>(buffer_.data()), bytesToWrite);
             if (bytesWritten != bytesToWrite)
-                throw jpegls_error(jpegls_errc::destination_buffer_too_small);
+                throw jpegls_error{jpegls_errc::destination_buffer_too_small};
         }
         else
         {

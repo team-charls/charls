@@ -105,9 +105,9 @@ struct LosslessTraits<uint16_t, 16> final : LosslessTraitsImpl<uint16_t, 16>
         return static_cast<short>(d);
     }
 
-    FORCE_INLINE constexpr static SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
+    FORCE_INLINE constexpr static SAMPLE ComputeReconstructedSample(int32_t Px, int32_t errorValue) noexcept
     {
-        return static_cast<SAMPLE>(Px + ErrVal);
+        return static_cast<SAMPLE>(Px + errorValue);
     }
 };
 
@@ -127,9 +127,9 @@ struct LosslessTraits<Triplet<T>, bpp> final : LosslessTraitsImpl<T, bpp>
         return lhs == rhs;
     }
 
-    FORCE_INLINE static T ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
+    FORCE_INLINE static T ComputeReconstructedSample(int32_t Px, int32_t errorValue) noexcept
     {
-        return static_cast<T>(Px + ErrVal);
+        return static_cast<T>(Px + errorValue);
     }
 };
 

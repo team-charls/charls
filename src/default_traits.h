@@ -37,25 +37,25 @@ struct DefaultTraits final
     const int32_t LIMIT;
     const int32_t RESET;
 
-    DefaultTraits(int32_t max, int32_t near, int32_t reset = DefaultResetValue) noexcept :
-        MAXVAL(max),
-        RANGE((max + 2 * near) / (2 * near + 1) + 1),
-        NEAR(near),
-        qbpp(log_2(RANGE)),
-        bpp(log_2(max)),
-        LIMIT(2 * (bpp + std::max(8, bpp))),
-        RESET(reset)
+    DefaultTraits(int32_t max, int32_t near, int32_t reset = DefaultResetValue) noexcept
+        : MAXVAL{max},
+          RANGE{(max + 2 * near) / (2 * near + 1) + 1},
+          NEAR{near},
+          qbpp{log_2(RANGE)},
+          bpp{log_2(max)},
+          LIMIT{2 * (bpp + std::max(8, bpp))},
+          RESET{reset}
     {
     }
 
     DefaultTraits(const DefaultTraits& other) noexcept :
-        MAXVAL(other.MAXVAL),
-        RANGE(other.RANGE),
-        NEAR(other.NEAR),
-        qbpp(other.qbpp),
-        bpp(other.bpp),
-        LIMIT(other.LIMIT),
-        RESET(other.RESET)
+        MAXVAL{other.MAXVAL},
+        RANGE{other.RANGE},
+        NEAR{other.NEAR},
+        qbpp{other.qbpp},
+        bpp{other.bpp},
+        LIMIT{other.LIMIT},
+        RESET{other.RESET}
     {
     }
 
@@ -129,18 +129,18 @@ private:
         return ErrorValue * (2 * NEAR + 1);
     }
 
-    FORCE_INLINE SAMPLE FixReconstructedValue(int32_t val) const noexcept
+    FORCE_INLINE SAMPLE FixReconstructedValue(int32_t value) const noexcept
     {
-        if (val < -NEAR)
+        if (value < -NEAR)
         {
-            val = val + RANGE * (2 * NEAR + 1);
+            value = value + RANGE * (2 * NEAR + 1);
         }
-        else if (val > MAXVAL + NEAR)
+        else if (value > MAXVAL + NEAR)
         {
-            val = val - RANGE * (2 * NEAR + 1);
+            value = value - RANGE * (2 * NEAR + 1);
         }
 
-        return static_cast<SAMPLE>(CorrectPrediction(val));
+        return static_cast<SAMPLE>(CorrectPrediction(value));
     }
 };
 

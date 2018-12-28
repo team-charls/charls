@@ -10,25 +10,15 @@ namespace charls
 // Purpose: a JPEG-LS context with it's current statistics.
 struct JlsContext final
 {
-    int32_t A;
-    int32_t B;
-    int16_t C;
-    int16_t N;
+    int32_t A{};
+    int32_t B{};
+    int16_t C{};
+    int16_t N{1};
 
-    JlsContext() noexcept :
-        A(),
-        B(),
-        C(),
-        N(1)
-    {
-    }
-
+    JlsContext() = default;
 
     explicit JlsContext(int32_t a) noexcept :
-        A(a),
-        B(0),
-        C(0),
-        N(1)
+        A(a)
     {
     }
 
@@ -101,7 +91,7 @@ struct JlsContext final
         if (nTest << 4 >= aTest) return 4;
 
         int32_t k = 5;
-        for(; (nTest << k) < aTest; k++)
+        for(; nTest << k < aTest; ++k)
         {
             ASSERT(k <= 32);
         }

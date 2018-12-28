@@ -121,13 +121,13 @@ protected:
     void OverFlow()
     {
         if (!compressedStream_)
-            throw jpegls_error(jpegls_errc::destination_buffer_too_small);
+            throw jpegls_error{jpegls_errc::destination_buffer_too_small};
 
         const std::size_t bytesCount = position_ - buffer_.data();
         const auto bytesWritten = static_cast<std::size_t>(compressedStream_->sputn(reinterpret_cast<char*>(buffer_.data()), position_ - buffer_.data()));
 
         if (bytesWritten != bytesCount)
-            throw jpegls_error(jpegls_errc::destination_buffer_too_small);
+            throw jpegls_error{jpegls_errc::destination_buffer_too_small};
 
         position_ = buffer_.data();
         compressedLength_ = buffer_.size();
@@ -159,7 +159,7 @@ protected:
                 freeBitCount_ += 8;
             }
 
-            isFFWritten_ = *position_ == 0xFF;
+            isFFWritten_ = *position_ == JpegMarkerStartByte;
             position_++;
             compressedLength_--;
             bytesWritten_++;

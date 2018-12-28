@@ -12,28 +12,19 @@ namespace charls
 struct CContextRunMode final
 {
     // Note: members are sorted based on their size.
-    int32_t A;
-    int32_t nRItype_;
-    uint8_t nReset_;
-    uint8_t N;
-    uint8_t Nn;
+    int32_t A{};
+    int32_t nRItype_{};
+    uint8_t nReset_{};
+    uint8_t N{};
+    uint8_t Nn{};
 
-    CContextRunMode() noexcept
-        : A(),
-          nRItype_(),
-          nReset_(),
-          N(),
-          Nn()
-    {
-    }
-
+    CContextRunMode() = default;
 
     CContextRunMode(int32_t a, int32_t nRItype, int32_t nReset) noexcept
-        : A(a),
-          nRItype_(nRItype),
-          nReset_(static_cast<uint8_t>(nReset)),
-          N(1),
-          Nn(0)
+        : A{a},
+          nRItype_{nRItype},
+          nReset_{static_cast<uint8_t>(nReset)},
+          N{1}
     {
     }
 
@@ -43,7 +34,7 @@ struct CContextRunMode final
         const int32_t TEMP = A + (N >> 1) * nRItype_;
         int32_t nTest = N;
         int32_t k = 0;
-        for (; nTest < TEMP; k++)
+        for (; nTest < TEMP; ++k)
         {
             nTest <<= 1;
             ASSERT(k <= 32);

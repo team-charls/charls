@@ -37,12 +37,12 @@ class jpegls_error : public std::system_error
 {
 public:
     explicit jpegls_error(std::error_code ec)
-        : system_error(ec)
+        : system_error{ec}
     {
     }
 
     explicit jpegls_error(jpegls_errc error_value)
-        : system_error(error_value)
+        : system_error{error_value}
     {
     }
 };

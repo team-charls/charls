@@ -117,7 +117,7 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(int32_t error
         return "Invalid JPEG-LS stream, an unknown JPEG marker code was found";
 
     case jpegls_errc::jpeg_marker_start_byte_not_found:
-        return "Invalid JPEG-LS stream, the leading start byte 0xFF for a JPEG marker was not found";
+        return "Invalid JPEG-LS stream, the leading start byte (0xFF) for a JPEG marker was not found";
 
     case jpegls_errc::not_enough_memory:
         return "No memory could be allocated for an internal buffer";

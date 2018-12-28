@@ -6,6 +6,7 @@
 
 #include "util.h"
 #include "process_line.h"
+#include "jpeg_marker_code.h"
 
 #include <memory>
 #include <cassert>
@@ -17,13 +18,7 @@ class DecoderStrategy
 {
 public:
     explicit DecoderStrategy(const JlsParameters& params) :
-        params_(params),
-        byteStream_(nullptr),
-        readCache_(0),
-        validBits_(0),
-        position_(nullptr),
-        nextFFPosition_(nullptr),
-        endPosition_(nullptr)
+        params_{params}
     {
     }
 
@@ -103,16 +98,16 @@ public:
 
     void EndScan()
     {
-        if (*position_ != 0xFF)
+        if (*position_ != JpegMarkerStartByte)
         {
             ReadBit();
 
-            if (*position_ != 0xFF)
-                throw jpegls_error(jpegls_errc::too_much_encoded_data);
+            if (*position_ != JpegMarkerStartByte)
+                throw jpegls_error{jpegls_errc::too_much_encoded_data};
         }
 
         if (readCache_ != 0)
-            throw jpegls_error(jpegls_errc::too_much_encoded_data);
+            throw jpegls_error{jpegls_errc::too_much_encoded_data};
     }
 
     FORCE_INLINE bool OptimizedRead() noexcept
@@ -144,20 +139,20 @@ public:
             if (position_ >= endPosition_)
             {
                 if (validBits_ <= 0)
-                    throw jpegls_error(jpegls_errc::invalid_encoded_data);
+                    throw jpegls_error{jpegls_errc::invalid_encoded_data};
 
                 return;
             }
 
             const bufType valueNew = position_[0];
 
-            if (valueNew == 0xFF)
+            if (valueNew == JpegMarkerStartByte)
             {
                 // JPEG bit stream rule: no FF may be followed by 0x80 or higher
                 if (position_ == endPosition_ - 1 || (position_[1] & 0x80) != 0)
                 {
                     if (validBits_ <= 0)
-                        throw jpegls_error(jpegls_errc::invalid_encoded_data);
+                        throw jpegls_error{jpegls_errc::invalid_encoded_data};
 
                     return;
                 }
@@ -167,7 +162,7 @@ public:
             position_ += 1;
             validBits_ += 8;
 
-            if (valueNew == 0xFF)
+            if (valueNew == JpegMarkerStartByte)
             {
                 validBits_--;
             }
@@ -183,7 +178,7 @@ public:
 
         while (positionNextFF < endPosition_)
         {
-            if (*positionNextFF == 0xFF)
+            if (*positionNextFF == JpegMarkerStartByte)
                 break;
 
             positionNextFF++;
@@ -199,7 +194,7 @@ public:
 
         for (;;)
         {
-            const int32_t lastBitsCount = compressedBytes[-1] == 0xFF ? 7 : 8;
+            const int32_t lastBitsCount = compressedBytes[-1] == JpegMarkerStartByte ? 7 : 8;
 
             if (validBits < lastBitsCount)
                 return compressedBytes;
@@ -215,7 +210,7 @@ public:
         {
             MakeValid();
             if (validBits_ < length)
-                throw jpegls_error(jpegls_errc::invalid_encoded_data);
+                throw jpegls_error{jpegls_errc::invalid_encoded_data};
         }
 
         ASSERT(length != 0 && length <= validBits_);
@@ -299,14 +294,14 @@ private:
     static constexpr size_t bufType_bit_count = sizeof(bufType) * 8;
 
     std::vector<uint8_t> buffer_;
-    std::basic_streambuf<char>* byteStream_;
+    std::basic_streambuf<char>* byteStream_{};
 
     // decoding
-    bufType readCache_;
-    int32_t validBits_;
-    uint8_t* position_;
-    uint8_t* nextFFPosition_;
-    uint8_t* endPosition_;
+    bufType readCache_{};
+    int32_t validBits_{};
+    uint8_t* position_{};
+    uint8_t* nextFFPosition_{};
+    uint8_t* endPosition_{};
 };
 
 } // namespace charls

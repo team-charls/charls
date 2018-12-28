@@ -1,6 +1,5 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#include "util.h"
 #include "decoder_strategy.h"
 #include "encoder_strategy.h"
 #include "lookup_table.h"
@@ -8,6 +7,8 @@
 #include "default_traits.h"
 #include "jls_codec_factory.h"
 #include "jpeg_stream_reader.h"
+#include "jpegls_preset_coding_parameters.h"
+#include "util.h"
 
 #include <vector>
 
@@ -27,14 +28,14 @@ namespace
 
 signed char QuantizeGradientOrg(const JpegLSPresetCodingParameters& preset, int32_t NEAR, int32_t Di) noexcept
 {
-    if (Di <= -preset.Threshold3) return  -4;
-    if (Di <= -preset.Threshold2) return  -3;
-    if (Di <= -preset.Threshold1) return  -2;
-    if (Di < -NEAR)  return  -1;
+    if (Di <= -preset.Threshold3) return -4;
+    if (Di <= -preset.Threshold2) return -3;
+    if (Di <= -preset.Threshold1) return -2;
+    if (Di < -NEAR) return -1;
     if (Di <=  NEAR) return   0;
-    if (Di < preset.Threshold1)   return   1;
-    if (Di < preset.Threshold2)   return   2;
-    if (Di < preset.Threshold3)   return   3;
+    if (Di < preset.Threshold1) return 1;
+    if (Di < preset.Threshold2) return 2;
+    if (Di < preset.Threshold3) return 3;
 
     return  4;
 }

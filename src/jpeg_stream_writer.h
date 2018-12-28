@@ -4,6 +4,8 @@
 
 #include <charls/jpegls_error.h>
 
+#include "jpeg_marker_code.h"
+
 #include <vector>
 
 namespace charls {
@@ -15,7 +17,7 @@ class JpegStreamWriter final
 {
 public:
     JpegStreamWriter() noexcept;
-    explicit JpegStreamWriter(const ByteStreamInfo& info) noexcept;
+    explicit JpegStreamWriter(const ByteStreamInfo& destination) noexcept;
 
     void WriteStartOfImage();
 
@@ -63,12 +65,12 @@ public:
 
     std::size_t GetLength() const noexcept
     {
-        return data_.count - byteOffset_;
+        return destination_.count - byteOffset_;
     }
 
     ByteStreamInfo OutputStream() const noexcept
     {
-        ByteStreamInfo data = data_;
+        ByteStreamInfo data = destination_;
         data.count -= byteOffset_;
         data.rawData += byteOffset_;
         return data;
@@ -76,7 +78,7 @@ public:
 
     void Seek(std::size_t byteCount) noexcept
     {
-        if (data_.rawStream)
+        if (destination_.rawStream)
             return;
 
         byteOffset_ += byteCount;
@@ -85,23 +87,23 @@ public:
 private:
     uint8_t* GetPos() const noexcept
     {
-        return data_.rawData + byteOffset_;
+        return destination_.rawData + byteOffset_;
     }
 
     void WriteSegment(JpegMarkerCode markerCode, const void* data, size_t dataSize);
 
     void WriteByte(uint8_t value)
     {
-        if (data_.rawStream)
+        if (destination_.rawStream)
         {
-            data_.rawStream->sputc(value);
+            destination_.rawStream->sputc(value);
         }
         else
         {
-            if (byteOffset_ >= data_.count)
-                throw jpegls_error(jpegls_errc::destination_buffer_too_small);
+            if (byteOffset_ >= destination_.count)
+                throw jpegls_error{jpegls_errc::destination_buffer_too_small};
 
-            data_.rawData[byteOffset_++] = value;
+            destination_.rawData[byteOffset_++] = value;
         }
     }
 
@@ -123,7 +125,7 @@ private:
         }
     }
 
-    void WriteWord(uint16_t value)
+    void WriteUInt16(uint16_t value)
     {
         WriteByte(static_cast<uint8_t>(value / 0x100));
         WriteByte(static_cast<uint8_t>(value % 0x100));
@@ -131,11 +133,11 @@ private:
 
     void WriteMarker(JpegMarkerCode marker)
     {
-        WriteByte(0xFF);
+        WriteByte(JpegMarkerStartByte);
         WriteByte(static_cast<uint8_t>(marker));
     }
 
-    ByteStreamInfo data_;
+    ByteStreamInfo destination_;
     std::size_t byteOffset_{};
     int8_t componentId_{1};
 };

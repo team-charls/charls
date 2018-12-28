@@ -17,13 +17,13 @@ using std::vector;
 namespace charls
 {
 JpegStreamWriter::JpegStreamWriter() noexcept
-    : data_{}
+    : destination_{}
 {
 }
 
 
-JpegStreamWriter::JpegStreamWriter(const ByteStreamInfo& info) noexcept
-    : data_{info}
+JpegStreamWriter::JpegStreamWriter(const ByteStreamInfo& destination) noexcept
+    : destination_{destination}
 {
 }
 
@@ -49,7 +49,7 @@ void JpegStreamWriter::WriteJpegFileInterchangeFormatSegment(const JfifParameter
     ASSERT(params.Ythumbnail >= 0 && params.Ythumbnail < 256);
 
     // Create a JPEG APP0 segment in the JPEG File Interchange Format (JFIF), v1.02
-    std::vector<uint8_t> segment{'J', 'F', 'I', 'F', '\0'};
+    vector<uint8_t> segment{'J', 'F', 'I', 'F', '\0'};
     push_back(segment, static_cast<uint16_t>(params.version));
     segment.push_back(static_cast<uint8_t>(params.units));
     push_back(segment, static_cast<uint16_t>(params.Xdensity));
@@ -61,7 +61,7 @@ void JpegStreamWriter::WriteJpegFileInterchangeFormatSegment(const JfifParameter
     if (params.Xthumbnail > 0)
     {
         if (params.thumbnail)
-            throw jpegls_error(jpegls_errc::invalid_argument_thumbnail); //, "params.Xthumbnail is > 0 but params.thumbnail == null_ptr");
+            throw jpegls_error{jpegls_errc::invalid_argument_thumbnail};
 
         segment.insert(segment.end(), static_cast<uint8_t*>(params.thumbnail),
                        static_cast<uint8_t*>(params.thumbnail) + static_cast<size_t>(3) * params.Xthumbnail * params.Ythumbnail);
@@ -158,9 +158,9 @@ void JpegStreamWriter::WriteStartOfScanSegment(int componentCount, int allowedLo
 
 void JpegStreamWriter::WriteSegment(JpegMarkerCode markerCode, const void* data, size_t dataSize)
 {
-    WriteByte(0xFF);
+    WriteByte(JpegMarkerStartByte);
     WriteByte(static_cast<uint8_t>(markerCode));
-    WriteWord(static_cast<uint16_t>(dataSize + 2));
+    WriteUInt16(static_cast<uint16_t>(dataSize + 2));
     WriteBytes(data, dataSize);
 }
 

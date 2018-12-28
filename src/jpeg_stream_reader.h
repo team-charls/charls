@@ -3,6 +3,7 @@
 #pragma once
 
 #include <charls/public_types.h>
+
 #include <cstdint>
 #include <vector>
 
@@ -10,8 +11,6 @@ namespace charls
 {
 
 enum class JpegMarkerCode : uint8_t;
-
-JpegLSPresetCodingParameters ComputeDefault(int32_t maximumSampleValue, int32_t allowedLossyError) noexcept;
 
 // Purpose: minimal implementation to read a JPEG byte stream.
 class JpegStreamReader final
@@ -48,7 +47,7 @@ public:
 private:
     int ReadUInt16();
     int32_t ReadSegmentSize();
-    void ReadNBytes(std::vector<char>& dst, int byteCount);
+    void ReadNBytes(std::vector<char>& destination, int byteCount);
     JpegMarkerCode ReadNextMarkerCode();
     void ValidateMarkerCode(JpegMarkerCode markerCode) const;
 

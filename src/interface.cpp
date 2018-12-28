@@ -18,22 +18,20 @@ namespace {
 void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& parameters)
 {
     if (!destination.rawStream && !destination.rawData)
-        throw jpegls_error(jpegls_errc::invalid_argument_destination);
+        throw jpegls_error{jpegls_errc::invalid_argument_destination};
 
     if (parameters.bitsPerSample < MinimumBitsPerSample || parameters.bitsPerSample > MaximumBitsPerSample)
-        throw jpegls_error(jpegls_errc::invalid_argument_bits_per_sample);
+        throw jpegls_error{jpegls_errc::invalid_argument_bits_per_sample};
 
     if (!(parameters.interleaveMode == InterleaveMode::None || parameters.interleaveMode == InterleaveMode::Sample || parameters.interleaveMode == InterleaveMode::Line))
-        throw jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
+        throw jpegls_error{jpegls_errc::invalid_argument_interleave_mode};
 
     if (parameters.components < 1 || parameters.components > MaximumComponentCount)
-        throw jpegls_error(jpegls_errc::invalid_argument_component_count);
+        throw jpegls_error{jpegls_errc::invalid_argument_component_count};
 
-    if (destination.rawData)
-    {
-        if (destination.count < static_cast<size_t>(parameters.height) * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1))
-            throw jpegls_error(jpegls_errc::destination_buffer_too_small);
-    }
+    if (destination.rawData &&
+        destination.count < static_cast<size_t>(parameters.height) * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1))
+        throw jpegls_error{jpegls_errc::destination_buffer_too_small};
 
     switch (parameters.components)
     {
@@ -41,11 +39,11 @@ void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& paramet
         break;
     case 4:
         if (parameters.interleaveMode == InterleaveMode::Sample)
-            throw jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
+            throw jpegls_error{jpegls_errc::invalid_argument_interleave_mode};
         break;
     default:
         if (parameters.interleaveMode != InterleaveMode::None)
-            throw jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
+            throw jpegls_error{jpegls_errc::invalid_argument_interleave_mode};
         break;
     }
 }
@@ -79,7 +77,7 @@ void EncodeScan(const JlsParameters& params, int componentCount, ByteStreamInfo 
 
     auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, info.custom);
     std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(source));
-    ByteStreamInfo destination = writer.OutputStream();
+    ByteStreamInfo destination{writer.OutputStream()};
     const size_t bytesWritten = codec->EncodeScan(move(processLine), destination);
 
     // Synchronize the destination encapsulated in the writer (EncodeScan works on a local copy)
@@ -102,7 +100,7 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten,
     {
         VerifyInput(source, params);
 
-        JlsParameters info = params;
+        JlsParameters info{params};
         if (info.stride == 0)
         {
             info.stride = info.width * ((info.bitsPerSample + 7) / 8);
@@ -173,7 +171,7 @@ jpegls_errc JpegLsDecodeStream(ByteStreamInfo destination, ByteStreamInfo source
 {
     try
     {
-        JpegStreamReader reader(source);
+        JpegStreamReader reader{source};
 
         if (params)
         {
@@ -195,7 +193,7 @@ jpegls_errc JpegLsReadHeaderStream(ByteStreamInfo source, JlsParameters* params)
 {
     try
     {
-        JpegStreamReader reader(source);
+        JpegStreamReader reader{source};
         reader.ReadHeader();
         reader.ReadStartOfScan(true);
         *params = reader.GetMetadata();
@@ -216,8 +214,8 @@ JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, 
     if (!destination || !bytesWritten || !source || !params)
         return jpegls_errc::invalid_argument;
 
-    const ByteStreamInfo sourceInfo = FromByteArrayConst(source, sourceLength);
-    const ByteStreamInfo destinationInfo = FromByteArray(destination, destinationLength);
+    const ByteStreamInfo sourceInfo{FromByteArrayConst(source, sourceLength)};
+    const ByteStreamInfo destinationInfo{FromByteArray(destination, destinationLength)};
 
     return JpegLsEncodeStream(destinationInfo, *bytesWritten, sourceInfo, *params);
 }
@@ -233,8 +231,8 @@ JpegLsReadHeader(const void* source, size_t sourceLength, JlsParameters* params,
 jpegls_errc CHARLS_API_CALLING_CONVENTION
 JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* params, const void* /*reserved*/)
 {
-    const ByteStreamInfo compressedStream = FromByteArrayConst(source, sourceLength);
-    const ByteStreamInfo rawStreamInfo = FromByteArray(destination, destinationLength);
+    const ByteStreamInfo compressedStream{FromByteArrayConst(source, sourceLength)};
+    const ByteStreamInfo rawStreamInfo{FromByteArray(destination, destinationLength)};
 
     return JpegLsDecodeStream(rawStreamInfo, compressedStream, params);
 }
@@ -246,10 +244,9 @@ JpegLsDecodeRect(void* destination, size_t destinationLength, const void* source
 {
     try
     {
-        const ByteStreamInfo sourceInfo = FromByteArrayConst(source, sourceLength);
-        JpegStreamReader reader(sourceInfo);
-
-        const ByteStreamInfo destinationInfo = FromByteArray(destination, destinationLength);
+        const ByteStreamInfo sourceInfo{FromByteArrayConst(source, sourceLength)};
+        JpegStreamReader reader{sourceInfo};
+        const ByteStreamInfo destinationInfo{FromByteArray(destination, destinationLength)};
 
         if (params)
         {

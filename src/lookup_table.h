@@ -12,15 +12,11 @@ namespace charls
 // Tables for fast decoding of short Golomb Codes.
 struct Code final
 {
-    Code() noexcept :
-        value_(),
-        length_()
-    {
-    }
+    Code() = default;
 
     Code(int32_t value, int32_t length) noexcept :
-        value_(value),
-        length_(length)
+        value_{value},
+        length_{length}
     {
     }
 
@@ -34,8 +30,8 @@ struct Code final
         return length_;
     }
 
-    int32_t value_;
-    int32_t length_;
+    int32_t value_{};
+    int32_t length_{};
 };
 
 
