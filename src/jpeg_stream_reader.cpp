@@ -302,10 +302,9 @@ int JpegStreamReader::ReadPresetParameters()
     case JpegLSPresetParametersType::ExtendedPresetCodingParameters:
     case JpegLSPresetParametersType::InverseColorTransformSpecification:
         throw jpegls_error{jpegls_errc::jpegls_preset_extended_parameter_type_not_supported};
-
-    default:
-        throw jpegls_error{jpegls_errc::invalid_jpegls_preset_parameter_type};
     }
+
+    throw jpegls_error{jpegls_errc::invalid_jpegls_preset_parameter_type};
 }
 
 
