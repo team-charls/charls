@@ -227,351 +227,213 @@
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="0015.raw">
+    <CopyFileToFolders Include="0015.raw">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="conformance\TEST8.PPM">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\TEST8.PPM">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="lena8b.jls">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="lena8b.jls">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="alphatest.raw">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="alphatest.raw">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="conformance\T16E0.JLS">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\T16E0.JLS">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="conformance\T8C2E3.JLS">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\T8C2E3.JLS">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-    </CustomBuild>
-    <CustomBuild Include="conformance\T8C0E0.JLS">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\T8C0E0.JLS">
       <FileType>Document</FileType>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-    </CustomBuild>
-    <CustomBuild Include="conformance\T8C1E0.JLS">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\T8C1E0.JLS">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="conformance\T8C0E3.JLS">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\T8C0E3.JLS">
       <FileType>Document</FileType>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-    </CustomBuild>
-    <CustomBuild Include="conformance\T8C2E0.JLS">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\T8C2E0.JLS">
       <FileType>Document</FileType>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-    </CustomBuild>
-    <CustomBuild Include="conformance\T16E3.JLS">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\T16E3.JLS">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="conformance\T8C1E3.JLS">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\T8C1E3.JLS">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="conformance\T8NDE0.JLS">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\T8NDE0.JLS">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="conformance\T8NDE3.JLS">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\T8NDE3.JLS">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="conformance\TEST16.PGM">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\TEST16.PGM">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="MR2_UNC">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="MR2_UNC">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="lena8b.raw">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="lena8b.raw">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="conformance\TEST8BS2.PGM">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="conformance\TEST8BS2.PGM">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\conformance\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\conformance\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="jlsimage\banny_HP1.jls">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="jlsimage\banny_HP1.jls">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="jlsimage\banny_HP2.jls">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="jlsimage\banny_HP2.jls">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="jlsimage\banny_HP3.jls">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="jlsimage\banny_HP3.jls">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="jlsimage\banny_normal.jls">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="jlsimage\banny_normal.jls">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="jlsimage\banny.ppm">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="jlsimage\banny.ppm">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">XCOPY "%(FullPath)" "$(TargetDir)test\jlsimage\" /R /Y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(TargetDir)test\jlsimage\%(Filename)%(Extension)</Outputs>
-    </CustomBuild>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+    </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\CharLS.vcxproj">
