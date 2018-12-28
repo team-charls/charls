@@ -17,9 +17,6 @@
 // This is to allow the traits class to replace the default implementation here with optimized specific implementations.
 // This is done for lossless coding/decoding: see losslesstraits.h
 
-// Note: false warning C26495 has been resolved in MSVC 15.9.0 Preview 3.
-MSVC_WARNING_SUPPRESS(26495)
-
 namespace charls
 {
 
@@ -145,5 +142,3 @@ private:
 };
 
 } // namespace charls
-
-MSVC_WARNING_UNSUPPRESS()

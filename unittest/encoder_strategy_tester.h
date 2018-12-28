@@ -5,28 +5,26 @@
 #include "../src/encoder_strategy.h"
 
 
-class EncoderStrategyTester : charls::EncoderStrategy
+class EncoderStrategyTester final : charls::EncoderStrategy
 {
 public:
     explicit EncoderStrategyTester(const JlsParameters& params) : EncoderStrategy(params)
     {
     }
 
-    MSVC_WARNING_SUPPRESS(26440)
-    void SetPresets(const JpegLSPresetCodingParameters&) override
+    void SetPresets(const JpegLSPresetCodingParameters&) noexcept(false) override
     {
     }
 
-    size_t EncodeScan(std::unique_ptr<charls::ProcessLine>, ByteStreamInfo&) override
+    size_t EncodeScan(std::unique_ptr<charls::ProcessLine>, ByteStreamInfo&) noexcept(false) override
     {
         return 0;
     }
 
-    std::unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo) override
+    std::unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo) noexcept(false) override
     {
         return nullptr;
     }
-    MSVC_WARNING_UNSUPPRESS()
 
     void InitForward(ByteStreamInfo& info)
     {

@@ -9,35 +9,38 @@
 using std::unique_ptr;
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 
-class DecoderStrategyTester : public charls::DecoderStrategy
+class DecoderStrategyTester final : public charls::DecoderStrategy
 {
 public:
-    DecoderStrategyTester(const JlsParameters& params, uint8_t* pOutBuf, size_t nOutBufLen) : DecoderStrategy(params)
+    DecoderStrategyTester(const JlsParameters& params, uint8_t* destination, size_t nOutBufLen) :
+        DecoderStrategy(params)
     {
-        ByteStreamInfo stream;
-        stream.rawStream = nullptr;
-        stream.rawData = pOutBuf;
-        stream.count = nOutBufLen;
+        ByteStreamInfo stream{nullptr, destination, nOutBufLen};
         Init(stream);
     }
 
-    MSVC_WARNING_SUPPRESS(26440)
-    void SetPresets(const JpegLSPresetCodingParameters& /*presets*/) override
+    void SetPresets(const JpegLSPresetCodingParameters& /*presets*/) noexcept(false) override
     {
     }
 
-    unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo /*rawStreamInfo*/) override
+    unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo /*rawStreamInfo*/) noexcept(false) override
     {
         return nullptr;
     }
 
-    void DecodeScan(unique_ptr<charls::ProcessLine> /*outputData*/, const JlsRect& /*size*/, ByteStreamInfo& /*compressedData*/) override
+    void DecodeScan(unique_ptr<charls::ProcessLine> /*outputData*/, const JlsRect& /*size*/, ByteStreamInfo& /*compressedData*/) noexcept(false) override
     {
     }
-    MSVC_WARNING_UNSUPPRESS()
 
-    int32_t Read(int32_t length) { return ReadLongValue(length); }
-    void Finish() { EndScan(); }
+    int32_t Read(int32_t length)
+    {
+        return ReadLongValue(length);
+    }
+
+    void Finish()
+    {
+        EndScan();
+    }
 };
 
 

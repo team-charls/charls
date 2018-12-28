@@ -52,19 +52,17 @@ public:
     {
     }
 
-    MSVC_WARNING_SUPPRESS(26440)
-    void NewLineRequested(void* destination, int pixelCount, int /*byteStride*/) override
+    void NewLineRequested(void* destination, int pixelCount, int /*byteStride*/) noexcept(false) override
     {
         std::memcpy(destination, rawData_, pixelCount * bytesPerPixel_);
         rawData_ += bytesPerLine_;
     }
 
-    void NewLineDecoded(const void* source, int pixelCount, int /*sourceStride*/) override
+    void NewLineDecoded(const void* source, int pixelCount, int /*sourceStride*/) noexcept(false) override
     {
         std::memcpy(rawData_, source, pixelCount * bytesPerPixel_);
         rawData_ += bytesPerLine_;
     }
-    MSVC_WARNING_UNSUPPRESS()
 
 private:
     uint8_t* rawData_;

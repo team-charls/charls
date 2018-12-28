@@ -7,15 +7,11 @@
 #include "context.h"
 #include "color_transform.h"
 #include "process_line.h"
+
 #include <sstream>
 #include <array>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
-
-
-#ifdef _MSC_VER
-#pragma warning (disable: 4127) // conditional expression is constant (caused by some template methods that are not fully specialized) [VS2017]
-#endif
 
 namespace charls
 {
@@ -106,26 +102,16 @@ public:
     using PIXEL = typename Traits::PIXEL;
     using SAMPLE = typename Traits::SAMPLE;
 
-    MSVC_WARNING_SUPPRESS(26495) // false warning that _contextRunmode is uninitialized
     JlsCodec(Traits inTraits, const JlsParameters& params) :
-        Strategy(params),
-        traits(std::move(inTraits)),
-        rect_(),
-        width_(params.width),
-        T1(0),
-        T2(0),
-        T3(0),
-        _RUNindex(0),
-        previousLine_(),
-        currentLine_(),
-        pquant_(nullptr)
+        Strategy{params},
+        traits{std::move(inTraits)},
+        width_{params.width}
     {
         if (Info().interleaveMode == InterleaveMode::None)
         {
             Info().components = 1;
         }
     }
-    MSVC_WARNING_UNSUPPRESS()
 
     void SetPresets(const JpegLSPresetCodingParameters& presets) override
     {
@@ -170,12 +156,12 @@ public:
 
     void IncrementRunIndex() noexcept
     {
-        _RUNindex = std::min(31, _RUNindex + 1);
+        RUNindex_ = std::min(31, RUNindex_ + 1);
     }
 
     void DecrementRunIndex() noexcept
     {
-        _RUNindex = std::max(0, _RUNindex - 1);
+        RUNindex_ = std::max(0, RUNindex_ - 1);
     }
 
     int32_t DecodeRIError(CContextRunMode& ctx);
@@ -215,21 +201,21 @@ public:
 protected:
     // codec parameters
     Traits traits;
-    JlsRect rect_;
+    JlsRect rect_{};
     int width_;
-    int32_t T1;
-    int32_t T2;
-    int32_t T3;
+    int32_t T1{};
+    int32_t T2{};
+    int32_t T3{};
 
     // compression context
     std::array<JlsContext, 365> contexts_;
     std::array<CContextRunMode, 2> contextRunmode_;
-    int32_t _RUNindex;
-    PIXEL* previousLine_;
-    PIXEL* currentLine_;
+    int32_t RUNindex_{};
+    PIXEL* previousLine_{};
+    PIXEL* currentLine_{};
 
     // quantization lookup table
-    signed char* pquant_;
+    signed char* pquant_{};
     std::vector<signed char> rgquant_;
 };
 
@@ -370,11 +356,9 @@ FORCE_INLINE void JlsCodec<Traits, Strategy>::EncodeMappedValue(int32_t k, int32
 }
 
 
-// Disable the Microsoft Static Analyzer warning: Potential comparison of a constant with another constant. (false warning, triggered by template construction)
-#ifdef _PREFAST_
-#pragma warning(push)
-#pragma warning(disable:6326)
-#endif
+// C4127 = conditional expression is constant (caused by some template methods that are not fully specialized) [VS2017]
+// 6326 = Potential comparison of a constant with another constant. (false warning, triggered by template construction in Checked build)
+MSVC_WARNING_SUPPRESS(4127 6326)
 
 // Sets up a lookup table to "Quantize" sample difference.
 
@@ -421,9 +405,7 @@ void JlsCodec<Traits, Strategy>::InitQuantizationLUT()
     }
 }
 
-#ifdef _PREFAST_
-#pragma warning(pop)
-#endif
+MSVC_WARNING_UNSUPPRESS()
 
 template<typename Traits, typename Strategy>
 signed char JlsCodec<Traits,Strategy>::QuantizeGradientOrg(int32_t Di) const noexcept
@@ -447,7 +429,7 @@ template<typename Traits, typename Strategy>
 int32_t JlsCodec<Traits,Strategy>::DecodeRIError(CContextRunMode& ctx)
 {
     const int32_t k = ctx.GetGolomb();
-    const int32_t EMErrval = DecodeValue(k, traits.LIMIT - J[_RUNindex]-1, traits.qbpp);
+    const int32_t EMErrval = DecodeValue(k, traits.LIMIT - J[RUNindex_]-1, traits.qbpp);
     const int32_t errorValue = ctx.ComputeErrVal(EMErrval + ctx.nRItype_, k);
     ctx.UpdateVariables(errorValue, EMErrval);
     return errorValue;
@@ -462,7 +444,7 @@ void JlsCodec<Traits,Strategy>::EncodeRIError(CContextRunMode& ctx, int32_t erro
     const int32_t EMErrval = 2 * std::abs(errorValue) - ctx.nRItype_ - static_cast<int32_t>(map);
 
     ASSERT(errorValue == ctx.ComputeErrVal(EMErrval + ctx.nRItype_, k));
-    EncodeMappedValue(k, EMErrval, traits.LIMIT-J[_RUNindex]-1);
+    EncodeMappedValue(k, EMErrval, traits.LIMIT-J[RUNindex_]-1);
     ctx.UpdateVariables(errorValue, EMErrval);
 }
 
@@ -533,10 +515,10 @@ typename Traits::SAMPLE JlsCodec<Traits,Strategy>::EncodeRIPixel(int32_t x, int3
 template<typename Traits, typename Strategy>
 void JlsCodec<Traits, Strategy>::EncodeRunPixels(int32_t runLength, bool endOfLine)
 {
-    while (runLength >= static_cast<int32_t>(1 << J[_RUNindex]))
+    while (runLength >= static_cast<int32_t>(1 << J[RUNindex_]))
     {
         Strategy::AppendOnesToBitStream(1);
-        runLength = runLength - static_cast<int32_t>(1 << J[_RUNindex]);
+        runLength = runLength - static_cast<int32_t>(1 << J[RUNindex_]);
         IncrementRunIndex();
     }
 
@@ -549,7 +531,7 @@ void JlsCodec<Traits, Strategy>::EncodeRunPixels(int32_t runLength, bool endOfLi
     }
     else
     {
-        Strategy::AppendToBitStream(runLength, J[_RUNindex] + 1); // leading 0 + actual remaining length
+        Strategy::AppendToBitStream(runLength, J[RUNindex_] + 1); // leading 0 + actual remaining length
     }
 }
 
@@ -560,11 +542,11 @@ int32_t JlsCodec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, i
     int32_t index = 0;
     while (Strategy::ReadBit())
     {
-        const int count = std::min(1 << J[_RUNindex], int(cpixelMac - index));
+        const int count = std::min(1 << J[RUNindex_], int(cpixelMac - index));
         index += count;
         ASSERT(index <= cpixelMac);
 
-        if (count == (1 << J[_RUNindex]))
+        if (count == (1 << J[RUNindex_]))
         {
             IncrementRunIndex();
         }
@@ -576,7 +558,7 @@ int32_t JlsCodec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, i
     if (index != cpixelMac)
     {
         // incomplete run.
-        index += (J[_RUNindex] > 0) ? Strategy::ReadValue(J[_RUNindex]) : 0;
+        index += (J[RUNindex_] > 0) ? Strategy::ReadValue(J[RUNindex_]) : 0;
     }
 
     if (index > cpixelMac)
@@ -732,14 +714,14 @@ void JlsCodec<Traits, Strategy>::DoScan()
 
         for (int component = 0; component < components; ++component)
         {
-            _RUNindex = rgRUNindex[component];
+            RUNindex_ = rgRUNindex[component];
 
             // initialize edge pixels used for prediction
             previousLine_[width_] = previousLine_[width_ - 1];
             currentLine_[-1] = previousLine_[0];
             DoLine(static_cast<PIXEL*>(nullptr)); // dummy argument for overload resolution
 
-            rgRUNindex[component] = _RUNindex;
+            rgRUNindex[component] = RUNindex_;
             previousLine_ += pixelStride;
             currentLine_ += pixelStride;
         }
@@ -798,7 +780,7 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
 
 
 // Setup codec for encoding and calls DoScan
-MSVC_WARNING_SUPPRESS(26433)
+MSVC_WARNING_SUPPRESS(26433) // C.128: Virtual functions should specify exactly one of virtual, override, or final
 template<typename Traits, typename Strategy>
 size_t JlsCodec<Traits, Strategy>::EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo& compressedData)
 {
@@ -844,7 +826,7 @@ void JlsCodec<Traits, Strategy>::InitParams(int32_t t1, int32_t t2, int32_t t3, 
 
     contextRunmode_[0] = CContextRunMode(std::max(2, (traits.RANGE + 32) / 64), 0, nReset);
     contextRunmode_[1] = CContextRunMode(std::max(2, (traits.RANGE + 32) / 64), 1, nReset);
-    _RUNindex = 0;
+    RUNindex_ = 0;
 }
 
 } // namespace charls
