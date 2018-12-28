@@ -267,6 +267,7 @@
     <ClInclude Include="jpeg_stream_writer.h" />
     <ClInclude Include="lookup_table.h" />
     <ClInclude Include="lossless_traits.h" />
+    <ClInclude Include="jpegls_preset_parameters_type.h" />
     <ClInclude Include="process_line.h" />
     <ClInclude Include="scan.h" />
     <ClInclude Include="util.h" />

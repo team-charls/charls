@@ -33,6 +33,7 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/jpegls.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/jpeg_marker_code.h"
     "${CMAKE_CURRENT_LIST_DIR}/jpegls_preset_coding_parameters.h"
+    "${CMAKE_CURRENT_LIST_DIR}/jpegls_preset_parameters_type.h"
     "${CMAKE_CURRENT_LIST_DIR}/jpeg_stream_reader.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/jpeg_stream_writer.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/lookup_table.h"

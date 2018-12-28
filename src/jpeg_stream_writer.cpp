@@ -4,6 +4,7 @@
 
 #include "jpeg_marker_code.h"
 #include "jpeg_stream_reader.h"
+#include "jpegls_preset_parameters_type.h"
 #include "util.h"
 
 #include <array>
@@ -116,8 +117,7 @@ void JpegStreamWriter::WriteJpegLSPresetParametersSegment(const JpegLSPresetCodi
 {
     vector<uint8_t> segment;
 
-    // Parameter ID. 0x01 = JPEG-LS preset coding parameters.
-    segment.push_back(1);
+    segment.push_back(static_cast<uint8_t>(JpegLSPresetParametersType::PresetCodingParameters));
 
     push_back(segment, static_cast<uint16_t>(params.MaximumSampleValue));
     push_back(segment, static_cast<uint16_t>(params.Threshold1));

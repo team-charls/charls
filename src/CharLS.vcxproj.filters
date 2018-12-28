@@ -81,6 +81,9 @@
     <ClInclude Include="jpegls_preset_coding_parameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jpegls_preset_parameters_type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />

@@ -2,12 +2,13 @@
 
 #include "jpeg_stream_reader.h"
 
-#include "util.h"
 #include "jpeg_marker_code.h"
 #include "decoder_strategy.h"
 #include "encoder_strategy.h"
 #include "jls_codec_factory.h"
 #include "constants.h"
+#include "jpegls_preset_parameters_type.h"
+#include "util.h"
 
 #include <memory>
 #include <iomanip>
@@ -272,11 +273,11 @@ int JpegStreamReader::ReadComment() noexcept
 
 int JpegStreamReader::ReadPresetParameters()
 {
-    const int type = ReadByte();
+    const auto type = static_cast<JpegLSPresetParametersType>(ReadByte());
 
     switch (type)
     {
-    case 0x1:
+    case JpegLSPresetParametersType::PresetCodingParameters:
         {
             params_.custom.MaximumSampleValue = ReadUInt16();
             params_.custom.Threshold1 = ReadUInt16();
@@ -286,19 +287,19 @@ int JpegStreamReader::ReadPresetParameters()
             return 11;
         }
 
-    case 0x2: // mapping table specification
-    case 0x3: // mapping table continuation
-    case 0x4: // X and Y parameters greater than 16 bits are defined.
+    case JpegLSPresetParametersType::MappingTableSpecification:
+    case JpegLSPresetParametersType::MappingTableContinuation:
+    case JpegLSPresetParametersType::ExtendedWidthAndHeight:
         throw jpegls_error(jpegls_errc::parameter_value_not_supported);
 
-    case 0x5: // JPEG-LS Extended (ISO/IEC 14495-2): Coding method specification
-    case 0x6: // JPEG-LS Extended (ISO/IEC 14495-2): NEAR value re-specification
-    case 0x7: // JPEG-LS Extended (ISO/IEC 14495-2): Visually oriented quantization specification
-    case 0x8: // JPEG-LS Extended (ISO/IEC 14495-2): Extended prediction specification
-    case 0x9: // JPEG-LS Extended (ISO/IEC 14495-2): Specification of the start of fixed length coding
-    case 0xA: // JPEG-LS Extended (ISO/IEC 14495-2): Specification of the end of fixed length coding
-    case 0xC: // JPEG-LS Extended (ISO/IEC 14495-2): JPEG-LS preset coding parameters
-    case 0xD: // JPEG-LS Extended (ISO/IEC 14495-2): Inverse color transform specification
+    case JpegLSPresetParametersType::CodingMethodSpecification:
+    case JpegLSPresetParametersType::NearLosslessErrorReSpecification:
+    case JpegLSPresetParametersType::VisuallyOrientedQuantizationSpecification:
+    case JpegLSPresetParametersType::ExtendedPredictionSpecification:
+    case JpegLSPresetParametersType::StartOfFixedLengthCoding:
+    case JpegLSPresetParametersType::EndOfFixedLengthCoding:
+    case JpegLSPresetParametersType::ExtendedPresetCodingParameters:
+    case JpegLSPresetParametersType::InverseColorTransformSpecification:
         throw jpegls_error(jpegls_errc::jpegls_preset_extended_parameter_type_not_supported);
 
     default:
