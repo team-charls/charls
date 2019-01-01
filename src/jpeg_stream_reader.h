@@ -45,6 +45,7 @@ public:
     uint8_t ReadByte();
 
 private:
+    void SkipByte();
     int ReadUInt16();
     int32_t ReadSegmentSize();
     void ReadNBytes(std::vector<char>& destination, int byteCount);
@@ -57,10 +58,12 @@ private:
     int ReadPresetParameters();
     void ReadJfif();
     int TryReadHPColorTransformSegment(int32_t segmentSize);
+    void AddComponent(uint8_t componentId);
 
     ByteStreamInfo byteStream_;
     JlsParameters params_{};
     JlsRect rect_{};
+    std::vector<uint8_t> componentIds_;
 };
 
 } // namespace charls

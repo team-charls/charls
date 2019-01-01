@@ -266,6 +266,7 @@ namespace CharLS
                 case JpegLSError.InvalidMarkerSegmentSize:
                 case JpegLSError.DuplicateStartOfImageMarker:
                 case JpegLSError.DuplicateStartOfFrameMarker:
+                case JpegLSError.DuplicateComponentIdInStartOfFrameSegment:
                 case JpegLSError.UnexpectedEndOfImageMarker:
                 case JpegLSError.InvalidJpeglsPresetParameterType:
                 case JpegLSError.JpeglsPresetExtendedParameterTypeNotSupported:

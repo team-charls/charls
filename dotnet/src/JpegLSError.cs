@@ -98,19 +98,24 @@ namespace CharLS
         DuplicateStartOfFrameMarker = 19,
 
         /// <summary>
+        /// This error is returned when the stream contains duplicate component identifiers in the SOF segment.
+        /// </summary>
+        DuplicateComponentIdInStartOfFrameSegment = 20,
+
+        /// <summary>
         /// This error is returned when the stream contains an unexpected EOI marker.
         /// </summary>
-        UnexpectedEndOfImageMarker = 20,
+        UnexpectedEndOfImageMarker = 21,
 
         /// <summary>
         /// This error is returned when the stream contains an invalid type parameter in the JPEG-LS segment.
         /// </summary>
-        InvalidJpeglsPresetParameterType = 21,
+        InvalidJpeglsPresetParameterType = 22,
 
         /// <summary>
         /// This error is returned when the stream contains an unsupported type parameter in the JPEG-LS segment.
         /// </summary>
-        JpeglsPresetExtendedParameterTypeNotSupported = 22,
+        JpeglsPresetExtendedParameterTypeNotSupported = 23,
 
         /// <summary>
         /// The argument for the width parameter is outside the range [1, 65535].

@@ -131,10 +131,10 @@ private:
         WriteByte(static_cast<uint8_t>(value % 0x100));
     }
 
-    void WriteMarker(JpegMarkerCode marker)
+    void WriteMarker(JpegMarkerCode markerCode)
     {
         WriteByte(JpegMarkerStartByte);
-        WriteByte(static_cast<uint8_t>(marker));
+        WriteByte(static_cast<uint8_t>(markerCode));
     }
 
     ByteStreamInfo destination_;

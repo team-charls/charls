@@ -2,25 +2,25 @@
 
 #include "jpeg_stream_reader.h"
 
-#include "jpeg_marker_code.h"
+#include "constants.h"
 #include "decoder_strategy.h"
 #include "encoder_strategy.h"
 #include "jls_codec_factory.h"
-#include "constants.h"
+#include "jpeg_marker_code.h"
 #include "jpegls_preset_parameters_type.h"
 #include "util.h"
 
-#include <memory>
-#include <iomanip>
 #include <algorithm>
+#include <iomanip>
+#include <memory>
 
 using std::vector;
 using namespace charls;
 
-namespace {
-
+namespace
+{
 // JFIF\0
-uint8_t jfifID[] = { 'J', 'F', 'I', 'F', '\0' };
+uint8_t jfifID[] = {'J', 'F', 'I', 'F', '\0'};
 
 
 void CheckParameterCoherent(const JlsParameters& params)
@@ -46,9 +46,8 @@ void CheckParameterCoherent(const JlsParameters& params)
 
 namespace charls
 {
-
-JpegStreamReader::JpegStreamReader(ByteStreamInfo byteStreamInfo) noexcept :
-    byteStream_{byteStreamInfo}
+JpegStreamReader::JpegStreamReader(ByteStreamInfo byteStreamInfo) noexcept
+    : byteStream_{byteStreamInfo}
 {
 }
 
@@ -64,7 +63,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
         rect_.Height = params_.height;
     }
 
-    const int64_t bytesPerPlane = static_cast<int64_t>(rect_.Width) * rect_.Height * ((params_.bitsPerSample + 7)/8);
+    const int64_t bytesPerPlane = static_cast<int64_t>(rect_.Width) * rect_.Height * ((params_.bitsPerSample + 7) / 8);
 
     if (rawPixels.rawData && static_cast<int64_t>(rawPixels.count) < bytesPerPlane * params_.components)
         throw jpegls_error{jpegls_errc::destination_buffer_too_small};
@@ -147,47 +146,47 @@ void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode) const
     // All other markers shall not be present.
     switch (markerCode)
     {
-        case JpegMarkerCode::StartOfFrameJpegLS:
-        case JpegMarkerCode::JpegLSPresetParameters:
-        case JpegMarkerCode::StartOfScan:
-        case JpegMarkerCode::Comment:
-        case JpegMarkerCode::ApplicationData0:
-        case JpegMarkerCode::ApplicationData1:
-        case JpegMarkerCode::ApplicationData2:
-        case JpegMarkerCode::ApplicationData3:
-        case JpegMarkerCode::ApplicationData4:
-        case JpegMarkerCode::ApplicationData5:
-        case JpegMarkerCode::ApplicationData6:
-        case JpegMarkerCode::ApplicationData7:
-        case JpegMarkerCode::ApplicationData8:
-        case JpegMarkerCode::ApplicationData9:
-        case JpegMarkerCode::ApplicationData10:
-        case JpegMarkerCode::ApplicationData11:
-        case JpegMarkerCode::ApplicationData12:
-        case JpegMarkerCode::ApplicationData13:
-        case JpegMarkerCode::ApplicationData14:
-        case JpegMarkerCode::ApplicationData15:
-            return;
+    case JpegMarkerCode::StartOfFrameJpegLS:
+    case JpegMarkerCode::JpegLSPresetParameters:
+    case JpegMarkerCode::StartOfScan:
+    case JpegMarkerCode::Comment:
+    case JpegMarkerCode::ApplicationData0:
+    case JpegMarkerCode::ApplicationData1:
+    case JpegMarkerCode::ApplicationData2:
+    case JpegMarkerCode::ApplicationData3:
+    case JpegMarkerCode::ApplicationData4:
+    case JpegMarkerCode::ApplicationData5:
+    case JpegMarkerCode::ApplicationData6:
+    case JpegMarkerCode::ApplicationData7:
+    case JpegMarkerCode::ApplicationData8:
+    case JpegMarkerCode::ApplicationData9:
+    case JpegMarkerCode::ApplicationData10:
+    case JpegMarkerCode::ApplicationData11:
+    case JpegMarkerCode::ApplicationData12:
+    case JpegMarkerCode::ApplicationData13:
+    case JpegMarkerCode::ApplicationData14:
+    case JpegMarkerCode::ApplicationData15:
+        return;
 
-        // Check explicit for one of the other common JPEG encodings.
-        case JpegMarkerCode::StartOfFrameBaselineJpeg:
-        case JpegMarkerCode::StartOfFrameExtendedSequential:
-        case JpegMarkerCode::StartOfFrameProgressive:
-        case JpegMarkerCode::StartOfFrameLossless:
-        case JpegMarkerCode::StartOfFrameDifferentialSequential:
-        case JpegMarkerCode::StartOfFrameDifferentialProgressive:
-        case JpegMarkerCode::StartOfFrameDifferentialLossless:
-        case JpegMarkerCode::StartOfFrameExtendedArithmetic:
-        case JpegMarkerCode::StartOfFrameProgressiveArithmetic:
-        case JpegMarkerCode::StartOfFrameLosslessArithmetic:
-        case JpegMarkerCode::StartOfFrameJpegLSExtended:
-            throw jpegls_error{jpegls_errc::encoding_not_supported};
+    // Check explicit for one of the other common JPEG encodings.
+    case JpegMarkerCode::StartOfFrameBaselineJpeg:
+    case JpegMarkerCode::StartOfFrameExtendedSequential:
+    case JpegMarkerCode::StartOfFrameProgressive:
+    case JpegMarkerCode::StartOfFrameLossless:
+    case JpegMarkerCode::StartOfFrameDifferentialSequential:
+    case JpegMarkerCode::StartOfFrameDifferentialProgressive:
+    case JpegMarkerCode::StartOfFrameDifferentialLossless:
+    case JpegMarkerCode::StartOfFrameExtendedArithmetic:
+    case JpegMarkerCode::StartOfFrameProgressiveArithmetic:
+    case JpegMarkerCode::StartOfFrameLosslessArithmetic:
+    case JpegMarkerCode::StartOfFrameJpegLSExtended:
+        throw jpegls_error{jpegls_errc::encoding_not_supported};
 
-        case JpegMarkerCode::StartOfImage:
-            throw jpegls_error{jpegls_errc::duplicate_start_of_image_marker};
+    case JpegMarkerCode::StartOfImage:
+        throw jpegls_error{jpegls_errc::duplicate_start_of_image_marker};
 
-        case JpegMarkerCode::EndOfImage:
-            throw jpegls_error{jpegls_errc::unexpected_end_of_image_marker};
+    case JpegMarkerCode::EndOfImage:
+        throw jpegls_error{jpegls_errc::unexpected_end_of_image_marker};
     }
 
     throw jpegls_error{jpegls_errc::unknown_jpeg_marker_found};
@@ -198,39 +197,39 @@ int JpegStreamReader::ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segme
 {
     switch (markerCode)
     {
-        case JpegMarkerCode::StartOfFrameJpegLS:
-            return ReadStartOfFrameSegment(segmentSize);
+    case JpegMarkerCode::StartOfFrameJpegLS:
+        return ReadStartOfFrameSegment(segmentSize);
 
-        case JpegMarkerCode::Comment:
-            return ReadComment();
+    case JpegMarkerCode::Comment:
+        return ReadComment();
 
-        case JpegMarkerCode::JpegLSPresetParameters:
-            return ReadPresetParameters();
+    case JpegMarkerCode::JpegLSPresetParameters:
+        return ReadPresetParameters();
 
-        case JpegMarkerCode::ApplicationData0:
-        case JpegMarkerCode::ApplicationData1:
-        case JpegMarkerCode::ApplicationData2:
-        case JpegMarkerCode::ApplicationData3:
-        case JpegMarkerCode::ApplicationData4:
-        case JpegMarkerCode::ApplicationData5:
-        case JpegMarkerCode::ApplicationData6:
-        case JpegMarkerCode::ApplicationData7:
-        case JpegMarkerCode::ApplicationData9:
-        case JpegMarkerCode::ApplicationData10:
-        case JpegMarkerCode::ApplicationData11:
-        case JpegMarkerCode::ApplicationData12:
-        case JpegMarkerCode::ApplicationData13:
-        case JpegMarkerCode::ApplicationData14:
-        case JpegMarkerCode::ApplicationData15:
-            return 0;
+    case JpegMarkerCode::ApplicationData0:
+    case JpegMarkerCode::ApplicationData1:
+    case JpegMarkerCode::ApplicationData2:
+    case JpegMarkerCode::ApplicationData3:
+    case JpegMarkerCode::ApplicationData4:
+    case JpegMarkerCode::ApplicationData5:
+    case JpegMarkerCode::ApplicationData6:
+    case JpegMarkerCode::ApplicationData7:
+    case JpegMarkerCode::ApplicationData9:
+    case JpegMarkerCode::ApplicationData10:
+    case JpegMarkerCode::ApplicationData11:
+    case JpegMarkerCode::ApplicationData12:
+    case JpegMarkerCode::ApplicationData13:
+    case JpegMarkerCode::ApplicationData14:
+    case JpegMarkerCode::ApplicationData15:
+        return 0;
 
-        case JpegMarkerCode::ApplicationData8:
-            return TryReadHPColorTransformSegment(segmentSize);
+    case JpegMarkerCode::ApplicationData8:
+        return TryReadHPColorTransformSegment(segmentSize);
 
-        // Other tags not supported (among which DNL DRI)
-        default:
-            ASSERT(false);
-            return 0;
+    // Other tags not supported (among which DNL DRI)
+    default:
+        ASSERT(false);
+        return 0;
     }
 }
 
@@ -260,9 +259,21 @@ int JpegStreamReader::ReadStartOfFrameSegment(int32_t segmentSize)
     if (params_.components < 1)
         throw jpegls_error{jpegls_errc::invalid_parameter_component_count};
 
-    // Note: component specific parameters are currently not verified.
+    if (segmentSize != 6 + (params_.components * 3))
+        throw jpegls_error{jpegls_errc::invalid_marker_segment_size};
 
-    return 6;
+    for (auto i = 0; i < params_.components; ++i)
+    {
+        // Component specification parameters
+        AddComponent(ReadByte());                                    // Ci = Component identifier
+        const uint8_t horizontalVerticalSamplingFactor = ReadByte(); // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
+        if (horizontalVerticalSamplingFactor != 0x11)
+            throw jpegls_error{jpegls_errc::parameter_value_not_supported};
+
+        SkipByte(); // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
+    }
+
+    return segmentSize;
 }
 
 
@@ -279,14 +290,14 @@ int JpegStreamReader::ReadPresetParameters()
     switch (type)
     {
     case JpegLSPresetParametersType::PresetCodingParameters:
-        {
-            params_.custom.MaximumSampleValue = ReadUInt16();
-            params_.custom.Threshold1 = ReadUInt16();
-            params_.custom.Threshold2 = ReadUInt16();
-            params_.custom.Threshold3 = ReadUInt16();
-            params_.custom.ResetValue = ReadUInt16();
-            return 11;
-        }
+    {
+        params_.custom.MaximumSampleValue = ReadUInt16();
+        params_.custom.Threshold1 = ReadUInt16();
+        params_.custom.Threshold2 = ReadUInt16();
+        params_.custom.Threshold3 = ReadUInt16();
+        params_.custom.ResetValue = ReadUInt16();
+        return 11;
+    }
 
     case JpegLSPresetParametersType::MappingTableSpecification:
     case JpegLSPresetParametersType::MappingTableContinuation:
@@ -314,7 +325,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     {
         const JpegMarkerCode markerCode = ReadNextMarkerCode();
         if (markerCode != JpegMarkerCode::StartOfScan)
-            throw jpegls_error{jpegls_errc::invalid_encoded_data};// TODO: throw more specific error code.
+            throw jpegls_error{jpegls_errc::invalid_encoded_data}; // TODO: throw more specific error code.
     }
 
     const int32_t segmentSize = ReadSegmentSize();
@@ -334,7 +345,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
         ReadByte(); // Read Mapping table selector
     }
 
-    params_.allowedLossyError = ReadByte(); // Read NEAR parameter
+    params_.allowedLossyError = ReadByte();                           // Read NEAR parameter
     params_.interleaveMode = static_cast<InterleaveMode>(ReadByte()); // Read ILV parameter
     if (!(params_.interleaveMode == InterleaveMode::None || params_.interleaveMode == InterleaveMode::Line || params_.interleaveMode == InterleaveMode::Sample))
         throw jpegls_error{jpegls_errc::invalid_parameter_interleave_mode};
@@ -342,7 +353,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     if ((ReadByte() & 0xF) != 0) // Read Ah (no meaning) and Al (point transform).
         throw jpegls_error{jpegls_errc::parameter_value_not_supported};
 
-    if(params_.stride == 0)
+    if (params_.stride == 0)
     {
         const int width = rect_.Width != 0 ? rect_.Width : params_.width;
         const int components = params_.interleaveMode == InterleaveMode::None ? 1 : params_.components;
@@ -353,12 +364,12 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
 
 void JpegStreamReader::ReadJfif()
 {
-    for(int i = 0; i < static_cast<int>(sizeof(jfifID)); i++)
+    for (int i = 0; i < static_cast<int>(sizeof(jfifID)); i++)
     {
-        if(jfifID[i] != ReadByte())
+        if (jfifID[i] != ReadByte())
             return;
     }
-    params_.jfif.version   = ReadUInt16();
+    params_.jfif.version = ReadUInt16();
 
     // DPI or DPcm
     params_.jfif.units = ReadByte();
@@ -371,7 +382,7 @@ void JpegStreamReader::ReadJfif()
     if (params_.jfif.Xthumbnail > 0 && params_.jfif.thumbnail)
     {
         std::vector<char> tempBuffer(static_cast<char*>(params_.jfif.thumbnail),
-            static_cast<char*>(params_.jfif.thumbnail) + static_cast<size_t>(3) * params_.jfif.Xthumbnail * params_.jfif.Ythumbnail);
+                                     static_cast<char*>(params_.jfif.thumbnail) + static_cast<size_t>(3) * params_.jfif.Xthumbnail * params_.jfif.Ythumbnail);
         ReadNBytes(tempBuffer, 3 * params_.jfif.Xthumbnail * params_.jfif.Ythumbnail);
     }
 }
@@ -388,6 +399,12 @@ uint8_t JpegStreamReader::ReadByte()
     const uint8_t value = byteStream_.rawData[0];
     SkipBytes(byteStream_, 1);
     return value;
+}
+
+
+void JpegStreamReader::SkipByte()
+{
+    static_cast<void>(ReadByte());
 }
 
 
@@ -421,20 +438,33 @@ int JpegStreamReader::TryReadHPColorTransformSegment(int32_t segmentSize)
     const auto colorTransformation = ReadByte();
     switch (colorTransformation)
     {
-        case static_cast<uint8_t>(ColorTransformation::None):
-        case static_cast<uint8_t>(ColorTransformation::HP1):
-        case static_cast<uint8_t>(ColorTransformation::HP2):
-        case static_cast<uint8_t>(ColorTransformation::HP3):
-            params_.colorTransformation = static_cast<ColorTransformation>(colorTransformation);
-            return 5;
+    case static_cast<uint8_t>(ColorTransformation::None):
+    case static_cast<uint8_t>(ColorTransformation::HP1):
+    case static_cast<uint8_t>(ColorTransformation::HP2):
+    case static_cast<uint8_t>(ColorTransformation::HP3):
+        params_.colorTransformation = static_cast<ColorTransformation>(colorTransformation);
+        return 5;
 
-        case 4: // RgbAsYuvLossy (The standard lossy RGB to YCbCr transform used in JPEG.)
-        case 5: // Matrix (transformation is controlled using a matrix that is also stored in the segment.
-            throw jpegls_error{jpegls_errc::color_transform_not_supported};
+    case 4: // RgbAsYuvLossy (The standard lossy RGB to YCbCr transform used in JPEG.)
+    case 5: // Matrix (transformation is controlled using a matrix that is also stored in the segment.
+        throw jpegls_error{jpegls_errc::color_transform_not_supported};
 
-        default:
-            throw jpegls_error{jpegls_errc::invalid_encoded_data};
+    default:
+        throw jpegls_error{jpegls_errc::invalid_encoded_data};
     }
 }
 
+
+void JpegStreamReader::AddComponent(uint8_t componentId)
+{
+    for (auto id : componentIds_)
+    {
+        if (id == componentId)
+            throw jpegls_error{jpegls_errc::duplicate_component_id_in_sof_segment};
+    }
+
+    componentIds_.push_back(componentId);
 }
+
+
+} // namespace charls

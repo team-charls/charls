@@ -158,9 +158,10 @@ void JpegStreamWriter::WriteStartOfScanSegment(int componentCount, int allowedLo
 
 void JpegStreamWriter::WriteSegment(JpegMarkerCode markerCode, const void* data, size_t dataSize)
 {
-    WriteByte(JpegMarkerStartByte);
-    WriteByte(static_cast<uint8_t>(markerCode));
-    WriteUInt16(static_cast<uint16_t>(dataSize + 2));
+    ASSERT(dataSize <= UINT16_MAX - sizeof(uint16_t));
+
+    WriteMarker(markerCode);
+    WriteUInt16(static_cast<uint16_t>(dataSize + sizeof(uint16_t)));
     WriteBytes(data, dataSize);
 }
 

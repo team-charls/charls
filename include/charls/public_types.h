@@ -43,9 +43,10 @@ namespace charls
         invalid_marker_segment_size = 17,        // This error is returned when the segment size of a marker segment is invalid.
         duplicate_start_of_image_marker = 18,    // This error is returned when the stream contains more then one SOI marker.
         duplicate_start_of_frame_marker = 19,    // This error is returned when the stream contains more then one SOF marker.
-        unexpected_end_of_image_marker = 20,     // This error is returned when the stream contains an unexpected EOI marker.
-        invalid_jpegls_preset_parameter_type = 21, // This error is returned when the stream contains an invalid type parameter in the JPEG-LS segment.
-        jpegls_preset_extended_parameter_type_not_supported = 22, // This error is returned when the stream contains an unsupported type parameter in the JPEG-LS segment.
+        duplicate_component_id_in_sof_segment = 20, // This error is returned when the stream contains duplicate component identifiers in the SOF segment.
+        unexpected_end_of_image_marker = 21,     // This error is returned when the stream contains an unexpected EOI marker.
+        invalid_jpegls_preset_parameter_type = 22, // This error is returned when the stream contains an invalid type parameter in the JPEG-LS segment.
+        jpegls_preset_extended_parameter_type_not_supported = 23, // This error is returned when the stream contains an unsupported type parameter in the JPEG-LS segment.
         invalid_argument_width = 100,            // The argument for the width parameter is outside the range [1, 65535].
         invalid_argument_height = 101,           // The argument for the height parameter is outside the range [1, 65535].
         invalid_argument_component_count = 102,  // The argument for the component count parameter is outside the range [1, 255].

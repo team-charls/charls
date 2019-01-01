@@ -195,6 +195,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="encoder_strategy_tester.h" />
+    <ClInclude Include="jpeg_test_stream_writer.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

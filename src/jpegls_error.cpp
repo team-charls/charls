@@ -77,6 +77,9 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(int32_t error
     case jpegls_errc::duplicate_start_of_frame_marker:
         return "Invalid JPEG-LS stream, more then one Start Of Frame (SOF) marker";
 
+    case jpegls_errc::duplicate_component_id_in_sof_segment:
+        return "Invalid JPEG-LS stream, duplicate component identifier in the (SOF) segment";
+
     case jpegls_errc::unexpected_end_of_image_marker:
         return "Invalid JPEG-LS stream, unexpected End Of Image (EOI) marker";
 
