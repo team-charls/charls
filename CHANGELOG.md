@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### Changed
+
+- Improved the validation of the JPEG stream during decoding
+- Use #pragma once (supported by all modern C++ compilers)
+- Updated referenced NuGet packages to their latest versions
+- Update CMake build script to 3.9 (Modern CMake structure)
+- charls_error is replaced by C++11 compatible jpegls_errc error code enum
+- All types are now in the charls C++ namespace
+- Support for .NET Code Contracts has been removed
+
 ### Fixed
 
 - Fixes [#35](https://github.com/team-charls/charls/issues/35), Encoding will fail if the bit per sample is greater than 8, and a custom RESET value is used
