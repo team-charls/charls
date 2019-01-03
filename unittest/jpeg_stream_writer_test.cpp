@@ -159,11 +159,13 @@ namespace CharLSUnitTest
             const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
             JpegStreamWriter writer(info);
 
-            writer.WriteStartOfFrameSegment(UINT16_MAX, UINT16_MAX, UINT8_MAX, UINT8_MAX);
+            writer.WriteStartOfFrameSegment(UINT16_MAX, UINT16_MAX, 16, UINT8_MAX);
 
             Assert::AreEqual(buffer.size(), writer.GetBytesWritten());
-            Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[4]);
+            Assert::AreEqual(static_cast<uint8_t>(16), buffer[4]);
             Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[9]);
+
+            Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[buffer.size() - 3]); // Last component index.
         }
 
         TEST_METHOD(WriteColorTransformSegment)
