@@ -3,6 +3,7 @@
 #include "pch.h"
 
 #include "../src/jpeg_stream_reader.h"
+#include "../src/jpeg_stream_writer.h"
 #include "jpeg_test_stream_writer.h"
 
 #include <cstdint>
@@ -125,7 +126,7 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xD8);
         buffer.push_back(0xFF);
-        buffer.push_back(0xF9); // SOF_59: Marks the start of JPEG-LS extended scan.
+        buffer.push_back(0xF9); // SOF_57: Marks the start of a JPEG-LS extended (ISO/IEC 14495-2) encoded frame.
 
         const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
         JpegStreamReader reader(byteStream);
@@ -143,13 +144,120 @@ public:
         Assert::Fail();
     }
 
-    static void ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(uint8_t id)
+    TEST_METHOD(ReadHeaderJpegLSPresetParameterSegment)
+    {
+        vector<uint8_t> source(100);
+        const ByteStreamInfo sourceInfo = FromByteArray(source.data(), source.size());
+
+        charls::JpegStreamWriter writer(sourceInfo);
+        writer.WriteStartOfImage();
+
+        const JpegLSPresetCodingParameters params{1, 2, 3, 4, 5};
+        writer.WriteJpegLSPresetParametersSegment(params);
+        writer.WriteStartOfFrameSegment(1, 1, 2, 1);
+        writer.WriteStartOfScanSegment(1, 0, charls::InterleaveMode::None);
+
+        const ByteStreamInfo destinationInfo = FromByteArray(source.data(), source.size());
+        JpegStreamReader reader(destinationInfo);
+
+        reader.ReadHeader();
+        const auto& actual = reader.GetCustomPreset();
+
+        Assert::AreEqual(params.MaximumSampleValue, actual.MaximumSampleValue);
+        Assert::AreEqual(params.ResetValue, actual.ResetValue);
+        Assert::AreEqual(params.Threshold1, actual.Threshold1);
+        Assert::AreEqual(params.Threshold2, actual.Threshold2);
+        Assert::AreEqual(params.Threshold3, actual.Threshold3);
+    }
+
+    TEST_METHOD(ReadHeaderWithTooSmallJpegLSPresetParameterSegmentShouldThrow)
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
         buffer.push_back(0xD8);
         buffer.push_back(0xFF);
-        buffer.push_back(0xF8); // SOF_59: Marks the start of JPEG-LS extended scan.
+        buffer.push_back(0xF8); // LSE: Marks the start of a JPEG-LS preset parameters segment.
+        buffer.push_back(0x00);
+        buffer.push_back(0x02);
+        buffer.push_back(0x01);
+
+        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+        JpegStreamReader reader(byteStream);
+
+        try
+        {
+            reader.ReadHeader();
+        }
+        catch (const system_error& error)
+        {
+            Assert::AreEqual(static_cast<int>(jpegls_errc::invalid_marker_segment_size), error.code().value());
+            return;
+        }
+
+        Assert::Fail();
+    }
+
+    TEST_METHOD(ReadHeaderWithTooSmallJpegLSPresetParameterSegmentWithCodingParametersShouldThrow)
+    {
+        vector<uint8_t> buffer;
+        buffer.push_back(0xFF);
+        buffer.push_back(0xD8);
+        buffer.push_back(0xFF);
+        buffer.push_back(0xF8); // LSE: Marks the start of a JPEG-LS preset parameters segment.
+        buffer.push_back(0x00);
+        buffer.push_back(0x0A);
+        buffer.push_back(0x01);
+
+        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+        JpegStreamReader reader(byteStream);
+
+        try
+        {
+            reader.ReadHeader();
+        }
+        catch (const system_error& error)
+        {
+            Assert::AreEqual(static_cast<int>(jpegls_errc::invalid_marker_segment_size), error.code().value());
+            return;
+        }
+
+        Assert::Fail();
+    }
+
+    TEST_METHOD(ReadHeaderWithTooLargeJpegLSPresetParameterSegmentWithCodingParametersShouldThrow)
+    {
+        vector<uint8_t> buffer;
+        buffer.push_back(0xFF);
+        buffer.push_back(0xD8);
+        buffer.push_back(0xFF);
+        buffer.push_back(0xF8); // LSE: Marks the start of a JPEG-LS preset parameters segment.
+        buffer.push_back(0x00);
+        buffer.push_back(0x0C);
+        buffer.push_back(0x01);
+
+        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+        JpegStreamReader reader(byteStream);
+
+        try
+        {
+            reader.ReadHeader();
+        }
+        catch (const system_error& error)
+        {
+            Assert::AreEqual(static_cast<int>(jpegls_errc::invalid_marker_segment_size), error.code().value());
+            return;
+        }
+
+        Assert::Fail();
+    }
+
+    static void ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(uint8_t id)
+    {
+        vector<uint8_t> buffer;
+        buffer.push_back(0xFF);
+        buffer.push_back(0xD8);
+        buffer.push_back(0xFF);
+        buffer.push_back(0xF8); // LSE: Marks the start of a JPEG-LS preset parameters segment.
         buffer.push_back(0x00);
         buffer.push_back(0x03);
         buffer.push_back(id);
@@ -170,16 +278,16 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow)
+    TEST_METHOD(ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow)
     {
-        ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(0x5);
-        ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(0x6);
-        ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(0x7);
-        ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(0x8);
-        ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(0x9);
-        ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(0xA);
-        ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(0xC);
-        ReadHeaderWithJpegLSExtendedPresetParameterIdShouldThrow(0xD);
+        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x5);
+        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x6);
+        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x7);
+        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x8);
+        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x9);
+        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0xA);
+        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0xC);
+        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0xD);
     }
 
     TEST_METHOD(ReadHeaderWithTooSmallSegmentSizeShouldThrow)

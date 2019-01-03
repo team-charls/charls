@@ -204,7 +204,7 @@ int JpegStreamReader::ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segme
         return ReadComment();
 
     case JpegMarkerCode::JpegLSPresetParameters:
-        return ReadPresetParameters();
+        return ReadPresetParametersSegment(segmentSize);
 
     case JpegMarkerCode::ApplicationData0:
     case JpegMarkerCode::ApplicationData1:
@@ -283,20 +283,27 @@ int JpegStreamReader::ReadComment() noexcept
 }
 
 
-int JpegStreamReader::ReadPresetParameters()
+int JpegStreamReader::ReadPresetParametersSegment(int32_t segmentSize)
 {
+    if (segmentSize < 1)
+        throw jpegls_error{jpegls_errc::invalid_marker_segment_size};
+
     const auto type = static_cast<JpegLSPresetParametersType>(ReadByte());
 
     switch (type)
     {
     case JpegLSPresetParametersType::PresetCodingParameters:
     {
+        constexpr int32_t CodingParameterSegmentSize = 11;
+        if (segmentSize != CodingParameterSegmentSize)
+            throw jpegls_error{jpegls_errc::invalid_marker_segment_size};
+
         params_.custom.MaximumSampleValue = ReadUInt16();
         params_.custom.Threshold1 = ReadUInt16();
         params_.custom.Threshold2 = ReadUInt16();
         params_.custom.Threshold3 = ReadUInt16();
         params_.custom.ResetValue = ReadUInt16();
-        return 11;
+        return CodingParameterSegmentSize;
     }
 
     case JpegLSPresetParametersType::MappingTableSpecification:
