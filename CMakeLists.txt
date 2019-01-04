@@ -24,6 +24,7 @@ option(CHARLS_THREAT_WARNINGS_AS_ERRORS "Treat Warnings as Errors." OFF)
 # CharLS requires C++14 or newer.
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Configure the supported C++ compilers: gcc, clang and MSVC
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
