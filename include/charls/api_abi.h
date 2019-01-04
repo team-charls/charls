@@ -18,7 +18,7 @@
 #if defined(CHARLS_LIBRARY_BUILD)
 #define CHARLS_API_IMPORT_EXPORT __declspec(dllexport)
 #else
-#define CHARLS_API_IMPORT_EXPORT __declspec(dllexport)
+#define CHARLS_API_IMPORT_EXPORT __declspec(dllimport)
 #endif
 
 // Ensure that the exported functions of a 32 bit Windows DLL use the __stdcall convention.

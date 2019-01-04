@@ -13,6 +13,8 @@ endif()
 
 target_compile_definitions(charls PRIVATE CHARLS_LIBRARY_BUILD)
 
+set_target_properties(charls PROPERTIES CXX_VISIBILITY_PRESET hidden)
+
 target_sources(charls
   PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/api_abi.h"
