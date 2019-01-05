@@ -8,7 +8,7 @@
 #include <cassert>
 #include <charconv>
 
-using std::cout;
+using std::cerr;
 using std::exception;
 using std::ofstream;
 using std::ios;
@@ -31,7 +31,6 @@ vector<byte> encode_bmp_image_to_jpegls(const bmp_image& image, int allowed_loss
 
     return encoder.encode();
 }
-
 
 void save_buffer_to_file(const void* buffer, size_t buffer_size, const char* filename)
 {
@@ -59,7 +58,7 @@ int main(const int argc, char const * const argv[])
     {
         if (argc < 3)
         {
-            cout << "Usage: input_file_name output_file_name [allowed_lossy_error, default=0 (lossless)]\n";
+            cerr << "Usage: <input_file_name> <output_file_name> [allowed_lossy_error, default=0 (lossless)]\n";
             return EXIT_FAILURE;
         }
 
@@ -69,7 +68,7 @@ int main(const int argc, char const * const argv[])
             allowed_lossy_error = from_chars(argv[3]);
             if (allowed_lossy_error < 0 || allowed_lossy_error > 255)
             {
-                cout << "allowed_lossy_error needs to be in the range [0,255]\n";
+                cerr << "allowed_lossy_error needs to be in the range [0,255]\n";
                 return EXIT_FAILURE;
             }
         }
@@ -81,11 +80,11 @@ int main(const int argc, char const * const argv[])
     }
     catch (const exception& error)
     {
-        cout << error.what();
+        cerr << error.what() << "\n";
     }
     catch (...)
     {
-        cout << "Unknown error occurred";
+        cerr << "Unknown error occurred\n";
     }
 
     return EXIT_FAILURE;

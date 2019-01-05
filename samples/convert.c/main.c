@@ -146,7 +146,7 @@ static bool save_jpegls_file(const char *filename, const void *buffer, size_t bu
 int main(int argc, char* argv[])
 {
     if (argc < 3) {
-        printf("Usage: input_file_name output_file_name [allowed_lossy_error, default=0 (lossless)]\n");
+        printf("Usage: <input_file_name> <output_file_name> [allowed_lossy_error, default=0 (lossless)]\n");
         return EXIT_FAILURE;
     }
 

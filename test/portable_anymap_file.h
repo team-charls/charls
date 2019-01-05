@@ -10,88 +10,88 @@
 //          The 2 binary formats P5 and P6 are supported:
 //          Portable GrayMap: P5 = binary, extension = .pgm, 0-2^16 (gray scale)
 //          Portable PixMap: P6 = binary, extension.ppm, range 0-2^16 (RGB)
-class portable_anymap_file
+class portable_anymap_file final
 {
 public:
     /// <exception cref="ifstream::failure">Thrown when the input file cannot be read.</exception>
     explicit portable_anymap_file(const char* filename)
     {
-        std::ifstream pnmFile;
-        pnmFile.exceptions(pnmFile.exceptions() | std::ios::failbit | std::ios::eofbit);
-        pnmFile.open(filename, std::ios_base::in | std::ios_base::binary);
+        std::ifstream pnm_file;
+        pnm_file.exceptions(std::ios::eofbit | std::ios::failbit | std::ios::badbit);
+        pnm_file.open(filename, std::ios_base::in | std::ios_base::binary);
 
-        std::vector<int> headerInfo = read_header(pnmFile);
-        if (headerInfo.size() != 4)
+        std::vector<int> header_info = read_header(pnm_file);
+        if (header_info.size() != 4)
             throw std::istream::failure("Incorrect PNM header");
 
-        m_componentCount = headerInfo[0] == 6 ? 3 : 1;
-        m_width = headerInfo[1];
-        m_height = headerInfo[2];
-        m_bitsPerSample = charls::log_2(headerInfo[3] + 1);
+        component_count_ = header_info[0] == 6 ? 3 : 1;
+        width_ = header_info[1];
+        height_ = header_info[2];
+        bits_per_sample_ = charls::log_2(header_info[3] + 1);
 
-        const int bytesPerSample = (m_bitsPerSample + 7) / 8;
-        m_inputBuffer.resize(static_cast<size_t>(m_width) * m_height * bytesPerSample * m_componentCount);
-        pnmFile.read(reinterpret_cast<char*>(m_inputBuffer.data()), m_inputBuffer.size());
+        const int bytes_per_sample = (bits_per_sample_ + 7) / 8;
+        input_buffer_.resize(static_cast<size_t>(width_) * height_ * bytes_per_sample * component_count_);
+        pnm_file.read(reinterpret_cast<char*>(input_buffer_.data()), input_buffer_.size());
     }
 
     int width() const noexcept
     {
-        return m_width;
+        return width_;
     }
 
     int height() const noexcept
     {
-        return m_height;
+        return height_;
     }
 
     int component_count() const noexcept
     {
-        return m_componentCount;
+        return component_count_;
     }
 
     int bits_per_sample() const noexcept
     {
-        return m_bitsPerSample;
+        return bits_per_sample_;
     }
 
     const std::vector<uint8_t>& image_data() const noexcept
     {
-        return m_inputBuffer;
+        return input_buffer_;
     }
 
 private:
-    static std::vector<int> read_header(std::istream& pnmFile)
+    static std::vector<int> read_header(std::istream& pnm_file)
     {
-        std::vector<int> readValues;
+        std::vector<int> result;
 
-        const auto first = static_cast<char>(pnmFile.get());
+        const auto first = static_cast<char>(pnm_file.get());
 
         // All portable anymap format (PNM) start with the character P.
         if (first != 'P')
             throw std::istream::failure("Missing P");
 
-        while (readValues.size() < 4)
+        while (result.size() < 4)
         {
             std::string bytes;
-            std::getline(pnmFile, bytes);
+            std::getline(pnm_file, bytes);
             std::stringstream line(bytes);
 
-            while (readValues.size() < 4)
+            while (result.size() < 4)
             {
                 int value = -1;
                 line >> value;
                 if (value <= 0)
                     break;
 
-                readValues.push_back(value);
+                result.push_back(value);
             }
         }
-        return readValues;
+        return result;
     }
 
-    int m_componentCount;
-    int m_width;
-    int m_height;
-    int m_bitsPerSample;
-    std::vector<uint8_t> m_inputBuffer;
+    int component_count_;
+    int width_;
+    int height_;
+    int bits_per_sample_;
+    std::vector<uint8_t> input_buffer_;
 };

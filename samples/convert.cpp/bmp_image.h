@@ -42,14 +42,15 @@ public:
         uint32_t number_important_colors; // the number of important colors used, or 0 when every color is important generally ignored.
     };
 
-
     explicit bmp_image(const char* filename)
     {
-        std::ifstream input(filename, std::ios::binary);
+        std::ifstream input;
+        input.exceptions(std::ios::eofbit | std::ios::failbit | std::ios::badbit);
+        input.open(filename, std::ios_base::in | std::ios_base::binary);
 
-        header = read_header(input);
+        header = read_bmp_header(input);
         if (header.magic[0] != 0x42 || header.magic[1] != 0x4D)
-            throw std::exception("Missing BMP identifier");
+            throw std::istream::failure("Missing BMP identifier");
 
         dib_header = read_dib_header(input);
     }
@@ -59,7 +60,7 @@ public:
     std::vector<std::byte> pixel_data;
 
 private:
-    static bmp_header read_header(std::istream& input)
+    static bmp_header read_bmp_header(std::istream& input)
     {
         bmp_header result{};
 
