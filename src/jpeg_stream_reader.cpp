@@ -15,6 +15,7 @@
 #include <memory>
 
 using std::vector;
+using std::find;
 using namespace charls;
 
 namespace
@@ -464,11 +465,8 @@ int JpegStreamReader::TryReadHPColorTransformSegment(int32_t segmentSize)
 
 void JpegStreamReader::AddComponent(uint8_t componentId)
 {
-    for (auto id : componentIds_)
-    {
-        if (id == componentId)
-            throw jpegls_error{jpegls_errc::duplicate_component_id_in_sof_segment};
-    }
+    if (find(componentIds_.cbegin(), componentIds_.cend(), componentId) != componentIds_.cend())
+        throw jpegls_error{jpegls_errc::duplicate_component_id_in_sof_segment};
 
     componentIds_.push_back(componentId);
 }
