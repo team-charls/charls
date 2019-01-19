@@ -7,6 +7,8 @@
 
 // WARNING: THESE CLASSES ARE NOT FINAL AND THEIR DESIGN AND API MAY CHANGE
 
+#if __cplusplus >= 201703L
+
 namespace charls {
 
 struct metadata
@@ -87,3 +89,5 @@ private:
 };
 
 } // namespace charls
+
+#endif // __cplusplus
