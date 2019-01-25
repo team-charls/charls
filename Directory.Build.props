@@ -16,7 +16,6 @@
          it is necesarry to explicitly define which version to use.
          At the momement there is no way to specify to use just the latest version. -->
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <PlatformToolset>v141</PlatformToolset>
 
     <!-- Use the latest released C# language version -->
     <LangVersion>latest</LangVersion>
@@ -26,6 +25,8 @@
 
     <!-- Define treat warnings as errors for C# projects -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)default.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -65,14 +66,8 @@
       -->
       <AdditionalOptions>
         /Zc:__cplusplus /Zc:throwingNew
-        /wd4061 /wd4191
-        /wd4263 /wd4264 /wd4265 /wd4266
-        /wd4365
-        /wd4464
-        /wd4514 /wd4571 /wd4599
-        /wd4623 /wd4625 /wd4626 /wd4668
-        /wd4710 /wd4711 /wd4738 /wd4774 /wd4820
-        /wd5026 /wd5027 /wd5039 /wd5042 /wd5045
+        /wd4061 /wd4191 /wd4263 /wd4264 /wd4265 /wd4266 /wd4365 /wd4464 /wd4514 /wd4571 /wd4599 /wd4623 /wd4625 /wd4626 /wd4668
+        /wd4710 /wd4711 /wd4738 /wd4774 /wd4820 /wd5026 /wd5027 /wd5039 /wd5042 /wd5045
       </AdditionalOptions>
 
       <!--  CharLS is cross-platform and cannot use the MSVC only secure CRT library functions. -->
@@ -80,7 +75,7 @@
 
       <!-- Use all cores to speed up the compilation (MS recommended best practice). -->
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      
+
       <!-- Explicit define that all projects are compiled according the latest offical C++ standard -->
       <LanguageStandard>stdcpp14</LanguageStandard>
 
@@ -91,18 +86,13 @@
 
       <!-- Use by default precompiled headers with the modern name pch.h -->
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+
+      <!-- For checked builds, enable the MS static analyzer build into the compiler. -->
+      <EnablePREfast Condition="'$(Configuration)'=='Checked'">true</EnablePREfast>
     </ClCompile>
   </ItemDefinitionGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Checked'">
     <LinkIncremental>true</LinkIncremental>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)default.ruleset</CodeAnalysisRuleSet>    
   </PropertyGroup>
-
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Checked'">
-    <ClCompile>
-      <!-- For checked builds, enable the MS static analyzer build into the compiler. -->
-      <EnablePREfast>true</EnablePREfast>
-    </ClCompile>
-  </ItemDefinitionGroup>  
 </Project>
