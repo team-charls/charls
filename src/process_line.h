@@ -193,6 +193,16 @@ void TransformLine(Triplet<T>* pDest, const Triplet<T>* pSrc, int pixelCount, TR
 
 
 template<typename TRANSFORM, typename T>
+void TransformLine(Quad<T>* pDest, const Quad<T>* pSrc, int pixelCount, TRANSFORM& transform) noexcept
+{
+    for (auto i = 0; i < pixelCount; ++i)
+    {
+        pDest[i] = Quad<T>(transform(pSrc[i].v1, pSrc[i].v2, pSrc[i].v3), pSrc[i].v4);
+    }
+}
+
+
+template<typename TRANSFORM, typename T>
 void TransformLineToTriplet(const T* ptypeInput, int32_t pixelStrideIn, Triplet<T>* byteBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto cpixel = std::min(pixelStride, pixelStrideIn);
@@ -283,9 +293,16 @@ public:
                 TransformTripletToLine(static_cast<const Triplet<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, transform_);
             }
         }
-        else if (params_.components == 4 && params_.interleaveMode == InterleaveMode::Line)
+        else if (params_.components == 4)
         {
-            TransformQuadToLine(static_cast<const Quad<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, transform_);
+            if (params_.interleaveMode == InterleaveMode::Sample)
+            {
+                TransformLine(static_cast<Quad<size_type>*>(dest), static_cast<const Quad<size_type>*>(source), pixelCount, transform_);
+            }
+            else if (params_.interleaveMode == InterleaveMode::Line)
+            {
+                TransformQuadToLine(static_cast<const Quad<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, transform_);
+            }
         }
     }
 
@@ -302,9 +319,16 @@ public:
                 TransformLineToTriplet(static_cast<const size_type*>(pSrc), byteStride, static_cast<Triplet<size_type>*>(rawData), pixelCount, inverseTransform_);
             }
         }
-        else if (params_.components == 4 && params_.interleaveMode == InterleaveMode::Line)
+        else if (params_.components == 4)
         {
-            TransformLineToQuad(static_cast<const size_type*>(pSrc), byteStride, static_cast<Quad<size_type>*>(rawData), pixelCount, inverseTransform_);
+            if (params_.interleaveMode == InterleaveMode::Sample)
+            {
+                TransformLine(static_cast<Quad<size_type>*>(rawData), static_cast<const Quad<size_type>*>(pSrc), pixelCount, inverseTransform_);
+            }
+            else if (params_.interleaveMode == InterleaveMode::Line)
+            {
+                TransformLineToQuad(static_cast<const size_type*>(pSrc), byteStride, static_cast<Quad<size_type>*>(rawData), pixelCount, inverseTransform_);
+            }
         }
 
         if (params_.outputBgr)

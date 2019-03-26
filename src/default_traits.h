@@ -84,6 +84,14 @@ struct DefaultTraits final
                std::abs(lhs.v3 - rhs.v3) <= NEAR;
     }
 
+    bool IsNear(Quad<SAMPLE> lhs, Quad<SAMPLE> rhs) const noexcept
+    {
+        return std::abs(lhs.v1 - rhs.v1) <= NEAR &&
+               std::abs(lhs.v2 - rhs.v2) <= NEAR &&
+               std::abs(lhs.v3 - rhs.v3) <= NEAR &&
+               std::abs(lhs.v4 - rhs.v4) <= NEAR;
+    }
+
     FORCE_INLINE int32_t CorrectPrediction(int32_t Pxc) const noexcept
     {
         if ((Pxc & MAXVAL) == Pxc)
