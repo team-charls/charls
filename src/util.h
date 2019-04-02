@@ -116,7 +116,7 @@ inline bool operator!=(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
 template<typename sample>
 struct Quad final : Triplet<sample>
 {
-    Quad() :
+    Quad() noexcept :
         v4(0)
     {
     }
