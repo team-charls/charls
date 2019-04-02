@@ -117,6 +117,7 @@ template<typename sample>
 struct Quad final : Triplet<sample>
 {
     Quad() noexcept :
+        Triplet<sample>(),
         v4(0)
     {
     }
