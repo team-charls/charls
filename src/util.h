@@ -116,11 +116,13 @@ inline bool operator!=(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs)
 template<typename sample>
 struct Quad final : Triplet<sample>
 {
+    MSVC_WARNING_SUPPRESS(26495) // false warning that v4 is uninitialized [VS 2017 15.9.4]
     Quad() noexcept :
         Triplet<sample>(),
         v4(0)
     {
     }
+    MSVC_WARNING_UNSUPPRESS()
 
     MSVC_WARNING_SUPPRESS(26495) // false warning that v4 is uninitialized [VS 2017 15.9.4]
     Quad(Triplet<sample> triplet, int32_t alpha) noexcept :
