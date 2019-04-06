@@ -36,10 +36,7 @@ void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& paramet
     switch (parameters.components)
     {
     case 3:
-        break;
     case 4:
-        if (parameters.interleaveMode == InterleaveMode::Sample)
-            throw jpegls_error{jpegls_errc::invalid_argument_interleave_mode};
         break;
     default:
         if (parameters.interleaveMode != InterleaveMode::None)

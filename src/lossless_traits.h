@@ -133,4 +133,26 @@ struct LosslessTraits<Triplet<T>, bpp> final : LosslessTraitsImpl<T, bpp>
     }
 };
 
+
+template<typename T, int32_t bpp>
+struct LosslessTraits<Quad<T>, bpp> final : LosslessTraitsImpl<T, bpp>
+{
+    using PIXEL = Quad<T>;
+
+    FORCE_INLINE constexpr static bool IsNear(int32_t lhs, int32_t rhs) noexcept
+    {
+        return lhs == rhs;
+    }
+
+    FORCE_INLINE static bool IsNear(PIXEL lhs, PIXEL rhs) noexcept
+    {
+        return lhs == rhs;
+    }
+
+    FORCE_INLINE static T ComputeReconstructedSample(int32_t Px, int32_t errorValue) noexcept
+    {
+        return static_cast<T>(Px + errorValue);
+    }
+};
+
 } // namespace charls

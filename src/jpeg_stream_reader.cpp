@@ -29,10 +29,6 @@ void CheckParameterCoherent(const JlsParameters& params)
     switch (params.components)
     {
     case 4:
-        if (params.interleaveMode == InterleaveMode::Sample)
-            throw jpegls_error{jpegls_errc::parameter_value_not_supported};
-
-        break;
     case 3:
         break;
     default:

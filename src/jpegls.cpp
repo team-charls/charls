@@ -116,7 +116,7 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const JlsParameters&
 template<typename Strategy>
 unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateOptimizedCodec(const JlsParameters& params)
 {
-    if (params.interleaveMode == InterleaveMode::Sample && params.components != 3)
+    if (params.interleaveMode == InterleaveMode::Sample && params.components != 3 && params.components != 4)
         return nullptr;
 
 #ifndef DISABLE_SPECIALIZATIONS
@@ -126,8 +126,10 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateOptimizedCodec(const JlsPa
     {
         if (params.interleaveMode == InterleaveMode::Sample)
         {
-            if (params.bitsPerSample == 8)
+            if (params.components == 3 && params.bitsPerSample == 8)
                 return create_codec<Strategy>(LosslessTraits<Triplet<uint8_t>, 8>(), params);
+            else if (params.components == 4 && params.bitsPerSample == 8)
+                return create_codec<Strategy>(LosslessTraits<Quad<uint8_t>, 8>(), params);
         }
         else
         {
@@ -149,14 +151,24 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateOptimizedCodec(const JlsPa
     if (params.bitsPerSample <= 8)
     {
         if (params.interleaveMode == InterleaveMode::Sample)
-            return create_codec<Strategy>(DefaultTraits<uint8_t, Triplet<uint8_t> >(maxval, params.allowedLossyError), params);
+        {
+            if (params.components == 3)
+                return create_codec<Strategy>(DefaultTraits<uint8_t, Triplet<uint8_t> >(maxval, params.allowedLossyError), params);
+            else if (params.components == 4)
+                return create_codec<Strategy>(DefaultTraits<uint8_t, Quad<uint8_t> >(maxval, params.allowedLossyError), params);
+        }
 
         return create_codec<Strategy>(DefaultTraits<uint8_t, uint8_t>((1u << params.bitsPerSample) - 1, params.allowedLossyError), params);
     }
     if (params.bitsPerSample <= 16)
     {
         if (params.interleaveMode == InterleaveMode::Sample)
-            return create_codec<Strategy>(DefaultTraits<uint16_t,Triplet<uint16_t> >(maxval, params.allowedLossyError), params);
+        {
+            if (params.components == 3)
+                return create_codec<Strategy>(DefaultTraits<uint16_t, Triplet<uint16_t> >(maxval, params.allowedLossyError), params);
+            else if (params.components == 4)
+                return create_codec<Strategy>(DefaultTraits<uint16_t, Quad<uint16_t> >(maxval, params.allowedLossyError), params);
+        }
 
         return create_codec<Strategy>(DefaultTraits<uint16_t, uint16_t>(maxval, params.allowedLossyError), params);
     }

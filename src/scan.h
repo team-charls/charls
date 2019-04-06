@@ -166,6 +166,7 @@ public:
 
     int32_t DecodeRIError(CContextRunMode& ctx);
     Triplet<SAMPLE> DecodeRIPixel(Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb);
+    Quad<SAMPLE> DecodeRIPixel(Quad<SAMPLE> Ra, Quad<SAMPLE> Rb);
     SAMPLE DecodeRIPixel(int32_t Ra, int32_t Rb);
     int32_t DecodeRunPixels(PIXEL Ra, PIXEL* startPos, int32_t cpixelMac);
     int32_t DoRunMode(int32_t startIndex, DecoderStrategy*);
@@ -173,6 +174,7 @@ public:
     void EncodeRIError(CContextRunMode& ctx, int32_t errorValue);
     SAMPLE EncodeRIPixel(int32_t x, int32_t Ra, int32_t Rb);
     Triplet<SAMPLE> EncodeRIPixel(Triplet<SAMPLE> x, Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb);
+    Quad<SAMPLE> EncodeRIPixel(Quad<SAMPLE> x, Quad<SAMPLE> Ra, Quad<SAMPLE> Rb);
     void EncodeRunPixels(int32_t runLength, bool endOfLine);
     int32_t DoRunMode(int32_t index, EncoderStrategy*);
 
@@ -181,6 +183,7 @@ public:
 
     void DoLine(SAMPLE* dummy);
     void DoLine(Triplet<SAMPLE>* dummy);
+    void DoLine(Quad<SAMPLE>* dummy);
     void DoScan();
 
     void InitParams(int32_t t1, int32_t t2, int32_t t3, int32_t nReset);
@@ -479,6 +482,42 @@ Triplet<typename Traits::SAMPLE> JlsCodec<Traits,Strategy>::EncodeRIPixel(Triple
                            traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3  - Ra.v3)));
 }
 
+template<typename Traits, typename Strategy>
+Quad<typename Traits::SAMPLE> JlsCodec<Traits, Strategy>::DecodeRIPixel(Quad<SAMPLE> Ra, Quad<SAMPLE> Rb)
+{
+    const int32_t errorValue1 = DecodeRIError(contextRunmode_[0]);
+    const int32_t errorValue2 = DecodeRIError(contextRunmode_[0]);
+    const int32_t errorValue3 = DecodeRIError(contextRunmode_[0]);
+    const int32_t errorValue4 = DecodeRIError(contextRunmode_[0]);
+
+    return Quad<SAMPLE>(Triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
+                                        traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
+                                        traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3))),
+                                        traits.ComputeReconstructedSample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
+}
+
+
+template<typename Traits, typename Strategy>
+Quad<typename Traits::SAMPLE> JlsCodec<Traits, Strategy>::EncodeRIPixel(Quad<SAMPLE> x, Quad<SAMPLE> Ra, Quad<SAMPLE> Rb)
+{
+    const int32_t errorValue1 = traits.ComputeErrVal(Sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
+    EncodeRIError(contextRunmode_[0], errorValue1);
+
+    const int32_t errorValue2 = traits.ComputeErrVal(Sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
+    EncodeRIError(contextRunmode_[0], errorValue2);
+
+    const int32_t errorValue3 = traits.ComputeErrVal(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
+    EncodeRIError(contextRunmode_[0], errorValue3);
+
+    const int32_t errorValue4 = traits.ComputeErrVal(Sign(Rb.v4 - Ra.v4) * (x.v4 - Rb.v4));
+    EncodeRIError(contextRunmode_[0], errorValue4);
+
+    return Quad<SAMPLE>(Triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
+                                        traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
+                                        traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3))),
+                                        traits.ComputeReconstructedSample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
+}
+
 
 template<typename Traits, typename Strategy>
 typename Traits::SAMPLE JlsCodec<Traits,Strategy>::DecodeRIPixel(int32_t Ra, int32_t Rb)
@@ -680,6 +719,41 @@ void JlsCodec<Traits, Strategy>::DoLine(Triplet<SAMPLE>*)
             Rx.v1 = DoRegular(Qs1, currentLine_[index].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1), static_cast<Strategy*>(nullptr));
             Rx.v2 = DoRegular(Qs2, currentLine_[index].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), static_cast<Strategy*>(nullptr));
             Rx.v3 = DoRegular(Qs3, currentLine_[index].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), static_cast<Strategy*>(nullptr));
+            currentLine_[index] = Rx;
+            index++;
+        }
+    }
+}
+
+
+/// <summary>Encodes/Decodes a scan line of quads in ILV_SAMPLE mode</summary>
+template<typename Traits, typename Strategy>
+void JlsCodec<Traits, Strategy>::DoLine(Quad<SAMPLE>*)
+{
+    int32_t index = 0;
+    while (index < width_)
+    {
+        const Quad<SAMPLE> Ra = currentLine_[index - 1];
+        const Quad<SAMPLE> Rc = previousLine_[index - 1];
+        const Quad<SAMPLE> Rb = previousLine_[index];
+        const Quad<SAMPLE> Rd = previousLine_[index + 1];
+
+        const int32_t Qs1 = ComputeContextID(QuantizeGradient(Rd.v1 - Rb.v1), QuantizeGradient(Rb.v1 - Rc.v1), QuantizeGradient(Rc.v1 - Ra.v1));
+        const int32_t Qs2 = ComputeContextID(QuantizeGradient(Rd.v2 - Rb.v2), QuantizeGradient(Rb.v2 - Rc.v2), QuantizeGradient(Rc.v2 - Ra.v2));
+        const int32_t Qs3 = ComputeContextID(QuantizeGradient(Rd.v3 - Rb.v3), QuantizeGradient(Rb.v3 - Rc.v3), QuantizeGradient(Rc.v3 - Ra.v3));
+        const int32_t Qs4 = ComputeContextID(QuantizeGradient(Rd.v4 - Rb.v4), QuantizeGradient(Rb.v4 - Rc.v4), QuantizeGradient(Rc.v4 - Ra.v4));
+
+        if (Qs1 == 0 && Qs2 == 0 && Qs3 == 0 && Qs4 == 0)
+        {
+            index += DoRunMode(index, static_cast<Strategy*>(nullptr));
+        }
+        else
+        {
+            Quad<SAMPLE> Rx;
+            Rx.v1 = DoRegular(Qs1, currentLine_[index].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1), static_cast<Strategy*>(nullptr));
+            Rx.v2 = DoRegular(Qs2, currentLine_[index].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), static_cast<Strategy*>(nullptr));
+            Rx.v3 = DoRegular(Qs3, currentLine_[index].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), static_cast<Strategy*>(nullptr));
+            Rx.v4 = DoRegular(Qs4, currentLine_[index].v4, GetPredictedValue(Ra.v4, Rb.v4, Rc.v4), static_cast<Strategy*>(nullptr));
             currentLine_[index] = Rx;
             index++;
         }
