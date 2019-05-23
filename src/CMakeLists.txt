@@ -11,6 +11,14 @@ if(NOT BUILD_SHARED_LIBS)
   target_compile_definitions(charls PUBLIC CHARLS_STATIC)
 endif()
 
+if(WIN32 AND BUILD_SHARED_LIBS)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set_target_properties(charls PROPERTIES OUTPUT_NAME "charls-2-x64")
+  else()
+    set_target_properties(charls PROPERTIES OUTPUT_NAME "charls-2-x86")
+  endif()
+endif()
+
 target_compile_definitions(charls PRIVATE CHARLS_LIBRARY_BUILD)
 
 set_target_properties(charls PROPERTIES CXX_VISIBILITY_PRESET hidden)

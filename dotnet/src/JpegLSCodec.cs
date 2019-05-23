@@ -116,12 +116,12 @@ namespace CharLS
             JpegLSError result;
             if (Environment.Is64BitProcess)
             {
-                result = SafeNativeMethods.JpegLsEncode64(destination, destinationLength, out var count, pixels, pixelCount, ref parameters, IntPtr.Zero);
+                result = SafeNativeMethods.JpegLsEncodeX64(destination, destinationLength, out var count, pixels, pixelCount, ref parameters, IntPtr.Zero);
                 compressedCount = (int)count;
             }
             else
             {
-                result = SafeNativeMethods.JpegLsEncode(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters, IntPtr.Zero);
+                result = SafeNativeMethods.JpegLsEncodeX86(destination, destinationLength, out compressedCount, pixels, pixelCount, ref parameters, IntPtr.Zero);
             }
 
             if (result == JpegLSError.SourceBufferTooSmall)
@@ -224,16 +224,16 @@ namespace CharLS
                 throw new ArgumentNullException(nameof(pixels));
 
             var error = Environment.Is64BitProcess ?
-                SafeNativeMethods.JpegLsDecode64(pixels, pixels.Length, source, count, IntPtr.Zero, IntPtr.Zero) :
-                SafeNativeMethods.JpegLsDecode(pixels, pixels.Length, source, count, IntPtr.Zero, IntPtr.Zero);
+                SafeNativeMethods.JpegLsDecodeX64(pixels, pixels.Length, source, count, IntPtr.Zero, IntPtr.Zero) :
+                SafeNativeMethods.JpegLsDecodeX86(pixels, pixels.Length, source, count, IntPtr.Zero, IntPtr.Zero);
             HandleResult(error);
         }
 
         private static void JpegLsReadHeaderThrowWhenError(byte[] source, int length, out JlsParameters info)
         {
             var result = Environment.Is64BitProcess ?
-                SafeNativeMethods.JpegLsReadHeader64(source, length, out info, IntPtr.Zero) :
-                SafeNativeMethods.JpegLsReadHeader(source, length, out info, IntPtr.Zero);
+                SafeNativeMethods.JpegLsReadHeaderX64(source, length, out info, IntPtr.Zero) :
+                SafeNativeMethods.JpegLsReadHeaderX86(source, length, out info, IntPtr.Zero);
             HandleResult(result);
         }
 
@@ -313,8 +313,8 @@ namespace CharLS
         private static string GetErrorMessage(JpegLSError result)
         {
             var message = Environment.Is64BitProcess ?
-                SafeNativeMethods.CharLSGetErrorMessage64((int)result) :
-                SafeNativeMethods.CharLSGetErrorMessage((int)result);
+                SafeNativeMethods.CharLSGetErrorMessageX64((int)result) :
+                SafeNativeMethods.CharLSGetErrorMessageX86((int)result);
             return Marshal.PtrToStringAnsi(message);
         }
     }

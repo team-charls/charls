@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The purpose of this document is to record the basic style and design guidelines of CharLS to ensure consistency and 
+The purpose of this document is to record the basic style and design guidelines of CharLS to ensure consistency and
 to record decisions.
 
 ## Style
@@ -10,7 +10,8 @@ to record decisions.
 ### Tabs and Spaces
 
 Spaces with an indent of 4. This to ensure maximum readability with different editors/platforms.
-To document this and ensure editors are configured correctly an .editorconfig is used in the root of the repository.
+To document this and ensure editors are configured correctly an .editorconfig file and a .clang-format file
+is placed in the root of the repository.
 
 ### Template: class vs typename
 
@@ -67,8 +68,17 @@ Javascript: only signed integers
 Python: only signed integers
 
 Given the practical applications that 2^31 * 2^31 (max signed integer) will be sufficient for the coming 10 years, the API should use signed integers.
-References: 
+References:
 8K Images = (7680×4320)
+
+### ABI
+
+A C style interface is used to ensure that the ABI is stable. However just a C style API is not enough.
+As CharLS can be distributes as a dynamic link library also the filename needs to be managed.
+- It should be possible for applications to use v1 and v2 DLL at the same time.
+- It should be possible to load the correct CPU architecture from the same directory.
+Design (Windows):
+ - filename = charls-<ABI version>-<CPU architecture>.dll
 
 ### Supported C++ language
 

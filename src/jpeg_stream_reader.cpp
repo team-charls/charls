@@ -436,7 +436,7 @@ int JpegStreamReader::TryReadHPColorTransformSegment(int32_t segmentSize)
 
     vector<char> sourceTag;
     ReadNBytes(sourceTag, 4);
-    if (strncmp(sourceTag.data(), "mrfx", 4) != 0)
+    if (strncmp(sourceTag.data(), "mrfx", 4) != 0) // mrfx = xfrm (in big endian) = colorXFoRM
         return 4;
 
     const auto colorTransformation = ReadByte();

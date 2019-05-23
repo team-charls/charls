@@ -1,6 +1,6 @@
 # Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-cmake_minimum_required(VERSION 3.9...3.12)
+cmake_minimum_required(VERSION 3.9...3.14)
 
 project(charls VERSION 2.0.1 LANGUAGES C CXX)
 
