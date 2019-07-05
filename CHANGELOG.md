@@ -9,16 +9,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 
 - Improved the validation of the JPEG stream during decoding
-- Use #pragma once (supported by all modern C++ compilers)
-- Updated referenced NuGet packages to their latest versions
-- Update CMake build script to 3.9 (Modern CMake structure)
-- charls_error is replaced by C++11 compatible jpegls_errc error code enum
+- #pragma once is now used to prevent that header files are included multiple times (supported by all modern C++ compilers)
+- The referenced NuGet packages of the .NET wrapper assembly are updated to their latest versions
+- The CMake build script has been updated to modern CMake and requires at least CMake 3.9
+- charls_error has been replaced by a C++11 compatible jpegls_errc error code enum design
 - All types are now in the charls C++ namespace
-- Support for .NET Code Contracts has been removed
+- Support for .NET Code Contracts has been removed as this technology is being phased out by Microsoft
 
 ### Fixed
 
 - Fixes [#35](https://github.com/team-charls/charls/issues/35), Encoding will fail if the bit per sample is greater than 8, and a custom RESET value is used
+- Fixes [#51](https://github.com/team-charls/charls/issues/51), The default threshold values are not corrected computed for 6 bit images or less
 
 ## [2.0.0] - 2016-5-18
 

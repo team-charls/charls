@@ -55,7 +55,7 @@ Once you have the library, the sample folder provides some code samples to get y
 ## Release Management
 
 This repository is provided as source code, and specifically does not offer binary releases. Instead, it is encouraged to either “live at head” (build from the latest version of or, if necessary, build against a known, supported branch, known as a Long Term Support (LTS) branch.
-Support for older compiler versions will be phased out, 3 years from the moment that a newer version of that compiler has become available.
+Support for older compiler versions will be phased out, 5 years from the moment that a newer version of that compiler has become available. The same applies to the minimal required C++ language version.
 
 ### Long Term Support (LTS) Branches
 
