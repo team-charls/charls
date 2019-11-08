@@ -16,6 +16,12 @@
     <ClCompile Include="jpeg_stream_writer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="charls_jpegls_encoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="charls_jpegls_decoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="context.h">
@@ -84,10 +90,7 @@
     <ClInclude Include="jpegls_preset_parameters_type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\charls\jpegls_decoder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\charls\jpegls_encoder.h">
+    <ClInclude Include="..\include\charls\charls_legacy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

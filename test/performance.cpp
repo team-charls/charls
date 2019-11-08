@@ -6,6 +6,7 @@
 #include <vector>
 #include <ratio>
 #include <chrono>
+#include <iostream>
 
 using std::vector;
 using std::cout;

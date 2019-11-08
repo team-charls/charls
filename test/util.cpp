@@ -20,9 +20,8 @@ using std::vector;
 using std::chrono::duration;
 using std::chrono::steady_clock;
 using std::milli;
-
-using charls::InterleaveMode;
-using charls::ColorTransformation;
+using namespace charls;
+using namespace charls_test;
 
 
 namespace
@@ -32,7 +31,7 @@ MSVC_WARNING_SUPPRESS(26497) // cannot be marked constexpr, check must be execut
 
 bool IsMachineLittleEndian() noexcept
 {
-    const int a = 0xFF000001;
+    constexpr int a = 0xFF000001;
     const auto* chars = reinterpret_cast<const char*>(&a);
     return chars[0] == 0x01;
 }
@@ -43,7 +42,7 @@ MSVC_WARNING_UNSUPPRESS()
 } // namespace
 
 
-void FixEndian(vector<uint8_t>* buffer, bool littleEndianData)
+void FixEndian(vector<uint8_t>* buffer, bool littleEndianData) noexcept
 {
     if (littleEndianData == IsMachineLittleEndian())
         return;
@@ -122,20 +121,20 @@ void TestRoundTrip(const char* strName, const vector<uint8_t>& originalBuffer, J
 
     if (params.components == 4)
     {
-        params.interleaveMode = InterleaveMode::Line;
+        params.interleaveMode = interleave_mode::line;
     }
     else if (params.components == 3)
     {
-        params.interleaveMode = InterleaveMode::Line;
-        params.colorTransformation = ColorTransformation::HP1;
+        params.interleaveMode = interleave_mode::line;
+        params.colorTransformation = color_transformation::hp1;
     }
 
-    size_t compressedLength = 0;
+    size_t encoded_actual_size{};
     auto start = steady_clock::now();
     for (int i = 0; i < loopCount; ++i)
     {
-        const error_code error = JpegLsEncode(encodedBuffer.data(), encodedBuffer.size(), &compressedLength,
-            originalBuffer.data(), decodedBuffer.size(), &params, nullptr);
+        const error_code error = JpegLsEncode(encodedBuffer.data(), encodedBuffer.size(), &encoded_actual_size,
+                                              originalBuffer.data(), originalBuffer.size(), &params, nullptr);
         Assert::IsTrue(!error);
     }
 
@@ -144,13 +143,13 @@ void TestRoundTrip(const char* strName, const vector<uint8_t>& originalBuffer, J
     start = steady_clock::now();
     for (int i = 0; i < loopCount; ++i)
     {
-        const error_code error = JpegLsDecode(&decodedBuffer[0], decodedBuffer.size(), &encodedBuffer[0], compressedLength, nullptr, nullptr);
+        const error_code error = JpegLsDecode(decodedBuffer.data(), decodedBuffer.size(), encodedBuffer.data(), encoded_actual_size, nullptr, nullptr);
         Assert::IsTrue(!error);
     }
 
     const auto totalDecodeDuration = steady_clock::now() - start;
 
-    const double bitsPerSample = 1.0 * compressedLength * 8 / (static_cast<double>(params.components) * params.height * params.width);
+    const double bitsPerSample = 1.0 * encoded_actual_size * 8 / (static_cast<double>(params.components) * params.height * params.width);
     cout << "RoundTrip test for: " << strName << "\n\r";
     const double encodeTime = duration<double, milli>(totalEncodeDuration).count() / loopCount;
     const double decodeTime = duration<double, milli>(totalDecodeDuration).count() / loopCount;

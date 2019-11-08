@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include "util.h"
+
+#include <cassert>
 #include <cstdint>
 
-namespace charls
-{
+namespace charls {
 
 // Implements statistical modeling for the run mode context.
 // Computes model dependent parameters like the Golomb code lengths
@@ -20,14 +22,13 @@ struct CContextRunMode final
 
     CContextRunMode() = default;
 
-    CContextRunMode(int32_t a, int32_t nRItype, int32_t nReset) noexcept
-        : A{a},
-          nRItype_{nRItype},
-          nReset_{static_cast<uint8_t>(nReset)},
-          N{1}
+    CContextRunMode(int32_t a, int32_t nRItype, int32_t nReset) noexcept :
+        A{a},
+        nRItype_{nRItype},
+        nReset_{static_cast<uint8_t>(nReset)},
+        N{1}
     {
     }
-
 
     FORCE_INLINE int32_t GetGolomb() const noexcept
     {
@@ -41,7 +42,6 @@ struct CContextRunMode final
         }
         return k;
     }
-
 
     void UpdateVariables(int32_t errorValue, int32_t EMErrval) noexcept
     {
@@ -59,7 +59,6 @@ struct CContextRunMode final
         N = N + 1;
     }
 
-
     FORCE_INLINE int32_t ComputeErrVal(int32_t temp, int32_t k) const noexcept
     {
         const bool map = temp & 1;
@@ -75,7 +74,6 @@ struct CContextRunMode final
         return errorValueAbs;
     }
 
-
     bool ComputeMap(int32_t errorValue, int32_t k) const noexcept
     {
         if (k == 0 && errorValue > 0 && 2 * Nn < N)
@@ -89,7 +87,6 @@ struct CContextRunMode final
 
         return false;
     }
-
 
     FORCE_INLINE bool ComputeMapNegativeE(int32_t k) const noexcept
     {

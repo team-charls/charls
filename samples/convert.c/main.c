@@ -1,7 +1,6 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
 #include <charls/charls.h>
-#include <charls/jpegls_error.h>
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -93,33 +92,75 @@ static void *bmp_read_pixel_data(FILE *fp, uint32_t offset, const bmp_dib_header
     return buffer;
 }
 
+static void* handle_encoder_failure(charls_jpegls_errc error, const char *step, charls_jpegls_encoder* encoder, void* buffer)
+{
+    printf("Failed to %s: %i, %s\n", step, error, charls_get_error_message(error));
+    charls_jpegls_encoder_destroy(encoder);
+    free(buffer);
+    return NULL;
+}
+
 
 static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size, const bmp_dib_header_t* header, int allowed_lossy_error, size_t* bytes_written)
 {
     assert(header->depth == 24); // This function only supports 24-bit BMP pixel data.
     assert(header->compress_type == 0); // Data needs to be stored by pixel as RGB.
 
-    struct JlsParameters params =
+    charls_jpegls_encoder* encoder = charls_jpegls_encoder_create();
+    if (!encoder)
     {
-        .interleaveMode = CHARLS_IM_SAMPLE,
-        .bitsPerSample = 8,
-        .components = 3
-    };
-    params.allowedLossyError = allowed_lossy_error;
-    params.width = header->width;
-    params.height = header->height;
-
-    // Assume that compressed pixels are smaller or equal to uncompressed pixels and reserve some room for JPEG header.
-    const size_t encoded_buffer_size = pixel_data_size + 1024;
-    void *encoded_buffer = malloc(encoded_buffer_size);
-
-    const int error_value = JpegLsEncode(encoded_buffer, encoded_buffer_size, bytes_written, pixel_data, pixel_data_size, &params, NULL);
-    if (error_value)
-    {
-        printf("Failed to encode pixel data: %i, %s\n", error_value, charls_get_error_message(error_value));
-        free(encoded_buffer);
-        encoded_buffer = NULL;
+        printf("Failed to create JPEG-LS encoder\n");
+        return NULL;
     }
+
+    charls_frame_info frame_info = { .bits_per_sample = 8, .component_count = 3 };
+    frame_info.width = header->width;
+    frame_info.height = header->height;
+    charls_jpegls_errc error = charls_jpegls_encoder_set_frame_info(encoder, &frame_info);
+    if (error)
+    {
+        return handle_encoder_failure(error, "set frame_info", encoder, NULL);
+    }
+
+    error = charls_jpegls_encoder_set_near_lossless(encoder, allowed_lossy_error);
+    if (error)
+    {
+        return handle_encoder_failure(error, "set near lossless", encoder, NULL);
+    }
+
+    error = charls_jpegls_encoder_set_interleave_mode(encoder, CHARLS_INTERLEAVE_MODE_SAMPLE);
+    if (error)
+    {
+        return handle_encoder_failure(error, "set near interleave mode", encoder, NULL);
+    }
+
+    size_t encoded_buffer_size;
+    error = charls_jpegls_encoder_get_estimated_destination_size(encoder, &encoded_buffer_size);
+    if (error)
+    {
+        return handle_encoder_failure(error, "get estimated destination size", encoder, NULL);
+    }
+
+    void* encoded_buffer = malloc(encoded_buffer_size);
+    error = charls_jpegls_encoder_set_destination_buffer(encoder, encoded_buffer, encoded_buffer_size);
+    if (error)
+    {
+        return handle_encoder_failure(error, "set destination buffer", encoder, encoded_buffer);
+    }
+
+    error = charls_jpegls_encoder_encode_from_buffer(encoder, pixel_data, pixel_data_size, 0);
+    if (error)
+    {
+        return handle_encoder_failure(error, "encode", encoder, encoded_buffer);
+    }
+
+    error = charls_jpegls_encoder_get_bytes_written(encoder, bytes_written);
+    if (error)
+    {
+        return handle_encoder_failure(error, "get bytes written", encoder, encoded_buffer);
+    }
+
+    charls_jpegls_encoder_destroy(encoder);
 
     return encoded_buffer;
 }

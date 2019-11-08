@@ -108,7 +108,6 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>CHARLS_LIBRARY_BUILD;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>
@@ -130,7 +129,6 @@
       <PreprocessorDefinitions>CHARLS_LIBRARY_BUILD;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>
@@ -156,7 +154,6 @@
       <PreprocessorDefinitions>CHARLS_LIBRARY_BUILD;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -178,7 +175,6 @@
       <PreprocessorDefinitions>CHARLS_LIBRARY_BUILD;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>
@@ -199,7 +195,6 @@
       <PreprocessorDefinitions>CHARLS_LIBRARY_BUILD;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>
@@ -225,7 +220,6 @@
       <PreprocessorDefinitions>CHARLS_LIBRARY_BUILD;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>
@@ -245,8 +239,10 @@
     <None Include="JpegStreamWriter.cd" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="charls_jpegls_decoder.cpp" />
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="jpegls.cpp" />
+    <ClCompile Include="charls_jpegls_encoder.cpp" />
     <ClCompile Include="jpegls_error.cpp" />
     <ClCompile Include="jpeg_stream_reader.cpp" />
     <ClCompile Include="jpeg_stream_writer.cpp" />
@@ -254,8 +250,7 @@
   <ItemGroup>
     <ClInclude Include="..\include\charls\api_abi.h" />
     <ClInclude Include="..\include\charls\charls.h" />
-    <ClInclude Include="..\include\charls\jpegls_decoder.h" />
-    <ClInclude Include="..\include\charls\jpegls_encoder.h" />
+    <ClInclude Include="..\include\charls\charls_legacy.h" />
     <ClInclude Include="..\include\charls\jpegls_error.h" />
     <ClInclude Include="..\include\charls\public_types.h" />
     <ClInclude Include="color_transform.h" />

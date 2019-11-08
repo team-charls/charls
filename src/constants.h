@@ -4,8 +4,8 @@
 
 #include <algorithm>
 
-namespace charls
-{
+namespace charls {
+
 // Default threshold values for JPEG-LS statistical modeling as defined in ISO/IEC 14495-1, Table C.3
 // for the case MAXVAL = 255 and NEAR = 0.
 // Can be overridden at compression time, however this is rarely done.
@@ -15,13 +15,22 @@ constexpr int DefaultThreshold3 = 21; // BASIC_T3
 
 constexpr int DefaultResetValue = 64; // Default RESET value as defined in ISO/IEC 14495-1, table C.2
 
+constexpr int maximum_width = 65535;
+constexpr int maximum_height = 65535;
 constexpr int MaximumComponentCount = 255;
 constexpr int MinimumBitsPerSample = 2;
 constexpr int MaximumBitsPerSample = 16;
+constexpr int maximum_near_lossless = 255;
 
 constexpr int MaximumNearLossless(const int maximumSampleValue) noexcept
 {
     return std::min(255, maximumSampleValue / 2); // As defined by ISO/IEC 14495-1, C.2.3
 }
+
+// ISO/IEC 14495-1, section 4.8.1 defines the SPIFF version numbers to be used for the SPIFF header in combination with JPEG-LS.
+constexpr uint8_t spiff_major_revision_number = 2;
+constexpr uint8_t spiff_minor_revision_number = 0;
+
+constexpr uint8_t spiff_end_of_directory_entry_type = 1;
 
 } // namespace charls

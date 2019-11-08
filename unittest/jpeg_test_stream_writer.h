@@ -5,6 +5,8 @@
 #include "../src/jpeg_marker_code.h"
 #include "../src/util.h"
 
+namespace CharLSUnitTest {
+
 class JpegTestStreamWriter final
 {
 public:
@@ -78,3 +80,5 @@ public:
     int componentIdOverride{};
     std::vector<uint8_t> data_;
 };
+
+} // namespace CharLSUnitTest

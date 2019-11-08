@@ -1,7 +1,7 @@
 BasedOnStyle: LLVM
 Language: Cpp
 
-# Use features of C++11, C++14 and C++17 (e.g. A<A<int>> instead of A<A<int> >) 
+# Use features of C++11, C++14 and C++17 (e.g. A<A<int>> instead of A<A<int> >)
 Standard: Cpp11
 
 UseTab: Never
@@ -9,14 +9,30 @@ IndentWidth: 4
 ColumnLimit: 0
 PointerAlignment: Left
 
-BreakBeforeBraces: Allman
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: false
+  AfterObjCDeclaration: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: false
 
 AccessModifierOffset: -4
-AlignTrailingComments: true 
-AllowShortFunctionsOnASingleLine: false
-AllowShortIfStatementsOnASingleLine: false
+AlignTrailingComments: true
+AllowShortFunctionsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
 AlwaysBreakTemplateDeclarations: true
+BreakConstructorInitializers: AfterColon
+CompactNamespaces: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 SpaceAfterTemplateKeyword: false
+SpaceBeforeCpp11BracedList: false
 KeepEmptyLinesAtTheStartOfBlocks: false
-MaxEmptyLinesToKeep: 2 
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: None

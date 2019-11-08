@@ -3,11 +3,14 @@
 //
 // This file is used solely to aid Visual Studio Intellisense while editing.
 // It is not used as part of any build. See Microsoft docs for more info about this file.
-// 
+//
 
 #define CHARLS_API_IMPORT_EXPORT
 #define CHARLS_API_CALLING_CONVENTION
-#define CHARLS_ENUM_DEPRECATED
+#define CHARLS_NO_DISCARD [[nodiscard]]
+#define CHARLS_DEPRECATED [[deprecated]]
+#define CHARLS_FINAL final
+#define CHARLS_NOEXCEPT noexcept
 #define FORCE_INLINE
 #define MSVC_WARNING_SUPPRESS(x)
 #define MSVC_WARNING_UNSUPPRESS()

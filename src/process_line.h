@@ -3,13 +3,14 @@
 #pragma once
 
 #include <charls/jpegls_error.h>
+#include <charls/charls_legacy.h>
 
 #include "util.h"
 
-#include <vector>
-#include <sstream>
-#include <cstring>
 #include <algorithm>
+#include <cstring>
+#include <sstream>
+#include <vector>
 
 
 //
@@ -21,8 +22,7 @@
 // This mechanism could be used to encode/decode images as they are received.
 //
 
-namespace charls
-{
+namespace charls {
 
 class ProcessLine
 {
@@ -73,20 +73,20 @@ private:
 
 inline void ByteSwap(void* data, int count)
 {
-    if (static_cast<unsigned int>(count) & 1u)
+    if (static_cast<unsigned int>(count) & 1U)
         throw jpegls_error{jpegls_errc::invalid_encoded_data};
 
     const auto data32 = static_cast<unsigned int*>(data);
-    for(auto i = 0; i < count / 4; i++)
+    for (auto i = 0; i < count / 4; i++)
     {
         const auto value = data32[i];
-        data32[i] = ((value >> 8u) & 0x00FF00FFu) | ((value & 0x00FF00FFu) << 8u);
+        data32[i] = ((value >> 8U) & 0x00FF00FFU) | ((value & 0x00FF00FFU) << 8U);
     }
 
     const auto data8 = static_cast<unsigned char*>(data);
     if ((count % 4) != 0)
     {
-        std::swap(data8[count-2], data8[count-1]);
+        std::swap(data8[count - 2], data8[count - 1]);
     }
 }
 
@@ -94,15 +94,15 @@ class PostProcessSingleStream final : public ProcessLine
 {
 public:
     PostProcessSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
-        rawData_(rawData),
-        bytesPerPixel_(bytesPerPixel),
-        bytesPerLine_(params.stride)
+        rawData_{rawData},
+        bytesPerPixel_{bytesPerPixel},
+        bytesPerLine_{static_cast<size_t>(params.stride)}
     {
     }
 
     void NewLineRequested(void* destination, int pixelCount, int /*destStride*/) override
     {
-        auto bytesToRead = static_cast<std::streamsize>(pixelCount) * bytesPerPixel_;
+        auto bytesToRead = static_cast<std::streamsize>(static_cast<std::streamsize>(pixelCount) * bytesPerPixel_);
         while (bytesToRead != 0)
         {
             const auto bytesRead = rawData_->sgetn(static_cast<char*>(destination), bytesToRead);
@@ -126,7 +126,7 @@ public:
     void NewLineDecoded(const void* source, int pixelCount, int /*sourceStride*/) override
     {
         const auto bytesToWrite = pixelCount * bytesPerPixel_;
-        const auto bytesWritten = static_cast<size_t>(rawData_->sputn(static_cast<const char*>(source), bytesToWrite));
+        const auto bytesWritten = static_cast<size_t>(rawData_->sputn(static_cast<const char*>(source), static_cast<std::streamsize>(bytesToWrite)));
         if (bytesWritten != bytesToWrite)
             throw jpegls_error{jpegls_errc::destination_buffer_too_small};
     }
@@ -146,7 +146,7 @@ void TransformLineToQuad(const T* ptypeInput, int32_t pixelStrideIn, Quad<T>* by
 
     for (auto x = 0; x < cpixel; ++x)
     {
-        const Quad<T> pixel(transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]), ptypeInput[x + 3 * pixelStrideIn]);
+        const Quad<T> pixel(transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2 * pixelStrideIn]), ptypeInput[x + 3 * pixelStrideIn]);
         ptypeBuffer[x] = pixel;
     }
 }
@@ -210,7 +210,7 @@ void TransformLineToTriplet(const T* ptypeInput, int32_t pixelStrideIn, Triplet<
 
     for (auto x = 0; x < cpixel; ++x)
     {
-        ptypeBuffer[x] = transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]);
+        ptypeBuffer[x] = transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2 * pixelStrideIn]);
     }
 }
 
@@ -228,7 +228,7 @@ void TransformTripletToLine(const Triplet<T>* byteInput, int32_t pixelStrideIn, 
 
         ptypeBuffer[x] = colorTransformed.v1;
         ptypeBuffer[x + pixelStride] = colorTransformed.v2;
-        ptypeBuffer[x + 2 *pixelStride] = colorTransformed.v3;
+        ptypeBuffer[x + 2 * pixelStride] = colorTransformed.v3;
     }
 }
 
@@ -238,12 +238,12 @@ class ProcessTransformed final : public ProcessLine
 {
 public:
     ProcessTransformed(ByteStreamInfo rawStream, const JlsParameters& info, TRANSFORM transform) :
-        params_(info),
+        params_{info},
         tempLine_(static_cast<size_t>(info.width) * info.components),
         buffer_(static_cast<size_t>(info.width) * info.components * sizeof(size_type)),
-        transform_(transform),
-        inverseTransform_(transform),
-        rawPixels_(rawStream)
+        transform_{transform},
+        inverseTransform_{transform},
+        rawPixels_{rawStream}
     {
     }
 
@@ -284,7 +284,7 @@ public:
 
         if (params_.components == 3)
         {
-            if (params_.interleaveMode == InterleaveMode::Sample)
+            if (params_.interleaveMode == interleave_mode::sample)
             {
                 TransformLine(static_cast<Triplet<size_type>*>(dest), static_cast<const Triplet<size_type>*>(source), pixelCount, transform_);
             }
@@ -295,11 +295,11 @@ public:
         }
         else if (params_.components == 4)
         {
-            if (params_.interleaveMode == InterleaveMode::Sample)
+            if (params_.interleaveMode == interleave_mode::sample)
             {
                 TransformLine(static_cast<Quad<size_type>*>(dest), static_cast<const Quad<size_type>*>(source), pixelCount, transform_);
             }
-            else if (params_.interleaveMode == InterleaveMode::Line)
+            else if (params_.interleaveMode == interleave_mode::line)
             {
                 TransformQuadToLine(static_cast<const Quad<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, transform_);
             }
@@ -310,7 +310,7 @@ public:
     {
         if (params_.components == 3)
         {
-            if (params_.interleaveMode == InterleaveMode::Sample)
+            if (params_.interleaveMode == interleave_mode::sample)
             {
                 TransformLine(static_cast<Triplet<size_type>*>(rawData), static_cast<const Triplet<size_type>*>(pSrc), pixelCount, inverseTransform_);
             }
@@ -321,11 +321,11 @@ public:
         }
         else if (params_.components == 4)
         {
-            if (params_.interleaveMode == InterleaveMode::Sample)
+            if (params_.interleaveMode == interleave_mode::sample)
             {
                 TransformLine(static_cast<Quad<size_type>*>(rawData), static_cast<const Quad<size_type>*>(pSrc), pixelCount, inverseTransform_);
             }
-            else if (params_.interleaveMode == InterleaveMode::Line)
+            else if (params_.interleaveMode == interleave_mode::line)
             {
                 TransformLineToQuad(static_cast<const size_type*>(pSrc), byteStride, static_cast<Quad<size_type>*>(rawData), pixelCount, inverseTransform_);
             }

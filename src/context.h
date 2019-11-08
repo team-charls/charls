@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include "util.h"
+
+#include <cassert>
 #include <cstdint>
 
-namespace charls
-{
+namespace charls {
 
 // Purpose: a JPEG-LS context with it's current statistics.
 struct JlsContext final
@@ -18,10 +20,9 @@ struct JlsContext final
     JlsContext() = default;
 
     explicit JlsContext(int32_t a) noexcept :
-        A(a)
+        A{a}
     {
     }
-
 
     FORCE_INLINE int32_t GetErrorCorrection(int32_t k) const noexcept
     {
@@ -30,7 +31,6 @@ struct JlsContext final
 
         return BitWiseSign(2 * B + N - 1);
     }
-
 
     FORCE_INLINE void UpdateVariables(int32_t errorValue, int32_t NEAR, int32_t NRESET) noexcept
     {
@@ -64,7 +64,7 @@ struct JlsContext final
             }
             C = C - (C > -128);
         }
-        else  if (b > 0)
+        else if (b > 0)
         {
             b = b - n;
             if (b > 0)
@@ -78,7 +78,6 @@ struct JlsContext final
         ASSERT(N != 0);
     }
 
-
     FORCE_INLINE int32_t GetGolomb() const noexcept
     {
         const int32_t nTest = N;
@@ -91,7 +90,7 @@ struct JlsContext final
         if (nTest << 4 >= aTest) return 4;
 
         int32_t k = 5;
-        for(; nTest << k < aTest; ++k)
+        for (; nTest << k < aTest; ++k)
         {
             ASSERT(k <= 32);
         }

@@ -2,12 +2,11 @@
 
 #pragma once
 
-#include <cstring>
 #include <array>
 #include <cassert>
+#include <cstring>
 
-namespace charls
-{
+namespace charls {
 
 // Tables for fast decoding of short Golomb Codes.
 struct Code final
@@ -50,7 +49,7 @@ public:
         const int32_t length = c.GetLength();
         ASSERT(static_cast<size_t>(length) <= byte_bit_count);
 
-        for (int32_t i = 0; i < 1 << (byte_bit_count - length); ++i)
+        for (size_t i = 0; i < static_cast<size_t>(1U) << (byte_bit_count - length); ++i)
         {
             ASSERT(types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i].GetLength() == 0);
             types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i] = c;

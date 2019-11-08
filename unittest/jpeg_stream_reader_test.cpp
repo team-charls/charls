@@ -2,29 +2,34 @@
 
 #include "pch.h"
 
+#include "util.h"
+
 #include "../src/jpeg_stream_reader.h"
 #include "../src/jpeg_stream_writer.h"
 #include "jpeg_test_stream_writer.h"
 
+#include <array>
 #include <cstdint>
 #include <vector>
 
-using charls::jpegls_errc;
-using charls::JpegStreamReader;
+using namespace charls;
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
+using std::array;
 using std::system_error;
 using std::vector;
 
-namespace CharLSUnitTest
-{
+namespace CharLSUnitTest {
+
+// clang-format off
+
 TEST_CLASS(JpegStreamReaderTest)
 {
 public:
     TEST_METHOD(ReadHeaderFromToSmallInputBuffer)
     {
-        uint8_t buffer[1];
+        array<uint8_t, 1> buffer{};
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer, 0);
+        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), 0);
         JpegStreamReader reader(byteStream);
 
         try
@@ -155,7 +160,7 @@ public:
         const JpegLSPresetCodingParameters params{1, 2, 3, 4, 5};
         writer.WriteJpegLSPresetParametersSegment(params);
         writer.WriteStartOfFrameSegment(1, 1, 2, 1);
-        writer.WriteStartOfScanSegment(1, 0, charls::InterleaveMode::None);
+        writer.WriteStartOfScanSegment(1, 0, charls::interleave_mode::none);
 
         const ByteStreamInfo destinationInfo = FromByteArray(source.data(), source.size());
         JpegStreamReader reader(destinationInfo);
@@ -442,10 +447,7 @@ public:
 
         try
         {
-            vector<uint8_t> outputBuffer;
-
-            const ByteStreamInfo destination = FromByteArray(outputBuffer.data(), outputBuffer.size());
-            reader.Read(destination);
+            reader.ReadHeader();
         }
         catch (const system_error& error)
         {
@@ -482,10 +484,7 @@ public:
 
         try
         {
-            vector<uint8_t> outputBuffer;
-
-            const ByteStreamInfo destination = FromByteArray(outputBuffer.data(), outputBuffer.size());
-            reader.Read(destination);
+            reader.ReadHeader();
         }
         catch (const system_error& error)
         {
@@ -534,14 +533,84 @@ public:
         try
         {
             reader.ReadHeader();
+            Assert::Fail();
         }
         catch (const system_error& error)
         {
             Assert::AreEqual(static_cast<int>(jpegls_errc::duplicate_start_of_image_marker), error.code().value());
-            return;
         }
+    }
 
-        Assert::Fail();
+    static void ReadSpiffHeader(uint8_t low_version)
+    {
+        vector<uint8_t> buffer = create_test_spiff_header(2, low_version);
+        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+        JpegStreamReader reader(byteStream);
+
+        spiff_header spiff_header{};
+        bool spiff_header_found{};
+
+        reader.ReadHeader(&spiff_header, &spiff_header_found);
+
+        Assert::IsTrue(spiff_header_found);
+        Assert::AreEqual(static_cast<int32_t>(spiff_profile_id::none), static_cast<int32_t>(spiff_header.profile_id));
+        Assert::AreEqual(3, spiff_header.component_count);
+        Assert::AreEqual(800U, spiff_header.height);
+        Assert::AreEqual(600U, spiff_header.width);
+        Assert::AreEqual(static_cast<int32_t>(spiff_color_space::rgb), static_cast<int32_t>(spiff_header.color_space));
+        Assert::AreEqual(8, spiff_header.bits_per_sample);;
+        Assert::AreEqual(static_cast<int32_t>(spiff_compression_type::jpeg_ls), static_cast<int32_t>(spiff_header.compression_type));
+        Assert::AreEqual(static_cast<int32_t>(spiff_resolution_units::dots_per_inch), static_cast<int32_t>(spiff_header.resolution_units));
+        Assert::AreEqual(96U, spiff_header.vertical_resolution);
+        Assert::AreEqual(1024U, spiff_header.horizontal_resolution);
+    }
+
+    TEST_METHOD(ReadSpiffHeader)
+    {
+        ReadSpiffHeader(0);
+    }
+
+    TEST_METHOD(read_spiff_header_low_version_newer)
+    {
+        ReadSpiffHeader(1);
+    }
+
+    TEST_METHOD(read_spiff_header_high_version_to_new)
+    {
+        vector<uint8_t> buffer = create_test_spiff_header(3);
+        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+        JpegStreamReader reader(byteStream);
+
+        spiff_header spiff_header{};
+        bool spiff_header_found{};
+
+        reader.ReadHeader(&spiff_header, &spiff_header_found);
+
+        Assert::IsFalse(spiff_header_found);
+    }
+
+    TEST_METHOD(read_spiff_header_without_end_of_directory)
+    {
+        vector<uint8_t> buffer = create_test_spiff_header(2, 0, false);
+        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+        JpegStreamReader reader(byteStream);
+
+        spiff_header spiff_header{};
+        bool spiff_header_found{};
+
+        reader.ReadHeader(&spiff_header, &spiff_header_found);
+        Assert::IsTrue(spiff_header_found);
+
+        try
+        {
+            reader.ReadHeader();
+            Assert::Fail();
+        }
+        catch (const system_error& error)
+        {
+            Assert::AreEqual(static_cast<int>(jpegls_errc::missing_end_of_spiff_directory), error.code().value());
+        }
     }
 };
+
 } // namespace CharLSUnitTest

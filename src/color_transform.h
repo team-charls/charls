@@ -4,8 +4,7 @@
 
 #include "util.h"
 
-namespace charls
-{
+namespace charls {
 
 // This file defines simple classes that define (lossless) color transforms.
 // They are invoked in process_line.h to convert between decoded values and the internal line buffers.
@@ -147,9 +146,9 @@ struct TransformShifted final
 
     struct Inverse final
     {
-        explicit Inverse(const TransformShifted& transform) noexcept
-            : shift_{transform.shift_},
-              inverseTransform_{transform.colorTransform_}
+        explicit Inverse(const TransformShifted& transform) noexcept :
+            shift_{transform.shift_},
+            inverseTransform_{transform.colorTransform_}
         {
         }
 
@@ -170,8 +169,8 @@ struct TransformShifted final
         typename Transform::Inverse inverseTransform_;
     };
 
-    explicit TransformShifted(int shift) noexcept
-        : shift_{shift}
+    explicit TransformShifted(int shift) noexcept :
+        shift_{shift}
     {
     }
 

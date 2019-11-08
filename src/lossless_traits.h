@@ -5,8 +5,7 @@
 #include "constants.h"
 #include <cstdint>
 
-namespace charls
-{
+namespace charls {
 
 // Optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
 // This class assumes MaximumSampleValue correspond to a whole number of bits, and no custom ResetValue is set when encoding.
@@ -18,11 +17,11 @@ struct LosslessTraitsImpl
 
     enum
     {
-        NEAR  = 0,
-        bpp   = bitsPerPixel,
-        qbpp  = bitsPerPixel,
+        NEAR = 0,
+        bpp = bitsPerPixel,
+        qbpp = bitsPerPixel,
         RANGE = (1 << bpp),
-        MAXVAL= (1 << bpp) - 1,
+        MAXVAL = (1 << bpp) - 1,
         LIMIT = 2 * (bitsPerPixel + std::max(8, bitsPerPixel)),
         RESET = DefaultResetValue
     };
@@ -39,9 +38,10 @@ struct LosslessTraitsImpl
 
 // The following optimization is implementation-dependent (works on x86 and ARM, see charlstest).
 #if defined(__clang__)
-     __attribute__((no_sanitize("shift")))
+    __attribute__((no_sanitize("shift")))
 #endif
-    FORCE_INLINE constexpr static int32_t ModuloRange(int32_t errorValue) noexcept
+    FORCE_INLINE constexpr static int32_t
+    ModuloRange(int32_t errorValue) noexcept
     {
         return static_cast<int32_t>(errorValue << (int32_t_bit_count - bpp)) >> (int32_t_bit_count - bpp);
     }
@@ -56,7 +56,7 @@ struct LosslessTraitsImpl
         if ((Pxc & MAXVAL) == Pxc)
             return Pxc;
 
-        return (~(Pxc >> (int32_t_bit_count-1))) & MAXVAL;
+        return (~(Pxc >> (int32_t_bit_count - 1))) & MAXVAL;
     }
 };
 

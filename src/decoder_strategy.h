@@ -62,22 +62,23 @@ public:
         if (!byteStream_ || byteStream_->sgetc() == std::char_traits<char>::eof())
             return;
 
-        const std::size_t count = endPosition_ - position_;
+        const auto count = endPosition_ - position_;
 
         if (count > 64)
             return;
 
-        for (std::size_t i = 0; i < count; ++i)
+        for (std::size_t i = 0; i < static_cast < std::size_t>(count); ++i)
         {
             buffer_[i] = position_[i];
         }
-        const std::size_t offset = buffer_.data() - position_;
+        const auto offset = buffer_.data() - position_;
 
         position_ += offset;
         endPosition_ += offset;
         nextFFPosition_ += offset;
 
-        const std::streamsize readBytes = byteStream_->sgetn(reinterpret_cast<char*>(endPosition_), buffer_.size() - count);
+        const std::streamsize readBytes = byteStream_->sgetn(reinterpret_cast<char*>(endPosition_),
+            static_cast<std::streamsize>(buffer_.size()) - count);
         endPosition_ += readBytes;
     }
 

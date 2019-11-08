@@ -107,7 +107,7 @@ void DecompressFile(const char* strNameEncoded, const char* strNameRaw, int offs
         FixEndian(&rawBuffer, false);
     }
 
-    if (params.interleaveMode == InterleaveMode::None && params.components == 3)
+    if (params.interleaveMode == interleave_mode::none && params.components == 3)
     {
         Triplet2Planar(rawBuffer, Size(params.width, params.height));
     }

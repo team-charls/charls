@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "util.h"
 #include "constants.h"
+#include "util.h"
 
 #include <algorithm>
-#include <cstdlib>
-#include <cmath>
 #include <cassert>
+#include <cmath>
+#include <cstdlib>
 
 // Default traits that support all JPEG LS parameters: custom limit, near, maxval (not power of 2)
 
@@ -17,8 +17,7 @@
 // This is to allow the traits class to replace the default implementation here with optimized specific implementations.
 // This is done for lossless coding/decoding: see losslesstraits.h
 
-namespace charls
-{
+namespace charls {
 
 template<typename sample, typename pixel>
 struct DefaultTraits final
@@ -34,14 +33,14 @@ struct DefaultTraits final
     const int32_t LIMIT;
     const int32_t RESET;
 
-    DefaultTraits(int32_t max, int32_t near, int32_t reset = DefaultResetValue) noexcept
-        : MAXVAL{max},
-          RANGE{(max + 2 * near) / (2 * near + 1) + 1},
-          NEAR{near},
-          qbpp{log_2(RANGE)},
-          bpp{log_2(max)},
-          LIMIT{2 * (bpp + std::max(8, bpp))},
-          RESET{reset}
+    DefaultTraits(int32_t max, int32_t near, int32_t reset = DefaultResetValue) noexcept :
+        MAXVAL{max},
+        RANGE{(max + 2 * near) / (2 * near + 1) + 1},
+        NEAR{near},
+        qbpp{log_2(RANGE)},
+        bpp{log_2(max)},
+        LIMIT{2 * (bpp + std::max(8, bpp))},
+        RESET{reset}
     {
     }
 
@@ -57,7 +56,7 @@ struct DefaultTraits final
     }
 
     DefaultTraits() = delete;
-    DefaultTraits(DefaultTraits&&) = default;
+    DefaultTraits(DefaultTraits&&) noexcept = default;
     ~DefaultTraits() = default;
     DefaultTraits& operator=(const DefaultTraits&) = delete;
     DefaultTraits& operator=(DefaultTraits&&) = delete;
@@ -97,7 +96,7 @@ struct DefaultTraits final
         if ((Pxc & MAXVAL) == Pxc)
             return Pxc;
 
-        return (~(Pxc >> (int32_t_bit_count-1))) & MAXVAL;
+        return (~(Pxc >> (int32_t_bit_count - 1))) & MAXVAL;
     }
 
     /// <summary>
@@ -124,9 +123,9 @@ private:
     int32_t Quantize(int32_t errorValue) const noexcept
     {
         if (errorValue > 0)
-            return  (errorValue + NEAR) / (2 * NEAR + 1);
+            return (errorValue + NEAR) / (2 * NEAR + 1);
 
-        return - (NEAR - errorValue) / (2 * NEAR + 1);
+        return -(NEAR - errorValue) / (2 * NEAR + 1);
     }
 
     FORCE_INLINE int32_t DeQuantize(int32_t ErrorValue) const noexcept

@@ -4,11 +4,13 @@
 
 #include "../src/encoder_strategy.h"
 
+namespace CharLSUnitTest {
 
 class EncoderStrategyTester final : charls::EncoderStrategy
 {
 public:
-    explicit EncoderStrategyTester(const JlsParameters& params) : EncoderStrategy(params)
+    explicit EncoderStrategyTester(const JlsParameters& params) :
+        EncoderStrategy(params)
     {
     }
 
@@ -52,3 +54,4 @@ public:
     }
 };
 
+} // namespace CharLSUnitTest

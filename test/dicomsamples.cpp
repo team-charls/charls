@@ -26,7 +26,7 @@ bool ContainsString(const uint8_t* container, const uint8_t* bytesToFind, size_t
     return true;
 }
 
-int FindString(vector<uint8_t>& container, const uint8_t* bytesToFind, size_t bytesLength)
+int FindString(vector<uint8_t>& container, const uint8_t* bytesToFind, size_t bytesLength) noexcept
 {
     for (size_t i = 0; i < container.size() - bytesLength; ++i)
     {

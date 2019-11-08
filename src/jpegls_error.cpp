@@ -2,9 +2,12 @@
 
 #include <charls/jpegls_error.h>
 
+using std::string;
+using std::error_category;
+
 namespace charls {
 
-class jpegls_category_t : public std::error_category
+class jpegls_category final : public error_category
 {
 public:
     const char* name() const noexcept override
@@ -12,7 +15,7 @@ public:
         return "charls::jpegls";
     }
 
-    std::string message(int error_value) const override
+    string message(int error_value) const override
     {
         return charls_get_error_message(error_value);
     }
@@ -22,9 +25,9 @@ public:
 
 using namespace charls;
 
-const void* CHARLS_API_CALLING_CONVENTION charls_jpegls_category()
+const void* CHARLS_API_CALLING_CONVENTION charls_get_jpegls_category()
 {
-    static jpegls_category_t instance;
+    static class jpegls_category instance;
     return &instance;
 }
 
@@ -33,7 +36,7 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(int32_t error
     switch (static_cast<jpegls_errc>(error_value))
     {
     case jpegls_errc::success:
-        return "";
+        return "Success";
 
     case jpegls_errc::invalid_argument:
         return "Invalid argument";
@@ -53,14 +56,17 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(int32_t error
     case jpegls_errc::invalid_argument_interleave_mode:
         return "The interleave mode is not None, Sample, Line) or invalid in combination with component count";
 
-    case jpegls_errc::invalid_argument_destination:
-        return "The destination buffer or stream is not set";
+    case jpegls_errc::invalid_argument_near_lossless:
+        return "The near lossless argument is outside the range [0, 255]";
 
-    case jpegls_errc::invalid_argument_source:
-        return "The source buffer or stream is not set";
+    case jpegls_errc::invalid_argument_spiff_entry_size:
+        return "The argument for the entry size parameter is outside the range [0, 65528]";
 
-    case jpegls_errc::invalid_argument_thumbnail:
-        return "The arguments for the thumbnail and the dimensions don't match";
+    case jpegls_errc::invalid_argument_color_transformation:
+        return "The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component count";
+
+    case jpegls_errc::invalid_argument_pc_parameters:
+        return "The argument for the JPEG-LS preset coding parameters is not valid";
 
     case jpegls_errc::start_of_image_marker_not_found:
         return "Invalid JPEG-LS stream, first JPEG marker is not a Start Of Image (SOI) marker";
@@ -89,6 +95,9 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(int32_t error
     case jpegls_errc::jpegls_preset_extended_parameter_type_not_supported:
         return "Unsupported JPEG-LS stream, JPEG-LS preset parameters segment contains an JPEG-LS Extended (ISO/IEC 14495-2) type";
 
+    case jpegls_errc::missing_end_of_spiff_directory:
+        return "Invalid JPEG-LS stream, SPIFF header without End Of Directory (EOD) entry";
+
     case jpegls_errc::invalid_parameter_bits_per_sample:
         return "Invalid JPEG-LS stream, The bit per sample (sample precision) parameter is not in the range [2, 16]";
 
@@ -106,6 +115,9 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(int32_t error
 
     case jpegls_errc::too_much_encoded_data:
         return "Invalid JPEG-LS stream, the decoding process is ready but the source buffer still contains encoded data";
+
+    case jpegls_errc::invalid_operation:
+        return "Method call is invalid for the current state";
 
     case jpegls_errc::bit_depth_for_transform_not_supported:
         return "The bit depth for the transformation is not supported";
@@ -141,5 +153,5 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(int32_t error
         return "Invalid JPEG-LS stream, interleave mode is outside the range [0, 2] or conflicts with component count";
     }
 
-    return nullptr;
+    return "Unknown";
 }

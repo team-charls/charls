@@ -7,8 +7,7 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using namespace charls;
 
-namespace
-{
+namespace {
 
 struct thresholds
 {
@@ -22,9 +21,7 @@ struct thresholds
 // Threshold function of JPEG-LS reference implementation.
 constexpr thresholds ComputeDefaultsUsingReferenceImplementation(const int32_t max_value, const uint16_t near) noexcept
 {
-    thresholds result{};
-
-    result.MaxVal = max_value;
+    thresholds result{max_value, 0, 0, 0, 64};
 
     if (result.MaxVal >= 128)
     {
@@ -61,11 +58,9 @@ constexpr thresholds ComputeDefaultsUsingReferenceImplementation(const int32_t m
         if (result.T3 > result.MaxVal || result.T3 < result.T2)
             result.T3 = result.T2;
     }
-    result.Reset = 64;
 
     return result;
 }
-
 
 } // namespace
 
@@ -157,6 +152,24 @@ public:
         Assert::AreEqual(expected.T2, parameters.Threshold2);
         Assert::AreEqual(expected.T3, parameters.Threshold3);
         Assert::AreEqual(expected.Reset, parameters.ResetValue);
+    }
+
+    TEST_METHOD(is_valid_default)
+    {
+        constexpr auto bits_per_sample = 16;
+        constexpr auto maximum_component_value = (1 << bits_per_sample) - 1;
+        const jpegls_pc_parameters pc_parameters{};
+
+        Assert::IsTrue(is_valid(pc_parameters, maximum_component_value, 0));
+    }
+
+    TEST_METHOD(is_valid_thresholds_zero)
+    {
+        constexpr auto bits_per_sample = 16;
+        constexpr auto maximum_component_value = (1 << bits_per_sample) - 1;
+        const jpegls_pc_parameters pc_parameters{maximum_component_value, 0, 0, 0, 63};
+
+        Assert::IsTrue(is_valid(pc_parameters, maximum_component_value, 0));
     }
 };
 

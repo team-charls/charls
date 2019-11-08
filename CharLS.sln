@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29006.145
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSTest", "test\CharLSTest.vcxproj", "{7185AD7F-57BA-42C7-A715-239CEA8ADC31}"
 EndProject
@@ -15,7 +15,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLS", "src\CharLS.vcxpro
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5F4C6204-36F8-4D63-BF33-ECFCB5D1D114}"
 	ProjectSection(SolutionItems) = preProject
+		.clang-format = .clang-format
 		.editorconfig = .editorconfig
+		cpp.hint = cpp.hint
+		default.ruleset.md = default.ruleset.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CharLSNetTest", "dotnet\test\CharLSNetTest.csproj", "{002B897F-9D96-4A99-853F-53806C39559D}"

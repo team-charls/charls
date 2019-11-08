@@ -4,32 +4,40 @@
 
 #include "bmp_image.h"
 
-#include <charls/jpegls_encoder.h>
+#include <charls/charls.h>
+
 #include <cassert>
-#include <charconv>
+#include <iostream>
+#include <vector>
 
 using std::cerr;
 using std::exception;
-using std::ofstream;
 using std::ios;
+using std::ofstream;
 using std::vector;
-using std::byte;
-using charls::jpegls_encoder;
-using charls::metadata;
+
+using namespace charls;
 
 namespace {
 
-vector<byte> encode_bmp_image_to_jpegls(const bmp_image& image, int allowed_lossy_error)
+vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, int near_lossless)
 {
     assert(image.dib_header.depth == 24);        // This function only supports 24-bit BMP pixel data.
     assert(image.dib_header.compress_type == 0); // Data needs to be stored by pixel as RGB.
 
     jpegls_encoder encoder;
-    encoder.source(image.pixel_data.data(), image.pixel_data.size(),
-                   metadata{static_cast<int32_t>(image.dib_header.width), static_cast<int32_t>(image.dib_header.height), 8, 3});
-    encoder.allowed_lossy_error(allowed_lossy_error);
+    encoder.frame_info({image.dib_header.width, image.dib_header.height, 8, 3})
+        .near_lossless(near_lossless);
 
-    return encoder.encode();
+    vector<uint8_t> buffer(encoder.estimated_destination_size());
+    encoder.destination(buffer);
+
+    encoder.write_standard_spiff_header(spiff_color_space::rgb);
+
+    const size_t encoded_size = encoder.encode(image.pixel_data);
+    buffer.resize(encoded_size);
+
+    return buffer;
 }
 
 void save_buffer_to_file(const void* buffer, size_t buffer_size, const char* filename)
@@ -42,38 +50,33 @@ void save_buffer_to_file(const void* buffer, size_t buffer_size, const char* fil
     output.write(static_cast<const char*>(buffer), buffer_size);
 }
 
-int from_chars(const char* argument) noexcept
+} // namespace
+
+
+int main(const int argc, char const* const argv[])
 {
-    int value;
-    std::from_chars(argument, argument + strlen(argument), value);
-    return value;
-}
+    ios::sync_with_stdio(false);
 
-} // nameless namespace.
-
-
-int main(const int argc, char const * const argv[])
-{
     try
     {
         if (argc < 3)
         {
-            cerr << "Usage: <input_file_name> <output_file_name> [allowed_lossy_error, default=0 (lossless)]\n";
+            cerr << "Usage: <input_file_name> <output_file_name> [near-lossless-value, default=0 (lossless)]\n";
             return EXIT_FAILURE;
         }
 
-        int allowed_lossy_error = 0;
+        int near_lossless{};
         if (argc > 3)
         {
-            allowed_lossy_error = from_chars(argv[3]);
-            if (allowed_lossy_error < 0 || allowed_lossy_error > 255)
+            near_lossless = strtol(argv[3], nullptr, 10);
+            if (near_lossless < 0 || near_lossless > 255)
             {
-                cerr << "allowed_lossy_error needs to be in the range [0,255]\n";
+                cerr << "near-lossless-value needs to be in the range [0,255]\n";
                 return EXIT_FAILURE;
             }
         }
 
-        auto encoded_buffer = encode_bmp_image_to_jpegls(bmp_image{argv[1]}, allowed_lossy_error);
+        auto encoded_buffer = encode_bmp_image_to_jpegls(bmp_image{argv[1]}, near_lossless);
         save_buffer_to_file(encoded_buffer.data(), encoded_buffer.size(), argv[2]);
 
         return EXIT_SUCCESS;

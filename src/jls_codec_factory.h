@@ -7,8 +7,7 @@
 struct JlsParameters;
 struct JpegLSPresetCodingParameters;
 
-namespace charls
-{
+namespace charls {
 
 template<typename Strategy>
 class JlsCodecFactory final

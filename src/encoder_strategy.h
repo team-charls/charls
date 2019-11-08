@@ -2,25 +2,17 @@
 
 #pragma once
 
-#include "process_line.h"
 #include "decoder_strategy.h"
+#include "process_line.h"
 
-namespace charls
-{
+namespace charls {
 
 // Purpose: Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
 class EncoderStrategy
 {
 public:
     explicit EncoderStrategy(const JlsParameters& params) :
-        params_(params),
-        bitBuffer_(0),
-        freeBitCount_(sizeof(bitBuffer_) * 8),
-        compressedLength_(0),
-        position_(nullptr),
-        isFFWritten_(false),
-        bytesWritten_(0),
-        compressedStream_(nullptr)
+        params_{params}
     {
     }
 
@@ -47,7 +39,6 @@ public:
     }
 
 protected:
-
     void Init(ByteStreamInfo& compressedStream)
     {
         freeBitCount_ = sizeof(bitBuffer_) * 8;
@@ -70,9 +61,9 @@ protected:
     void AppendToBitStream(int32_t bits, int32_t bitCount)
     {
         ASSERT(bitCount < 32 && bitCount >= 0);
-        ASSERT((!decoder_) || (bitCount == 0 && bits == 0) ||( decoder_->ReadLongValue(bitCount) == bits));
+        ASSERT((!decoder_) || (bitCount == 0 && bits == 0) || (decoder_->ReadLongValue(bitCount) == bits));
 #ifndef NDEBUG
-        const int mask = (1u << (bitCount)) - 1;
+        const int mask = (1U << (bitCount)) - 1;
         ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
 #endif
 
@@ -177,22 +168,21 @@ protected:
     }
 
     std::unique_ptr<DecoderStrategy> decoder_;
-
     JlsParameters params_;
     std::unique_ptr<ProcessLine> processLine_;
 
 private:
-    unsigned int bitBuffer_;
-    int32_t freeBitCount_;
-    std::size_t compressedLength_;
+    unsigned int bitBuffer_{};
+    int32_t freeBitCount_{sizeof bitBuffer_ * 8};
+    std::size_t compressedLength_{};
 
     // encoding
-    uint8_t* position_;
-    bool isFFWritten_;
-    std::size_t bytesWritten_;
+    uint8_t* position_{};
+    bool isFFWritten_{};
+    std::size_t bytesWritten_{};
 
     std::vector<uint8_t> buffer_;
-    std::basic_streambuf<char>* compressedStream_;
+    std::basic_streambuf<char>* compressedStream_{};
 };
 
 } // namespace charls

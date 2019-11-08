@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include <charls/jpegls_encoder.h>
+#include <charls/charls.h>
 
 #include <cassert>
+#include <iostream>
 #include <vector>
-#include <fstream>
-#include <charconv>

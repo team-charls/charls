@@ -15,16 +15,10 @@
 using std::array;
 using std::vector;
 
-namespace charls
-{
-JpegStreamWriter::JpegStreamWriter() noexcept
-    : destination_{}
-{
-}
+namespace charls {
 
-
-JpegStreamWriter::JpegStreamWriter(const ByteStreamInfo& destination) noexcept
-    : destination_{destination}
+JpegStreamWriter::JpegStreamWriter(const ByteStreamInfo& destination) noexcept :
+    destination_{destination}
 {
 }
 
@@ -41,34 +35,47 @@ void JpegStreamWriter::WriteEndOfImage()
 }
 
 
-void JpegStreamWriter::WriteJpegFileInterchangeFormatSegment(const JfifParameters& params)
+void JpegStreamWriter::WriteSpiffHeaderSegment(const spiff_header& header)
 {
-    ASSERT(params.units == 0 || params.units == 1 || params.units == 2);
-    ASSERT(params.Xdensity > 0);
-    ASSERT(params.Ydensity > 0);
-    ASSERT(params.Xthumbnail >= 0 && params.Xthumbnail < 256);
-    ASSERT(params.Ythumbnail >= 0 && params.Ythumbnail < 256);
+    ASSERT(header.height > 0);
+    ASSERT(header.width > 0);
 
-    // Create a JPEG APP0 segment in the JPEG File Interchange Format (JFIF), v1.02
-    vector<uint8_t> segment{'J', 'F', 'I', 'F', '\0'};
-    push_back(segment, static_cast<uint16_t>(params.version));
-    segment.push_back(static_cast<uint8_t>(params.units));
-    push_back(segment, static_cast<uint16_t>(params.Xdensity));
-    push_back(segment, static_cast<uint16_t>(params.Ydensity));
+    // Create a JPEG APP8 segment in Still Picture Interchange File Format (SPIFF), v2.0
+    vector<uint8_t> segment{'S', 'P', 'I', 'F', 'F', '\0'};
+    segment.push_back(spiff_major_revision_number);
+    segment.push_back(spiff_minor_revision_number);
+    segment.push_back(static_cast<uint8_t>(header.profile_id));
+    segment.push_back(static_cast<uint8_t>(header.component_count));
+    push_back(segment, header.height);
+    push_back(segment, header.width);
+    segment.push_back(static_cast<uint8_t>(header.color_space));
+    segment.push_back(static_cast<uint8_t>(header.bits_per_sample));
+    segment.push_back(static_cast<uint8_t>(header.compression_type));
+    segment.push_back(static_cast<uint8_t>(header.resolution_units));
+    push_back(segment, header.vertical_resolution);
+    push_back(segment, header.horizontal_resolution);
 
-    // thumbnail
-    segment.push_back(static_cast<uint8_t>(params.Xthumbnail));
-    segment.push_back(static_cast<uint8_t>(params.Ythumbnail));
-    if (params.Xthumbnail > 0)
-    {
-        if (params.thumbnail)
-            throw jpegls_error{jpegls_errc::invalid_argument_thumbnail};
+    WriteSegment(JpegMarkerCode::ApplicationData8, segment.data(), segment.size());
+}
 
-        segment.insert(segment.end(), static_cast<uint8_t*>(params.thumbnail),
-                       static_cast<uint8_t*>(params.thumbnail) + static_cast<size_t>(3) * params.Xthumbnail * params.Ythumbnail);
-    }
 
-    WriteSegment(JpegMarkerCode::ApplicationData0, segment.data(), segment.size());
+void JpegStreamWriter::WriteSpiffDirectoryEntry(uint32_t entry_tag, const void* entry_data, size_t entry_data_size)
+{
+    WriteMarker(JpegMarkerCode::ApplicationData8);
+    WriteUInt16(static_cast<uint16_t>(sizeof(uint16_t) + sizeof(uint32_t) + entry_data_size));
+    WriteUInt32(entry_tag);
+    WriteBytes(entry_data, entry_data_size);
+}
+
+
+void JpegStreamWriter::WriteSpiffEndOfDirectoryEntry()
+{
+    // Note: ISO/IEC 10918-3, Annex F.2.2.3 documents that the EOD entry segment should have a length of 8
+    // but only 6 data bytes. This approach allows to wrap existing bit streams\encoders with a SPIFF header.
+    // In this implementation the SOI marker is added as data bytes to simplify the design.
+
+    array<uint8_t, 6> segment{0, 0, 0, spiff_end_of_directory_entry_type, 0xFF, static_cast<uint8_t>(JpegMarkerCode::StartOfImage)};
+    WriteSegment(JpegMarkerCode::ApplicationData8, segment.data(), segment.size());
 }
 
 
@@ -102,7 +109,7 @@ void JpegStreamWriter::WriteStartOfFrameSegment(int width, int height, int bitsP
 }
 
 
-void JpegStreamWriter::WriteColorTransformSegment(ColorTransformation transformation)
+void JpegStreamWriter::WriteColorTransformSegment(color_transformation transformation)
 {
     array<uint8_t, 5> segment{'m', 'r', 'f', 'x', static_cast<uint8_t>(transformation)};
     WriteSegment(JpegMarkerCode::ApplicationData8, segment.data(), segment.size());
@@ -125,13 +132,13 @@ void JpegStreamWriter::WriteJpegLSPresetParametersSegment(const JpegLSPresetCodi
 }
 
 
-void JpegStreamWriter::WriteStartOfScanSegment(int componentCount, int allowedLossyError, InterleaveMode interleaveMode)
+void JpegStreamWriter::WriteStartOfScanSegment(int componentCount, int allowedLossyError, interleave_mode interleaveMode)
 {
     ASSERT(componentCount > 0 && componentCount <= UINT8_MAX);
     ASSERT(allowedLossyError >= 0 && allowedLossyError <= UINT8_MAX);
-    ASSERT(interleaveMode == InterleaveMode::None ||
-           interleaveMode == InterleaveMode::Line ||
-           interleaveMode == InterleaveMode::Sample);
+    ASSERT(interleaveMode == interleave_mode::none ||
+           interleaveMode == interleave_mode::line ||
+           interleaveMode == interleave_mode::sample);
 
     // Create a Scan Header as defined in T.87, C.2.3 and T.81, B.2.3
     vector<uint8_t> segment;

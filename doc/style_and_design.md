@@ -23,7 +23,7 @@ There are 2 methods to prevent double include:
 
 1) #pragma once. Supported by all main compilers MSVC, GCC, clang and many other compilers, but in essence a compiler extension.
 
-2) #ifdef CHARLS_<FILENAME> \ #define CHARLS_<FILENAME> \ #endif construction.
+2) #ifdef CHARLS_\<FILENAME> \ #define CHARLS_\<FILENAME> \ #endif construction.
 
 * Given the industry acceptance, use method 1 (easier and less manual code).
 
@@ -54,12 +54,17 @@ catch (const std::system_error& e)
 }
 ```
 
+## Types
+
+The type charls_jpegls_encoder is placed in the charls namespace as the type needs also to be defined as a C type.
+It makes it also easier to keep the header only type charls::jpegls_encoder and the implementation class charls_jpegls_encoder separate.
+
 ## Jpeg-LS Design decisions
 
 ### Width and Height
 
 The Jpeg-LS standards support a height and weight up to 2^32-1. This means that at least an 32-bit unsigned integer is
-needed to support the complete range. Using unsigned integers has however the drawback that the interoperability with other languages is poort:
+needed to support the complete range. Using unsigned integers has however the drawback that the interoperability with other languages is poor:
 
 C# : supports unsigned 32 bit integers (but .NET marks them as not CLS compliant)
 VB.NET : supports unsigned 32 bit integers (but .NET marks them as not CLS compliant)
@@ -67,22 +72,39 @@ Java : by default integers are signed
 Javascript: only signed integers
 Python: only signed integers
 
-Given the practical applications that 2^31 * 2^31 (max signed integer) will be sufficient for the coming 10 years, the API should use signed integers.
-References:
-8K Images = (7680×4320)
+Having unsigned integers in the C and C++ application and signed integers in wrapping libaries should
+not be a practical problem. Most real world images can be expressed in signed integers,  8K Images = (7680×4320).
 
 ### ABI
 
 A C style interface is used to ensure that the ABI is stable. However just a C style API is not enough.
 As CharLS can be distributes as a dynamic link library also the filename needs to be managed.
-- It should be possible for applications to use v1 and v2 DLL at the same time.
-- It should be possible to load the correct CPU architecture from the same directory.
+
+* It should be possible for applications to use v1 and v2 DLL at the same time.
+
+* It should be possible to load the correct CPU architecture from the same directory.
+
 Design (Windows):
- - filename = charls-<ABI version>-<CPU architecture>.dll
+
+* filename = charls-\<ABI version>-\<CPU architecture>.dll
+
+#### Null pointer checking
+
+Passing a NULL pointer as parameter into the C ABI can be handled in 2 ways:
+
+* There can be an explicit check and an error return value.
+
+* The pointer can be deferenced directly and passing NULL will just crash the process.
+
+Passing a NULL pointer is a defect of the calling application, it is however helpfull to
+not generate an access violation inside the library module. If the library is build without
+symbol info, it is difficult for the user to detect this mistake. Returning a "bad parameter"
+error is in this case more helpfull.
+Note: NULL is the only special value that can be checked, but also the common mistake.
 
 ### Supported C++ language
 
-CharLS currently targets C++14 on the main branch. This will be done until December 2020 (3 years after the release of C++17)
+CharLS currently targets C++14 on the main branch. This will be done until December 2022 (5 years after the release of C++17)
 
 #### Features currently not available (C++17)
 
@@ -100,10 +122,29 @@ CharLS currently targets C++14 on the main branch. This will be done until Decem
 The following features are available in C++20 (usable after 2023), or in dual language support mode.
 
 * endian
-* <span>
+* \<span>
 * modules
 
 ### Supported C# language
 
 CharLS currently targets C# 7.3 on the main branch. This will be done until C# 8.0 becomes available.
 Client code in C# 7.3 calling the CharLS assembly will be supported up to 3 years after the release of C# 8.0.
+
+### Portable Anymap Format
+
+The de facto standard used by the JPEG standard to deliver test files is the Portable Anymap Format.
+This format has been made populair by the netpbm project. It is an extreme simple format and only
+designed to make it easy to exchange images on many platforms.
+It consists of the following variants
+
+* P5 = Portable Graymap (0 ... 16 bits monochrome), extension = .pgm
+* P6 = Portable PixMap (0 .. 16 bits RGB), extension = .ppm
+* P7 = Portable Arbitrary Map (0..16 bits, N channels), extension = .pam
+
+### External components \ Package Manager
+
+One of the missing features of C++ is a standard Package Manager. The following packages would be usefull to use:
+
+* Cross-platform unit test library (for example Catch2)
+* Library to read Anymap files (for example Netpbm)
+* Library to parse command line parameters (for example Clara, CLI11)

@@ -34,19 +34,13 @@ using std::fstream;
 using std::string;
 using std::iter_swap;
 using std::getline;
-using charls::DefaultTraits;
-using charls::LosslessTraits;
-using charls::jpegls_errc;
-using charls::TransformRgbToBgr;
-using charls::InterleaveMode;
-using charls::log_2;
-
+using namespace charls;
 
 namespace
 {
 
-const ios_base::openmode mode_input  = ios_base::in  | ios::binary;
-const ios_base::openmode mode_output = ios_base::out | ios::binary;
+constexpr ios_base::openmode mode_input  = ios_base::in  | ios::binary;
+constexpr ios_base::openmode mode_output = ios_base::out | ios::binary;
 
 
 vector<uint8_t> ScanFile(const char* strNameEncoded, JlsParameters* params)
@@ -174,7 +168,7 @@ void TestNoiseImage()
 void TestNoiseImageWithCustomReset()
 {
     const Size size{512, 512};
-    const int bitDepth = 16;
+    constexpr int bitDepth = 16;
     const vector<uint8_t> noiseBytes = MakeSomeNoise16bit(size.cx * size.cy, bitDepth, 21344);
 
     JlsParameters params{};
@@ -323,7 +317,7 @@ void TestDecodeRect()
 }
 
 
-void TestEncodeFromStream(const char* file, int offset, int width, int height, int bpp, int componentCount, InterleaveMode ilv, size_t expectedLength)
+void TestEncodeFromStream(const char* file, int offset, int width, int height, int bpp, int componentCount, interleave_mode ilv, size_t expectedLength)
 {
     basic_filebuf<char> myFile; // On the stack
     myFile.open(file, mode_input);
@@ -429,7 +423,7 @@ bool EncodePnm(istream& pnmFile, const ostream& jlsFileStream)
     params.width = readValues[1];
     params.height = readValues[2];
     params.bitsPerSample = log_2(readValues[3] + 1);
-    params.interleaveMode = params.components == 3 ? InterleaveMode::Line : InterleaveMode::None;
+    params.interleaveMode = params.components == 3 ? interleave_mode::line : interleave_mode::none;
 
     const int bytesPerSample = (params.bitsPerSample + 7) / 8;
     vector<uint8_t> inputBuffer(static_cast<size_t>(params.width) * params.height * bytesPerSample * params.components);
@@ -578,10 +572,10 @@ void TestEncodeFromStream()
 {
     ////TestDecodeFromStream("test/user_supplied/output.jls");
 
-    TestEncodeFromStream("test/0015.raw", 0, 1024, 1024, 8, 1, InterleaveMode::None, 0x3D3ee);
+    TestEncodeFromStream("test/0015.raw", 0, 1024, 1024, 8, 1, interleave_mode::none, 0x3D3ee);
     ////TestEncodeFromStream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
-    TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, InterleaveMode::Sample, 99734);
-    TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, InterleaveMode::Line, 100615);
+    TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, interleave_mode::sample, 99734);
+    TestEncodeFromStream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, interleave_mode::line, 100615);
 }
 
 

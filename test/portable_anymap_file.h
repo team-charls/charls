@@ -1,10 +1,14 @@
 #pragma once
 
 #include "../src/util.h"
+
 #include <vector>
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <ios>
+
+namespace charls_test {
 
 // Purpose: this class can read an image stored in the Portable Anymap Format (PNM).
 //          The 2 binary formats P5 and P6 are supported:
@@ -22,7 +26,7 @@ public:
 
         std::vector<int> header_info = read_header(pnm_file);
         if (header_info.size() != 4)
-            throw std::istream::failure("Incorrect PNM header");
+            throw std::ios_base::failure("Incorrect PNM header");
 
         component_count_ = header_info[0] == 6 ? 3 : 1;
         width_ = header_info[1];
@@ -54,7 +58,7 @@ public:
         return bits_per_sample_;
     }
 
-    const std::vector<uint8_t>& image_data() const noexcept
+    std::vector<uint8_t>& image_data() noexcept
     {
         return input_buffer_;
     }
@@ -95,3 +99,5 @@ private:
     int bits_per_sample_;
     std::vector<uint8_t> input_buffer_;
 };
+
+} // namespace charls_test

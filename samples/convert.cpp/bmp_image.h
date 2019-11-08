@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <vector>
-#include <fstream>
 #include <cstddef>
+#include <fstream>
+#include <vector>
 
 class bmp_image final
 {
@@ -57,7 +57,7 @@ public:
 
     bmp_header header;
     bmp_dib_header dib_header;
-    std::vector<std::byte> pixel_data;
+    std::vector<uint8_t> pixel_data;
 
 private:
     static bmp_header read_bmp_header(std::istream& input)

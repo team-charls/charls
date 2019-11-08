@@ -3,6 +3,7 @@
 #pragma once
 
 #include <charls/jpegls_error.h>
+#include <charls/charls_legacy.h>
 
 #include "jpeg_marker_code.h"
 
@@ -16,22 +17,31 @@ enum class JpegMarkerCode : uint8_t;
 class JpegStreamWriter final
 {
 public:
-    JpegStreamWriter() noexcept;
+    JpegStreamWriter() = default;
     explicit JpegStreamWriter(const ByteStreamInfo& destination) noexcept;
 
     void WriteStartOfImage();
 
     /// <summary>
-    /// Write a JPEG File Interchange (APP1 + jfif) segment.
+    /// Write a JPEG SPIFF (APP8 + spiff) segment.
+    /// This segment is documented in ISO/IEC 10918-3, Annex F.
     /// </summary>
-    /// <param name="params">Parameters to write into the JFIF segment.</param>
-    void WriteJpegFileInterchangeFormatSegment(const JfifParameters& params);
+    /// <param name="header">Header info to write into the SPIFF segment.</param>
+    void WriteSpiffHeaderSegment(const spiff_header& header);
+
+    void WriteSpiffDirectoryEntry(uint32_t entry_tag, const void* entry_data, size_t entry_data_size);
+
+    /// <summary>
+    /// Write a JPEG SPIFF end of directory (APP8) segment.
+    /// This segment is documented in ISO/IEC 10918-3, Annex F.
+    /// </summary>
+    void WriteSpiffEndOfDirectoryEntry();
 
     /// <summary>
     /// Writes a HP color transformation (APP8) segment.
     /// </summary>
     /// <param name="transformation">Color transformation to put into the segment.</param>
-    void WriteColorTransformSegment(ColorTransformation transformation);
+    void WriteColorTransformSegment(color_transformation transformation);
 
     /// <summary>
     /// Writes a JPEG-LS preset parameters (LSE) segment.
@@ -54,7 +64,7 @@ public:
     /// <param name="componentCount">The number of components in the scan segment. Can only be > 1 when the components are interleaved.</param>
     /// <param name="allowedLossyError">The allowed lossy error. 0 means lossless.</param>
     /// <param name="interleaveMode">The interleave mode of the components.</param>
-    void WriteStartOfScanSegment(int componentCount, int allowedLossyError, InterleaveMode interleaveMode);
+    void WriteStartOfScanSegment(int componentCount, int allowedLossyError, interleave_mode interleaveMode);
 
     void WriteEndOfImage();
 
@@ -84,6 +94,12 @@ public:
         byteOffset_ += byteCount;
     }
 
+    void UpdateDestination(void* destination_buffer, size_t destination_size) noexcept
+    {
+        destination_.rawData = static_cast<uint8_t*>(destination_buffer);
+        destination_.count = destination_size;
+    }
+
 private:
     uint8_t* GetPos() const noexcept
     {
@@ -96,7 +112,7 @@ private:
     {
         if (destination_.rawStream)
         {
-            destination_.rawStream->sputc(value);
+            destination_.rawStream->sputc(static_cast<char>(value));
         }
         else
         {
@@ -131,13 +147,21 @@ private:
         WriteByte(static_cast<uint8_t>(value % 0x100));
     }
 
+    void WriteUInt32(uint32_t value)
+    {
+        WriteByte(static_cast<uint8_t>(value >> 24));
+        WriteByte(static_cast<uint8_t>(value >> 16));
+        WriteByte(static_cast<uint8_t>(value >> 8));
+        WriteByte(static_cast<uint8_t>(value));
+    }
+
     void WriteMarker(JpegMarkerCode markerCode)
     {
         WriteByte(JpegMarkerStartByte);
         WriteByte(static_cast<uint8_t>(markerCode));
     }
 
-    ByteStreamInfo destination_;
+    ByteStreamInfo destination_{};
     std::size_t byteOffset_{};
     int8_t componentId_{1};
 };

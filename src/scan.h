@@ -2,19 +2,18 @@
 
 #pragma once
 
-#include "lookup_table.h"
-#include "context_run_mode.h"
-#include "context.h"
 #include "color_transform.h"
+#include "context.h"
+#include "context_run_mode.h"
+#include "lookup_table.h"
 #include "process_line.h"
 
-#include <sstream>
 #include <array>
+#include <sstream>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
 
-namespace charls
-{
+namespace charls {
 
 extern CTable decodingTables[16];
 extern std::vector<signed char> rgquant8Ll;
@@ -85,7 +84,7 @@ constexpr int32_t UnMapErrVal(int32_t mappedError) noexcept
 
 constexpr int32_t GetMappedErrVal(int32_t errorValue) noexcept
 {
-    const int32_t mappedError = (errorValue >> (int32_t_bit_count-2)) ^ (2 * errorValue);
+    const int32_t mappedError = (errorValue >> (int32_t_bit_count - 2)) ^ (2 * errorValue);
     return mappedError;
 }
 
@@ -107,7 +106,7 @@ public:
         traits{std::move(inTraits)},
         width_{params.width}
     {
-        if (Info().interleaveMode == InterleaveMode::None)
+        if (Info().interleaveMode == interleave_mode::none)
         {
             Info().components = 1;
         }
@@ -127,7 +126,7 @@ public:
 
     bool IsInterleaved() noexcept
     {
-        if (Info().interleaveMode == InterleaveMode::None)
+        if (Info().interleaveMode == interleave_mode::none)
             return false;
 
         if (Info().components == 1)
@@ -225,7 +224,7 @@ protected:
 
 // Encode/decode a single sample. Performance wise the #1 important functions
 template<typename Traits, typename Strategy>
-typename Traits::SAMPLE JlsCodec<Traits,Strategy>::DoRegular(int32_t Qs, int32_t, int32_t pred, DecoderStrategy*)
+typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_t, int32_t pred, DecoderStrategy*)
 {
     const int32_t sign = BitWiseSign(Qs);
     JlsContext& ctx = contexts_[ApplySign(Qs, sign)];
@@ -257,7 +256,7 @@ typename Traits::SAMPLE JlsCodec<Traits,Strategy>::DoRegular(int32_t Qs, int32_t
 
 
 template<typename Traits, typename Strategy>
-typename Traits::SAMPLE JlsCodec<Traits,Strategy>::DoRegular(int32_t Qs, int32_t x, int32_t pred, EncoderStrategy*)
+typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_t x, int32_t pred, EncoderStrategy*)
 {
     const int32_t sign = BitWiseSign(Qs);
     JlsContext& ctx = contexts_[ApplySign(Qs, sign)];
@@ -284,7 +283,7 @@ inline std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedE
 inline CTable InitTable(int32_t k) noexcept
 {
     CTable table;
-    for (short nerr = 0; ; nerr++)
+    for (short nerr = 0;; nerr++)
     {
         // Q is not used when k != 0
         const int32_t merrval = GetMappedErrVal(nerr);
@@ -296,7 +295,7 @@ inline CTable InitTable(int32_t k) noexcept
         table.AddEntry(static_cast<uint8_t>(pairCode.second), code);
     }
 
-    for (short nerr = -1; ; nerr--)
+    for (short nerr = -1;; nerr--)
     {
         // Q is not used when k != 0
         const int32_t merrval = GetMappedErrVal(nerr);
@@ -361,7 +360,8 @@ FORCE_INLINE void JlsCodec<Traits, Strategy>::EncodeMappedValue(int32_t k, int32
 
 // C4127 = conditional expression is constant (caused by some template methods that are not fully specialized) [VS2017]
 // 6326 = Potential comparison of a constant with another constant. (false warning, triggered by template construction in Checked build)
-MSVC_WARNING_SUPPRESS(4127 6326)
+// 26814 = The const variable 'RANGE' can be computed at compile-time. [incorrect warning, VS 16.3.0 P3]
+MSVC_WARNING_SUPPRESS(4127 6326 26814)
 
 // Sets up a lookup table to "Quantize" sample difference.
 
@@ -411,28 +411,28 @@ void JlsCodec<Traits, Strategy>::InitQuantizationLUT()
 MSVC_WARNING_UNSUPPRESS()
 
 template<typename Traits, typename Strategy>
-signed char JlsCodec<Traits,Strategy>::QuantizeGradientOrg(int32_t Di) const noexcept
+signed char JlsCodec<Traits, Strategy>::QuantizeGradientOrg(int32_t Di) const noexcept
 {
-    if (Di <= -T3) return  -4;
-    if (Di <= -T2) return  -3;
-    if (Di <= -T1) return  -2;
-    if (Di < -traits.NEAR)  return  -1;
-    if (Di <=  traits.NEAR) return   0;
-    if (Di < T1)   return   1;
-    if (Di < T2)   return   2;
-    if (Di < T3)   return   3;
+    if (Di <= -T3) return -4;
+    if (Di <= -T2) return -3;
+    if (Di <= -T1) return -2;
+    if (Di < -traits.NEAR) return -1;
+    if (Di <= traits.NEAR) return 0;
+    if (Di < T1) return 1;
+    if (Di < T2) return 2;
+    if (Di < T3) return 3;
 
-    return  4;
+    return 4;
 }
 
 
 // RI = Run interruption: functions that handle the sample terminating a run.
 
 template<typename Traits, typename Strategy>
-int32_t JlsCodec<Traits,Strategy>::DecodeRIError(CContextRunMode& ctx)
+int32_t JlsCodec<Traits, Strategy>::DecodeRIError(CContextRunMode& ctx)
 {
     const int32_t k = ctx.GetGolomb();
-    const int32_t EMErrval = DecodeValue(k, traits.LIMIT - J[RUNindex_]-1, traits.qbpp);
+    const int32_t EMErrval = DecodeValue(k, traits.LIMIT - J[RUNindex_] - 1, traits.qbpp);
     const int32_t errorValue = ctx.ComputeErrVal(EMErrval + ctx.nRItype_, k);
     ctx.UpdateVariables(errorValue, EMErrval);
     return errorValue;
@@ -440,33 +440,33 @@ int32_t JlsCodec<Traits,Strategy>::DecodeRIError(CContextRunMode& ctx)
 
 
 template<typename Traits, typename Strategy>
-void JlsCodec<Traits,Strategy>::EncodeRIError(CContextRunMode& ctx, int32_t errorValue)
+void JlsCodec<Traits, Strategy>::EncodeRIError(CContextRunMode& ctx, int32_t errorValue)
 {
     const int32_t k = ctx.GetGolomb();
     const bool map = ctx.ComputeMap(errorValue, k);
     const int32_t EMErrval = 2 * std::abs(errorValue) - ctx.nRItype_ - static_cast<int32_t>(map);
 
     ASSERT(errorValue == ctx.ComputeErrVal(EMErrval + ctx.nRItype_, k));
-    EncodeMappedValue(k, EMErrval, traits.LIMIT-J[RUNindex_]-1);
+    EncodeMappedValue(k, EMErrval, traits.LIMIT - J[RUNindex_] - 1);
     ctx.UpdateVariables(errorValue, EMErrval);
 }
 
 
 template<typename Traits, typename Strategy>
-Triplet<typename Traits::SAMPLE> JlsCodec<Traits,Strategy>::DecodeRIPixel(Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb)
+Triplet<typename Traits::SAMPLE> JlsCodec<Traits, Strategy>::DecodeRIPixel(Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb)
 {
     const int32_t errorValue1 = DecodeRIError(contextRunmode_[0]);
     const int32_t errorValue2 = DecodeRIError(contextRunmode_[0]);
     const int32_t errorValue3 = DecodeRIError(contextRunmode_[0]);
 
-    return Triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1  - Ra.v1)),
-                           traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2  - Ra.v2)),
-                           traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3  - Ra.v3)));
+    return Triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
+                           traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
+                           traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3)));
 }
 
 
 template<typename Traits, typename Strategy>
-Triplet<typename Traits::SAMPLE> JlsCodec<Traits,Strategy>::EncodeRIPixel(Triplet<SAMPLE> x, Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb)
+Triplet<typename Traits::SAMPLE> JlsCodec<Traits, Strategy>::EncodeRIPixel(Triplet<SAMPLE> x, Triplet<SAMPLE> Ra, Triplet<SAMPLE> Rb)
 {
     const int32_t errorValue1 = traits.ComputeErrVal(Sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
     EncodeRIError(contextRunmode_[0], errorValue1);
@@ -477,9 +477,9 @@ Triplet<typename Traits::SAMPLE> JlsCodec<Traits,Strategy>::EncodeRIPixel(Triple
     const int32_t errorValue3 = traits.ComputeErrVal(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
     EncodeRIError(contextRunmode_[0], errorValue3);
 
-    return Triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1  - Ra.v1)),
-                           traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2  - Ra.v2)),
-                           traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3  - Ra.v3)));
+    return Triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
+                           traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
+                           traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3)));
 }
 
 template<typename Traits, typename Strategy>
@@ -493,7 +493,7 @@ Quad<typename Traits::SAMPLE> JlsCodec<Traits, Strategy>::DecodeRIPixel(Quad<SAM
     return Quad<SAMPLE>(Triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
                                         traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
                                         traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3))),
-                                        traits.ComputeReconstructedSample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
+                        traits.ComputeReconstructedSample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
 }
 
 
@@ -515,12 +515,12 @@ Quad<typename Traits::SAMPLE> JlsCodec<Traits, Strategy>::EncodeRIPixel(Quad<SAM
     return Quad<SAMPLE>(Triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
                                         traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
                                         traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3))),
-                                        traits.ComputeReconstructedSample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
+                        traits.ComputeReconstructedSample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
 }
 
 
 template<typename Traits, typename Strategy>
-typename Traits::SAMPLE JlsCodec<Traits,Strategy>::DecodeRIPixel(int32_t Ra, int32_t Rb)
+typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DecodeRIPixel(int32_t Ra, int32_t Rb)
 {
     if (std::abs(Ra - Rb) <= traits.NEAR)
     {
@@ -534,7 +534,7 @@ typename Traits::SAMPLE JlsCodec<Traits,Strategy>::DecodeRIPixel(int32_t Ra, int
 
 
 template<typename Traits, typename Strategy>
-typename Traits::SAMPLE JlsCodec<Traits,Strategy>::EncodeRIPixel(int32_t x, int32_t Ra, int32_t Rb)
+typename Traits::SAMPLE JlsCodec<Traits, Strategy>::EncodeRIPixel(int32_t x, int32_t Ra, int32_t Rb)
 {
     if (std::abs(Ra - Rb) <= traits.NEAR)
     {
@@ -622,7 +622,7 @@ int32_t JlsCodec<Traits, Strategy>::DoRunMode(int32_t index, EncoderStrategy*)
 
     int32_t runLength = 0;
 
-    while (traits.IsNear(ptypeCurX[runLength],Ra))
+    while (traits.IsNear(ptypeCurX[runLength], Ra))
     {
         ptypeCurX[runLength] = Ra;
         runLength++;
@@ -645,7 +645,7 @@ int32_t JlsCodec<Traits, Strategy>::DoRunMode(int32_t index, EncoderStrategy*)
 template<typename Traits, typename Strategy>
 int32_t JlsCodec<Traits, Strategy>::DoRunMode(int32_t startIndex, DecoderStrategy*)
 {
-    const PIXEL Ra = currentLine_[startIndex-1];
+    const PIXEL Ra = currentLine_[startIndex - 1];
 
     const int32_t runLength = DecodeRunPixels(Ra, currentLine_ + startIndex, width_ - startIndex);
     const int32_t endIndex = startIndex + runLength;
@@ -666,12 +666,12 @@ template<typename Traits, typename Strategy>
 void JlsCodec<Traits, Strategy>::DoLine(SAMPLE*)
 {
     int32_t index = 0;
-    int32_t Rb = previousLine_[index-1];
+    int32_t Rb = previousLine_[index - 1];
     int32_t Rd = previousLine_[index];
 
     while (index < width_)
     {
-        const int32_t Ra = currentLine_[index -1];
+        const int32_t Ra = currentLine_[index - 1];
         const int32_t Rc = Rb;
         Rb = Rd;
         Rd = previousLine_[index + 1];
@@ -698,7 +698,7 @@ template<typename Traits, typename Strategy>
 void JlsCodec<Traits, Strategy>::DoLine(Triplet<SAMPLE>*)
 {
     int32_t index = 0;
-    while(index < width_)
+    while (index < width_)
     {
         const Triplet<SAMPLE> Ra = currentLine_[index - 1];
         const Triplet<SAMPLE> Rc = previousLine_[index - 1];
@@ -770,7 +770,7 @@ template<typename Traits, typename Strategy>
 void JlsCodec<Traits, Strategy>::DoScan()
 {
     const int32_t pixelStride = width_ + 4;
-    const int components = Info().interleaveMode == InterleaveMode::Line ? Info().components : 1;
+    const int components = Info().interleaveMode == interleave_mode::line ? Info().components : 1;
 
     std::vector<PIXEL> vectmp(static_cast<size_t>(2) * components * pixelStride);
     std::vector<int32_t> rgRUNindex(components);
@@ -816,23 +816,24 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
 {
     if (!IsInterleaved())
     {
-        return info.rawData ?
-            std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleComponent>(info.rawData, Info(), sizeof(typename Traits::PIXEL))) :
-            std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleStream>(info.rawStream, Info(), sizeof(typename Traits::PIXEL)));
+        return info.rawData ? std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleComponent>(info.rawData, Info(), sizeof(typename Traits::PIXEL))) : std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleStream>(info.rawStream, Info(), sizeof(typename Traits::PIXEL)));
     }
 
-    if (Info().colorTransformation == ColorTransformation::None)
+    if (Info().colorTransformation == color_transformation::none)
         return std::make_unique<ProcessTransformed<TransformNone<typename Traits::SAMPLE>>>(info, Info(), TransformNone<SAMPLE>());
 
     if (Info().bitsPerSample == sizeof(SAMPLE) * 8)
     {
         switch (Info().colorTransformation)
         {
-            case ColorTransformation::HP1: return std::make_unique<ProcessTransformed<TransformHp1<SAMPLE>>>(info, Info(), TransformHp1<SAMPLE>());
-            case ColorTransformation::HP2: return std::make_unique<ProcessTransformed<TransformHp2<SAMPLE>>>(info, Info(), TransformHp2<SAMPLE>());
-            case ColorTransformation::HP3: return std::make_unique<ProcessTransformed<TransformHp3<SAMPLE>>>(info, Info(), TransformHp3<SAMPLE>());
-            default:
-                throw jpegls_error{jpegls_errc::color_transform_not_supported};
+        case color_transformation::hp1:
+            return std::make_unique<ProcessTransformed<TransformHp1<SAMPLE>>>(info, Info(), TransformHp1<SAMPLE>());
+        case color_transformation::hp2:
+            return std::make_unique<ProcessTransformed<TransformHp2<SAMPLE>>>(info, Info(), TransformHp2<SAMPLE>());
+        case color_transformation::hp3:
+            return std::make_unique<ProcessTransformed<TransformHp3<SAMPLE>>>(info, Info(), TransformHp3<SAMPLE>());
+        default:
+            throw jpegls_error{jpegls_errc::color_transform_not_supported};
         }
     }
 
@@ -841,11 +842,14 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
         const int shift = 16 - Info().bitsPerSample;
         switch (Info().colorTransformation)
         {
-            case ColorTransformation::HP1: return std::make_unique<ProcessTransformed<TransformShifted<TransformHp1<uint16_t>>>>(info, Info(), TransformShifted<TransformHp1<uint16_t>>(shift));
-            case ColorTransformation::HP2: return std::make_unique<ProcessTransformed<TransformShifted<TransformHp2<uint16_t>>>>(info, Info(), TransformShifted<TransformHp2<uint16_t>>(shift));
-            case ColorTransformation::HP3: return std::make_unique<ProcessTransformed<TransformShifted<TransformHp3<uint16_t>>>>(info, Info(), TransformShifted<TransformHp3<uint16_t>>(shift));
-            default:
-                throw jpegls_error{jpegls_errc::color_transform_not_supported};
+        case color_transformation::hp1:
+            return std::make_unique<ProcessTransformed<TransformShifted<TransformHp1<uint16_t>>>>(info, Info(), TransformShifted<TransformHp1<uint16_t>>(shift));
+        case color_transformation::hp2:
+            return std::make_unique<ProcessTransformed<TransformShifted<TransformHp2<uint16_t>>>>(info, Info(), TransformShifted<TransformHp2<uint16_t>>(shift));
+        case color_transformation::hp3:
+            return std::make_unique<ProcessTransformed<TransformShifted<TransformHp3<uint16_t>>>>(info, Info(), TransformShifted<TransformHp3<uint16_t>>(shift));
+        default:
+            throw jpegls_error{jpegls_errc::color_transform_not_supported};
         }
     }
 

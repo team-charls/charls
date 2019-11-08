@@ -2,11 +2,13 @@
 
 #pragma once
 
+#include <charls/charls_legacy.h>
 #include <charls/charls.h>
+
 #include <vector>
 #include <exception>
 
-struct Size
+struct Size final
 {
     Size(size_t width, size_t height) noexcept
         :
@@ -18,7 +20,7 @@ struct Size
 };
 
 
-void FixEndian(std::vector<uint8_t>* buffer, bool littleEndianData);
+void FixEndian(std::vector<uint8_t>* buffer, bool littleEndianData) noexcept;
 std::vector<uint8_t> ReadFile(const char* filename, long offset = 0, size_t bytes = 0);
 void TestFile(const char* filename, int offset, Size size2, int bitsPerSample, int componentCount, bool littleEndianFile = false, int loopCount = 1);
 void TestRoundTrip(const char* strName, const std::vector<uint8_t>& decodedBuffer, Size size, int bitsPerSample, int componentCount, int loopCount = 1);
@@ -31,7 +33,7 @@ public:
     explicit UnitTestException() = default;
 };
 
-class Assert
+class Assert final
 {
 public:
     static void IsTrue(bool condition)

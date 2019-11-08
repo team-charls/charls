@@ -8,6 +8,7 @@ trim_trailing_whitespace = true
 
 [*.{h,cpp}]
 indent_size = 4
+insert_final_newline = true
 
 [CMakeLists.txt]
 indent_size = 2

@@ -1,8 +1,5 @@
 // Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
 
-#include <charls/charls.h>
-#include <charls/jpegls_error.h>
-
 #include "jpeg_stream_reader.h"
 #include "jpeg_stream_writer.h"
 #include "jpegls_preset_coding_parameters.h"
@@ -18,12 +15,12 @@ namespace {
 void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& parameters)
 {
     if (!destination.rawStream && !destination.rawData)
-        throw jpegls_error{jpegls_errc::invalid_argument_destination};
+        throw jpegls_error{jpegls_errc::invalid_operation};
 
     if (parameters.bitsPerSample < MinimumBitsPerSample || parameters.bitsPerSample > MaximumBitsPerSample)
         throw jpegls_error{jpegls_errc::invalid_argument_bits_per_sample};
 
-    if (!(parameters.interleaveMode == InterleaveMode::None || parameters.interleaveMode == InterleaveMode::Sample || parameters.interleaveMode == InterleaveMode::Line))
+    if (!(parameters.interleaveMode == interleave_mode::none || parameters.interleaveMode == interleave_mode::sample || parameters.interleaveMode == interleave_mode::line))
         throw jpegls_error{jpegls_errc::invalid_argument_interleave_mode};
 
     if (parameters.components < 1 || parameters.components > MaximumComponentCount)
@@ -39,31 +36,9 @@ void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& paramet
     case 4:
         break;
     default:
-        if (parameters.interleaveMode != InterleaveMode::None)
+        if (parameters.interleaveMode != interleave_mode::none)
             throw jpegls_error{jpegls_errc::invalid_argument_interleave_mode};
         break;
-    }
-}
-
-
-jpegls_errc to_jpegls_errc() noexcept
-{
-    try
-    {
-        // re-trow the exception.
-        throw;
-    }
-    catch (const jpegls_error& error)
-    {
-        return static_cast<jpegls_errc>(error.code().value());
-    }
-    catch (const std::bad_alloc&)
-    {
-        return jpegls_errc::not_enough_memory;
-    }
-    catch (...)
-    {
-        return jpegls_errc::unexpected_failure;
     }
 }
 
@@ -101,7 +76,7 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten,
         if (info.stride == 0)
         {
             info.stride = info.width * ((info.bitsPerSample + 7) / 8);
-            if (info.interleaveMode != InterleaveMode::None)
+            if (info.interleaveMode != interleave_mode::none)
             {
                 info.stride *= info.components;
             }
@@ -111,14 +86,9 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten,
 
         writer.WriteStartOfImage();
 
-        if (info.jfif.version != 0)
-        {
-            writer.WriteJpegFileInterchangeFormatSegment(info.jfif);
-        }
-
         writer.WriteStartOfFrameSegment(info.width, info.height, info.bitsPerSample, info.components);
 
-        if (info.colorTransformation != ColorTransformation::None)
+        if (info.colorTransformation != color_transformation::none)
         {
             writer.WriteColorTransformSegment(info.colorTransformation);
         }
@@ -133,7 +103,7 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten,
             writer.WriteJpegLSPresetParametersSegment(preset);
         }
 
-        if (info.interleaveMode == InterleaveMode::None)
+        if (info.interleaveMode == interleave_mode::none)
         {
             const int32_t byteCountComponent = info.width * info.height * ((info.bitsPerSample + 7) / 8);
             for (int32_t component = 0; component < info.components; ++component)
@@ -170,6 +140,9 @@ jpegls_errc JpegLsDecodeStream(ByteStreamInfo destination, ByteStreamInfo source
     {
         JpegStreamReader reader{source};
 
+        reader.ReadHeader();
+        reader.ReadStartOfScan(true);
+
         if (params)
         {
             reader.SetInfo(*params);
@@ -201,64 +174,4 @@ jpegls_errc JpegLsReadHeaderStream(ByteStreamInfo source, JlsParameters* params)
     {
         return to_jpegls_errc();
     }
-}
-
-extern "C" {
-
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsEncode(void* destination, size_t destinationLength, size_t* bytesWritten, const void* source, size_t sourceLength, const struct JlsParameters* params, const void* /*reserved*/)
-{
-    if (!destination || !bytesWritten || !source || !params)
-        return jpegls_errc::invalid_argument;
-
-    const ByteStreamInfo sourceInfo{FromByteArrayConst(source, sourceLength)};
-    const ByteStreamInfo destinationInfo{FromByteArray(destination, destinationLength)};
-
-    return JpegLsEncodeStream(destinationInfo, *bytesWritten, sourceInfo, *params);
-}
-
-
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsReadHeader(const void* source, size_t sourceLength, JlsParameters* params, const void* /*reserved*/)
-{
-    return JpegLsReadHeaderStream(FromByteArrayConst(source, sourceLength), params);
-}
-
-
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength, const struct JlsParameters* params, const void* /*reserved*/)
-{
-    const ByteStreamInfo compressedStream{FromByteArrayConst(source, sourceLength)};
-    const ByteStreamInfo rawStreamInfo{FromByteArray(destination, destinationLength)};
-
-    return JpegLsDecodeStream(rawStreamInfo, compressedStream, params);
-}
-
-
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsDecodeRect(void* destination, size_t destinationLength, const void* source, size_t sourceLength,
-                 JlsRect roi, const JlsParameters* params, const void* /*reserved*/)
-{
-    try
-    {
-        const ByteStreamInfo sourceInfo{FromByteArrayConst(source, sourceLength)};
-        JpegStreamReader reader{sourceInfo};
-        const ByteStreamInfo destinationInfo{FromByteArray(destination, destinationLength)};
-
-        if (params)
-        {
-            reader.SetInfo(*params);
-        }
-
-        reader.SetRect(roi);
-        reader.Read(destinationInfo);
-
-        return jpegls_errc::success;
-    }
-    catch (...)
-    {
-        return to_jpegls_errc();
-    }
-}
-
 }
