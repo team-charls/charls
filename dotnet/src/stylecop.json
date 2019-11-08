@@ -1,9 +1,9 @@
-﻿{
+{
   "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
   "settings": {
     "documentationRules": {
       "companyName": "CharLS Team",
-      "copyrightText": "(C) {companyName}, all rights reserved. See the accompanying \"License.txt\" for licensed use.",
+      "copyrightText": "Copyright (c) Team CharLS.\nSPDX-License-Identifier: BSD-3-Clause",
       "xmlHeader": false,
       "documentInterfaces": true,
       "documentInternalElements": false
