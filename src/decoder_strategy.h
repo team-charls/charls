@@ -119,7 +119,7 @@ public:
             const int bytesToRead = (bufType_bit_count - validBits_) >> 3;
             position_ += bytesToRead;
             validBits_ += bytesToRead * 8;
-            ASSERT(static_cast<size_t>(validBits_) >= bufType_bit_count - 8);
+            ASSERT(validBits_ >= bufType_bit_count - 8);
             return true;
         }
         return false;
@@ -127,7 +127,7 @@ public:
 
     void MakeValid()
     {
-        ASSERT(static_cast<size_t>(validBits_) <=bufType_bit_count - 8);
+        ASSERT(validBits_ <= bufType_bit_count - 8);
 
         if (OptimizedRead())
             return;
@@ -167,7 +167,7 @@ public:
                 validBits_--;
             }
         }
-        while (static_cast<size_t>(validBits_) < bufType_bit_count - 8);
+        while (validBits_ < bufType_bit_count - 8);
 
         nextFFPosition_ = FindNextFF();
     }
@@ -291,7 +291,7 @@ protected:
 
 private:
     using bufType = std::size_t;
-    static constexpr size_t bufType_bit_count = sizeof(bufType) * 8;
+    static constexpr auto bufType_bit_count = static_cast<int32_t>(sizeof(bufType) * 8);
 
     std::vector<uint8_t> buffer_;
     std::basic_streambuf<char>* byteStream_{};
