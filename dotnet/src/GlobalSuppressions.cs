@@ -1,4 +1,6 @@
-﻿// Copyright (c) Team CharLS. All rights reserved. See the accompanying "LICENSE.md" for licensed use.
+﻿// Copyright (c) Team CharLS.
+// SPDX-License-Identifier: BSD-3-Clause
+
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "CharLS", Justification = "At least 1 main namespace is needed.")]

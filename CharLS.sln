@@ -17,8 +17,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.clang-format = .clang-format
 		.editorconfig = .editorconfig
+		CHANGELOG.md = CHANGELOG.md
 		cpp.hint = cpp.hint
 		default.ruleset.md = default.ruleset.md
+		Directory.Build.props = Directory.Build.props
+		LICENSE.md = LICENSE.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CharLSNetTest", "dotnet\test\CharLSNetTest.csproj", "{002B897F-9D96-4A99-853F-53806C39559D}"
