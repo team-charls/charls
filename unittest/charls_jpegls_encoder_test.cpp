@@ -11,9 +11,9 @@ namespace Microsoft {
 namespace VisualStudio {
 namespace CppUnitTestFramework {
 template<>
-std::wstring ToString<charls::jpegls_errc>(const charls::jpegls_errc& t)
+std::wstring ToString<charls::jpegls_errc>(const charls::jpegls_errc& q)
 {
-    RETURN_WIDE_STRING(static_cast<int>(t));
+    RETURN_WIDE_STRING(static_cast<int>(q));
 }
 
 }}} // namespace Microsoft::VisualStudio::CppUnitTestFramework
@@ -41,7 +41,7 @@ public:
         auto error = charls_jpegls_encoder_set_destination_buffer(nullptr, buffer, sizeof buffer);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
 
-        auto encoder = charls_jpegls_encoder_create();
+        const auto encoder = charls_jpegls_encoder_create();
         error = charls_jpegls_encoder_set_destination_buffer(encoder, nullptr, sizeof buffer);
         charls_jpegls_encoder_destroy(encoder);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
@@ -53,7 +53,7 @@ public:
         auto error = charls_jpegls_encoder_set_frame_info(nullptr, &frame_info);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
 
-        auto encoder = charls_jpegls_encoder_create();
+        const auto encoder = charls_jpegls_encoder_create();
         error = charls_jpegls_encoder_set_frame_info(encoder, nullptr);
         charls_jpegls_encoder_destroy(encoder);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
@@ -77,7 +77,7 @@ public:
         auto error = charls_jpegls_encoder_set_preset_coding_parameters(nullptr, &parameters);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
 
-        auto encoder = charls_jpegls_encoder_create();
+        const auto encoder = charls_jpegls_encoder_create();
         error = charls_jpegls_encoder_set_preset_coding_parameters(encoder, nullptr);
         charls_jpegls_encoder_destroy(encoder);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
@@ -119,7 +119,7 @@ public:
         auto error = charls_jpegls_encoder_encode_from_buffer(nullptr, source_buffer, sizeof source_buffer, 0);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
 
-        auto encoder = charls_jpegls_encoder_create();
+        const auto encoder = charls_jpegls_encoder_create();
         error = charls_jpegls_encoder_encode_from_buffer(encoder, nullptr, sizeof source_buffer, 0);
         charls_jpegls_encoder_destroy(encoder);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
@@ -131,7 +131,7 @@ public:
         auto error = charls_jpegls_encoder_write_spiff_header(nullptr, &spiff_header);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
 
-        auto encoder = charls_jpegls_encoder_create();
+        const auto encoder = charls_jpegls_encoder_create();
         error = charls_jpegls_encoder_write_spiff_header(encoder, nullptr);
         charls_jpegls_encoder_destroy(encoder);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
@@ -150,7 +150,7 @@ public:
         auto error = charls_jpegls_encoder_write_spiff_entry(nullptr, 5, entry_data, sizeof(entry_data));
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
 
-        auto encoder = charls_jpegls_encoder_create();
+        const auto encoder = charls_jpegls_encoder_create();
         error = charls_jpegls_encoder_write_spiff_entry(encoder, 5, nullptr, sizeof(entry_data));
         charls_jpegls_encoder_destroy(encoder);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);

@@ -135,7 +135,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { encoder.estimated_destination_size(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(encoder.estimated_destination_size()); });
     }
 
     TEST_METHOD(destination)
@@ -341,7 +341,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        charls_jpegls_pc_parameters pc_parameters{};
+        const charls_jpegls_pc_parameters pc_parameters{};
         encoder.preset_coding_parameters(pc_parameters);
 
         // No explicit test possible, code should remain stable.
@@ -372,7 +372,7 @@ public:
 
         encoder.frame_info({1, 1, 2, 1});
         vector<uint8_t> source(20);
-        assert_expect_exception(jpegls_errc::invalid_operation,[&] { encoder.encode(source); });
+        assert_expect_exception(jpegls_errc::invalid_operation,[&] { static_cast<void>(encoder.encode(source)); });
     }
 
     TEST_METHOD(encode_without_frame_info)
@@ -382,7 +382,7 @@ public:
         vector<uint8_t> destination(20);
         encoder.destination(destination);
         vector<uint8_t> source(20);
-        assert_expect_exception(jpegls_errc::invalid_operation,[&] { encoder.encode(source); });
+        assert_expect_exception(jpegls_errc::invalid_operation,[&] { static_cast<void>(encoder.encode(source)); });
     }
 
     TEST_METHOD(encode_with_spiff_header)
@@ -395,7 +395,7 @@ public:
         encoder.destination(destination);
 
         encoder.write_standard_spiff_header(spiff_color_space::grayscale);
-        encoder.encode(source);
+        static_cast<void>(encoder.encode(source));
 
         // TODO: add generic compare test function.
     }
@@ -410,7 +410,7 @@ public:
         encoder.destination(destination)
                .color_transformation(color_transformation::hp1);
 
-        encoder.encode(source);
+        static_cast<void>(encoder.encode(source));
 
         // TODO: add generic compare test function.
     }
@@ -425,7 +425,7 @@ public:
         vector<uint8_t> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
-        encoder.encode(source);
+        static_cast<void>(encoder.encode(source));
 
         // TODO: add generic compare test function.
     }

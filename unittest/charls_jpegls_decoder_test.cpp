@@ -13,9 +13,9 @@ namespace Microsoft {
 namespace VisualStudio {
 namespace CppUnitTestFramework {
 template<>
-std::wstring ToString<charls::jpegls_errc>(const jpegls_errc& t)
+std::wstring ToString<jpegls_errc>(const jpegls_errc& q)
 {
-    RETURN_WIDE_STRING(static_cast<int>(t));
+    RETURN_WIDE_STRING(static_cast<int>(q));
 }
 
 }}} // namespace Microsoft::VisualStudio::CppUnitTestFramework
@@ -44,7 +44,7 @@ public:
         auto error = charls_jpegls_decoder_set_source_buffer(nullptr, buffer, sizeof buffer);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        auto decoder = charls_jpegls_decoder_create();
+        const auto decoder = charls_jpegls_decoder_create();
         error = charls_jpegls_decoder_set_source_buffer(decoder, nullptr, sizeof buffer);
         charls_jpegls_decoder_destroy(decoder);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
@@ -57,7 +57,7 @@ public:
         auto error = charls_jpegls_decoder_read_spiff_header(nullptr, &spiff_header, &header_found);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        auto decoder = charls_jpegls_decoder_create();
+        const auto decoder = charls_jpegls_decoder_create();
         error = charls_jpegls_decoder_read_spiff_header(decoder, nullptr, &header_found);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 

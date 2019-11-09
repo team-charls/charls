@@ -559,7 +559,7 @@ public:
         Assert::AreEqual(800U, spiff_header.height);
         Assert::AreEqual(600U, spiff_header.width);
         Assert::AreEqual(static_cast<int32_t>(spiff_color_space::rgb), static_cast<int32_t>(spiff_header.color_space));
-        Assert::AreEqual(8, spiff_header.bits_per_sample);;
+        Assert::AreEqual(8, spiff_header.bits_per_sample);
         Assert::AreEqual(static_cast<int32_t>(spiff_compression_type::jpeg_ls), static_cast<int32_t>(spiff_header.compression_type));
         Assert::AreEqual(static_cast<int32_t>(spiff_resolution_units::dots_per_inch), static_cast<int32_t>(spiff_header.resolution_units));
         Assert::AreEqual(96U, spiff_header.vertical_resolution);

@@ -29,7 +29,7 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& originalBuff
 void WriteFile(const char* filename, std::vector<uint8_t>& buffer);
 void test_portable_anymap_file(const char* filename, int loopCount = 1);
 
-class UnitTestException : public std::exception {
+class UnitTestException final : public std::exception {
 public:
     explicit UnitTestException() = default;
 };

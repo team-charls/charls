@@ -60,17 +60,19 @@ public:
 
         JpegStreamWriter writer(info);
 
-        spiff_header header{};
-        header.profile_id = spiff_profile_id::none;
-        header.component_count = 3;
-        header.height = 800;
-        header.width = 600;
-        header.color_space = spiff_color_space::rgb;
-        header.bits_per_sample = 8;
-        header.compression_type = spiff_compression_type::jpeg_ls;
-        header.resolution_units = spiff_resolution_units::dots_per_inch;
-        header.vertical_resolution = 96;
-        header.horizontal_resolution = 1024;
+        spiff_header header
+        {
+            spiff_profile_id::none,
+            3,
+            800,
+            600,
+            spiff_color_space::rgb,
+            8,
+            spiff_compression_type::jpeg_ls,
+            spiff_resolution_units::dots_per_inch,
+            96,
+            1024
+        };
 
         writer.WriteSpiffHeaderSegment(header);
 

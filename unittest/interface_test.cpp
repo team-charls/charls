@@ -20,9 +20,9 @@ namespace Microsoft {
 namespace VisualStudio {
 namespace CppUnitTestFramework {
 template<>
-std::wstring ToString<charls::jpegls_errc>(const charls::jpegls_errc& t)
+std::wstring ToString<jpegls_errc>(const jpegls_errc& q)
 {
-    RETURN_WIDE_STRING(static_cast<int>(t));
+    RETURN_WIDE_STRING(static_cast<int>(q));
 }
 
 }}} // namespace Microsoft::VisualStudio::CppUnitTestFramework

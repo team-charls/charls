@@ -75,7 +75,7 @@ public:
         constexpr uint8_t startValue = 123;
         constexpr uint8_t endValue = 124;
 
-        charls::TransformHp3<uint8_t> transformation;
+        const charls::TransformHp3<uint8_t> transformation;
 
         for (int red = startValue; red < endValue; ++red)
         {

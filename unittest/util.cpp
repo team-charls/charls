@@ -22,7 +22,7 @@ namespace {
 MSVC_WARNING_SUPPRESS(26497) // cannot be marked constexpr: will give error C3615
 bool IsMachineLittleEndian() noexcept
 {
-    constexpr int a = 0xFF000001;
+    constexpr unsigned int a = 0xFF000001;
     const auto* chars = reinterpret_cast<const char*>(&a);
     return chars[0] == 0x01;
 }
