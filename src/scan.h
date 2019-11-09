@@ -113,14 +113,14 @@ public:
         }
     }
 
-    void SetPresets(const JpegLSPresetCodingParameters& presets) override
+    void SetPresets(const jpegls_pc_parameters& presets) override
     {
-        const JpegLSPresetCodingParameters presetDefault = ComputeDefault(traits.MAXVAL, traits.NEAR);
+        const jpegls_pc_parameters presetDefault{compute_default(traits.MAXVAL, traits.NEAR)};
 
-        InitParams(presets.Threshold1 != 0 ? presets.Threshold1 : presetDefault.Threshold1,
-                   presets.Threshold2 != 0 ? presets.Threshold2 : presetDefault.Threshold2,
-                   presets.Threshold3 != 0 ? presets.Threshold3 : presetDefault.Threshold3,
-                   presets.ResetValue != 0 ? presets.ResetValue : presetDefault.ResetValue);
+        InitParams(presets.threshold1 != 0 ? presets.threshold1 : presetDefault.threshold1,
+                   presets.threshold2 != 0 ? presets.threshold2 : presetDefault.threshold2,
+                   presets.threshold3 != 0 ? presets.threshold3 : presetDefault.threshold3,
+                   presets.reset_value != 0 ? presets.reset_value : presetDefault.reset_value);
     }
 
     std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo info) override;
@@ -372,8 +372,8 @@ void JlsCodec<Traits, Strategy>::InitQuantizationLUT()
     // for lossless mode with default parameters, we have precomputed the look up table for bit counts 8, 10, 12 and 16.
     if (traits.NEAR == 0 && traits.MAXVAL == (1 << traits.bpp) - 1)
     {
-        const JpegLSPresetCodingParameters presets = ComputeDefault(traits.MAXVAL, traits.NEAR);
-        if (presets.Threshold1 == T1 && presets.Threshold2 == T2 && presets.Threshold3 == T3)
+        const jpegls_pc_parameters presets{compute_default(traits.MAXVAL, traits.NEAR)};
+        if (presets.threshold1 == T1 && presets.threshold2 == T2 && presets.threshold3 == T3)
         {
             if (traits.bpp == 8)
             {

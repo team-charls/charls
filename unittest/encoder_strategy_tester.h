@@ -15,7 +15,7 @@ public:
     {
     }
 
-    void SetPresets(const JpegLSPresetCodingParameters&) noexcept(false) override
+    void SetPresets(const charls::jpegls_pc_parameters&) noexcept(false) override
     {
     }
 

@@ -48,7 +48,15 @@ void EncodeScan(const JlsParameters& params, int componentCount, ByteStreamInfo 
     JlsParameters info{params};
     info.components = componentCount;
 
-    auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, info.custom);
+    const jpegls_pc_parameters preset_coding_parameters{
+        info.custom.MaximumSampleValue,
+        info.custom.Threshold1,
+        info.custom.Threshold2,
+        info.custom.Threshold3,
+        info.custom.ResetValue,
+    };
+
+    auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, preset_coding_parameters);
     std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(source));
     ByteStreamInfo destination{writer.OutputStream()};
     const size_t bytesWritten = codec->EncodeScan(move(processLine), destination);
@@ -94,14 +102,22 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten,
             writer.WriteColorTransformSegment(info.colorTransformation);
         }
 
-        if (!IsDefault(info.custom))
+        const jpegls_pc_parameters preset_coding_parameters{
+            info.custom.MaximumSampleValue,
+            info.custom.Threshold1,
+            info.custom.Threshold2,
+            info.custom.Threshold3,
+            info.custom.ResetValue,
+        };
+
+        if (!is_default(preset_coding_parameters))
         {
-            writer.WriteJpegLSPresetParametersSegment(info.custom);
+            writer.WriteJpegLSPresetParametersSegment(preset_coding_parameters);
         }
         else if (info.bitsPerSample > 12)
         {
-            const JpegLSPresetCodingParameters preset = ComputeDefault((1 << info.bitsPerSample) - 1, info.allowedLossyError);
-            writer.WriteJpegLSPresetParametersSegment(preset);
+            const auto default_preset_coding_parameters{compute_default((1 << info.bitsPerSample) - 1, info.allowedLossyError)};
+            writer.WriteJpegLSPresetParametersSegment(default_preset_coding_parameters);
         }
 
         if (info.interleaveMode == interleave_mode::none)

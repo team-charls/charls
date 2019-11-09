@@ -24,9 +24,9 @@ public:
         return params_;
     }
 
-    const JpegLSPresetCodingParameters& GetCustomPreset() const noexcept
+    const jpegls_pc_parameters& GetCustomPreset() const noexcept
     {
-        return params_.custom;
+        return preset_coding_parameters_;
     }
 
     void Read(ByteStreamInfo rawPixels);
@@ -83,6 +83,7 @@ private:
 
     ByteStreamInfo byteStream_;
     JlsParameters params_{};
+    jpegls_pc_parameters preset_coding_parameters_{};
     JlsRect rect_{};
     std::vector<uint8_t> componentIds_;
     state state_{};

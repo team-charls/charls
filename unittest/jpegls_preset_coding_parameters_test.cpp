@@ -74,85 +74,85 @@ TEST_CLASS(JpeglsPresetCodingParametersTest)
 public:
     TEST_METHOD(TableC3)
     {
-        const auto parameters = ComputeDefault(255, 0);
+        const auto parameters{compute_default(255, 0)};
 
-        Assert::AreEqual(255, parameters.MaximumSampleValue);
-        Assert::AreEqual(3, parameters.Threshold1);
-        Assert::AreEqual(7, parameters.Threshold2);
-        Assert::AreEqual(21, parameters.Threshold3);
-        Assert::AreEqual(64, parameters.ResetValue);
+        Assert::AreEqual(255, parameters.maximum_sample_value);
+        Assert::AreEqual(3, parameters.threshold1);
+        Assert::AreEqual(7, parameters.threshold2);
+        Assert::AreEqual(21, parameters.threshold3);
+        Assert::AreEqual(64, parameters.reset_value);
     }
 
     TEST_METHOD(MaxValueLossless)
     {
-        const auto expected = ComputeDefaultsUsingReferenceImplementation(65535, 0);
-        const auto parameters = ComputeDefault(65535, 0);
+        const auto expected{ComputeDefaultsUsingReferenceImplementation(65535, 0)};
+        const auto parameters{compute_default(65535, 0)};
 
-        Assert::AreEqual(expected.MaxVal, parameters.MaximumSampleValue);
-        Assert::AreEqual(expected.T1, parameters.Threshold1);
-        Assert::AreEqual(expected.T2, parameters.Threshold2);
-        Assert::AreEqual(expected.T3, parameters.Threshold3);
-        Assert::AreEqual(expected.Reset, parameters.ResetValue);
+        Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
+        Assert::AreEqual(expected.T1, parameters.threshold1);
+        Assert::AreEqual(expected.T2, parameters.threshold2);
+        Assert::AreEqual(expected.T3, parameters.threshold3);
+        Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
     TEST_METHOD(MinValueLossless)
     {
-        const auto expected = ComputeDefaultsUsingReferenceImplementation(3, 0);
-        const auto parameters = ComputeDefault(3, 0);
+        const auto expected{ComputeDefaultsUsingReferenceImplementation(3, 0)};
+        const auto parameters{compute_default(3, 0)};
 
-        Assert::AreEqual(expected.MaxVal, parameters.MaximumSampleValue);
-        Assert::AreEqual(expected.T1, parameters.Threshold1);
-        Assert::AreEqual(expected.T2, parameters.Threshold2);
-        Assert::AreEqual(expected.T3, parameters.Threshold3);
-        Assert::AreEqual(expected.Reset, parameters.ResetValue);
+        Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
+        Assert::AreEqual(expected.T1, parameters.threshold1);
+        Assert::AreEqual(expected.T2, parameters.threshold2);
+        Assert::AreEqual(expected.T3, parameters.threshold3);
+        Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
     TEST_METHOD(MinHighValueLossless)
     {
-        const auto expected = ComputeDefaultsUsingReferenceImplementation(128, 0);
-        const auto parameters = ComputeDefault(128, 0);
+        const auto expected{ComputeDefaultsUsingReferenceImplementation(128, 0)};
+        const auto parameters{compute_default(128, 0)};
 
-        Assert::AreEqual(expected.MaxVal, parameters.MaximumSampleValue);
-        Assert::AreEqual(expected.T1, parameters.Threshold1);
-        Assert::AreEqual(expected.T2, parameters.Threshold2);
-        Assert::AreEqual(expected.T3, parameters.Threshold3);
-        Assert::AreEqual(expected.Reset, parameters.ResetValue);
+        Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
+        Assert::AreEqual(expected.T1, parameters.threshold1);
+        Assert::AreEqual(expected.T2, parameters.threshold2);
+        Assert::AreEqual(expected.T3, parameters.threshold3);
+        Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
     TEST_METHOD(MaxLowValueLossless)
     {
-        const auto expected = ComputeDefaultsUsingReferenceImplementation(127, 0);
-        const auto parameters = ComputeDefault(127, 0);
+        const auto expected{ComputeDefaultsUsingReferenceImplementation(127, 0)};
+        const auto parameters{compute_default(127, 0)};
 
-        Assert::AreEqual(expected.MaxVal, parameters.MaximumSampleValue);
-        Assert::AreEqual(expected.T1, parameters.Threshold1);
-        Assert::AreEqual(expected.T2, parameters.Threshold2);
-        Assert::AreEqual(expected.T3, parameters.Threshold3);
-        Assert::AreEqual(expected.Reset, parameters.ResetValue);
+        Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
+        Assert::AreEqual(expected.T1, parameters.threshold1);
+        Assert::AreEqual(expected.T2, parameters.threshold2);
+        Assert::AreEqual(expected.T3, parameters.threshold3);
+        Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
     TEST_METHOD(MaxValueMaxLossy)
     {
-        const auto expected = ComputeDefaultsUsingReferenceImplementation(65535, 255);
-        const auto parameters = ComputeDefault(65535, 255);
+        const auto expected{ComputeDefaultsUsingReferenceImplementation(65535, 255)};
+        const auto parameters{compute_default(65535, 255)};
 
-        Assert::AreEqual(expected.MaxVal, parameters.MaximumSampleValue);
-        Assert::AreEqual(expected.T1, parameters.Threshold1);
-        Assert::AreEqual(expected.T2, parameters.Threshold2);
-        Assert::AreEqual(expected.T3, parameters.Threshold3);
-        Assert::AreEqual(expected.Reset, parameters.ResetValue);
+        Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
+        Assert::AreEqual(expected.T1, parameters.threshold1);
+        Assert::AreEqual(expected.T2, parameters.threshold2);
+        Assert::AreEqual(expected.T3, parameters.threshold3);
+        Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
     TEST_METHOD(MinValueMaxLossy)
     {
-        const auto expected = ComputeDefaultsUsingReferenceImplementation(3, 1);
-        const auto parameters = ComputeDefault(3, 1);
+        const auto expected{ComputeDefaultsUsingReferenceImplementation(3, 1)};
+        const auto parameters{compute_default(3, 1)};
 
-        Assert::AreEqual(expected.MaxVal, parameters.MaximumSampleValue);
-        Assert::AreEqual(expected.T1, parameters.Threshold1);
-        Assert::AreEqual(expected.T2, parameters.Threshold2);
-        Assert::AreEqual(expected.T3, parameters.Threshold3);
-        Assert::AreEqual(expected.Reset, parameters.ResetValue);
+        Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
+        Assert::AreEqual(expected.T1, parameters.threshold1);
+        Assert::AreEqual(expected.T2, parameters.threshold2);
+        Assert::AreEqual(expected.T3, parameters.threshold3);
+        Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
     TEST_METHOD(is_valid_default)

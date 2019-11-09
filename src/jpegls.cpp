@@ -23,28 +23,28 @@ const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6
 using std::make_unique;
 using std::unique_ptr;
 using std::vector;
+using namespace charls;
 
 namespace {
 
-signed char QuantizeGradientOrg(const JpegLSPresetCodingParameters& preset, int32_t NEAR, int32_t Di) noexcept
+signed char QuantizeGradientOrg(const jpegls_pc_parameters& preset, int32_t near_lossless, int32_t Di) noexcept
 {
-    if (Di <= -preset.Threshold3) return -4;
-    if (Di <= -preset.Threshold2) return -3;
-    if (Di <= -preset.Threshold1) return -2;
-    if (Di < -NEAR) return -1;
-    if (Di <= NEAR) return 0;
-    if (Di < preset.Threshold1) return 1;
-    if (Di < preset.Threshold2) return 2;
-    if (Di < preset.Threshold3) return 3;
+    if (Di <= -preset.threshold3) return -4;
+    if (Di <= -preset.threshold2) return -3;
+    if (Di <= -preset.threshold1) return -2;
+    if (Di < -near_lossless) return -1;
+    if (Di <= near_lossless) return 0;
+    if (Di < preset.threshold1) return 1;
+    if (Di < preset.threshold2) return 2;
+    if (Di < preset.threshold3) return 3;
 
     return 4;
 }
 
-
 vector<signed char> CreateQLutLossless(int32_t bitCount)
 {
-    const JpegLSPresetCodingParameters preset = charls::ComputeDefault((1u << static_cast<uint32_t>(bitCount)) - 1, 0);
-    const int32_t range = preset.MaximumSampleValue + 1;
+    const jpegls_pc_parameters preset{compute_default((1U << static_cast<uint32_t>(bitCount)) - 1, 0)};
+    const int32_t range = preset.maximum_sample_value + 1;
 
     vector<signed char> lut(static_cast<size_t>(range) * 2);
 
@@ -83,11 +83,11 @@ vector<signed char> rgquant16Ll = CreateQLutLossless(16);
 
 
 template<typename Strategy>
-unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const JlsParameters& params, const JpegLSPresetCodingParameters& presets)
+unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const JlsParameters& params, const jpegls_pc_parameters& preset_coding_parameters)
 {
     unique_ptr<Strategy> codec;
 
-    if (presets.ResetValue == 0 || presets.ResetValue == DefaultResetValue)
+    if (preset_coding_parameters.reset_value == 0 || preset_coding_parameters.reset_value == DefaultResetValue)
     {
         codec = CreateOptimizedCodec(params);
     }
@@ -96,19 +96,19 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const JlsParameters&
     {
         if (params.bitsPerSample <= 8)
         {
-            DefaultTraits<uint8_t, uint8_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
-            traits.MAXVAL = presets.MaximumSampleValue;
+            DefaultTraits<uint8_t, uint8_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, preset_coding_parameters.reset_value);
+            traits.MAXVAL = preset_coding_parameters.maximum_sample_value;
             codec = make_unique<JlsCodec<DefaultTraits<uint8_t, uint8_t>, Strategy>>(traits, params);
         }
         else
         {
-            DefaultTraits<uint16_t, uint16_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, presets.ResetValue);
-            traits.MAXVAL = presets.MaximumSampleValue;
+            DefaultTraits<uint16_t, uint16_t> traits((1 << params.bitsPerSample) - 1, params.allowedLossyError, preset_coding_parameters.reset_value);
+            traits.MAXVAL = preset_coding_parameters.maximum_sample_value;
             codec = make_unique<JlsCodec<DefaultTraits<uint16_t, uint16_t>, Strategy>>(traits, params);
         }
     }
 
-    codec->SetPresets(presets);
+    codec->SetPresets(preset_coding_parameters);
     return codec;
 }
 

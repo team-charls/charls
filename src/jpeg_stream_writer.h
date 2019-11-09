@@ -47,8 +47,8 @@ public:
     /// <summary>
     /// Writes a JPEG-LS preset parameters (LSE) segment.
     /// </summary>
-    /// <param name="params">Parameters to write into the JPEG-LS preset segment.</param>
-    void WriteJpegLSPresetParametersSegment(const JpegLSPresetCodingParameters& params);
+    /// <param name="preset_coding_parameters">Parameters to write into the JPEG-LS preset segment.</param>
+    void WriteJpegLSPresetParametersSegment(const jpegls_pc_parameters& preset_coding_parameters);
 
     /// <summary>
     /// Writes a JPEG-LS Start Of Frame (SOF-55) segment.

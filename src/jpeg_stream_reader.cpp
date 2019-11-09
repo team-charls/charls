@@ -72,7 +72,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels)
             ReadStartOfScan(componentIndex == 0);
         }
 
-        unique_ptr<DecoderStrategy> codec = JlsCodecFactory<DecoderStrategy>().CreateCodec(params_, params_.custom);
+        unique_ptr<DecoderStrategy> codec = JlsCodecFactory<DecoderStrategy>().CreateCodec(params_, preset_coding_parameters_);
         unique_ptr<ProcessLine> processLine(codec->CreateProcess(rawPixels));
         codec->DecodeScan(move(processLine), rect_, byteStream_);
         SkipBytes(rawPixels, static_cast<size_t>(bytesPerPlane));
@@ -340,11 +340,11 @@ int JpegStreamReader::ReadPresetParametersSegment(int32_t segmentSize)
         if (segmentSize != CodingParameterSegmentSize)
             throw jpegls_error{jpegls_errc::invalid_marker_segment_size};
 
-        params_.custom.MaximumSampleValue = ReadUInt16();
-        params_.custom.Threshold1 = ReadUInt16();
-        params_.custom.Threshold2 = ReadUInt16();
-        params_.custom.Threshold3 = ReadUInt16();
-        params_.custom.ResetValue = ReadUInt16();
+        preset_coding_parameters_.maximum_sample_value = ReadUInt16();
+        preset_coding_parameters_.threshold1 = ReadUInt16();
+        preset_coding_parameters_.threshold2 = ReadUInt16();
+        preset_coding_parameters_.threshold3 = ReadUInt16();
+        preset_coding_parameters_.reset_value = ReadUInt16();
 
         // TODO: perform more extensive validation (see C.2.4.1.1 )
 

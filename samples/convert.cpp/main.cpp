@@ -69,7 +69,7 @@ int main(const int argc, char const* const argv[])
         int near_lossless{};
         if (argc > 3)
         {
-            near_lossless = strtol(argv[3], nullptr, 10);
+            near_lossless = static_cast<int>(strtol(argv[3], nullptr, 10));
             if (near_lossless < 0 || near_lossless > 255)
             {
                 cerr << "near-lossless-value needs to be in the range [0,255]\n";

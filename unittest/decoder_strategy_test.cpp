@@ -22,7 +22,7 @@ public:
         Init(stream);
     }
 
-    void SetPresets(const JpegLSPresetCodingParameters& /*presets*/) noexcept(false) override
+    void SetPresets(const charls::jpegls_pc_parameters& /*preset_coding_parameters*/) noexcept(false) override
     {
     }
 

@@ -158,10 +158,10 @@ public:
         charls::JpegStreamWriter writer(sourceInfo);
         writer.WriteStartOfImage();
 
-        const JpegLSPresetCodingParameters params{1, 2, 3, 4, 5};
-        writer.WriteJpegLSPresetParametersSegment(params);
+        const jpegls_pc_parameters presets{1, 2, 3, 4, 5};
+        writer.WriteJpegLSPresetParametersSegment(presets);
         writer.WriteStartOfFrameSegment(1, 1, 2, 1);
-        writer.WriteStartOfScanSegment(1, 0, charls::interleave_mode::none);
+        writer.WriteStartOfScanSegment(1, 0, interleave_mode::none);
 
         const ByteStreamInfo destinationInfo = FromByteArray(source.data(), source.size());
         JpegStreamReader reader(destinationInfo);
@@ -169,11 +169,11 @@ public:
         reader.ReadHeader();
         const auto& actual = reader.GetCustomPreset();
 
-        Assert::AreEqual(params.MaximumSampleValue, actual.MaximumSampleValue);
-        Assert::AreEqual(params.ResetValue, actual.ResetValue);
-        Assert::AreEqual(params.Threshold1, actual.Threshold1);
-        Assert::AreEqual(params.Threshold2, actual.Threshold2);
-        Assert::AreEqual(params.Threshold3, actual.Threshold3);
+        Assert::AreEqual(presets.maximum_sample_value, actual.maximum_sample_value);
+        Assert::AreEqual(presets.reset_value, actual.reset_value);
+        Assert::AreEqual(presets.threshold1, actual.threshold1);
+        Assert::AreEqual(presets.threshold2, actual.threshold2);
+        Assert::AreEqual(presets.threshold3, actual.threshold3);
     }
 
     TEST_METHOD(ReadHeaderWithTooSmallJpegLSPresetParameterSegmentShouldThrow)

@@ -66,11 +66,7 @@ struct charls_jpegls_encoder final
         if (!is_valid(preset_coding_parameters, UINT16_MAX, near_lossless_))
             throw jpegls_error{jpegls_errc::invalid_argument_pc_parameters};
 
-        custom_preset_coding_parameters_.MaximumSampleValue = preset_coding_parameters.maximum_sample_value;
-        custom_preset_coding_parameters_.ResetValue = preset_coding_parameters.reset_value;
-        custom_preset_coding_parameters_.Threshold1 = preset_coding_parameters.threshold1;
-        custom_preset_coding_parameters_.Threshold2 = preset_coding_parameters.threshold2;
-        custom_preset_coding_parameters_.Threshold3 = preset_coding_parameters.threshold3;
+        preset_coding_parameters_ = preset_coding_parameters;
     }
 
     void color_transformation(const color_transformation color_transformation)
@@ -168,13 +164,13 @@ struct charls_jpegls_encoder final
             writer_.WriteColorTransformSegment(color_transformation_);
         }
 
-        if (!IsDefault(custom_preset_coding_parameters_))
+        if (!is_default(preset_coding_parameters_))
         {
-            writer_.WriteJpegLSPresetParametersSegment(custom_preset_coding_parameters_);
+            writer_.WriteJpegLSPresetParametersSegment(preset_coding_parameters_);
         }
         else if (frame_info_.bits_per_sample > 12)
         {
-            const JpegLSPresetCodingParameters preset = ComputeDefault((1 << frame_info_.bits_per_sample) - 1, near_lossless_);
+            const jpegls_pc_parameters preset = compute_default((1 << frame_info_.bits_per_sample) - 1, near_lossless_);
             writer_.WriteJpegLSPresetParametersSegment(preset);
         }
 
@@ -230,7 +226,7 @@ private:
         info.interleaveMode = interleave_mode_;
         info.allowedLossyError = near_lossless_;
 
-        auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, custom_preset_coding_parameters_);
+        auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, preset_coding_parameters_);
         unique_ptr<ProcessLine> processLine(codec->CreateProcess(source));
         ByteStreamInfo destination{writer_.OutputStream()};
         const size_t bytesWritten = codec->EncodeScan(move(processLine), destination);
@@ -245,7 +241,7 @@ private:
     charls::color_transformation color_transformation_{};
     state state_{};
     JpegStreamWriter writer_;
-    JpegLSPresetCodingParameters custom_preset_coding_parameters_{};
+    jpegls_pc_parameters preset_coding_parameters_{};
 };
 
 extern "C" {

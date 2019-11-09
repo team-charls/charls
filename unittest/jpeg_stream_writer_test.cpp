@@ -277,13 +277,13 @@ public:
 
     TEST_METHOD(WriteJpegLSExtendedParametersMarkerAndSerialize)
     {
-        const JpegLSPresetCodingParameters params{2, 1, 2, 3, 7};
+        const jpegls_pc_parameters presets{2, 1, 2, 3, 7};
 
         array<uint8_t, 15> buffer{};
         const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
         JpegStreamWriter writer(info);
 
-        writer.WriteJpegLSPresetParametersSegment(params);
+        writer.WriteJpegLSPresetParametersSegment(presets);
         Assert::AreEqual(buffer.size(), writer.GetBytesWritten());
 
         // Parameter ID.

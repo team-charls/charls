@@ -80,21 +80,12 @@ struct charls_jpegls_decoder final
         return metadata.interleaveMode;
     }
 
-    jpegls_pc_parameters preset_coding_parameters() const
+    const jpegls_pc_parameters& preset_coding_parameters() const
     {
         if (state_ < state::header_read)
             throw jpegls_error{jpegls_errc::invalid_operation};
 
-        const auto& preset_parameters = reader_->GetCustomPreset();
-
-        jpegls_pc_parameters preset_coding_parameters;
-        preset_coding_parameters.maximum_sample_value = preset_parameters.MaximumSampleValue;
-        preset_coding_parameters.reset_value = preset_parameters.ResetValue;
-        preset_coding_parameters.threshold1 = preset_parameters.Threshold1;
-        preset_coding_parameters.threshold2 = preset_parameters.Threshold2;
-        preset_coding_parameters.threshold3 = preset_parameters.Threshold3;
-
-        return preset_coding_parameters;
+        return reader_->GetCustomPreset();
     }
 
     size_t destination_size() const
@@ -319,6 +310,13 @@ try
     decoder.source(source, sourceLength);
     decoder.read_header();
     *params = decoder.metadata();
+
+    const auto& preset{decoder.preset_coding_parameters()};
+    params->custom.MaximumSampleValue = preset.maximum_sample_value;
+    params->custom.Threshold1 = preset.threshold1;
+    params->custom.Threshold2 = preset.threshold2;
+    params->custom.Threshold3 = preset.threshold3;
+    params->custom.ResetValue = preset.reset_value;
 
     clear_error_message(errorMessage);
     return jpegls_errc::success;

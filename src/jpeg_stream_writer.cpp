@@ -110,24 +110,24 @@ void JpegStreamWriter::WriteStartOfFrameSegment(int width, int height, int bitsP
 }
 
 
-void JpegStreamWriter::WriteColorTransformSegment(color_transformation transformation)
+void JpegStreamWriter::WriteColorTransformSegment(const color_transformation transformation)
 {
     array<uint8_t, 5> segment{'m', 'r', 'f', 'x', static_cast<uint8_t>(transformation)};
     WriteSegment(JpegMarkerCode::ApplicationData8, segment.data(), segment.size());
 }
 
 
-void JpegStreamWriter::WriteJpegLSPresetParametersSegment(const JpegLSPresetCodingParameters& params)
+void JpegStreamWriter::WriteJpegLSPresetParametersSegment(const jpegls_pc_parameters& preset_coding_parameters)
 {
     vector<uint8_t> segment;
 
     segment.push_back(static_cast<uint8_t>(JpegLSPresetParametersType::PresetCodingParameters));
 
-    push_back(segment, static_cast<uint16_t>(params.MaximumSampleValue));
-    push_back(segment, static_cast<uint16_t>(params.Threshold1));
-    push_back(segment, static_cast<uint16_t>(params.Threshold2));
-    push_back(segment, static_cast<uint16_t>(params.Threshold3));
-    push_back(segment, static_cast<uint16_t>(params.ResetValue));
+    push_back(segment, static_cast<uint16_t>(preset_coding_parameters.maximum_sample_value));
+    push_back(segment, static_cast<uint16_t>(preset_coding_parameters.threshold1));
+    push_back(segment, static_cast<uint16_t>(preset_coding_parameters.threshold2));
+    push_back(segment, static_cast<uint16_t>(preset_coding_parameters.threshold3));
+    push_back(segment, static_cast<uint16_t>(preset_coding_parameters.reset_value));
 
     WriteSegment(JpegMarkerCode::JpegLSPresetParameters, segment.data(), segment.size());
 }

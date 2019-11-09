@@ -37,10 +37,10 @@ TEST_CLASS(interface_test)
 public:
     TEST_METHOD(GetMetadataInfoFromNearLosslessEncodedColorImage)
     {
-        vector<uint8_t> buffer{read_file("DataFiles/T8C0E3.JLS")};
+        vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E3.JLS")};
 
         JlsParameters params{};
-        const jpegls_errc result = JpegLsReadHeader(buffer.data(), buffer.size(), &params, nullptr);
+        const jpegls_errc result = JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr);
 
         Assert::AreEqual(jpegls_errc::success, result);
         Assert::AreEqual(params.height, 256);
@@ -69,6 +69,22 @@ public:
         const auto error = JpegLsReadHeader(source.data(), 0, &params, error_message.data());
         Assert::AreEqual(charls::jpegls_errc::source_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
+    }
+
+    TEST_METHOD(JpegLsReadHeader_custom_preset_parameters)
+    {
+        // NON-DEFAULT parameters T1=T2=T3=9,RESET=31.
+        vector<uint8_t> encoded_source{read_file("DataFiles/T8NDE0.JLS")};
+
+        JlsParameters params{};
+        const jpegls_errc result = JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr);
+
+        Assert::AreEqual(jpegls_errc::success, result);
+        Assert::AreEqual(255, params.custom.MaximumSampleValue);
+        Assert::AreEqual(9, params.custom.Threshold1);
+        Assert::AreEqual(9, params.custom.Threshold2);
+        Assert::AreEqual(9, params.custom.Threshold3);
+        Assert::AreEqual(31, params.custom.ResetValue);
     }
 
     TEST_METHOD(JpegLsEncode_nullptr)
