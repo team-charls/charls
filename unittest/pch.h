@@ -4,6 +4,7 @@
 #pragma once
 
 #pragma warning(push)
+#pragma warning(disable : 5039) // '_set_invalid_parameter_handler' : pointer or reference to potentially throwing function passed to extern C function under - EHc.Undefined behavior may occur if this function throws an exception.
 #pragma warning(disable : 26432)
 #pragma warning(disable : 26433)
 #pragma warning(disable : 26439)
