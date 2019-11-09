@@ -632,11 +632,10 @@ int main(const int argc, const char * const argv[])
 {
     if (argc == 1)
     {
-        cout << "CharLS test runner.\nOptions: -unittest, -bitstreamdamage, -performance[:loop-count], -decodeperformance[:loop-count], -dontwait -decoderaw -encodepnm -decodetopnm -comparepnm\n";
+        cout << "CharLS test runner.\nOptions: -unittest, -bitstreamdamage, -performance[:loop-count], -decodeperformance[:loop-count], -decoderaw -encodepnm -decodetopnm -comparepnm\n";
         return EXIT_FAILURE;
     }
 
-    bool wait = true;
     for (int i = 1; i < argc; ++i)
     {
         string str = argv[i];
@@ -754,22 +753,8 @@ int main(const int argc, const char * const argv[])
             continue;
         }
 
-        if (str == "-dontwait")
-        {
-            wait = false;
-            continue;
-        }
-
         cout << "Option not understood: " << argv[i] << "\n";
         break;
-    }
-
-    if (wait)
-    {
-        cout << "Press any key + 'enter' to exit program\n";
-
-        char c;
-        cin >> c;
     }
 
     return EXIT_SUCCESS;
