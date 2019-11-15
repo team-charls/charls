@@ -10,6 +10,7 @@
 #include <vector>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
+using std::error_code;
 using std::vector;
 using namespace charls;
 using namespace charls_test;
@@ -72,6 +73,19 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_operation,
             [&] { decoder.read_header(); });
+    }
+
+    TEST_METHOD(read_header_from_non_jpegls_data)
+    {
+        const vector<uint8_t> source(100);
+
+        jpegls_decoder decoder;
+
+        error_code ec;
+        decoder.source(source)
+               .read_header(ec);
+
+        Assert::IsTrue(ec == jpegls_errc::jpeg_marker_start_byte_not_found);
     }
 
     TEST_METHOD(frame_info_without_read_header)
@@ -168,6 +182,21 @@ public:
         Assert::AreEqual(static_cast<int32_t>(spiff_resolution_units::dots_per_inch), static_cast<int32_t>(header.resolution_units));
         Assert::AreEqual(96U, header.vertical_resolution);
         Assert::AreEqual(1024U, header.horizontal_resolution);
+    }
+
+    TEST_METHOD(read_spiff_header_from_non_jpegls_data)
+    {
+        const vector<uint8_t> source(100);
+
+        jpegls_decoder decoder;
+
+        decoder.source(source);
+
+        bool found;
+        error_code ec;
+        static_cast<void>(decoder.read_spiff_header(found, ec));
+
+        Assert::IsTrue(ec == jpegls_errc::jpeg_marker_start_byte_not_found);
     }
 
     TEST_METHOD(simple_decode)
