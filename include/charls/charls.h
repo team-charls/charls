@@ -364,6 +364,31 @@ public:
     jpegls_decoder& operator=(jpegls_decoder&&) noexcept = default;
 
     /// <summary>
+    /// Decodes a JPEG-LS buffer in 1 simple operation.
+    /// </summary>
+    /// <param name="source">Source container with the JPEG-LS encoded bytes.</param>
+    /// <param name="destination">Destination container that will hold the image data on return. Container will be resized automatically.</param>
+    /// <param name="maximum_size_in_bytes">The maximum output size that may be allocated, default is 94 MiB (enough to decode 8 bit color 8K image).</param>
+    /// <returns>Frame info of the decoded image.</returns>
+    template<typename SourceContainer, typename DestinationContainer, typename ValueType = typename DestinationContainer::value_type>
+    static frame_info decode(const SourceContainer& source, DestinationContainer& destination, const size_t maximum_size_in_bytes = 7680 * 4320 * 3)
+    {
+        jpegls_decoder decoder;
+
+        decoder.source(source);
+        decoder.read_header();
+
+        const size_t destination_size = decoder.destination_size();
+        if (destination_size > maximum_size_in_bytes)
+            throw jpegls_error(jpegls_errc::not_enough_memory);
+
+        destination.resize(destination_size * sizeof(ValueType));
+        decoder.decode(destination);
+
+        return decoder.frame_info();
+    }
+
+    /// <summary>
     /// Set the reference to a source buffer that contains the encoded JPEG-LS byte stream data.
     /// This buffer needs to remain valid until the stream is fully decoded.
     /// </summary>

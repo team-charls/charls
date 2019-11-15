@@ -170,6 +170,18 @@ public:
         Assert::AreEqual(1024U, header.horizontal_resolution);
     }
 
+    TEST_METHOD(simple_decode)
+    {
+        const vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E0.JLS")};
+
+        vector<uint8_t> decoded_destination;
+        const auto frame_info{jpegls_decoder::decode(encoded_source, decoded_destination)};
+
+        Assert::AreEqual(3, frame_info.component_count);
+        Assert::AreEqual(8, frame_info.bits_per_sample);
+        Assert::AreEqual(256U, frame_info.height);
+        Assert::AreEqual(256U, frame_info.width);
+    }
 };
 
 } // namespace CharLSUnitTest
