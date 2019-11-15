@@ -817,7 +817,9 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
 {
     if (!IsInterleaved())
     {
-        return info.rawData ? std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleComponent>(info.rawData, Info(), sizeof(typename Traits::PIXEL))) : std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleStream>(info.rawStream, Info(), sizeof(typename Traits::PIXEL)));
+        return info.rawData ?
+            std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleComponent>(info.rawData, Info().stride, sizeof(typename Traits::PIXEL))) :
+            std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleStream>(info.rawStream, Info().stride, sizeof(typename Traits::PIXEL)));
     }
 
     if (Info().colorTransformation == color_transformation::none)

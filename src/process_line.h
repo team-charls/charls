@@ -46,10 +46,10 @@ protected:
 class PostProcessSingleComponent final : public ProcessLine
 {
 public:
-    PostProcessSingleComponent(void* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
+    PostProcessSingleComponent(void* rawData, const uint32_t stride, const size_t bytesPerPixel) noexcept :
         rawData_{static_cast<uint8_t*>(rawData)},
         bytesPerPixel_{bytesPerPixel},
-        bytesPerLine_{static_cast<size_t>(params.stride)}
+        bytesPerLine_{stride}
     {
     }
 
@@ -94,10 +94,10 @@ inline void ByteSwap(void* data, int count)
 class PostProcessSingleStream final : public ProcessLine
 {
 public:
-    PostProcessSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& params, size_t bytesPerPixel) noexcept :
+    PostProcessSingleStream(std::basic_streambuf<char>* rawData, uint32_t stride, size_t bytesPerPixel) noexcept :
         rawData_{rawData},
         bytesPerPixel_{bytesPerPixel},
-        bytesPerLine_{static_cast<size_t>(params.stride)}
+        bytesPerLine_{stride}
     {
     }
 
