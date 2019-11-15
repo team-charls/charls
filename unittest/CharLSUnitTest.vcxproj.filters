@@ -80,6 +80,9 @@
     <ClCompile Include="jpeg_error_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lossless_traits_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="lena8b.pgm">

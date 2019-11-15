@@ -608,7 +608,7 @@ enum class spiff_resolution_units : int32_t
 /// <summary>
 /// Official defined SPIFF tags defined in Table F.5 (ISO/IEC 10918-3)
 /// </summary>
-enum class spiff_entry_tag : int32_t
+enum class spiff_entry_tag : uint32_t
 {
     /// <summary>
     /// This entry describes the opto-electronic transfer characteristics of the source image.

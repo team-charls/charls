@@ -102,6 +102,7 @@ struct DefaultTraits final
 
     /// <summary>
     /// Returns the value of errorValue modulo RANGE. ITU.T.87, A.4.5 (code segment A.9)
+    /// This ensures the error is reduced to the range (-⌊RANGE/2⌋ .. ⌈RANGE/2⌉-1)
     /// </summary>
     FORCE_INLINE int32_t ModuloRange(int32_t errorValue) const noexcept
     {
@@ -111,12 +112,13 @@ struct DefaultTraits final
         {
             errorValue += RANGE;
         }
+
         if (errorValue >= (RANGE + 1) / 2)
         {
             errorValue -= RANGE;
         }
 
-        ASSERT(-RANGE / 2 <= errorValue && errorValue <= static_cast<int32_t>(ceil(static_cast<double>(RANGE) / 2)) - 1);
+        ASSERT(-RANGE / 2 <= errorValue && errorValue <= ((RANGE + 1) / 2) - 1);
         return errorValue;
     }
 

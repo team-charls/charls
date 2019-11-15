@@ -349,8 +349,6 @@ CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegL
 
 namespace charls {
 
-// WARNING: THESE CLASSES ARE NOT FINAL AND THEIR DESIGN AND API MAY CHANGE
-
 /// <summary>
 /// JPEG-LS decoder class that encapsulates the C ABI interface calls and provide a native C++ interface.
 /// </summary>

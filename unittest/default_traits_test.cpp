@@ -26,6 +26,18 @@ public:
         Assert::AreEqual(32, traits.LIMIT);
         Assert::AreEqual(64, traits.RESET);
     }
+
+    TEST_METHOD(ModuloRange)
+    {
+        const charls::DefaultTraits<uint8_t, uint8_t> traits(24, 0);
+
+        for (int i = -25; i < 26; ++i)
+        {
+            const auto error_value = traits.ModuloRange(i);
+            constexpr int range = 24 + 1;
+            Assert::IsTrue(-range / 2 <= error_value && error_value <= ((range + 1) / 2) - 1);
+        }
+    }
 };
 
 }
