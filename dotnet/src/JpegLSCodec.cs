@@ -271,11 +271,14 @@ namespace CharLS
                 case JpegLSError.UnexpectedEndOfImageMarker:
                 case JpegLSError.InvalidJpeglsPresetParameterType:
                 case JpegLSError.JpeglsPresetExtendedParameterTypeNotSupported:
+                case JpegLSError.MissingEndOfSpiffDirectory:
                 case JpegLSError.InvalidParameterWidth:
                 case JpegLSError.InvalidParameterHeight:
                 case JpegLSError.InvalidParameterComponentCount:
                 case JpegLSError.InvalidParameterBitsPerSample:
                 case JpegLSError.InvalidParameterInterleaveMode:
+                case JpegLSError.UnexpectedFailure:
+                case JpegLSError.NotEnoughMemory:
                     exception = new InvalidDataException(GetErrorMessage(result));
                     break;
 
@@ -286,13 +289,14 @@ namespace CharLS
                 case JpegLSError.InvalidArgumentComponentCount:
                 case JpegLSError.InvalidArgumentBitsPerSample:
                 case JpegLSError.InvalidArgumentInterleaveMode:
-                case JpegLSError.InvalidArgumentDestination:
-                case JpegLSError.InvalidArgumentSource:
-                case JpegLSError.InvalidArgumentThumbnail:
+                case JpegLSError.InvalidArgumentNearLossless:
+                case JpegLSError.InvalidArgumentPresetCodingParameters:
+                case JpegLSError.InvalidArgumentSpiffEntrySize:
+                case JpegLSError.InvalidArgumentColorTransformation:
                     exception = new ArgumentException(GetErrorMessage(result));
                     break;
 
-                case JpegLSError.UnexpectedFailure:
+                case JpegLSError.InvalidOperation:
                     exception = new InvalidOperationException(GetErrorMessage(result));
                     break;
 

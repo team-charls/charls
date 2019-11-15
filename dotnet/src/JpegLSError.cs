@@ -44,6 +44,11 @@ namespace CharLS
         TooMuchEncodedData = 6,
 
         /// <summary>
+        /// This error is returned when a method call is invalid for the current state.
+        /// </summary>
+        InvalidOperation = 7,
+
+        /// <summary>
         /// The bit depth for transformation is not supported.
         /// </summary>
         BitDepthForTransformNotSupported = 8,
@@ -67,6 +72,11 @@ namespace CharLS
         /// This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
         /// </summary>
         JpegMarkerStartByteNotFound = 12,
+
+        /// <summary>
+        /// This error is returned when the implementation could not allocate memory for its internal buffers.
+        /// </summary>
+        NotEnoughMemory = 13,
 
         /// <summary>
         /// This error is returned when the implementation encountered a failure it didn't expect. No guarantees can be given for the state after this error.
@@ -119,6 +129,11 @@ namespace CharLS
         JpeglsPresetExtendedParameterTypeNotSupported = 23,
 
         /// <summary>
+        /// This error is returned when the stream contains a SPIFF header but not an SPIFF end-of-directory entry.
+        /// </summary>
+        MissingEndOfSpiffDirectory = 24,
+
+        /// <summary>
         /// The argument for the width parameter is outside the range [1, 65535].
         /// </summary>
         InvalidArgumentWidth = 100,
@@ -144,19 +159,25 @@ namespace CharLS
         InvalidArgumentInterleaveMode = 104,
 
         /// <summary>
-        /// The destination buffer or stream is not set.
+        /// The argument for the near lossless parameter is outside the range [0, 255].
         /// </summary>
-        InvalidArgumentDestination = 105,
+        InvalidArgumentNearLossless = 105,
 
         /// <summary>
-        /// The source buffer or stream is not set.
+        /// The argument for the JPEG-LS preset coding parameters is not valid, see ISO/IEC 14495-1,
+        /// C.2.4.1.1, Table C.1 for the ranges of valid values.
         /// </summary>
-        InvalidArgumentSource = 106,
+        InvalidArgumentPresetCodingParameters = 106,
 
         /// <summary>
-        /// The arguments for the thumbnail and the dimensions don't match.
+        /// The argument for the entry size parameter is outside the range [0, 65528].
         /// </summary>
-        InvalidArgumentThumbnail = 107,
+        InvalidArgumentSpiffEntrySize = 110,
+
+        /// <summary>
+        /// The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component count.
+        /// </summary>
+        InvalidArgumentColorTransformation = 111,
 
         /// <summary>
         /// This error is returned when the width parameter is defined more then once in an incompatible way.
