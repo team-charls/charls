@@ -3,15 +3,16 @@
 
 #include <charls/charls.h>
 
-#include <stdlib.h>
+#include <assert.h>
+#include <errno.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdbool.h>
-#include <errno.h>
-#include <assert.h>
+#include <stdlib.h>
 
 
-typedef struct {
+typedef struct
+{
     uint8_t magic[2];   // the magic number used to identify the BMP file:
                         // 0x42 0x4D (Hex code points for B and M).
                         // The following entries are possible:
@@ -26,7 +27,8 @@ typedef struct {
     uint32_t offset;    // the offset, i.e. starting address, of the byte where the bitmap data can be found.
 } bmp_header_t;
 
-typedef struct {
+typedef struct
+{
     uint32_t header_size;             // the size of this header (40 bytes)
     uint32_t width;                   // the bitmap width in pixels
     uint32_t height;                  // the bitmap height in pixels
@@ -43,7 +45,7 @@ typedef struct {
 } bmp_dib_header_t;
 
 
-static bool bmp_read_header(FILE *fp, bmp_header_t *header)
+static bool bmp_read_header(FILE* fp, bmp_header_t* header)
 {
     assert(fp);
     assert(header);
@@ -56,7 +58,7 @@ static bool bmp_read_header(FILE *fp, bmp_header_t *header)
 }
 
 
-static bool bmp_read_dib_header(FILE *fp, bmp_dib_header_t *header)
+static bool bmp_read_dib_header(FILE* fp, bmp_dib_header_t* header)
 {
     assert(fp);
     assert(header);
@@ -70,7 +72,7 @@ static bool bmp_read_dib_header(FILE *fp, bmp_dib_header_t *header)
 }
 
 
-static void *bmp_read_pixel_data(FILE *fp, uint32_t offset, const bmp_dib_header_t *header, size_t *buffer_size)
+static void* bmp_read_pixel_data(FILE* fp, uint32_t offset, const bmp_dib_header_t* header, size_t* buffer_size)
 {
     assert(fp);
     assert(header);
@@ -80,7 +82,7 @@ static void *bmp_read_pixel_data(FILE *fp, uint32_t offset, const bmp_dib_header
         return NULL;
 
     *buffer_size = (size_t)header->height * header->width * 3;
-    void *buffer = malloc(*buffer_size);
+    void* buffer = malloc(*buffer_size);
     if (buffer)
     {
         if (!fread(buffer, *buffer_size, 1, fp))
@@ -93,7 +95,7 @@ static void *bmp_read_pixel_data(FILE *fp, uint32_t offset, const bmp_dib_header
     return buffer;
 }
 
-static void* handle_encoder_failure(charls_jpegls_errc error, const char *step, charls_jpegls_encoder* encoder, void* buffer)
+static void* handle_encoder_failure(charls_jpegls_errc error, const char* step, charls_jpegls_encoder* encoder, void* buffer)
 {
     printf("Failed to %s: %i, %s\n", step, error, charls_get_error_message(error));
     charls_jpegls_encoder_destroy(encoder);
@@ -102,9 +104,9 @@ static void* handle_encoder_failure(charls_jpegls_errc error, const char *step, 
 }
 
 
-static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size, const bmp_dib_header_t* header, int allowed_lossy_error, size_t* bytes_written)
+static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size, const bmp_dib_header_t* header, int near_lossless, size_t* bytes_written)
 {
-    assert(header->depth == 24); // This function only supports 24-bit BMP pixel data.
+    assert(header->depth == 24);        // This function only supports 24-bit BMP pixel data.
     assert(header->compress_type == 0); // Data needs to be stored by pixel as RGB.
 
     charls_jpegls_encoder* encoder = charls_jpegls_encoder_create();
@@ -114,7 +116,7 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size
         return NULL;
     }
 
-    charls_frame_info frame_info = { .bits_per_sample = 8, .component_count = 3 };
+    charls_frame_info frame_info = {.bits_per_sample = 8, .component_count = 3};
     frame_info.width = header->width;
     frame_info.height = header->height;
     charls_jpegls_errc error = charls_jpegls_encoder_set_frame_info(encoder, &frame_info);
@@ -123,7 +125,7 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size
         return handle_encoder_failure(error, "set frame_info", encoder, NULL);
     }
 
-    error = charls_jpegls_encoder_set_near_lossless(encoder, allowed_lossy_error);
+    error = charls_jpegls_encoder_set_near_lossless(encoder, near_lossless);
     if (error)
     {
         return handle_encoder_failure(error, "set near lossless", encoder, NULL);
@@ -149,6 +151,15 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size
         return handle_encoder_failure(error, "set destination buffer", encoder, encoded_buffer);
     }
 
+    error = charls_jpegls_encoder_write_standard_spiff_header(encoder,
+                                                              CHARLS_SPIFF_COLOR_SPACE_RGB,
+                                                              CHARLS_SPIFF_RESOLUTION_UNITS_DOTS_PER_CENTIMETER,
+                                                              header->vertical_resolution / 100, header->vertical_resolution / 100);
+    if (error)
+    {
+        return handle_encoder_failure(error, "write_standard_spiff_header", encoder, encoded_buffer);
+    }
+
     error = charls_jpegls_encoder_encode_from_buffer(encoder, pixel_data, pixel_data_size, 0);
     if (error)
     {
@@ -167,14 +178,14 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size
 }
 
 
-static bool save_jpegls_file(const char *filename, const void *buffer, size_t buffer_size)
+static bool save_jpegls_file(const char* filename, const void* buffer, size_t buffer_size)
 {
     assert(filename);
     assert(buffer);
     assert(buffer_size);
 
     bool result = false;
-    FILE *stream = fopen(filename, "wb");
+    FILE* stream = fopen(filename, "wb");
     if (stream)
     {
         result = fwrite(buffer, buffer_size, 1, stream);
@@ -187,23 +198,24 @@ static bool save_jpegls_file(const char *filename, const void *buffer, size_t bu
 
 int main(int argc, char* argv[])
 {
-    if (argc < 3) {
-        printf("Usage: <input_file_name> <output_file_name> [allowed_lossy_error, default=0 (lossless)]\n");
+    if (argc < 3)
+    {
+        printf("Usage: <input_file_name> <output_file_name> [near_lossless, default=0 (lossless)]\n");
         return EXIT_FAILURE;
     }
 
-    int allowed_lossy_error = 0;
+    int near_lossless = 0;
     if (argc > 3)
     {
-        allowed_lossy_error = strtol(argv[3], NULL, 10);
-        if (allowed_lossy_error < 0 || allowed_lossy_error > 255)
+        near_lossless = strtol(argv[3], NULL, 10);
+        if (near_lossless < 0 || near_lossless > 255)
         {
-            printf("allowed_lossy_error needs to be in the range [0,255]\n");
+            printf("Argument near_lossless needs to be in the range [0,255]\n");
             return EXIT_FAILURE;
         }
     }
 
-    FILE *input_stream = fopen(argv[1], "rb");
+    FILE* input_stream = fopen(argv[1], "rb");
     if (!input_stream)
     {
         printf("Failed to open file: %s, errno: %d\n", argv[1], errno);
@@ -227,7 +239,7 @@ int main(int argc, char* argv[])
     }
 
     size_t buffer_size;
-    void *pixel_data = bmp_read_pixel_data(input_stream, header.offset, &dib_header, &buffer_size);
+    void* pixel_data = bmp_read_pixel_data(input_stream, header.offset, &dib_header, &buffer_size);
     fclose(input_stream);
 
     if (!pixel_data)
@@ -237,7 +249,7 @@ int main(int argc, char* argv[])
     }
 
     size_t encoded_size;
-    void* encoded_data = encode_bmp_to_jpegls(pixel_data, buffer_size, &dib_header, allowed_lossy_error, &encoded_size);
+    void* encoded_data = encode_bmp_to_jpegls(pixel_data, buffer_size, &dib_header, near_lossless, &encoded_size);
     free(pixel_data);
     if (!encoded_data)
         return EXIT_FAILURE; // error already printed.

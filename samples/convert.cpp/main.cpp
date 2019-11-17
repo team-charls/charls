@@ -33,7 +33,10 @@ vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, int near_loss
     vector<uint8_t> buffer(encoder.estimated_destination_size());
     encoder.destination(buffer);
 
-    encoder.write_standard_spiff_header(spiff_color_space::rgb);
+    encoder.write_standard_spiff_header(spiff_color_space::rgb,
+                                        charls_spiff_resolution_units::dots_per_centimeter,
+                                        image.dib_header.vertical_resolution / 100,
+                                        image.dib_header.horizontal_resolution / 100);
 
     const size_t encoded_size = encoder.encode(image.pixel_data);
     buffer.resize(encoded_size);
@@ -51,18 +54,30 @@ void save_buffer_to_file(const void* buffer, size_t buffer_size, const char* fil
     output.write(static_cast<const char*>(buffer), buffer_size);
 }
 
+void log_failure(const char* message) noexcept
+{
+    try
+    {
+        cerr << message  << "\n";
+    }
+    catch (...)
+    {
+        assert(false);
+    }
+}
+
 } // namespace
 
 
 int main(const int argc, char const* const argv[])
 {
-    ios::sync_with_stdio(false);
-
     try
     {
+        ios::sync_with_stdio(false);
+
         if (argc < 3)
         {
-            cerr << "Usage: <input_file_name> <output_file_name> [near-lossless-value, default=0 (lossless)]\n";
+            log_failure("Usage: <input_file_name> <output_file_name> [near-lossless-value, default=0 (lossless)]");
             return EXIT_FAILURE;
         }
 
@@ -72,7 +87,7 @@ int main(const int argc, char const* const argv[])
             near_lossless = static_cast<int>(strtol(argv[3], nullptr, 10));
             if (near_lossless < 0 || near_lossless > 255)
             {
-                cerr << "near-lossless-value needs to be in the range [0,255]\n";
+                log_failure("near-lossless-value needs to be in the range [0,255]");
                 return EXIT_FAILURE;
             }
         }
@@ -84,11 +99,12 @@ int main(const int argc, char const* const argv[])
     }
     catch (const exception& error)
     {
-        cerr << error.what() << "\n";
+        log_failure(error.what());
     }
     catch (...)
     {
-        cerr << "Unknown error occurred\n";
+        log_failure("Unknown error occurred");
+        assert(false);
     }
 
     return EXIT_FAILURE;
