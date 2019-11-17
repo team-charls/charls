@@ -5,15 +5,18 @@
 
 #include "util.h"
 
+#include "../src/jpeg_marker_code.h"
 #include <charls/charls.h>
 
-#include <vector>
 #include <array>
+#include <vector>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using namespace charls;
-using std::vector;
 using std::array;
+using std::vector;
+
+constexpr size_t serialized_spiff_header_size = 34;
 
 namespace CharLSUnitTest {
 
@@ -167,7 +170,23 @@ public:
 
         encoder.write_standard_spiff_header(spiff_color_space::cmyk);
 
-        Assert::AreEqual(static_cast<size_t>(34), encoder.bytes_written());
+        Assert::AreEqual(serialized_spiff_header_size + 2, encoder.bytes_written());
+
+        // Check that SOI marker has been written.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::StartOfImage), destination[1]);
+
+        // Verify that a APP8 with SPIFF has been written (details already verified by jpeg_stream_writer_test).
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::ApplicationData8), destination[3]);
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
+        Assert::AreEqual(static_cast<uint8_t>(32), destination[5]);
+        Assert::AreEqual(static_cast<uint8_t>('S'), destination[6]);
+        Assert::AreEqual(static_cast<uint8_t>('P'), destination[7]);
+        Assert::AreEqual(static_cast<uint8_t>('I'), destination[8]);
+        Assert::AreEqual(static_cast<uint8_t>('F'), destination[9]);
+        Assert::AreEqual(static_cast<uint8_t>('F'), destination[10]);
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[11]);
     }
 
     TEST_METHOD(write_standard_spiff_header_without_destination)
@@ -216,7 +235,23 @@ public:
         spiff_header.height = 1;
         encoder.write_spiff_header(spiff_header);
 
-        Assert::AreEqual(static_cast<size_t>(34), encoder.bytes_written());
+        Assert::AreEqual(serialized_spiff_header_size + 2, encoder.bytes_written());
+
+        // Check that SOI marker has been written.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::StartOfImage), destination[1]);
+
+        // Verify that a APP8 with SPIFF has been written (details already verified by jpeg_stream_writer_test).
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::ApplicationData8), destination[3]);
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
+        Assert::AreEqual(static_cast<uint8_t>(32), destination[5]);
+        Assert::AreEqual(static_cast<uint8_t>('S'), destination[6]);
+        Assert::AreEqual(static_cast<uint8_t>('P'), destination[7]);
+        Assert::AreEqual(static_cast<uint8_t>('I'), destination[8]);
+        Assert::AreEqual(static_cast<uint8_t>('F'), destination[9]);
+        Assert::AreEqual(static_cast<uint8_t>('F'), destination[10]);
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[11]);
     }
 
     TEST_METHOD(write_spiff_header_invalid_height)
@@ -263,7 +298,7 @@ public:
 
         encoder.write_spiff_entry(spiff_entry_tag::image_title, "test", 4);
 
-        Assert::AreEqual(static_cast<size_t>(46), encoder.bytes_written());
+        Assert::AreEqual(static_cast<size_t>(48), encoder.bytes_written());
     }
 
     TEST_METHOD(write_spiff_entry_twice)
@@ -279,7 +314,7 @@ public:
         encoder.write_spiff_entry(spiff_entry_tag::image_title, "test", 4);
         encoder.write_spiff_entry(spiff_entry_tag::image_title, "test", 4);
 
-        Assert::AreEqual(static_cast<size_t>(58), encoder.bytes_written());
+        Assert::AreEqual(static_cast<size_t>(60), encoder.bytes_written());
     }
 
     TEST_METHOD(write_empty_spiff_entry)
@@ -294,7 +329,7 @@ public:
 
         encoder.write_spiff_entry(spiff_entry_tag::image_title, nullptr, 0);
 
-        Assert::AreEqual(static_cast<size_t>(42), encoder.bytes_written());
+        Assert::AreEqual(static_cast<size_t>(44), encoder.bytes_written());
     }
 
     TEST_METHOD(write_spiff_entry_with_invalid_tag)

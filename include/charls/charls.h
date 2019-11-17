@@ -201,6 +201,9 @@ charls_jpegls_encoder_set_color_transformation(charls_jpegls_encoder* encoder, c
 /// <summary>
 /// Returns the size in bytes, that the encoder expects are needed to hold the encoded image.
 /// </summary>
+/// <remarks>
+/// Size for dynamic extras like SPIFF entries and other tables are not included in this size.
+/// </remarks>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="size_in_bytes">Reference to the size that will be set when the functions returns.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
@@ -639,6 +642,9 @@ public:
     /// <summary>
     /// Returns the size in bytes, that the encoder expects are needed to hold the encoded image.
     /// </summary>
+    /// <remarks>
+    /// Size for dynamic extras like SPIFF entries and other tables are not included in this size.
+    /// </remarks>
     /// <returns>The estimated size in bytes needed to hold the encoded image.</returns>
     CHARLS_NO_DISCARD size_t estimated_destination_size() const
     {

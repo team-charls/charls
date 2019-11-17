@@ -716,6 +716,7 @@ using CharlsInterleaveModeType = charls::interleave_mode;
 using CharlsColorTransformationType = charls::color_transformation;
 
 // Defines the size of the char buffer that should be passed to the legacy CharLS API to get the error message text.
+// Note: this define will be removed in the next major release as it is not defined in the charls namespace.
 constexpr std::size_t ErrorMessageSize = 256;
 
 #else

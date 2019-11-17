@@ -82,7 +82,9 @@ struct charls_jpegls_encoder final
         if (!is_frame_info_configured())
             throw jpegls_error{jpegls_errc::invalid_operation};
 
-        return static_cast<size_t>(frame_info_.height) * frame_info_.height * frame_info_.component_count * (frame_info_.bits_per_sample < 9 ? 1 : 2) + 1024;
+        return static_cast<size_t>(frame_info_.height) * frame_info_.height *
+                   frame_info_.component_count * (frame_info_.bits_per_sample < 9 ? 1 : 2) +
+                   1024 + spiff_header_size_in_bytes;
     }
 
     void write_spiff_header(const spiff_header& spiff_header)
@@ -96,6 +98,7 @@ struct charls_jpegls_encoder final
         if (state_ != state::destination_set)
             throw jpegls_error{jpegls_errc::invalid_operation};
 
+        writer_.WriteStartOfImage();
         writer_.WriteSpiffHeaderSegment(spiff_header);
         state_ = state::spiff_header;
     }
@@ -469,5 +472,4 @@ catch (...)
 {
     return set_error_message(to_jpegls_errc(), errorMessage);
 }
-
 }
