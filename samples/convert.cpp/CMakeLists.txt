@@ -10,4 +10,6 @@ target_sources(convert-cpp
     main.cpp
 )
 
+set_target_properties(convert-cpp PROPERTIES CXX_VISIBILITY_PRESET hidden)
+
 target_link_libraries(convert-cpp PRIVATE charls)

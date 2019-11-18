@@ -18,4 +18,6 @@ target_sources(charlstest
     util.h
 )
 
+set_target_properties(charlstest PROPERTIES CXX_VISIBILITY_PRESET hidden)
+
 target_link_libraries(charlstest PRIVATE charls)
