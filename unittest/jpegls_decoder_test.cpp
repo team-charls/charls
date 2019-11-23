@@ -78,22 +78,18 @@ public:
     TEST_METHOD(read_header_from_non_jpegls_data)
     {
         const vector<uint8_t> source(100);
-
-        jpegls_decoder decoder;
+        jpegls_decoder decoder{source};
 
         error_code ec;
-        decoder.source(source)
-               .read_header(ec);
+        decoder.read_header(ec);
 
         Assert::IsTrue(ec == jpegls_errc::jpeg_marker_start_byte_not_found);
     }
 
     TEST_METHOD(frame_info_without_read_header)
     {
-        jpegls_decoder decoder;
-
         const vector<uint8_t> source(2000);
-        decoder.source(source);
+        jpegls_decoder decoder{source};
 
         assert_expect_exception(jpegls_errc::invalid_operation,
             [&] { static_cast<void>(decoder.frame_info()); });
@@ -101,10 +97,8 @@ public:
 
     TEST_METHOD(interleave_mode_without_read_header)
     {
-        jpegls_decoder decoder;
-
         const vector<uint8_t> source(2000);
-        decoder.source(source);
+        jpegls_decoder decoder{source};
 
         assert_expect_exception(jpegls_errc::invalid_operation,
             [&] { static_cast<void>(decoder.interleave_mode()); });
@@ -112,10 +106,8 @@ public:
 
     TEST_METHOD(near_lossless_without_read_header)
     {
-        jpegls_decoder decoder;
-
         const vector<uint8_t> source(2000);
-        decoder.source(source);
+        jpegls_decoder decoder{source};
 
         assert_expect_exception(jpegls_errc::invalid_operation,
             [&] { static_cast<void>(decoder.near_lossless()); });
@@ -134,11 +126,10 @@ public:
 
     TEST_METHOD(decode_reference_file_from_buffer)
     {
-        vector<uint8_t> buffer{read_file("DataFiles/T8C0E0.JLS")};
+        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
 
-        jpegls_decoder decoder;
-        decoder.source(buffer.data(), buffer.size())
-               .read_header();
+        jpegls_decoder decoder{source};
+        decoder.read_header();
 
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
@@ -163,10 +154,8 @@ public:
 
     TEST_METHOD(read_spiff_header)
     {
-        jpegls_decoder decoder;
-
-        const vector<uint8_t> buffer = create_test_spiff_header();
-        decoder.source(buffer);
+        const vector<uint8_t> source = create_test_spiff_header();
+        const jpegls_decoder decoder{source};
 
         bool found;
         const auto header = decoder.read_spiff_header(found);
@@ -187,10 +176,7 @@ public:
     TEST_METHOD(read_spiff_header_from_non_jpegls_data)
     {
         const vector<uint8_t> source(100);
-
-        jpegls_decoder decoder;
-
-        decoder.source(source);
+        const jpegls_decoder decoder{source};
 
         bool found;
         error_code ec;

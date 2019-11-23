@@ -368,9 +368,8 @@ public:
     template<typename SourceContainer, typename DestinationContainer, typename ValueType = typename DestinationContainer::value_type>
     static frame_info decode(const SourceContainer& source, DestinationContainer& destination, const size_t maximum_size_in_bytes = 7680 * 4320 * 3)
     {
-        jpegls_decoder decoder;
+        jpegls_decoder decoder{source};
 
-        decoder.source(source);
         decoder.read_header();
 
         const size_t destination_size = decoder.destination_size();
@@ -384,6 +383,18 @@ public:
     }
 
     jpegls_decoder() = default;
+
+    /// <summary>
+    /// Constructs a jpegls_decoder instance.
+    /// The passed container needs to remain valid until the stream is fully decoded.
+    /// </summary>
+    /// <param name="source_container">A STL like container that provides the functions data() and size() and the type value_type.</param>
+    template<typename Container>
+    jpegls_decoder(const Container& source_container)
+    {
+        source(source_container);
+    }
+
     ~jpegls_decoder() = default;
 
     jpegls_decoder(const jpegls_decoder&) = delete;
