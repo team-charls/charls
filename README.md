@@ -31,10 +31,17 @@ According to preliminary test results published on http://imagecompression.info/
 
 ### Limitations
 
-* No support for (optional) JPEG restart markers (RST). These markers are rarely used in practice.
-* No support for the SPIFF file header.
+The following JPEG-LS options are not supported by the CharLS implementation. Most of these options are rarely used in practice.
+
+* No support for JPEG restart markers (RST).
+* No support for sub-sampled scans.
+* No support for multi component frames with mixed component counts in a single scan.
 * No support for oversize image dimension. Maximum supported image dimensions are [1, 65535] by [1, 65535].
-* After releasing the original baseline JPEG-LS standard 14495-1:1999, ISO released an extension to the JPEG-LS standard called ISO/IEC 14495-2:2003: "Lossless and near-lossless compression of continuous-tone still images: Extensions". Currently CharLS doesn't support these extensions.
+* No support for JPEG-LS mapping tables.
+
+#### Note about JPEG-LS part 2
+
+After releasing the original baseline JPEG-LS standard ISO 14495-1:1999, ISO released an extension to the JPEG-LS standard called ISO/IEC 14495-2:2003: "Lossless and near-lossless compression of continuous-tone still images: Extensions". Currently CharLS doesn't support these extensions.
 
 ## Supported platforms
 
