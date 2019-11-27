@@ -145,7 +145,7 @@ struct charls_jpegls_encoder final
         if (stride == 0)
         {
             stride = frame_info_.width * ((frame_info_.bits_per_sample + 7) / 8);
-            if (interleave_mode_ != interleave_mode::none)
+            if (interleave_mode_ != charls::interleave_mode::none)
             {
                 stride *= frame_info_.component_count;
             }
@@ -162,7 +162,7 @@ struct charls_jpegls_encoder final
 
         writer_.WriteStartOfFrameSegment(frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, frame_info_.component_count);
 
-        if (color_transformation_ != color_transformation::none)
+        if (color_transformation_ != charls::color_transformation::none)
         {
             writer_.WriteColorTransformSegment(color_transformation_);
         }
@@ -178,7 +178,7 @@ struct charls_jpegls_encoder final
         }
 
         ByteStreamInfo sourceInfo = FromByteArrayConst(source, source_size);
-        if (interleave_mode_ == interleave_mode::none)
+        if (interleave_mode_ == charls::interleave_mode::none)
         {
             const int32_t byteCountComponent = frame_info_.width * frame_info_.height * ((frame_info_.bits_per_sample + 7) / 8);
             for (int32_t component = 0; component < frame_info_.component_count; ++component)
