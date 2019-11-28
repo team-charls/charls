@@ -239,6 +239,7 @@
     <None Include="JpegStreamWriter.cd" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="version.cpp" />
     <ClCompile Include="charls_jpegls_decoder.cpp" />
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="jpegls.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="..\include\charls\charls_legacy.h" />
     <ClInclude Include="..\include\charls\jpegls_error.h" />
     <ClInclude Include="..\include\charls\public_types.h" />
+    <ClInclude Include="..\include\charls\version.h" />
     <ClInclude Include="color_transform.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="context.h" />

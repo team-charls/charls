@@ -4,6 +4,7 @@
 #pragma once
 
 #include "jpegls_error.h"
+#include "version.h"
 
 struct charls_jpegls_decoder;
 struct charls_jpegls_encoder;

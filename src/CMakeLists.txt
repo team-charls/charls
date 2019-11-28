@@ -31,6 +31,7 @@ target_sources(charls
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/charls_legacy.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/jpegls_error.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/public_types.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/version.h"
   PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_decoder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_encoder.cpp"
@@ -55,6 +56,7 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/process_line.h"
     "${CMAKE_CURRENT_LIST_DIR}/scan.h"
     "${CMAKE_CURRENT_LIST_DIR}/util.h"
+    "${CMAKE_CURRENT_LIST_DIR}/version.cpp"
 )
 
 if(CHARLS_INSTALL)
