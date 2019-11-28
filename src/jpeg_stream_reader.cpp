@@ -346,8 +346,6 @@ int JpegStreamReader::ReadPresetParametersSegment(int32_t segmentSize)
         preset_coding_parameters_.threshold3 = ReadUInt16();
         preset_coding_parameters_.reset_value = ReadUInt16();
 
-        // TODO: perform more extensive validation (see C.2.4.1.1 )
-
         return CodingParameterSegmentSize;
     }
 
@@ -377,7 +375,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
     {
         const JpegMarkerCode markerCode = ReadNextMarkerCode();
         if (markerCode != JpegMarkerCode::StartOfScan)
-            throw jpegls_error{jpegls_errc::invalid_encoded_data}; // TODO: throw more specific error code.
+            throw jpegls_error{jpegls_errc::invalid_encoded_data};
     }
 
     const int32_t segmentSize = ReadSegmentSize();

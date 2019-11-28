@@ -5,7 +5,6 @@
 
 #include <array>
 #include <cassert>
-#include <cstring>
 
 namespace charls {
 
@@ -40,12 +39,7 @@ class CTable final
 public:
     static constexpr size_t byte_bit_count = 8;
 
-    CTable() noexcept
-    {
-        std::memset(types_.data(), 0, sizeof(types_)); // TODO: analyze if needed
-    }
-
-    void AddEntry(uint8_t value, Code c) noexcept
+    void AddEntry(const uint8_t value, const Code c) noexcept
     {
         const int32_t length = c.GetLength();
         ASSERT(static_cast<size_t>(length) <= byte_bit_count);
@@ -57,7 +51,7 @@ public:
         }
     }
 
-    FORCE_INLINE const Code& Get(int32_t value) const noexcept
+    FORCE_INLINE const Code& Get(const int32_t value) const noexcept
     {
         return types_[value];
     }

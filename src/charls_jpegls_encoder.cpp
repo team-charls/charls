@@ -123,7 +123,7 @@ struct charls_jpegls_encoder final
     void write_spiff_entry(const uint32_t entry_tag, const void* entry_data, const size_t entry_data_size)
     {
         if (entry_tag == spiff_end_of_directory_entry_type)
-            throw jpegls_error{jpegls_errc::invalid_argument}; // TODO: create specific code.
+            throw jpegls_error{jpegls_errc::invalid_argument};
 
         if (entry_data_size > 65528)
             throw jpegls_error{jpegls_errc::invalid_argument_spiff_entry_size};
