@@ -37,21 +37,44 @@ CHARLS_NO_DISCARD inline std::error_code make_error_code(jpegls_errc error_value
 class jpegls_error final : public std::system_error
 {
 public:
-    explicit jpegls_error(std::error_code ec)
-        : system_error{ec}
+    explicit jpegls_error(std::error_code ec) :
+        system_error{ec}
     {
     }
 
-    explicit jpegls_error(jpegls_errc error_value)
-        : system_error{error_value}
+    explicit jpegls_error(jpegls_errc error_value) :
+        system_error{error_value}
     {
     }
 };
 
+namespace impl {
+
+#if defined(_MSC_VER)
+#define CHARLS_NO_INLINE __declspec(noinline)
+#elif defined(__GNUC__)
+#define CHARLS_NO_INLINE __attribute__((noinline))
+#elif defined(__clang__)
+#define CHARLS_NO_INLINE __attribute__((noinline))
+#else
+#define CHARLS_NO_INLINE
+#endif
+
+[[noreturn]] inline CHARLS_NO_INLINE void throw_jpegls_error(const std::error_code ec)
+{
+    throw jpegls_error(ec);
+}
+
+#undef CHARLS_NO_INLINE
+
+} // namespace impl
+
 inline void check_jpegls_errc(const std::error_code ec)
 {
     if (ec)
-        throw jpegls_error(ec);
+    {
+        impl::throw_jpegls_error(ec); // not inlined by design, as this code path is the exceptional case.
+    }
 }
 
 } // namespace charls

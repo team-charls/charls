@@ -14,6 +14,7 @@
 #define CHARLS_DEPRECATED [[deprecated]]
 #define CHARLS_FINAL final
 #define CHARLS_NOEXCEPT noexcept
+#define CHARLS_NO_INLINE
 #define FORCE_INLINE
 #define MSVC_WARNING_SUPPRESS(x)
 #define MSVC_WARNING_UNSUPPRESS()
