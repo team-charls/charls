@@ -377,7 +377,7 @@ public:
         if (destination_size > maximum_size_in_bytes)
             throw jpegls_error(jpegls_errc::not_enough_memory);
 
-        destination.resize(destination_size * sizeof(ValueType));
+        destination.resize(destination_size / sizeof(ValueType));
         decoder.decode(destination);
 
         return decoder.frame_info();

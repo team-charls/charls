@@ -196,7 +196,27 @@ public:
         Assert::AreEqual(8, frame_info.bits_per_sample);
         Assert::AreEqual(256U, frame_info.height);
         Assert::AreEqual(256U, frame_info.width);
+
+        const size_t expected_size = static_cast<size_t>(frame_info.height) * frame_info.width * frame_info.component_count;
+        Assert::AreEqual(expected_size, decoded_destination.size());
     }
+
+    TEST_METHOD(simple_decode_to_uint16_buffer)
+    {
+        const vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E0.JLS")};
+
+        vector<uint16_t> decoded_destination;
+        const auto frame_info{jpegls_decoder::decode(encoded_source, decoded_destination)};
+
+        Assert::AreEqual(3, frame_info.component_count);
+        Assert::AreEqual(8, frame_info.bits_per_sample);
+        Assert::AreEqual(256U, frame_info.height);
+        Assert::AreEqual(256U, frame_info.width);
+
+        const size_t expected_size = static_cast<size_t>(frame_info.height) * frame_info.width * frame_info.component_count;
+        Assert::AreEqual(expected_size, decoded_destination.size() * sizeof(uint16_t));
+    }
+
 };
 
 } // namespace CharLSUnitTest
