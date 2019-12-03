@@ -22,16 +22,21 @@ endif()
 
 target_compile_definitions(charls PRIVATE CHARLS_LIBRARY_BUILD)
 
-set_target_properties(charls PROPERTIES CXX_VISIBILITY_PRESET hidden)
-
-target_sources(charls
-  PUBLIC
+set(CHARLS_PUBLIC_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/api_abi.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/charls.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/charls_legacy.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/jpegls_error.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/public_types.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/version.h"
+)
+
+set_target_properties(charls PROPERTIES CXX_VISIBILITY_PRESET hidden)
+set_property(TARGET charls PROPERTY PUBLIC_HEADER ${CHARLS_PUBLIC_HEADERS})
+
+target_sources(charls
+  PUBLIC
+    ${CHARLS_PUBLIC_HEADERS}
   PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_decoder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_encoder.cpp"
@@ -63,10 +68,9 @@ if(CHARLS_INSTALL)
   include(GNUInstallDirs)
 
   install(TARGETS charls
-    CONFIGURATIONS Release
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/charls
   )
 endif()
