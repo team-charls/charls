@@ -391,7 +391,7 @@ public:
     /// </summary>
     /// <param name="source_container">A STL like container that provides the functions data() and size() and the type value_type.</param>
     template<typename Container>
-    jpegls_decoder(const Container& source_container)
+    explicit jpegls_decoder(const Container& source_container)
     {
         source(source_container);
     }
