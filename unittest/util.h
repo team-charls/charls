@@ -5,6 +5,8 @@
 
 #include "../test/portable_anymap_file.h"
 
+#include <CppUnitTest.h>
+
 #include <vector>
 
 std::vector<uint8_t> read_file(const char* filename);
@@ -34,7 +36,7 @@ void assert_expect_exception(charls::jpegls_errc error_value, Functor functor)
         throw;
     }
 
-    Assert::Fail();
+    Microsoft::VisualStudio::CppUnitTestFramework::Assert::Fail();
 }
 
 } // namespace CharLSUnitTest
