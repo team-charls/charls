@@ -20,6 +20,10 @@ if(WIN32 AND BUILD_SHARED_LIBS)
   endif()
 endif()
 
+set_target_properties(charls PROPERTIES
+                      VERSION ${PROJECT_VERSION}
+                      SOVERSION ${PROJECT_VERSION_MAJOR})
+
 target_compile_definitions(charls PRIVATE CHARLS_LIBRARY_BUILD)
 
 set(CHARLS_PUBLIC_HEADERS
