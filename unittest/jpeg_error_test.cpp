@@ -20,14 +20,14 @@ TEST_CLASS(jpegls_error_test)
 public:
     TEST_METHOD(get_error_message_success)
     {
-        const auto result = charls_get_error_message(0);
+        const auto result = charls_get_error_message(jpegls_errc::success);
         Assert::IsNotNull(result);
         Assert::IsTrue(strlen(result) > 0);
     }
 
     TEST_METHOD(get_error_message_unknown)
     {
-        constexpr int32_t unknown_error_code{3000};
+        constexpr jpegls_errc unknown_error_code{static_cast<jpegls_errc>(3000)};
         const auto result = charls_get_error_message(unknown_error_code);
         Assert::IsNotNull(result);
         Assert::IsTrue(strlen(result) > 0);

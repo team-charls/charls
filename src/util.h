@@ -74,8 +74,8 @@ inline jpegls_errc set_error_message(const jpegls_errc error, char* error_messag
 {
     if (error_message)
     {
-        ASSERT(strlen(charls_get_error_message(static_cast<int32_t>(error))) < ErrorMessageSize);
-        strcpy(error_message, charls_get_error_message(static_cast<int32_t>(error)));
+        ASSERT(strlen(charls_get_error_message(error)) < ErrorMessageSize);
+        strcpy(error_message, charls_get_error_message(error));
     }
 
     return error;

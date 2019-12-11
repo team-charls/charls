@@ -438,7 +438,7 @@ public:
     {
         std::error_code ec;
         const spiff_header header{read_spiff_header(header_found, ec)};
-        check_jpegls_errc(ec);
+        check_jpegls_errc(static_cast<jpegls_errc>(ec.value()));
         return header;
     }
 

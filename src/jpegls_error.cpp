@@ -18,7 +18,7 @@ public:
 
     string message(int error_value) const override
     {
-        return charls_get_error_message(error_value);
+        return charls_get_error_message(static_cast<jpegls_errc>(error_value));
     }
 };
 
@@ -32,9 +32,9 @@ const void* CHARLS_API_CALLING_CONVENTION charls_get_jpegls_category()
     return &instance;
 }
 
-const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(int32_t error_value)
+const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(jpegls_errc error_value)
 {
-    switch (static_cast<jpegls_errc>(error_value))
+    switch (error_value)
     {
     case jpegls_errc::success:
         return "Success";

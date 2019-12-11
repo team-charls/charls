@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 CHARLS_API_IMPORT_EXPORT const void* CHARLS_API_CALLING_CONVENTION charls_get_jpegls_category(void);
-CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(int32_t error_value);
+CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(charls_jpegls_errc error_value);
 
 #ifdef __cplusplus
 }
@@ -60,20 +60,20 @@ namespace impl {
 #define CHARLS_NO_INLINE
 #endif
 
-[[noreturn]] inline CHARLS_NO_INLINE void throw_jpegls_error(const std::error_code ec)
+[[noreturn]] inline CHARLS_NO_INLINE void throw_jpegls_error(const jpegls_errc error_value)
 {
-    throw jpegls_error(ec);
+    throw jpegls_error(error_value);
 }
 
 #undef CHARLS_NO_INLINE
 
 } // namespace impl
 
-inline void check_jpegls_errc(const std::error_code ec)
+inline void check_jpegls_errc(const jpegls_errc error_value)
 {
-    if (ec)
+    if (error_value != jpegls_errc::success)
     {
-        impl::throw_jpegls_error(ec); // not inlined by design, as this code path is the exceptional case.
+        impl::throw_jpegls_error(error_value); // not inlined by design, as this code path is the exceptional case.
     }
 }
 
