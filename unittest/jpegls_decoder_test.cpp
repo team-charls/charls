@@ -217,6 +217,24 @@ public:
         Assert::AreEqual(expected_size, decoded_destination.size() * sizeof(uint16_t));
     }
 
+    TEST_METHOD(decode_file_with_ff_in_entropy_data)
+    {
+        const vector<uint8_t> source{read_file("ff_in_entropy_data.jls")};
+
+        jpegls_decoder decoder{source};
+        decoder.read_header();
+
+        const auto frame_info{decoder.frame_info()};
+        Assert::AreEqual(1, frame_info.component_count);
+        Assert::AreEqual(12, frame_info.bits_per_sample);
+        Assert::AreEqual(1216U, frame_info.height);
+        Assert::AreEqual(968U, frame_info.width);
+
+        vector<uint8_t> destination(decoder.destination_size());
+
+        assert_expect_exception(jpegls_errc::invalid_encoded_data,
+            [&] { static_cast<void>(decoder.decode(destination)); });
+    }
 };
 
 } // namespace CharLSUnitTest

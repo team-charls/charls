@@ -140,4 +140,9 @@
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ff_in_entropy_data.jls">
+      <Filter>Test Images</Filter>
+    </None>
+  </ItemGroup>
 </Project>
