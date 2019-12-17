@@ -83,16 +83,11 @@ static void* bmp_read_pixel_data(FILE* fp, uint32_t offset, const bmp_dib_header
 
     *buffer_size = (size_t)header->height * header->width * 3;
     void* buffer = malloc(*buffer_size);
-    if (buffer)
-    {
-        if (!fread(buffer, *buffer_size, 1, fp))
-        {
-            free(buffer);
-            buffer = NULL;
-        }
-    }
+    if (buffer && fread(buffer, *buffer_size, 1, fp))
+        return buffer;
 
-    return buffer;
+    free(buffer);
+    return NULL;
 }
 
 static void* handle_encoder_failure(charls_jpegls_errc error, const char* step, charls_jpegls_encoder* encoder, void* buffer)

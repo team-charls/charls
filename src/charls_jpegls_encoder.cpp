@@ -139,9 +139,6 @@ struct charls_jpegls_encoder final
         if (!is_frame_info_configured() || state_ == state::initial)
             throw jpegls_error{jpegls_errc::invalid_operation};
 
-        ////if (!is_valid(preset_coding_parameters, UINT16_MAX, 0))
-        ////    throw jpegls_error{jpegls_errc::invalid_argument_pc_parameters};
-
         if (stride == 0)
         {
             stride = frame_info_.width * ((frame_info_.bits_per_sample + 7) / 8);

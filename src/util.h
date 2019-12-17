@@ -70,12 +70,27 @@ inline void clear_error_message(char* errorMessage) noexcept
     }
 }
 
+
+/// <summary>
+/// Cross platform safe version of strcpy.
+/// </summary>
+inline void string_copy(const char* source, char* destination, const size_t size_in_bytes) noexcept
+{
+    ASSERT(strlen(source) < size_in_bytes && "String will be truncated");
+
+#if defined(__STDC_SECURE_LIB__) && defined(__STDC_WANT_SECURE_LIB__) && __STDC_WANT_SECURE_LIB__ == 1
+    strncpy_s(destination, size_in_bytes, source, _TRUNCATE);
+#else
+    strncpy(destination, source, size_in_bytes);
+    destination[size_in_bytes - 1] = 0;
+#endif
+}
+
 inline jpegls_errc set_error_message(const jpegls_errc error, char* error_message) noexcept
 {
     if (error_message)
     {
-        ASSERT(strlen(charls_get_error_message(error)) < ErrorMessageSize);
-        strcpy(error_message, charls_get_error_message(error));
+        string_copy(charls_get_error_message(error), error_message, ErrorMessageSize);
     }
 
     return error;

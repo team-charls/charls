@@ -6,19 +6,26 @@
 #include "jpegls_error.h"
 #include "version.h"
 
-struct charls_jpegls_decoder;
-struct charls_jpegls_encoder;
-
 #ifdef __cplusplus
 
 #include <memory>
-
-extern "C" {
 
 #else
 
 #include <stdbool.h>
 #include <stddef.h>
+
+#endif
+
+
+#ifdef __cplusplus
+
+struct charls_jpegls_decoder;
+struct charls_jpegls_encoder;
+
+extern "C" {
+
+#else
 
 typedef struct charls_jpegls_decoder charls_jpegls_decoder;
 typedef struct charls_jpegls_encoder charls_jpegls_encoder;
@@ -75,8 +82,10 @@ charls_jpegls_decoder_read_header(charls_jpegls_decoder* decoder) CHARLS_NOEXCEP
 
 /// <summary>
 /// Returns information about the frame stored in the JPEG-LS byte stream.
-/// Function can be called after charls_jpegls_decoder_read_header.
 /// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_read_header.
+/// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
 /// <param name="frame_info">Output argument, will hold the frame info when the function returns.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
@@ -86,6 +95,9 @@ charls_jpegls_decoder_get_frame_info(const charls_jpegls_decoder* decoder, charl
 /// <summary>
 /// Returns the NEAR parameter that was used to encode the scan. A value of 0 means lossless.
 /// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_read_header.
+/// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
 /// <param name="component">The component index for which the NEAR parameter should be retrieved.</param>
 /// <param name="near_lossless">Reference that will hold the value of the NEAR parameter.</param>
@@ -96,6 +108,9 @@ charls_jpegls_decoder_get_near_lossless(const charls_jpegls_decoder* decoder, in
 /// <summary>
 /// Returns the interleave mode that was used to encode the scan(s).
 /// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_read_header.
+/// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
 /// <param name="interleave_mode">Reference that will hold the value of the interleave mode.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
@@ -105,6 +120,9 @@ charls_jpegls_decoder_get_interleave_mode(const charls_jpegls_decoder* decoder, 
 /// <summary>
 /// Returns the preset coding parameters used to encode the first scan.
 /// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_read_header.
+/// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
 /// <param name="reserved">Reserved. Should be set to 0.</param>
 /// <param name="preset_coding_parameters">Reference that will hold the values preset coding parameters.</param>
@@ -114,8 +132,10 @@ charls_jpegls_decoder_get_preset_coding_parameters(const charls_jpegls_decoder* 
 
 /// <summary>
 /// Returns the size required for the destination buffer in bytes to hold the decoded pixel data.
-/// Function can be called after charls_jpegls_decoder_read_header.
 /// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_read_header.
+/// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
 /// <param name="destination_size_bytes">Output argument, will hold the required size when the function returns.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
@@ -125,6 +145,9 @@ charls_jpegls_decoder_get_destination_size(const charls_jpegls_decoder* decoder,
 /// <summary>
 /// Will decode the JPEG-LS byte stream from the source buffer into the destination buffer.
 /// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_read_header.
+/// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
 /// <param name="destination_buffer">Byte array that holds the encoded bytes when the function returns.</param>
 /// <param name="destination_size_bytes">Length of the array in bytes. If the array is too small the function will return an error.</param>
@@ -158,7 +181,7 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_set_frame_info(charls_jpegls_encoder* encoder, const charls_frame_info* frame_info) CHARLS_NOEXCEPT;
 
 /// <summary>
-/// Configures the NEAR parameter the encoder should use. A value of 0 means lossless, this is also the default.
+/// Configures the NEAR parameter the encoder should use. A value of 0 means lossless, 0 is also the default.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="near_lossless">Value of the NEAR parameter.</param>
@@ -224,6 +247,7 @@ charls_jpegls_encoder_set_destination_buffer(charls_jpegls_encoder* encoder, voi
 
 /// <summary>
 /// Writes a standard SPIFF header to the destination. The additional values are computed from the current encoder settings.
+/// A SPIFF header is optional, but recommended for standalone JPEG-LS files.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="color_space">The color space of the image.</param>
@@ -250,6 +274,9 @@ charls_jpegls_encoder_write_spiff_header(charls_jpegls_encoder* encoder, const c
 /// <summary>
 /// Writes a SPIFF directory entry to the destination.
 /// </summary>
+/// <remarks>
+/// Function should be called after writing a SPIFF header.
+/// </remarks>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="entry_tag">The entry tag of the directory entry.</param>
 /// <param name="entry_data">The entry data of the directory entry.</param>

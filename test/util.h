@@ -26,7 +26,6 @@ std::vector<uint8_t> ReadFile(const char* filename, long offset = 0, size_t byte
 void TestFile(const char* filename, int offset, Size size2, int bitsPerSample, int componentCount, bool littleEndianFile = false, int loopCount = 1);
 void TestRoundTrip(const char* strName, const std::vector<uint8_t>& decodedBuffer, Size size, int bitsPerSample, int componentCount, int loopCount = 1);
 void TestRoundTrip(const char* strName, const std::vector<uint8_t>& originalBuffer, JlsParameters& params, int loopCount = 1);
-void WriteFile(const char* filename, std::vector<uint8_t>& buffer);
 void test_portable_anymap_file(const char* filename, int loopCount = 1);
 
 class UnitTestException final : public std::exception {

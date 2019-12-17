@@ -97,9 +97,6 @@ endif()
 if(MSVC)
   set(PEDANTIC_CXX_COMPILE_FLAGS /W4)
   set(WERROR_FLAG /WX)
-
-  # CharLS is cross-platform and cannot use the MSVC only secure CRT functions.
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
 # When enabled apply the pedantic warnings options and warnings as errors to globally.
