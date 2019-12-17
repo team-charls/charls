@@ -236,7 +236,8 @@
   <ItemGroup>
     <None Include="..\doc\style_and_design.md" />
     <None Include="charls.def" />
-    <None Include="JpegStreamWriter.cd" />
+    <None Include="design\JpegStream.cd" />
+    <None Include="design\Strategy.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="version.cpp" />
