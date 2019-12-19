@@ -210,6 +210,7 @@
     <ClCompile Include="decoder_strategy_test.cpp" />
     <ClCompile Include="default_traits_test.cpp" />
     <ClCompile Include="encoder_strategy_test.cpp" />
+    <ClCompile Include="encode_test.cpp" />
     <ClCompile Include="interface_test.cpp" />
     <ClCompile Include="jpegls_decoder_test.cpp" />
     <ClCompile Include="jpegls_encoder_test.cpp" />

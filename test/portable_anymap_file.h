@@ -66,6 +66,11 @@ public:
         return input_buffer_;
     }
 
+    const std::vector<uint8_t>& image_data() const noexcept
+    {
+        return input_buffer_;
+    }
+
 private:
     static std::vector<int> read_header(std::istream& pnm_file)
     {

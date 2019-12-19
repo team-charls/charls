@@ -71,7 +71,7 @@ void fix_endian(vector<uint8_t>& buffer, bool little_endian_data) noexcept
     }
 }
 
-portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode, const frame_info& frame_info)
+portable_anymap_file read_anymap_reference_file(const char* filename, const interleave_mode interleave_mode, const frame_info& frame_info)
 {
     portable_anymap_file reference_file(filename);
 
@@ -83,6 +83,23 @@ portable_anymap_file read_anymap_reference_file(const char* filename, interleave
     if (interleave_mode == interleave_mode::none && frame_info.component_count == 3)
     {
         triplet_to_planar(reference_file.image_data(), frame_info.width, frame_info.height);
+    }
+
+    return reference_file;
+}
+
+portable_anymap_file read_anymap_reference_file(const char* filename, const interleave_mode interleave_mode)
+{
+    portable_anymap_file reference_file(filename);
+
+    if (reference_file.bits_per_sample() > 8)
+    {
+        fix_endian(reference_file.image_data(), false);
+    }
+
+    if (interleave_mode == interleave_mode::none && reference_file.component_count() == 3)
+    {
+        triplet_to_planar(reference_file.image_data(), reference_file.width(), reference_file.height());
     }
 
     return reference_file;
