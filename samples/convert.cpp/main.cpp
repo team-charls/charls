@@ -11,30 +11,22 @@
 #include <iostream>
 #include <vector>
 
-using std::cerr;
-using std::exception;
-using std::ios;
-using std::ofstream;
-using std::vector;
-
-using namespace charls;
-
 namespace {
 
-vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, int near_lossless)
+std::vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, int near_lossless)
 {
     assert(image.dib_header.depth == 24);        // This function only supports 24-bit BMP pixel data.
     assert(image.dib_header.compress_type == 0); // Data needs to be stored by pixel as RGB.
 
-    jpegls_encoder encoder;
+    charls::jpegls_encoder encoder;
     encoder.frame_info({image.dib_header.width, image.dib_header.height, 8, 3})
         .near_lossless(near_lossless);
 
-    vector<uint8_t> buffer(encoder.estimated_destination_size());
+    std::vector<uint8_t> buffer(encoder.estimated_destination_size());
     encoder.destination(buffer);
 
-    encoder.write_standard_spiff_header(spiff_color_space::rgb,
-                                        charls_spiff_resolution_units::dots_per_centimeter,
+    encoder.write_standard_spiff_header(charls::spiff_color_space::rgb,
+                                        charls::spiff_resolution_units::dots_per_centimeter,
                                         image.dib_header.vertical_resolution / 100,
                                         image.dib_header.horizontal_resolution / 100);
 
@@ -50,7 +42,7 @@ void save_buffer_to_file(const void* buffer, size_t buffer_size, const char* fil
     assert(buffer);
     assert(buffer_size);
 
-    ofstream output(filename, ios::binary);
+    std::ofstream output(filename, std::ios::binary);
     output.write(static_cast<const char*>(buffer), buffer_size);
 }
 
@@ -58,7 +50,7 @@ void log_failure(const char* message) noexcept
 {
     try
     {
-        cerr << message  << "\n";
+        std::cerr << message  << "\n";
     }
     catch (...)
     {
@@ -73,7 +65,7 @@ int main(const int argc, char const* const argv[])
 {
     try
     {
-        ios::sync_with_stdio(false);
+        std::ios::sync_with_stdio(false);
 
         if (argc < 3)
         {
@@ -97,7 +89,7 @@ int main(const int argc, char const* const argv[])
 
         return EXIT_SUCCESS;
     }
-    catch (const exception& error)
+    catch (const std::exception& error)
     {
         log_failure(error.what());
     }
