@@ -142,6 +142,9 @@
     <CopyFileToFolders Include="../test/conformance/TEST16.PGM">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="ff_in_entropy_data.jls" />
+    <CopyFileToFolders Include="16-bit-640-480-many-dots.pgm" />
+    <CopyFileToFolders Include="ff_in_entropy_data.jls">
+      <Filter>Test Images</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

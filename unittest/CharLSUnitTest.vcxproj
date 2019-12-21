@@ -302,8 +302,10 @@
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>
-  </ItemGroup>
-  <ItemGroup>
+    <CopyFileToFolders Include="16-bit-640-480-many-dots.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
+    </CopyFileToFolders>
     <CopyFileToFolders Include="ff_in_entropy_data.jls">
       <FileType>Document</FileType>
     </CopyFileToFolders>

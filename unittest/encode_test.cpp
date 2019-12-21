@@ -23,20 +23,12 @@ TEST_CLASS(encode_test)
 public:
     TEST_METHOD(encode_monochrome_12_bit_lossless)
     {
-        const portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/TEST16.pgm", interleave_mode::none);
+        encode("DataFiles/TEST16.pgm", interleave_mode::none);
+    }
 
-        jpegls_encoder encoder;
-        encoder.frame_info({
-            static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()),
-            reference_file.bits_per_sample(), reference_file.component_count()});
-
-        vector<uint8_t> charls_encoded_data(encoder.estimated_destination_size());
-        encoder.destination(charls_encoded_data);
-
-        const size_t bytes_written = encoder.encode(reference_file.image_data());
-        charls_encoded_data.resize(bytes_written);
-
-        test_by_decoding(charls_encoded_data, reference_file.image_data());
+    TEST_METHOD(encode_monochrome_16_bit_lossless)
+    {
+        encode("DataFiles/16-bit-640-480-many-dots.pgm", interleave_mode::none);
     }
 
     TEST_METHOD(encode_color_8_bit_interleave_none_lossless)
