@@ -204,13 +204,13 @@ public:
 
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
         Assert::AreEqual(static_cast<uint8_t>(0xF7), buffer[1]); // JPEG_SOF_55
-        Assert::AreEqual(static_cast<uint8_t>(0), buffer[2]);    // 6 + (3 * 3) + 2 (in little endian)
-        Assert::AreEqual(static_cast<uint8_t>(17), buffer[3]);   // 6 + (3 * 3) + 2 (in little endian)
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[2]);    // 6 + (3 * 3) + 2 (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(17), buffer[3]);   // 6 + (3 * 3) + 2 (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(bitsPerSample), buffer[4]);
-        Assert::AreEqual(static_cast<uint8_t>(255), buffer[5]);  // height (in little endian)
-        Assert::AreEqual(static_cast<uint8_t>(255), buffer[6]);  // height (in little endian)
-        Assert::AreEqual(static_cast<uint8_t>(0), buffer[7]);    // width (in little endian)
-        Assert::AreEqual(static_cast<uint8_t>(100), buffer[8]); // width (in little endian)
+        Assert::AreEqual(static_cast<uint8_t>(255), buffer[5]);  // height (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(255), buffer[6]);  // height (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[7]);    // width (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(100), buffer[8]);  // width (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(componentCount), buffer[9]);
 
         Assert::AreEqual(static_cast<uint8_t>(1), buffer[10]);

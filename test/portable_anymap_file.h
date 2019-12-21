@@ -3,13 +3,11 @@
 
 #pragma once
 
-#include "../src/util.h"
-
-#include <vector>
-#include <string>
-#include <sstream>
 #include <fstream>
 #include <ios>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace charls_test {
 
@@ -34,11 +32,13 @@ public:
         component_count_ = header_info[0] == 6 ? 3 : 1;
         width_ = header_info[1];
         height_ = header_info[2];
-        bits_per_sample_ = charls::log_2(header_info[3] + 1);
+        bits_per_sample_ = log_2(header_info[3] + 1);
 
         const int bytes_per_sample = (bits_per_sample_ + 7) / 8;
         input_buffer_.resize(static_cast<size_t>(width_) * height_ * bytes_per_sample * component_count_);
         pnm_file.read(reinterpret_cast<char*>(input_buffer_.data()), input_buffer_.size());
+
+        convert_to_little_endian_if_needed();
     }
 
     int width() const noexcept
@@ -99,6 +99,28 @@ private:
             }
         }
         return result;
+    }
+
+    static constexpr int32_t log_2(int32_t n) noexcept
+    {
+        int32_t x = 0;
+        while (n > (1 << x))
+        {
+            ++x;
+        }
+        return x;
+    }
+
+    void convert_to_little_endian_if_needed() noexcept
+    {
+        // Anymap files with multi byte pixels are stored in big endian format in the file.
+        if (bits_per_sample_ > 8)
+        {
+            for (size_t i = 0; i < input_buffer_.size() - 1; i += 2)
+            {
+                std::swap(input_buffer_[i], input_buffer_[i + 1]);
+            }
+        }
     }
 
     int component_count_;

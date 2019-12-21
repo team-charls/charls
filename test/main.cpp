@@ -19,7 +19,6 @@
 #include <array>
 #include <string>
 
-using std::cin;
 using std::cout;
 using std::ios;
 using std::ios_base;

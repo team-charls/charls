@@ -19,15 +19,6 @@ using namespace charls_test;
 
 namespace {
 
-MSVC_WARNING_SUPPRESS(26497) // cannot be marked constexpr: will give error C3615
-bool IsMachineLittleEndian() noexcept
-{
-    constexpr unsigned int a = 0xFF000001;
-    const auto* chars = reinterpret_cast<const char*>(&a);
-    return chars[0] == 0x01;
-}
-MSVC_WARNING_UNSUPPRESS()
-
 void triplet_to_planar(vector<uint8_t>& buffer, uint32_t width, uint32_t height)
 {
     vector<uint8_t> workBuffer(buffer.size());
@@ -60,25 +51,9 @@ vector<uint8_t> read_file(const char* filename)
     return buffer;
 }
 
-void fix_endian(vector<uint8_t>& buffer, bool little_endian_data) noexcept
-{
-    if (little_endian_data == IsMachineLittleEndian())
-        return;
-
-    for (size_t i = 0; i < buffer.size() - 1; i += 2)
-    {
-        std::swap(buffer[i], buffer[i + 1]);
-    }
-}
-
 portable_anymap_file read_anymap_reference_file(const char* filename, const interleave_mode interleave_mode, const frame_info& frame_info)
 {
     portable_anymap_file reference_file(filename);
-
-    if (frame_info.bits_per_sample > 8)
-    {
-        fix_endian(reference_file.image_data(), false);
-    }
 
     if (interleave_mode == interleave_mode::none && frame_info.component_count == 3)
     {
@@ -91,11 +66,6 @@ portable_anymap_file read_anymap_reference_file(const char* filename, const inte
 portable_anymap_file read_anymap_reference_file(const char* filename, const interleave_mode interleave_mode)
 {
     portable_anymap_file reference_file(filename);
-
-    if (reference_file.bits_per_sample() > 8)
-    {
-        fix_endian(reference_file.image_data(), false);
-    }
 
     if (interleave_mode == interleave_mode::none && reference_file.component_count() == 3)
     {
