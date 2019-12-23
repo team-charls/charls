@@ -129,9 +129,10 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({UINT16_MAX, UINT16_MAX, 16, 255}); // = maximum.
+        encoder.frame_info({UINT16_MAX, UINT16_MAX, 8, 1}); // = maximum.
         const auto size = encoder.estimated_destination_size();
-        Assert::IsTrue(size >= static_cast<size_t>(UINT16_MAX) * UINT16_MAX * 2 * 255);
+        constexpr auto expected = static_cast<size_t>(UINT16_MAX) * UINT16_MAX * 1 * 1;
+        Assert::IsTrue(size >= expected);
     }
 
     TEST_METHOD(estimated_destination_size_monochrome_16_bit)
