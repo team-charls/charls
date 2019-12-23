@@ -120,18 +120,54 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, 1, 2, 1}); // minimum.
+        encoder.frame_info({1, 1, 2, 1}); // = minimum.
         const auto size = encoder.estimated_destination_size();
         Assert::IsTrue(size >= 1024);
     }
 
-    TEST_METHOD(estimated_destination_size_16_bit)
+    TEST_METHOD(estimated_destination_size_maximal_frame_info)
+    {
+        jpegls_encoder encoder;
+
+        encoder.frame_info({UINT16_MAX, UINT16_MAX, 16, 255}); // = maximum.
+        const auto size = encoder.estimated_destination_size();
+        Assert::IsTrue(size >= static_cast<size_t>(UINT16_MAX) * UINT16_MAX * 2 * 255);
+    }
+
+    TEST_METHOD(estimated_destination_size_monochrome_16_bit)
     {
         jpegls_encoder encoder;
 
         encoder.frame_info({100, 100, 16, 1}); // minimum.
         const auto size = encoder.estimated_destination_size();
         Assert::IsTrue(size >= 100 * 100 * 2);
+    }
+
+    TEST_METHOD(estimated_destination_size_color_8_bit)
+    {
+        jpegls_encoder encoder;
+
+        encoder.frame_info({2000, 2000, 8, 3});
+        const auto size = encoder.estimated_destination_size();
+        Assert::IsTrue(size >= 2000 * 2000 * 3);
+    }
+
+    TEST_METHOD(estimated_destination_size_very_wide)
+    {
+        jpegls_encoder encoder;
+
+        encoder.frame_info({UINT16_MAX, 1, 8, 1});
+        const auto size = encoder.estimated_destination_size();
+        Assert::IsTrue(size >= UINT16_MAX + 1024);
+    }
+
+    TEST_METHOD(estimated_destination_size_very_high)
+    {
+        jpegls_encoder encoder;
+
+        encoder.frame_info({1, UINT16_MAX, 8, 1});
+        const auto size = encoder.estimated_destination_size();
+        Assert::IsTrue(size >= UINT16_MAX + 1024);
     }
 
     TEST_METHOD(estimated_destination_size_too_soon)

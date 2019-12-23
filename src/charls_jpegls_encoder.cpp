@@ -82,7 +82,7 @@ struct charls_jpegls_encoder final
         if (!is_frame_info_configured())
             throw jpegls_error{jpegls_errc::invalid_operation};
 
-        return static_cast<size_t>(frame_info_.height) * frame_info_.height *
+        return static_cast<size_t>(frame_info_.width) * frame_info_.height *
                    frame_info_.component_count * (frame_info_.bits_per_sample < 9 ? 1 : 2) +
                    1024 + spiff_header_size_in_bytes;
     }
