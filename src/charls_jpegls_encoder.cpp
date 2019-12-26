@@ -452,7 +452,7 @@ try
 
     charls_jpegls_encoder encoder;
     encoder.destination(destination, destinationLength);
-    encoder.frame_info({static_cast<uint32_t>(params->height), static_cast<uint32_t>(params->width), params->bitsPerSample, params->components});
+    encoder.frame_info({static_cast<uint32_t>(params->width), static_cast<uint32_t>(params->height), params->bitsPerSample, params->components});
     encoder.near_lossless(params->allowedLossyError);
     encoder.interleave_mode(params->interleaveMode);
     encoder.color_transformation(params->colorTransformation);

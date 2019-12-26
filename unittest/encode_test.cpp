@@ -51,6 +51,13 @@ private:
     {
         const portable_anymap_file reference_file = read_anymap_reference_file(filename, interleave_mode);
 
+        // TODO: pass interleave_mode to encode...
+        encode(reference_file);
+        encode_legacy_api(reference_file);
+    }
+
+    static void encode(const portable_anymap_file& reference_file)
+    {
         jpegls_encoder encoder;
         encoder.frame_info({
             static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()),
@@ -62,17 +69,44 @@ private:
         const size_t bytes_written = encoder.encode(reference_file.image_data());
         charls_encoded.resize(bytes_written);
 
-        test_by_decoding(charls_encoded, reference_file.image_data());
+        test_by_decoding(charls_encoded, reference_file);
     }
 
-    static void test_by_decoding(const vector<uint8_t>& encoded_source, const vector<uint8_t>& uncompressed_source)
+    static void encode_legacy_api(const portable_anymap_file& reference_file)
+    {
+        JlsParameters info{};
+        info.width = reference_file.width();
+        info.height = reference_file.height();
+        info.bitsPerSample = reference_file.bits_per_sample();
+        info.components = reference_file.component_count();
+
+        vector<uint8_t> charls_encoded(estimated_destination_size(reference_file.width(), reference_file.height(),
+            reference_file.component_count(), reference_file.bits_per_sample()));
+
+        size_t bytesWritten;
+        const auto error = JpegLsEncode(charls_encoded.data(), charls_encoded.size(), &bytesWritten,
+            reference_file.image_data().data(), reference_file.image_data().size(), &info, nullptr);
+        Assert::IsTrue(jpegls_errc::success == error);
+
+        test_by_decoding(charls_encoded, reference_file);
+    }
+
+    static void test_by_decoding(const vector<uint8_t>& encoded_source, const portable_anymap_file& reference_file)
     {
         jpegls_decoder decoder;
         decoder.source(encoded_source);
         decoder.read_header();
 
+        const auto frame_info = decoder.frame_info();
+        Assert::AreEqual(static_cast<uint32_t>(reference_file.width()), frame_info.width);
+        Assert::AreEqual(static_cast<uint32_t>(reference_file.height()), frame_info.height);
+        Assert::AreEqual(reference_file.component_count(), frame_info.component_count);
+        Assert::AreEqual(reference_file.bits_per_sample(), frame_info.bits_per_sample);
+
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
+
+        const vector<uint8_t>& uncompressed_source = reference_file.image_data();
 
         Assert::AreEqual(destination.size(), uncompressed_source.size());
 
@@ -86,6 +120,12 @@ private:
                 }
             }
         }
+    }
+
+    constexpr static size_t estimated_destination_size(int width, int height, int component_count, int bits_per_sample) noexcept
+    {
+        return static_cast<size_t>(width) * height *
+                   component_count * (bits_per_sample < 9 ? 1 : 2) + 1024;
     }
 };
 
