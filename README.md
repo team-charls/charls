@@ -27,17 +27,23 @@ Tip: the ITU makes their version of the JPEG-LS standard (ITU-T.87) freely avail
 ## About this software
 
 This project's goal is to provide a full implementation of the ISO/IEC 14495-1:1999, "Lossless and near-lossless compression of continuous-tone still images: Baseline" standard. This library is written from scratch in portable C++. The master branch uses modern C++14. The 1.x branch is maintained in C++03. All mainstream JPEG-LS features are implemented by this library.
-According to preliminary test results published on http://imagecompression.info/gralic, CharLS is about *twice as fast* as the original HP code, and beats both JPEG-XR and JPEG 2000 by a factor 3.
+According to preliminary test results published on <http://imagecompression.info/gralic,> CharLS is about *twice as fast* as the original HP code, and beats both JPEG-XR and JPEG 2000 by a factor 3.
 
 ### Limitations
 
 The following JPEG-LS options are not supported by the CharLS implementation. Most of these options are rarely used in practice.
 
 * No support for JPEG restart markers (RST).
+  Restart markers make it possible to recover from corrupted JPEG files, but are seldom used for data recovery scenarios.
 * No support for sub-sampled scans.
+  Sub-sampling is a lossly encoding mechanism and not used in lossless scenarios.
 * No support for multi component frames with mixed component counts in a single scan.
+  While technical possible all known JPEG-LS codecs put multi-component (color) images in a single scan
+  or in multiple scans, but not use a mix of these in one file.
 * No support for oversize image dimension. Maximum supported image dimensions are [1, 65535] by [1, 65535].
 * No support for JPEG-LS mapping tables.
+* No support Point transform.
+  Point transform is a lossly encoding mechanism and not used in lossless scenarios.
 
 #### Note about JPEG-LS part 2
 
@@ -55,7 +61,13 @@ With [vcpkg](https://github.com/Microsoft/vcpkg) on Windows
 PS> vcpkg install charls charls:x64-windows
 ```
 
-For other platforms, install options, how to build from source, and more, take a look at the [Documentation](https://github.com/team-charls/charls/wiki).
+With [vcpkg](https://github.com/Microsoft/vcpkg) on Linux or MacOS
+
+```bash
+~/$ ./vcpkg install charls
+```
+
+For other platforms, more install options, how to build from source, and more, take a look at the [Documentation](https://github.com/team-charls/charls/wiki).
 
 Once you have the library, the sample folder provides some code samples to get you started.
 
@@ -70,7 +82,7 @@ Before any major breaking change in the API and/or ABI a branch will be created 
 
 ## Users & Acknowledgements
 
-CharLS is being used by [GDCM DICOM toolkit](http://sourceforge.net/projects/gdcm/), thanks for [Mathieu Malaterre](http://sourceforge.net/users/malat) for getting CharLS started on Linux. [Kato Kanryu](http://knivez.homelinux.org/) wrote an initial version of the color transfroms and the DIB output format code, for an [irfanview](http://www.irfanview.com) plugin using CharLS. Thanks to Uli Schlachter, CharLS now finally runs correctly on big-endian architectures like Sun SPARC.
+CharLS is being used by [GDCM DICOM toolkit](http://sourceforge.net/projects/gdcm/), thanks for [Mathieu Malaterre](http://sourceforge.net/users/malat) for getting CharLS started on Linux. Kato Kanryu wrote an initial version of the color transforms and the DIB output format code, for an [irfanview](http://www.irfanview.com) plugin using CharLS. Thanks to Uli Schlachter, CharLS now finally runs correctly on big-endian architectures like Sun SPARC.
 
 ## Legal
 
