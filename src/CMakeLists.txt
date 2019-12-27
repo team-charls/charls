@@ -66,6 +66,8 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/scan.h"
     "${CMAKE_CURRENT_LIST_DIR}/util.h"
     "${CMAKE_CURRENT_LIST_DIR}/version.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/charls.def"
+    "${CMAKE_CURRENT_LIST_DIR}/charls.rc"
 )
 
 if(CHARLS_INSTALL)
