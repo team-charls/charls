@@ -41,7 +41,7 @@ public:
         jpegls_encoder encoder3 = std::move(encoder2);
     }
 
-    TEST_METHOD(frame_info)
+    TEST_METHOD(frame_info_max_and_min)
     {
         jpegls_encoder encoder;
 
@@ -460,55 +460,94 @@ public:
     TEST_METHOD(encode_with_spiff_header)
     {
         const array<uint8_t, 5> source{0, 1, 2, 3, 4};
+        const frame_info frame_info{5, 1, 8, 1};
 
         jpegls_encoder encoder;
-        encoder.frame_info({5, 1, 8, 1});
+        encoder.frame_info(frame_info);
         vector<uint8_t> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
         encoder.write_standard_spiff_header(spiff_color_space::grayscale);
-        static_cast<void>(encoder.encode(source));
 
-        // TODO: add generic compare test function.
+        const size_t bytes_written{encoder.encode(source)};
+        destination.resize(bytes_written);
+
+        test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
     TEST_METHOD(encode_with_color_space)
     {
         const array<uint8_t, 6> source{0, 1, 2, 3, 4, 5};
+        const frame_info frame_info{2, 1, 8, 3};
 
         jpegls_encoder encoder;
-        encoder.frame_info({2, 1, 8, 3});
+        encoder.frame_info(frame_info);
         vector<uint8_t> destination(encoder.estimated_destination_size());
         encoder.destination(destination)
                .color_transformation(color_transformation::hp1);
 
-        static_cast<void>(encoder.encode(source));
+        const size_t bytes_written{encoder.encode(source)};
+        destination.resize(bytes_written);
 
-        // TODO: add generic compare test function.
+        test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
     TEST_METHOD(encode_16bit)
     {
         const array<uint8_t, 6> source{0, 1, 2, 3, 4, 5};
+        const frame_info frame_info{3, 1, 16, 1};
 
         jpegls_encoder encoder;
-        encoder.frame_info({3, 1, 16, 1});
+        encoder.frame_info(frame_info);
 
         vector<uint8_t> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
-        static_cast<void>(encoder.encode(source));
+        const size_t bytes_written{encoder.encode(source)};
+        destination.resize(bytes_written);
 
-        // TODO: add generic compare test function.
+        test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
     TEST_METHOD(simple_encode)
     {
         const vector<uint8_t> source{0, 1, 2, 3, 4, 5};
 
-        const auto encoded = jpegls_encoder::encode(source, {3, 1, 16, 1});
+        const frame_info frame_info{3, 1, 16, 1};
+        const auto encoded = jpegls_encoder::encode(source, frame_info);
 
-        // TODO: add generic compare test function.
+        test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
+    }
+
+private:
+    static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info, const uint8_t* source, const size_t source_size, const charls::interleave_mode interleave_mode)
+    {
+        jpegls_decoder decoder;
+        decoder.source(encoded_source);
+        decoder.read_header();
+
+        const auto frame_info = decoder.frame_info();
+        Assert::AreEqual(source_frame_info.width, frame_info.width);
+        Assert::AreEqual(source_frame_info.height, frame_info.height);
+        Assert::AreEqual(source_frame_info.bits_per_sample, frame_info.bits_per_sample);
+        Assert::AreEqual(source_frame_info.component_count, frame_info.component_count);
+        Assert::IsTrue(interleave_mode == decoder.interleave_mode());
+
+        vector<uint8_t> destination(decoder.destination_size());
+        decoder.decode(destination);
+
+        Assert::AreEqual(destination.size(), source_size);
+
+        if (decoder.near_lossless() == 0)
+        {
+            for (size_t i = 0; i < source_size; ++i)
+            {
+                if (destination[i] != source[i]) // AreEqual is very slow, pre-test to speed up 50X
+                {
+                    Assert::AreEqual(destination[i], source[i]);
+                }
+            }
+        }
     }
 };
 

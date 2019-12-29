@@ -76,13 +76,15 @@ public:
     TEST_METHOD(decompress_monochrome_16_bit_lossless)
     {
         // ISO 14495-1: official test image 11 (T87_test-11-12.zip)
+        // Note: test image is actually 12 bit.
         decompress_file("DataFiles/T16E0.JLS", "DataFiles/TEST16.PGM");
     }
 
     TEST_METHOD(decompress_monochrome_16_bit_near_lossless_3)
     {
         // ISO 14495-1: official test image 12 (T87_test-11-12.zip)
-        decompress_file("DataFiles/T16E0.JLS", "DataFiles/TEST16.pgm"); // TODO: fix incorrect test file.
+        // Note: test image is actually 12 bit.
+        decompress_file("DataFiles/T16E3.JLS", "DataFiles/TEST16.pgm", false);
     }
 
     TEST_METHOD(lena_monochrome_8_bit_lossless_ubc)
@@ -127,6 +129,35 @@ private:
                 if (uncompressed_source[i] != destination[i]) // AreEqual is very slow, pre-test to speed up 50X
                 {
                     Assert::AreEqual(uncompressed_source[i], destination[i]);
+                }
+            }
+        }
+        else
+        {
+            const frame_info frame_info{decoder.frame_info()};
+            const auto near_lossless{decoder.near_lossless()};
+
+            if (frame_info.bits_per_sample <= 8)
+            {
+                for (size_t i = 0; i < uncompressed_source.size(); ++i)
+                {
+                    if (abs(uncompressed_source[i] - destination[i]) > near_lossless) // AreEqual is very slow, pre-test to speed up 50X
+                    {
+                        Assert::AreEqual(uncompressed_source[i], destination[i]);
+                    }
+                }
+            }
+            else
+            {
+                const auto* source16 = reinterpret_cast<const uint16_t*>(uncompressed_source.data());
+                const auto* destination16 = reinterpret_cast<const uint16_t*>(destination.data());
+
+                for (size_t i = 0; i < uncompressed_source.size() / 2; ++i)
+                {
+                    if (abs(source16[i] - destination16[i]) > near_lossless) // AreEqual is very slow, pre-test to speed up 50X
+                    {
+                        Assert::AreEqual(static_cast<int>(source16[i]), static_cast<int>(destination16[i]));
+                    }
                 }
             }
         }

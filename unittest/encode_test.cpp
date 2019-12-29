@@ -101,8 +101,8 @@ private:
         const auto frame_info = decoder.frame_info();
         Assert::AreEqual(static_cast<uint32_t>(reference_file.width()), frame_info.width);
         Assert::AreEqual(static_cast<uint32_t>(reference_file.height()), frame_info.height);
-        Assert::AreEqual(reference_file.component_count(), frame_info.component_count);
         Assert::AreEqual(reference_file.bits_per_sample(), frame_info.bits_per_sample);
+        Assert::AreEqual(reference_file.component_count(), frame_info.component_count);
         Assert::IsTrue(interleave_mode == decoder.interleave_mode());
 
         vector<uint8_t> destination(decoder.destination_size());
