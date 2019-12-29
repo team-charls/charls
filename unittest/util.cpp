@@ -169,10 +169,10 @@ void test_round_trip_legacy(const vector<uint8_t>& source, const JlsParameters& 
     size_t compressedLength = 0;
     auto error = JpegLsEncode(encodedBuffer.data(), encodedBuffer.size(), &compressedLength,
                               source.data(), source.size(), &params, nullptr);
-    Assert::IsTrue(error == jpegls_errc::success);
+    Assert::AreEqual(jpegls_errc::success, error);
 
     error = JpegLsDecode(decodedBuffer.data(), decodedBuffer.size(), encodedBuffer.data(), compressedLength, nullptr, nullptr);
-    Assert::IsTrue(error == jpegls_errc::success);
+    Assert::AreEqual(jpegls_errc::success, error);
 
     const uint8_t* byteOut = decodedBuffer.data();
     for (size_t i = 0; i < decodedBuffer.size(); ++i)

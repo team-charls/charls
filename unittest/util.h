@@ -24,6 +24,12 @@ namespace VisualStudio {
 namespace CppUnitTestFramework {
 
 template<>
+inline std::wstring ToString<charls::jpegls_errc>(const charls::jpegls_errc& q)
+{
+    RETURN_WIDE_STRING(static_cast<int>(q));
+}
+
+template<>
 inline std::wstring ToString<charls::interleave_mode>(const charls::interleave_mode& q)
 {
     RETURN_WIDE_STRING(static_cast<int>(q));

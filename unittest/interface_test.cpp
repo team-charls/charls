@@ -16,18 +16,6 @@ using namespace charls;
 using std::array;
 using std::vector;
 
-namespace Microsoft {
-namespace VisualStudio {
-namespace CppUnitTestFramework {
-template<>
-std::wstring ToString<jpegls_errc>(const jpegls_errc& q)
-{
-    RETURN_WIDE_STRING(static_cast<int>(q));
-}
-
-}}} // namespace Microsoft::VisualStudio::CppUnitTestFramework
-
-
 // clang-format off
 
 namespace CharLSUnitTest {

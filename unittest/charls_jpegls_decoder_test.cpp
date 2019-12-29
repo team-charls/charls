@@ -3,26 +3,15 @@
 
 #include "pch.h"
 
+#include "util.h"
+
 #include <charls/charls.h>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using Microsoft::VisualStudio::CppUnitTestFramework::TestClass;
 using namespace charls;
-
-namespace Microsoft {
-namespace VisualStudio {
-namespace CppUnitTestFramework {
-template<>
-std::wstring ToString<jpegls_errc>(const jpegls_errc& q)
-{
-    RETURN_WIDE_STRING(static_cast<int>(q));
-}
-
-}}} // namespace Microsoft::VisualStudio::CppUnitTestFramework
 
 
 namespace CharLSUnitTest {
-
 
 // clang-format off
 

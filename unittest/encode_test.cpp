@@ -87,7 +87,7 @@ private:
         size_t bytesWritten;
         const auto error = JpegLsEncode(charls_encoded.data(), charls_encoded.size(), &bytesWritten,
             reference_file.image_data().data(), reference_file.image_data().size(), &info, nullptr);
-        Assert::IsTrue(jpegls_errc::success == error);
+        Assert::AreEqual(jpegls_errc::success, error);
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode);
     }
