@@ -501,6 +501,15 @@ public:
 
         // TODO: add generic compare test function.
     }
+
+    TEST_METHOD(simple_encode)
+    {
+        const vector<uint8_t> source{0, 1, 2, 3, 4, 5};
+
+        const auto encoded = jpegls_encoder::encode(source, {3, 1, 16, 1});
+
+        // TODO: add generic compare test function.
+    }
 };
 
 } // namespace CharLSUnitTest

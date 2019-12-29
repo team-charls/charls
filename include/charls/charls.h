@@ -9,6 +9,7 @@
 #ifdef __cplusplus
 
 #include <memory>
+#include <utility>
 
 #else
 
@@ -392,22 +393,22 @@ public:
     /// <param name="source">Source container with the JPEG-LS encoded bytes.</param>
     /// <param name="destination">Destination container that will hold the image data on return. Container will be resized automatically.</param>
     /// <param name="maximum_size_in_bytes">The maximum output size that may be allocated, default is 94 MiB (enough to decode 8 bit color 8K image).</param>
-    /// <returns>Frame info of the decoded image.</returns>
+    /// <returns>Frame info of the decoded image and the interleave mode.</returns>
     template<typename SourceContainer, typename DestinationContainer, typename ValueType = typename DestinationContainer::value_type>
-    static frame_info decode(const SourceContainer& source, DestinationContainer& destination, const size_t maximum_size_in_bytes = 7680 * 4320 * 3)
+    static std::pair<frame_info, interleave_mode> decode(const SourceContainer& source, DestinationContainer& destination, const size_t maximum_size_in_bytes = 7680 * 4320 * 3)
     {
         jpegls_decoder decoder{source};
 
         decoder.read_header();
 
-        const size_t destination_size = decoder.destination_size();
+        const size_t destination_size{decoder.destination_size()};
         if (destination_size > maximum_size_in_bytes)
             throw jpegls_error(jpegls_errc::not_enough_memory);
 
         destination.resize(destination_size / sizeof(ValueType));
         decoder.decode(destination);
 
-        return decoder.frame_info();
+        return std::make_pair(decoder.frame_info(), decoder.interleave_mode());
     }
 
     jpegls_decoder() = default;
@@ -583,9 +584,23 @@ public:
     /// <param name="destination_container">A STL like container that provides the functions data() and size() and the type value_type.</param>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
     template<typename Container, typename ValueType = typename Container::value_type>
-    void decode(Container& destination_container, const uint32_t stride = 0)
+    void decode(Container& destination_container, const uint32_t stride = 0) const
     {
         decode(destination_container.data(), destination_container.size() * sizeof(ValueType), stride);
+    }
+
+    /// <summary>
+    /// Will decode the JPEG-LS byte stream set with source and return a container with the decoded data.
+    /// </summary>
+    /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
+    /// <returns>Container with the decoded data.</returns>
+    template<typename Container, typename ValueType = typename Container::value_type>
+    auto decode(const uint32_t stride = 0) const
+    {
+        Container destination(destination_size() / sizeof(ValueType));
+
+        decode(destination.data(), destination.size() * sizeof(ValueType), stride);
+        return destination;
     }
 
 private:
@@ -613,6 +628,29 @@ private:
 class jpegls_encoder final
 {
 public:
+    /// <summary>
+    /// Encoded pixel data in 1 simple operation into a JPEG-LS encoded buffer.
+    /// </summary>
+    /// <param name="source">Source container with the pixel data bytes that need to be encoded.</param>
+    /// <param name="frame_info">Information about the frame that needs to be encoded.</param>
+    /// <param name="interleave_mode">Configures the interleave mode the encoder should use.</param>
+    /// <returns>Container with the JPEG-LS encoded bytes.</returns>
+    template<typename Container, typename ValueType = typename Container::value_type>
+    static auto encode(const Container& source, const charls::frame_info& frame_info, const charls::interleave_mode interleave_mode = charls::interleave_mode::none)
+    {
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info)
+            .interleave_mode(interleave_mode);
+
+        Container destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source)};
+        destination.resize(bytes_written);
+
+        return destination;
+    }
+
     jpegls_encoder() = default;
     ~jpegls_encoder() = default;
 

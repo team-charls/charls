@@ -7,10 +7,12 @@
 
 #include <charls/charls.h>
 
+#include <tuple>
 #include <vector>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::error_code;
+using std::tie;
 using std::vector;
 using namespace charls;
 using namespace charls_test;
@@ -143,6 +145,43 @@ public:
         }
     }
 
+    TEST_METHOD(decode_with_destination_as_return)
+    {
+        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+
+        jpegls_decoder decoder{source};
+        decoder.read_header();
+
+        const auto destination = decoder.decode<vector<uint8_t>>();
+
+        portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/TEST8.PPM", decoder.interleave_mode(), decoder.frame_info());
+
+        const auto& reference_image_data = reference_file.image_data();
+        for (size_t i = 0; i < destination.size(); ++i)
+        {
+            Assert::AreEqual(reference_image_data[i], destination[i]);
+        }
+    }
+
+    TEST_METHOD(decode_with_16bit_destination_as_return)
+    {
+        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+
+        jpegls_decoder decoder{source};
+        decoder.read_header();
+
+        const auto destination = decoder.decode<vector<uint16_t>>();
+
+        portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/TEST8.PPM", decoder.interleave_mode(), decoder.frame_info());
+
+        const auto& reference_image_data = reference_file.image_data();
+        const auto* destination_as_bytes = reinterpret_cast<const uint8_t*>(destination.data());
+        for (size_t i = 0; i < reference_image_data.size(); ++i)
+        {
+            Assert::AreEqual(reference_image_data[i], destination_as_bytes[i]);
+        }
+    }
+
     TEST_METHOD(decode_without_reading_header)
     {
         jpegls_decoder decoder;
@@ -185,17 +224,51 @@ public:
         Assert::IsTrue(ec == jpegls_errc::jpeg_marker_start_byte_not_found);
     }
 
-    TEST_METHOD(simple_decode)
+    TEST_METHOD(read_spiff_header_from_jpegls_without_spiff)
     {
-        const vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E0.JLS")};
+        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
 
-        vector<uint8_t> decoded_destination;
-        const auto frame_info{jpegls_decoder::decode(encoded_source, decoded_destination)};
+        jpegls_decoder decoder{source};
+
+        bool found;
+        static_cast<void>(decoder.read_spiff_header(found));
+        Assert::IsFalse(found);
+
+        decoder.read_header();
+        const frame_info frame_info{decoder.frame_info()};
 
         Assert::AreEqual(3, frame_info.component_count);
         Assert::AreEqual(8, frame_info.bits_per_sample);
         Assert::AreEqual(256U, frame_info.height);
         Assert::AreEqual(256U, frame_info.width);
+    }
+
+    TEST_METHOD(read_header_twice)
+    {
+        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+
+        jpegls_decoder decoder{source};
+
+        decoder.read_header();
+
+        assert_expect_exception(jpegls_errc::invalid_operation,
+            [&] { static_cast<void>(decoder.read_header()); });
+    }
+
+    TEST_METHOD(simple_decode)
+    {
+        const vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E0.JLS")};
+
+        vector<uint8_t> decoded_destination;
+        frame_info frame_info;
+        interleave_mode interleave_mode;
+        tie(frame_info, interleave_mode) = jpegls_decoder::decode(encoded_source, decoded_destination);
+
+        Assert::AreEqual(3, frame_info.component_count);
+        Assert::AreEqual(8, frame_info.bits_per_sample);
+        Assert::AreEqual(256U, frame_info.height);
+        Assert::AreEqual(256U, frame_info.width);
+        Assert::AreEqual(interleave_mode::none, interleave_mode);
 
         const size_t expected_size = static_cast<size_t>(frame_info.height) * frame_info.width * frame_info.component_count;
         Assert::AreEqual(expected_size, decoded_destination.size());
@@ -206,12 +279,15 @@ public:
         const vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E0.JLS")};
 
         vector<uint16_t> decoded_destination;
-        const auto frame_info{jpegls_decoder::decode(encoded_source, decoded_destination)};
+        frame_info frame_info;
+        interleave_mode interleave_mode;
+        tie(frame_info, interleave_mode) = jpegls_decoder::decode(encoded_source, decoded_destination);
 
         Assert::AreEqual(3, frame_info.component_count);
         Assert::AreEqual(8, frame_info.bits_per_sample);
         Assert::AreEqual(256U, frame_info.height);
         Assert::AreEqual(256U, frame_info.width);
+        Assert::AreEqual(interleave_mode::none, interleave_mode);
 
         const size_t expected_size = static_cast<size_t>(frame_info.height) * frame_info.width * frame_info.component_count;
         Assert::AreEqual(expected_size, decoded_destination.size() * sizeof(uint16_t));

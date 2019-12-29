@@ -92,6 +92,9 @@
     <ClCompile Include="encode_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="documentation_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="lena8b.pgm">
@@ -142,8 +145,10 @@
     <CopyFileToFolders Include="../test/conformance/TEST16.PGM">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="16-bit-640-480-many-dots.pgm" />
     <CopyFileToFolders Include="ff_in_entropy_data.jls">
+      <Filter>Test Images</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="16-bit-640-480-many-dots.pgm">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
   </ItemGroup>

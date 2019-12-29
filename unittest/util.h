@@ -19,6 +19,21 @@ std::vector<uint8_t> create_test_spiff_header(uint8_t high_version = 2, uint8_t 
 std::vector<uint8_t> create_noise_image_16bit(size_t pixel_count, int bit_count, uint32_t seed);
 void test_round_trip_legacy(const std::vector<uint8_t>& source, const JlsParameters& params);
 
+namespace Microsoft {
+namespace VisualStudio {
+namespace CppUnitTestFramework {
+
+template<>
+inline std::wstring ToString<charls::interleave_mode>(const charls::interleave_mode& q)
+{
+    RETURN_WIDE_STRING(static_cast<int>(q));
+}
+
+}
+}
+} // namespace Microsoft::VisualStudio::CppUnitTestFramework
+
+
 namespace CharLSUnitTest {
 
 template<typename Functor>

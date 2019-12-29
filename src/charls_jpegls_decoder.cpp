@@ -35,17 +35,21 @@ struct charls_jpegls_decoder final
 
         bool spiff_header_found{};
         reader_->ReadHeader(spiff_header, &spiff_header_found);
-        state_ = state::spiff_header_read;
+        state_ = spiff_header_found ? state::spiff_header_read : state::spiff_header_not_found;
 
         return spiff_header_found;
     }
 
     void read_header()
     {
-        if (state_ >= state::header_read || state_ == state::initial)
+        if (state_ == state::initial || state_ >= state::header_read)
             throw jpegls_error{jpegls_errc::invalid_operation};
 
-        reader_->ReadHeader();
+        if (state_ != state::spiff_header_not_found)
+        {
+            reader_->ReadHeader();
+        }
+
         reader_->ReadStartOfScan(true);
         state_ = state::header_read;
     }
@@ -129,6 +133,7 @@ private:
         initial,
         source_set,
         spiff_header_read,
+        spiff_header_not_found,
         header_read,
         completed,
     };
