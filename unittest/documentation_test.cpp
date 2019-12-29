@@ -64,7 +64,7 @@ std::vector<uint8_t> decode_simple_8bit_monochrome_legacy(const std::vector<uint
     if (parameters.components != 1 || parameters.bitsPerSample != 8)
         throw std::exception("Not a 8 bit monochrome image");
 
-    const size_t destination_size = parameters.width * parameters.height;
+    const size_t destination_size = static_cast<size_t>(parameters.width) * parameters.height;
     std::vector<uint8_t> destination(destination_size);
 
     error = JpegLsDecode(destination.data(), destination.size(),
@@ -109,7 +109,7 @@ std::vector<uint8_t> encode_simple_8bit_monochrome_legacy(const std::vector<uint
     parameters.bitsPerSample = 8;
     parameters.components = 1;
 
-    const size_t estimated_destination_size = width * height * 1 * 1 + 1024;
+    const size_t estimated_destination_size = static_cast<size_t>(width) * height * 1 * 1 + 1024;
     std::vector<uint8_t> destination(estimated_destination_size);
 
     size_t bytes_written;

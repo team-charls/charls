@@ -632,14 +632,14 @@ public:
     /// Encoded pixel data in 1 simple operation into a JPEG-LS encoded buffer.
     /// </summary>
     /// <param name="source">Source container with the pixel data bytes that need to be encoded.</param>
-    /// <param name="frame_info">Information about the frame that needs to be encoded.</param>
+    /// <param name="info">Information about the frame that needs to be encoded.</param>
     /// <param name="interleave_mode">Configures the interleave mode the encoder should use.</param>
     /// <returns>Container with the JPEG-LS encoded bytes.</returns>
     template<typename Container, typename ValueType = typename Container::value_type>
-    static auto encode(const Container& source, const charls::frame_info& frame_info, const charls::interleave_mode interleave_mode = charls::interleave_mode::none)
+    static auto encode(const Container& source, const charls::frame_info& info, const charls::interleave_mode interleave_mode = charls::interleave_mode::none)
     {
         jpegls_encoder encoder;
-        encoder.frame_info(frame_info)
+        encoder.frame_info(info)
             .interleave_mode(interleave_mode);
 
         Container destination(encoder.estimated_destination_size());
