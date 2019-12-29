@@ -138,10 +138,11 @@ charls_jpegls_decoder_get_preset_coding_parameters(const charls_jpegls_decoder* 
 /// Function should be called after calling the function charls_jpegls_decoder_read_header.
 /// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
+/// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
 /// <param name="destination_size_bytes">Output argument, will hold the required size when the function returns.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_destination_size(const charls_jpegls_decoder* decoder, size_t* destination_size_bytes) CHARLS_NOEXCEPT;
+charls_jpegls_decoder_get_destination_size(const charls_jpegls_decoder* decoder, uint32_t stride, size_t* destination_size_bytes) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Will decode the JPEG-LS byte stream from the source buffer into the destination buffer.
@@ -559,11 +560,12 @@ public:
     /// Returns the size required for the destination buffer in bytes to hold the decoded pixel data.
     /// Function can be read_header.
     /// </summary>
+    /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
     /// <returns>The required size in bytes of the destination buffer.</returns>
-    CHARLS_NO_DISCARD size_t destination_size() const
+    CHARLS_NO_DISCARD size_t destination_size(const uint32_t stride = 0) const
     {
         size_t size_in_bytes;
-        check_jpegls_errc(charls_jpegls_decoder_get_destination_size(decoder_.get(), &size_in_bytes));
+        check_jpegls_errc(charls_jpegls_decoder_get_destination_size(decoder_.get(), stride, &size_in_bytes));
         return size_in_bytes;
     }
 

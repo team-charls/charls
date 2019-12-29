@@ -126,6 +126,53 @@ public:
             [&] { static_cast<void>(decoder.preset_coding_parameters()); });
     }
 
+    TEST_METHOD(destination_size)
+    {
+        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+
+        jpegls_decoder decoder{source};
+        decoder.read_header();
+
+        constexpr size_t expected_destination_size{256 * 256 * 3};
+        Assert::AreEqual(expected_destination_size, decoder.destination_size());
+    }
+
+    TEST_METHOD(destination_size_stride_interleave_none)
+    {
+        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+
+        jpegls_decoder decoder{source};
+        decoder.read_header();
+
+        constexpr uint32_t stride = 512;
+        constexpr size_t expected_destination_size{stride * 256 * 3};
+        Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
+    }
+
+    TEST_METHOD(destination_size_stride_interleave_line)
+    {
+        const vector<uint8_t> source{read_file("DataFiles/T8C1E0.JLS")};
+
+        jpegls_decoder decoder{source};
+        decoder.read_header();
+
+        constexpr uint32_t stride = 1024;
+        constexpr size_t expected_destination_size{stride * 256};
+        Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
+    }
+
+    TEST_METHOD(destination_size_stride_interleave_sample)
+    {
+        const vector<uint8_t> source{read_file("DataFiles/T8C2E0.JLS")};
+
+        jpegls_decoder decoder{source};
+        decoder.read_header();
+
+        constexpr uint32_t stride = 1024;
+        constexpr size_t expected_destination_size{stride * 256};
+        Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
+    }
+
     TEST_METHOD(decode_reference_file_from_buffer)
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};

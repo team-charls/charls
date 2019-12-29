@@ -92,10 +92,28 @@ struct charls_jpegls_decoder final
         return reader_->GetCustomPreset();
     }
 
-    size_t destination_size() const
+    size_t destination_size(const uint32_t stride) const
     {
         const charls::frame_info info{frame_info()};
-        return static_cast<size_t>(info.width) * info.height * info.component_count * (info.bits_per_sample <= 8 ? 1 : 2);
+
+        if (stride == 0)
+        {
+            return static_cast<size_t>(info.width) * info.height * info.component_count * (info.bits_per_sample <= 8 ? 1 : 2);
+        }
+
+        switch (interleave_mode())
+        {
+        case interleave_mode::none:
+            return static_cast<size_t>(stride) * info.height * info.component_count;
+
+        case interleave_mode::line:
+        case interleave_mode::sample:
+            return static_cast<size_t>(stride) * info.height;
+
+        default:
+            ASSERT(false);
+            return 0;
+        }
     }
 
     void decode(void* destination_buffer, size_t destination_size_bytes, uint32_t stride) const
@@ -273,13 +291,13 @@ catch (...)
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_destination_size(const struct charls_jpegls_decoder* decoder, size_t* destination_size_bytes) noexcept
+charls_jpegls_decoder_get_destination_size(const struct charls_jpegls_decoder* decoder, const uint32_t stride, size_t* destination_size_bytes) noexcept
 try
 {
     if (!decoder || !destination_size_bytes)
         return jpegls_errc::invalid_argument;
 
-    *destination_size_bytes = decoder->destination_size();
+    *destination_size_bytes = decoder->destination_size(stride);
     return jpegls_errc::success;
 }
 catch (...)

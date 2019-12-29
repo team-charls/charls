@@ -117,11 +117,11 @@ public:
     TEST_METHOD(get_destination_size_nullptr)
     {
         size_t destination_size_bytes;
-        auto error = charls_jpegls_decoder_get_destination_size(nullptr, &destination_size_bytes);
+        auto error = charls_jpegls_decoder_get_destination_size(nullptr, 0, &destination_size_bytes);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
         const auto* decoder = charls_jpegls_decoder_create();
-        error = charls_jpegls_decoder_get_destination_size(decoder, nullptr);
+        error = charls_jpegls_decoder_get_destination_size(decoder, 0, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
         charls_jpegls_decoder_destroy(decoder);
