@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 3.9...3.14)
 
-project(charls VERSION 2.0.1 LANGUAGES C CXX)
+project(charls VERSION 2.1.0 LANGUAGES C CXX)
 
 # Determine if project is built as a subproject (using add_subdirectory) or if it is the master project.
 set(MASTER_PROJECT OFF)
