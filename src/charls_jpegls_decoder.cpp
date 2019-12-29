@@ -109,11 +109,10 @@ struct charls_jpegls_decoder final
         case interleave_mode::line:
         case interleave_mode::sample:
             return static_cast<size_t>(stride) * info.height;
-
-        default:
-            ASSERT(false);
-            return 0;
         }
+
+        ASSERT(false);
+        return 0;
     }
 
     void decode(void* destination_buffer, size_t destination_size_bytes, uint32_t stride) const
