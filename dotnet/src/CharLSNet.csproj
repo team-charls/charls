@@ -7,9 +7,9 @@
     <Description>".NET interop layer for the CharLS JPEG-LS codec"</Description>
     <Company>Team-CharLS</Company>
     <Authors>Team-CharLS</Authors>
-    <Version>2.1.0</Version>
+    <Version>2.1.1</Version>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
+    <FileVersion>2.1.1.0</FileVersion>
     <Copyright>Copyright 2019 Team CharLS</Copyright>
     <Platforms>AnyCPU</Platforms>
     <Configurations>Debug;Release;Checked</Configurations>

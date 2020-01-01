@@ -7,7 +7,7 @@
 
 #define CHARLS_VERSION_MAJOR 2
 #define CHARLS_VERSION_MINOR 1
-#define CHARLS_VERSION_PATCH 0
+#define CHARLS_VERSION_PATCH 1
 
 #ifdef __cplusplus
 
