@@ -9,6 +9,21 @@
 #include <string>
 #include <vector>
 
+
+// Visual Studio 2015 supports C++14, but not all constexpr scenarios. VS 2017 has full C++14 support.
+#ifdef _MSC_VER
+
+#if _MSC_VER >= 1910
+#define CONSTEXPR constexpr
+#else
+#define CONSTEXPR
+#endif
+
+#else
+#define CONSTEXPR constexpr
+#endif
+
+
 namespace charls_test {
 
 // Purpose: this class can read an image stored in the Portable Anymap Format (PNM).
@@ -101,7 +116,7 @@ private:
         return result;
     }
 
-    static constexpr int32_t log_2(int32_t n) noexcept
+    static CONSTEXPR int32_t log_2(int32_t n) noexcept
     {
         int32_t x = 0;
         while (n > (1 << x))

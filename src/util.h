@@ -34,9 +34,18 @@
     __pragma(warning(disable                             \
                      : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses)
 #define MSVC_WARNING_UNSUPPRESS() __pragma(warning(pop))
+
+// Visual Studio 2015 supports C++14, but not all constexpr scenarios. VS 2017 has full C++14 support.
+#if _MSC_VER >= 1910
+#define CONSTEXPR constexpr
+#else
+#define CONSTEXPR inline
+#endif
+
 #else
 #define MSVC_WARNING_SUPPRESS(x)
 #define MSVC_WARNING_UNSUPPRESS()
+#define CONSTEXPR constexpr
 #endif
 
 namespace charls {
@@ -116,7 +125,7 @@ inline void push_back(std::vector<uint8_t>& values, uint32_t value)
 }
 
 
-constexpr int32_t log_2(int32_t n) noexcept
+CONSTEXPR int32_t log_2(int32_t n) noexcept
 {
     int32_t x = 0;
     while (n > (1 << x))

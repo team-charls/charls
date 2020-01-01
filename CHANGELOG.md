@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Next-Release]
+
+### Fixed
+
+- Fixed [#60](https://github.com/team-charls/charls/issues/60), Visual Studio 2015 C++ compiler cannot compile certain constexpr constructions
+
 ## [2.1.0] - 2019-12-29
 
 ### Added

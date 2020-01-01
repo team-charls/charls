@@ -485,7 +485,7 @@ public:
         spiff_header header{};
         int32_t found;
         ec = charls_jpegls_decoder_read_spiff_header(decoder_.get(), &header, &found);
-        header_found = static_cast<bool>(found);
+        header_found = header_found = found != 0;
         return header;
     }
 

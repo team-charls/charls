@@ -77,13 +77,13 @@ inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc) noexcept
 
 #endif
 
-constexpr int32_t UnMapErrVal(int32_t mappedError) noexcept
+CONSTEXPR int32_t UnMapErrVal(int32_t mappedError) noexcept
 {
     const int32_t sign = mappedError << (int32_t_bit_count - 1) >> (int32_t_bit_count - 1);
     return sign ^ (mappedError >> 1);
 }
 
-constexpr int32_t GetMappedErrVal(int32_t errorValue) noexcept
+CONSTEXPR int32_t GetMappedErrVal(int32_t errorValue) noexcept
 {
     const int32_t mappedError = (errorValue >> (int32_t_bit_count - 2)) ^ (2 * errorValue);
     return mappedError;
