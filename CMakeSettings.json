@@ -96,6 +96,29 @@
           "type": "STRING"
         }
       ]
+    },
+    {
+      "name": "ARM64-Release",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
+      "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
+      "cmakeCommandArgs": "-DBUILD_SHARED_LIBS=YES",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_arm64_x64" ],
+      "variables": [
+        {
+          "name": "CHARLS_THREAT_WARNINGS_AS_ERRORS",
+          "value": "On",
+          "type": "STRING"
+        },
+        {
+          "name": "CHARLS_PEDANTIC_WARNINGS",
+          "value": "On",
+          "type": "STRING"
+        }
+      ]
     }
   ]
 }

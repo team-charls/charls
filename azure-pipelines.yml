@@ -1,0 +1,325 @@
+# Copyright (c) Team CharLS.
+# SPDX-License-Identifier: BSD-3-Clause
+
+variables:
+  solution: '*.sln'
+
+jobs:
+- job: 'cppWindows'
+  pool:
+    vmImage: windows-latest
+  displayName: 'Solution MSVC 2019'
+
+  strategy:
+    matrix:
+      x86 Debug:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Debug'
+      x86 Release:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+      x64 Debug:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Debug'
+      x64 Release:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+
+  steps:
+  - task: NuGetToolInstaller@0
+
+  - task: NuGetCommand@2
+    inputs:
+      command: 'restore'
+      restoreSolution: '**/*.sln'
+
+  - task: VSBuild@1
+    inputs:
+      solution: '$(solution)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+  - task: VSTest@2
+    inputs:
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+
+- job: 'cppVS2019'
+  pool:
+    vmImage: windows-latest
+  displayName: 'CMake - MSVC 2019'
+
+  strategy:
+    matrix:
+      x64 Debug:
+        BuildType: Debug
+        Architecture: x64
+        Shared: 'OFF'
+
+      x64 Release:
+        BuildType: Release
+        Architecture: x64
+        Shared: 'OFF'
+
+      x64 Release Shared:
+        BuildType: Release
+        Architecture: x64
+        Shared: 'ON'
+
+      x86 Debug:
+        BuildType: Debug
+        Architecture: x86
+        Shared: 'OFF'
+
+      x86 Release:
+        BuildType: Release
+        Architecture: x86
+        Shared: 'OFF'
+
+      ARM Release:
+        BuildType: Release
+        Architecture:  x64_arm
+        Shared: 'OFF'
+
+      ARM64 Release:
+        BuildType: Release
+        Architecture:  x64_arm64
+        Shared: 'OFF'
+
+  steps:
+  - script: choco install ninja
+    displayName: Install Ninja
+
+  - task: BatchScript@1
+    inputs:
+      filename: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat"
+      arguments: $(Architecture)
+      modifyEnvironment: true
+    displayName: Setup Environment Variables
+
+  - task: CMake@1
+    displayName: "Configure CharLS"
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/build
+      cmakeArgs:
+        -G Ninja
+        -DCMAKE_C_COMPILER="cl.exe"
+        -DCMAKE_CXX_COMPILER="cl.exe"
+        -DCMAKE_BUILD_TYPE=$(buildType)
+        -DBUILD_SHARED_LIBS=$(Shared)
+        -DCHARLS_PEDANTIC_WARNINGS=On
+        -DCHARLS_THREAT_WARNINGS_AS_ERRORS=On
+        $(Build.SourcesDirectory)
+
+  - task: CMake@1
+    displayName: "Build CharLS"
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/build
+      cmakeArgs: --build $(Build.BinariesDirectory)/build
+
+
+- job: 'cppVS2017'
+  pool:
+    vmImage: vs2017-win2016
+  displayName: 'CMake - MSVC 2017'
+
+  strategy:
+    matrix:
+      x64 Debug:
+        BuildType: Debug
+        Architecture: x64
+
+      x64 Release:
+        BuildType: Release
+        Architecture: x64
+
+      x86 Debug:
+        BuildType: Debug
+        Architecture: x86
+
+      x86 Release:
+        BuildType: Release
+        Architecture: x86
+
+  steps:
+  - script: choco install ninja
+    displayName: Install Ninja
+
+  - task: BatchScript@1
+    inputs:
+      filename: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat"
+      arguments: $(Architecture)
+      modifyEnvironment: true
+    displayName: Setup Environment Variables
+
+  - task: CMake@1
+    displayName: "Configure CharLS"
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/build
+      cmakeArgs:
+        -G Ninja
+        -DCMAKE_C_COMPILER="cl.exe"
+        -DCMAKE_CXX_COMPILER="cl.exe"
+        -DCMAKE_BUILD_TYPE=$(buildType)
+        -DCHARLS_PEDANTIC_WARNINGS=On
+        -DCHARLS_THREAT_WARNINGS_AS_ERRORS=On
+        $(Build.SourcesDirectory)
+
+  - task: CMake@1
+    displayName: "Build CharLS"
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/build
+      cmakeArgs: --build $(Build.BinariesDirectory)/build
+
+
+- job: 'cppVS2015'
+  pool:
+    vmImage: vs2015-win2012r2
+  displayName: 'CMake - MSVC 2015'
+
+  strategy:
+    matrix:
+      x64 Debug:
+        BuildType: Debug
+        Platform: x64
+
+      x64 Release:
+        BuildType: Release
+        Platform: x64
+
+      x86 Debug:
+        BuildType: Debug
+        Platform: Win32
+
+      x86 Release:
+        BuildType: Release
+        Platform: Win32
+
+  steps:
+  - powershell: |
+      Invoke-WebRequest https://cmake.org/files/v3.14/cmake-3.14.0-win64-x64.zip -OutFile C:\cmake-3.14.0-win64-x64.zip
+      Expand-Archive C:\cmake-3.14.0-win64-x64.zip -DestinationPath C:\
+      Rename-Item -Path C:\cmake-3.14.0-win64-x64 -NewName C:\cmake
+      Write-Host "##vso[task.prependpath]C:\cmake\bin"
+    displayName: 'Install CMake 3.14'
+
+  - script: cmake --version
+    displayName: "Print CMake version"
+
+  - task: CMake@1
+    displayName: "Configure CharLS"
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/build
+      cmakeArgs:
+        -A $(Platform)
+        -DCMAKE_C_COMPILER="cl.exe"
+        -DCMAKE_CXX_COMPILER="cl.exe"
+        -DCHARLS_PEDANTIC_WARNINGS=On
+        -DCHARLS_THREAT_WARNINGS_AS_ERRORS=On
+        $(Build.SourcesDirectory)
+
+  - task: CMake@1
+    displayName: "Build CharLS"
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/build
+      cmakeArgs: --build $(Build.BinariesDirectory)/build --config $(BuildType)
+
+
+- job: 'cppLinux'
+  pool:
+    vmImage: ubuntu-latest
+  displayName: 'CMake - '
+
+  strategy:
+    matrix:
+      GCC-7 Debug:
+        buildType: Debug
+        CC: gcc-7
+        CXX: g++-7
+        Shared: 'OFF'
+
+      GCC-7 Release:
+        buildType: Release
+        CC: gcc-7
+        CXX: g++-7
+        Shared: 'OFF'
+
+      GCC-7 Release Shared:
+        buildType: Release
+        CC: gcc-7
+        CXX: g++-7
+        Shared: 'ON'
+
+      Clang-6 Debug:
+        buildType: Debug
+        CC: clang-6.0
+        CXX: clang++-6.0
+        Shared: 'OFF'
+
+      Clang-6 Release:
+        buildType: Release
+        CC: clang-6.0
+        CXX: clang++-6.0
+        Shared: 'OFF'
+
+      Clang-6 Release Shared:
+        buildType: Release
+        CC: clang-6.0
+        CXX: clang++-6.0
+        Shared: 'ON'
+
+  steps:
+  - script: mkdir $(Build.BinariesDirectory)/build
+    displayName: "Create build folder"
+
+  - task: CMake@1
+    displayName: "Configure CharLS"
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/build
+      cmakeArgs:
+        -DCMAKE_BUILD_TYPE=$(buildType)
+        -DBUILD_SHARED_LIBS=$(Shared)
+        -DCHARLS_PEDANTIC_WARNINGS=On
+        -DCHARLS_THREAT_WARNINGS_AS_ERRORS=On
+        $(Build.SourcesDirectory)
+
+  - task: CMake@1
+    displayName: "Build CharLS"
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/build
+      cmakeArgs: --build .
+
+
+- job: 'cppmacOS'
+  pool:
+    vmImage: macOS-latest
+  displayName: 'CMake - '
+
+  strategy:
+    matrix:
+      Xcode Debug:
+        buildType: Debug
+
+      Xcode Release:
+        buildType: Release
+
+  steps:
+  - script: mkdir $(Build.BinariesDirectory)/build
+    displayName: "Create build folder"
+
+  - task: CMake@1
+    displayName: "Configure CharLS"
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/build
+      cmakeArgs:
+        -DCMAKE_BUILD_TYPE=$(buildType
+        -DCHARLS_PEDANTIC_WARNINGS=On
+        -DCHARLS_THREAT_WARNINGS_AS_ERRORS=On
+        $(Build.SourcesDirectory)
+
+  - task: CMake@1
+    displayName: "Build CharLS"
+    inputs:
+      workingDirectory: $(Build.BinariesDirectory)/build
+      cmakeArgs: --build .

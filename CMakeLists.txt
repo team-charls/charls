@@ -97,6 +97,14 @@ endif()
 if(MSVC)
   set(PEDANTIC_CXX_COMPILE_FLAGS /W4)
   set(WERROR_FLAG /WX)
+
+  # Exception settings are not set for ARM(64) when building for Ninja
+  string(TOLOWER ${CMAKE_CXX_COMPILER} CXX_COMPILER_LOWER)
+  string(FIND ${CXX_COMPILER_LOWER} "arm" ARM_DETECTED)
+  if(${ARM_DETECTED} GREATER 0)
+    add_compile_options("/EHsc")
+  endif()
+
 endif()
 
 # When enabled apply the pedantic warnings options and warnings as errors to globally.
