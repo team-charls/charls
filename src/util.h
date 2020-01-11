@@ -268,4 +268,18 @@ std::ostream& operator<<(typename std::enable_if<std::is_enum<T>::value, std::os
     return stream << static_cast<typename std::underlying_type<T>::type>(e);
 }
 
+
+
+template<typename T>
+T* check_pointer(T* pointer)
+{
+    if (!pointer)
+    {
+        impl::throw_jpegls_error(jpegls_errc::invalid_argument);
+    }
+
+    return pointer;
+}
+
+
 } // namespace charls

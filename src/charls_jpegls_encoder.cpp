@@ -84,7 +84,7 @@ struct charls_jpegls_encoder final
 
         return static_cast<size_t>(frame_info_.width) * frame_info_.height *
                    frame_info_.component_count * (frame_info_.bits_per_sample < 9 ? 1 : 2) +
-                   1024 + spiff_header_size_in_bytes;
+               1024 + spiff_header_size_in_bytes;
     }
 
     void write_spiff_header(const spiff_header& spiff_header)
@@ -246,10 +246,6 @@ private:
 
 extern "C" {
 
-#if defined _MSC_VER && _MSC_VER < 1917
-#pragma warning(disable : 26447) // Function is declared 'noexcept' but calls function '' which may throw exceptions (f.6). [false warning in VS 2017]
-#endif
-
 charls_jpegls_encoder* CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_create() noexcept
 {
@@ -270,10 +266,7 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_set_destination_buffer(charls_jpegls_encoder* encoder, void* destination_buffer, size_t destination_size) noexcept
 try
 {
-    if (!encoder || !destination_buffer)
-        return jpegls_errc::invalid_argument;
-
-    encoder->destination(destination_buffer, destination_size);
+    check_pointer(encoder)->destination(check_pointer(destination_buffer), destination_size);
     return jpegls_errc::success;
 }
 catch (...)
@@ -285,10 +278,7 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_set_frame_info(charls_jpegls_encoder* encoder, const charls_frame_info* frame_info) noexcept
 try
 {
-    if (!encoder || !frame_info)
-        return jpegls_errc::invalid_argument;
-
-    encoder->frame_info(*frame_info);
+    check_pointer(encoder)->frame_info(*check_pointer(frame_info));
     return jpegls_errc::success;
 }
 catch (...)
@@ -300,10 +290,7 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_set_near_lossless(charls_jpegls_encoder* encoder, int32_t near_lossless) noexcept
 try
 {
-    if (!encoder)
-        return jpegls_errc::invalid_argument;
-
-    encoder->near_lossless(near_lossless);
+    check_pointer(encoder)->near_lossless(near_lossless);
     return jpegls_errc::success;
 }
 catch (...)
@@ -315,10 +302,7 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_set_interleave_mode(charls_jpegls_encoder* encoder, charls_interleave_mode interleave_mode) noexcept
 try
 {
-    if (!encoder)
-        return jpegls_errc::invalid_argument;
-
-    encoder->interleave_mode(interleave_mode);
+    check_pointer(encoder)->interleave_mode(interleave_mode);
     return jpegls_errc::success;
 }
 catch (...)
@@ -330,10 +314,7 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_set_preset_coding_parameters(charls_jpegls_encoder* encoder, const charls_jpegls_pc_parameters* preset_coding_parameters) noexcept
 try
 {
-    if (!encoder || !preset_coding_parameters)
-        return jpegls_errc::invalid_argument;
-
-    encoder->preset_coding_parameters(*preset_coding_parameters);
+    check_pointer(encoder)->preset_coding_parameters(*check_pointer(preset_coding_parameters));
     return jpegls_errc::success;
 }
 catch (...)
@@ -345,10 +326,7 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_set_color_transformation(charls_jpegls_encoder* encoder, charls_color_transformation color_transformation) noexcept
 try
 {
-    if (!encoder)
-        return jpegls_errc::invalid_argument;
-
-    encoder->color_transformation(color_transformation);
+    check_pointer(encoder)->color_transformation(color_transformation);
     return jpegls_errc::success;
 }
 catch (...)
@@ -360,10 +338,7 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_get_estimated_destination_size(const charls_jpegls_encoder* encoder, size_t* size_in_bytes) noexcept
 try
 {
-    if (!encoder || !size_in_bytes)
-        return jpegls_errc::invalid_argument;
-
-    *size_in_bytes = encoder->estimated_destination_size();
+    *check_pointer(size_in_bytes) = check_pointer(encoder)->estimated_destination_size();
     return jpegls_errc::success;
 }
 catch (...)
@@ -373,22 +348,21 @@ catch (...)
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_get_bytes_written(const charls_jpegls_encoder* encoder, size_t* bytes_written) noexcept
+try
 {
-    if (!encoder || !bytes_written)
-        return jpegls_errc::invalid_argument;
-
-    *bytes_written = encoder->bytes_written();
+    *check_pointer(bytes_written) = check_pointer(encoder)->bytes_written();
     return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_encode_from_buffer(charls_jpegls_encoder* encoder, const void* source_buffer, const size_t source_size, const uint32_t stride) noexcept
 try
 {
-    if (!encoder || !source_buffer)
-        return jpegls_errc::invalid_argument;
-
-    encoder->encode(source_buffer, source_size, stride);
+    check_pointer(encoder)->encode(check_pointer(source_buffer), source_size, stride);
     return jpegls_errc::success;
 }
 catch (...)
@@ -400,10 +374,7 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_write_spiff_header(charls_jpegls_encoder* encoder, const charls_spiff_header* spiff_header) noexcept
 try
 {
-    if (!encoder || !spiff_header)
-        return jpegls_errc::invalid_argument;
-
-    encoder->write_spiff_header(*spiff_header);
+    check_pointer(encoder)->write_spiff_header(*check_pointer(spiff_header));
     return jpegls_errc::success;
 }
 catch (...)
@@ -416,10 +387,7 @@ charls_jpegls_encoder_write_standard_spiff_header(charls_jpegls_encoder* encoder
                                                   const charls_spiff_resolution_units resolution_units, const uint32_t vertical_resolution, const uint32_t horizontal_resolution) noexcept
 try
 {
-    if (!encoder)
-        return jpegls_errc::invalid_argument;
-
-    encoder->write_standard_spiff_header(color_space, resolution_units, vertical_resolution, horizontal_resolution);
+    check_pointer(encoder)->write_standard_spiff_header(color_space, resolution_units, vertical_resolution, horizontal_resolution);
     return jpegls_errc::success;
 }
 catch (...)
@@ -431,10 +399,10 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_write_spiff_entry(charls_jpegls_encoder* encoder, const uint32_t entry_tag, const void* entry_data, const size_t entry_data_size) noexcept
 try
 {
-    if (!encoder || (!entry_data && entry_data_size != 0))
+    if (!entry_data && entry_data_size != 0)
         return jpegls_errc::invalid_argument;
 
-    encoder->write_spiff_entry(entry_tag, entry_data, entry_data_size);
+    check_pointer(encoder)->write_spiff_entry(entry_tag, entry_data, entry_data_size);
     return jpegls_errc::success;
 }
 catch (...)

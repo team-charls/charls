@@ -86,7 +86,12 @@ public:
         auto error = charls_jpegls_encoder_get_estimated_destination_size(nullptr, &size_in_bytes);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        charls_jpegls_encoder const * const encoder = charls_jpegls_encoder_create();
+        charls_jpegls_encoder * const encoder = charls_jpegls_encoder_create();
+
+        charls_frame_info frame_info{1, 1, 2, 1};
+        error = charls_jpegls_encoder_set_frame_info(encoder, &frame_info);
+        Assert::AreEqual(jpegls_errc::success, error);
+
         error = charls_jpegls_encoder_get_estimated_destination_size(encoder, nullptr);
         charls_jpegls_encoder_destroy(encoder);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
