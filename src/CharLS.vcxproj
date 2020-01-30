@@ -235,7 +235,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\doc\style_and_design.md" />
-    <None Include="charls.def" />
+    <None Include="charls.def">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="design\JpegStream.cd" />
     <None Include="design\Strategy.cd" />
   </ItemGroup>

@@ -1,7 +1,7 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <charls/version.h>
+#include <charls/charls.h>
 
 // Turn A into a string literal without expanding macro definitions
 // (however, if invoked from a macro, macro arguments are expanded).

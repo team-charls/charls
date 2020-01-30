@@ -37,6 +37,22 @@ typedef struct charls_jpegls_encoder charls_jpegls_encoder;
 // The C++ API is defined after the C API.
 
 /// <summary>
+/// Returns the version of CharLS in the semver format "major.minor.patch" or "major.minor.patch-pre_release"
+/// </summary>
+CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION
+charls_get_version_string(void) CHARLS_NOEXCEPT;
+
+/// <summary>
+/// Returns the version of CharLS in its numerical format.
+/// </summary>
+/// <param name="major">Reference to the major number, may be NULL/nullptr when this info is not needed.</param>
+/// <param name="minor">Reference to the minor number, may be NULL/nullptr when this info is not needed.</param>
+/// <param name="patch">Reference to the patch number, may be NULL/nullptr when this info is not needed.</param>
+CHARLS_API_IMPORT_EXPORT void CHARLS_API_CALLING_CONVENTION
+charls_get_version_number(int32_t* major, int32_t* minor, int32_t* patch) CHARLS_NOEXCEPT;
+
+
+/// <summary>
 /// Creates a JPEG-LS decoder instance, when finished with the instance destroy it with the function charls_jpegls_decoder_destroy.
 /// </summary>
 /// <returns>A reference to a new created decoder instance, or a null pointer when the creation fails.</returns>

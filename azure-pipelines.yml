@@ -79,12 +79,12 @@ jobs:
 
       ARM Release:
         BuildType: Release
-        Architecture:  x64_arm
+        Architecture: x64_arm
         Shared: 'OFF'
 
       ARM64 Release:
         BuildType: Release
-        Architecture:  x64_arm64
+        Architecture: x64_arm64
         Shared: 'OFF'
 
   steps:
@@ -183,18 +183,32 @@ jobs:
       x64 Debug:
         BuildType: Debug
         Platform: x64
+        Shared: 'OFF'
 
       x64 Release:
         BuildType: Release
         Platform: x64
+        Shared: 'OFF'
+
+      x64 Release Shared:
+        BuildType: Release
+        Platform: x64
+        Shared: 'ON'
 
       x86 Debug:
         BuildType: Debug
         Platform: Win32
+        Shared: 'OFF'
 
       x86 Release:
         BuildType: Release
         Platform: Win32
+        Shared: 'OFF'
+
+      x86 Release Shared:
+        BuildType: Release
+        Platform: Win32
+        Shared: 'ON'
 
   steps:
   - powershell: |
@@ -215,6 +229,7 @@ jobs:
         -A $(Platform)
         -DCMAKE_C_COMPILER="cl.exe"
         -DCMAKE_CXX_COMPILER="cl.exe"
+        -DBUILD_SHARED_LIBS=$(Shared)
         -DCHARLS_PEDANTIC_WARNINGS=On
         -DCHARLS_THREAT_WARNINGS_AS_ERRORS=On
         $(Build.SourcesDirectory)

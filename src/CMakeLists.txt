@@ -66,9 +66,24 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/scan.h"
     "${CMAKE_CURRENT_LIST_DIR}/util.h"
     "${CMAKE_CURRENT_LIST_DIR}/version.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/charls.def"
-    "${CMAKE_CURRENT_LIST_DIR}/charls.rc"
 )
+
+if(WIN32 AND BUILD_SHARED_LIBS)
+  # Only add the Win32 resource script file when building a DLL
+  target_sources(charls
+    PRIVATE
+      "${CMAKE_CURRENT_LIST_DIR}/charls.rc"
+  )
+
+  # Only add the definition file when building a x86 DLL
+  # The definition file is needed to ensure the legacy functions are exported with the correct name
+  if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    target_sources(charls
+      PRIVATE
+      "${CMAKE_CURRENT_LIST_DIR}/charls.def"
+    )
+  endif()
+endif()
 
 if(CHARLS_INSTALL)
   include(GNUInstallDirs)

@@ -82,6 +82,15 @@
       <!-- For checked builds, enable the MS static analyzer build into the compiler. -->
       <EnablePREfast Condition="'$(Configuration)'=='Checked'">true</EnablePREfast>
     </ClCompile>
+
+    <Link>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+    </Link>
+
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include</AdditionalIncludeDirectories>
+    </ResourceCompile>
+
   </ItemDefinitionGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">

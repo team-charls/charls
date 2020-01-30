@@ -3,7 +3,17 @@
 
 cmake_minimum_required(VERSION 3.9...3.14)
 
-project(charls VERSION 2.1.1 LANGUAGES C CXX)
+# Extract the version info from version.h
+file(READ "include/charls/version.h" version)
+string(REGEX MATCH "CHARLS_VERSION_MAJOR ([0-9]*)" _ ${version})
+set(version_major ${CMAKE_MATCH_1})
+string(REGEX MATCH "CHARLS_VERSION_MINOR ([0-9]*)" _ ${version})
+set(version_minor ${CMAKE_MATCH_1})
+string(REGEX MATCH "CHARLS_VERSION_PATCH ([0-9]*)" _ ${version})
+set(version_patch ${CMAKE_MATCH_1})
+message(STATUS "CharLS version: ${version_major}.${version_minor}.${version_patch}")
+
+project(charls VERSION ${version_major}.${version_minor}.${version_patch} LANGUAGES C CXX)
 
 # Determine if project is built as a subproject (using add_subdirectory) or if it is the master project.
 set(MASTER_PROJECT OFF)
