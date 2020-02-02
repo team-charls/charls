@@ -4,6 +4,7 @@
 #pragma once
 
 #include "api_abi.h"
+#include "annotations.h"
 
 #ifdef __cplusplus
 
@@ -21,8 +22,7 @@ namespace impl {
 // The following enum values are for C applications, for C++ the enums are defined after these definitions.
 // For the documentation, see the C++ enums definitions.
 
-enum charls_jpegls_errc
-{
+RETURN_TYPE_SUCCESS_(return == 0) enum charls_jpegls_errc {
     CHARLS_JPEGLS_ERRC_SUCCESS = 0,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT = 1,
     CHARLS_JPEGLS_ERRC_PARAMETER_VALUE_NOT_SUPPORTED = 2,
@@ -151,8 +151,7 @@ namespace charls {
 /// <summary>
 /// Defines the result values that are returned by the CharLS API functions.
 /// </summary>
-enum class jpegls_errc
-{
+RETURN_TYPE_SUCCESS_(return == 0) enum class jpegls_errc {
     /// <summary>
     /// The operation completed without errors.
     /// </summary>

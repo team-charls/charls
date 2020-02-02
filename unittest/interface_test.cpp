@@ -16,6 +16,9 @@ using namespace charls;
 using std::array;
 using std::vector;
 
+MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
+
+
 // clang-format off
 
 namespace CharLSUnitTest {
@@ -41,11 +44,11 @@ public:
     TEST_METHOD(JpegLsReadHeader_nullptr)
     {
         JlsParameters params{};
-        vector<uint8_t> buffer(100);
-        auto error = JpegLsReadHeader(nullptr, buffer.size(), &params, nullptr);
+        vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E3.JLS")};
+        auto error = JpegLsReadHeader(nullptr, encoded_source.size(), &params, nullptr);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
 
-        error = JpegLsReadHeader(buffer.data(), buffer.size(), nullptr, nullptr);
+        error = JpegLsReadHeader(encoded_source.data(), encoded_source.size(), nullptr, nullptr);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
     }
 
@@ -78,12 +81,17 @@ public:
     TEST_METHOD(JpegLsEncode_nullptr)
     {
         JlsParameters params{};
+        params.bitsPerSample = 8;
+        params.height = 10;
+        params.width = 10;
+        params.components = 1;
+
         size_t bytesWritten{};
-        vector<uint8_t> buffer(100);
-        auto error = JpegLsEncode(nullptr, 100, &bytesWritten, buffer.data(), buffer.size(), &params, nullptr);
+        vector<uint8_t> buffer(10000);
+        auto error = JpegLsEncode(nullptr, buffer.size(), &bytesWritten, buffer.data(), buffer.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        error = JpegLsEncode(buffer.data(), 100, nullptr, buffer.data(), buffer.size(), &params, nullptr);
+        error = JpegLsEncode(buffer.data(), buffer.size(), nullptr, buffer.data(), buffer.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
         error = JpegLsEncode(buffer.data(), buffer.size(),  &bytesWritten, nullptr, buffer.size(), &params, nullptr);
@@ -114,11 +122,11 @@ public:
     TEST_METHOD(JpegLsDecode_nullptr)
     {
         JlsParameters params{};
-        vector<uint8_t> buffer(100);
-        auto error = JpegLsDecode(nullptr, 100, buffer.data(), buffer.size(), &params, nullptr);
+        vector<uint8_t> encoded_source = read_file("DataFiles/lena8b.jls");
+        auto error = JpegLsDecode(nullptr, 100, encoded_source.data(), encoded_source.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        error = JpegLsDecode(buffer.data(), 100, nullptr, buffer.size(), &params, nullptr);
+        error = JpegLsDecode(encoded_source.data(), 100, nullptr, encoded_source.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
@@ -166,11 +174,11 @@ public:
     {
         JlsParameters params{};
         const JlsRect roi{};
-        vector<uint8_t> buffer(100);
-        auto error = JpegLsDecodeRect(nullptr, 100, buffer.data(), buffer.size(), roi, &params, nullptr);
+        vector<uint8_t> encoded_source = read_file("DataFiles/lena8b.jls");
+        auto error = JpegLsDecodeRect(nullptr, 100, encoded_source.data(), encoded_source.size(), roi, &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        error = JpegLsDecodeRect(buffer.data(), 100, nullptr, buffer.size(), roi, &params, nullptr);
+        error = JpegLsDecodeRect(encoded_source.data(), 100, nullptr, encoded_source.size(), roi, &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
@@ -242,3 +250,5 @@ public:
 };
 
 } // namespace CharLSUnitTest
+
+MSVC_WARNING_UNSUPPRESS()

@@ -16,8 +16,8 @@
 #include <memory>
 
 using std::find;
-using std::vector;
 using std::unique_ptr;
+using std::vector;
 using namespace charls;
 
 namespace {
@@ -219,7 +219,10 @@ void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode)
 }
 
 
-int JpegStreamReader::ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segmentSize, spiff_header* header, bool* spiff_header_found)
+int JpegStreamReader::ReadMarkerSegment(const JpegMarkerCode markerCode,
+                                        const int32_t segmentSize,
+                                        spiff_header* header,
+                                        bool* spiff_header_found)
 {
     switch (markerCode)
     {
@@ -334,8 +337,7 @@ int JpegStreamReader::ReadPresetParametersSegment(int32_t segmentSize)
 
     switch (type)
     {
-    case JpegLSPresetParametersType::PresetCodingParameters:
-    {
+    case JpegLSPresetParametersType::PresetCodingParameters: {
         constexpr int32_t CodingParameterSegmentSize = 11;
         if (segmentSize != CodingParameterSegmentSize)
             throw jpegls_error{jpegls_errc::invalid_marker_segment_size};
@@ -458,7 +460,9 @@ int32_t JpegStreamReader::ReadSegmentSize()
     return segmentSize;
 }
 
-int JpegStreamReader::TryReadApplicationData8Segment(int32_t segmentSize, spiff_header* header, bool* spiff_header_found)
+int JpegStreamReader::TryReadApplicationData8Segment(const int32_t segmentSize,
+                                                     spiff_header* header,
+                                                     bool* spiff_header_found)
 {
     if (spiff_header_found)
     {
@@ -470,7 +474,7 @@ int JpegStreamReader::TryReadApplicationData8Segment(int32_t segmentSize, spiff_
         return TryReadHPColorTransformSegment();
 
     if (header && spiff_header_found && segmentSize >= 30)
-        return TryReadSpiffHeaderSegment(header, *spiff_header_found);
+        return TryReadSpiffHeaderSegment(*header, *spiff_header_found);
 
     return 0;
 }
@@ -514,29 +518,37 @@ EnumType enum_cast(uint8_t value)
     return static_cast<EnumType>(value);
 }
 
-int JpegStreamReader::TryReadSpiffHeaderSegment(spiff_header* header, bool& spiff_header_found)
+int JpegStreamReader::TryReadSpiffHeaderSegment(OUT_ spiff_header& header, OUT_ bool& spiff_header_found)
 {
     vector<char> sourceTag;
     ReadNBytes(sourceTag, 6);
     if (strncmp(sourceTag.data(), "SPIFF", 6) != 0)
+    {
+        header = {};
+        spiff_header_found = false;
         return 6;
+    }
 
     const auto high_version = ReadByte();
     if (high_version > spiff_major_revision_number)
+    {
+        header = {};
+        spiff_header_found = false;
         return 7; // Treat unknown versions as if the SPIFF header doesn't exists.
+    }
 
     SkipByte(); // low version
 
-    header->profile_id = static_cast<spiff_profile_id>(ReadByte());
-    header->component_count = ReadByte();
-    header->height = ReadUInt32();
-    header->width = ReadUInt32();
-    header->color_space = static_cast<spiff_color_space>(ReadByte());
-    header->bits_per_sample = ReadByte();
-    header->compression_type = static_cast<spiff_compression_type>(ReadByte());
-    header->resolution_units = static_cast<spiff_resolution_units>(ReadByte());
-    header->vertical_resolution = ReadUInt32();
-    header->horizontal_resolution = ReadUInt32();
+    header.profile_id = static_cast<spiff_profile_id>(ReadByte());
+    header.component_count = ReadByte();
+    header.height = ReadUInt32();
+    header.width = ReadUInt32();
+    header.color_space = static_cast<spiff_color_space>(ReadByte());
+    header.bits_per_sample = ReadByte();
+    header.compression_type = static_cast<spiff_compression_type>(ReadByte());
+    header.resolution_units = static_cast<spiff_resolution_units>(ReadByte());
+    header.vertical_resolution = ReadUInt32();
+    header.horizontal_resolution = ReadUInt32();
 
     spiff_header_found = true;
     return 30;

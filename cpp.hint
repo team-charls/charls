@@ -18,3 +18,13 @@
 #define FORCE_INLINE
 #define MSVC_WARNING_SUPPRESS(x)
 #define MSVC_WARNING_UNSUPPRESS()
+#define IN_
+#define IN_OPT_
+#define IN_Z_
+#define IN_READS_BYTES_(size)
+#define OUT_
+#define OUT_OPT_
+#define OUT_WRITES_BYTES_(size)
+#define OUT_WRITES_Z_(size_in_bytes)
+#define RETURN_TYPE_SUCCESS_(expr)
+#define CHARLS_ATTRIBUTE(a)

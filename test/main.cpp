@@ -1,11 +1,11 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "util.h"
-
 #include "../src/default_traits.h"
 #include "../src/lossless_traits.h"
 #include "../src/process_line.h"
+
+#include "util.h"
 
 #include "bitstreamdamage.h"
 #include "compliance.h"

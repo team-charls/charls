@@ -28,6 +28,7 @@ target_compile_definitions(charls PRIVATE CHARLS_LIBRARY_BUILD)
 
 set(CHARLS_PUBLIC_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/api_abi.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/annotations.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/charls.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/charls_legacy.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/jpegls_error.h"

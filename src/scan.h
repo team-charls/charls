@@ -22,7 +22,7 @@ extern std::vector<signed char> rgquant10Ll;
 extern std::vector<signed char> rgquant12Ll;
 extern std::vector<signed char> rgquant16Ll;
 
-constexpr int32_t ApplySign(int32_t i, int32_t sign) noexcept
+constexpr int32_t ApplySign(const int32_t i, const int32_t sign) noexcept
 {
     return (sign ^ i) - sign;
 }

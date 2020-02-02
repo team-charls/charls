@@ -37,7 +37,7 @@ public:
         params_ = params;
     }
 
-    void SetOutputBgr(char value) noexcept
+    void SetOutputBgr(const char value) noexcept
     {
         params_.outputBgr = value;
     }
@@ -65,7 +65,7 @@ private:
     static int ReadComment() noexcept;
     int ReadPresetParametersSegment(int32_t segmentSize);
     int TryReadApplicationData8Segment(int32_t segmentSize, spiff_header* header, bool* spiff_header_found);
-    int TryReadSpiffHeaderSegment(spiff_header* header, bool& spiff_header_found);
+    int TryReadSpiffHeaderSegment(OUT_ spiff_header& header, OUT_ bool& spiff_header_found);
 
     int TryReadHPColorTransformSegment();
     void AddComponent(uint8_t componentId);

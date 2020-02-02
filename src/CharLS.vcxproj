@@ -254,6 +254,7 @@
     <ClCompile Include="jpeg_stream_writer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\charls\annotations.h" />
     <ClInclude Include="..\include\charls\api_abi.h" />
     <ClInclude Include="..\include\charls\charls.h" />
     <ClInclude Include="..\include\charls\charls_legacy.h" />

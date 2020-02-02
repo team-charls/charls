@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Fixed [#60](https://github.com/team-charls/charls/issues/60), Visual Studio 2015 C++ compiler cannot compile certain constexpr constructions
 
+### Changed
+
+- The API has been extended with additional annotations to assist the static analyzer in the  MSVC and GCC/clang compilers
+
 ## [2.1.0] - 2019-12-29
 
 ### Added

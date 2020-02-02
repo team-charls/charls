@@ -60,12 +60,14 @@ void JpegStreamWriter::WriteSpiffHeaderSegment(const spiff_header& header)
 }
 
 
-void JpegStreamWriter::WriteSpiffDirectoryEntry(uint32_t entry_tag, const void* entry_data, size_t entry_data_size)
+void JpegStreamWriter::WriteSpiffDirectoryEntry(const uint32_t entry_tag,
+                                                IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data,
+                                                const size_t entry_data_size_bytes)
 {
     WriteMarker(JpegMarkerCode::ApplicationData8);
-    WriteUInt16(static_cast<uint16_t>(sizeof(uint16_t) + sizeof(uint32_t) + entry_data_size));
+    WriteUInt16(static_cast<uint16_t>(sizeof(uint16_t) + sizeof(uint32_t) + entry_data_size_bytes));
     WriteUInt32(entry_tag);
-    WriteBytes(entry_data, entry_data_size);
+    WriteBytes(entry_data, entry_data_size_bytes);
 }
 
 
@@ -133,7 +135,9 @@ void JpegStreamWriter::WriteJpegLSPresetParametersSegment(const jpegls_pc_parame
 }
 
 
-void JpegStreamWriter::WriteStartOfScanSegment(int componentCount, int allowedLossyError, interleave_mode interleaveMode)
+void JpegStreamWriter::WriteStartOfScanSegment(const int componentCount,
+                                               const int allowedLossyError,
+                                               const interleave_mode interleaveMode)
 {
     ASSERT(componentCount > 0 && componentCount <= UINT8_MAX);
     ASSERT(allowedLossyError >= 0 && allowedLossyError <= UINT8_MAX);
@@ -160,7 +164,9 @@ void JpegStreamWriter::WriteStartOfScanSegment(int componentCount, int allowedLo
 }
 
 
-void JpegStreamWriter::WriteSegment(JpegMarkerCode markerCode, const void* data, size_t dataSize)
+void JpegStreamWriter::WriteSegment(const JpegMarkerCode markerCode,
+                                    IN_READS_BYTES_(dataSize) const void* data,
+                                    const size_t dataSize)
 {
     ASSERT(dataSize <= UINT16_MAX - sizeof(uint16_t));
 

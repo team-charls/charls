@@ -5,6 +5,7 @@
 
 #include <charls/charls_legacy.h>
 #include <charls/jpegls_error.h>
+#include <charls/annotations.h>
 
 #include <cassert>
 #include <cstring>
@@ -71,7 +72,7 @@ inline jpegls_errc to_jpegls_errc() noexcept
     }
 }
 
-inline void clear_error_message(char* errorMessage) noexcept
+inline void clear_error_message(OUT_OPT_ char* errorMessage) noexcept
 {
     if (errorMessage)
     {
@@ -83,7 +84,7 @@ inline void clear_error_message(char* errorMessage) noexcept
 /// <summary>
 /// Cross platform safe version of strcpy.
 /// </summary>
-inline void string_copy(const char* source, char* destination, const size_t size_in_bytes) noexcept
+inline void string_copy(IN_Z_ const char* source, OUT_WRITES_Z_(size_in_bytes) char* destination, const size_t size_in_bytes) noexcept
 {
     ASSERT(strlen(source) < size_in_bytes && "String will be truncated");
 
@@ -95,7 +96,7 @@ inline void string_copy(const char* source, char* destination, const size_t size
 #endif
 }
 
-inline jpegls_errc set_error_message(const jpegls_errc error, char* error_message) noexcept
+inline jpegls_errc set_error_message(const jpegls_errc error, OUT_WRITES_Z_(ErrorMessageSize) char* error_message) noexcept
 {
     if (error_message)
     {
@@ -125,7 +126,7 @@ inline void push_back(std::vector<uint8_t>& values, uint32_t value)
 }
 
 
-CONSTEXPR int32_t log_2(int32_t n) noexcept
+CONSTEXPR int32_t log_2(const int32_t n) noexcept
 {
     int32_t x = 0;
     while (n > (1 << x))
@@ -136,13 +137,13 @@ CONSTEXPR int32_t log_2(int32_t n) noexcept
 }
 
 
-constexpr int32_t Sign(int32_t n) noexcept
+constexpr int32_t Sign(const int32_t n) noexcept
 {
     return (n >> (int32_t_bit_count - 1)) | 1;
 }
 
 
-constexpr int32_t BitWiseSign(int32_t i) noexcept
+constexpr int32_t BitWiseSign(const int32_t i) noexcept
 {
     return i >> (int32_t_bit_count - 1);
 }
@@ -252,7 +253,7 @@ struct FromBigEndian<8> final
 };
 
 
-inline void SkipBytes(ByteStreamInfo& streamInfo, std::size_t count) noexcept
+inline void SkipBytes(ByteStreamInfo& streamInfo, const std::size_t count) noexcept
 {
     if (!streamInfo.rawData)
         return;
@@ -267,7 +268,6 @@ std::ostream& operator<<(typename std::enable_if<std::is_enum<T>::value, std::os
 {
     return stream << static_cast<typename std::underlying_type<T>::type>(e);
 }
-
 
 
 template<typename T>

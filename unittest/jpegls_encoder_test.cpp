@@ -393,7 +393,10 @@ public:
         encoder.write_standard_spiff_header(spiff_color_space::cmyk);
 
         assert_expect_exception(jpegls_errc::invalid_argument_spiff_entry_size,
-            [&] { encoder.write_spiff_entry(spiff_entry_tag::image_title, "test", 65528 + 1); });
+            [&] {
+                vector<uint8_t> spiff_entry(65528 + 1);
+                encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
+            });
     }
 
     TEST_METHOD(write_spiff_entry_without_spiff_header)
@@ -406,7 +409,10 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] { encoder.write_spiff_entry(spiff_entry_tag::image_title, "test", 65528); });
+            [&] {
+                vector<uint8_t> spiff_entry(65528);
+                encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
+            });
     }
 
     TEST_METHOD(set_preset_coding_parameters)
