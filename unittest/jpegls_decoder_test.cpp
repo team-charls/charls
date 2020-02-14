@@ -36,8 +36,10 @@ public:
 
         jpegls_decoder decoder2(std::move(decoder1));
 
-        // ReSharper disable once CppLocalVariableWithNonTrivialDtorIsNeverUsed
-        jpegls_decoder decoder3 = std::move(decoder2);
+        jpegls_decoder decoder3;
+        const uint8_t buffer[10]{};
+        decoder3.source(buffer, sizeof(buffer));
+        decoder3 = std::move(decoder2);
     }
 
     TEST_METHOD(set_source_twice)

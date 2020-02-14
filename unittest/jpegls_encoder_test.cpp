@@ -37,8 +37,10 @@ public:
 
         jpegls_encoder encoder2(std::move(encoder1));
 
-        // ReSharper disable once CppLocalVariableWithNonTrivialDtorIsNeverUsed
-        jpegls_encoder encoder3 = std::move(encoder2);
+        jpegls_encoder encoder3;
+        uint8_t buffer[10]{};
+        encoder3.destination(buffer, sizeof(buffer));
+        encoder3 = std::move(encoder2);
     }
 
     TEST_METHOD(frame_info_max_and_min)
