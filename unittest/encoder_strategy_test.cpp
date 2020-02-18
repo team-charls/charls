@@ -16,9 +16,10 @@ TEST_CLASS(EncoderStrategyTest)
 public:
     TEST_METHOD(AppendToBitStreamZeroLength)
     {
-        JlsParameters params;
+        const charls::frame_info frame_info{};
+        const charls::coding_parameters parameters{};
 
-        EncoderStrategyTester strategy(params);
+        EncoderStrategyTester strategy(frame_info, parameters);
 
         uint8_t data[1024];
 
@@ -34,9 +35,10 @@ public:
 
     TEST_METHOD(AppendToBitStreamFFPattern)
     {
-        JlsParameters params;
+        const charls::frame_info frame_info{};
+        const charls::coding_parameters parameters{};
 
-        EncoderStrategyTester strategy(params);
+        EncoderStrategyTester strategy(frame_info, parameters);
 
         uint8_t data[1024];
         data[13] = 0x77; // marker byte to detect overruns.

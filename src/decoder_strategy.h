@@ -18,8 +18,9 @@ namespace charls {
 class DecoderStrategy
 {
 public:
-    explicit DecoderStrategy(const JlsParameters& params) :
-        params_{params}
+    explicit DecoderStrategy(const frame_info& frame, const coding_parameters& parameters) :
+        frame_info_{frame},
+        parameters_{parameters}
     {
     }
 
@@ -30,7 +31,7 @@ public:
     DecoderStrategy& operator=(const DecoderStrategy&) = delete;
     DecoderStrategy& operator=(DecoderStrategy&&) = delete;
 
-    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
+    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo, uint32_t stride) = 0;
     virtual void SetPresets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo& compressedData) = 0;
 
@@ -288,7 +289,8 @@ public:
     }
 
 protected:
-    JlsParameters params_;
+    frame_info frame_info_;
+    coding_parameters parameters_;
     std::unique_ptr<ProcessLine> processLine_;
 
 private:

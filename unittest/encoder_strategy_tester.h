@@ -10,8 +10,8 @@ namespace CharLSUnitTest {
 class EncoderStrategyTester final : charls::EncoderStrategy
 {
 public:
-    explicit EncoderStrategyTester(const JlsParameters& params) :
-        EncoderStrategy(params)
+    explicit EncoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters) :
+        EncoderStrategy(frame_info, parameters)
     {
     }
 
@@ -24,7 +24,7 @@ public:
         return 0;
     }
 
-    std::unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo) noexcept(false) override
+    std::unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo, uint32_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }

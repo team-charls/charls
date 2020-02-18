@@ -60,18 +60,16 @@ struct charls_jpegls_decoder final
         if (state_ < state::header_read)
             throw jpegls_error{jpegls_errc::invalid_operation};
 
-        const auto& metadata = reader_->GetMetadata();
-        return {static_cast<uint32_t>(metadata.width), static_cast<uint32_t>(metadata.height), metadata.bitsPerSample, metadata.components};
+        return reader_->frame_info();
     }
 
-    int32_t near_lossless(int32_t /*component*/) const
+    int32_t near_lossless(int32_t /*component*/ = 0) const
     {
         if (state_ < state::header_read)
             throw jpegls_error{jpegls_errc::invalid_operation};
 
         // Note: The JPEG-LS standard allows to define different NEAR parameter for every scan.
-        const auto& metadata = reader_->GetMetadata();
-        return metadata.allowedLossyError;
+        return reader_->parameters().near_lossless;
     }
 
     charls::interleave_mode interleave_mode() const
@@ -81,8 +79,15 @@ struct charls_jpegls_decoder final
 
         // Note: The JPEG-LS standard allows to define different interleave modes for every scan.
         //       CharLS doesn't support mixed interleave modes, first scan determines the mode.
-        const auto& metadata = reader_->GetMetadata();
-        return metadata.interleaveMode;
+        return reader_->parameters().interleave_mode;
+    }
+
+    color_transformation transformation() const
+    {
+        if (state_ < state::header_read)
+            throw jpegls_error{jpegls_errc::invalid_operation};
+
+        return reader_->parameters().transformation;
     }
 
     const jpegls_pc_parameters& preset_coding_parameters() const
@@ -123,23 +128,13 @@ struct charls_jpegls_decoder final
         if (state_ != state::header_read)
             throw jpegls_error{jpegls_errc::invalid_operation};
 
-        if (stride != 0)
-        {
-            reader_->GetMetadata().stride = static_cast<int32_t>(stride);
-        }
-
         const ByteStreamInfo destination = FromByteArray(destination_buffer, destination_size_bytes);
-        reader_->Read(destination);
+        reader_->Read(destination, stride);
     }
 
-    void output_bgr(const char value) const noexcept
+    void output_bgr(const bool value) const noexcept
     {
         reader_->SetOutputBgr(value);
-    }
-
-    const JlsParameters& metadata() const noexcept
-    {
-        return reader_->GetMetadata();
     }
 
     void region(const JlsRect& rect) const noexcept
@@ -319,7 +314,15 @@ try
 
     decoder.source(check_pointer(source), sourceLength);
     decoder.read_header();
-    *check_pointer(params) = decoder.metadata();
+    *check_pointer(params) = JlsParameters{};
+    const frame_info info = decoder.frame_info();
+    params->height = info.height;
+    params->width = info.width;
+    params->bitsPerSample = info.bits_per_sample;
+    params->components = info.component_count;
+    params->interleaveMode = decoder.interleave_mode();
+    params->allowedLossyError = decoder.near_lossless();
+    params->colorTransformation = decoder.transformation();
 
     const auto& preset{decoder.preset_coding_parameters()};
     params->custom.MaximumSampleValue = preset.maximum_sample_value;
@@ -352,7 +355,7 @@ try
     int32_t stride{};
     if (params)
     {
-        decoder.output_bgr(params->outputBgr);
+        decoder.output_bgr(params->outputBgr != 0);
         stride = params->stride;
     }
 
@@ -383,7 +386,7 @@ try
     int32_t stride{};
     if (params)
     {
-        decoder.output_bgr(params->outputBgr);
+        decoder.output_bgr(params->outputBgr != 0);
         stride = params->stride;
     }
 

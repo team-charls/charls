@@ -12,8 +12,9 @@ namespace charls {
 class EncoderStrategy
 {
 public:
-    explicit EncoderStrategy(const JlsParameters& params) :
-        params_{params}
+    explicit EncoderStrategy(const frame_info& frame, const coding_parameters& parameters) :
+        frame_info_{frame},
+        parameters_{parameters}
     {
     }
 
@@ -24,7 +25,7 @@ public:
     EncoderStrategy& operator=(const EncoderStrategy&) = delete;
     EncoderStrategy& operator=(EncoderStrategy&&) = delete;
 
-    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
+    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo, uint32_t stride) = 0;
     virtual void SetPresets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData) = 0;
 
@@ -168,8 +169,9 @@ protected:
         AppendToBitStream((1 << length) - 1, length);
     }
 
+    frame_info frame_info_;
+    coding_parameters parameters_;
     std::unique_ptr<DecoderStrategy> decoder_;
-    JlsParameters params_;
     std::unique_ptr<ProcessLine> processLine_;
 
 private:

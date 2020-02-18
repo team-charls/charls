@@ -45,6 +45,7 @@ target_sources(charls
   PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_decoder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_encoder.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/coding_parameters.h"
     "${CMAKE_CURRENT_LIST_DIR}/color_transform.h"
     "${CMAKE_CURRENT_LIST_DIR}/constants.h"
     "${CMAKE_CURRENT_LIST_DIR}/context.h"

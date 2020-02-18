@@ -6,6 +6,8 @@
 #include <charls/charls_legacy.h>
 #include <charls/public_types.h>
 
+#include "coding_parameters.h"
+
 #include <cstdint>
 #include <vector>
 
@@ -19,9 +21,14 @@ class JpegStreamReader final
 public:
     explicit JpegStreamReader(ByteStreamInfo byteStreamInfo) noexcept;
 
-    JlsParameters& GetMetadata() noexcept
+    const charls::frame_info& frame_info() const noexcept
     {
-        return params_;
+        return frame_info_;
+    }
+
+    const coding_parameters& parameters() const noexcept
+    {
+        return parameters_;
     }
 
     const jpegls_pc_parameters& GetCustomPreset() const noexcept
@@ -29,17 +36,12 @@ public:
         return preset_coding_parameters_;
     }
 
-    void Read(ByteStreamInfo rawPixels);
+    void Read(ByteStreamInfo rawPixels, uint32_t stride);
     void ReadHeader(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
 
-    void SetInfo(const JlsParameters& params) noexcept
+    void SetOutputBgr(const bool value) noexcept
     {
-        params_ = params;
-    }
-
-    void SetOutputBgr(const char value) noexcept
-    {
-        params_.outputBgr = value;
+        parameters_.output_bgr = value;
     }
 
     void SetRect(const JlsRect& rect) noexcept
@@ -69,6 +71,7 @@ private:
 
     int TryReadHPColorTransformSegment();
     void AddComponent(uint8_t componentId);
+    void CheckParameterCoherent() const;
 
     enum class state
     {
@@ -82,7 +85,8 @@ private:
     };
 
     ByteStreamInfo byteStream_;
-    JlsParameters params_{};
+    charls::frame_info frame_info_{};
+    coding_parameters parameters_{};
     jpegls_pc_parameters preset_coding_parameters_{};
     JlsRect rect_{};
     std::vector<uint8_t> componentIds_;

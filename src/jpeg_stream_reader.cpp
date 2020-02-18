@@ -20,25 +20,6 @@ using std::unique_ptr;
 using std::vector;
 using namespace charls;
 
-namespace {
-
-void CheckParameterCoherent(const JlsParameters& params)
-{
-    switch (params.components)
-    {
-    case 4:
-    case 3:
-        break;
-    default:
-        if (params.interleaveMode != interleave_mode::none)
-            throw jpegls_error{jpegls_errc::parameter_value_not_supported};
-
-        break;
-    }
-}
-
-} // namespace
-
 namespace charls {
 
 JpegStreamReader::JpegStreamReader(ByteStreamInfo byteStreamInfo) noexcept :
@@ -47,38 +28,45 @@ JpegStreamReader::JpegStreamReader(ByteStreamInfo byteStreamInfo) noexcept :
 }
 
 
-void JpegStreamReader::Read(ByteStreamInfo rawPixels)
+void JpegStreamReader::Read(ByteStreamInfo rawPixels, uint32_t stride)
 {
     ASSERT(state_ == state::bit_stream_section);
 
-    CheckParameterCoherent(params_);
+    CheckParameterCoherent();
 
     if (rect_.Width <= 0)
     {
-        rect_.Width = params_.width;
-        rect_.Height = params_.height;
+        rect_.Width = frame_info_.width;
+        rect_.Height = frame_info_.height;
     }
 
-    const int64_t bytesPerPlane = static_cast<int64_t>(rect_.Width) * rect_.Height * ((params_.bitsPerSample + 7) / 8);
+    if (stride == 0)
+    {
+        const uint32_t width = rect_.Width != 0 ? rect_.Width : frame_info_.width;
+        const uint32_t components = parameters_.interleave_mode == interleave_mode::none ? 1 : frame_info_.component_count;
+        stride = components * width * ((frame_info_.bits_per_sample + 7) / 8);
+    }
 
-    if (rawPixels.rawData && static_cast<int64_t>(rawPixels.count) < bytesPerPlane * params_.components)
+    const int64_t bytesPerPlane = static_cast<int64_t>(rect_.Width) * rect_.Height * ((frame_info_.bits_per_sample + 7) / 8);
+
+    if (rawPixels.rawData && static_cast<int64_t>(rawPixels.count) < bytesPerPlane * frame_info_.component_count)
         throw jpegls_error{jpegls_errc::destination_buffer_too_small};
 
     int componentIndex{};
-    while (componentIndex < params_.components)
+    while (componentIndex < frame_info_.component_count)
     {
         if (state_ == state::scan_section)
         {
             ReadStartOfScan(componentIndex == 0);
         }
 
-        unique_ptr<DecoderStrategy> codec = JlsCodecFactory<DecoderStrategy>().CreateCodec(params_, preset_coding_parameters_);
-        unique_ptr<ProcessLine> processLine(codec->CreateProcess(rawPixels));
+        unique_ptr<DecoderStrategy> codec = JlsCodecFactory<DecoderStrategy>().CreateCodec(frame_info_, parameters_, preset_coding_parameters_);
+        unique_ptr<ProcessLine> processLine(codec->CreateProcess(rawPixels, stride));
         codec->DecodeScan(move(processLine), rect_, byteStream_);
         SkipBytes(rawPixels, static_cast<size_t>(bytesPerPlane));
         state_ = state::scan_section;
 
-        if (params_.interleaveMode != interleave_mode::none)
+        if (parameters_.interleave_mode != interleave_mode::none)
             return;
 
         componentIndex++;
@@ -288,26 +276,26 @@ int JpegStreamReader::ReadStartOfFrameSegment(int32_t segmentSize)
     if (segmentSize < 6)
         throw jpegls_error{jpegls_errc::invalid_marker_segment_size};
 
-    params_.bitsPerSample = ReadByte();
-    if (params_.bitsPerSample < MinimumBitsPerSample || params_.bitsPerSample > MaximumBitsPerSample)
+    frame_info_.bits_per_sample = ReadByte();
+    if (frame_info_.bits_per_sample < MinimumBitsPerSample || frame_info_.bits_per_sample > MaximumBitsPerSample)
         throw jpegls_error{jpegls_errc::invalid_parameter_bits_per_sample};
 
-    params_.height = ReadUInt16();
-    if (params_.height < 1)
+    frame_info_.height = ReadUInt16();
+    if (frame_info_.height < 1)
         throw jpegls_error{jpegls_errc::parameter_value_not_supported};
 
-    params_.width = ReadUInt16();
-    if (params_.width < 1)
+    frame_info_.width = ReadUInt16();
+    if (frame_info_.width < 1)
         throw jpegls_error{jpegls_errc::parameter_value_not_supported};
 
-    params_.components = ReadByte();
-    if (params_.components < 1)
+    frame_info_.component_count = ReadByte();
+    if (frame_info_.component_count < 1)
         throw jpegls_error{jpegls_errc::invalid_parameter_component_count};
 
-    if (segmentSize != 6 + (params_.components * 3))
+    if (segmentSize != 6 + (frame_info_.component_count * 3))
         throw jpegls_error{jpegls_errc::invalid_marker_segment_size};
 
-    for (auto i = 0; i < params_.components; ++i)
+    for (auto i = 0; i < frame_info_.component_count; ++i)
     {
         // Component specification parameters
         AddComponent(ReadByte());                                    // Ci = Component identifier
@@ -385,7 +373,7 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
         throw jpegls_error{jpegls_errc::invalid_marker_segment_size};
 
     const int componentCountInScan = ReadByte();
-    if (componentCountInScan != 1 && componentCountInScan != params_.components)
+    if (componentCountInScan != 1 && componentCountInScan != frame_info_.component_count)
         throw jpegls_error{jpegls_errc::parameter_value_not_supported};
 
     if (segmentSize < 6 + (2 * componentCountInScan))
@@ -397,20 +385,13 @@ void JpegStreamReader::ReadStartOfScan(bool firstComponent)
         ReadByte(); // Read Mapping table selector
     }
 
-    params_.allowedLossyError = ReadByte();                            // Read NEAR parameter
-    params_.interleaveMode = static_cast<interleave_mode>(ReadByte()); // Read ILV parameter
-    if (!(params_.interleaveMode == interleave_mode::none || params_.interleaveMode == interleave_mode::line || params_.interleaveMode == interleave_mode::sample))
+    parameters_.near_lossless = ReadByte();                            // Read NEAR parameter
+    parameters_.interleave_mode = static_cast<interleave_mode>(ReadByte()); // Read ILV parameter
+    if (!(parameters_.interleave_mode == interleave_mode::none || parameters_.interleave_mode == interleave_mode::line || parameters_.interleave_mode == interleave_mode::sample))
         throw jpegls_error{jpegls_errc::invalid_parameter_interleave_mode};
 
     if ((ReadByte() & 0xF) != 0) // Read Ah (no meaning) and Al (point transform).
         throw jpegls_error{jpegls_errc::parameter_value_not_supported};
-
-    if (params_.stride == 0)
-    {
-        const int width = rect_.Width != 0 ? rect_.Width : params_.width;
-        const int components = params_.interleaveMode == interleave_mode::none ? 1 : params_.components;
-        params_.stride = components * width * ((params_.bitsPerSample + 7) / 8);
-    }
 
     state_ = state::bit_stream_section;
 }
@@ -494,7 +475,7 @@ int JpegStreamReader::TryReadHPColorTransformSegment()
     case static_cast<uint8_t>(color_transformation::hp1):
     case static_cast<uint8_t>(color_transformation::hp2):
     case static_cast<uint8_t>(color_transformation::hp3):
-        params_.colorTransformation = static_cast<color_transformation>(colorTransformation);
+        parameters_.transformation = static_cast<color_transformation>(colorTransformation);
         return 5;
 
     case 4: // RgbAsYuvLossy (The standard lossy RGB to YCbCr transform used in JPEG.)
@@ -561,6 +542,22 @@ void JpegStreamReader::AddComponent(uint8_t componentId)
         throw jpegls_error{jpegls_errc::duplicate_component_id_in_sof_segment};
 
     componentIds_.push_back(componentId);
+}
+
+
+void JpegStreamReader::CheckParameterCoherent() const
+{
+    switch (frame_info_.component_count)
+    {
+    case 4:
+    case 3:
+        break;
+    default:
+        if (parameters_.interleave_mode != interleave_mode::none)
+            throw jpegls_error{jpegls_errc::parameter_value_not_supported};
+
+        break;
+    }
 }
 
 

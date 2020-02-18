@@ -224,17 +224,12 @@ private:
 
     void encode_scan(ByteStreamInfo source, const uint32_t stride, const int32_t component_count)
     {
-        JlsParameters info{};
-        info.components = component_count;
-        info.bitsPerSample = frame_info_.bits_per_sample;
-        info.height = frame_info_.height;
-        info.width = frame_info_.width;
-        info.stride = stride;
-        info.interleaveMode = interleave_mode_;
-        info.allowedLossyError = near_lossless_;
+        const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, component_count};
 
-        auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, preset_coding_parameters_);
-        unique_ptr<ProcessLine> processLine(codec->CreateProcess(source));
+        auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(frame_info,
+                                                                    {near_lossless_, interleave_mode_, color_transformation_, false},
+                                                                    preset_coding_parameters_);
+        unique_ptr<ProcessLine> processLine(codec->CreateProcess(source, stride));
         ByteStreamInfo destination{writer_.OutputStream()};
         const size_t bytesWritten = codec->EncodeScan(move(processLine), destination);
 
