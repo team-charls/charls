@@ -57,7 +57,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels, uint32_t stride)
     {
         if (state_ == state::scan_section)
         {
-            ReadStartOfScan(componentIndex == 0);
+            ReadNextStartOfScan();
         }
 
         unique_ptr<DecoderStrategy> codec = JlsCodecFactory<DecoderStrategy>().CreateCodec(frame_info_, parameters_, preset_coding_parameters_);
@@ -132,6 +132,36 @@ void JpegStreamReader::ReadHeader(spiff_header* header, bool* spiff_header_found
         {
             state_ = state::spiff_header_section;
             return;
+        }
+    }
+}
+
+
+void JpegStreamReader::ReadNextStartOfScan()
+{
+    ASSERT(state_ == state::scan_section);
+
+    for (;;)
+    {
+        const JpegMarkerCode markerCode = ReadNextMarkerCode();
+        ValidateMarkerCode(markerCode);
+
+        if (markerCode == JpegMarkerCode::StartOfScan)
+        {
+            ReadStartOfScan();
+            return;
+        }
+
+        const int32_t segmentSize = ReadSegmentSize();
+        const int bytesRead = ReadMarkerSegment(markerCode, segmentSize - 2) + 2;
+
+        const int paddingToRead = segmentSize - bytesRead;
+        if (paddingToRead < 0)
+            throw jpegls_error{jpegls_errc::invalid_marker_segment_size};
+
+        for (int i = 0; i < paddingToRead; ++i)
+        {
+            ReadByte();
         }
     }
 }
@@ -359,15 +389,8 @@ int JpegStreamReader::ReadPresetParametersSegment(int32_t segmentSize)
 }
 
 
-void JpegStreamReader::ReadStartOfScan(bool firstComponent)
+void JpegStreamReader::ReadStartOfScan()
 {
-    if (!firstComponent)
-    {
-        const JpegMarkerCode markerCode = ReadNextMarkerCode();
-        if (markerCode != JpegMarkerCode::StartOfScan)
-            throw jpegls_error{jpegls_errc::invalid_encoded_data};
-    }
-
     const int32_t segmentSize = ReadSegmentSize();
     if (segmentSize < 6)
         throw jpegls_error{jpegls_errc::invalid_marker_segment_size};

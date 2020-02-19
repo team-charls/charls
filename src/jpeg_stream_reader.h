@@ -49,7 +49,7 @@ public:
         rect_ = rect;
     }
 
-    void ReadStartOfScan(bool firstComponent);
+    void ReadStartOfScan();
     uint8_t ReadByte();
 
 private:
@@ -58,10 +58,11 @@ private:
     uint32_t ReadUInt32();
     int32_t ReadSegmentSize();
     void ReadNBytes(std::vector<char>& destination, int byteCount);
+    void ReadNextStartOfScan();
     JpegMarkerCode ReadNextMarkerCode();
     static void ValidateMarkerCode(JpegMarkerCode markerCode);
 
-    int ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segmentSize, spiff_header* header, bool* spiff_header_found);
+    int ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segmentSize, spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
     int ReadSpiffDirectoryEntry(JpegMarkerCode markerCode, int32_t segmentSize);
     int ReadStartOfFrameSegment(int32_t segmentSize);
     static int ReadComment() noexcept;

@@ -157,7 +157,7 @@ jpegls_errc JpegLsDecodeStream(ByteStreamInfo destination, ByteStreamInfo source
         JpegStreamReader reader{source};
 
         reader.ReadHeader();
-        reader.ReadStartOfScan(true);
+        reader.ReadStartOfScan();
 
         reader.Read(destination, 0);
 
@@ -176,7 +176,7 @@ jpegls_errc JpegLsReadHeaderStream(ByteStreamInfo source, JlsParameters* params)
     {
         JpegStreamReader reader{source};
         reader.ReadHeader();
-        reader.ReadStartOfScan(true);
+        reader.ReadStartOfScan();
         *params = JlsParameters{};
 
         const auto& info = reader.frame_info();

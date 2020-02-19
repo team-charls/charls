@@ -51,7 +51,7 @@ struct charls_jpegls_decoder final
             reader_->ReadHeader();
         }
 
-        reader_->ReadStartOfScan(true);
+        reader_->ReadStartOfScan();
         state_ = state::header_read;
     }
 
