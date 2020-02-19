@@ -106,11 +106,11 @@ public:
             ReadBit();
 
             if (*position_ != JpegMarkerStartByte)
-                throw jpegls_error{jpegls_errc::too_much_encoded_data};
+                impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
         }
 
         if (readCache_ != 0)
-            throw jpegls_error{jpegls_errc::too_much_encoded_data};
+            impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
     }
 
     FORCE_INLINE bool OptimizedRead() noexcept
@@ -142,7 +142,7 @@ public:
             if (position_ >= endPosition_)
             {
                 if (validBits_ <= 0)
-                    throw jpegls_error{jpegls_errc::invalid_encoded_data};
+                    impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
                 return;
             }
@@ -155,7 +155,7 @@ public:
                 if (position_ == endPosition_ - 1 || (position_[1] & 0x80) != 0)
                 {
                     if (validBits_ <= 0)
-                        throw jpegls_error{jpegls_errc::invalid_encoded_data};
+                        impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
                     return;
                 }
@@ -213,7 +213,7 @@ public:
         {
             MakeValid();
             if (validBits_ < length)
-                throw jpegls_error{jpegls_errc::invalid_encoded_data};
+                impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
         }
 
         ASSERT(length != 0 && length <= validBits_);

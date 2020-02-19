@@ -253,7 +253,7 @@ typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_
     {
         ErrVal = UnMapErrVal(DecodeValue(k, traits.LIMIT, traits.qbpp));
         if (std::abs(ErrVal) > 65535)
-            throw jpegls_error{jpegls_errc::invalid_encoded_data};
+            impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
     }
     if (k == 0)
     {
@@ -611,7 +611,7 @@ int32_t JlsCodec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, i
     }
 
     if (index > cpixelMac)
-        throw jpegls_error{jpegls_errc::invalid_encoded_data};
+        impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
     for (int32_t i = 0; i < index; ++i)
     {
@@ -843,7 +843,7 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
         case color_transformation::hp3:
             return std::make_unique<ProcessTransformed<TransformHp3<SAMPLE>>>(info, stride, frame_info(), parameters(), TransformHp3<SAMPLE>());
         default:
-            throw jpegls_error{jpegls_errc::color_transform_not_supported};
+            impl::throw_jpegls_error(jpegls_errc::color_transform_not_supported);
         }
     }
 
@@ -859,11 +859,11 @@ std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStrea
         case color_transformation::hp3:
             return std::make_unique<ProcessTransformed<TransformShifted<TransformHp3<uint16_t>>>>(info, stride, frame_info(), parameters(), TransformShifted<TransformHp3<uint16_t>>(shift));
         default:
-            throw jpegls_error{jpegls_errc::color_transform_not_supported};
+            impl::throw_jpegls_error(jpegls_errc::color_transform_not_supported);
         }
     }
 
-    throw jpegls_error{jpegls_errc::bit_depth_for_transform_not_supported};
+    impl::throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
 }
 
 

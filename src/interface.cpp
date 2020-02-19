@@ -1,35 +1,36 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "constants.h"
+#include "encoder_strategy.h"
+#include "jls_codec_factory.h"
 #include "jpeg_stream_reader.h"
 #include "jpeg_stream_writer.h"
 #include "jpegls_preset_coding_parameters.h"
-#include "encoder_strategy.h"
-#include "jls_codec_factory.h"
 #include "util.h"
-#include "constants.h"
 
 using namespace charls;
+using impl::throw_jpegls_error;
 
 namespace {
 
 void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& parameters)
 {
     if (!destination.rawStream && !destination.rawData)
-        throw jpegls_error{jpegls_errc::invalid_operation};
+        throw_jpegls_error(jpegls_errc::invalid_operation);
 
     if (parameters.bitsPerSample < MinimumBitsPerSample || parameters.bitsPerSample > MaximumBitsPerSample)
-        throw jpegls_error{jpegls_errc::invalid_argument_bits_per_sample};
+        throw_jpegls_error(jpegls_errc::invalid_argument_bits_per_sample);
 
     if (!(parameters.interleaveMode == interleave_mode::none || parameters.interleaveMode == interleave_mode::sample || parameters.interleaveMode == interleave_mode::line))
-        throw jpegls_error{jpegls_errc::invalid_argument_interleave_mode};
+        throw_jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
 
     if (parameters.components < 1 || parameters.components > MaximumComponentCount)
-        throw jpegls_error{jpegls_errc::invalid_argument_component_count};
+        throw_jpegls_error(jpegls_errc::invalid_argument_component_count);
 
     if (destination.rawData &&
         destination.count < static_cast<size_t>(parameters.height) * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1))
-        throw jpegls_error{jpegls_errc::destination_buffer_too_small};
+        throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
     switch (parameters.components)
     {
@@ -38,7 +39,7 @@ void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& paramet
         break;
     default:
         if (parameters.interleaveMode != interleave_mode::none)
-            throw jpegls_error{jpegls_errc::invalid_argument_interleave_mode};
+            throw_jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
         break;
     }
 }

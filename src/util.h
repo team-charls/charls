@@ -3,16 +3,24 @@
 
 #pragma once
 
+#include <charls/annotations.h>
 #include <charls/charls_legacy.h>
 #include <charls/jpegls_error.h>
-#include <charls/annotations.h>
 
 #include <cassert>
 #include <cstring>
 #include <vector>
 
-// Use an uppercase alias for assert to make it clear that it is a pre-processor macro.
-#define ASSERT(t) assert(t)
+// Use an uppercase alias for assert to make it clear that ASSERT is a pre-processor macro.
+#ifdef _MSC_VER
+#define ASSERT(expression)                 \
+    __pragma(warning(push))                \
+        __pragma(warning(disable : 26493)) \
+            assert(expression)             \
+                __pragma(warning(pop))
+#else
+#define ASSERT(expression) assert(expression)
+#endif
 
 // Only use __forceinline for the Microsoft C++ compiler in release mode (verified scenario)
 // Use the build-in optimizer for all other C++ compilers.
@@ -89,7 +97,8 @@ inline void string_copy(IN_Z_ const char* source, OUT_WRITES_Z_(size_in_bytes) c
     ASSERT(strlen(source) < size_in_bytes && "String will be truncated");
 
 #if defined(__STDC_SECURE_LIB__) && defined(__STDC_WANT_SECURE_LIB__) && __STDC_WANT_SECURE_LIB__ == 1
-    strncpy_s(destination, size_in_bytes, source, _TRUNCATE);
+    constexpr size_t truncate{static_cast<size_t>(-1)};
+    strncpy_s(destination, size_in_bytes, source, truncate);
 #else
     strncpy(destination, source, size_in_bytes);
     destination[size_in_bytes - 1] = 0;

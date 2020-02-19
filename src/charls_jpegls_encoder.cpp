@@ -13,6 +13,7 @@
 #include <new>
 
 using namespace charls;
+using impl::throw_jpegls_error;
 using std::unique_ptr;
 
 struct charls_jpegls_encoder final
@@ -22,7 +23,7 @@ struct charls_jpegls_encoder final
     void destination(OUT_WRITES_BYTES_(size) void* destination, const size_t size)
     {
         if (state_ != state::initial)
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         writer_.UpdateDestination(destination, size);
         state_ = state::destination_set;
@@ -31,16 +32,16 @@ struct charls_jpegls_encoder final
     void frame_info(const charls_frame_info& frame_info)
     {
         if (frame_info.width < 1 || frame_info.width > maximum_width)
-            throw jpegls_error{jpegls_errc::invalid_argument_width};
+            throw_jpegls_error(jpegls_errc::invalid_argument_width);
 
         if (frame_info.height < 1 || frame_info.height > maximum_height)
-            throw jpegls_error{jpegls_errc::invalid_argument_height};
+            throw_jpegls_error(jpegls_errc::invalid_argument_height);
 
         if (frame_info.bits_per_sample < MinimumBitsPerSample || frame_info.bits_per_sample > MaximumBitsPerSample)
-            throw jpegls_error{jpegls_errc::invalid_argument_bits_per_sample};
+            throw_jpegls_error(jpegls_errc::invalid_argument_bits_per_sample);
 
         if (frame_info.component_count < 1 || frame_info.component_count > MaximumComponentCount)
-            throw jpegls_error{jpegls_errc::invalid_argument_component_count};
+            throw_jpegls_error(jpegls_errc::invalid_argument_component_count);
 
         frame_info_ = frame_info;
     }
@@ -48,7 +49,7 @@ struct charls_jpegls_encoder final
     void interleave_mode(const charls::interleave_mode interleave_mode)
     {
         if (interleave_mode < charls::interleave_mode::none || interleave_mode > charls::interleave_mode::sample)
-            throw jpegls_error{jpegls_errc::invalid_argument_interleave_mode};
+            throw_jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
 
         interleave_mode_ = interleave_mode;
     }
@@ -56,7 +57,7 @@ struct charls_jpegls_encoder final
     void near_lossless(const int32_t near_lossless)
     {
         if (near_lossless < 0 || near_lossless > maximum_near_lossless)
-            throw jpegls_error{jpegls_errc::invalid_argument_near_lossless};
+            throw_jpegls_error(jpegls_errc::invalid_argument_near_lossless);
 
         near_lossless_ = near_lossless;
     }
@@ -64,15 +65,15 @@ struct charls_jpegls_encoder final
     void preset_coding_parameters(const jpegls_pc_parameters& preset_coding_parameters)
     {
         if (!is_valid(preset_coding_parameters, UINT16_MAX, near_lossless_))
-            throw jpegls_error{jpegls_errc::invalid_argument_pc_parameters};
+            throw_jpegls_error(jpegls_errc::invalid_argument_pc_parameters);
 
         preset_coding_parameters_ = preset_coding_parameters;
     }
 
-    void color_transformation(const color_transformation color_transformation)
+    void color_transformation(const charls::color_transformation color_transformation)
     {
         if (color_transformation < charls::color_transformation::none || color_transformation > charls::color_transformation::hp3)
-            throw jpegls_error{jpegls_errc::invalid_argument_color_transformation};
+            throw_jpegls_error(jpegls_errc::invalid_argument_color_transformation);
 
         color_transformation_ = color_transformation;
     }
@@ -80,7 +81,7 @@ struct charls_jpegls_encoder final
     size_t estimated_destination_size() const
     {
         if (!is_frame_info_configured())
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         return static_cast<size_t>(frame_info_.width) * frame_info_.height *
                    frame_info_.component_count * (frame_info_.bits_per_sample < 9 ? 1 : 2) +
@@ -90,13 +91,13 @@ struct charls_jpegls_encoder final
     void write_spiff_header(const spiff_header& spiff_header)
     {
         if (spiff_header.height == 0)
-            throw jpegls_error{jpegls_errc::invalid_argument_height};
+            throw_jpegls_error(jpegls_errc::invalid_argument_height);
 
         if (spiff_header.width == 0)
-            throw jpegls_error{jpegls_errc::invalid_argument_width};
+            throw_jpegls_error(jpegls_errc::invalid_argument_width);
 
         if (state_ != state::destination_set)
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         writer_.WriteStartOfImage();
         writer_.WriteSpiffHeaderSegment(spiff_header);
@@ -109,7 +110,7 @@ struct charls_jpegls_encoder final
                                      const uint32_t horizontal_resolution)
     {
         if (!is_frame_info_configured())
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         write_spiff_header({spiff_profile_id::none,
                             frame_info_.component_count,
@@ -128,13 +129,13 @@ struct charls_jpegls_encoder final
                            const size_t entry_data_size_bytes)
     {
         if (entry_tag == spiff_end_of_directory_entry_type)
-            throw jpegls_error{jpegls_errc::invalid_argument};
+            throw_jpegls_error(jpegls_errc::invalid_argument);
 
         if (entry_data_size_bytes > 65528)
-            throw jpegls_error{jpegls_errc::invalid_argument_spiff_entry_size};
+            throw_jpegls_error(jpegls_errc::invalid_argument_spiff_entry_size);
 
         if (state_ != state::spiff_header)
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         writer_.WriteSpiffDirectoryEntry(entry_tag, entry_data, entry_data_size_bytes);
     }
@@ -144,7 +145,7 @@ struct charls_jpegls_encoder final
                 uint32_t stride)
     {
         if (!is_frame_info_configured() || state_ == state::initial)
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         if (stride == 0)
         {

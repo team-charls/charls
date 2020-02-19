@@ -119,7 +119,7 @@ private:
         else
         {
             if (byteOffset_ >= destination_.count)
-                throw jpegls_error{jpegls_errc::destination_buffer_too_small};
+                impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
             destination_.rawData[byteOffset_++] = value;
         }
