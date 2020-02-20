@@ -291,4 +291,10 @@ T* check_pointer(T* pointer)
 }
 
 
+CONSTEXPR uint32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
+{
+    ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);
+    return (1U << bits_per_sample) - 1;
+}
+
 } // namespace charls

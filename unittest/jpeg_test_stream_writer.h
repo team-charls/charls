@@ -44,6 +44,31 @@ public:
         WriteSegment(charls::JpegMarkerCode::StartOfFrameJpegLS, segment.data(), segment.size());
     }
 
+
+    void WriteStartOfScanSegment(int component_id,
+                                 const int component_count,
+                                 const int near_lossless,
+                                 const charls::interleave_mode interleave_mode)
+    {
+        // Create a Scan Header as defined in T.87, C.2.3 and T.81, B.2.3
+        std::vector<uint8_t> segment;
+
+        segment.push_back(static_cast<uint8_t>(component_count));
+        for (auto i = 0; i < component_count; ++i)
+        {
+            segment.push_back(static_cast<uint8_t>(component_id));
+            ++component_id;
+            segment.push_back(0); // Mapping table selector (0 = no table)
+        }
+
+        segment.push_back(static_cast<uint8_t>(near_lossless)); // NEAR parameter
+        segment.push_back(static_cast<uint8_t>(interleave_mode));    // ILV parameter
+        segment.push_back(0);                                       // transformation
+
+        WriteSegment(charls::JpegMarkerCode::StartOfScan, segment.data(), segment.size());
+    }
+
+
     void WriteSegment(charls::JpegMarkerCode markerCode, const void* data, size_t dataSize)
     {
         WriteMarker(markerCode);

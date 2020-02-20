@@ -62,6 +62,7 @@ RETURN_TYPE_SUCCESS_(return == 0) enum charls_jpegls_errc {
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT = 202,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE = 203,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE = 204,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 205
 };
 
 enum charls_interleave_mode
@@ -347,6 +348,11 @@ RETURN_TYPE_SUCCESS_(return == 0) enum class jpegls_errc {
     /// This error is returned when the stream contains an interleave mode (ILV) parameter outside the range [0, 2]
     /// </summary>
     invalid_parameter_interleave_mode = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE,
+
+    /// <summary>
+    /// This error is returned when the stream contains a near-lossless (NEAR) parameter outside the range [0, min(255, MAXVAL/2)]
+    /// </summary>
+    invalid_parameter_near_lossless = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS,
 
     // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17 extension.
     OK = success,

@@ -409,6 +409,9 @@ void JpegStreamReader::ReadStartOfScan()
     }
 
     parameters_.near_lossless = ReadByte();                            // Read NEAR parameter
+    if (parameters_.near_lossless > MaximumNearLossless(calculate_maximum_sample_value(frame_info_.bits_per_sample)))
+        throw_jpegls_error(jpegls_errc::invalid_parameter_interleave_mode);
+
     parameters_.interleave_mode = static_cast<interleave_mode>(ReadByte()); // Read ILV parameter
     if (!(parameters_.interleave_mode == interleave_mode::none || parameters_.interleave_mode == interleave_mode::line || parameters_.interleave_mode == interleave_mode::sample))
         throw_jpegls_error(jpegls_errc::invalid_parameter_interleave_mode);

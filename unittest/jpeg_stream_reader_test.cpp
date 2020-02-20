@@ -400,6 +400,21 @@ public:
         Assert::Fail();
     }
 
+    TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw)
+    {
+        JpegTestStreamWriter writer;
+        writer.WriteStartOfImage();
+        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
+        writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
+        const ByteStreamInfo source = FromByteArray(writer.data_.data(), writer.data_.size());
+
+        JpegStreamReader reader(source);
+        reader.ReadHeader();
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_interleave_mode,
+            [&](){reader.ReadStartOfScan();});
+    }
+
     TEST_METHOD(ReadHeaderWithDuplicateComponentIdInStartOfFrameSegmentShouldThrow)
     {
         JpegTestStreamWriter writer;

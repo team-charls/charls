@@ -96,13 +96,13 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const frame_info& fr
     {
         if (frame.bits_per_sample <= 8)
         {
-            DefaultTraits<uint8_t, uint8_t> traits((1 << frame.bits_per_sample) - 1, parameters.near_lossless, preset_coding_parameters.reset_value);
+            DefaultTraits<uint8_t, uint8_t> traits(calculate_maximum_sample_value(frame.bits_per_sample), parameters.near_lossless, preset_coding_parameters.reset_value);
             traits.MAXVAL = preset_coding_parameters.maximum_sample_value;
             codec = make_unique<JlsCodec<DefaultTraits<uint8_t, uint8_t>, Strategy>>(traits, frame, parameters);
         }
         else
         {
-            DefaultTraits<uint16_t, uint16_t> traits((1 << frame.bits_per_sample) - 1, parameters.near_lossless, preset_coding_parameters.reset_value);
+            DefaultTraits<uint16_t, uint16_t> traits(calculate_maximum_sample_value(frame.bits_per_sample), parameters.near_lossless, preset_coding_parameters.reset_value);
             traits.MAXVAL = preset_coding_parameters.maximum_sample_value;
             codec = make_unique<JlsCodec<DefaultTraits<uint16_t, uint16_t>, Strategy>>(traits, frame, parameters);
         }
@@ -148,7 +148,7 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateOptimizedCodec(const frame
 
 #endif
 
-    const int maxval = (1u << static_cast<unsigned int>(frame.bits_per_sample)) - 1;
+    const int maxval = calculate_maximum_sample_value(frame.bits_per_sample);
 
     if (frame.bits_per_sample <= 8)
     {
@@ -160,7 +160,7 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateOptimizedCodec(const frame
                 return create_codec<Strategy>(DefaultTraits<uint8_t, Quad<uint8_t>>(maxval, parameters.near_lossless), frame, parameters);
         }
 
-        return create_codec<Strategy>(DefaultTraits<uint8_t, uint8_t>((1u << frame.bits_per_sample) - 1, parameters.near_lossless), frame, parameters);
+        return create_codec<Strategy>(DefaultTraits<uint8_t, uint8_t>(maxval, parameters.near_lossless), frame, parameters);
     }
     if (frame.bits_per_sample <= 16)
     {

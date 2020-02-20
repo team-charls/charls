@@ -152,6 +152,9 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(charls_jpegls
 
     case jpegls_errc::invalid_parameter_interleave_mode:
         return "Invalid JPEG-LS stream, interleave mode is outside the range [0, 2] or conflicts with component count";
+
+    case jpegls_errc::invalid_parameter_near_lossless:
+        return "Invalid JPEG-LS stream, near-lossless is outside the range [0, min(255, MAXVAL/2)]";
     }
 
     return "Unknown";

@@ -178,7 +178,7 @@ struct charls_jpegls_encoder final
         }
         else if (frame_info_.bits_per_sample > 12)
         {
-            const jpegls_pc_parameters preset = compute_default((1 << frame_info_.bits_per_sample) - 1, near_lossless_);
+            const jpegls_pc_parameters preset = compute_default(calculate_maximum_sample_value(frame_info_.bits_per_sample), near_lossless_);
             writer_.WriteJpegLSPresetParametersSegment(preset);
         }
 
