@@ -24,6 +24,7 @@ endif ()
 
 # The basic options to control what is build extra.
 option(CHARLS_BUILD_TESTS "Build test application" ${MASTER_PROJECT})
+option(CHARLS_BUILD_FUZZ_TEST "Build AFL fuzzer application" ${MASTER_PROJECT})
 option(CHARLS_BUILD_SAMPLES "Build sample applications" ${MASTER_PROJECT})
 option(CHARLS_INSTALL "Generate the install target." ${MASTER_PROJECT})
 
@@ -136,6 +137,10 @@ include(src/CMakeLists.txt)
 
 if(CHARLS_BUILD_TESTS)
   add_subdirectory(test)
+endif()
+
+if(CHARLS_BUILD_FUZZ_TEST)
+  add_subdirectory(fuzztest)
 endif()
 
 if(CHARLS_BUILD_SAMPLES)

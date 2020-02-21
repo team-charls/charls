@@ -445,7 +445,7 @@ public:
     /// <param name="maximum_size_in_bytes">The maximum output size that may be allocated, default is 94 MiB (enough to decode 8 bit color 8K image).</param>
     /// <returns>Frame info of the decoded image and the interleave mode.</returns>
     template<typename SourceContainer, typename DestinationContainer, typename ValueType = typename DestinationContainer::value_type>
-    static std::pair<frame_info, interleave_mode> decode(const SourceContainer& source, OUT_ DestinationContainer& destination, const size_t maximum_size_in_bytes = 7680 * 4320 * 3)
+    static std::pair<charls::frame_info, charls::interleave_mode> decode(const SourceContainer& source, DestinationContainer& destination, const size_t maximum_size_in_bytes = 7680 * 4320 * 3)
     {
         jpegls_decoder decoder{source};
 
