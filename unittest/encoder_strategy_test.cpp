@@ -7,7 +7,8 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 // clang-format off
 
@@ -81,4 +82,5 @@ public:
     }
 };
 
+}
 }

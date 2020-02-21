@@ -8,12 +8,12 @@
 #include <charls/charls.h>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using namespace charls;
 using std::vector;
 
 MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0':  this does not adhere to the specification for the function.
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 // clang-format off
 
@@ -162,6 +162,7 @@ private:
     }
 };
 
+}
 }
 
 MSVC_WARNING_UNSUPPRESS()

@@ -43,7 +43,9 @@ public:
 
 } // namespace
 
-namespace CharLSUnitTest {
+
+namespace charls {
+namespace test {
 
 // clang-format off
 
@@ -87,4 +89,5 @@ public:
     }
 };
 
+}
 }

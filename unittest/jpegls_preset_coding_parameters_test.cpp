@@ -6,7 +6,6 @@
 #include "../src/jpegls_preset_coding_parameters.h"
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using namespace charls;
 
 namespace {
 
@@ -67,7 +66,8 @@ constexpr thresholds ComputeDefaultsUsingReferenceImplementation(const int32_t m
 
 // clang-format off
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 TEST_CLASS(JpeglsPresetCodingParametersTest)
 {
@@ -174,4 +174,5 @@ public:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+}

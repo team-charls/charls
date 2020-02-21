@@ -12,13 +12,13 @@
 #include <vector>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using namespace charls;
 using std::array;
 using std::vector;
 
 constexpr size_t serialized_spiff_header_size = 34;
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 // clang-format off
 
@@ -559,4 +559,5 @@ private:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+}

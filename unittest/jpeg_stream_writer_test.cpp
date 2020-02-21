@@ -10,9 +10,9 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
-using namespace charls;
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 // clang-format off
 
@@ -330,4 +330,5 @@ public:
     }
 };
 
+}
 }

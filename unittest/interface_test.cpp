@@ -12,16 +12,15 @@
 #include <vector>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using namespace charls;
 using std::array;
 using std::vector;
 
 MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
-
 // clang-format off
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 TEST_CLASS(interface_test)
 {
@@ -249,6 +248,7 @@ public:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+}
 
 MSVC_WARNING_UNSUPPRESS()

@@ -6,7 +6,8 @@
 #include "../src/jpeg_marker_code.h"
 #include "../src/util.h"
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 class JpegTestStreamWriter final
 {
@@ -61,9 +62,9 @@ public:
             segment.push_back(0); // Mapping table selector (0 = no table)
         }
 
-        segment.push_back(static_cast<uint8_t>(near_lossless)); // NEAR parameter
-        segment.push_back(static_cast<uint8_t>(interleave_mode));    // ILV parameter
-        segment.push_back(0);                                       // transformation
+        segment.push_back(static_cast<uint8_t>(near_lossless));   // NEAR parameter
+        segment.push_back(static_cast<uint8_t>(interleave_mode)); // ILV parameter
+        segment.push_back(0);                                     // transformation
 
         WriteSegment(charls::JpegMarkerCode::StartOfScan, segment.data(), segment.size());
     }
@@ -107,4 +108,5 @@ public:
     std::vector<uint8_t> buffer;
 };
 
-} // namespace CharLSUnitTest
+}
+} // namespace charls::test

@@ -5,7 +5,8 @@
 
 #include "../src/encoder_strategy.h"
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 class EncoderStrategyTester final : charls::EncoderStrategy
 {
@@ -55,4 +56,5 @@ public:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+} // namespace charls::test

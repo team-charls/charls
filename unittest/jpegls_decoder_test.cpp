@@ -18,7 +18,6 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::error_code;
 using std::tie;
 using std::vector;
-using namespace charls;
 using namespace charls_test;
 
 namespace {
@@ -31,7 +30,8 @@ void push_back(std::vector<uint8_t>& values, uint16_t value)
 
 }
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 // clang-format off
 
@@ -440,4 +440,5 @@ private:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+}

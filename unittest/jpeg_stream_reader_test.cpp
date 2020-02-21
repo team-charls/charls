@@ -4,22 +4,22 @@
 #include "pch.h"
 
 #include "util.h"
+#include "jpeg_test_stream_writer.h"
 
 #include "../src/jpeg_stream_reader.h"
 #include "../src/jpeg_stream_writer.h"
-#include "jpeg_test_stream_writer.h"
 
 #include <array>
 #include <cstdint>
 #include <vector>
 
-using namespace charls;
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::system_error;
 using std::vector;
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 // clang-format off
 
@@ -646,4 +646,5 @@ private:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+}
