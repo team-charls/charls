@@ -72,8 +72,8 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(charls_jpegls
     case jpegls_errc::start_of_image_marker_not_found:
         return "Invalid JPEG-LS stream, first JPEG marker is not a Start Of Image (SOI) marker";
 
-    case jpegls_errc::start_of_frame_marker_not_found:
-        return "Invalid JPEG-LS stream, Start Of Frame (SOF) marker not found before the SOS marker";
+    case jpegls_errc::unexpected_marker_found:
+        return "Invalid JPEG-LS stream, unexpected marker found";
 
     case jpegls_errc::invalid_marker_segment_size:
         return "Invalid JPEG-LS stream, segment size of a marker segment is invalid";

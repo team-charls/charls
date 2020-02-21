@@ -183,16 +183,21 @@ JpegMarkerCode JpegStreamReader::ReadNextMarkerCode()
 }
 
 
-void JpegStreamReader::ValidateMarkerCode(JpegMarkerCode markerCode)
+void JpegStreamReader::ValidateMarkerCode(const JpegMarkerCode markerCode) const
 {
     // ISO/IEC 14495-1, C.1.1. defines the following markers as valid for a JPEG-LS byte stream:
     // SOF55, LSE, SOI, EOI, SOS, DNL, DRI, RSTm, APPn and COM.
     // All other markers shall not be present.
     switch (markerCode)
     {
+    case JpegMarkerCode::StartOfScan:
+        if (state_ != state::scan_section)
+            throw_jpegls_error(jpegls_errc::unexpected_marker_found);
+
+        return;
+
     case JpegMarkerCode::StartOfFrameJpegLS:
     case JpegMarkerCode::JpegLSPresetParameters:
-    case JpegMarkerCode::StartOfScan:
     case JpegMarkerCode::Comment:
     case JpegMarkerCode::ApplicationData0:
     case JpegMarkerCode::ApplicationData1:
@@ -335,6 +340,8 @@ int JpegStreamReader::ReadStartOfFrameSegment(int32_t segmentSize)
 
         SkipByte(); // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
     }
+
+    state_ = state::scan_section;
 
     return segmentSize;
 }

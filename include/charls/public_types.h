@@ -39,7 +39,7 @@ RETURN_TYPE_SUCCESS_(return == 0) enum charls_jpegls_errc {
     CHARLS_JPEGLS_ERRC_NOT_ENOUGH_MEMORY = 13,
     CHARLS_JPEGLS_ERRC_UNEXPECTED_FAILURE = 14,
     CHARLS_JPEGLS_ERRC_START_OF_IMAGE_MARKER_NOT_FOUND = 15,
-    CHARLS_JPEGLS_ERRC_START_OF_FRAME_MARKER_NOT_FOUND = 16,
+    CHARLS_JPEGLS_ERRC_UNEXPECTED_MARKER_FOUND = 16,
     CHARLS_JPEGLS_ERRC_INVALID_MARKER_SEGMENT_SIZE = 17,
     CHARLS_JPEGLS_ERRC_DUPLICATE_START_OF_IMAGE_MARKER = 18,
     CHARLS_JPEGLS_ERRC_DUPLICATE_START_OF_FRAME_MARKER = 19,
@@ -234,9 +234,9 @@ RETURN_TYPE_SUCCESS_(return == 0) enum class jpegls_errc {
     start_of_image_marker_not_found = impl::CHARLS_JPEGLS_ERRC_START_OF_IMAGE_MARKER_NOT_FOUND,
 
     /// <summary>
-    /// This error is returned when the SOF JPEG marker is not found before the SOS marker.
+    /// This error is returned when a JPEG marker is found that is not valid for the current state.
     /// </summary>
-    start_of_frame_marker_not_found = impl::CHARLS_JPEGLS_ERRC_START_OF_FRAME_MARKER_NOT_FOUND,
+    unexpected_marker_found = impl::CHARLS_JPEGLS_ERRC_UNEXPECTED_MARKER_FOUND,
 
     /// <summary>
     /// This error is returned when the segment size of a marker segment is invalid.

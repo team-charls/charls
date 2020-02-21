@@ -52,6 +52,8 @@ void assert_expect_exception(charls::jpegls_errc error_value, Functor functor)
     catch (const charls::jpegls_error& error)
     {
         Microsoft::VisualStudio::CppUnitTestFramework::Assert::IsTrue(error_value == error.code());
+        Microsoft::VisualStudio::CppUnitTestFramework::Assert::IsNotNull(error.what());
+        Microsoft::VisualStudio::CppUnitTestFramework::Assert::IsTrue(strlen(error.what()) > 0);
         return;
     }
     catch (...)

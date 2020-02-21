@@ -90,7 +90,7 @@ public:
 
     void WriteByte(uint8_t value)
     {
-        data_.push_back(value);
+        buffer.push_back(value);
     }
 
     void WriteBytes(const void* data, const size_t dataSize)
@@ -104,7 +104,7 @@ public:
     }
 
     int componentIdOverride{};
-    std::vector<uint8_t> data_;
+    std::vector<uint8_t> buffer;
 };
 
 } // namespace CharLSUnitTest

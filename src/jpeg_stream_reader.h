@@ -60,7 +60,7 @@ private:
     void ReadNBytes(std::vector<char>& destination, int byteCount);
     void ReadNextStartOfScan();
     JpegMarkerCode ReadNextMarkerCode();
-    static void ValidateMarkerCode(JpegMarkerCode markerCode);
+    void ValidateMarkerCode(JpegMarkerCode markerCode) const;
 
     int ReadMarkerSegment(JpegMarkerCode markerCode, int32_t segmentSize, spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
     int ReadSpiffDirectoryEntry(JpegMarkerCode markerCode, int32_t segmentSize);

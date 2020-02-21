@@ -48,15 +48,18 @@ public:
 
     TEST_METHOD(ReadHeaderFromBufferPrecededWithFillBytes)
     {
-        vector<uint8_t> buffer;
-        buffer.push_back(0xFF);
-        buffer.push_back(0xFF);
-        buffer.push_back(0xD8);
-        buffer.push_back(0xFF);
-        buffer.push_back(0xFF);
-        buffer.push_back(0xDA); // SOS: Marks the start of scan.
+        JpegTestStreamWriter writer;
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+        writer.buffer.push_back(0xFF);
+        writer.WriteStartOfImage();
+
+        writer.buffer.push_back(0xFF);
+        writer.WriteStartOfFrameSegment(1, 1, 2, 1);
+
+        writer.buffer.push_back(0xFF);
+        writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
+
+        const ByteStreamInfo byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
         JpegStreamReader reader(byteStream);
 
         reader.ReadHeader(); // if it doesn't throw test is passed.
@@ -87,25 +90,6 @@ public:
 
         Assert::Fail();
     }
-
-    static void ReadHeaderWithApplicationData(uint8_t dataNumber)
-    {
-        vector<uint8_t> buffer;
-        buffer.push_back(0xFF);
-        buffer.push_back(0xD8); // SOI: Marks the start of an image.
-        buffer.push_back(0xFF);
-        buffer.push_back(0xE0 + dataNumber);
-        buffer.push_back(0x00);
-        buffer.push_back(0x02);
-        buffer.push_back(0xFF);
-        buffer.push_back(0xDA); // SOS: Marks the start of scan.
-
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
-
-        reader.ReadHeader(); // if it doesn't throw test is passed.
-    }
-
     TEST_METHOD(ReadHeaderWithApplicationData)
     {
         ReadHeaderWithApplicationData(0);
@@ -381,9 +365,9 @@ public:
         JpegTestStreamWriter writer;
         writer.WriteStartOfImage();
         writer.WriteStartOfFrameSegment(512, 512, 8, 3);
-        writer.data_.push_back(0);
-        writer.data_[5]++;
-        const ByteStreamInfo byteStream = FromByteArray(writer.data_.data(), writer.data_.size());
+        writer.buffer.push_back(0);
+        writer.buffer[5]++;
+        const ByteStreamInfo byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
         JpegStreamReader reader(byteStream);
 
@@ -400,13 +384,26 @@ public:
         Assert::Fail();
     }
 
+    TEST_METHOD(read_header_sos_before_sof_should_throw)
+    {
+        JpegTestStreamWriter writer;
+        writer.WriteStartOfImage();
+        writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
+        const ByteStreamInfo source = FromByteArray(writer.buffer.data(), writer.buffer.size());
+
+        JpegStreamReader reader(source);
+
+        assert_expect_exception(jpegls_errc::unexpected_marker_found,
+            [&](){reader.ReadHeader();});
+    }
+
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw)
     {
         JpegTestStreamWriter writer;
         writer.WriteStartOfImage();
         writer.WriteStartOfFrameSegment(512, 512, 8, 3);
         writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
-        const ByteStreamInfo source = FromByteArray(writer.data_.data(), writer.data_.size());
+        const ByteStreamInfo source = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
         JpegStreamReader reader(source);
         reader.ReadHeader();
@@ -421,7 +418,7 @@ public:
         writer.componentIdOverride = 7;
         writer.WriteStartOfImage();
         writer.WriteStartOfFrameSegment(512, 512, 8, 3);
-        const ByteStreamInfo byteStream = FromByteArray(writer.data_.data(), writer.data_.size());
+        const ByteStreamInfo byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
         JpegStreamReader reader(byteStream);
 
@@ -626,6 +623,26 @@ public:
         {
             Assert::AreEqual(static_cast<int>(jpegls_errc::missing_end_of_spiff_directory), error.code().value());
         }
+    }
+
+private:
+    static void ReadHeaderWithApplicationData(const uint8_t dataNumber)
+    {
+        JpegTestStreamWriter writer;
+        writer.WriteStartOfImage();
+
+        writer.buffer.push_back(0xFF);
+        writer.buffer.push_back(0xE0 + dataNumber);
+        writer.buffer.push_back(0x00);
+        writer.buffer.push_back(0x02);
+
+        writer.WriteStartOfFrameSegment(1, 1, 2, 1);
+        writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
+
+        const ByteStreamInfo byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
+        JpegStreamReader reader(byteStream);
+
+        reader.ReadHeader(); // if it doesn't throw test is passed.
     }
 };
 
