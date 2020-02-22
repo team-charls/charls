@@ -102,6 +102,9 @@ void JpegStreamReader::ReadHeader(spiff_header* header, bool* spiff_header_found
 
         if (markerCode == JpegMarkerCode::StartOfScan)
         {
+            if (!is_maximum_sample_value_valid())
+                throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_pc_parameters);
+
             state_ = state::scan_section;
             return;
         }
@@ -416,8 +419,8 @@ void JpegStreamReader::ReadStartOfScan()
     }
 
     parameters_.near_lossless = ReadByte();                            // Read NEAR parameter
-    if (parameters_.near_lossless > MaximumNearLossless(calculate_maximum_sample_value(frame_info_.bits_per_sample)))
-        throw_jpegls_error(jpegls_errc::invalid_parameter_interleave_mode);
+    if (parameters_.near_lossless > MaximumNearLossless(maximum_sample_value()))
+        throw_jpegls_error(jpegls_errc::invalid_parameter_near_lossless);
 
     parameters_.interleave_mode = static_cast<interleave_mode>(ReadByte()); // Read ILV parameter
     if (!(parameters_.interleave_mode == interleave_mode::none || parameters_.interleave_mode == interleave_mode::line || parameters_.interleave_mode == interleave_mode::sample))
@@ -591,6 +594,24 @@ void JpegStreamReader::CheckParameterCoherent() const
 
         break;
     }
+}
+
+
+bool JpegStreamReader::is_maximum_sample_value_valid() const noexcept
+{
+    return preset_coding_parameters_.maximum_sample_value == 0 ||
+           static_cast<uint32_t>(preset_coding_parameters_.maximum_sample_value) <= calculate_maximum_sample_value(frame_info_.bits_per_sample);
+}
+
+
+uint32_t JpegStreamReader::maximum_sample_value() const noexcept
+{
+    ASSERT(is_maximum_sample_value_valid());
+
+    if (preset_coding_parameters_.maximum_sample_value != 0)
+        return preset_coding_parameters_.maximum_sample_value;
+
+    return calculate_maximum_sample_value(frame_info_.bits_per_sample);
 }
 
 

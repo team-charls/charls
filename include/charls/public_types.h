@@ -54,7 +54,7 @@ RETURN_TYPE_SUCCESS_(return == 0) enum charls_jpegls_errc {
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_BITS_PER_SAMPLE = 103,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_INTERLEAVE_MODE = 104,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_NEAR_LOSSLESS = 105,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_PC_PARAMETERS = 106,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_JPEGLS_PC_PARAMETERS = 106,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SPIFF_ENTRY_SIZE = 110,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COLOR_TRANSFORMATION = 111,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH = 200,
@@ -62,7 +62,8 @@ RETURN_TYPE_SUCCESS_(return == 0) enum charls_jpegls_errc {
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT = 202,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE = 203,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE = 204,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 205
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 205,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PC_PARAMETERS = 206,
 };
 
 enum charls_interleave_mode
@@ -312,7 +313,7 @@ RETURN_TYPE_SUCCESS_(return == 0) enum class jpegls_errc {
     /// The argument for the JPEG-LS preset coding parameters is not valid, see ISO/IEC 14495-1,
     /// C.2.4.1.1, Table C.1 for the ranges of valid values.
     /// </summary>
-    invalid_argument_pc_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_PC_PARAMETERS,
+    invalid_argument_jpegls_pc_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_JPEGLS_PC_PARAMETERS,
 
     /// <summary>
     /// The argument for the entry size parameter is outside the range [0, 65528].
@@ -353,6 +354,11 @@ RETURN_TYPE_SUCCESS_(return == 0) enum class jpegls_errc {
     /// This error is returned when the stream contains a near-lossless (NEAR) parameter outside the range [0, min(255, MAXVAL/2)]
     /// </summary>
     invalid_parameter_near_lossless = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS,
+
+    /// <summary>
+    /// This error is returned when the stream contains an invalid JPEG-LS preset coding parameters segment.
+    /// </summary>
+    invalid_parameter_jpegls_pc_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PC_PARAMETERS,
 
     // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17 extension.
     OK = success,

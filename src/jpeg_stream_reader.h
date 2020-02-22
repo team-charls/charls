@@ -73,6 +73,8 @@ private:
     int TryReadHPColorTransformSegment();
     void AddComponent(uint8_t componentId);
     void CheckParameterCoherent() const;
+    bool is_maximum_sample_value_valid() const noexcept;
+    uint32_t maximum_sample_value() const noexcept;
 
     enum class state
     {

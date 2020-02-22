@@ -241,6 +241,23 @@ public:
         Assert::Fail();
     }
 
+    TEST_METHOD(read_header_bad_jpegls_preset_coding_parameters_should_throw)
+    {
+        const jpegls_pc_parameters preset_coding_parameters{256};
+
+        JpegTestStreamWriter writer;
+        writer.WriteStartOfImage();
+        writer.WriteJpegLSPresetParametersSegment(preset_coding_parameters);
+        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
+        writer.WriteStartOfScanSegment(0, 1, 127, charls::interleave_mode::none);
+        const ByteStreamInfo source = FromByteArray(writer.buffer.data(), writer.buffer.size());
+
+        JpegStreamReader reader(source);
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_jpegls_pc_parameters,
+            [&](){reader.ReadHeader();});
+    }
+
     static void ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(uint8_t id)
     {
         vector<uint8_t> buffer;
@@ -408,7 +425,27 @@ public:
         JpegStreamReader reader(source);
         reader.ReadHeader();
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_interleave_mode,
+        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless,
+            [&](){reader.ReadStartOfScan();});
+    }
+
+    TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw2)
+    {
+        const jpegls_pc_parameters preset_coding_parameters{200};
+
+        JpegTestStreamWriter writer;
+        writer.WriteStartOfImage();
+        writer.WriteJpegLSPresetParametersSegment(preset_coding_parameters);
+        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
+
+        constexpr int bad_near_lossless = (200 / 2) + 1;
+        writer.WriteStartOfScanSegment(0, 1, bad_near_lossless, charls::interleave_mode::none);
+        const ByteStreamInfo source = FromByteArray(writer.buffer.data(), writer.buffer.size());
+
+        JpegStreamReader reader(source);
+        reader.ReadHeader();
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless,
             [&](){reader.ReadStartOfScan();});
     }
 

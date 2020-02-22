@@ -65,7 +65,7 @@ struct charls_jpegls_encoder final
     void preset_coding_parameters(const jpegls_pc_parameters& preset_coding_parameters)
     {
         if (!is_valid(preset_coding_parameters, UINT16_MAX, near_lossless_))
-            throw_jpegls_error(jpegls_errc::invalid_argument_pc_parameters);
+            throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
 
         preset_coding_parameters_ = preset_coding_parameters;
     }

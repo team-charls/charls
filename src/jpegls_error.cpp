@@ -66,7 +66,7 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(charls_jpegls
     case jpegls_errc::invalid_argument_color_transformation:
         return "The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component count";
 
-    case jpegls_errc::invalid_argument_pc_parameters:
+    case jpegls_errc::invalid_argument_jpegls_pc_parameters:
         return "The argument for the JPEG-LS preset coding parameters is not valid";
 
     case jpegls_errc::start_of_image_marker_not_found:
@@ -155,6 +155,9 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(charls_jpegls
 
     case jpegls_errc::invalid_parameter_near_lossless:
         return "Invalid JPEG-LS stream, near-lossless is outside the range [0, min(255, MAXVAL/2)]";
+
+    case jpegls_errc::invalid_parameter_jpegls_pc_parameters:
+        return "Invalid JPEG-LS stream, JPEG-LS preset coding parameters segment contains invalid values";
     }
 
     return "Unknown";

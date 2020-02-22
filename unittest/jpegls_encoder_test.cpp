@@ -434,7 +434,7 @@ public:
 
         charls_jpegls_pc_parameters pc_parameters{1,1,1,1,1};
 
-        assert_expect_exception(jpegls_errc::invalid_argument_pc_parameters,
+        assert_expect_exception(jpegls_errc::invalid_argument_jpegls_pc_parameters,
             [&] { encoder.preset_coding_parameters(pc_parameters); });
     }
 
