@@ -32,7 +32,7 @@ const void* CHARLS_API_CALLING_CONVENTION charls_get_jpegls_category()
     return &instance;
 }
 
-const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(charls_jpegls_errc error_value)
+const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_jpegls_errc error_value)
 {
     switch (error_value)
     {

@@ -34,7 +34,7 @@ struct DefaultTraits final
     const int32_t LIMIT;
     const int32_t RESET;
 
-    DefaultTraits(int32_t max, int32_t near, int32_t reset = DefaultResetValue) noexcept :
+    DefaultTraits(const int32_t max, const int32_t near, const int32_t reset = DefaultResetValue) noexcept :
         MAXVAL{max},
         RANGE{(max + 2 * near) / (2 * near + 1) + 1},
         NEAR{near},
@@ -62,29 +62,29 @@ struct DefaultTraits final
     DefaultTraits& operator=(const DefaultTraits&) = delete;
     DefaultTraits& operator=(DefaultTraits&&) = delete;
 
-    FORCE_INLINE int32_t ComputeErrVal(int32_t e) const noexcept
+    FORCE_INLINE int32_t ComputeErrVal(const int32_t e) const noexcept
     {
         return ModuloRange(Quantize(e));
     }
 
-    FORCE_INLINE SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) const noexcept
+    FORCE_INLINE SAMPLE ComputeReconstructedSample(const int32_t Px, const int32_t ErrVal) const noexcept
     {
         return FixReconstructedValue(Px + DeQuantize(ErrVal));
     }
 
-    FORCE_INLINE bool IsNear(int32_t lhs, int32_t rhs) const noexcept
+    FORCE_INLINE bool IsNear(const int32_t lhs, const int32_t rhs) const noexcept
     {
         return std::abs(lhs - rhs) <= NEAR;
     }
 
-    bool IsNear(Triplet<SAMPLE> lhs, Triplet<SAMPLE> rhs) const noexcept
+    bool IsNear(const Triplet<SAMPLE> lhs, const Triplet<SAMPLE> rhs) const noexcept
     {
         return std::abs(lhs.v1 - rhs.v1) <= NEAR &&
                std::abs(lhs.v2 - rhs.v2) <= NEAR &&
                std::abs(lhs.v3 - rhs.v3) <= NEAR;
     }
 
-    bool IsNear(Quad<SAMPLE> lhs, Quad<SAMPLE> rhs) const noexcept
+    bool IsNear(const Quad<SAMPLE> lhs, const Quad<SAMPLE> rhs) const noexcept
     {
         return std::abs(lhs.v1 - rhs.v1) <= NEAR &&
                std::abs(lhs.v2 - rhs.v2) <= NEAR &&
@@ -92,7 +92,7 @@ struct DefaultTraits final
                std::abs(lhs.v4 - rhs.v4) <= NEAR;
     }
 
-    FORCE_INLINE int32_t CorrectPrediction(int32_t Pxc) const noexcept
+    FORCE_INLINE int32_t CorrectPrediction(const int32_t Pxc) const noexcept
     {
         if ((Pxc & MAXVAL) == Pxc)
             return Pxc;
@@ -123,7 +123,7 @@ struct DefaultTraits final
     }
 
 private:
-    int32_t Quantize(int32_t errorValue) const noexcept
+    int32_t Quantize(const int32_t errorValue) const noexcept
     {
         if (errorValue > 0)
             return (errorValue + NEAR) / (2 * NEAR + 1);
@@ -131,7 +131,7 @@ private:
         return -(NEAR - errorValue) / (2 * NEAR + 1);
     }
 
-    FORCE_INLINE int32_t DeQuantize(int32_t ErrorValue) const noexcept
+    FORCE_INLINE int32_t DeQuantize(const int32_t ErrorValue) const noexcept
     {
         return ErrorValue * (2 * NEAR + 1);
     }

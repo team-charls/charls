@@ -74,7 +74,7 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels, uint32_t stride)
 }
 
 
-void JpegStreamReader::ReadNBytes(std::vector<char>& destination, int byteCount)
+void JpegStreamReader::ReadNBytes(std::vector<char>& destination, const int byteCount)
 {
     for (int i = 0; i < byteCount; ++i)
     {
@@ -293,7 +293,7 @@ int JpegStreamReader::ReadMarkerSegment(const JpegMarkerCode markerCode,
     }
 }
 
-int JpegStreamReader::ReadSpiffDirectoryEntry(JpegMarkerCode markerCode, int32_t segmentSize)
+int JpegStreamReader::ReadSpiffDirectoryEntry(const JpegMarkerCode markerCode, const int32_t segmentSize)
 {
     if (markerCode != JpegMarkerCode::ApplicationData8)
         throw_jpegls_error(jpegls_errc::missing_end_of_spiff_directory);
@@ -310,7 +310,7 @@ int JpegStreamReader::ReadSpiffDirectoryEntry(JpegMarkerCode markerCode, int32_t
     return 4;
 }
 
-int JpegStreamReader::ReadStartOfFrameSegment(int32_t segmentSize)
+int JpegStreamReader::ReadStartOfFrameSegment(const int32_t segmentSize)
 {
     // A JPEG-LS Start of Frame (SOF) segment is documented in ISO/IEC 14495-1, C.2.2
     // This section references ISO/IEC 10918-1, B.2.2, which defines the normal JPEG SOF,
@@ -361,7 +361,7 @@ int JpegStreamReader::ReadComment() noexcept
 }
 
 
-int JpegStreamReader::ReadPresetParametersSegment(int32_t segmentSize)
+int JpegStreamReader::ReadPresetParametersSegment(const int32_t segmentSize)
 {
     if (segmentSize < 1)
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
@@ -577,7 +577,7 @@ int JpegStreamReader::TryReadSpiffHeaderSegment(OUT_ spiff_header& header, OUT_ 
 }
 
 
-void JpegStreamReader::AddComponent(uint8_t componentId)
+void JpegStreamReader::AddComponent(const uint8_t componentId)
 {
     if (find(componentIds_.cbegin(), componentIds_.cend(), componentId) != componentIds_.cend())
         throw_jpegls_error(jpegls_errc::duplicate_component_id_in_sof_segment);

@@ -223,7 +223,7 @@ private:
         return frame_info_.width != 0;
     }
 
-    void encode_scan(ByteStreamInfo source, const uint32_t stride, const int32_t component_count)
+    void encode_scan(const ByteStreamInfo source, const uint32_t stride, const int32_t component_count)
     {
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, component_count};
 

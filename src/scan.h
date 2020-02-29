@@ -57,7 +57,7 @@ inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 #else
 
-inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc) noexcept
+inline int32_t GetPredictedValue(const int32_t Ra, const int32_t Rb, const int32_t Rc) noexcept
 {
     // sign trick reduces the number of if statements (branches)
     const int32_t sgn = BitWiseSign(Rb - Ra);
@@ -78,19 +78,19 @@ inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc) noexcept
 
 #endif
 
-CONSTEXPR int32_t UnMapErrVal(int32_t mappedError) noexcept
+CONSTEXPR int32_t UnMapErrVal(const int32_t mappedError) noexcept
 {
     const int32_t sign = mappedError << (int32_t_bit_count - 1) >> (int32_t_bit_count - 1);
     return sign ^ (mappedError >> 1);
 }
 
-CONSTEXPR int32_t GetMappedErrVal(int32_t errorValue) noexcept
+CONSTEXPR int32_t GetMappedErrVal(const int32_t errorValue) noexcept
 {
     const int32_t mappedError = (errorValue >> (int32_t_bit_count - 2)) ^ (2 * errorValue);
     return mappedError;
 }
 
-constexpr int32_t ComputeContextID(int32_t Q1, int32_t Q2, int32_t Q3) noexcept
+constexpr int32_t ComputeContextID(const int32_t Q1, const int32_t Q2, const int32_t Q3) noexcept
 {
     return (Q1 * 9 + Q2) * 9 + Q3;
 }
@@ -142,7 +142,7 @@ public:
 
     signed char QuantizeGradientOrg(int32_t Di) const noexcept;
 
-    FORCE_INLINE int32_t QuantizeGradient(int32_t Di) const noexcept
+    FORCE_INLINE int32_t QuantizeGradient(const int32_t Di) const noexcept
     {
         ASSERT(QuantizeGradientOrg(Di) == *(pquant_ + Di));
         return *(pquant_ + Di);
@@ -234,7 +234,7 @@ private:
 
 // Encode/decode a single sample. Performance wise the #1 important functions
 template<typename Traits, typename Strategy>
-typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_t, int32_t pred, DecoderStrategy*)
+typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(const int32_t Qs, int32_t, const int32_t pred, DecoderStrategy*)
 {
     const int32_t sign = BitWiseSign(Qs);
     JlsContext& ctx = contexts_[ApplySign(Qs, sign)];
@@ -266,7 +266,7 @@ typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_
 
 
 template<typename Traits, typename Strategy>
-typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_t x, int32_t pred, EncoderStrategy*)
+typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(const int32_t Qs, int32_t x, const int32_t pred, EncoderStrategy*)
 {
     const int32_t sign = BitWiseSign(Qs);
     JlsContext& ctx = contexts_[ApplySign(Qs, sign)];
@@ -283,14 +283,14 @@ typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_
 
 // Functions to build tables used to decode short Golomb codes.
 
-inline std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedError) noexcept
+inline std::pair<int32_t, int32_t> CreateEncodedValue(const int32_t k, const int32_t mappedError) noexcept
 {
     const int32_t highBits = mappedError >> k;
     return std::make_pair(highBits + k + 1, (1 << k) | (mappedError & ((1 << k) - 1)));
 }
 
 
-inline CTable InitTable(int32_t k) noexcept
+inline CTable InitTable(const int32_t k) noexcept
 {
     CTable table;
     for (short nerr = 0;; nerr++)
@@ -324,7 +324,7 @@ inline CTable InitTable(int32_t k) noexcept
 // Encoding/decoding of Golomb codes
 
 template<typename Traits, typename Strategy>
-int32_t JlsCodec<Traits, Strategy>::DecodeValue(int32_t k, int32_t limit, int32_t qbpp)
+int32_t JlsCodec<Traits, Strategy>::DecodeValue(int32_t k, const int32_t limit, int32_t qbpp)
 {
     const int32_t highBits = Strategy::ReadHighBits();
 
@@ -339,7 +339,7 @@ int32_t JlsCodec<Traits, Strategy>::DecodeValue(int32_t k, int32_t limit, int32_
 
 
 template<typename Traits, typename Strategy>
-FORCE_INLINE void JlsCodec<Traits, Strategy>::EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit)
+FORCE_INLINE void JlsCodec<Traits, Strategy>::EncodeMappedValue(int32_t k, const int32_t mappedError, int32_t limit)
 {
     int32_t highBits = mappedError >> k;
 
@@ -450,7 +450,7 @@ int32_t JlsCodec<Traits, Strategy>::DecodeRIError(CContextRunMode& ctx)
 
 
 template<typename Traits, typename Strategy>
-void JlsCodec<Traits, Strategy>::EncodeRIError(CContextRunMode& ctx, int32_t errorValue)
+void JlsCodec<Traits, Strategy>::EncodeRIError(CContextRunMode& ctx, const int32_t errorValue)
 {
     const int32_t k = ctx.GetGolomb();
     const bool map = ctx.ComputeMap(errorValue, k);
@@ -544,7 +544,7 @@ typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DecodeRIPixel(int32_t Ra, in
 
 
 template<typename Traits, typename Strategy>
-typename Traits::SAMPLE JlsCodec<Traits, Strategy>::EncodeRIPixel(int32_t x, int32_t Ra, int32_t Rb)
+typename Traits::SAMPLE JlsCodec<Traits, Strategy>::EncodeRIPixel(const int32_t x, int32_t Ra, int32_t Rb)
 {
     if (std::abs(Ra - Rb) <= traits.NEAR)
     {
@@ -562,7 +562,7 @@ typename Traits::SAMPLE JlsCodec<Traits, Strategy>::EncodeRIPixel(int32_t x, int
 // RunMode: Functions that handle run-length encoding
 
 template<typename Traits, typename Strategy>
-void JlsCodec<Traits, Strategy>::EncodeRunPixels(int32_t runLength, bool endOfLine)
+void JlsCodec<Traits, Strategy>::EncodeRunPixels(int32_t runLength, const bool endOfLine)
 {
     while (runLength >= static_cast<int32_t>(1 << J[RUNindex_]))
     {
@@ -586,12 +586,12 @@ void JlsCodec<Traits, Strategy>::EncodeRunPixels(int32_t runLength, bool endOfLi
 
 
 template<typename Traits, typename Strategy>
-int32_t JlsCodec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, int32_t cpixelMac)
+int32_t JlsCodec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, const int32_t cpixelMac)
 {
     int32_t index = 0;
     while (Strategy::ReadBit())
     {
-        const int count = std::min(1 << J[RUNindex_], int(cpixelMac - index));
+        const int count = std::min(1 << J[RUNindex_], static_cast<int>(cpixelMac - index));
         index += count;
         ASSERT(index <= cpixelMac);
 
@@ -898,7 +898,7 @@ MSVC_WARNING_UNSUPPRESS()
 
 // Initialize the codec data structures. Depends on JPEG-LS parameters like Threshold1-Threshold3.
 template<typename Traits, typename Strategy>
-void JlsCodec<Traits, Strategy>::InitParams(int32_t t1, int32_t t2, int32_t t3, int32_t nReset)
+void JlsCodec<Traits, Strategy>::InitParams(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t nReset)
 {
     T1 = t1;
     T2 = t2;

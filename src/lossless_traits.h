@@ -27,12 +27,12 @@ struct LosslessTraitsImpl
         RESET = DefaultResetValue
     };
 
-    FORCE_INLINE constexpr static int32_t ComputeErrVal(int32_t d) noexcept
+    FORCE_INLINE constexpr static int32_t ComputeErrVal(const int32_t d) noexcept
     {
         return ModuloRange(d);
     }
 
-    FORCE_INLINE constexpr static bool IsNear(int32_t lhs, int32_t rhs) noexcept
+    FORCE_INLINE constexpr static bool IsNear(const int32_t lhs, const int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
@@ -47,7 +47,7 @@ struct LosslessTraitsImpl
         return static_cast<int32_t>(errorValue << (int32_t_bit_count - bpp)) >> (int32_t_bit_count - bpp);
     }
 
-    FORCE_INLINE static SAMPLE ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
+    FORCE_INLINE static SAMPLE ComputeReconstructedSample(const int32_t Px, const int32_t ErrVal) noexcept
     {
         return static_cast<SAMPLE>(MAXVAL & (Px + ErrVal));
     }
@@ -74,17 +74,17 @@ struct LosslessTraits<uint8_t, 8> final : LosslessTraitsImpl<uint8_t, 8>
 {
     using PIXEL = SAMPLE;
 
-    FORCE_INLINE constexpr static signed char ModRange(int32_t errorValue) noexcept
+    FORCE_INLINE constexpr static signed char ModRange(const int32_t errorValue) noexcept
     {
         return static_cast<signed char>(errorValue);
     }
 
-    FORCE_INLINE constexpr static int32_t ComputeErrVal(int32_t d) noexcept
+    FORCE_INLINE constexpr static int32_t ComputeErrVal(const int32_t d) noexcept
     {
         return static_cast<signed char>(d);
     }
 
-    FORCE_INLINE constexpr static uint8_t ComputeReconstructedSample(int32_t Px, int32_t ErrVal) noexcept
+    FORCE_INLINE constexpr static uint8_t ComputeReconstructedSample(const int32_t Px, const int32_t ErrVal) noexcept
     {
         return static_cast<uint8_t>(Px + ErrVal);
     }
@@ -96,17 +96,17 @@ struct LosslessTraits<uint16_t, 16> final : LosslessTraitsImpl<uint16_t, 16>
 {
     using PIXEL = SAMPLE;
 
-    FORCE_INLINE constexpr static short ModRange(int32_t errorValue) noexcept
+    FORCE_INLINE constexpr static short ModRange(const int32_t errorValue) noexcept
     {
         return static_cast<short>(errorValue);
     }
 
-    FORCE_INLINE constexpr static int32_t ComputeErrVal(int32_t d) noexcept
+    FORCE_INLINE constexpr static int32_t ComputeErrVal(const int32_t d) noexcept
     {
         return static_cast<short>(d);
     }
 
-    FORCE_INLINE constexpr static SAMPLE ComputeReconstructedSample(int32_t Px, int32_t errorValue) noexcept
+    FORCE_INLINE constexpr static SAMPLE ComputeReconstructedSample(const int32_t Px, const int32_t errorValue) noexcept
     {
         return static_cast<SAMPLE>(Px + errorValue);
     }
@@ -118,7 +118,7 @@ struct LosslessTraits<Triplet<T>, bpp> final : LosslessTraitsImpl<T, bpp>
 {
     using PIXEL = Triplet<T>;
 
-    FORCE_INLINE constexpr static bool IsNear(int32_t lhs, int32_t rhs) noexcept
+    FORCE_INLINE constexpr static bool IsNear(const int32_t lhs, const int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
@@ -128,7 +128,7 @@ struct LosslessTraits<Triplet<T>, bpp> final : LosslessTraitsImpl<T, bpp>
         return lhs == rhs;
     }
 
-    FORCE_INLINE static T ComputeReconstructedSample(int32_t Px, int32_t errorValue) noexcept
+    FORCE_INLINE static T ComputeReconstructedSample(const int32_t Px, const int32_t errorValue) noexcept
     {
         return static_cast<T>(Px + errorValue);
     }
@@ -140,7 +140,7 @@ struct LosslessTraits<Quad<T>, bpp> final : LosslessTraitsImpl<T, bpp>
 {
     using PIXEL = Quad<T>;
 
-    FORCE_INLINE constexpr static bool IsNear(int32_t lhs, int32_t rhs) noexcept
+    FORCE_INLINE constexpr static bool IsNear(const int32_t lhs, const int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
@@ -150,7 +150,7 @@ struct LosslessTraits<Quad<T>, bpp> final : LosslessTraitsImpl<T, bpp>
         return lhs == rhs;
     }
 
-    FORCE_INLINE static T ComputeReconstructedSample(int32_t Px, int32_t errorValue) noexcept
+    FORCE_INLINE static T ComputeReconstructedSample(const int32_t Px, const int32_t errorValue) noexcept
     {
         return static_cast<T>(Px + errorValue);
     }

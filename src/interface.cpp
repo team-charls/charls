@@ -44,7 +44,7 @@ void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& paramet
     }
 }
 
-void EncodeScan(const JlsParameters& params, int componentCount, ByteStreamInfo source, JpegStreamWriter& writer)
+void EncodeScan(const JlsParameters& params, const int componentCount, const ByteStreamInfo source, JpegStreamWriter& writer)
 {
     const frame_info frame_info{static_cast<uint32_t>(params.width), static_cast<uint32_t>(params.height), params.bitsPerSample, componentCount};
     const coding_parameters codec_parameters{params.allowedLossyError, params.interleaveMode, params.colorTransformation, false};
@@ -68,7 +68,7 @@ void EncodeScan(const JlsParameters& params, int componentCount, ByteStreamInfo 
 } // namespace
 
 
-jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten,
+jpegls_errc JpegLsEncodeStream(const ByteStreamInfo destination, size_t& bytesWritten,
                                ByteStreamInfo source, const JlsParameters& params)
 {
     if (params.width < 1 || params.width > 65535)
@@ -151,7 +151,7 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten,
 }
 
 
-jpegls_errc JpegLsDecodeStream(ByteStreamInfo destination, ByteStreamInfo source, const JlsParameters* /*params*/)
+jpegls_errc JpegLsDecodeStream(const ByteStreamInfo destination, const ByteStreamInfo source, const JlsParameters* /*params*/)
 {
     try
     {
@@ -171,7 +171,7 @@ jpegls_errc JpegLsDecodeStream(ByteStreamInfo destination, ByteStreamInfo source
 }
 
 
-jpegls_errc JpegLsReadHeaderStream(ByteStreamInfo source, JlsParameters* params)
+jpegls_errc JpegLsReadHeaderStream(const ByteStreamInfo source, JlsParameters* params)
 {
     try
     {

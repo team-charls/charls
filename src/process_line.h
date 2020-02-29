@@ -73,7 +73,7 @@ private:
 };
 
 
-inline void ByteSwap(void* data, int count)
+inline void ByteSwap(void* data, const int count)
 {
     if (static_cast<unsigned int>(count) & 1U)
         throw jpegls_error{jpegls_errc::invalid_encoded_data};
@@ -95,7 +95,7 @@ inline void ByteSwap(void* data, int count)
 class PostProcessSingleStream final : public ProcessLine
 {
 public:
-    PostProcessSingleStream(std::basic_streambuf<char>* rawData, uint32_t stride, size_t bytesPerPixel) noexcept :
+    PostProcessSingleStream(std::basic_streambuf<char>* rawData, const uint32_t stride, const size_t bytesPerPixel) noexcept :
         rawData_{rawData},
         bytesPerPixel_{bytesPerPixel},
         bytesPerLine_{stride}
@@ -141,7 +141,7 @@ private:
 
 
 template<typename TRANSFORM, typename T>
-void TransformLineToQuad(const T* ptypeInput, int32_t pixelStrideIn, Quad<T>* byteBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformLineToQuad(const T* ptypeInput, const int32_t pixelStrideIn, Quad<T>* byteBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const int cpixel = std::min(pixelStride, pixelStrideIn);
     Quad<T>* ptypeBuffer = byteBuffer;
@@ -155,7 +155,7 @@ void TransformLineToQuad(const T* ptypeInput, int32_t pixelStrideIn, Quad<T>* by
 
 
 template<typename TRANSFORM, typename T>
-void TransformQuadToLine(const Quad<T>* byteInput, int32_t pixelStrideIn, T* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformQuadToLine(const Quad<T>* byteInput, const int32_t pixelStrideIn, T* ptypeBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto cpixel = std::min(pixelStride, pixelStrideIn);
     const Quad<T>* ptypeBufferIn = byteInput;
@@ -174,7 +174,7 @@ void TransformQuadToLine(const Quad<T>* byteInput, int32_t pixelStrideIn, T* pty
 
 
 template<typename T>
-void TransformRgbToBgr(T* pDest, int samplesPerPixel, int pixelCount) noexcept
+void TransformRgbToBgr(T* pDest, int samplesPerPixel, const int pixelCount) noexcept
 {
     for (auto i = 0; i < pixelCount; ++i)
     {
@@ -185,7 +185,7 @@ void TransformRgbToBgr(T* pDest, int samplesPerPixel, int pixelCount) noexcept
 
 
 template<typename TRANSFORM, typename T>
-void TransformLine(Triplet<T>* pDest, const Triplet<T>* pSrc, int pixelCount, TRANSFORM& transform) noexcept
+void TransformLine(Triplet<T>* pDest, const Triplet<T>* pSrc, const int pixelCount, TRANSFORM& transform) noexcept
 {
     for (auto i = 0; i < pixelCount; ++i)
     {
@@ -195,7 +195,7 @@ void TransformLine(Triplet<T>* pDest, const Triplet<T>* pSrc, int pixelCount, TR
 
 
 template<typename TRANSFORM, typename T>
-void TransformLine(Quad<T>* pDest, const Quad<T>* pSrc, int pixelCount, TRANSFORM& transform) noexcept
+void TransformLine(Quad<T>* pDest, const Quad<T>* pSrc, const int pixelCount, TRANSFORM& transform) noexcept
 {
     for (auto i = 0; i < pixelCount; ++i)
     {
@@ -205,7 +205,7 @@ void TransformLine(Quad<T>* pDest, const Quad<T>* pSrc, int pixelCount, TRANSFOR
 
 
 template<typename TRANSFORM, typename T>
-void TransformLineToTriplet(const T* ptypeInput, int32_t pixelStrideIn, Triplet<T>* byteBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformLineToTriplet(const T* ptypeInput, const int32_t pixelStrideIn, Triplet<T>* byteBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto cpixel = std::min(pixelStride, pixelStrideIn);
     Triplet<T>* ptypeBuffer = byteBuffer;
@@ -218,7 +218,7 @@ void TransformLineToTriplet(const T* ptypeInput, int32_t pixelStrideIn, Triplet<
 
 
 template<typename TRANSFORM, typename T>
-void TransformTripletToLine(const Triplet<T>* byteInput, int32_t pixelStrideIn, T* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformTripletToLine(const Triplet<T>* byteInput, const int32_t pixelStrideIn, T* ptypeBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto cpixel = std::min(pixelStride, pixelStrideIn);
     const Triplet<T>* ptypeBufferIn = byteInput;
@@ -263,7 +263,7 @@ public:
         Transform(rawPixels_.rawStream, dest, pixelCount, destStride);
     }
 
-    void Transform(std::basic_streambuf<char>* rawStream, void* destination, int pixelCount, int destinationStride)
+    void Transform(std::basic_streambuf<char>* rawStream, void* destination, const int pixelCount, const int destinationStride)
     {
         std::streamsize bytesToRead = static_cast<std::streamsize>(pixelCount) * frame_info_.component_count * sizeof(size_type);
         while (bytesToRead != 0)

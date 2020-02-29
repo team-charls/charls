@@ -31,7 +31,7 @@ public:
 
     int32_t PeekByte();
 
-    void OnLineBegin(int32_t cpixel, void* ptypeBuffer, int32_t pixelStride) const
+    void OnLineBegin(const int32_t cpixel, void* ptypeBuffer, const int32_t pixelStride) const
     {
         processLine_->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
     }
@@ -60,7 +60,7 @@ protected:
         }
     }
 
-    void AppendToBitStream(int32_t bits, int32_t bitCount)
+    void AppendToBitStream(const int32_t bits, const int32_t bitCount)
     {
         ASSERT(bitCount < 32 && bitCount >= 0);
         ASSERT((!decoder_) || (bitCount == 0 && bits == 0) || (decoder_->ReadLongValue(bitCount) == bits));
@@ -164,7 +164,7 @@ protected:
         return bytesWritten_ - (freeBitCount_ - 32) / 8;
     }
 
-    FORCE_INLINE void AppendOnesToBitStream(int32_t length)
+    FORCE_INLINE void AppendOnesToBitStream(const int32_t length)
     {
         AppendToBitStream((1 << length) - 1, length);
     }

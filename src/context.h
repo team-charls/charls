@@ -20,12 +20,12 @@ struct JlsContext final
 
     JlsContext() = default;
 
-    explicit JlsContext(int32_t a) noexcept :
+    explicit JlsContext(const int32_t a) noexcept :
         A{a}
     {
     }
 
-    FORCE_INLINE int32_t GetErrorCorrection(int32_t k) const noexcept
+    FORCE_INLINE int32_t GetErrorCorrection(const int32_t k) const noexcept
     {
         if (k != 0)
             return 0;
@@ -33,7 +33,7 @@ struct JlsContext final
         return BitWiseSign(2 * B + N - 1);
     }
 
-    FORCE_INLINE void UpdateVariables(int32_t errorValue, int32_t NEAR, int32_t NRESET) noexcept
+    FORCE_INLINE void UpdateVariables(const int32_t errorValue, const int32_t NEAR, const int32_t NRESET) noexcept
     {
         ASSERT(N != 0);
 

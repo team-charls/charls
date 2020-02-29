@@ -84,7 +84,7 @@ public:
         endPosition_ += readBytes;
     }
 
-    FORCE_INLINE void Skip(int32_t length) noexcept
+    FORCE_INLINE void Skip(const int32_t length) noexcept
     {
         validBits_ -= length;
         readCache_ = readCache_ << length;
@@ -94,7 +94,7 @@ public:
     {
     }
 
-    void OnLineEnd(int32_t pixelCount, const void* ptypeBuffer, int32_t pixelStride) const
+    void OnLineEnd(const int32_t pixelCount, const void* ptypeBuffer, const int32_t pixelStride) const
     {
         processLine_->NewLineDecoded(ptypeBuffer, pixelCount, pixelStride);
     }
@@ -207,7 +207,7 @@ public:
         }
     }
 
-    FORCE_INLINE int32_t ReadValue(int32_t length)
+    FORCE_INLINE int32_t ReadValue(const int32_t length)
     {
         if (validBits_ < length)
         {
@@ -280,7 +280,7 @@ public:
         }
     }
 
-    int32_t ReadLongValue(int32_t length)
+    int32_t ReadLongValue(const int32_t length)
     {
         if (length <= 24)
             return ReadValue(length);

@@ -234,7 +234,7 @@ catch (...)
 
 charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_get_near_lossless(IN_ const charls_jpegls_decoder* decoder,
-                                        int32_t component,
+                                        const int32_t component,
                                         OUT_ int32_t* near_lossless) noexcept
 try
 {
@@ -375,7 +375,7 @@ JpegLsDecodeRect(OUT_WRITES_BYTES_(destinationLength) void* destination,
                  const size_t destinationLength,
                  IN_READS_BYTES_(sourceLength) const void* source,
                  const size_t sourceLength,
-                 JlsRect roi,
+                 const JlsRect roi,
                  IN_OPT_ const JlsParameters* params,
                  OUT_OPT_ char* errorMessage)
 try

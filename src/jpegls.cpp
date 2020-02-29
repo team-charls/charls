@@ -27,7 +27,7 @@ using namespace charls;
 
 namespace {
 
-signed char QuantizeGradientOrg(const jpegls_pc_parameters& preset, int32_t near_lossless, int32_t Di) noexcept
+signed char QuantizeGradientOrg(const jpegls_pc_parameters& preset, const int32_t near_lossless, const int32_t Di) noexcept
 {
     if (Di <= -preset.threshold3) return -4;
     if (Di <= -preset.threshold2) return -3;
@@ -41,7 +41,7 @@ signed char QuantizeGradientOrg(const jpegls_pc_parameters& preset, int32_t near
     return 4;
 }
 
-vector<signed char> CreateQLutLossless(int32_t bitCount)
+vector<signed char> CreateQLutLossless(const int32_t bitCount)
 {
     const jpegls_pc_parameters preset{compute_default((1U << static_cast<uint32_t>(bitCount)) - 1, 0)};
     const int32_t range = preset.maximum_sample_value + 1;
