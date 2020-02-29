@@ -200,6 +200,11 @@ void JpegStreamReader::ValidateMarkerCode(const JpegMarkerCode markerCode) const
         return;
 
     case JpegMarkerCode::StartOfFrameJpegLS:
+        if (state_ == state::scan_section)
+            throw_jpegls_error(jpegls_errc::duplicate_start_of_frame_marker);
+
+        return;
+
     case JpegMarkerCode::JpegLSPresetParameters:
     case JpegMarkerCode::Comment:
     case JpegMarkerCode::ApplicationData0:

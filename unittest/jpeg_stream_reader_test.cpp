@@ -414,6 +414,20 @@ public:
             [&](){reader.ReadHeader();});
     }
 
+    TEST_METHOD(read_header_extra_sof_should_throw)
+    {
+        JpegTestStreamWriter writer;
+        writer.WriteStartOfImage();
+        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
+        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
+        const ByteStreamInfo source = FromByteArray(writer.buffer.data(), writer.buffer.size());
+
+        JpegStreamReader reader(source);
+
+        assert_expect_exception(jpegls_errc::duplicate_start_of_frame_marker,
+            [&](){reader.ReadHeader();});
+    }
+
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw)
     {
         JpegTestStreamWriter writer;
