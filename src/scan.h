@@ -17,7 +17,7 @@
 
 namespace charls {
 
-extern CTable decodingTables[16];
+extern std::array<CTable, 16> decodingTables;
 extern std::vector<signed char> rgquant8Ll;
 extern std::vector<signed char> rgquant10Ll;
 extern std::vector<signed char> rgquant12Ll;

@@ -1,0 +1,43 @@
+# Copyright (c) Team CharLS.
+# SPDX-License-Identifier: BSD-3-Clause
+
+# -fuchsia-* => Rules only apply to Fuchsia projects.
+# -google-* => Rules only apply to Google projects.
+# -clang-diagnostic-c++98-compat => CharLS targets C++14
+# -modernize-use-trailing-return-type => Style recommendation, not selected for CharLS
+# -readability-magic-numbers => To critical rule, used numbers are logical
+# -cppcoreguidelines-avoid-magic-numbers => Alias
+# -cppcoreguidelines-pro-bounds-pointer-arithmetic => usage is required in codec implementation
+# -cppcoreguidelines-pro-type-reinterpret-cast => To strict for conditions that require its usage
+# -cert-err58-cpp => Only exception that could be thrown are out of memory
+# -clang-diagnostic-switch-enum => options are handled by default case
+# -clang-diagnostic-exit-time-destructors => Acceptable construction
+# -clang-diagnostic-pragma-once-outside-header => Generates false warnings for usage in header files
+
+---
+Checks:          '*,
+                  -fuchsia-*,
+                  -google-*,
+                  -clang-diagnostic-c++98-compat,
+                  -modernize-use-trailing-return-type,
+                  -readability-magic-numbers,
+                  -cppcoreguidelines-avoid-magic-numbers,
+                  -cppcoreguidelines-pro-type-reinterpret-cast,
+                  -cert-err58-cpp,
+                  -clang-diagnostic-switch-enum,
+                  -clang-diagnostic-exit-time-destructors,
+                  -clang-diagnostic-pragma-once-outside-header'
+WarningsAsErrors: false
+HeaderFilterRegex: ''
+FormatStyle:     none
+CheckOptions:
+  - key:             readability-braces-around-statements.ShortStatementLines
+    value:           '2'
+  - key:             google-readability-braces-around-statements.ShortStatementLines
+    value:           '2'
+  - key:             hicpp-braces-around-statements.ShortStatementLines
+    value:           '2'
+  - key:             readability-implicit-bool-conversion.AllowPointerConditions
+    value:           '1'
+  - key:             hicpp-signed-bitwise.IgnorePositiveIntegerLiterals
+    value:           'true'

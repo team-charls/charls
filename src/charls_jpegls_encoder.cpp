@@ -215,7 +215,7 @@ private:
         initial,
         destination_set,
         spiff_header,
-        completed,
+        completed
     };
 
     bool is_frame_info_configured() const noexcept
@@ -252,8 +252,8 @@ extern "C" {
 charls_jpegls_encoder* CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_create() noexcept
 {
-    MSVC_WARNING_SUPPRESS(26402 26409) // don't use new and delete + scoped object and move
-    return new (std::nothrow) charls_jpegls_encoder;
+    MSVC_WARNING_SUPPRESS(26402 26409)               // don't use new and delete + scoped object and move
+    return new (std::nothrow) charls_jpegls_encoder; // NOLINT(cppcoreguidelines-owning-memory)
     MSVC_WARNING_UNSUPPRESS()
 }
 
@@ -261,7 +261,7 @@ void CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_destroy(IN_OPT_ const charls_jpegls_encoder* encoder) noexcept
 {
     MSVC_WARNING_SUPPRESS(26401 26409) // don't use new and delete + non-owner.
-    delete encoder;
+    delete encoder;                    // NOLINT(cppcoreguidelines-owning-memory)
     MSVC_WARNING_UNSUPPRESS()
 }
 
@@ -443,7 +443,7 @@ JpegLsEncode(OUT_WRITES_BYTES_(destinationLength) void* destination,
              OUT_OPT_ char* errorMessage)
 try
 {
-    if (check_pointer(params)->jfif.version)
+    if (check_pointer(params)->jfif.version != 0)
         return jpegls_errc::invalid_argument;
 
     charls_jpegls_encoder encoder;

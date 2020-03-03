@@ -116,7 +116,7 @@ jpegls_errc JpegLsEncodeStream(const ByteStreamInfo destination, size_t& bytesWr
         }
         else if (info.bitsPerSample > 12)
         {
-            const auto default_preset_coding_parameters{compute_default((1 << info.bitsPerSample) - 1, info.allowedLossyError)};
+            const auto default_preset_coding_parameters{compute_default((1U << static_cast<uint32_t>(info.bitsPerSample)) - 1, info.allowedLossyError)};
             writer.WriteJpegLSPresetParametersSegment(default_preset_coding_parameters);
         }
 

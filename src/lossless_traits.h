@@ -4,6 +4,8 @@
 #pragma once
 
 #include "constants.h"
+#include "util.h"
+
 #include <cstdint>
 
 namespace charls {
@@ -21,8 +23,8 @@ struct LosslessTraitsImpl
         NEAR = 0,
         bpp = bitsPerPixel,
         qbpp = bitsPerPixel,
-        RANGE = (1 << bpp),
-        MAXVAL = (1 << bpp) - 1,
+        RANGE = (1U << bpp),
+        MAXVAL = (1U << bpp) - 1,
         LIMIT = 2 * (bitsPerPixel + std::max(8, bitsPerPixel)),
         RESET = DefaultResetValue
     };

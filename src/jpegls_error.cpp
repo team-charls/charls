@@ -3,8 +3,8 @@
 
 #include <charls/jpegls_error.h>
 
-using std::string;
 using std::error_category;
+using std::string;
 
 namespace charls {
 
@@ -22,7 +22,7 @@ public:
     }
 };
 
-}
+} // namespace charls
 
 using namespace charls;
 

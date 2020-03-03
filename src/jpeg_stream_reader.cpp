@@ -431,7 +431,7 @@ void JpegStreamReader::ReadStartOfScan()
     if (!(parameters_.interleave_mode == interleave_mode::none || parameters_.interleave_mode == interleave_mode::line || parameters_.interleave_mode == interleave_mode::sample))
         throw_jpegls_error(jpegls_errc::invalid_parameter_interleave_mode);
 
-    if ((ReadByte() & 0xF) != 0) // Read Ah (no meaning) and Al (point transform).
+    if ((ReadByte() & 0xFU) != 0) // Read Ah (no meaning) and Al (point transform).
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
     state_ = state::bit_stream_section;
@@ -467,7 +467,7 @@ int JpegStreamReader::ReadUInt16()
 uint32_t JpegStreamReader::ReadUInt32()
 {
     uint32_t value = ReadUInt16();
-    value = value << 16;
+    value = value << 16U;
     value += ReadUInt16();
 
     return value;

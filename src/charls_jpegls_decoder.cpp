@@ -151,7 +151,7 @@ private:
         spiff_header_read,
         spiff_header_not_found,
         header_read,
-        completed,
+        completed
     };
 
     state state_{};
@@ -166,8 +166,8 @@ extern "C" {
 charls_jpegls_decoder* CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_create() noexcept
 {
-    MSVC_WARNING_SUPPRESS(26402 26409) // don't use new and delete + scoped object and move
-    return new (std::nothrow) charls_jpegls_decoder;
+    MSVC_WARNING_SUPPRESS(26402 26409)               // don't use new and delete + scoped object and move
+    return new (std::nothrow) charls_jpegls_decoder; // NOLINT(cppcoreguidelines-owning-memory)
     MSVC_WARNING_UNSUPPRESS()
 }
 
@@ -175,7 +175,7 @@ void CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_destroy(IN_OPT_ const charls_jpegls_decoder* decoder) noexcept
 {
     MSVC_WARNING_SUPPRESS(26401 26409) // don't use new and delete + non-owner.
-    delete decoder;
+    delete decoder;                    // NOLINT(cppcoreguidelines-owning-memory)
     MSVC_WARNING_UNSUPPRESS()
 }
 
@@ -199,7 +199,7 @@ charls_jpegls_decoder_read_spiff_header(IN_ charls_jpegls_decoder* const decoder
                                         OUT_ int32_t* header_found) noexcept
 try
 {
-    *check_pointer(header_found) = check_pointer(decoder)->read_header(check_pointer(spiff_header));
+    *check_pointer(header_found) = static_cast<int32_t>(check_pointer(decoder)->read_header(check_pointer(spiff_header)));
     return jpegls_errc::success;
 }
 catch (...)

@@ -11,15 +11,17 @@
 #include "lossless_traits.h"
 #include "util.h"
 
+#include <array>
 #include <vector>
 
 // As defined in the JPEG-LS standard
 
 // used to determine how large runs should be encoded at a time.
-const int J[32] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+const std::array<int, 32> J = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 #include "scan.h"
 
+using std::array;
 using std::make_unique;
 using std::unique_ptr;
 using std::vector;
@@ -70,16 +72,16 @@ namespace charls {
 // To avoid threading issues, all tables are created when the program is loaded.
 
 // Lookup table: decode symbols that are smaller or equal to 8 bit (16 tables for each value of k)
-CTable decodingTables[16] = {InitTable(0), InitTable(1), InitTable(2), InitTable(3),
-                             InitTable(4), InitTable(5), InitTable(6), InitTable(7),
-                             InitTable(8), InitTable(9), InitTable(10), InitTable(11),
-                             InitTable(12), InitTable(13), InitTable(14), InitTable(15)};
+array<CTable, 16> decodingTables = {InitTable(0), InitTable(1), InitTable(2), InitTable(3), // NOLINT(clang-diagnostic-global-constructors)
+                                    InitTable(4), InitTable(5), InitTable(6), InitTable(7),
+                                    InitTable(8), InitTable(9), InitTable(10), InitTable(11),
+                                    InitTable(12), InitTable(13), InitTable(14), InitTable(15)};
 
 // Lookup tables: sample differences to bin indexes.
-vector<signed char> rgquant8Ll = CreateQLutLossless(8);
-vector<signed char> rgquant10Ll = CreateQLutLossless(10);
-vector<signed char> rgquant12Ll = CreateQLutLossless(12);
-vector<signed char> rgquant16Ll = CreateQLutLossless(16);
+vector<signed char> rgquant8Ll = CreateQLutLossless(8);   // NOLINT(clang-diagnostic-global-constructors)
+vector<signed char> rgquant10Ll = CreateQLutLossless(10); // NOLINT(clang-diagnostic-global-constructors)
+vector<signed char> rgquant12Ll = CreateQLutLossless(12); // NOLINT(clang-diagnostic-global-constructors)
+vector<signed char> rgquant16Ll = CreateQLutLossless(16); // NOLINT(clang-diagnostic-global-constructors)
 
 
 template<typename Strategy>
