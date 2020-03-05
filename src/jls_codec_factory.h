@@ -7,9 +7,11 @@
 
 #include <memory>
 
-struct JlsParameters;
 
 namespace charls {
+
+class DecoderStrategy;
+class EncoderStrategy;
 
 template<typename Strategy>
 class JlsCodecFactory final
@@ -20,5 +22,8 @@ public:
 private:
     std::unique_ptr<Strategy> CreateOptimizedCodec(const frame_info& frame, const coding_parameters& parameters);
 };
+
+extern template class JlsCodecFactory<DecoderStrategy>;
+extern template class JlsCodecFactory<EncoderStrategy>;
 
 } // namespace charls
