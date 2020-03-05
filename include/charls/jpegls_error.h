@@ -7,8 +7,6 @@
 
 #ifdef __cplusplus
 
-#include <system_error>
-
 extern "C" {
 #endif
 

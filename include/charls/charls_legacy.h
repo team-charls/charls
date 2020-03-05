@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "public_types.h"
+#include "jpegls_error.h"
 
 #include <iostream>
 

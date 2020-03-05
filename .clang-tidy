@@ -1,28 +1,37 @@
 # Copyright (c) Team CharLS.
 # SPDX-License-Identifier: BSD-3-Clause
 
-# -fuchsia-* => Rules only apply to Fuchsia projects.
-# -google-* => Rules only apply to Google projects.
-# -clang-diagnostic-c++98-compat => CharLS targets C++14
-# -modernize-use-trailing-return-type => Style recommendation, not selected for CharLS
-# -readability-magic-numbers => To critical rule, used numbers are logical
-# -cppcoreguidelines-avoid-magic-numbers => Alias
-# -cppcoreguidelines-pro-bounds-pointer-arithmetic => usage is required in codec implementation
-# -cppcoreguidelines-pro-type-reinterpret-cast => To strict for conditions that require its usage
-# -cert-err58-cpp => Only exception that could be thrown are out of memory
-# -clang-diagnostic-switch-enum => options are handled by default case
-# -clang-diagnostic-exit-time-destructors => Acceptable construction
-# -clang-diagnostic-pragma-once-outside-header => Generates false warnings for usage in header files
+# The approach for using clang tidy is to enable all warnings unless it adds no practical value to the CharLS projects
+# Having all warnings enables helps to find problems when new code is added to the project. Some warnings are however
+# to noisy and adding NO_LINT suppressions make the code less readable.
+#
+# -fuchsia-* => Rationale: Rules only apply to Fuchsia projects.
+# -google-* => Rationale: Rules only apply to Google projects.
+# -clang-diagnostic-c++98-compat => Rationale: CharLS targets C++14
+# -clang-diagnostic-unused-macros => Rationale: Macros defined in header are reported as problem
+# -modernize-use-trailing-return-type => Rationale: A style recommendation, this style is selected for CharLS
+# -readability-magic-numbers => Rationale: To critical rule, used numbers are logical
+# -cppcoreguidelines-avoid-magic-numbers => Rationale: Alias
+# -cppcoreguidelines-pro-bounds-pointer-arithmetic => Rationale: usage is required in codec implementation
+# -cppcoreguidelines-pro-type-reinterpret-cast => Rationale: To strict for conditions that require its usage
+# -cppcoreguidelines-macro-usage => Rationale: Many false warnings
+# -cert-err58-cpp => Rationale: Only exception that could be thrown is out of memory
+# -clang-diagnostic-switch-enum => Rationale: options are handled by default case
+# -clang-diagnostic-exit-time-destructors => Rationale: Acceptable construction
+# -clang-diagnostic-pragma-once-outside-header => Rationale: Generates false warnings for usage in header files
 
 ---
 Checks:          '*,
                   -fuchsia-*,
                   -google-*,
                   -clang-diagnostic-c++98-compat,
+                  -clang-diagnostic-unused-macros,
                   -modernize-use-trailing-return-type,
                   -readability-magic-numbers,
                   -cppcoreguidelines-avoid-magic-numbers,
+                  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
                   -cppcoreguidelines-pro-type-reinterpret-cast,
+                  -cppcoreguidelines-macro-usage,
                   -cert-err58-cpp,
                   -clang-diagnostic-switch-enum,
                   -clang-diagnostic-exit-time-destructors,

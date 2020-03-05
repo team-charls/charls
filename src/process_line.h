@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include <charls/jpegls_error.h>
 #include <charls/charls_legacy.h>
+#include <charls/jpegls_error.h>
 
-#include "util.h"
 #include "coding_parameters.h"
+#include "util.h"
 
 #include <algorithm>
 #include <cstring>

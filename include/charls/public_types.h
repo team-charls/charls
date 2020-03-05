@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "api_abi.h"
 #include "annotations.h"
+#include "api_abi.h"
 
 #ifdef __cplusplus
 
@@ -22,7 +22,9 @@ namespace impl {
 // The following enum values are for C applications, for C++ the enums are defined after these definitions.
 // For the documentation, see the C++ enums definitions.
 
-RETURN_TYPE_SUCCESS_(return == 0) enum charls_jpegls_errc {
+RETURN_TYPE_SUCCESS_(return == 0)
+enum charls_jpegls_errc
+{
     CHARLS_JPEGLS_ERRC_SUCCESS = 0,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT = 1,
     CHARLS_JPEGLS_ERRC_PARAMETER_VALUE_NOT_SUPPORTED = 2,
@@ -63,7 +65,7 @@ RETURN_TYPE_SUCCESS_(return == 0) enum charls_jpegls_errc {
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE = 203,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE = 204,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 205,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PC_PARAMETERS = 206,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PC_PARAMETERS = 206
 };
 
 enum charls_interleave_mode
@@ -145,15 +147,17 @@ enum charls_spiff_entry_tag
 };
 
 #ifdef __cplusplus
-}
-}
+} // namespace impl
+} // namespace charls
 
 namespace charls {
 
 /// <summary>
 /// Defines the result values that are returned by the CharLS API functions.
 /// </summary>
-RETURN_TYPE_SUCCESS_(return == 0) enum class jpegls_errc {
+RETURN_TYPE_SUCCESS_(return == 0)
+enum class jpegls_errc
+{
     /// <summary>
     /// The operation completed without errors.
     /// </summary>
