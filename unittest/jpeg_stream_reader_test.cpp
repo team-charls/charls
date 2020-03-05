@@ -90,6 +90,7 @@ public:
 
         Assert::Fail();
     }
+
     TEST_METHOD(ReadHeaderWithApplicationData)
     {
         ReadHeaderWithApplicationData(0);
@@ -258,7 +259,7 @@ public:
             [&](){reader.ReadHeader();});
     }
 
-    static void ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(uint8_t id)
+    static void ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(const uint8_t id)
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -605,7 +606,7 @@ public:
         }
     }
 
-    static void ReadSpiffHeader(uint8_t low_version)
+    static void ReadSpiffHeader(const uint8_t low_version)
     {
         vector<uint8_t> buffer = create_test_spiff_header(2, low_version);
         const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());

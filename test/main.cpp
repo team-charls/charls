@@ -110,7 +110,7 @@ void TestTraits8bit()
 }
 
 
-vector<uint8_t> MakeSomeNoise(size_t length, size_t bitCount, int seed)
+vector<uint8_t> MakeSomeNoise(const size_t length, const size_t bitCount, const int seed)
 {
     srand(seed);
     vector<uint8_t> buffer(length);
@@ -124,7 +124,7 @@ vector<uint8_t> MakeSomeNoise(size_t length, size_t bitCount, int seed)
 }
 
 
-vector<uint8_t> MakeSomeNoise16bit(size_t length, int bitCount, int seed)
+vector<uint8_t> MakeSomeNoise16bit(const size_t length, const int bitCount, const int seed)
 {
     srand(seed);
     vector<uint8_t> buffer(length * 2);
@@ -317,7 +317,7 @@ void TestDecodeRect()
 }
 
 
-void TestEncodeFromStream(const char* file, int offset, int width, int height, int bpp, int componentCount, interleave_mode ilv, size_t expectedLength)
+void TestEncodeFromStream(const char* file, const int offset, const int width, const int height, const int bpp, const int componentCount, const interleave_mode ilv, const size_t expectedLength)
 {
     basic_filebuf<char> myFile; // On the stack
     myFile.open(file, mode_input);

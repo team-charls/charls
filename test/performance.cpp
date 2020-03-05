@@ -20,7 +20,7 @@ using std::milli;
 namespace
 {
 
-void TestFile16BitAs12(const char* filename, int offset, Size size2, int componentCount, bool littleEndianFile)
+void TestFile16BitAs12(const char* filename, const int offset, const Size size2, const int componentCount, const bool littleEndianFile)
 {
     vector<uint8_t> uncompressedData = ReadFile(filename, offset);
 
@@ -37,7 +37,7 @@ void TestFile16BitAs12(const char* filename, int offset, Size size2, int compone
 }
 
 
-void TestPerformance(int loopCount)
+void TestPerformance(const int loopCount)
 {
     ////TestFile("test/bad.raw", 0, Size(512, 512),  8, 1);
 
@@ -69,7 +69,7 @@ void TestPerformance(int loopCount)
 } // namespace
 
 
-void PerformanceTests(int loopCount)
+void PerformanceTests(const int loopCount)
 {
 #ifdef _DEBUG
     cout << "NOTE: running performance test in debug mode, performance may be slow!\n";
@@ -78,7 +78,7 @@ void PerformanceTests(int loopCount)
     TestPerformance(loopCount);
 }
 
-void TestLargeImagePerformanceRgb8(int loopCount)
+void TestLargeImagePerformanceRgb8(const int loopCount)
 {
     // Note: the test images are very large and not included in the repository.
     //       The images can be downloaded from: http://imagecompression.info/test_images/
@@ -111,7 +111,7 @@ void TestLargeImagePerformanceRgb8(int loopCount)
     }
 }
 
-void DecodePerformanceTests(int loopCount)
+void DecodePerformanceTests(const int loopCount)
 {
     cout << "Test decode Perf (with loop count " << loopCount << ")\n";
 

@@ -22,7 +22,7 @@ using namespace charls_test;
 
 namespace {
 
-void push_back(std::vector<uint8_t>& values, uint16_t value)
+void push_back(std::vector<uint8_t>& values, const uint16_t value)
 {
     values.push_back(static_cast<uint8_t>(value >> 8));
     values.push_back(static_cast<uint8_t>(value));
@@ -396,7 +396,7 @@ public:
     }
 
 private:
-    static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator& begin, vector<uint8_t>::iterator end)
+    static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator& begin, const vector<uint8_t>::iterator end)
     {
         constexpr uint8_t start_of_scan = 0xDA;
 
@@ -426,7 +426,7 @@ private:
         return segment;
     }
 
-    static void insert_pc_parameters_segments(vector<uint8_t>& jpegls_source, int component_count)
+    static void insert_pc_parameters_segments(vector<uint8_t>& jpegls_source, const int component_count)
     {
         const auto pcp_segment = create_default_pc_parameters_segment();
 

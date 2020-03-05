@@ -15,7 +15,7 @@ namespace {
 class DecoderStrategyTester final : public charls::DecoderStrategy
 {
 public:
-    DecoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters, uint8_t* destination, size_t nOutBufLen) :
+    DecoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters, uint8_t* destination, const size_t nOutBufLen) :
         DecoderStrategy(frame_info, parameters)
     {
         ByteStreamInfo stream{nullptr, destination, nOutBufLen};
@@ -35,7 +35,7 @@ public:
     {
     }
 
-    int32_t Read(int32_t length)
+    int32_t Read(const int32_t length)
     {
         return ReadLongValue(length);
     }

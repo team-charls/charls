@@ -1,6 +1,7 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
+// ReSharper disable CppClangTidyClangDiagnosticNonnull
 #include "pch.h"
 
 #include "util.h"
@@ -152,7 +153,7 @@ private:
     static charls_jpegls_decoder* get_initialized_decoder()
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
-        auto decoder = charls_jpegls_decoder_create();
+        const auto decoder = charls_jpegls_decoder_create();
         auto error = charls_jpegls_decoder_set_source_buffer(decoder, source.data(), source.size());
         Assert::AreEqual(jpegls_errc::success, error);
         error = charls_jpegls_decoder_read_header(decoder);

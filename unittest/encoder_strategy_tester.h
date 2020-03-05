@@ -35,7 +35,7 @@ public:
         Init(info);
     }
 
-    void AppendToBitStreamForward(int32_t value, int32_t length)
+    void AppendToBitStreamForward(const int32_t value, const int32_t length)
     {
         AppendToBitStream(value, length);
     }

@@ -18,7 +18,7 @@ using namespace charls_test;
 
 namespace {
 
-void triplet_to_planar(vector<uint8_t>& buffer, uint32_t width, uint32_t height)
+void triplet_to_planar(vector<uint8_t>& buffer, const uint32_t width, const uint32_t height)
 {
     vector<uint8_t> workBuffer(buffer.size());
 

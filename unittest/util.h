@@ -50,7 +50,7 @@ namespace charls {
 namespace test {
 
 template<typename Functor>
-void assert_expect_exception(jpegls_errc error_value, Functor functor)
+void assert_expect_exception(const jpegls_errc error_value, Functor functor)
 {
     try
     {

@@ -41,7 +41,7 @@ MSVC_WARNING_UNSUPPRESS()
 } // namespace
 
 
-void FixEndian(vector<uint8_t>* buffer, bool littleEndianData) noexcept
+void FixEndian(vector<uint8_t>* buffer, const bool littleEndianData) noexcept
 {
     if (littleEndianData == IsMachineLittleEndian())
         return;
@@ -80,7 +80,7 @@ vector<uint8_t> ReadFile(const char* filename, long offset, size_t bytes)
 }
 
 
-void TestRoundTrip(const char* strName, const vector<uint8_t>& decodedBuffer, Size size, int bitsPerSample, int componentCount, int loopCount)
+void TestRoundTrip(const char* strName, const vector<uint8_t>& decodedBuffer, const Size size, const int bitsPerSample, const int componentCount, const int loopCount)
 {
     JlsParameters params = JlsParameters();
     params.components = componentCount;
@@ -92,7 +92,7 @@ void TestRoundTrip(const char* strName, const vector<uint8_t>& decodedBuffer, Si
 }
 
 
-void TestRoundTrip(const char* strName, const vector<uint8_t>& originalBuffer, JlsParameters& params, int loopCount)
+void TestRoundTrip(const char* strName, const vector<uint8_t>& originalBuffer, JlsParameters& params, const int loopCount)
 {
     vector<uint8_t> encodedBuffer(params.height * params.width * params.components * params.bitsPerSample / 4);
 
@@ -148,7 +148,7 @@ void TestRoundTrip(const char* strName, const vector<uint8_t>& originalBuffer, J
 }
 
 
-void TestFile(const char* filename, int offset, Size size2, int bitsPerSample, int componentCount, bool littleEndianFile, int loopCount)
+void TestFile(const char* filename, const int offset, const Size size2, const int bitsPerSample, const int componentCount, const bool littleEndianFile, const int loopCount)
 {
     const size_t byteCount = size2.cx * size2.cy * componentCount * ((bitsPerSample + 7) / 8);
     vector<uint8_t> uncompressedBuffer = ReadFile(filename, offset, byteCount);
@@ -162,7 +162,7 @@ void TestFile(const char* filename, int offset, Size size2, int bitsPerSample, i
 }
 
 
-void test_portable_anymap_file(const char* filename, int loopCount)
+void test_portable_anymap_file(const char* filename, const int loopCount)
 {
     portable_anymap_file anymapFile(filename);
 

@@ -15,16 +15,16 @@ class JpegTestStreamWriter final
 public:
     void WriteStartOfImage()
     {
-        WriteMarker(charls::JpegMarkerCode::StartOfImage);
+        WriteMarker(JpegMarkerCode::StartOfImage);
     }
 
-    void WriteStartOfFrameSegment(int width, int height, int bitsPerSample, int componentCount)
+    void WriteStartOfFrameSegment(const int width, const int height, const int bitsPerSample, const int componentCount)
     {
         // Create a Frame Header as defined in T.87, C.2.2 and T.81, B.2.2
         std::vector<uint8_t> segment;
         segment.push_back(static_cast<uint8_t>(bitsPerSample));    // P = Sample precision
-        charls::push_back(segment, static_cast<uint16_t>(height)); // Y = Number of lines
-        charls::push_back(segment, static_cast<uint16_t>(width));  // X = Number of samples per line
+        push_back(segment, static_cast<uint16_t>(height)); // Y = Number of lines
+        push_back(segment, static_cast<uint16_t>(width));  // X = Number of samples per line
 
         // Components
         segment.push_back(static_cast<uint8_t>(componentCount)); // Nf = Number of image components in frame
@@ -81,30 +81,29 @@ public:
         segment.push_back(static_cast<uint8_t>(interleave_mode)); // ILV parameter
         segment.push_back(0);                                     // transformation
 
-        WriteSegment(charls::JpegMarkerCode::StartOfScan, segment.data(), segment.size());
+        WriteSegment(JpegMarkerCode::StartOfScan, segment.data(), segment.size());
     }
 
-
-    void WriteSegment(charls::JpegMarkerCode markerCode, const void* data, size_t dataSize)
+    void WriteSegment(const JpegMarkerCode markerCode, const void* data, const size_t dataSize)
     {
         WriteMarker(markerCode);
         WriteUInt16(static_cast<uint16_t>(dataSize + 2));
         WriteBytes(data, dataSize);
     }
 
-    void WriteMarker(charls::JpegMarkerCode markerCode)
+    void WriteMarker(JpegMarkerCode markerCode)
     {
         WriteByte(charls::JpegMarkerStartByte);
         WriteByte(static_cast<uint8_t>(markerCode));
     }
 
-    void WriteUInt16(uint16_t value)
+    void WriteUInt16(const uint16_t value)
     {
         WriteByte(static_cast<uint8_t>(value / 0x100));
         WriteByte(static_cast<uint8_t>(value % 0x100));
     }
 
-    void WriteByte(uint8_t value)
+    void WriteByte(const uint8_t value)
     {
         buffer.push_back(value);
     }

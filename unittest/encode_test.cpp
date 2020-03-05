@@ -124,7 +124,7 @@ private:
         }
     }
 
-    constexpr static size_t estimated_destination_size(int width, int height, int component_count, int bits_per_sample) noexcept
+    constexpr static size_t estimated_destination_size(const int width, const int height, const int component_count, const int bits_per_sample) noexcept
     {
         return static_cast<size_t>(width) * height *
                    component_count * (bits_per_sample < 9 ? 1 : 2) + 1024;

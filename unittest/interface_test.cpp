@@ -5,8 +5,10 @@
 
 #include "util.h"
 
-#include <charls/charls.h>
+// Must include charls_legacy.h first as charls.h will undefine macro's
 #include <charls/charls_legacy.h>
+
+#include <charls/charls.h>
 
 #include <array>
 #include <vector>

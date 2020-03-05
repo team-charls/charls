@@ -76,7 +76,7 @@ std::vector<uint8_t> decode_simple_8bit_monochrome_legacy(const std::vector<uint
     return destination;
 }
 
-std::vector<uint8_t> encode_simple_8bit_monochrome(const std::vector<uint8_t>& source, uint32_t width, uint32_t height)
+std::vector<uint8_t> encode_simple_8bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
 {
     constexpr auto bits_per_sample = 8;
     constexpr auto component_count = 1;
@@ -84,7 +84,7 @@ std::vector<uint8_t> encode_simple_8bit_monochrome(const std::vector<uint8_t>& s
                                           {width, height, bits_per_sample, component_count});
 }
 
-std::vector<uint8_t> encode_advanced_8bit_monochrome(const std::vector<uint8_t>& source, uint32_t width, uint32_t height)
+std::vector<uint8_t> encode_advanced_8bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
 {
     charls::jpegls_encoder encoder;
     encoder.frame_info({width, height, 8, 1});
@@ -100,7 +100,7 @@ std::vector<uint8_t> encode_advanced_8bit_monochrome(const std::vector<uint8_t>&
     return destination;
 }
 
-std::vector<uint8_t> encode_simple_8bit_monochrome_legacy(const std::vector<uint8_t>& source, uint32_t width, uint32_t height)
+std::vector<uint8_t> encode_simple_8bit_monochrome_legacy(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
 {
     char error_message[ErrorMessageSize];
     JlsParameters parameters{};
