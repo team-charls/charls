@@ -72,18 +72,12 @@ target_sources(charls
 
 if(WIN32 AND BUILD_SHARED_LIBS)
   # Only add the Win32 resource script file when building a DLL
-  target_sources(charls
-    PRIVATE
-      "${CMAKE_CURRENT_LIST_DIR}/charls.rc"
-  )
+  target_sources(charls PRIVATE "${CMAKE_CURRENT_LIST_DIR}/charls.rc")
 
-  # Only add the definition file when building a x86 DLL
+  # Only add the definition file when building a x86 DLL with MSVC
   # The definition file is needed to ensure the legacy functions are exported with the correct name
-  if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-    target_sources(charls
-      PRIVATE
-      "${CMAKE_CURRENT_LIST_DIR}/charls.def"
-    )
+  if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+    target_sources(charls PRIVATE "${CMAKE_CURRENT_LIST_DIR}/charls.def")
   endif()
 endif()
 

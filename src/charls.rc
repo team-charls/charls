@@ -9,13 +9,13 @@
 
 // Turn A into a string literal without expanding macro definitions
 // (however, if invoked from a macro, macro arguments are expanded).
-#define TO_STRING_NX(A) L#A
+#define TO_STRING_NX(A) #A
 
 // Turn A into a string literal after macro-expanding it.
 #define TO_STRING(A) TO_STRING_NX(A)
 
 #define VERSION_STR TO_STRING(CHARLS_VERSION_MAJOR) \
-L"." TO_STRING(CHARLS_VERSION_MINOR) L"." TO_STRING(CHARLS_VERSION_PATCH) L".0"
+"." TO_STRING(CHARLS_VERSION_MINOR) "." TO_STRING(CHARLS_VERSION_PATCH) ".0"
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
