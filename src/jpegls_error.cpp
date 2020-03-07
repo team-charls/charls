@@ -3,6 +3,8 @@
 
 #include <charls/jpegls_error.h>
 
+#include <string>
+
 using std::error_category;
 using std::string;
 
