@@ -367,7 +367,7 @@ enum class jpegls_errc
     // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17 extension.
     OK = success,
     InvalidJlsParameters = invalid_argument,
-    ParameterValueNotSupported = invalid_encoded_data,
+    ParameterValueNotSupported = parameter_value_not_supported,
     UncompressedBufferTooSmall = destination_buffer_too_small,
     CompressedBufferTooSmall = source_buffer_too_small,
     InvalidCompressedData = invalid_encoded_data,
