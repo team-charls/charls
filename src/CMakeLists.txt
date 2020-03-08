@@ -8,6 +8,8 @@ target_include_directories(charls PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+set(BUILD_SHARED_LIBS "YES")
+
 if(NOT BUILD_SHARED_LIBS)
   target_compile_definitions(charls PUBLIC CHARLS_STATIC)
 endif()
