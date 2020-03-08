@@ -9,9 +9,9 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using Microsoft::VisualStudio::CppUnitTestFramework::TestClass;
-using namespace charls;
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 // clang-format off
 
@@ -39,4 +39,5 @@ public:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+}

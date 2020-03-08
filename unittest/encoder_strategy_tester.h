@@ -5,13 +5,14 @@
 
 #include "../src/encoder_strategy.h"
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 class EncoderStrategyTester final : charls::EncoderStrategy
 {
 public:
-    explicit EncoderStrategyTester(const JlsParameters& params) :
-        EncoderStrategy(params)
+    explicit EncoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters) :
+        EncoderStrategy(frame_info, parameters)
     {
     }
 
@@ -24,7 +25,7 @@ public:
         return 0;
     }
 
-    std::unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo) noexcept(false) override
+    std::unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo, uint32_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
@@ -34,7 +35,7 @@ public:
         Init(info);
     }
 
-    void AppendToBitStreamForward(int32_t value, int32_t length)
+    void AppendToBitStreamForward(const int32_t value, const int32_t length)
     {
         AppendToBitStream(value, length);
     }
@@ -55,4 +56,5 @@ public:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+} // namespace charls::test

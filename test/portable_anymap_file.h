@@ -116,7 +116,7 @@ private:
         return result;
     }
 
-    static CONSTEXPR int32_t log_2(int32_t n) noexcept
+    static CONSTEXPR int32_t log_2(const int32_t n) noexcept
     {
         int32_t x = 0;
         while (n > (1 << x))

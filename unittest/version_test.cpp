@@ -10,12 +10,12 @@
 #include <sstream>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using namespace charls;
 using std::ostringstream;
 
 // clang-format off
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 TEST_CLASS(version_test)
 {
@@ -57,4 +57,5 @@ public:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+}

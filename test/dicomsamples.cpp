@@ -16,7 +16,7 @@ using std::error_code;
 namespace
 {
 
-bool ContainsString(const uint8_t* container, const uint8_t* bytesToFind, size_t bytesLength) noexcept
+bool ContainsString(const uint8_t* container, const uint8_t* bytesToFind, const size_t bytesLength) noexcept
 {
     for (size_t j = 0; j < bytesLength; ++j)
     {
@@ -27,7 +27,7 @@ bool ContainsString(const uint8_t* container, const uint8_t* bytesToFind, size_t
     return true;
 }
 
-int FindString(vector<uint8_t>& container, const uint8_t* bytesToFind, size_t bytesLength) noexcept
+int FindString(vector<uint8_t>& container, const uint8_t* bytesToFind, const size_t bytesLength) noexcept
 {
     for (size_t i = 0; i < container.size() - bytesLength; ++i)
     {

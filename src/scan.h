@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "coding_parameters.h"
 #include "color_transform.h"
 #include "context.h"
 #include "context_run_mode.h"
@@ -16,13 +17,13 @@
 
 namespace charls {
 
-extern CTable decodingTables[16];
+extern std::array<CTable, 16> decodingTables;
 extern std::vector<signed char> rgquant8Ll;
 extern std::vector<signed char> rgquant10Ll;
 extern std::vector<signed char> rgquant12Ll;
 extern std::vector<signed char> rgquant16Ll;
 
-constexpr int32_t ApplySign(int32_t i, int32_t sign) noexcept
+constexpr int32_t ApplySign(const int32_t i, const int32_t sign) noexcept
 {
     return (sign ^ i) - sign;
 }
@@ -56,7 +57,7 @@ inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 #else
 
-inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc) noexcept
+inline int32_t GetPredictedValue(const int32_t Ra, const int32_t Rb, const int32_t Rc) noexcept
 {
     // sign trick reduces the number of if statements (branches)
     const int32_t sgn = BitWiseSign(Rb - Ra);
@@ -77,19 +78,19 @@ inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc) noexcept
 
 #endif
 
-CONSTEXPR int32_t UnMapErrVal(int32_t mappedError) noexcept
+CONSTEXPR int32_t UnMapErrVal(const int32_t mappedError) noexcept
 {
     const int32_t sign = mappedError << (int32_t_bit_count - 1) >> (int32_t_bit_count - 1);
     return sign ^ (mappedError >> 1);
 }
 
-CONSTEXPR int32_t GetMappedErrVal(int32_t errorValue) noexcept
+CONSTEXPR int32_t GetMappedErrVal(const int32_t errorValue) noexcept
 {
     const int32_t mappedError = (errorValue >> (int32_t_bit_count - 2)) ^ (2 * errorValue);
     return mappedError;
 }
 
-constexpr int32_t ComputeContextID(int32_t Q1, int32_t Q2, int32_t Q3) noexcept
+constexpr int32_t ComputeContextID(const int32_t Q1, const int32_t Q2, const int32_t Q3) noexcept
 {
     return (Q1 * 9 + Q2) * 9 + Q3;
 }
@@ -102,15 +103,12 @@ public:
     using PIXEL = typename Traits::PIXEL;
     using SAMPLE = typename Traits::SAMPLE;
 
-    JlsCodec(Traits inTraits, const JlsParameters& params) :
-        Strategy{params},
+    JlsCodec(Traits inTraits, const frame_info& frame_info, const coding_parameters& parameters) :
+        Strategy{update_component_count(frame_info, parameters), parameters},
         traits{std::move(inTraits)},
-        width_{params.width}
+        width_{frame_info.width}
     {
-        if (Info().interleaveMode == interleave_mode::none)
-        {
-            Info().components = 1;
-        }
+        ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) || parameters.interleave_mode != interleave_mode::none);
     }
 
     void SetPresets(const jpegls_pc_parameters& presets) override
@@ -123,27 +121,28 @@ public:
                    presets.reset_value != 0 ? presets.reset_value : presetDefault.reset_value);
     }
 
-    std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo info) override;
+    std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo info, uint32_t stride) override;
 
     bool IsInterleaved() noexcept
     {
-        if (Info().interleaveMode == interleave_mode::none)
-            return false;
+        ASSERT((parameters().interleave_mode == interleave_mode::none && frame_info().component_count == 1) || parameters().interleave_mode != interleave_mode::none);
 
-        if (Info().components == 1)
-            return false;
-
-        return true;
+        return parameters().interleave_mode != interleave_mode::none;
     }
 
-    JlsParameters& Info() noexcept
+    const coding_parameters& parameters() const noexcept
     {
-        return Strategy::params_;
+        return Strategy::parameters_;
+    }
+
+    const charls::frame_info& frame_info() const noexcept
+    {
+        return Strategy::frame_info_;
     }
 
     signed char QuantizeGradientOrg(int32_t Di) const noexcept;
 
-    FORCE_INLINE int32_t QuantizeGradient(int32_t Di) const noexcept
+    FORCE_INLINE int32_t QuantizeGradient(const int32_t Di) const noexcept
     {
         ASSERT(QuantizeGradientOrg(Di) == *(pquant_ + Di));
         return *(pquant_ + Di);
@@ -201,11 +200,21 @@ public:
 #pragma clang diagnostic pop
 #endif
 
-protected:
+private:
+    static charls::frame_info update_component_count(charls::frame_info frame, const coding_parameters& parameters) noexcept
+    {
+        if (parameters.interleave_mode == interleave_mode::none)
+        {
+            frame.component_count = 1;
+        }
+
+        return frame;
+    }
+
     // codec parameters
     Traits traits;
     JlsRect rect_{};
-    int width_;
+    uint32_t width_;
     int32_t T1{};
     int32_t T2{};
     int32_t T3{};
@@ -225,7 +234,7 @@ protected:
 
 // Encode/decode a single sample. Performance wise the #1 important functions
 template<typename Traits, typename Strategy>
-typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_t, int32_t pred, DecoderStrategy*)
+typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(const int32_t Qs, int32_t, const int32_t pred, DecoderStrategy*)
 {
     const int32_t sign = BitWiseSign(Qs);
     JlsContext& ctx = contexts_[ApplySign(Qs, sign)];
@@ -244,7 +253,7 @@ typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_
     {
         ErrVal = UnMapErrVal(DecodeValue(k, traits.LIMIT, traits.qbpp));
         if (std::abs(ErrVal) > 65535)
-            throw jpegls_error{jpegls_errc::invalid_encoded_data};
+            impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
     }
     if (k == 0)
     {
@@ -257,7 +266,7 @@ typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_
 
 
 template<typename Traits, typename Strategy>
-typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_t x, int32_t pred, EncoderStrategy*)
+typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(const int32_t Qs, int32_t x, const int32_t pred, EncoderStrategy*)
 {
     const int32_t sign = BitWiseSign(Qs);
     JlsContext& ctx = contexts_[ApplySign(Qs, sign)];
@@ -274,14 +283,14 @@ typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DoRegular(int32_t Qs, int32_
 
 // Functions to build tables used to decode short Golomb codes.
 
-inline std::pair<int32_t, int32_t> CreateEncodedValue(int32_t k, int32_t mappedError) noexcept
+inline std::pair<int32_t, int32_t> CreateEncodedValue(const int32_t k, const int32_t mappedError) noexcept
 {
     const int32_t highBits = mappedError >> k;
     return std::make_pair(highBits + k + 1, (1 << k) | (mappedError & ((1 << k) - 1)));
 }
 
 
-inline CTable InitTable(int32_t k) noexcept
+inline CTable InitTable(const int32_t k) noexcept
 {
     CTable table;
     for (short nerr = 0;; nerr++)
@@ -315,7 +324,7 @@ inline CTable InitTable(int32_t k) noexcept
 // Encoding/decoding of Golomb codes
 
 template<typename Traits, typename Strategy>
-int32_t JlsCodec<Traits, Strategy>::DecodeValue(int32_t k, int32_t limit, int32_t qbpp)
+int32_t JlsCodec<Traits, Strategy>::DecodeValue(int32_t k, const int32_t limit, int32_t qbpp)
 {
     const int32_t highBits = Strategy::ReadHighBits();
 
@@ -330,7 +339,7 @@ int32_t JlsCodec<Traits, Strategy>::DecodeValue(int32_t k, int32_t limit, int32_
 
 
 template<typename Traits, typename Strategy>
-FORCE_INLINE void JlsCodec<Traits, Strategy>::EncodeMappedValue(int32_t k, int32_t mappedError, int32_t limit)
+FORCE_INLINE void JlsCodec<Traits, Strategy>::EncodeMappedValue(int32_t k, const int32_t mappedError, int32_t limit)
 {
     int32_t highBits = mappedError >> k;
 
@@ -441,7 +450,7 @@ int32_t JlsCodec<Traits, Strategy>::DecodeRIError(CContextRunMode& ctx)
 
 
 template<typename Traits, typename Strategy>
-void JlsCodec<Traits, Strategy>::EncodeRIError(CContextRunMode& ctx, int32_t errorValue)
+void JlsCodec<Traits, Strategy>::EncodeRIError(CContextRunMode& ctx, const int32_t errorValue)
 {
     const int32_t k = ctx.GetGolomb();
     const bool map = ctx.ComputeMap(errorValue, k);
@@ -535,7 +544,7 @@ typename Traits::SAMPLE JlsCodec<Traits, Strategy>::DecodeRIPixel(int32_t Ra, in
 
 
 template<typename Traits, typename Strategy>
-typename Traits::SAMPLE JlsCodec<Traits, Strategy>::EncodeRIPixel(int32_t x, int32_t Ra, int32_t Rb)
+typename Traits::SAMPLE JlsCodec<Traits, Strategy>::EncodeRIPixel(const int32_t x, int32_t Ra, int32_t Rb)
 {
     if (std::abs(Ra - Rb) <= traits.NEAR)
     {
@@ -553,7 +562,7 @@ typename Traits::SAMPLE JlsCodec<Traits, Strategy>::EncodeRIPixel(int32_t x, int
 // RunMode: Functions that handle run-length encoding
 
 template<typename Traits, typename Strategy>
-void JlsCodec<Traits, Strategy>::EncodeRunPixels(int32_t runLength, bool endOfLine)
+void JlsCodec<Traits, Strategy>::EncodeRunPixels(int32_t runLength, const bool endOfLine)
 {
     while (runLength >= static_cast<int32_t>(1 << J[RUNindex_]))
     {
@@ -577,12 +586,12 @@ void JlsCodec<Traits, Strategy>::EncodeRunPixels(int32_t runLength, bool endOfLi
 
 
 template<typename Traits, typename Strategy>
-int32_t JlsCodec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, int32_t cpixelMac)
+int32_t JlsCodec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, const int32_t cpixelMac)
 {
     int32_t index = 0;
     while (Strategy::ReadBit())
     {
-        const int count = std::min(1 << J[RUNindex_], int(cpixelMac - index));
+        const int count = std::min(1 << J[RUNindex_], static_cast<int>(cpixelMac - index));
         index += count;
         ASSERT(index <= cpixelMac);
 
@@ -602,7 +611,7 @@ int32_t JlsCodec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, i
     }
 
     if (index > cpixelMac)
-        throw jpegls_error{jpegls_errc::invalid_encoded_data};
+        impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
     for (int32_t i = 0; i < index; ++i)
     {
@@ -649,7 +658,7 @@ int32_t JlsCodec<Traits, Strategy>::DoRunMode(int32_t startIndex, DecoderStrateg
     const PIXEL Ra = currentLine_[startIndex - 1];
 
     const int32_t runLength = DecodeRunPixels(Ra, currentLine_ + startIndex, width_ - startIndex);
-    const int32_t endIndex = startIndex + runLength;
+    const uint32_t endIndex = startIndex + runLength;
 
     if (endIndex == width_)
         return endIndex - startIndex;
@@ -670,7 +679,7 @@ void JlsCodec<Traits, Strategy>::DoLine(SAMPLE*)
     int32_t Rb = previousLine_[index - 1];
     int32_t Rd = previousLine_[index];
 
-    while (index < width_)
+    while (static_cast<uint32_t>(index) < width_)
     {
         const int32_t Ra = currentLine_[index - 1];
         const int32_t Rc = Rb;
@@ -699,7 +708,7 @@ template<typename Traits, typename Strategy>
 void JlsCodec<Traits, Strategy>::DoLine(Triplet<SAMPLE>*)
 {
     int32_t index = 0;
-    while (index < width_)
+    while (static_cast<uint32_t>(index) < width_)
     {
         const Triplet<SAMPLE> Ra = currentLine_[index - 1];
         const Triplet<SAMPLE> Rc = previousLine_[index - 1];
@@ -732,7 +741,7 @@ template<typename Traits, typename Strategy>
 void JlsCodec<Traits, Strategy>::DoLine(Quad<SAMPLE>*)
 {
     int32_t index = 0;
-    while (index < width_)
+    while (static_cast<uint32_t>(index) < width_)
     {
         const Quad<SAMPLE> Ra = currentLine_[index - 1];
         const Quad<SAMPLE> Rc = previousLine_[index - 1];
@@ -771,12 +780,12 @@ template<typename Traits, typename Strategy>
 void JlsCodec<Traits, Strategy>::DoScan()
 {
     const int32_t pixelStride = width_ + 4;
-    const int components = Info().interleaveMode == interleave_mode::line ? Info().components : 1;
+    const int components = parameters().interleave_mode == interleave_mode::line ? frame_info().component_count : 1;
 
     std::vector<PIXEL> vectmp(static_cast<size_t>(2) * components * pixelStride);
     std::vector<int32_t> rgRUNindex(components);
 
-    for (int32_t line = 0; line < Info().height; ++line)
+    for (uint32_t line = 0; line < frame_info().height; ++line)
     {
         previousLine_ = &vectmp[1];
         currentLine_ = &vectmp[1 + static_cast<size_t>(components) * pixelStride];
@@ -801,7 +810,7 @@ void JlsCodec<Traits, Strategy>::DoScan()
             currentLine_ += pixelStride;
         }
 
-        if (rect_.Y <= line && line < rect_.Y + rect_.Height)
+        if (static_cast<uint32_t>(rect_.Y) <= line && line < static_cast<uint32_t>(rect_.Y + rect_.Height))
         {
             Strategy::OnLineEnd(rect_.Width, currentLine_ + rect_.X - (static_cast<size_t>(components) * pixelStride), pixelStride);
         }
@@ -813,50 +822,48 @@ void JlsCodec<Traits, Strategy>::DoScan()
 
 // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
 template<typename Traits, typename Strategy>
-std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStreamInfo info)
+std::unique_ptr<ProcessLine> JlsCodec<Traits, Strategy>::CreateProcess(ByteStreamInfo info, const uint32_t stride)
 {
     if (!IsInterleaved())
     {
-        return info.rawData ?
-            std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleComponent>(info.rawData, Info().stride, sizeof(typename Traits::PIXEL))) :
-            std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleStream>(info.rawStream, Info().stride, sizeof(typename Traits::PIXEL)));
+        return info.rawData ? std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleComponent>(info.rawData, stride, sizeof(typename Traits::PIXEL))) : std::unique_ptr<ProcessLine>(std::make_unique<PostProcessSingleStream>(info.rawStream, stride, sizeof(typename Traits::PIXEL)));
     }
 
-    if (Info().colorTransformation == color_transformation::none)
-        return std::make_unique<ProcessTransformed<TransformNone<typename Traits::SAMPLE>>>(info, Info(), TransformNone<SAMPLE>());
+    if (parameters().transformation == color_transformation::none)
+        return std::make_unique<ProcessTransformed<TransformNone<typename Traits::SAMPLE>>>(info, stride, frame_info(), parameters(), TransformNone<SAMPLE>());
 
-    if (Info().bitsPerSample == sizeof(SAMPLE) * 8)
+    if (frame_info().bits_per_sample == sizeof(SAMPLE) * 8)
     {
-        switch (Info().colorTransformation)
+        switch (parameters().transformation)
         {
         case color_transformation::hp1:
-            return std::make_unique<ProcessTransformed<TransformHp1<SAMPLE>>>(info, Info(), TransformHp1<SAMPLE>());
+            return std::make_unique<ProcessTransformed<TransformHp1<SAMPLE>>>(info, stride, frame_info(), parameters(), TransformHp1<SAMPLE>());
         case color_transformation::hp2:
-            return std::make_unique<ProcessTransformed<TransformHp2<SAMPLE>>>(info, Info(), TransformHp2<SAMPLE>());
+            return std::make_unique<ProcessTransformed<TransformHp2<SAMPLE>>>(info, stride, frame_info(), parameters(), TransformHp2<SAMPLE>());
         case color_transformation::hp3:
-            return std::make_unique<ProcessTransformed<TransformHp3<SAMPLE>>>(info, Info(), TransformHp3<SAMPLE>());
+            return std::make_unique<ProcessTransformed<TransformHp3<SAMPLE>>>(info, stride, frame_info(), parameters(), TransformHp3<SAMPLE>());
         default:
-            throw jpegls_error{jpegls_errc::color_transform_not_supported};
+            impl::throw_jpegls_error(jpegls_errc::color_transform_not_supported);
         }
     }
 
-    if (Info().bitsPerSample > 8)
+    if (frame_info().bits_per_sample > 8)
     {
-        const int shift = 16 - Info().bitsPerSample;
-        switch (Info().colorTransformation)
+        const int shift = 16 - frame_info().bits_per_sample;
+        switch (parameters().transformation)
         {
         case color_transformation::hp1:
-            return std::make_unique<ProcessTransformed<TransformShifted<TransformHp1<uint16_t>>>>(info, Info(), TransformShifted<TransformHp1<uint16_t>>(shift));
+            return std::make_unique<ProcessTransformed<TransformShifted<TransformHp1<uint16_t>>>>(info, stride, frame_info(), parameters(), TransformShifted<TransformHp1<uint16_t>>(shift));
         case color_transformation::hp2:
-            return std::make_unique<ProcessTransformed<TransformShifted<TransformHp2<uint16_t>>>>(info, Info(), TransformShifted<TransformHp2<uint16_t>>(shift));
+            return std::make_unique<ProcessTransformed<TransformShifted<TransformHp2<uint16_t>>>>(info, stride, frame_info(), parameters(), TransformShifted<TransformHp2<uint16_t>>(shift));
         case color_transformation::hp3:
-            return std::make_unique<ProcessTransformed<TransformShifted<TransformHp3<uint16_t>>>>(info, Info(), TransformShifted<TransformHp3<uint16_t>>(shift));
+            return std::make_unique<ProcessTransformed<TransformShifted<TransformHp3<uint16_t>>>>(info, stride, frame_info(), parameters(), TransformShifted<TransformHp3<uint16_t>>(shift));
         default:
-            throw jpegls_error{jpegls_errc::color_transform_not_supported};
+            impl::throw_jpegls_error(jpegls_errc::color_transform_not_supported);
         }
     }
 
-    throw jpegls_error{jpegls_errc::bit_depth_for_transform_not_supported};
+    impl::throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
 }
 
 
@@ -891,7 +898,7 @@ MSVC_WARNING_UNSUPPRESS()
 
 // Initialize the codec data structures. Depends on JPEG-LS parameters like Threshold1-Threshold3.
 template<typename Traits, typename Strategy>
-void JlsCodec<Traits, Strategy>::InitParams(int32_t t1, int32_t t2, int32_t t3, int32_t nReset)
+void JlsCodec<Traits, Strategy>::InitParams(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t nReset)
 {
     T1 = t1;
     T2 = t2;

@@ -99,6 +99,12 @@
     <ClInclude Include="..\include\charls\version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\charls\annotations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="coding_parameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />

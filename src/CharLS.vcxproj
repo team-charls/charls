@@ -235,7 +235,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\doc\style_and_design.md" />
-    <None Include="charls.def" />
+    <None Include="charls.def">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="design\JpegStream.cd" />
     <None Include="design\Strategy.cd" />
   </ItemGroup>
@@ -250,12 +254,14 @@
     <ClCompile Include="jpeg_stream_writer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\charls\annotations.h" />
     <ClInclude Include="..\include\charls\api_abi.h" />
     <ClInclude Include="..\include\charls\charls.h" />
     <ClInclude Include="..\include\charls\charls_legacy.h" />
     <ClInclude Include="..\include\charls\jpegls_error.h" />
     <ClInclude Include="..\include\charls\public_types.h" />
     <ClInclude Include="..\include\charls\version.h" />
+    <ClInclude Include="coding_parameters.h" />
     <ClInclude Include="color_transform.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="context.h" />

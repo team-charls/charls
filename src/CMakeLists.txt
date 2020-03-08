@@ -30,6 +30,7 @@ target_compile_definitions(charls PRIVATE CHARLS_LIBRARY_BUILD)
 
 set(CHARLS_PUBLIC_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/api_abi.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/annotations.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/charls.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/charls_legacy.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/jpegls_error.h"
@@ -46,6 +47,7 @@ target_sources(charls
   PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_decoder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_encoder.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/coding_parameters.h"
     "${CMAKE_CURRENT_LIST_DIR}/color_transform.h"
     "${CMAKE_CURRENT_LIST_DIR}/constants.h"
     "${CMAKE_CURRENT_LIST_DIR}/context.h"
@@ -68,9 +70,18 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/scan.h"
     "${CMAKE_CURRENT_LIST_DIR}/util.h"
     "${CMAKE_CURRENT_LIST_DIR}/version.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/charls.def"
-    "${CMAKE_CURRENT_LIST_DIR}/charls.rc"
 )
+
+if(WIN32 AND BUILD_SHARED_LIBS)
+  # Only add the Win32 resource script file when building a DLL
+  target_sources(charls PRIVATE "${CMAKE_CURRENT_LIST_DIR}/charls.rc")
+
+  # Only add the definition file when building a x86 DLL with MSVC
+  # The definition file is needed to ensure the legacy functions are exported with the correct name
+  if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+    target_sources(charls PRIVATE "${CMAKE_CURRENT_LIST_DIR}/charls.def")
+  endif()
+endif()
 
 if(CHARLS_INSTALL)
   include(GNUInstallDirs)

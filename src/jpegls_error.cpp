@@ -3,8 +3,10 @@
 
 #include <charls/jpegls_error.h>
 
-using std::string;
+#include <string>
+
 using std::error_category;
+using std::string;
 
 namespace charls {
 
@@ -22,7 +24,7 @@ public:
     }
 };
 
-}
+} // namespace charls
 
 using namespace charls;
 
@@ -32,7 +34,7 @@ const void* CHARLS_API_CALLING_CONVENTION charls_get_jpegls_category()
     return &instance;
 }
 
-const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(jpegls_errc error_value)
+const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_jpegls_errc error_value)
 {
     switch (error_value)
     {
@@ -66,14 +68,14 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(jpegls_errc e
     case jpegls_errc::invalid_argument_color_transformation:
         return "The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component count";
 
-    case jpegls_errc::invalid_argument_pc_parameters:
+    case jpegls_errc::invalid_argument_jpegls_pc_parameters:
         return "The argument for the JPEG-LS preset coding parameters is not valid";
 
     case jpegls_errc::start_of_image_marker_not_found:
         return "Invalid JPEG-LS stream, first JPEG marker is not a Start Of Image (SOI) marker";
 
-    case jpegls_errc::start_of_frame_marker_not_found:
-        return "Invalid JPEG-LS stream, Start Of Frame (SOF) marker not found before the SOS marker";
+    case jpegls_errc::unexpected_marker_found:
+        return "Invalid JPEG-LS stream, unexpected marker found";
 
     case jpegls_errc::invalid_marker_segment_size:
         return "Invalid JPEG-LS stream, segment size of a marker segment is invalid";
@@ -152,6 +154,12 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(jpegls_errc e
 
     case jpegls_errc::invalid_parameter_interleave_mode:
         return "Invalid JPEG-LS stream, interleave mode is outside the range [0, 2] or conflicts with component count";
+
+    case jpegls_errc::invalid_parameter_near_lossless:
+        return "Invalid JPEG-LS stream, near-lossless is outside the range [0, min(255, MAXVAL/2)]";
+
+    case jpegls_errc::invalid_parameter_jpegls_pc_parameters:
+        return "Invalid JPEG-LS stream, JPEG-LS preset coding parameters segment contains invalid values";
     }
 
     return "Unknown";

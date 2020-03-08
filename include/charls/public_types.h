@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "annotations.h"
 #include "api_abi.h"
 
 #ifdef __cplusplus
@@ -21,6 +22,7 @@ namespace impl {
 // The following enum values are for C applications, for C++ the enums are defined after these definitions.
 // For the documentation, see the C++ enums definitions.
 
+RETURN_TYPE_SUCCESS_(return == 0)
 enum charls_jpegls_errc
 {
     CHARLS_JPEGLS_ERRC_SUCCESS = 0,
@@ -39,7 +41,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_NOT_ENOUGH_MEMORY = 13,
     CHARLS_JPEGLS_ERRC_UNEXPECTED_FAILURE = 14,
     CHARLS_JPEGLS_ERRC_START_OF_IMAGE_MARKER_NOT_FOUND = 15,
-    CHARLS_JPEGLS_ERRC_START_OF_FRAME_MARKER_NOT_FOUND = 16,
+    CHARLS_JPEGLS_ERRC_UNEXPECTED_MARKER_FOUND = 16,
     CHARLS_JPEGLS_ERRC_INVALID_MARKER_SEGMENT_SIZE = 17,
     CHARLS_JPEGLS_ERRC_DUPLICATE_START_OF_IMAGE_MARKER = 18,
     CHARLS_JPEGLS_ERRC_DUPLICATE_START_OF_FRAME_MARKER = 19,
@@ -54,7 +56,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_BITS_PER_SAMPLE = 103,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_INTERLEAVE_MODE = 104,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_NEAR_LOSSLESS = 105,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_PC_PARAMETERS = 106,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_JPEGLS_PC_PARAMETERS = 106,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SPIFF_ENTRY_SIZE = 110,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COLOR_TRANSFORMATION = 111,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH = 200,
@@ -62,6 +64,8 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT = 202,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE = 203,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE = 204,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 205,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PC_PARAMETERS = 206
 };
 
 enum charls_interleave_mode
@@ -143,14 +147,15 @@ enum charls_spiff_entry_tag
 };
 
 #ifdef __cplusplus
-}
-}
+} // namespace impl
+} // namespace charls
 
 namespace charls {
 
 /// <summary>
 /// Defines the result values that are returned by the CharLS API functions.
 /// </summary>
+RETURN_TYPE_SUCCESS_(return == 0)
 enum class jpegls_errc
 {
     /// <summary>
@@ -234,9 +239,9 @@ enum class jpegls_errc
     start_of_image_marker_not_found = impl::CHARLS_JPEGLS_ERRC_START_OF_IMAGE_MARKER_NOT_FOUND,
 
     /// <summary>
-    /// This error is returned when the SOF JPEG marker is not found before the SOS marker.
+    /// This error is returned when a JPEG marker is found that is not valid for the current state.
     /// </summary>
-    start_of_frame_marker_not_found = impl::CHARLS_JPEGLS_ERRC_START_OF_FRAME_MARKER_NOT_FOUND,
+    unexpected_marker_found = impl::CHARLS_JPEGLS_ERRC_UNEXPECTED_MARKER_FOUND,
 
     /// <summary>
     /// This error is returned when the segment size of a marker segment is invalid.
@@ -312,7 +317,7 @@ enum class jpegls_errc
     /// The argument for the JPEG-LS preset coding parameters is not valid, see ISO/IEC 14495-1,
     /// C.2.4.1.1, Table C.1 for the ranges of valid values.
     /// </summary>
-    invalid_argument_pc_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_PC_PARAMETERS,
+    invalid_argument_jpegls_pc_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_JPEGLS_PC_PARAMETERS,
 
     /// <summary>
     /// The argument for the entry size parameter is outside the range [0, 65528].
@@ -348,6 +353,16 @@ enum class jpegls_errc
     /// This error is returned when the stream contains an interleave mode (ILV) parameter outside the range [0, 2]
     /// </summary>
     invalid_parameter_interleave_mode = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE,
+
+    /// <summary>
+    /// This error is returned when the stream contains a near-lossless (NEAR) parameter outside the range [0, min(255, MAXVAL/2)]
+    /// </summary>
+    invalid_parameter_near_lossless = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS,
+
+    /// <summary>
+    /// This error is returned when the stream contains an invalid JPEG-LS preset coding parameters segment.
+    /// </summary>
+    invalid_parameter_jpegls_pc_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PC_PARAMETERS,
 
     // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17 extension.
     OK = success,

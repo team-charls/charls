@@ -9,11 +9,11 @@
 
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using namespace charls;
 
 // clang-format off
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 TEST_CLASS(ctable_test)
 {
@@ -30,4 +30,5 @@ public:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+}

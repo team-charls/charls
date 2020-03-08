@@ -3,16 +3,14 @@
 
 #pragma once
 
-#include <charls/jpegls_error.h>
 #include <charls/charls_legacy.h>
+#include <charls/jpegls_error.h>
 
 #include "jpeg_marker_code.h"
 
 #include <vector>
 
 namespace charls {
-
-enum class JpegMarkerCode : uint8_t;
 
 // Purpose: 'Writer' class that can generate JPEG-LS file streams.
 class JpegStreamWriter final
@@ -30,7 +28,9 @@ public:
     /// <param name="header">Header info to write into the SPIFF segment.</param>
     void WriteSpiffHeaderSegment(const spiff_header& header);
 
-    void WriteSpiffDirectoryEntry(uint32_t entry_tag, const void* entry_data, size_t entry_data_size);
+    void WriteSpiffDirectoryEntry(uint32_t entry_tag,
+                                  IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data,
+                                  size_t entry_data_size_bytes);
 
     /// <summary>
     /// Write a JPEG SPIFF end of directory (APP8) segment.
@@ -87,7 +87,7 @@ public:
         return data;
     }
 
-    void Seek(std::size_t byteCount) noexcept
+    void Seek(const std::size_t byteCount) noexcept
     {
         if (destination_.rawStream)
             return;
@@ -95,7 +95,8 @@ public:
         byteOffset_ += byteCount;
     }
 
-    void UpdateDestination(void* destination_buffer, size_t destination_size) noexcept
+    void UpdateDestination(OUT_WRITES_BYTES_(destination_size) void* destination_buffer,
+                           const size_t destination_size) noexcept
     {
         destination_.rawData = static_cast<uint8_t*>(destination_buffer);
         destination_.count = destination_size;
@@ -107,9 +108,9 @@ private:
         return destination_.rawData + byteOffset_;
     }
 
-    void WriteSegment(JpegMarkerCode markerCode, const void* data, size_t dataSize);
+    void WriteSegment(JpegMarkerCode markerCode, IN_READS_BYTES_(dataSize) const void* data, size_t dataSize);
 
-    void WriteByte(uint8_t value)
+    void WriteByte(const uint8_t value)
     {
         if (destination_.rawStream)
         {
@@ -118,7 +119,7 @@ private:
         else
         {
             if (byteOffset_ >= destination_.count)
-                throw jpegls_error{jpegls_errc::destination_buffer_too_small};
+                impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
             destination_.rawData[byteOffset_++] = value;
         }
@@ -132,7 +133,7 @@ private:
         }
     }
 
-    void WriteBytes(const void* data, const size_t dataSize)
+    void WriteBytes(IN_READS_BYTES_(dataSize) const void* data, const size_t dataSize)
     {
         const auto bytes = static_cast<const uint8_t*>(data);
 
@@ -142,13 +143,13 @@ private:
         }
     }
 
-    void WriteUInt16(uint16_t value)
+    void WriteUInt16(const uint16_t value)
     {
         WriteByte(static_cast<uint8_t>(value / 0x100));
         WriteByte(static_cast<uint8_t>(value % 0x100));
     }
 
-    void WriteUInt32(uint32_t value)
+    void WriteUInt32(const uint32_t value)
     {
         WriteByte(static_cast<uint8_t>(value >> 24));
         WriteByte(static_cast<uint8_t>(value >> 16));
@@ -156,7 +157,7 @@ private:
         WriteByte(static_cast<uint8_t>(value));
     }
 
-    void WriteMarker(JpegMarkerCode markerCode)
+    void WriteMarker(const JpegMarkerCode markerCode)
     {
         WriteByte(JpegMarkerStartByte);
         WriteByte(static_cast<uint8_t>(markerCode));

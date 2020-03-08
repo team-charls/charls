@@ -14,12 +14,11 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::ifstream;
 using std::vector;
-using namespace charls;
 using namespace charls_test;
 
 namespace {
 
-void triplet_to_planar(vector<uint8_t>& buffer, uint32_t width, uint32_t height)
+void triplet_to_planar(vector<uint8_t>& buffer, const uint32_t width, const uint32_t height)
 {
     vector<uint8_t> workBuffer(buffer.size());
 
@@ -34,6 +33,9 @@ void triplet_to_planar(vector<uint8_t>& buffer, uint32_t width, uint32_t height)
 }
 
 } // namespace
+
+namespace charls {
+namespace test {
 
 vector<uint8_t> read_file(const char* filename)
 {
@@ -184,3 +186,6 @@ void test_round_trip_legacy(const vector<uint8_t>& source, const JlsParameters& 
         }
     }
 }
+
+}
+} // namespace charls::test

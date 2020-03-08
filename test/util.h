@@ -3,19 +3,21 @@
 
 #pragma once
 
+// Must include charls_legacy.h first as charls.h will undefine macro's
 #include <charls/charls_legacy.h>
+
 #include <charls/charls.h>
 
-#include <vector>
 #include <exception>
+#include <vector>
 
 struct Size final
 {
-    Size(size_t width, size_t height) noexcept
-        :
+    Size(const size_t width, const size_t height) noexcept :
         cx(width),
         cy(height)
-    {}
+    {
+    }
     size_t cx;
     size_t cy;
 };
@@ -28,7 +30,8 @@ void TestRoundTrip(const char* strName, const std::vector<uint8_t>& decodedBuffe
 void TestRoundTrip(const char* strName, const std::vector<uint8_t>& originalBuffer, JlsParameters& params, int loopCount = 1);
 void test_portable_anymap_file(const char* filename, int loopCount = 1);
 
-class UnitTestException final : public std::exception {
+class UnitTestException final : public std::exception
+{
 public:
     explicit UnitTestException() = default;
 };
@@ -36,7 +39,7 @@ public:
 class Assert final
 {
 public:
-    static void IsTrue(bool condition)
+    static void IsTrue(const bool condition)
     {
         if (!condition)
             throw UnitTestException();
@@ -44,7 +47,8 @@ public:
 };
 
 #ifdef _MSC_VER
-#define MSVC_WARNING_SUPPRESS(x) __pragma(warning(push)) __pragma(warning(disable : x))  // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses)
+#define MSVC_WARNING_SUPPRESS(x) __pragma(warning(push)) __pragma(warning(disable \
+                                                                          : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses)
 #define MSVC_WARNING_UNSUPPRESS() __pragma(warning(pop))
 #else
 #define MSVC_WARNING_SUPPRESS(x)

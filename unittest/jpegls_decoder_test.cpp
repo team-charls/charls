@@ -10,14 +10,28 @@
 #include <tuple>
 #include <vector>
 
+
+#include "../src/jpeg_marker_code.h"
+#include "../src/jpegls_preset_parameters_type.h"
+
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::error_code;
 using std::tie;
 using std::vector;
-using namespace charls;
 using namespace charls_test;
 
-namespace CharLSUnitTest {
+namespace {
+
+void push_back(std::vector<uint8_t>& values, const uint16_t value)
+{
+    values.push_back(static_cast<uint8_t>(value >> 8));
+    values.push_back(static_cast<uint8_t>(value));
+}
+
+}
+
+namespace charls {
+namespace test {
 
 // clang-format off
 
@@ -36,8 +50,10 @@ public:
 
         jpegls_decoder decoder2(std::move(decoder1));
 
-        // ReSharper disable once CppLocalVariableWithNonTrivialDtorIsNeverUsed
-        jpegls_decoder decoder3 = std::move(decoder2);
+        jpegls_decoder decoder3;
+        const uint8_t buffer[10]{};
+        decoder3.source(buffer, sizeof(buffer));
+        decoder3 = std::move(decoder2);
     }
 
     TEST_METHOD(set_source_twice)
@@ -176,6 +192,26 @@ public:
     TEST_METHOD(decode_reference_file_from_buffer)
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+
+        jpegls_decoder decoder{source};
+        decoder.read_header();
+
+        vector<uint8_t> destination(decoder.destination_size());
+        decoder.decode(destination);
+
+        portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/TEST8.PPM", decoder.interleave_mode(), decoder.frame_info());
+
+        const auto& reference_image_data = reference_file.image_data();
+        for (size_t i = 0; i < destination.size(); ++i)
+        {
+            Assert::AreEqual(reference_image_data[i], destination[i]);
+        }
+    }
+
+    TEST_METHOD(decode_with_default_pc_parameters_before_each_sos)
+    {
+        vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+        insert_pc_parameters_segments(source, 3);
 
         jpegls_decoder decoder{source};
         decoder.read_header();
@@ -358,6 +394,51 @@ public:
         assert_expect_exception(jpegls_errc::invalid_encoded_data,
             [&] { static_cast<void>(decoder.decode(destination)); });
     }
+
+private:
+    static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator& begin, const vector<uint8_t>::iterator end)
+    {
+        constexpr uint8_t start_of_scan = 0xDA;
+
+        for (auto it = begin; it != end; ++it)
+        {
+            if (*it == 0xFF && it + 1 != end && *(it + 1) == start_of_scan)
+                return it;
+        }
+
+        return end;
+    }
+
+    static vector<uint8_t> create_default_pc_parameters_segment()
+    {
+        vector<uint8_t> segment;
+
+        segment.push_back(static_cast<uint8_t>(0xFF));
+        segment.push_back(static_cast<uint8_t>(JpegMarkerCode::JpegLSPresetParameters));
+        push_back(segment, static_cast<uint16_t>(11 + sizeof(uint16_t)));
+        segment.push_back(static_cast<uint8_t>(JpegLSPresetParametersType::PresetCodingParameters));
+        push_back(segment, static_cast<uint16_t>(0));
+        push_back(segment, static_cast<uint16_t>(0));
+        push_back(segment, static_cast<uint16_t>(0));
+        push_back(segment, static_cast<uint16_t>(0));
+        push_back(segment, static_cast<uint16_t>(0));
+
+        return segment;
+    }
+
+    static void insert_pc_parameters_segments(vector<uint8_t>& jpegls_source, const int component_count)
+    {
+        const auto pcp_segment = create_default_pc_parameters_segment();
+
+        auto it = jpegls_source.begin();
+        for (int i = 0; i < component_count; ++i)
+        {
+            it = find_scan_header(it, jpegls_source.end());
+            it = jpegls_source.insert(it, pcp_segment.cbegin(), pcp_segment.cend());
+            it += pcp_segment.size() + 2;
+        }
+    }
 };
 
-} // namespace CharLSUnitTest
+}
+}

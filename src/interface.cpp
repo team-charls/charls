@@ -1,35 +1,36 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "constants.h"
+#include "encoder_strategy.h"
+#include "jls_codec_factory.h"
 #include "jpeg_stream_reader.h"
 #include "jpeg_stream_writer.h"
 #include "jpegls_preset_coding_parameters.h"
-#include "encoder_strategy.h"
-#include "jls_codec_factory.h"
 #include "util.h"
-#include "constants.h"
 
 using namespace charls;
+using impl::throw_jpegls_error;
 
 namespace {
 
 void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& parameters)
 {
     if (!destination.rawStream && !destination.rawData)
-        throw jpegls_error{jpegls_errc::invalid_operation};
+        throw_jpegls_error(jpegls_errc::invalid_operation);
 
     if (parameters.bitsPerSample < MinimumBitsPerSample || parameters.bitsPerSample > MaximumBitsPerSample)
-        throw jpegls_error{jpegls_errc::invalid_argument_bits_per_sample};
+        throw_jpegls_error(jpegls_errc::invalid_argument_bits_per_sample);
 
     if (!(parameters.interleaveMode == interleave_mode::none || parameters.interleaveMode == interleave_mode::sample || parameters.interleaveMode == interleave_mode::line))
-        throw jpegls_error{jpegls_errc::invalid_argument_interleave_mode};
+        throw_jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
 
     if (parameters.components < 1 || parameters.components > MaximumComponentCount)
-        throw jpegls_error{jpegls_errc::invalid_argument_component_count};
+        throw_jpegls_error(jpegls_errc::invalid_argument_component_count);
 
     if (destination.rawData &&
         destination.count < static_cast<size_t>(parameters.height) * parameters.width * parameters.components * (parameters.bitsPerSample > 8 ? 2 : 1))
-        throw jpegls_error{jpegls_errc::destination_buffer_too_small};
+        throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
     switch (parameters.components)
     {
@@ -38,26 +39,25 @@ void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& paramet
         break;
     default:
         if (parameters.interleaveMode != interleave_mode::none)
-            throw jpegls_error{jpegls_errc::invalid_argument_interleave_mode};
+            throw_jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
         break;
     }
 }
 
-void EncodeScan(const JlsParameters& params, int componentCount, ByteStreamInfo source, JpegStreamWriter& writer)
+void EncodeScan(const JlsParameters& params, const int componentCount, const ByteStreamInfo source, JpegStreamWriter& writer)
 {
-    JlsParameters info{params};
-    info.components = componentCount;
-
+    const frame_info frame_info{static_cast<uint32_t>(params.width), static_cast<uint32_t>(params.height), params.bitsPerSample, componentCount};
+    const coding_parameters codec_parameters{params.allowedLossyError, params.interleaveMode, params.colorTransformation, false};
     const jpegls_pc_parameters preset_coding_parameters{
-        info.custom.MaximumSampleValue,
-        info.custom.Threshold1,
-        info.custom.Threshold2,
-        info.custom.Threshold3,
-        info.custom.ResetValue,
+        params.custom.MaximumSampleValue,
+        params.custom.Threshold1,
+        params.custom.Threshold2,
+        params.custom.Threshold3,
+        params.custom.ResetValue,
     };
 
-    auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(info, preset_coding_parameters);
-    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(source));
+    auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(frame_info, codec_parameters, preset_coding_parameters);
+    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(source, params.stride));
     ByteStreamInfo destination{writer.OutputStream()};
     const size_t bytesWritten = codec->EncodeScan(move(processLine), destination);
 
@@ -68,7 +68,7 @@ void EncodeScan(const JlsParameters& params, int componentCount, ByteStreamInfo 
 } // namespace
 
 
-jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten,
+jpegls_errc JpegLsEncodeStream(const ByteStreamInfo destination, size_t& bytesWritten,
                                ByteStreamInfo source, const JlsParameters& params)
 {
     if (params.width < 1 || params.width > 65535)
@@ -116,7 +116,7 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten,
         }
         else if (info.bitsPerSample > 12)
         {
-            const auto default_preset_coding_parameters{compute_default((1 << info.bitsPerSample) - 1, info.allowedLossyError)};
+            const auto default_preset_coding_parameters{compute_default((1U << static_cast<uint32_t>(info.bitsPerSample)) - 1, info.allowedLossyError)};
             writer.WriteJpegLSPresetParametersSegment(default_preset_coding_parameters);
         }
 
@@ -151,21 +151,16 @@ jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten,
 }
 
 
-jpegls_errc JpegLsDecodeStream(ByteStreamInfo destination, ByteStreamInfo source, const JlsParameters* params)
+jpegls_errc JpegLsDecodeStream(const ByteStreamInfo destination, const ByteStreamInfo source, const JlsParameters* /*params*/)
 {
     try
     {
         JpegStreamReader reader{source};
 
         reader.ReadHeader();
-        reader.ReadStartOfScan(true);
+        reader.ReadStartOfScan();
 
-        if (params)
-        {
-            reader.SetInfo(*params);
-        }
-
-        reader.Read(destination);
+        reader.Read(destination, 0);
 
         return jpegls_errc::success;
     }
@@ -176,14 +171,25 @@ jpegls_errc JpegLsDecodeStream(ByteStreamInfo destination, ByteStreamInfo source
 }
 
 
-jpegls_errc JpegLsReadHeaderStream(ByteStreamInfo source, JlsParameters* params)
+jpegls_errc JpegLsReadHeaderStream(const ByteStreamInfo source, JlsParameters* params)
 {
     try
     {
         JpegStreamReader reader{source};
         reader.ReadHeader();
-        reader.ReadStartOfScan(true);
-        *params = reader.GetMetadata();
+        reader.ReadStartOfScan();
+        *params = JlsParameters{};
+
+        const auto& info = reader.frame_info();
+        params->height = info.height;
+        params->width = info.width;
+        params->bitsPerSample = info.bits_per_sample;
+        params->components = info.component_count;
+
+        const auto& parameters = reader.parameters();
+        params->interleaveMode = parameters.interleave_mode;
+        params->allowedLossyError = parameters.near_lossless;
+        params->colorTransformation = parameters.transformation;
 
         return jpegls_errc::success;
     }

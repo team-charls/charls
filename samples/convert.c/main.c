@@ -140,6 +140,11 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size
     }
 
     void* encoded_buffer = malloc(encoded_buffer_size);
+    if (!encoded_buffer)
+    {
+        return handle_encoder_failure(error, "malloc failed", encoder, NULL);
+    }
+
     error = charls_jpegls_encoder_set_destination_buffer(encoder, encoded_buffer, encoded_buffer_size);
     if (error)
     {

@@ -23,7 +23,7 @@ struct CContextRunMode final
 
     CContextRunMode() = default;
 
-    CContextRunMode(int32_t a, int32_t nRItype, int32_t nReset) noexcept :
+    CContextRunMode(const int32_t a, const int32_t nRItype, const int32_t nReset) noexcept :
         A{a},
         nRItype_{nRItype},
         nReset_{static_cast<uint8_t>(nReset)},
@@ -44,7 +44,7 @@ struct CContextRunMode final
         return k;
     }
 
-    void UpdateVariables(int32_t errorValue, int32_t EMErrval) noexcept
+    void UpdateVariables(const int32_t errorValue, const int32_t EMErrval) noexcept
     {
         if (errorValue < 0)
         {
@@ -60,7 +60,7 @@ struct CContextRunMode final
         N = N + 1;
     }
 
-    FORCE_INLINE int32_t ComputeErrVal(int32_t temp, int32_t k) const noexcept
+    FORCE_INLINE int32_t ComputeErrVal(const int32_t temp, const int32_t k) const noexcept
     {
         const bool map = temp & 1;
         const int32_t errorValueAbs = (temp + static_cast<int32_t>(map)) / 2;
@@ -75,7 +75,7 @@ struct CContextRunMode final
         return errorValueAbs;
     }
 
-    bool ComputeMap(int32_t errorValue, int32_t k) const noexcept
+    bool ComputeMap(const int32_t errorValue, const int32_t k) const noexcept
     {
         if (k == 0 && errorValue > 0 && 2 * Nn < N)
             return true;
@@ -89,7 +89,7 @@ struct CContextRunMode final
         return false;
     }
 
-    FORCE_INLINE bool ComputeMapNegativeE(int32_t k) const noexcept
+    FORCE_INLINE bool ComputeMapNegativeE(const int32_t k) const noexcept
     {
         return k != 0 || 2 * Nn >= N;
     }

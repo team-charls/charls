@@ -15,7 +15,7 @@ struct Code final
 {
     Code() = default;
 
-    Code(int32_t value, int32_t length) noexcept :
+    Code(const int32_t value, const int32_t length) noexcept :
         value_{value},
         length_{length}
     {

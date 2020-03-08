@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <charls/annotations.h>
 #include <charls/charls_legacy.h>
 #include <charls/jpegls_error.h>
 
@@ -10,8 +11,16 @@
 #include <cstring>
 #include <vector>
 
-// Use an uppercase alias for assert to make it clear that it is a pre-processor macro.
-#define ASSERT(t) assert(t)
+// Use an uppercase alias for assert to make it clear that ASSERT is a pre-processor macro.
+#ifdef _MSC_VER
+#define ASSERT(expression)                 \
+    __pragma(warning(push))                \
+        __pragma(warning(disable : 26493)) \
+            assert(expression)             \
+                __pragma(warning(pop))
+#else
+#define ASSERT(expression) assert(expression)
+#endif
 
 // Only use __forceinline for the Microsoft C++ compiler in release mode (verified scenario)
 // Use the build-in optimizer for all other C++ compilers.
@@ -71,7 +80,7 @@ inline jpegls_errc to_jpegls_errc() noexcept
     }
 }
 
-inline void clear_error_message(char* errorMessage) noexcept
+inline void clear_error_message(OUT_OPT_ char* errorMessage) noexcept
 {
     if (errorMessage)
     {
@@ -83,19 +92,20 @@ inline void clear_error_message(char* errorMessage) noexcept
 /// <summary>
 /// Cross platform safe version of strcpy.
 /// </summary>
-inline void string_copy(const char* source, char* destination, const size_t size_in_bytes) noexcept
+inline void string_copy(IN_Z_ const char* source, OUT_WRITES_Z_(size_in_bytes) char* destination, const size_t size_in_bytes) noexcept
 {
     ASSERT(strlen(source) < size_in_bytes && "String will be truncated");
 
 #if defined(__STDC_SECURE_LIB__) && defined(__STDC_WANT_SECURE_LIB__) && __STDC_WANT_SECURE_LIB__ == 1
-    strncpy_s(destination, size_in_bytes, source, _TRUNCATE);
+    constexpr size_t truncate{static_cast<size_t>(-1)};
+    strncpy_s(destination, size_in_bytes, source, truncate);
 #else
     strncpy(destination, source, size_in_bytes);
     destination[size_in_bytes - 1] = 0;
 #endif
 }
 
-inline jpegls_errc set_error_message(const jpegls_errc error, char* error_message) noexcept
+inline jpegls_errc set_error_message(const jpegls_errc error, OUT_WRITES_Z_(ErrorMessageSize) char* error_message) noexcept
 {
     if (error_message)
     {
@@ -109,14 +119,14 @@ inline jpegls_errc set_error_message(const jpegls_errc error, char* error_messag
 constexpr size_t int32_t_bit_count = sizeof(int32_t) * 8;
 
 
-inline void push_back(std::vector<uint8_t>& values, uint16_t value)
+inline void push_back(std::vector<uint8_t>& values, const uint16_t value)
 {
     values.push_back(static_cast<uint8_t>(value >> 8));
     values.push_back(static_cast<uint8_t>(value));
 }
 
 
-inline void push_back(std::vector<uint8_t>& values, uint32_t value)
+inline void push_back(std::vector<uint8_t>& values, const uint32_t value)
 {
     values.push_back(static_cast<uint8_t>(value >> 24));
     values.push_back(static_cast<uint8_t>(value >> 16));
@@ -125,7 +135,7 @@ inline void push_back(std::vector<uint8_t>& values, uint32_t value)
 }
 
 
-CONSTEXPR int32_t log_2(int32_t n) noexcept
+CONSTEXPR int32_t log_2(const int32_t n) noexcept
 {
     int32_t x = 0;
     while (n > (1 << x))
@@ -136,13 +146,13 @@ CONSTEXPR int32_t log_2(int32_t n) noexcept
 }
 
 
-constexpr int32_t Sign(int32_t n) noexcept
+constexpr int32_t Sign(const int32_t n) noexcept
 {
     return (n >> (int32_t_bit_count - 1)) | 1;
 }
 
 
-constexpr int32_t BitWiseSign(int32_t i) noexcept
+constexpr int32_t BitWiseSign(const int32_t i) noexcept
 {
     return i >> (int32_t_bit_count - 1);
 }
@@ -252,7 +262,7 @@ struct FromBigEndian<8> final
 };
 
 
-inline void SkipBytes(ByteStreamInfo& streamInfo, std::size_t count) noexcept
+inline void SkipBytes(ByteStreamInfo& streamInfo, const std::size_t count) noexcept
 {
     if (!streamInfo.rawData)
         return;
@@ -269,7 +279,6 @@ std::ostream& operator<<(typename std::enable_if<std::is_enum<T>::value, std::os
 }
 
 
-
 template<typename T>
 T* check_pointer(T* pointer)
 {
@@ -281,5 +290,11 @@ T* check_pointer(T* pointer)
     return pointer;
 }
 
+
+CONSTEXPR uint32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
+{
+    ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);
+    return (1U << bits_per_sample) - 1;
+}
 
 } // namespace charls

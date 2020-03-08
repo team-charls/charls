@@ -15,8 +15,8 @@ namespace {
 class DecoderStrategyTester final : public charls::DecoderStrategy
 {
 public:
-    DecoderStrategyTester(const JlsParameters& params, uint8_t* destination, size_t nOutBufLen) :
-        DecoderStrategy(params)
+    DecoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters, uint8_t* destination, const size_t nOutBufLen) :
+        DecoderStrategy(frame_info, parameters)
     {
         ByteStreamInfo stream{nullptr, destination, nOutBufLen};
         Init(stream);
@@ -26,7 +26,7 @@ public:
     {
     }
 
-    unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo /*rawStreamInfo*/) noexcept(false) override
+    unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo /*rawStreamInfo*/, uint32_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
@@ -35,7 +35,7 @@ public:
     {
     }
 
-    int32_t Read(int32_t length)
+    int32_t Read(const int32_t length)
     {
         return ReadLongValue(length);
     }
@@ -43,7 +43,9 @@ public:
 
 } // namespace
 
-namespace CharLSUnitTest {
+
+namespace charls {
+namespace test {
 
 // clang-format off
 
@@ -59,9 +61,10 @@ public:
         } inData[5] = { { 0x00, 24 },{ 0xFF, 8 },{ 0xFFFF, 16 },{ 0xFFFF, 16 },{ 0x12345678, 31 } };
 
         uint8_t encBuf[100];
-        const JlsParameters params{};
+        const charls::frame_info frame_info{};
+        const charls::coding_parameters parameters{};
 
-        EncoderStrategyTester encoder(params);
+        EncoderStrategyTester encoder(frame_info, parameters);
 
         ByteStreamInfo stream;
         stream.rawStream = nullptr;
@@ -77,7 +80,7 @@ public:
         // Note: Correct encoding is tested in EncoderStrategyTest::AppendToBitStreamFFPattern.
 
         const auto length = encoder.GetLengthForward();
-        DecoderStrategyTester dec(params, encBuf, length);
+        DecoderStrategyTester dec(frame_info, parameters, encBuf, length);
         for (auto i = 0U; i < sizeof(inData) / sizeof(inData[0]); i++)
         {
             const auto actual = dec.Read(inData[i].bits);
@@ -86,4 +89,5 @@ public:
     }
 };
 
+}
 }

@@ -12,8 +12,9 @@ namespace charls {
 class EncoderStrategy
 {
 public:
-    explicit EncoderStrategy(const JlsParameters& params) :
-        params_{params}
+    explicit EncoderStrategy(const frame_info& frame, const coding_parameters& parameters) :
+        frame_info_{frame},
+        parameters_{parameters}
     {
     }
 
@@ -24,13 +25,13 @@ public:
     EncoderStrategy& operator=(const EncoderStrategy&) = delete;
     EncoderStrategy& operator=(EncoderStrategy&&) = delete;
 
-    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
+    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo, uint32_t stride) = 0;
     virtual void SetPresets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData) = 0;
 
     int32_t PeekByte();
 
-    void OnLineBegin(int32_t cpixel, void* ptypeBuffer, int32_t pixelStride) const
+    void OnLineBegin(const int32_t cpixel, void* ptypeBuffer, const int32_t pixelStride) const
     {
         processLine_->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
     }
@@ -59,7 +60,7 @@ protected:
         }
     }
 
-    void AppendToBitStream(int32_t bits, int32_t bitCount)
+    void AppendToBitStream(const int32_t bits, const int32_t bitCount)
     {
         ASSERT(bitCount < 32 && bitCount >= 0);
         ASSERT((!decoder_) || (bitCount == 0 && bits == 0) || (decoder_->ReadLongValue(bitCount) == bits));
@@ -113,13 +114,13 @@ protected:
     void OverFlow()
     {
         if (!compressedStream_)
-            throw jpegls_error{jpegls_errc::destination_buffer_too_small};
+            impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
         const std::size_t bytesCount = position_ - buffer_.data();
         const auto bytesWritten = static_cast<std::size_t>(compressedStream_->sputn(reinterpret_cast<char*>(buffer_.data()), position_ - buffer_.data()));
 
         if (bytesWritten != bytesCount)
-            throw jpegls_error{jpegls_errc::destination_buffer_too_small};
+            impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
         position_ = buffer_.data();
         compressedLength_ = buffer_.size();
@@ -163,13 +164,14 @@ protected:
         return bytesWritten_ - (freeBitCount_ - 32) / 8;
     }
 
-    FORCE_INLINE void AppendOnesToBitStream(int32_t length)
+    FORCE_INLINE void AppendOnesToBitStream(const int32_t length)
     {
         AppendToBitStream((1 << length) - 1, length);
     }
 
+    frame_info frame_info_;
+    coding_parameters parameters_;
     std::unique_ptr<DecoderStrategy> decoder_;
-    JlsParameters params_;
     std::unique_ptr<ProcessLine> processLine_;
 
 private:

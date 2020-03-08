@@ -12,13 +12,15 @@
 
 using std::unique_ptr;
 using namespace charls;
+using impl::throw_jpegls_error;
 
 struct charls_jpegls_decoder final
 {
-    void source(const void* source_buffer, size_t source_size_bytes)
+    void source(IN_READS_BYTES_(source_size_bytes) const void* source_buffer,
+                const size_t source_size_bytes) CHARLS_ATTRIBUTE((nonnull))
     {
         if (state_ != state::initial)
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         source_buffer_ = source_buffer;
         size_ = source_size_bytes;
@@ -28,10 +30,10 @@ struct charls_jpegls_decoder final
         state_ = state::source_set;
     }
 
-    bool read_header(spiff_header* spiff_header)
+    bool read_header(OUT_ spiff_header* spiff_header)
     {
         if (state_ != state::source_set)
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         bool spiff_header_found{};
         reader_->ReadHeader(spiff_header, &spiff_header_found);
@@ -43,51 +45,56 @@ struct charls_jpegls_decoder final
     void read_header()
     {
         if (state_ == state::initial || state_ >= state::header_read)
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         if (state_ != state::spiff_header_not_found)
         {
             reader_->ReadHeader();
         }
 
-        reader_->ReadStartOfScan(true);
+        reader_->ReadStartOfScan();
         state_ = state::header_read;
     }
 
     charls::frame_info frame_info() const
     {
         if (state_ < state::header_read)
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
-        const auto& metadata = reader_->GetMetadata();
-        return {static_cast<uint32_t>(metadata.width), static_cast<uint32_t>(metadata.height), metadata.bitsPerSample, metadata.components};
+        return reader_->frame_info();
     }
 
-    int32_t near_lossless(int32_t /*component*/) const
+    int32_t near_lossless(int32_t /*component*/ = 0) const
     {
         if (state_ < state::header_read)
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         // Note: The JPEG-LS standard allows to define different NEAR parameter for every scan.
-        const auto& metadata = reader_->GetMetadata();
-        return metadata.allowedLossyError;
+        return reader_->parameters().near_lossless;
     }
 
     charls::interleave_mode interleave_mode() const
     {
         if (state_ < state::header_read)
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         // Note: The JPEG-LS standard allows to define different interleave modes for every scan.
         //       CharLS doesn't support mixed interleave modes, first scan determines the mode.
-        const auto& metadata = reader_->GetMetadata();
-        return metadata.interleaveMode;
+        return reader_->parameters().interleave_mode;
+    }
+
+    color_transformation transformation() const
+    {
+        if (state_ < state::header_read)
+            throw_jpegls_error(jpegls_errc::invalid_operation);
+
+        return reader_->parameters().transformation;
     }
 
     const jpegls_pc_parameters& preset_coding_parameters() const
     {
         if (state_ < state::header_read)
-            throw jpegls_error{jpegls_errc::invalid_operation};
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         return reader_->GetCustomPreset();
     }
@@ -103,11 +110,11 @@ struct charls_jpegls_decoder final
 
         switch (interleave_mode())
         {
-        case interleave_mode::none:
+        case charls::interleave_mode::none:
             return static_cast<size_t>(stride) * info.height * info.component_count;
 
-        case interleave_mode::line:
-        case interleave_mode::sample:
+        case charls::interleave_mode::line:
+        case charls::interleave_mode::sample:
             return static_cast<size_t>(stride) * info.height;
         }
 
@@ -115,28 +122,20 @@ struct charls_jpegls_decoder final
         return 0;
     }
 
-    void decode(void* destination_buffer, size_t destination_size_bytes, uint32_t stride) const
+    void decode(OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
+                const size_t destination_size_bytes,
+                const uint32_t stride) const CHARLS_ATTRIBUTE((nonnull))
     {
         if (state_ != state::header_read)
-            throw jpegls_error{jpegls_errc::invalid_operation};
-
-        if (stride != 0)
-        {
-            reader_->GetMetadata().stride = static_cast<int32_t>(stride);
-        }
+            throw_jpegls_error(jpegls_errc::invalid_operation);
 
         const ByteStreamInfo destination = FromByteArray(destination_buffer, destination_size_bytes);
-        reader_->Read(destination);
+        reader_->Read(destination, stride);
     }
 
-    void output_bgr(char value) const noexcept
+    void output_bgr(const bool value) const noexcept
     {
         reader_->SetOutputBgr(value);
-    }
-
-    const JlsParameters& metadata() const noexcept
-    {
-        return reader_->GetMetadata();
     }
 
     void region(const JlsRect& rect) const noexcept
@@ -152,7 +151,7 @@ private:
         spiff_header_read,
         spiff_header_not_found,
         header_read,
-        completed,
+        completed
     };
 
     state state_{};
@@ -167,21 +166,23 @@ extern "C" {
 charls_jpegls_decoder* CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_create() noexcept
 {
-    MSVC_WARNING_SUPPRESS(26402 26409) // don't use new and delete + scoped object and move
-    return new (std::nothrow) charls_jpegls_decoder;
+    MSVC_WARNING_SUPPRESS(26402 26409)               // don't use new and delete + scoped object and move
+    return new (std::nothrow) charls_jpegls_decoder; // NOLINT(cppcoreguidelines-owning-memory)
     MSVC_WARNING_UNSUPPRESS()
 }
 
 void CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_destroy(const charls_jpegls_decoder* decoder) noexcept
+charls_jpegls_decoder_destroy(IN_OPT_ const charls_jpegls_decoder* decoder) noexcept
 {
     MSVC_WARNING_SUPPRESS(26401 26409) // don't use new and delete + non-owner.
-    delete decoder;
+    delete decoder;                    // NOLINT(cppcoreguidelines-owning-memory)
     MSVC_WARNING_UNSUPPRESS()
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_set_source_buffer(charls_jpegls_decoder* decoder, const void* source_buffer, size_t source_size_bytes) noexcept
+charls_jpegls_decoder_set_source_buffer(IN_ charls_jpegls_decoder* decoder,
+                                        IN_READS_BYTES_(source_size_bytes) const void* source_buffer,
+                                        const size_t source_size_bytes) noexcept
 try
 {
     check_pointer(decoder)->source(check_pointer(source_buffer), source_size_bytes);
@@ -193,10 +194,12 @@ catch (...)
 }
 
 charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_read_spiff_header(charls_jpegls_decoder* const decoder, charls_spiff_header* spiff_header, int32_t* header_found) noexcept
+charls_jpegls_decoder_read_spiff_header(IN_ charls_jpegls_decoder* const decoder,
+                                        OUT_ charls_spiff_header* spiff_header,
+                                        OUT_ int32_t* header_found) noexcept
 try
 {
-    *check_pointer(header_found) = check_pointer(decoder)->read_header(check_pointer(spiff_header));
+    *check_pointer(header_found) = static_cast<int32_t>(check_pointer(decoder)->read_header(check_pointer(spiff_header)));
     return jpegls_errc::success;
 }
 catch (...)
@@ -205,7 +208,7 @@ catch (...)
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_read_header(charls_jpegls_decoder* const decoder) noexcept
+charls_jpegls_decoder_read_header(IN_ charls_jpegls_decoder* const decoder) noexcept
 try
 {
     check_pointer(decoder)->read_header();
@@ -217,7 +220,8 @@ catch (...)
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_frame_info(const charls_jpegls_decoder* const decoder, charls_frame_info* frame_info) noexcept
+charls_jpegls_decoder_get_frame_info(IN_ const charls_jpegls_decoder* const decoder,
+                                     OUT_ charls_frame_info* frame_info) noexcept
 try
 {
     *check_pointer(frame_info) = check_pointer(decoder)->frame_info();
@@ -229,7 +233,9 @@ catch (...)
 }
 
 charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_near_lossless(const charls_jpegls_decoder* decoder, int32_t component, int32_t* near_lossless) noexcept
+charls_jpegls_decoder_get_near_lossless(IN_ const charls_jpegls_decoder* decoder,
+                                        const int32_t component,
+                                        OUT_ int32_t* near_lossless) noexcept
 try
 {
     *check_pointer(near_lossless) = check_pointer(decoder)->near_lossless(component);
@@ -241,7 +247,8 @@ catch (...)
 }
 
 charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_interleave_mode(const charls_jpegls_decoder* decoder, charls_interleave_mode* interleave_mode) noexcept
+charls_jpegls_decoder_get_interleave_mode(IN_ const charls_jpegls_decoder* decoder,
+                                          OUT_ charls_interleave_mode* interleave_mode) noexcept
 try
 {
     *check_pointer(interleave_mode) = check_pointer(decoder)->interleave_mode();
@@ -253,7 +260,9 @@ catch (...)
 }
 
 charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_preset_coding_parameters(const charls_jpegls_decoder* decoder, int32_t /*reserved*/, charls_jpegls_pc_parameters* preset_coding_parameters) noexcept
+charls_jpegls_decoder_get_preset_coding_parameters(IN_ const charls_jpegls_decoder* decoder,
+                                                   const int32_t /*reserved*/,
+                                                   OUT_ charls_jpegls_pc_parameters* preset_coding_parameters) noexcept
 try
 {
     *check_pointer(preset_coding_parameters) = check_pointer(decoder)->preset_coding_parameters();
@@ -265,7 +274,9 @@ catch (...)
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_destination_size(const struct charls_jpegls_decoder* decoder, const uint32_t stride, size_t* destination_size_bytes) noexcept
+charls_jpegls_decoder_get_destination_size(IN_ const charls_jpegls_decoder* decoder,
+                                           const uint32_t stride,
+                                           OUT_ size_t* destination_size_bytes) noexcept
 try
 {
     *check_pointer(destination_size_bytes) = check_pointer(decoder)->destination_size(stride);
@@ -277,7 +288,10 @@ catch (...)
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_decode_to_buffer(const charls_jpegls_decoder* decoder, void* destination_buffer, size_t destination_size_bytes, uint32_t stride) noexcept
+charls_jpegls_decoder_decode_to_buffer(IN_ const charls_jpegls_decoder* decoder,
+                                       OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
+                                       const size_t destination_size_bytes,
+                                       const uint32_t stride) noexcept
 try
 {
     check_pointer(decoder)->decode(check_pointer(destination_buffer), destination_size_bytes, stride);
@@ -290,17 +304,26 @@ catch (...)
 
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsReadHeader(const void* source, size_t sourceLength, JlsParameters* params, char* errorMessage)
+JpegLsReadHeader(
+    IN_READS_BYTES_(sourceLength) const void* source,
+    const size_t sourceLength,
+    OUT_ JlsParameters* params,
+    OUT_OPT_ char* errorMessage)
 try
 {
-    if (!source || !params)
-        return jpegls_errc::invalid_argument;
-
     charls_jpegls_decoder decoder;
 
-    decoder.source(source, sourceLength);
+    decoder.source(check_pointer(source), sourceLength);
     decoder.read_header();
-    *params = decoder.metadata();
+    *check_pointer(params) = JlsParameters{};
+    const frame_info info = decoder.frame_info();
+    params->height = info.height;
+    params->width = info.width;
+    params->bitsPerSample = info.bits_per_sample;
+    params->components = info.component_count;
+    params->interleaveMode = decoder.interleave_mode();
+    params->allowedLossyError = decoder.near_lossless();
+    params->colorTransformation = decoder.transformation();
 
     const auto& preset{decoder.preset_coding_parameters()};
     params->custom.MaximumSampleValue = preset.maximum_sample_value;
@@ -318,25 +341,26 @@ catch (...)
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsDecode(void* destination, size_t destinationLength, const void* source, size_t sourceLength,
-             const struct JlsParameters* params, char* errorMessage)
+JpegLsDecode(OUT_WRITES_BYTES_(destinationLength) void* destination,
+             const size_t destinationLength,
+             IN_READS_BYTES_(sourceLength) const void* source,
+             const size_t sourceLength,
+             IN_OPT_ const struct JlsParameters* params,
+             OUT_OPT_ char* errorMessage)
 try
 {
-    if (!destination || !source)
-        return jpegls_errc::invalid_argument;
-
     charls_jpegls_decoder decoder;
-    decoder.source(source, sourceLength);
+    decoder.source(check_pointer(source), sourceLength);
     decoder.read_header();
 
     int32_t stride{};
     if (params)
     {
-        decoder.output_bgr(params->outputBgr);
+        decoder.output_bgr(params->outputBgr != 0);
         stride = params->stride;
     }
 
-    decoder.decode(destination, destinationLength, static_cast<uint32_t>(stride));
+    decoder.decode(check_pointer(destination), destinationLength, static_cast<uint32_t>(stride));
 
     clear_error_message(errorMessage);
     return jpegls_errc::success;
@@ -347,26 +371,28 @@ catch (...)
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsDecodeRect(void* destination, size_t destinationLength, const void* source, size_t sourceLength,
-                 JlsRect roi, const JlsParameters* params, char* errorMessage)
+JpegLsDecodeRect(OUT_WRITES_BYTES_(destinationLength) void* destination,
+                 const size_t destinationLength,
+                 IN_READS_BYTES_(sourceLength) const void* source,
+                 const size_t sourceLength,
+                 const JlsRect roi,
+                 IN_OPT_ const JlsParameters* params,
+                 OUT_OPT_ char* errorMessage)
 try
 {
-    if (!destination || !source)
-        return jpegls_errc::invalid_argument;
-
     charls_jpegls_decoder decoder;
-    decoder.source(source, sourceLength);
+    decoder.source(check_pointer(source), sourceLength);
     decoder.read_header();
 
     int32_t stride{};
     if (params)
     {
-        decoder.output_bgr(params->outputBgr);
+        decoder.output_bgr(params->outputBgr != 0);
         stride = params->stride;
     }
 
     decoder.region(roi);
-    decoder.decode(destination, destinationLength, static_cast<uint32_t>(stride));
+    decoder.decode(check_pointer(destination), destinationLength, static_cast<uint32_t>(stride));
 
     clear_error_message(errorMessage);
     return jpegls_errc::success;

@@ -12,13 +12,13 @@
 #include <vector>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using namespace charls;
 using std::array;
 using std::vector;
 
 constexpr size_t serialized_spiff_header_size = 34;
 
-namespace CharLSUnitTest {
+namespace charls {
+namespace test {
 
 // clang-format off
 
@@ -37,8 +37,10 @@ public:
 
         jpegls_encoder encoder2(std::move(encoder1));
 
-        // ReSharper disable once CppLocalVariableWithNonTrivialDtorIsNeverUsed
-        jpegls_encoder encoder3 = std::move(encoder2);
+        jpegls_encoder encoder3;
+        uint8_t buffer[10]{};
+        encoder3.destination(buffer, sizeof(buffer));
+        encoder3 = std::move(encoder2);
     }
 
     TEST_METHOD(frame_info_max_and_min)
@@ -393,7 +395,10 @@ public:
         encoder.write_standard_spiff_header(spiff_color_space::cmyk);
 
         assert_expect_exception(jpegls_errc::invalid_argument_spiff_entry_size,
-            [&] { encoder.write_spiff_entry(spiff_entry_tag::image_title, "test", 65528 + 1); });
+            [&] {
+                vector<uint8_t> spiff_entry(65528 + 1);
+                encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
+            });
     }
 
     TEST_METHOD(write_spiff_entry_without_spiff_header)
@@ -406,7 +411,10 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] { encoder.write_spiff_entry(spiff_entry_tag::image_title, "test", 65528); });
+            [&] {
+                vector<uint8_t> spiff_entry(65528);
+                encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
+            });
     }
 
     TEST_METHOD(set_preset_coding_parameters)
@@ -426,7 +434,7 @@ public:
 
         charls_jpegls_pc_parameters pc_parameters{1,1,1,1,1};
 
-        assert_expect_exception(jpegls_errc::invalid_argument_pc_parameters,
+        assert_expect_exception(jpegls_errc::invalid_argument_jpegls_pc_parameters,
             [&] { encoder.preset_coding_parameters(pc_parameters); });
     }
 
@@ -551,4 +559,5 @@ private:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+}

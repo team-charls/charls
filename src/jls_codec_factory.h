@@ -3,22 +3,27 @@
 
 #pragma once
 
-#include <charls/public_types.h>
+#include "coding_parameters.h"
 
 #include <memory>
 
-struct JlsParameters;
 
 namespace charls {
+
+class DecoderStrategy;
+class EncoderStrategy;
 
 template<typename Strategy>
 class JlsCodecFactory final
 {
 public:
-    std::unique_ptr<Strategy> CreateCodec(const JlsParameters& params, const jpegls_pc_parameters& preset_coding_parameters);
+    std::unique_ptr<Strategy> CreateCodec(const frame_info& frame, const coding_parameters& parameters, const jpegls_pc_parameters& preset_coding_parameters);
 
 private:
-    std::unique_ptr<Strategy> CreateOptimizedCodec(const JlsParameters& params);
+    std::unique_ptr<Strategy> CreateOptimizedCodec(const frame_info& frame, const coding_parameters& parameters);
 };
+
+extern template class JlsCodecFactory<DecoderStrategy>;
+extern template class JlsCodecFactory<EncoderStrategy>;
 
 } // namespace charls

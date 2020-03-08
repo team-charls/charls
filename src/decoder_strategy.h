@@ -18,8 +18,9 @@ namespace charls {
 class DecoderStrategy
 {
 public:
-    explicit DecoderStrategy(const JlsParameters& params) :
-        params_{params}
+    explicit DecoderStrategy(const frame_info& frame, const coding_parameters& parameters) :
+        frame_info_{frame},
+        parameters_{parameters}
     {
     }
 
@@ -30,7 +31,7 @@ public:
     DecoderStrategy& operator=(const DecoderStrategy&) = delete;
     DecoderStrategy& operator=(DecoderStrategy&&) = delete;
 
-    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo) = 0;
+    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo, uint32_t stride) = 0;
     virtual void SetPresets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo& compressedData) = 0;
 
@@ -83,7 +84,7 @@ public:
         endPosition_ += readBytes;
     }
 
-    FORCE_INLINE void Skip(int32_t length) noexcept
+    FORCE_INLINE void Skip(const int32_t length) noexcept
     {
         validBits_ -= length;
         readCache_ = readCache_ << length;
@@ -93,7 +94,7 @@ public:
     {
     }
 
-    void OnLineEnd(int32_t pixelCount, const void* ptypeBuffer, int32_t pixelStride) const
+    void OnLineEnd(const int32_t pixelCount, const void* ptypeBuffer, const int32_t pixelStride) const
     {
         processLine_->NewLineDecoded(ptypeBuffer, pixelCount, pixelStride);
     }
@@ -105,11 +106,11 @@ public:
             ReadBit();
 
             if (*position_ != JpegMarkerStartByte)
-                throw jpegls_error{jpegls_errc::too_much_encoded_data};
+                impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
         }
 
         if (readCache_ != 0)
-            throw jpegls_error{jpegls_errc::too_much_encoded_data};
+            impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
     }
 
     FORCE_INLINE bool OptimizedRead() noexcept
@@ -141,7 +142,7 @@ public:
             if (position_ >= endPosition_)
             {
                 if (validBits_ <= 0)
-                    throw jpegls_error{jpegls_errc::invalid_encoded_data};
+                    impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
                 return;
             }
@@ -154,7 +155,7 @@ public:
                 if (position_ == endPosition_ - 1 || (position_[1] & 0x80) != 0)
                 {
                     if (validBits_ <= 0)
-                        throw jpegls_error{jpegls_errc::invalid_encoded_data};
+                        impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
                     return;
                 }
@@ -206,13 +207,13 @@ public:
         }
     }
 
-    FORCE_INLINE int32_t ReadValue(int32_t length)
+    FORCE_INLINE int32_t ReadValue(const int32_t length)
     {
         if (validBits_ < length)
         {
             MakeValid();
             if (validBits_ < length)
-                throw jpegls_error{jpegls_errc::invalid_encoded_data};
+                impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
         }
 
         ASSERT(length != 0 && length <= validBits_);
@@ -279,7 +280,7 @@ public:
         }
     }
 
-    int32_t ReadLongValue(int32_t length)
+    int32_t ReadLongValue(const int32_t length)
     {
         if (length <= 24)
             return ReadValue(length);
@@ -288,7 +289,8 @@ public:
     }
 
 protected:
-    JlsParameters params_;
+    frame_info frame_info_;
+    coding_parameters parameters_;
     std::unique_ptr<ProcessLine> processLine_;
 
 private:

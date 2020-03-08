@@ -1,9 +1,19 @@
 # Copyright (c) Team CharLS.
 # SPDX-License-Identifier: BSD-3-Clause
 
-cmake_minimum_required(VERSION 3.9...3.14)
+cmake_minimum_required(VERSION 3.9...3.16)
 
-project(charls VERSION 2.1.1 LANGUAGES C CXX)
+# Extract the version info from version.h
+file(READ "include/charls/version.h" version)
+string(REGEX MATCH "CHARLS_VERSION_MAJOR ([0-9]*)" _ ${version})
+set(version_major ${CMAKE_MATCH_1})
+string(REGEX MATCH "CHARLS_VERSION_MINOR ([0-9]*)" _ ${version})
+set(version_minor ${CMAKE_MATCH_1})
+string(REGEX MATCH "CHARLS_VERSION_PATCH ([0-9]*)" _ ${version})
+set(version_patch ${CMAKE_MATCH_1})
+message(STATUS "CharLS version: ${version_major}.${version_minor}.${version_patch}")
+
+project(charls VERSION ${version_major}.${version_minor}.${version_patch} LANGUAGES C CXX)
 
 # Determine if project is built as a subproject (using add_subdirectory) or if it is the master project.
 set(MASTER_PROJECT OFF)
@@ -14,6 +24,7 @@ endif ()
 
 # The basic options to control what is build extra.
 option(CHARLS_BUILD_TESTS "Build test application" ${MASTER_PROJECT})
+option(CHARLS_BUILD_FUZZ_TEST "Build AFL fuzzer application" ${MASTER_PROJECT})
 option(CHARLS_BUILD_SAMPLES "Build sample applications" ${MASTER_PROJECT})
 option(CHARLS_INSTALL "Generate the install target." ${MASTER_PROJECT})
 
@@ -126,6 +137,10 @@ include(src/CMakeLists.txt)
 
 if(CHARLS_BUILD_TESTS)
   add_subdirectory(test)
+endif()
+
+if(CHARLS_BUILD_FUZZ_TEST)
+  add_subdirectory(fuzztest)
 endif()
 
 if(CHARLS_BUILD_SAMPLES)

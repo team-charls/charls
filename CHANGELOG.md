@@ -8,7 +8,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 
+- Fixed [#25](https://github.com/team-charls/charls/issues/25), CharLS fails to read LSE marker segment after first SOS segment
 - Fixed [#60](https://github.com/team-charls/charls/issues/60), Visual Studio 2015 C++ compiler cannot compile certain constexpr constructions
+
+### Changed
+
+- The API has been extended with additional annotations to assist the static analyzer in the MSVC and GCC/clang compilers
 
 ## [2.1.0] - 2019-12-29
 
@@ -46,8 +51,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 
 - Fixed [#7](https://github.com/team-charls/charls/issues/7), How to compile CharLS with Xcode has been documented in the Wiki
-- Fixed [#44](https://github.com/team-charls/charls/issues/44), Only the API functions should be exported from a Linux shared library
 - Fixes [#35](https://github.com/team-charls/charls/issues/35), Encoding will fail if the bit per sample is greater than 8, and a custom RESET value is used
+- Fixed [#44](https://github.com/team-charls/charls/issues/44), Only the API functions should be exported from a Linux shared library
 - Fixes [#51](https://github.com/team-charls/charls/issues/51), The default threshold values are not corrected computed for 6 bit images or less
 - Fixed the ASSERT in the ModuloRange function, which would trigger false assertions in debug builds
 

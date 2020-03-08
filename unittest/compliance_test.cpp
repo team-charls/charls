@@ -10,15 +10,14 @@
 #include "../test/portable_anymap_file.h"
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using namespace charls;
 using namespace charls_test;
 using std::error_code;
 using std::vector;
 
+namespace charls {
+namespace test {
 
 // clang-format off
-
-namespace CharLSUnitTest {
 
 TEST_CLASS(compliance_test)
 {
@@ -94,7 +93,7 @@ public:
     }
 
 private:
-    static void decompress_file(const char* encoded_filename, const char* raw_filename, bool check_encode = true)
+    static void decompress_file(const char* encoded_filename, const char* raw_filename, const bool check_encode = true)
     {
         vector<uint8_t> encoded_source = read_file(encoded_filename);
 
@@ -108,7 +107,7 @@ private:
         test_compliance_legacy_api(encoded_source.data(), encoded_source.size(), reference_file.image_data().data(), reference_file.image_data().size(), check_encode);
     }
 
-    static void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t>& uncompressed_source, bool checkEncode)
+    static void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t>& uncompressed_source, const bool checkEncode)
     {
         jpegls_decoder decoder;
         decoder.source(encoded_source);
@@ -163,7 +162,7 @@ private:
         }
     }
 
-    static void test_compliance_legacy_api(const uint8_t* compressedBytes, size_t compressedLength, const uint8_t* uncompressedData, size_t uncompressedLength, bool checkEncode)
+    static void test_compliance_legacy_api(const uint8_t* compressedBytes, const size_t compressedLength, const uint8_t* uncompressedData, const size_t uncompressedLength, const bool checkEncode)
     {
         JlsParameters info{};
         error_code error = JpegLsReadHeader(compressedBytes, compressedLength, &info, nullptr);
@@ -191,7 +190,7 @@ private:
         }
     }
 
-    static bool verify_encoded_bytes_legacy_api(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength)
+    static bool verify_encoded_bytes_legacy_api(const void* uncompressedData, const size_t uncompressedLength, const void* compressedData, const size_t compressedLength)
     {
         JlsParameters info{};
         error_code error = JpegLsReadHeader(compressedData, compressedLength, &info, nullptr);
@@ -247,4 +246,5 @@ private:
     }
 };
 
-} // namespace CharLSUnitTest
+}
+}

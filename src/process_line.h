@@ -3,9 +3,10 @@
 
 #pragma once
 
-#include <charls/jpegls_error.h>
 #include <charls/charls_legacy.h>
+#include <charls/jpegls_error.h>
 
+#include "coding_parameters.h"
 #include "util.h"
 
 #include <algorithm>
@@ -72,7 +73,7 @@ private:
 };
 
 
-inline void ByteSwap(void* data, int count)
+inline void ByteSwap(void* data, const int count)
 {
     if (static_cast<unsigned int>(count) & 1U)
         throw jpegls_error{jpegls_errc::invalid_encoded_data};
@@ -94,7 +95,7 @@ inline void ByteSwap(void* data, int count)
 class PostProcessSingleStream final : public ProcessLine
 {
 public:
-    PostProcessSingleStream(std::basic_streambuf<char>* rawData, uint32_t stride, size_t bytesPerPixel) noexcept :
+    PostProcessSingleStream(std::basic_streambuf<char>* rawData, const uint32_t stride, const size_t bytesPerPixel) noexcept :
         rawData_{rawData},
         bytesPerPixel_{bytesPerPixel},
         bytesPerLine_{stride}
@@ -140,7 +141,7 @@ private:
 
 
 template<typename TRANSFORM, typename T>
-void TransformLineToQuad(const T* ptypeInput, int32_t pixelStrideIn, Quad<T>* byteBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformLineToQuad(const T* ptypeInput, const int32_t pixelStrideIn, Quad<T>* byteBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const int cpixel = std::min(pixelStride, pixelStrideIn);
     Quad<T>* ptypeBuffer = byteBuffer;
@@ -154,7 +155,7 @@ void TransformLineToQuad(const T* ptypeInput, int32_t pixelStrideIn, Quad<T>* by
 
 
 template<typename TRANSFORM, typename T>
-void TransformQuadToLine(const Quad<T>* byteInput, int32_t pixelStrideIn, T* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformQuadToLine(const Quad<T>* byteInput, const int32_t pixelStrideIn, T* ptypeBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto cpixel = std::min(pixelStride, pixelStrideIn);
     const Quad<T>* ptypeBufferIn = byteInput;
@@ -173,7 +174,7 @@ void TransformQuadToLine(const Quad<T>* byteInput, int32_t pixelStrideIn, T* pty
 
 
 template<typename T>
-void TransformRgbToBgr(T* pDest, int samplesPerPixel, int pixelCount) noexcept
+void TransformRgbToBgr(T* pDest, int samplesPerPixel, const int pixelCount) noexcept
 {
     for (auto i = 0; i < pixelCount; ++i)
     {
@@ -184,7 +185,7 @@ void TransformRgbToBgr(T* pDest, int samplesPerPixel, int pixelCount) noexcept
 
 
 template<typename TRANSFORM, typename T>
-void TransformLine(Triplet<T>* pDest, const Triplet<T>* pSrc, int pixelCount, TRANSFORM& transform) noexcept
+void TransformLine(Triplet<T>* pDest, const Triplet<T>* pSrc, const int pixelCount, TRANSFORM& transform) noexcept
 {
     for (auto i = 0; i < pixelCount; ++i)
     {
@@ -194,7 +195,7 @@ void TransformLine(Triplet<T>* pDest, const Triplet<T>* pSrc, int pixelCount, TR
 
 
 template<typename TRANSFORM, typename T>
-void TransformLine(Quad<T>* pDest, const Quad<T>* pSrc, int pixelCount, TRANSFORM& transform) noexcept
+void TransformLine(Quad<T>* pDest, const Quad<T>* pSrc, const int pixelCount, TRANSFORM& transform) noexcept
 {
     for (auto i = 0; i < pixelCount; ++i)
     {
@@ -204,7 +205,7 @@ void TransformLine(Quad<T>* pDest, const Quad<T>* pSrc, int pixelCount, TRANSFOR
 
 
 template<typename TRANSFORM, typename T>
-void TransformLineToTriplet(const T* ptypeInput, int32_t pixelStrideIn, Triplet<T>* byteBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformLineToTriplet(const T* ptypeInput, const int32_t pixelStrideIn, Triplet<T>* byteBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto cpixel = std::min(pixelStride, pixelStrideIn);
     Triplet<T>* ptypeBuffer = byteBuffer;
@@ -217,7 +218,7 @@ void TransformLineToTriplet(const T* ptypeInput, int32_t pixelStrideIn, Triplet<
 
 
 template<typename TRANSFORM, typename T>
-void TransformTripletToLine(const Triplet<T>* byteInput, int32_t pixelStrideIn, T* ptypeBuffer, int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformTripletToLine(const Triplet<T>* byteInput, const int32_t pixelStrideIn, T* ptypeBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto cpixel = std::min(pixelStride, pixelStrideIn);
     const Triplet<T>* ptypeBufferIn = byteInput;
@@ -238,10 +239,12 @@ template<typename TRANSFORM>
 class ProcessTransformed final : public ProcessLine
 {
 public:
-    ProcessTransformed(ByteStreamInfo rawStream, const JlsParameters& info, TRANSFORM transform) :
-        params_{info},
-        tempLine_(static_cast<size_t>(info.width) * info.components),
-        buffer_(static_cast<size_t>(info.width) * info.components * sizeof(size_type)),
+    ProcessTransformed(ByteStreamInfo rawStream, const uint32_t stride, const frame_info& info, const coding_parameters& parameters, TRANSFORM transform) :
+        frame_info_{info},
+        parameters_{parameters},
+        stride_{stride},
+        tempLine_(static_cast<size_t>(info.width) * info.component_count),
+        buffer_(static_cast<size_t>(info.width) * info.component_count * sizeof(size_type)),
         transform_{transform},
         inverseTransform_{transform},
         rawPixels_{rawStream}
@@ -253,16 +256,16 @@ public:
         if (!rawPixels_.rawStream)
         {
             Transform(rawPixels_.rawData, dest, pixelCount, destStride);
-            rawPixels_.rawData += params_.stride;
+            rawPixels_.rawData += stride_;
             return;
         }
 
         Transform(rawPixels_.rawStream, dest, pixelCount, destStride);
     }
 
-    void Transform(std::basic_streambuf<char>* rawStream, void* destination, int pixelCount, int destinationStride)
+    void Transform(std::basic_streambuf<char>* rawStream, void* destination, const int pixelCount, const int destinationStride)
     {
-        std::streamsize bytesToRead = static_cast<std::streamsize>(pixelCount) * params_.components * sizeof(size_type);
+        std::streamsize bytesToRead = static_cast<std::streamsize>(pixelCount) * frame_info_.component_count * sizeof(size_type);
         while (bytesToRead != 0)
         {
             const auto read = rawStream->sgetn(reinterpret_cast<char*>(buffer_.data()), bytesToRead);
@@ -276,16 +279,16 @@ public:
 
     void Transform(const void* source, void* dest, int pixelCount, int destStride) noexcept
     {
-        if (params_.outputBgr)
+        if (parameters_.output_bgr)
         {
             memcpy(tempLine_.data(), source, sizeof(Triplet<size_type>) * pixelCount);
-            TransformRgbToBgr(tempLine_.data(), params_.components, pixelCount);
+            TransformRgbToBgr(tempLine_.data(), frame_info_.component_count, pixelCount);
             source = tempLine_.data();
         }
 
-        if (params_.components == 3)
+        if (frame_info_.component_count == 3)
         {
-            if (params_.interleaveMode == interleave_mode::sample)
+            if (parameters_.interleave_mode == interleave_mode::sample)
             {
                 TransformLine(static_cast<Triplet<size_type>*>(dest), static_cast<const Triplet<size_type>*>(source), pixelCount, transform_);
             }
@@ -294,13 +297,13 @@ public:
                 TransformTripletToLine(static_cast<const Triplet<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, transform_);
             }
         }
-        else if (params_.components == 4)
+        else if (frame_info_.component_count == 4)
         {
-            if (params_.interleaveMode == interleave_mode::sample)
+            if (parameters_.interleave_mode == interleave_mode::sample)
             {
                 TransformLine(static_cast<Quad<size_type>*>(dest), static_cast<const Quad<size_type>*>(source), pixelCount, transform_);
             }
-            else if (params_.interleaveMode == interleave_mode::line)
+            else if (parameters_.interleave_mode == interleave_mode::line)
             {
                 TransformQuadToLine(static_cast<const Quad<size_type>*>(source), pixelCount, static_cast<size_type*>(dest), destStride, transform_);
             }
@@ -309,9 +312,9 @@ public:
 
     void DecodeTransform(const void* pSrc, void* rawData, int pixelCount, int byteStride) noexcept
     {
-        if (params_.components == 3)
+        if (frame_info_.component_count == 3)
         {
-            if (params_.interleaveMode == interleave_mode::sample)
+            if (parameters_.interleave_mode == interleave_mode::sample)
             {
                 TransformLine(static_cast<Triplet<size_type>*>(rawData), static_cast<const Triplet<size_type>*>(pSrc), pixelCount, inverseTransform_);
             }
@@ -320,21 +323,21 @@ public:
                 TransformLineToTriplet(static_cast<const size_type*>(pSrc), byteStride, static_cast<Triplet<size_type>*>(rawData), pixelCount, inverseTransform_);
             }
         }
-        else if (params_.components == 4)
+        else if (frame_info_.component_count == 4)
         {
-            if (params_.interleaveMode == interleave_mode::sample)
+            if (parameters_.interleave_mode == interleave_mode::sample)
             {
                 TransformLine(static_cast<Quad<size_type>*>(rawData), static_cast<const Quad<size_type>*>(pSrc), pixelCount, inverseTransform_);
             }
-            else if (params_.interleaveMode == interleave_mode::line)
+            else if (parameters_.interleave_mode == interleave_mode::line)
             {
                 TransformLineToQuad(static_cast<const size_type*>(pSrc), byteStride, static_cast<Quad<size_type>*>(rawData), pixelCount, inverseTransform_);
             }
         }
 
-        if (params_.outputBgr)
+        if (parameters_.output_bgr)
         {
-            TransformRgbToBgr(static_cast<size_type*>(rawData), params_.components, pixelCount);
+            TransformRgbToBgr(static_cast<size_type*>(rawData), frame_info_.component_count, pixelCount);
         }
     }
 
@@ -342,7 +345,7 @@ public:
     {
         if (rawPixels_.rawStream)
         {
-            const std::streamsize bytesToWrite = static_cast<std::streamsize>(pixelCount) * params_.components * sizeof(size_type);
+            const std::streamsize bytesToWrite = static_cast<std::streamsize>(pixelCount) * frame_info_.component_count * sizeof(size_type);
             DecodeTransform(pSrc, buffer_.data(), pixelCount, sourceStride);
 
             const auto bytesWritten = rawPixels_.rawStream->sputn(reinterpret_cast<char*>(buffer_.data()), bytesToWrite);
@@ -352,14 +355,16 @@ public:
         else
         {
             DecodeTransform(pSrc, rawPixels_.rawData, pixelCount, sourceStride);
-            rawPixels_.rawData += params_.stride;
+            rawPixels_.rawData += stride_;
         }
     }
 
 private:
     using size_type = typename TRANSFORM::size_type;
 
-    const JlsParameters& params_;
+    const frame_info& frame_info_;
+    const coding_parameters& parameters_;
+    const uint32_t stride_;
     std::vector<size_type> tempLine_;
     std::vector<uint8_t> buffer_;
     TRANSFORM transform_;

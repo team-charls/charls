@@ -19,7 +19,7 @@ using namespace charls;
 namespace
 {
 
-void Triplet2Planar(vector<uint8_t>& buffer, Size size)
+void Triplet2Planar(vector<uint8_t>& buffer, const Size size)
 {
     vector<uint8_t> workBuffer(buffer.size());
 
@@ -34,7 +34,7 @@ void Triplet2Planar(vector<uint8_t>& buffer, Size size)
 }
 
 
-bool VerifyEncodedBytes(const void* uncompressedData, size_t uncompressedLength, const void* compressedData, size_t compressedLength)
+bool VerifyEncodedBytes(const void* uncompressedData, const size_t uncompressedLength, const void* compressedData, const size_t compressedLength)
 {
     JlsParameters info{};
     error_code error = JpegLsReadHeader(compressedData, compressedLength, &info, nullptr);
@@ -59,7 +59,7 @@ bool VerifyEncodedBytes(const void* uncompressedData, size_t uncompressedLength,
 }
 
 
-void TestCompliance(const uint8_t* compressedBytes, size_t compressedLength, const uint8_t* uncompressedData, size_t uncompressedLength, bool checkEncode)
+void TestCompliance(const uint8_t* compressedBytes, const size_t compressedLength, const uint8_t* uncompressedData, const size_t uncompressedLength, const bool checkEncode)
 {
     JlsParameters info{};
     error_code error = JpegLsReadHeader(compressedBytes, compressedLength, &info, nullptr);
@@ -89,7 +89,7 @@ void TestCompliance(const uint8_t* compressedBytes, size_t compressedLength, con
 }
 
 
-void DecompressFile(const char* strNameEncoded, const char* strNameRaw, int offset, bool checkEncode = true)
+void DecompressFile(const char* strNameEncoded, const char* strNameRaw, const int offset, const bool checkEncode = true)
 {
     cout << "Conformance test:" << strNameEncoded << "\n\r";
     vector<uint8_t> encodedBuffer = ReadFile(strNameEncoded);
