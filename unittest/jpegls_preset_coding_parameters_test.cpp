@@ -72,7 +72,7 @@ namespace test {
 TEST_CLASS(JpeglsPresetCodingParametersTest)
 {
 public:
-    TEST_METHOD(TableC3)
+    TEST_METHOD(TableC3) // NOLINT
     {
         const auto parameters{compute_default(255, 0)};
 
@@ -83,7 +83,7 @@ public:
         Assert::AreEqual(64, parameters.reset_value);
     }
 
-    TEST_METHOD(MaxValueLossless)
+    TEST_METHOD(MaxValueLossless) // NOLINT
     {
         const auto expected{ComputeDefaultsUsingReferenceImplementation(65535, 0)};
         const auto parameters{compute_default(65535, 0)};
@@ -95,7 +95,7 @@ public:
         Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
-    TEST_METHOD(MinValueLossless)
+    TEST_METHOD(MinValueLossless) // NOLINT
     {
         const auto expected{ComputeDefaultsUsingReferenceImplementation(3, 0)};
         const auto parameters{compute_default(3, 0)};
@@ -107,7 +107,7 @@ public:
         Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
-    TEST_METHOD(MinHighValueLossless)
+    TEST_METHOD(MinHighValueLossless) // NOLINT
     {
         const auto expected{ComputeDefaultsUsingReferenceImplementation(128, 0)};
         const auto parameters{compute_default(128, 0)};
@@ -119,7 +119,7 @@ public:
         Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
-    TEST_METHOD(MaxLowValueLossless)
+    TEST_METHOD(MaxLowValueLossless) // NOLINT
     {
         const auto expected{ComputeDefaultsUsingReferenceImplementation(127, 0)};
         const auto parameters{compute_default(127, 0)};
@@ -131,7 +131,7 @@ public:
         Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
-    TEST_METHOD(MaxValueMaxLossy)
+    TEST_METHOD(MaxValueMaxLossy) // NOLINT
     {
         const auto expected{ComputeDefaultsUsingReferenceImplementation(65535, 255)};
         const auto parameters{compute_default(65535, 255)};
@@ -143,7 +143,7 @@ public:
         Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
-    TEST_METHOD(MinValueMaxLossy)
+    TEST_METHOD(MinValueMaxLossy) // NOLINT
     {
         const auto expected{ComputeDefaultsUsingReferenceImplementation(3, 1)};
         const auto parameters{compute_default(3, 1)};
@@ -155,7 +155,7 @@ public:
         Assert::AreEqual(expected.Reset, parameters.reset_value);
     }
 
-    TEST_METHOD(is_valid_default)
+    TEST_METHOD(is_valid_default) // NOLINT
     {
         constexpr auto bits_per_sample = 16;
         constexpr auto maximum_component_value = (1 << bits_per_sample) - 1;
@@ -164,7 +164,7 @@ public:
         Assert::IsTrue(is_valid(pc_parameters, maximum_component_value, 0));
     }
 
-    TEST_METHOD(is_valid_thresholds_zero)
+    TEST_METHOD(is_valid_thresholds_zero) // NOLINT
     {
         constexpr auto bits_per_sample = 16;
         constexpr auto maximum_component_value = (1 << bits_per_sample) - 1;
@@ -174,5 +174,5 @@ public:
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls

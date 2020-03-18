@@ -4,20 +4,19 @@
 #include "compliance.h"
 #include "util.h"
 
+#include <array>
+#include <cstring>
 #include <iostream>
 #include <vector>
-#include <cstring>
-#include <array>
 
+using std::array;
 using std::cout;
 using std::error_code;
 using std::swap;
 using std::vector;
-using std::array;
 using namespace charls;
 
-namespace
-{
+namespace {
 
 void Triplet2Planar(vector<uint8_t>& buffer, const Size size)
 {
@@ -70,7 +69,7 @@ void TestCompliance(const uint8_t* compressedBytes, const size_t compressedLengt
         Assert::IsTrue(VerifyEncodedBytes(uncompressedData, uncompressedLength, compressedBytes, compressedLength));
     }
 
-    vector<uint8_t> destination(static_cast<size_t>(info.height) *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
+    vector<uint8_t> destination(static_cast<size_t>(info.height) * info.width * ((info.bitsPerSample + 7) / 8) * info.components);
 
     error = JpegLsDecode(destination.data(), destination.size(), compressedBytes, compressedLength, nullptr, nullptr);
     Assert::IsTrue(!error);
@@ -152,10 +151,10 @@ void DecompressFile(const char* strNameEncoded, const char* strNameRaw, const in
 ////};
 
 
-const array<uint8_t, 16> buffer = { 0,   0,  90,  74,
-68,  50,  43, 205,
-64, 145, 145, 145,
-100, 145, 145, 145};
+const array<uint8_t, 16> buffer = {0, 0, 90, 74,
+                                   68, 50, 43, 205,
+                                   64, 145, 145, 145,
+                                   100, 145, 145, 145};
 ////const uint8_t bufferEncoded[] =   {   0xFF, 0xD8, 0xFF, 0xF7, 0x00, 0x0B, 0x08, 0x00, 0x04, 0x00, 0x04, 0x01, 0x01, 0x11, 0x00, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00,
 ////0xC0, 0x00, 0x00, 0x6C, 0x80, 0x20, 0x8E,
 ////0x01, 0xC0, 0x00, 0x00, 0x57, 0x40, 0x00, 0x00, 0x6E, 0xE6, 0x00, 0x00, 0x01, 0xBC, 0x18, 0x00,
@@ -185,38 +184,38 @@ void TestColorTransforms_HpImages()
 void TestConformance()
 {
     // Test 1
-    DecompressFile("test/conformance/T8C0E0.JLS", "test/conformance/TEST8.PPM",15);
+    DecompressFile("test/conformance/T8C0E0.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 2
-    DecompressFile("test/conformance/T8C1E0.JLS", "test/conformance/TEST8.PPM",15);
+    DecompressFile("test/conformance/T8C1E0.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 3
     DecompressFile("test/conformance/T8C2E0.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 4
-    DecompressFile("test/conformance/T8C0E3.JLS", "test/conformance/TEST8.PPM",15);
+    DecompressFile("test/conformance/T8C0E3.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 5
-    DecompressFile("test/conformance/T8C1E3.JLS", "test/conformance/TEST8.PPM",15);
+    DecompressFile("test/conformance/T8C1E3.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 6
-    DecompressFile("test/conformance/T8C2E3.JLS", "test/conformance/TEST8.PPM",15);
+    DecompressFile("test/conformance/T8C2E3.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 7
     // Test 8
 
     // Test 9
-    DecompressFile("test/conformance/T8NDE0.JLS", "test/conformance/TEST8BS2.PGM",15);
+    DecompressFile("test/conformance/T8NDE0.JLS", "test/conformance/TEST8BS2.PGM", 15);
 
     // Test 10
-    DecompressFile("test/conformance/T8NDE3.JLS", "test/conformance/TEST8BS2.PGM",15);
+    DecompressFile("test/conformance/T8NDE3.JLS", "test/conformance/TEST8BS2.PGM", 15);
 
     // Test 11
-    DecompressFile("test/conformance/T16E0.JLS", "test/conformance/TEST16.PGM",16);
+    DecompressFile("test/conformance/T16E0.JLS", "test/conformance/TEST16.PGM", 16);
 
     // Test 12
-    DecompressFile("test/conformance/T16E3.JLS", "test/conformance/TEST16.PGM",16);
+    DecompressFile("test/conformance/T16E3.JLS", "test/conformance/TEST16.PGM", 16);
 
     // additional, Lena compressed with other codec (UBC?), vfy with CharLS
-    DecompressFile("test/lena8b.jls", "test/lena8b.raw",0);
+    DecompressFile("test/lena8b.jls", "test/lena8b.raw", 0);
 }

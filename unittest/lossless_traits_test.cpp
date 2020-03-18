@@ -16,10 +16,11 @@ namespace test {
 TEST_CLASS(lossless_traits_test)
 {
 public:
-    TEST_METHOD(TestTraits16bit)
+    TEST_METHOD(TestTraits16bit) // NOLINT
     {
-        const auto traits1 = charls::DefaultTraits<uint16_t, uint16_t>(4095,0);
-        const auto traits2 = charls::LosslessTraits<uint16_t, 12>();
+        using lossless_traits = LosslessTraits<uint16_t, 12>;
+        const auto traits1 = DefaultTraits<uint16_t, uint16_t>(4095,0);
+        const lossless_traits traits2;
 
         Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
         Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
@@ -29,21 +30,22 @@ public:
 
         for (int i = -4096; i <= 4096; ++i)
         {
-            Assert::IsTrue(traits1.ModuloRange(i) == traits2.ModuloRange(i));
-            Assert::IsTrue(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
+            Assert::IsTrue(traits1.ModuloRange(i) == lossless_traits::ModuloRange(i));
+            Assert::IsTrue(traits1.ComputeErrVal(i) == lossless_traits::ComputeErrVal(i));
         }
 
         for (int i = -8095; i <= 8095; ++i)
         {
-            Assert::IsTrue(traits1.CorrectPrediction(i) == traits2.CorrectPrediction(i));
-            Assert::IsTrue(traits1.IsNear(i,2) == traits2.IsNear(i,2));
+            Assert::IsTrue(traits1.CorrectPrediction(i) == lossless_traits::CorrectPrediction(i));
+            Assert::IsTrue(traits1.IsNear(i,2) == lossless_traits::IsNear(i, 2));
         }
     }
 
-    TEST_METHOD(TestTraits8bit)
+    TEST_METHOD(TestTraits8bit) // NOLINT
     {
-        const auto traits1 = charls::DefaultTraits<uint8_t, uint8_t>(255,0);
-        const auto traits2 = charls::LosslessTraits<uint8_t, 8>();
+        using lossless_traits = LosslessTraits<uint8_t, 8>;
+        const auto traits1 = DefaultTraits<uint8_t, uint8_t>(255,0);
+        const lossless_traits traits2;
 
         Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
         Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
@@ -53,17 +55,17 @@ public:
 
         for (int i = -255; i <= 255; ++i)
         {
-            Assert::IsTrue(traits1.ModuloRange(i) == traits2.ModuloRange(i));
-            Assert::IsTrue(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
+            Assert::IsTrue(traits1.ModuloRange(i) == lossless_traits::ModuloRange(i));
+            Assert::IsTrue(traits1.ComputeErrVal(i) == lossless_traits::ComputeErrVal(i));
         }
 
         for (int i = -255; i <= 512; ++i)
         {
-            Assert::IsTrue(traits1.CorrectPrediction(i) == traits2.CorrectPrediction(i));
-            Assert::IsTrue(traits1.IsNear(i,2) == traits2.IsNear(i,2));
+            Assert::IsTrue(traits1.CorrectPrediction(i) == lossless_traits::CorrectPrediction(i));
+            Assert::IsTrue(traits1.IsNear(i,2) == lossless_traits::IsNear(i,2));
         }
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls

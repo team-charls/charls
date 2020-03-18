@@ -5,37 +5,71 @@
 # Having all warnings enables helps to find problems when new code is added to the project. Some warnings are however
 # to noisy and adding NO_LINT suppressions make the code less readable.
 #
-# -fuchsia-* => Rationale: Rules only apply to Fuchsia projects.
-# -google-* => Rationale: Rules only apply to Google projects.
-# -clang-diagnostic-c++98-compat => Rationale: CharLS targets C++14
+# -fuchsia-* => Rationale: Rules only apply to Fuchsia projects are out of scope for CharLS
+# -google-* => Rationale: Rules only apply to Google projects are out of scope for CharLS
+# -android-* => Rationale: Rules only apply to Android projects are out of scope for CharLS
+# -llvm-header-guard => Rationale: #pragma once is used
+# -hicpp-no-array-decay => Rationale: alias for cppcoreguidelines-pro-bounds-constant-array-index
+# -hicpp-signed-bitwise => Rationale: Bad test, types are checked, not values.
+# -clang-diagnostic-c++98-compat* => Rationale: CharLS targets C++14
+# -clang-diagnostic-c++98-c++11-compat => Rationale: CharLS targets C++14
 # -clang-diagnostic-unused-macros => Rationale: Macros defined in header are reported as problem
+# -clang-diagnostic-sign-conversion => Rationale: warning will be enabled in additional steps
+# -clang-diagnostic-switch-enum => Rationale: options are handled by default case
+# -clang-diagnostic-exit-time-destructors => Rationale: Acceptable construction
+# -clang-diagnostic-pragma-once-outside-header => Rationale: Generates false warnings for usage in header files
+# -clang-analyzer-core.NonNullParamChecker => Rationale: cannot be effective disabled, already checked by other checkers.
+# -misc-non-private-member-variables-in-classes => Rationale: design can be ok, manual review is better
 # -modernize-use-trailing-return-type => Rationale: A style recommendation, this style is selected for CharLS
 # -readability-magic-numbers => Rationale: To critical rule, used numbers are logical
+# -readability-named-parameter => Rationale: to many non problematic warnings
+# -readability-implicit-bool-conversion => Rationale: style issue
 # -cppcoreguidelines-avoid-magic-numbers => Rationale: Alias
 # -cppcoreguidelines-pro-bounds-pointer-arithmetic => Rationale: usage is required in codec implementation
 # -cppcoreguidelines-pro-type-reinterpret-cast => Rationale: To strict for conditions that require its usage
 # -cppcoreguidelines-macro-usage => Rationale: Many false warnings
+# -cppcoreguidelines-pro-bounds-array-to-pointer-decay => Span is not available
+# -cppcoreguidelines-pro-type-const-cast => Rationale: const cast is needed for legacy functions
+# -cppcoreguidelines-pro-type-union-access => Rationale: std::variant not an option as target is C++14
+# -cppcoreguidelines-non-private-member-variables-in-classes => Warning is too strict, manual review code review is preferred
+# -cppcoreguidelines-pro-bounds-constant-array-index => gsl:at is not used by design
+# -cert-msc32-c => Rationale: predictable seed is by design (random used for testing, not crypto)
+# -cert-msc51-cpp => Rationale: alias for cert-msc32-c
 # -cert-err58-cpp => Rationale: Only exception that could be thrown is out of memory
-# -clang-diagnostic-switch-enum => Rationale: options are handled by default case
-# -clang-diagnostic-exit-time-destructors => Rationale: Acceptable construction
-# -clang-diagnostic-pragma-once-outside-header => Rationale: Generates false warnings for usage in header files
 
 ---
 Checks:          '*,
                   -fuchsia-*,
                   -google-*,
-                  -clang-diagnostic-c++98-compat,
+                  -android-*,
+                  -llvm-header-guard,
+                  -hicpp-no-array-decay,
+                  -hicpp-signed-bitwise,
+                  -clang-diagnostic-c++98-compat*,
+                  -clang-diagnostic-c++98-c++11-compat,
                   -clang-diagnostic-unused-macros,
+                  -clang-diagnostic-sign-conversion,
+                  -clang-diagnostic-switch-enum,
+                  -clang-diagnostic-exit-time-destructors,
+                  -clang-diagnostic-pragma-once-outside-header,
+                  -clang-analyzer-core.NonNullParamChecker,
+                  -misc-non-private-member-variables-in-classes,
                   -modernize-use-trailing-return-type,
                   -readability-magic-numbers,
+                  -readability-named-parameter,
+                  -readability-implicit-bool-conversion,
                   -cppcoreguidelines-avoid-magic-numbers,
                   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
                   -cppcoreguidelines-pro-type-reinterpret-cast,
                   -cppcoreguidelines-macro-usage,
-                  -cert-err58-cpp,
-                  -clang-diagnostic-switch-enum,
-                  -clang-diagnostic-exit-time-destructors,
-                  -clang-diagnostic-pragma-once-outside-header'
+                  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+                  -cppcoreguidelines-pro-type-const-cast,
+                  -cppcoreguidelines-pro-type-union-access,
+                  -cppcoreguidelines-non-private-member-variables-in-classes,
+                  -cppcoreguidelines-pro-bounds-constant-array-index,
+                  -cert-msc32-c,
+                  -cert-msc51-cpp,
+                  -cert-err58-cpp'
 WarningsAsErrors: false
 HeaderFilterRegex: ''
 FormatStyle:     none
@@ -48,5 +82,3 @@ CheckOptions:
     value:           '2'
   - key:             readability-implicit-bool-conversion.AllowPointerConditions
     value:           '1'
-  - key:             hicpp-signed-bitwise.IgnorePositiveIntegerLiterals
-    value:           'true'

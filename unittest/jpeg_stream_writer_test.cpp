@@ -19,13 +19,13 @@ namespace test {
 TEST_CLASS(JpegStreamWriterTest)
 {
 public:
-    TEST_METHOD(LengthWillbeZeroAfterCreate)
+    TEST_METHOD(LengthWillbeZeroAfterCreate) // NOLINT
     {
         const JpegStreamWriter writer;
         Assert::AreEqual(static_cast<size_t>(0), writer.GetLength());
     }
 
-    TEST_METHOD(WriteStartOfImage)
+    TEST_METHOD(WriteStartOfImage) // NOLINT
     {
         array<uint8_t, 2> buffer{};
         const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
@@ -39,7 +39,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::StartOfImage), buffer[1]);
     }
 
-    TEST_METHOD(WriteEndOfImage)
+    TEST_METHOD(WriteEndOfImage) // NOLINT
     {
         array<uint8_t, 2> buffer{};
         const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
@@ -53,7 +53,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::EndOfImage), buffer[1]);
     }
 
-    TEST_METHOD(WriteSpiffSegment)
+    TEST_METHOD(WriteSpiffSegment) // NOLINT
     {
         array<uint8_t, 34> buffer{};
         const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
@@ -129,7 +129,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[33]);
     }
 
-    TEST_METHOD(WriteSpiffEndOfDirectorySegment)
+    TEST_METHOD(WriteSpiffEndOfDirectorySegment) // NOLINT
     {
         array<uint8_t, 10> buffer{};
         const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
@@ -159,7 +159,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::StartOfImage), buffer[9]);
     }
 
-    TEST_METHOD(WriteSpiffDirectoryEntry)
+    TEST_METHOD(WriteSpiffDirectoryEntry) // NOLINT
     {
         array<uint8_t, 10> buffer{};
         const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
@@ -189,7 +189,7 @@ public:
         Assert::AreEqual(data[1], buffer[9]);
     }
 
-    TEST_METHOD(WriteStartOfFrameSegment)
+    TEST_METHOD(WriteStartOfFrameSegment) // NOLINT
     {
         constexpr int32_t bitsPerSample = 8;
         constexpr int32_t componentCount = 3;
@@ -226,7 +226,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[18]);
     }
 
-    TEST_METHOD(WriteStartOfFrameMarkerSegmentWithLowBoundaryValues)
+    TEST_METHOD(WriteStartOfFrameMarkerSegmentWithLowBoundaryValues) // NOLINT
     {
         constexpr int32_t bitsPerSample = 2;
         constexpr int32_t componentCount = 1;
@@ -242,7 +242,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(componentCount), buffer[9]);
     }
 
-    TEST_METHOD(WriteStartOfFrameMarkerSegmentWithHighBoundaryValuesAndSerialize)
+    TEST_METHOD(WriteStartOfFrameMarkerSegmentWithHighBoundaryValuesAndSerialize) // NOLINT
     {
         array<uint8_t, 775> buffer{};
         const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
@@ -257,7 +257,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[buffer.size() - 3]); // Last component index.
     }
 
-    TEST_METHOD(WriteColorTransformSegment)
+    TEST_METHOD(WriteColorTransformSegment) // NOLINT
     {
         const color_transformation transformation = color_transformation::hp1;
 
@@ -277,7 +277,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(transformation), buffer[8]);
     }
 
-    TEST_METHOD(WriteJpegLSExtendedParametersMarkerAndSerialize)
+    TEST_METHOD(WriteJpegLSExtendedParametersMarkerAndSerialize) // NOLINT
     {
         const jpegls_pc_parameters presets{2, 1, 2, 3, 7};
 
@@ -312,7 +312,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(7), buffer[14]);
     }
 
-    TEST_METHOD(WriteStartOfScanMarker)
+    TEST_METHOD(WriteStartOfScanMarker) // NOLINT
     {
         array<uint8_t, 10> buffer{};
         const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
@@ -330,5 +330,5 @@ public:
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls

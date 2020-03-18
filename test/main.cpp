@@ -9,37 +9,39 @@
 
 #include "bitstreamdamage.h"
 #include "compliance.h"
-#include "performance.h"
 #include "dicomsamples.h"
+#include "performance.h"
 
-#include <sstream>
-#include <fstream>
-#include <vector>
 #include <algorithm>
 #include <array>
+#include <fstream>
+#include <random>
+#include <sstream>
 #include <string>
+#include <vector>
 
+using std::array;
+using std::basic_filebuf;
 using std::cout;
+using std::error_code;
+using std::fstream;
+using std::getline;
 using std::ios;
 using std::ios_base;
-using std::error_code;
-using std::array;
-using std::vector;
-using std::basic_filebuf;
-using std::streamoff;
-using std::stringstream;
 using std::istream;
-using std::ostream;
-using std::fstream;
-using std::string;
 using std::iter_swap;
-using std::getline;
+using std::mt19937;
+using std::ostream;
+using std::streamoff;
+using std::string;
+using std::stringstream;
+using std::uniform_int_distribution;
+using std::vector;
 using namespace charls;
 
-namespace
-{
+namespace {
 
-constexpr ios_base::openmode mode_input  = ios_base::in  | ios::binary;
+constexpr ios_base::openmode mode_input = ios_base::in | ios::binary;
 constexpr ios_base::openmode mode_output = ios_base::out | ios::binary;
 
 
@@ -50,7 +52,7 @@ vector<uint8_t> ScanFile(const char* strNameEncoded, JlsParameters* params)
     basic_filebuf<char> jlsFile;
     jlsFile.open(strNameEncoded, mode_input);
 
-    const ByteStreamInfo rawStreamInfo {&jlsFile, nullptr, 0};
+    const ByteStreamInfo rawStreamInfo{&jlsFile, nullptr, 0};
 
     const error_code error = JpegLsReadHeaderStream(rawStreamInfo, params);
     if (error)
@@ -62,63 +64,67 @@ vector<uint8_t> ScanFile(const char* strNameEncoded, JlsParameters* params)
 
 void TestTraits16bit()
 {
-    const auto traits1 = DefaultTraits<uint16_t, uint16_t>(4095,0);
-    const auto traits2 = LosslessTraits<uint16_t, 12>();
+    const auto traits1 = DefaultTraits<uint16_t, uint16_t>(4095, 0);
+    using lossless_traits = LosslessTraits<uint16_t, 12>;
 
-    Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
-    Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
-    Assert::IsTrue(traits1.RESET == traits2.RESET);
-    Assert::IsTrue(traits1.bpp == traits2.bpp);
-    Assert::IsTrue(traits1.qbpp == traits2.qbpp);
+    Assert::IsTrue(traits1.LIMIT == lossless_traits::LIMIT);
+    Assert::IsTrue(traits1.MAXVAL == lossless_traits::MAXVAL);
+    Assert::IsTrue(traits1.RESET == lossless_traits::RESET);
+    Assert::IsTrue(traits1.bpp == lossless_traits::bpp);
+    Assert::IsTrue(traits1.qbpp == lossless_traits::qbpp);
 
     for (int i = -4096; i < 4096; ++i)
     {
-        Assert::IsTrue(traits1.ModuloRange(i) == traits2.ModuloRange(i));
-        Assert::IsTrue(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
+        Assert::IsTrue(traits1.ModuloRange(i) == lossless_traits::ModuloRange(i));
+        Assert::IsTrue(traits1.ComputeErrVal(i) == lossless_traits::ComputeErrVal(i));
     }
 
     for (int i = -8095; i < 8095; ++i)
     {
-        Assert::IsTrue(traits1.CorrectPrediction(i) == traits2.CorrectPrediction(i));
-        Assert::IsTrue(traits1.IsNear(i,2) == traits2.IsNear(i,2));
+        Assert::IsTrue(traits1.CorrectPrediction(i) == lossless_traits::CorrectPrediction(i));
+        Assert::IsTrue(traits1.IsNear(i, 2) == lossless_traits::IsNear(i, 2));
     }
 }
 
 
 void TestTraits8bit()
 {
-    const auto traits1 = DefaultTraits<uint8_t, uint8_t>(255,0);
-    const auto traits2 = LosslessTraits<uint8_t, 8>();
+    const auto traits1 = DefaultTraits<uint8_t, uint8_t>(255, 0);
+    using lossless_traits = LosslessTraits<uint8_t, 8>;
 
-    Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
-    Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
-    Assert::IsTrue(traits1.RESET == traits2.RESET);
-    Assert::IsTrue(traits1.bpp == traits2.bpp);
-    Assert::IsTrue(traits1.qbpp == traits2.qbpp);
+    Assert::IsTrue(traits1.LIMIT == lossless_traits::LIMIT);
+    Assert::IsTrue(traits1.MAXVAL == lossless_traits::MAXVAL);
+    Assert::IsTrue(traits1.RESET == lossless_traits::RESET);
+    Assert::IsTrue(traits1.bpp == lossless_traits::bpp);
+    Assert::IsTrue(traits1.qbpp == lossless_traits::qbpp);
 
     for (int i = -255; i < 255; ++i)
     {
-        Assert::IsTrue(traits1.ModuloRange(i) == traits2.ModuloRange(i));
-        Assert::IsTrue(traits1.ComputeErrVal(i) == traits2.ComputeErrVal(i));
+        Assert::IsTrue(traits1.ModuloRange(i) == lossless_traits::ModuloRange(i));
+        Assert::IsTrue(traits1.ComputeErrVal(i) == lossless_traits::ComputeErrVal(i));
     }
 
     for (int i = -255; i < 512; ++i)
     {
-        Assert::IsTrue(traits1.CorrectPrediction(i) == traits2.CorrectPrediction(i));
-        Assert::IsTrue(traits1.IsNear(i,2) == traits2.IsNear(i,2));
+        Assert::IsTrue(traits1.CorrectPrediction(i) == lossless_traits::CorrectPrediction(i));
+        Assert::IsTrue(traits1.IsNear(i, 2) == lossless_traits::IsNear(i, 2));
     }
 }
 
 
 vector<uint8_t> MakeSomeNoise(const size_t length, const size_t bitCount, const int seed)
 {
-    srand(seed);
+    const auto max_value = (1U << bitCount) - 1U;
+    mt19937 generator(seed);
+
+    MSVC_WARNING_SUPPRESS(26496) // cannot be marked as const as operator() is not always defined const.
+    uniform_int_distribution<uint32_t> distribution(0, max_value);
+    MSVC_WARNING_UNSUPPRESS()
+
     vector<uint8_t> buffer(length);
-    const auto mask = static_cast<uint8_t>((1 << bitCount) - 1);
     for (size_t i = 0; i < length; ++i)
     {
-        const auto val = static_cast<uint8_t>(rand());
-        buffer[i] = static_cast<uint8_t>(val & mask);
+        buffer[i] = static_cast<uint8_t>(distribution(generator));
     }
     return buffer;
 }
@@ -126,16 +132,20 @@ vector<uint8_t> MakeSomeNoise(const size_t length, const size_t bitCount, const 
 
 vector<uint8_t> MakeSomeNoise16bit(const size_t length, const int bitCount, const int seed)
 {
-    srand(seed);
+    const auto max_value = static_cast<uint16_t>((1U << bitCount) - 1U);
+    mt19937 generator(seed);
+
+    MSVC_WARNING_SUPPRESS(26496) // cannot be marked as const as operator() is not always defined const.
+    uniform_int_distribution<uint16_t> distribution(0, max_value);
+    MSVC_WARNING_UNSUPPRESS()
+
     vector<uint8_t> buffer(length * 2);
-    const auto mask = static_cast<uint16_t>((1 << bitCount) - 1);
     for (size_t i = 0; i < length; i = i + 2)
     {
-        const uint16_t value = static_cast<uint16_t>(rand()) & mask;
+        const uint16_t value = distribution(generator);
 
         buffer[i] = static_cast<uint8_t>(value);
         buffer[i] = static_cast<uint8_t>(value >> 8);
-
     }
     return buffer;
 }
@@ -145,7 +155,7 @@ void TestNoiseImage()
 {
     const Size size2 = Size(512, 512);
 
-    for (size_t bitDepth = 8; bitDepth >=2; --bitDepth)
+    for (size_t bitDepth = 8; bitDepth >= 2; --bitDepth)
     {
         stringstream label;
         label << "noise, bit depth: " << bitDepth;
@@ -208,10 +218,11 @@ void TestFailOnTooSmallOutputBuffer()
 
 void TestBgra()
 {
-    char input[] = "RGBARGBARGBARGBA1234";
-    const char expected[] = "BGRABGRABGRABGRA1234";
-    TransformRgbToBgr(input, 4, 4);
-    Assert::IsTrue(strcmp(input, expected) == 0);
+    array<uint8_t, 20> input{'R', 'G', 'B', 'A', 'R', 'G', 'B', 'A', 'R', 'G', 'B', 'A', 'R', 'G', 'B', 'A', 1, 2, 3, 4};
+    const array<uint8_t, 20> expected{'B', 'G', 'R', 'A', 'B', 'G', 'R', 'A', 'B', 'G', 'R', 'A', 'B', 'G', 'R', 'A', 1, 2, 3, 4};
+
+    TransformRgbToBgr(input.data(), 4, 4);
+    Assert::IsTrue(expected == input);
 }
 
 
@@ -301,12 +312,12 @@ void TestDecodeRect()
 {
     JlsParameters params{};
     vector<uint8_t> encodedData = ScanFile("test/lena8b.jls", &params);
-    vector<uint8_t> decodedBuffer(static_cast<size_t>(params.width) * params.height*params.components);
+    vector<uint8_t> decodedBuffer(static_cast<size_t>(params.width) * params.height * params.components);
 
     error_code error = JpegLsDecode(decodedBuffer.data(), decodedBuffer.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
     Assert::IsTrue(!error);
 
-    const JlsRect rect = { 128, 128, 256, 1 };
+    const JlsRect rect = {128, 128, 256, 1};
     vector<uint8_t> decodedData(static_cast<size_t>(rect.Width) * rect.Height);
     decodedData.push_back(0x1f);
     error = JpegLsDecodeRect(decodedData.data(), decodedData.size(), encodedData.data(), encodedData.size(), rect, nullptr, nullptr);
@@ -371,7 +382,9 @@ bool DecodeToPnm(istream& input, ostream& output)
     }
 
     const int magicNumber = params.components == 3 ? 6 : 5;
-    output << 'P' << magicNumber << "\n" << params.width << ' ' << params.height << "\n" << maxValue << "\n";
+    output << 'P' << magicNumber << "\n"
+           << params.width << ' ' << params.height << "\n"
+           << maxValue << "\n";
     output.write(reinterpret_cast<char*>(outputBuffer.data()), outputBuffer.size());
 
     return true;
@@ -415,7 +428,7 @@ vector<int> readPnmHeader(istream& pnmFile)
 bool EncodePnm(istream& pnmFile, const ostream& jlsFileStream)
 {
     vector<int> readValues = readPnmHeader(pnmFile);
-    if (readValues.size() !=4)
+    if (readValues.size() != 4)
         return false;
 
     JlsParameters params{};
@@ -467,7 +480,7 @@ bool ComparePnm(istream& pnmFile1, istream& pnmFile2)
 
     if (header1[0] != header2[0])
     {
-        cout << "Header type " << header1[0] << " is not equal with type "<< header2[0] << "\n";
+        cout << "Header type " << header1[0] << " is not equal with type " << header2[0] << "\n";
         return false;
     }
 
@@ -627,7 +640,7 @@ void UnitTest()
 } // namespace
 
 
-int main(const int argc, const char * const argv[])
+int main(const int argc, const char* const argv[])  // NOLINT(bugprone-exception-escape)
 {
     if (argc == 1)
     {

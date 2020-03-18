@@ -5,12 +5,12 @@
 
 #include <charls/jpegls_error.h>
 
-#include "util.h"
-#include "process_line.h"
 #include "jpeg_marker_code.h"
+#include "process_line.h"
+#include "util.h"
 
-#include <memory>
 #include <cassert>
+#include <memory>
 
 namespace charls {
 
@@ -69,7 +69,7 @@ public:
         if (count > 64)
             return;
 
-        for (std::size_t i = 0; i < static_cast < std::size_t>(count); ++i)
+        for (std::size_t i = 0; i < static_cast<std::size_t>(count); ++i)
         {
             buffer_[i] = position_[i];
         }
@@ -80,7 +80,7 @@ public:
         nextFFPosition_ += offset;
 
         const std::streamsize readBytes = byteStream_->sgetn(reinterpret_cast<char*>(endPosition_),
-            static_cast<std::streamsize>(buffer_.size()) - count);
+                                                             static_cast<std::streamsize>(buffer_.size()) - count);
         endPosition_ += readBytes;
     }
 
@@ -116,7 +116,7 @@ public:
     FORCE_INLINE bool OptimizedRead() noexcept
     {
         // Easy & fast: if there is no 0xFF byte in sight, we can read without bit stuffing
-        if (position_ < nextFFPosition_ - (sizeof(bufType)-1))
+        if (position_ < nextFFPosition_ - (sizeof(bufType) - 1))
         {
             readCache_ |= FromBigEndian<sizeof(bufType)>::Read(position_) >> validBits_;
             const int bytesToRead = (bufType_bit_count - validBits_) >> 3;
@@ -169,8 +169,7 @@ public:
             {
                 validBits_--;
             }
-        }
-        while (validBits_ < bufType_bit_count - 8);
+        } while (validBits_ < bufType_bit_count - 8);
 
         nextFFPosition_ = FindNextFF();
     }
@@ -273,7 +272,7 @@ public:
         }
         Skip(15);
 
-        for (int32_t highBitsCount = 15; ; highBitsCount++)
+        for (int32_t highBitsCount = 15;; highBitsCount++)
         {
             if (ReadBit())
                 return highBitsCount;

@@ -15,7 +15,7 @@ namespace test {
 TEST_CLASS(ColorTransformTest)
 {
 public:
-    TEST_METHOD(TransformHp1RoundTrip)
+    TEST_METHOD(TransformHp1RoundTrip) // NOLINT
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.
@@ -42,7 +42,7 @@ public:
         }
     }
 
-    TEST_METHOD(TransformHp2RoundTrip)
+    TEST_METHOD(TransformHp2RoundTrip) // NOLINT
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.
@@ -69,7 +69,7 @@ public:
         }
     }
 
-    TEST_METHOD(TransformHp3RoundTrip)
+    TEST_METHOD(TransformHp3RoundTrip) // NOLINT
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.
@@ -97,5 +97,5 @@ public:
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls

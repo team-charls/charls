@@ -17,6 +17,9 @@
 
 namespace charls {
 
+class DecoderStrategy;
+class EncoderStrategy;
+
 extern std::array<CTable, 16> decodingTables;
 extern std::vector<signed char> rgquant8Ll;
 extern std::vector<signed char> rgquant10Ll;
@@ -193,7 +196,10 @@ public:
 #endif
 
     // Note: depending on the base class EncodeScan OR DecodeScan will be virtual and abstract, cannot use override in all cases.
+    // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override)
     size_t EncodeScan(std::unique_ptr<ProcessLine> processLine, ByteStreamInfo& compressedData);
+
+    // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override)
     void DecodeScan(std::unique_ptr<ProcessLine> processLine, const JlsRect& rect, ByteStreamInfo& compressedData);
 
 #if defined(__clang__)

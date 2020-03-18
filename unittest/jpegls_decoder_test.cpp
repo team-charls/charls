@@ -7,14 +7,15 @@
 
 #include <charls/charls.h>
 
+#include <array>
 #include <tuple>
 #include <vector>
-
 
 #include "../src/jpeg_marker_code.h"
 #include "../src/jpegls_preset_parameters_type.h"
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
+using std::array;
 using std::error_code;
 using std::tie;
 using std::vector;
@@ -28,7 +29,7 @@ void push_back(std::vector<uint8_t>& values, const uint16_t value)
     values.push_back(static_cast<uint8_t>(value));
 }
 
-}
+} // namespace
 
 namespace charls {
 namespace test {
@@ -38,25 +39,25 @@ namespace test {
 TEST_CLASS(jpegls_decoder_test)
 {
 public:
-    TEST_METHOD(create_destroy)
+    TEST_METHOD(create_destroy) // NOLINT
     {
         // ReSharper disable once CppLocalVariableWithNonTrivialDtorIsNeverUsed
         jpegls_decoder decoder;
     }
 
-    TEST_METHOD(create_and_move)
+    TEST_METHOD(create_and_move) // NOLINT
     {
         jpegls_decoder decoder1;
 
         jpegls_decoder decoder2(std::move(decoder1));
 
         jpegls_decoder decoder3;
-        const uint8_t buffer[10]{};
-        decoder3.source(buffer, sizeof(buffer));
+        const array<uint8_t, 10> buffer{};
+        decoder3.source(buffer.data(), buffer.size());
         decoder3 = std::move(decoder2);
     }
 
-    TEST_METHOD(set_source_twice)
+    TEST_METHOD(set_source_twice) // NOLINT
     {
         jpegls_decoder decoder;
 
@@ -66,7 +67,7 @@ public:
             [&] { decoder.source(source); });
     }
 
-    TEST_METHOD(read_spiff_header_without_source)
+    TEST_METHOD(read_spiff_header_without_source) // NOLINT
     {
         jpegls_decoder decoder;
 
@@ -77,7 +78,7 @@ public:
                 });
     }
 
-    TEST_METHOD(destination_size_without_reading_header)
+    TEST_METHOD(destination_size_without_reading_header) // NOLINT
     {
         jpegls_decoder decoder;
 
@@ -85,7 +86,7 @@ public:
             [&] { static_cast<void>(decoder.destination_size()); });
     }
 
-    TEST_METHOD(read_header_without_source)
+    TEST_METHOD(read_header_without_source) // NOLINT
     {
         jpegls_decoder decoder;
 
@@ -93,7 +94,7 @@ public:
             [&] { decoder.read_header(); });
     }
 
-    TEST_METHOD(read_header_from_non_jpegls_data)
+    TEST_METHOD(read_header_from_non_jpegls_data) // NOLINT
     {
         const vector<uint8_t> source(100);
         jpegls_decoder decoder{source};
@@ -104,7 +105,7 @@ public:
         Assert::IsTrue(ec == jpegls_errc::jpeg_marker_start_byte_not_found);
     }
 
-    TEST_METHOD(frame_info_without_read_header)
+    TEST_METHOD(frame_info_without_read_header) // NOLINT
     {
         const vector<uint8_t> source(2000);
         jpegls_decoder decoder{source};
@@ -113,7 +114,7 @@ public:
             [&] { static_cast<void>(decoder.frame_info()); });
     }
 
-    TEST_METHOD(interleave_mode_without_read_header)
+    TEST_METHOD(interleave_mode_without_read_header) // NOLINT
     {
         const vector<uint8_t> source(2000);
         jpegls_decoder decoder{source};
@@ -122,7 +123,7 @@ public:
             [&] { static_cast<void>(decoder.interleave_mode()); });
     }
 
-    TEST_METHOD(near_lossless_without_read_header)
+    TEST_METHOD(near_lossless_without_read_header) // NOLINT
     {
         const vector<uint8_t> source(2000);
         jpegls_decoder decoder{source};
@@ -131,7 +132,7 @@ public:
             [&] { static_cast<void>(decoder.near_lossless()); });
     }
 
-    TEST_METHOD(preset_coding_parameters_without_read_header)
+    TEST_METHOD(preset_coding_parameters_without_read_header) // NOLINT
     {
         jpegls_decoder decoder;
 
@@ -142,7 +143,7 @@ public:
             [&] { static_cast<void>(decoder.preset_coding_parameters()); });
     }
 
-    TEST_METHOD(destination_size)
+    TEST_METHOD(destination_size) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
 
@@ -153,7 +154,7 @@ public:
         Assert::AreEqual(expected_destination_size, decoder.destination_size());
     }
 
-    TEST_METHOD(destination_size_stride_interleave_none)
+    TEST_METHOD(destination_size_stride_interleave_none) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
 
@@ -165,7 +166,7 @@ public:
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
 
-    TEST_METHOD(destination_size_stride_interleave_line)
+    TEST_METHOD(destination_size_stride_interleave_line) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C1E0.JLS")};
 
@@ -177,7 +178,7 @@ public:
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
 
-    TEST_METHOD(destination_size_stride_interleave_sample)
+    TEST_METHOD(destination_size_stride_interleave_sample) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C2E0.JLS")};
 
@@ -189,7 +190,7 @@ public:
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
 
-    TEST_METHOD(decode_reference_file_from_buffer)
+    TEST_METHOD(decode_reference_file_from_buffer) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
 
@@ -208,7 +209,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_with_default_pc_parameters_before_each_sos)
+    TEST_METHOD(decode_with_default_pc_parameters_before_each_sos) // NOLINT
     {
         vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
         insert_pc_parameters_segments(source, 3);
@@ -228,7 +229,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_with_destination_as_return)
+    TEST_METHOD(decode_with_destination_as_return) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
 
@@ -246,7 +247,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_with_16bit_destination_as_return)
+    TEST_METHOD(decode_with_16bit_destination_as_return) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
 
@@ -265,7 +266,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_without_reading_header)
+    TEST_METHOD(decode_without_reading_header) // NOLINT
     {
         jpegls_decoder decoder;
 
@@ -274,7 +275,7 @@ public:
             [&] { decoder.decode(buffer); });
     }
 
-    TEST_METHOD(read_spiff_header)
+    TEST_METHOD(read_spiff_header) // NOLINT
     {
         const vector<uint8_t> source = create_test_spiff_header();
         const jpegls_decoder decoder{source};
@@ -295,7 +296,7 @@ public:
         Assert::AreEqual(1024U, header.horizontal_resolution);
     }
 
-    TEST_METHOD(read_spiff_header_from_non_jpegls_data)
+    TEST_METHOD(read_spiff_header_from_non_jpegls_data) // NOLINT
     {
         const vector<uint8_t> source(100);
         const jpegls_decoder decoder{source};
@@ -307,7 +308,7 @@ public:
         Assert::IsTrue(ec == jpegls_errc::jpeg_marker_start_byte_not_found);
     }
 
-    TEST_METHOD(read_spiff_header_from_jpegls_without_spiff)
+    TEST_METHOD(read_spiff_header_from_jpegls_without_spiff) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
 
@@ -326,7 +327,7 @@ public:
         Assert::AreEqual(256U, frame_info.width);
     }
 
-    TEST_METHOD(read_header_twice)
+    TEST_METHOD(read_header_twice) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
 
@@ -338,7 +339,7 @@ public:
             [&] { static_cast<void>(decoder.read_header()); });
     }
 
-    TEST_METHOD(simple_decode)
+    TEST_METHOD(simple_decode) // NOLINT
     {
         const vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E0.JLS")};
 
@@ -357,7 +358,7 @@ public:
         Assert::AreEqual(expected_size, decoded_destination.size());
     }
 
-    TEST_METHOD(simple_decode_to_uint16_buffer)
+    TEST_METHOD(simple_decode_to_uint16_buffer) // NOLINT
     {
         const vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E0.JLS")};
 
@@ -376,7 +377,7 @@ public:
         Assert::AreEqual(expected_size, decoded_destination.size() * sizeof(uint16_t));
     }
 
-    TEST_METHOD(decode_file_with_ff_in_entropy_data)
+    TEST_METHOD(decode_file_with_ff_in_entropy_data) // NOLINT
     {
         const vector<uint8_t> source{read_file("ff_in_entropy_data.jls")};
 
@@ -396,7 +397,7 @@ public:
     }
 
 private:
-    static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator& begin, const vector<uint8_t>::iterator end)
+    static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator& begin, const vector<uint8_t>::iterator& end)
     {
         constexpr uint8_t start_of_scan = 0xDA;
 
@@ -440,5 +441,5 @@ private:
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls

@@ -5,14 +5,16 @@
 #include "util.h"
 
 #include <iostream>
+#include <random>
 #include <vector>
 
-using std::cout;
-using std::vector;
 using charls::jpegls_errc;
+using std::cout;
+using std::mt19937;
+using std::uniform_int_distribution;
+using std::vector;
 
-namespace
-{
+namespace {
 
 void TestDamagedBitStream1()
 {
@@ -27,7 +29,7 @@ void TestDamagedBitStream1()
 void TestDamagedBitStream2()
 {
     vector<uint8_t> encodedBuffer = ReadFile("test/lena8b.jls");
-    
+
     encodedBuffer.resize(900);
     encodedBuffer.resize(40000, 3);
 
@@ -54,7 +56,11 @@ void TestFileWithRandomHeaderDamage(const char* filename)
 {
     const vector<uint8_t> encodedBufferOriginal = ReadFile(filename);
 
-    srand(102347325);
+    mt19937 generator(102347325);
+
+    MSVC_WARNING_SUPPRESS(26496) // cannot be marked as const as operator() is not always defined const.
+    uniform_int_distribution<uint32_t> distribution(0, 255);
+    MSVC_WARNING_UNSUPPRESS()
 
     vector<uint8_t> destination(512 * 512);
 
@@ -65,22 +71,22 @@ void TestFileWithRandomHeaderDamage(const char* filename)
 
         for (int j = 0; j < 20; ++j)
         {
-            encodedBuffer[i] = static_cast<uint8_t>(rand());
-            encodedBuffer[i+1] = static_cast<uint8_t>(rand());
-            encodedBuffer[i+2] = static_cast<uint8_t>(rand());
-            encodedBuffer[i+3] = static_cast<uint8_t>(rand());
+            encodedBuffer[i] = static_cast<uint8_t>(distribution(generator));
+            encodedBuffer[i + 1] = static_cast<uint8_t>(distribution(generator));
+            encodedBuffer[i + 2] = static_cast<uint8_t>(distribution(generator));
+            encodedBuffer[i + 3] = static_cast<uint8_t>(distribution(generator));
 
             const auto error = JpegLsDecode(destination.data(), destination.size(), &encodedBuffer[0], encodedBuffer.size(), nullptr, nullptr);
             errors[static_cast<int>(error)]++;
         }
 
         cout << "With garbage input at index " << i << ": ";
-        for(unsigned int error = 0; error < errors.size(); ++error)
+        for (unsigned int error = 0; error < errors.size(); ++error)
         {
             if (errors[error] == 0)
                 continue;
 
-            cout <<  errors[error] << "x error (" << error << "); ";
+            cout << errors[error] << "x error (" << error << "); ";
         }
 
         cout << "\r\n";

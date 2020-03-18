@@ -65,14 +65,14 @@ protected:
         ASSERT(bitCount < 32 && bitCount >= 0);
         ASSERT((!decoder_) || (bitCount == 0 && bits == 0) || (decoder_->ReadLongValue(bitCount) == bits));
 #ifndef NDEBUG
-        const int mask = (1U << (bitCount)) - 1;
-        ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
+        const uint32_t mask = (1U << bitCount) - 1U;
+        ASSERT((static_cast<uint32_t>(bits) | mask) == mask); // Not used bits must be set to zero.
 #endif
 
         freeBitCount_ -= bitCount;
         if (freeBitCount_ >= 0)
         {
-            bitBuffer_ |= bits << freeBitCount_;
+            bitBuffer_ |= bits << freeBitCount_; // NOLINT
         }
         else
         {
@@ -98,9 +98,13 @@ protected:
 
         // if a 0xff was written, Flush() will force one unset bit anyway
         if (isFFWritten_)
+        {
             AppendToBitStream(0, (freeBitCount_ - 1) % 8);
+        }
         else
+        {
             AppendToBitStream(0, freeBitCount_ % 8);
+        }
 
         Flush();
         ASSERT(freeBitCount_ == 0x20);

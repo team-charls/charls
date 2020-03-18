@@ -20,7 +20,7 @@ namespace test {
 TEST_CLASS(version_test)
 {
 public:
-    TEST_METHOD(charls_get_version_string_test)
+    TEST_METHOD(charls_get_version_string_test) // NOLINT
     {
         const char* version = charls_get_version_string();
 
@@ -35,7 +35,7 @@ public:
         }
     }
 
-    TEST_METHOD(charls_get_version_number_all)
+    TEST_METHOD(charls_get_version_number_all) // NOLINT
     {
         int32_t major;
         int32_t minor;
@@ -48,7 +48,7 @@ public:
         Assert::AreEqual(CHARLS_VERSION_PATCH, patch);
     }
 
-    TEST_METHOD(charls_get_version_number_none)
+    TEST_METHOD(charls_get_version_number_none) // NOLINT
     {
         charls_get_version_number(nullptr, nullptr, nullptr);
 
@@ -57,5 +57,5 @@ public:
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls

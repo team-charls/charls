@@ -15,7 +15,7 @@ namespace test {
 TEST_CLASS(DefaultTraitsTest)
 {
 public:
-    TEST_METHOD(Create)
+    TEST_METHOD(Create) // NOLINT
     {
         const charls::DefaultTraits<uint8_t, uint8_t> traits((1 << 8) - 1, 0);
 
@@ -28,7 +28,7 @@ public:
         Assert::AreEqual(64, traits.RESET);
     }
 
-    TEST_METHOD(ModuloRange)
+    TEST_METHOD(ModuloRange) // NOLINT
     {
         const charls::DefaultTraits<uint8_t, uint8_t> traits(24, 0);
 
@@ -41,5 +41,5 @@ public:
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls

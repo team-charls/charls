@@ -127,9 +127,9 @@ private:
 
     void WriteBytes(const std::vector<uint8_t>& bytes)
     {
-        for (std::size_t i = 0; i < bytes.size(); ++i)
+        for (const auto value : bytes)
         {
-            WriteByte(bytes[i]);
+            WriteByte(value);
         }
     }
 

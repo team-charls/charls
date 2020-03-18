@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <array>
 #include <cstddef>
 #include <fstream>
 #include <vector>
@@ -12,15 +13,15 @@ class bmp_image final
 public:
     struct bmp_header final
     {
-        uint8_t magic[2];   // the magic number used to identify the BMP file:
-                            // 0x42 0x4D (Hex code points for B and M).
-                            // The following entries are possible:
-                            // BM - Windows 3.1x, 95, NT, ... etc
-                            // BA - OS/2 Bitmap Array
-                            // CI - OS/2 Color Icon
-                            // CP - OS/2 Color Pointer
-                            // IC - OS/2 Icon
-                            // PT - OS/2 Pointer.
+        std::array<uint8_t, 2> magic;   // the magic number used to identify the BMP file:
+                                        // 0x42 0x4D (Hex code points for B and M).
+                                        // The following entries are possible:
+                                        // BM - Windows 3.1x, 95, NT, ... etc
+                                        // BA - OS/2 Bitmap Array
+                                        // CI - OS/2 Color Icon
+                                        // CP - OS/2 Color Pointer
+                                        // IC - OS/2 Icon
+                                        // PT - OS/2 Pointer.
         uint32_t file_size; // the size of the BMP file in bytes
         uint32_t reserved;  // reserved.
         uint32_t offset;    // the offset, i.e. starting address, of the byte where the bitmap data can be found.
@@ -65,7 +66,7 @@ private:
     {
         bmp_header result{};
 
-        input.read(reinterpret_cast<char*>(&result.magic), sizeof result.magic);
+        input.read(reinterpret_cast<char*>(result.magic.data()), result.magic.size());
         input.read(reinterpret_cast<char*>(&result.file_size), sizeof result.file_size);
         input.read(reinterpret_cast<char*>(&result.reserved), sizeof result.reserved);
         input.read(reinterpret_cast<char*>(&result.offset), sizeof result.offset);

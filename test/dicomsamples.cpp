@@ -4,17 +4,16 @@
 #include "dicomsamples.h"
 #include "util.h"
 
+#include <array>
 #include <iostream>
 #include <vector>
-#include <array>
 
-using std::cout;
-using std::vector;
 using std::array;
+using std::cout;
 using std::error_code;
+using std::vector;
 
-namespace
-{
+namespace {
 
 bool ContainsString(const uint8_t* container, const uint8_t* bytesToFind, const size_t bytesLength) noexcept
 {
@@ -49,7 +48,7 @@ void TestDicomSampleImage(const char* name)
     data.erase(data.begin(), data.begin() + offset - 4);
 
     // remove the DICOM fragment headers (in the concerned images they occur every 64k)
-    for (unsigned int i =  0; i < data.size(); i+= 64 * 1024)
+    for (unsigned int i = 0; i < data.size(); i += 64 * 1024)
     {
         data.erase(data.begin() + i, data.begin() + i + 8);
     }

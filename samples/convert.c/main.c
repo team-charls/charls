@@ -10,6 +10,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// The MSVC static analyzer reports false warnings when the normal assert is used (MSVC 16.5.0)
+#ifdef _PREFAST_
+#undef  assert
+#define assert(expression) ((void)0)
+#endif
 
 typedef struct
 {

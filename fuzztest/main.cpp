@@ -51,7 +51,7 @@ auto generate_once()
 } // namespace
 
 
-int main(const int argc, const char* const argv[])
+int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-escape)
 {
     int fd = 0;
     if (argc == 2)

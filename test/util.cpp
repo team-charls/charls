@@ -20,6 +20,7 @@ using std::swap;
 using std::vector;
 using std::chrono::duration;
 using std::chrono::steady_clock;
+using std::ios;
 using namespace charls;
 using namespace charls_test;
 
@@ -30,7 +31,7 @@ MSVC_WARNING_SUPPRESS(26497) // cannot be marked constexpr, check must be execut
 
 bool IsMachineLittleEndian() noexcept
 {
-    constexpr int a = 0xFF000001;  // NOLINT(bugprone-narrowing-conversions)
+    constexpr int a = 0xFF000001;  // NOLINT(bugprone-narrowing-conversions, cppcoreguidelines-narrowing-conversions)
     const auto* chars = reinterpret_cast<const char*>(&a);
     return chars[0] == 0x01;
 }
@@ -56,12 +57,12 @@ void FixEndian(vector<uint8_t>* buffer, const bool littleEndianData) noexcept
 vector<uint8_t> ReadFile(const char* filename, long offset, size_t bytes)
 {
     ifstream input;
-    input.exceptions(input.eofbit | input.failbit | input.badbit);
-    input.open(filename, input.in | input.binary);
+    input.exceptions(ios::eofbit | ios::failbit | ios::badbit);
+    input.open(filename, ios::in | ios::binary);
 
-    input.seekg(0, input.end);
+    input.seekg(0, ios::end);
     const auto byteCountFile = static_cast<int>(input.tellg());
-    input.seekg(offset, input.beg);
+    input.seekg(offset, ios::beg);
 
     if (offset < 0)
     {

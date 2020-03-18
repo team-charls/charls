@@ -23,4 +23,4 @@ enum class JpegLSPresetParametersType : uint8_t
     InverseColorTransformSpecification = 0xD         // JPEG-LS Extended (ISO/IEC 14495-2): Inverse color transform specification.
 };
 
-}
+} // namespace charls

@@ -3,8 +3,8 @@
 
 #include "pch.h"
 
-#include "util.h"
 #include "jpeg_test_stream_writer.h"
+#include "util.h"
 
 #include "../src/jpeg_stream_reader.h"
 #include "../src/jpeg_stream_writer.h"
@@ -26,7 +26,7 @@ namespace test {
 TEST_CLASS(JpegStreamReaderTest)
 {
 public:
-    TEST_METHOD(ReadHeaderFromToSmallInputBuffer)
+    TEST_METHOD(ReadHeaderFromToSmallInputBuffer) // NOLINT
     {
         array<uint8_t, 1> buffer{};
 
@@ -46,7 +46,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderFromBufferPrecededWithFillBytes)
+    TEST_METHOD(ReadHeaderFromBufferPrecededWithFillBytes) // NOLINT
     {
         JpegTestStreamWriter writer;
 
@@ -65,7 +65,7 @@ public:
         reader.ReadHeader(); // if it doesn't throw test is passed.
     }
 
-    TEST_METHOD(ReadHeaderFromBufferNotStartingWithFFShouldThrow)
+    TEST_METHOD(ReadHeaderFromBufferNotStartingWithFFShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0x0F);
@@ -91,7 +91,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithApplicationData)
+    TEST_METHOD(ReadHeaderWithApplicationData) // NOLINT
     {
         ReadHeaderWithApplicationData(0);
         ReadHeaderWithApplicationData(1);
@@ -111,7 +111,7 @@ public:
         ReadHeaderWithApplicationData(15);
     }
 
-    TEST_METHOD(ReadHeaderWithJpegLSExtendedFrameShouldThrow)
+    TEST_METHOD(ReadHeaderWithJpegLSExtendedFrameShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -135,7 +135,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderJpegLSPresetParameterSegment)
+    TEST_METHOD(ReadHeaderJpegLSPresetParameterSegment) // NOLINT
     {
         vector<uint8_t> source(100);
         const ByteStreamInfo sourceInfo = FromByteArray(source.data(), source.size());
@@ -161,7 +161,7 @@ public:
         Assert::AreEqual(presets.threshold3, actual.threshold3);
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallJpegLSPresetParameterSegmentShouldThrow)
+    TEST_METHOD(ReadHeaderWithTooSmallJpegLSPresetParameterSegmentShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -188,7 +188,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallJpegLSPresetParameterSegmentWithCodingParametersShouldThrow)
+    TEST_METHOD(ReadHeaderWithTooSmallJpegLSPresetParameterSegmentWithCodingParametersShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -215,7 +215,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooLargeJpegLSPresetParameterSegmentWithCodingParametersShouldThrow)
+    TEST_METHOD(ReadHeaderWithTooLargeJpegLSPresetParameterSegmentWithCodingParametersShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -242,9 +242,9 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(read_header_bad_jpegls_preset_coding_parameters_should_throw)
+    TEST_METHOD(read_header_bad_jpegls_preset_coding_parameters_should_throw) // NOLINT
     {
-        const jpegls_pc_parameters preset_coding_parameters{256};
+        const jpegls_pc_parameters preset_coding_parameters{256, 0, 0, 0, 0};
 
         JpegTestStreamWriter writer;
         writer.WriteStartOfImage();
@@ -286,7 +286,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow)
+    TEST_METHOD(ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow) // NOLINT
     {
         ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x5);
         ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x6);
@@ -298,7 +298,7 @@ public:
         ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0xD);
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallSegmentSizeShouldThrow)
+    TEST_METHOD(ReadHeaderWithTooSmallSegmentSizeShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -326,7 +326,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallStartOfFrameShouldThrow)
+    TEST_METHOD(ReadHeaderWithTooSmallStartOfFrameShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -352,7 +352,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallStartOfFrameInComponentInfoShouldThrow)
+    TEST_METHOD(ReadHeaderWithTooSmallStartOfFrameInComponentInfoShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -378,7 +378,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooLargeStartOfFrameShouldThrow)
+    TEST_METHOD(ReadHeaderWithTooLargeStartOfFrameShouldThrow) // NOLINT
     {
         JpegTestStreamWriter writer;
         writer.WriteStartOfImage();
@@ -402,7 +402,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(read_header_sos_before_sof_should_throw)
+    TEST_METHOD(read_header_sos_before_sof_should_throw) // NOLINT
     {
         JpegTestStreamWriter writer;
         writer.WriteStartOfImage();
@@ -415,7 +415,7 @@ public:
             [&](){reader.ReadHeader();});
     }
 
-    TEST_METHOD(read_header_extra_sof_should_throw)
+    TEST_METHOD(read_header_extra_sof_should_throw) // NOLINT
     {
         JpegTestStreamWriter writer;
         writer.WriteStartOfImage();
@@ -429,7 +429,7 @@ public:
             [&](){reader.ReadHeader();});
     }
 
-    TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw)
+    TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw) // NOLINT
     {
         JpegTestStreamWriter writer;
         writer.WriteStartOfImage();
@@ -444,9 +444,9 @@ public:
             [&](){reader.ReadStartOfScan();});
     }
 
-    TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw2)
+    TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw2) // NOLINT
     {
-        const jpegls_pc_parameters preset_coding_parameters{200};
+        const jpegls_pc_parameters preset_coding_parameters{200, 0, 0, 0, 0};
 
         JpegTestStreamWriter writer;
         writer.WriteStartOfImage();
@@ -464,7 +464,7 @@ public:
             [&](){reader.ReadStartOfScan();});
     }
 
-    TEST_METHOD(ReadHeaderWithDuplicateComponentIdInStartOfFrameSegmentShouldThrow)
+    TEST_METHOD(ReadHeaderWithDuplicateComponentIdInStartOfFrameSegmentShouldThrow) // NOLINT
     {
         JpegTestStreamWriter writer;
         writer.componentIdOverride = 7;
@@ -487,7 +487,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallStartOfScanShouldThrow)
+    TEST_METHOD(ReadHeaderWithTooSmallStartOfScanShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -523,7 +523,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallStartOfScanComponentCountShouldThrow)
+    TEST_METHOD(ReadHeaderWithTooSmallStartOfScanComponentCountShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -560,7 +560,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithDirectlyEndOfImageShouldThrow)
+    TEST_METHOD(ReadHeaderWithDirectlyEndOfImageShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -584,7 +584,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithDuplicateStartOfImageShouldThrow)
+    TEST_METHOD(ReadHeaderWithDuplicateStartOfImageShouldThrow) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -606,6 +606,54 @@ public:
         }
     }
 
+    TEST_METHOD(ReadSpiffHeader) // NOLINT
+    {
+        ReadSpiffHeader(0);
+    }
+
+    TEST_METHOD(read_spiff_header_low_version_newer) // NOLINT
+    {
+        ReadSpiffHeader(1);
+    }
+
+    TEST_METHOD(read_spiff_header_high_version_to_new) // NOLINT
+    {
+        vector<uint8_t> buffer = create_test_spiff_header(3);
+        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+        JpegStreamReader reader(byteStream);
+
+        spiff_header spiff_header{};
+        bool spiff_header_found{};
+
+        reader.ReadHeader(&spiff_header, &spiff_header_found);
+
+        Assert::IsFalse(spiff_header_found);
+    }
+
+    TEST_METHOD(read_spiff_header_without_end_of_directory) // NOLINT
+    {
+        vector<uint8_t> buffer = create_test_spiff_header(2, 0, false);
+        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
+        JpegStreamReader reader(byteStream);
+
+        spiff_header spiff_header{};
+        bool spiff_header_found{};
+
+        reader.ReadHeader(&spiff_header, &spiff_header_found);
+        Assert::IsTrue(spiff_header_found);
+
+        try
+        {
+            reader.ReadHeader();
+            Assert::Fail();
+        }
+        catch (const system_error& error)
+        {
+            Assert::AreEqual(static_cast<int>(jpegls_errc::missing_end_of_spiff_directory), error.code().value());
+        }
+    }
+
+private:
     static void ReadSpiffHeader(const uint8_t low_version)
     {
         vector<uint8_t> buffer = create_test_spiff_header(2, low_version);
@@ -630,54 +678,6 @@ public:
         Assert::AreEqual(1024U, spiff_header.horizontal_resolution);
     }
 
-    TEST_METHOD(ReadSpiffHeader)
-    {
-        ReadSpiffHeader(0);
-    }
-
-    TEST_METHOD(read_spiff_header_low_version_newer)
-    {
-        ReadSpiffHeader(1);
-    }
-
-    TEST_METHOD(read_spiff_header_high_version_to_new)
-    {
-        vector<uint8_t> buffer = create_test_spiff_header(3);
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
-
-        spiff_header spiff_header{};
-        bool spiff_header_found{};
-
-        reader.ReadHeader(&spiff_header, &spiff_header_found);
-
-        Assert::IsFalse(spiff_header_found);
-    }
-
-    TEST_METHOD(read_spiff_header_without_end_of_directory)
-    {
-        vector<uint8_t> buffer = create_test_spiff_header(2, 0, false);
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
-
-        spiff_header spiff_header{};
-        bool spiff_header_found{};
-
-        reader.ReadHeader(&spiff_header, &spiff_header_found);
-        Assert::IsTrue(spiff_header_found);
-
-        try
-        {
-            reader.ReadHeader();
-            Assert::Fail();
-        }
-        catch (const system_error& error)
-        {
-            Assert::AreEqual(static_cast<int>(jpegls_errc::missing_end_of_spiff_directory), error.code().value());
-        }
-    }
-
-private:
     static void ReadHeaderWithApplicationData(const uint8_t dataNumber)
     {
         JpegTestStreamWriter writer;
@@ -698,5 +698,5 @@ private:
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls

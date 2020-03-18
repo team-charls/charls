@@ -46,7 +46,7 @@ struct LosslessTraitsImpl
     FORCE_INLINE constexpr static int32_t
     ModuloRange(int32_t errorValue) noexcept
     {
-        return static_cast<int32_t>(errorValue << (int32_t_bit_count - bpp)) >> (int32_t_bit_count - bpp);
+        return static_cast<int32_t>(errorValue << (int32_t_bit_count - bpp)) >> (int32_t_bit_count - bpp); //NOLINT
     }
 
     FORCE_INLINE static SAMPLE ComputeReconstructedSample(const int32_t Px, const int32_t ErrVal) noexcept

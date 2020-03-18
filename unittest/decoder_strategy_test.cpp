@@ -7,7 +7,10 @@
 
 #include "encoder_strategy_tester.h"
 
+#include <array>
+
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
+using std::array;
 using std::unique_ptr;
 
 namespace {
@@ -15,7 +18,7 @@ namespace {
 class DecoderStrategyTester final : public charls::DecoderStrategy
 {
 public:
-    DecoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters, uint8_t* destination, const size_t nOutBufLen) :
+    DecoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters, uint8_t* const destination, const size_t nOutBufLen) : // NOLINT
         DecoderStrategy(frame_info, parameters)
     {
         ByteStreamInfo stream{nullptr, destination, nOutBufLen};
@@ -52,42 +55,42 @@ namespace test {
 TEST_CLASS(DecoderStrategyTest)
 {
 public:
-    TEST_METHOD(DecodeEncodedFFPattern)
+    TEST_METHOD(DecodeEncodedFFPattern) // NOLINT
     {
-        const struct
+        struct data_t final
         {
-            int32_t val;
+            int32_t value;
             int bits;
-        } inData[5] = { { 0x00, 24 },{ 0xFF, 8 },{ 0xFFFF, 16 },{ 0xFFFF, 16 },{ 0x12345678, 31 } };
+        };
 
-        uint8_t encBuf[100];
+        const array<data_t, 5> inData{{{0x00, 24}, {0xFF, 8}, {0xFFFF, 16 }, {0xFFFF, 16 }, {0x12345678, 31}}};
+
+        array<uint8_t, 100> encBuf{};
         const charls::frame_info frame_info{};
         const charls::coding_parameters parameters{};
 
         EncoderStrategyTester encoder(frame_info, parameters);
 
-        ByteStreamInfo stream;
-        stream.rawStream = nullptr;
-        stream.rawData = encBuf;
-        stream.count = sizeof(encBuf);
+        ByteStreamInfo stream{nullptr, encBuf.data(), encBuf.size()};
         encoder.InitForward(stream);
 
-        for (size_t i = 0; i < sizeof(inData) / sizeof(inData[0]); i++)
+        for (const auto& data : inData)
         {
-            encoder.AppendToBitStreamForward(inData[i].val, inData[i].bits);
+            encoder.AppendToBitStreamForward(data.value, data.bits);
         }
+
         encoder.EndScanForward();
         // Note: Correct encoding is tested in EncoderStrategyTest::AppendToBitStreamFFPattern.
 
         const auto length = encoder.GetLengthForward();
-        DecoderStrategyTester dec(frame_info, parameters, encBuf, length);
+        DecoderStrategyTester dec(frame_info, parameters, encBuf.data(), length);
         for (auto i = 0U; i < sizeof(inData) / sizeof(inData[0]); i++)
         {
             const auto actual = dec.Read(inData[i].bits);
-            Assert::AreEqual(inData[i].val, actual);
+            Assert::AreEqual(inData[i].value, actual);
         }
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls

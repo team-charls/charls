@@ -5,7 +5,10 @@
 
 #include "encoder_strategy_tester.h"
 
+#include <array>
+
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
+using std::array;
 
 namespace charls {
 namespace test {
@@ -15,39 +18,33 @@ namespace test {
 TEST_CLASS(EncoderStrategyTest)
 {
 public:
-    TEST_METHOD(AppendToBitStreamZeroLength)
+    TEST_METHOD(AppendToBitStreamZeroLength) // NOLINT
     {
         const charls::frame_info frame_info{};
         const charls::coding_parameters parameters{};
 
         EncoderStrategyTester strategy(frame_info, parameters);
 
-        uint8_t data[1024];
+        array<uint8_t, 1024> data{};
 
-        ByteStreamInfo stream;
-        stream.rawStream = nullptr;
-        stream.rawData = data;
-        stream.count = sizeof(data);
+        ByteStreamInfo stream{nullptr, data.data(), data.size()};
         strategy.InitForward(stream);
 
         strategy.AppendToBitStreamForward(0, 0);
         strategy.FlushForward();
     }
 
-    TEST_METHOD(AppendToBitStreamFFPattern)
+    TEST_METHOD(AppendToBitStreamFFPattern) // NOLINT
     {
         const charls::frame_info frame_info{};
         const charls::coding_parameters parameters{};
 
         EncoderStrategyTester strategy(frame_info, parameters);
 
-        uint8_t data[1024];
+        array<uint8_t, 1024> data{};
         data[13] = 0x77; // marker byte to detect overruns.
 
-        ByteStreamInfo stream;
-        stream.rawStream = nullptr;
-        stream.rawData = data;
-        stream.count = sizeof(data);
+        ByteStreamInfo stream{nullptr, data.data(), data.size()};
         strategy.InitForward(stream);
 
         // We want _isFFWritten == true.
@@ -82,5 +79,5 @@ public:
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls

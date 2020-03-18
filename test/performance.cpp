@@ -4,21 +4,20 @@
 #include "performance.h"
 #include "util.h"
 
-#include <vector>
-#include <ratio>
 #include <chrono>
 #include <iostream>
+#include <ratio>
+#include <vector>
 
-using std::vector;
 using std::cout;
 using std::error_code;
 using std::istream;
-using std::chrono::steady_clock;
-using std::chrono::duration;
 using std::milli;
+using std::vector;
+using std::chrono::duration;
+using std::chrono::steady_clock;
 
-namespace
-{
+namespace {
 
 void TestFile16BitAs12(const char* filename, const int offset, const Size size2, const int componentCount, const bool littleEndianFile)
 {
@@ -74,7 +73,7 @@ void PerformanceTests(const int loopCount)
 #ifdef _DEBUG
     cout << "NOTE: running performance test in debug mode, performance may be slow!\n";
 #endif
-    cout << "Test Perf (with loop count "<< loopCount << ")\n";
+    cout << "Test Perf (with loop count " << loopCount << ")\n";
     TestPerformance(loopCount);
 }
 
@@ -127,7 +126,6 @@ void DecodePerformanceTests(const int loopCount)
     const auto start = steady_clock::now();
     for (int i = 0; i < loopCount; ++i)
     {
-
         error = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
         if (error)
         {

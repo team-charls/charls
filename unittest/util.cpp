@@ -11,8 +11,13 @@
 
 #include "../test/portable_anymap_file.h"
 
+#include <random>
+
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::ifstream;
+using std::ios;
+using std::mt19937;
+using std::uniform_int_distribution;
 using std::vector;
 using namespace charls_test;
 
@@ -40,12 +45,12 @@ namespace test {
 vector<uint8_t> read_file(const char* filename)
 {
     ifstream input;
-    input.exceptions(input.eofbit | input.failbit | input.badbit);
-    input.open(filename, input.in | input.binary);
+    input.exceptions(ios::eofbit | ios::failbit | ios::badbit);
+    input.open(filename, ios::in | ios::binary);
 
-    input.seekg(0, input.end);
+    input.seekg(0, ios::end);
     const auto byteCountFile = static_cast<int>(input.tellg());
-    input.seekg(0, input.beg);
+    input.seekg(0, ios::beg);
 
     vector<uint8_t> buffer(byteCountFile);
     input.read(reinterpret_cast<char*>(buffer.data()), buffer.size());
@@ -150,12 +155,17 @@ vector<uint8_t> create_test_spiff_header(const uint8_t high_version, const uint8
 
 vector<uint8_t> create_noise_image_16bit(const size_t pixel_count, const int bit_count, const uint32_t seed)
 {
-    srand(seed);
+    const auto max_value = static_cast<uint16_t>((1U << bit_count) - 1U);
+    mt19937 generator(seed);
+
+    MSVC_WARNING_SUPPRESS(26496) // cannot be marked as const as operator() is not always defined const.
+    uniform_int_distribution<uint16_t> distribution(0, max_value);
+    MSVC_WARNING_UNSUPPRESS()
+
     vector<uint8_t> buffer(pixel_count * 2);
-    const auto mask = static_cast<uint16_t>((1 << bit_count) - 1);
     for (size_t i = 0; i < pixel_count; i = i + 2)
     {
-        const uint16_t value = static_cast<uint16_t>(rand()) & mask;
+        const uint16_t value = distribution(generator);
 
         buffer[i] = static_cast<uint8_t>(value);
         buffer[i] = static_cast<uint8_t>(value >> 8);
@@ -187,5 +197,5 @@ void test_round_trip_legacy(const vector<uint8_t>& source, const JlsParameters& 
     }
 }
 
-}
-} // namespace charls::test
+} // namespace test
+} // namespace charls

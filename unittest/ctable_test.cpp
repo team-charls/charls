@@ -18,7 +18,7 @@ namespace test {
 TEST_CLASS(ctable_test)
 {
 public:
-    TEST_METHOD(CTable_create)
+    TEST_METHOD(CTable_create) // NOLINT
     {
         const CTable golomb_table;
 
@@ -30,5 +30,5 @@ public:
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls

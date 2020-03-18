@@ -19,6 +19,11 @@ using std::vector;
 
 MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnonnull"
+#endif
+
 // clang-format off
 
 namespace charls {
@@ -27,7 +32,7 @@ namespace test {
 TEST_CLASS(interface_test)
 {
 public:
-    TEST_METHOD(GetMetadataInfoFromNearLosslessEncodedColorImage)
+    TEST_METHOD(GetMetadataInfoFromNearLosslessEncodedColorImage) // NOLINT
     {
         vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E3.JLS")};
 
@@ -42,7 +47,7 @@ public:
         Assert::AreEqual(params.allowedLossyError, 3);
     }
 
-    TEST_METHOD(JpegLsReadHeader_nullptr)
+    TEST_METHOD(JpegLsReadHeader_nullptr) // NOLINT
     {
         JlsParameters params{};
         vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E3.JLS")};
@@ -53,17 +58,17 @@ public:
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
     }
 
-    TEST_METHOD(JpegLsReadHeader_empty_source)
+    TEST_METHOD(JpegLsReadHeader_empty_source) // NOLINT
     {
-        array<char, ErrorMessageSize> error_message;
+        array<char, ErrorMessageSize> error_message{};
         JlsParameters params{};
-        array<uint8_t, 1> source;
+        array<uint8_t, 1> source{};
         const auto error = JpegLsReadHeader(source.data(), 0, &params, error_message.data());
         Assert::AreEqual(charls::jpegls_errc::source_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
 
-    TEST_METHOD(JpegLsReadHeader_custom_preset_parameters)
+    TEST_METHOD(JpegLsReadHeader_custom_preset_parameters) // NOLINT
     {
         // NON-DEFAULT parameters T1=T2=T3=9,RESET=31.
         vector<uint8_t> encoded_source{read_file("DataFiles/T8NDE0.JLS")};
@@ -79,7 +84,7 @@ public:
         Assert::AreEqual(31, params.custom.ResetValue);
     }
 
-    TEST_METHOD(JpegLsEncode_nullptr)
+    TEST_METHOD(JpegLsEncode_nullptr) // NOLINT
     {
         JlsParameters params{};
         params.bitsPerSample = 8;
@@ -102,9 +107,9 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
-    TEST_METHOD(JpegLsEncode_empty_destination)
+    TEST_METHOD(JpegLsEncode_empty_destination) // NOLINT
     {
-        array<char, ErrorMessageSize> error_message;
+        array<char, ErrorMessageSize> error_message{};
 
         JlsParameters params{};
         params.bitsPerSample = 8;
@@ -113,14 +118,14 @@ public:
         params.components = 1;
 
         size_t bytesWritten{};
-        array<uint8_t, 1> destination;
+        array<uint8_t, 1> destination{};
         vector<uint8_t> source(100);
         const auto error = JpegLsEncode(destination.data(), 0, &bytesWritten, source.data(), source.size(), &params, error_message.data());
         Assert::AreEqual(charls::jpegls_errc::destination_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
 
-    TEST_METHOD(JpegLsDecode_nullptr)
+    TEST_METHOD(JpegLsDecode_nullptr) // NOLINT
     {
         JlsParameters params{};
         vector<uint8_t> encoded_source = read_file("DataFiles/lena8b.jls");
@@ -131,23 +136,23 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
-    TEST_METHOD(JpegLsDecode_empty_source)
+    TEST_METHOD(JpegLsDecode_empty_source) // NOLINT
     {
-        array<char, ErrorMessageSize> error_message;
+        array<char, ErrorMessageSize> error_message{};
         JlsParameters params{};
         params.bitsPerSample = 8;
         params.height = 10;
         params.width = 10;
         params.components = 1;
 
-        array<uint8_t, 1> source;
+        array<uint8_t, 1> source{};
         vector<uint8_t> destination(100);
         const auto error = JpegLsDecode(destination.data(), destination.size(), source.data(), 0, &params, error_message.data());
         Assert::AreEqual(jpegls_errc::source_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
 
-    TEST_METHOD(JpegLsDecodeRect_lena)
+    TEST_METHOD(JpegLsDecodeRect_lena) // NOLINT
     {
         JlsParameters params{};
         vector<uint8_t> encoded_source = read_file("DataFiles/lena8b.jls");
@@ -171,7 +176,7 @@ public:
         Assert::IsTrue(decoded_rect[static_cast<size_t>(rect.Width) * rect.Height] == 0x1f);
     }
 
-    TEST_METHOD(JpegLsDecodeRect_nullptr)
+    TEST_METHOD(JpegLsDecodeRect_nullptr) // NOLINT
     {
         JlsParameters params{};
         const JlsRect roi{};
@@ -183,9 +188,9 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
-    TEST_METHOD(JpegLsDecodeRect_empty_source)
+    TEST_METHOD(JpegLsDecodeRect_empty_source) // NOLINT
     {
-        array<char, ErrorMessageSize> error_message;
+        array<char, ErrorMessageSize> error_message{};
         JlsParameters params{};
         params.bitsPerSample = 8;
         params.height = 10;
@@ -193,7 +198,7 @@ public:
         params.components = 1;
 
         const JlsRect roi{};
-        array<uint8_t, 1> source;
+        array<uint8_t, 1> source{};
         vector<uint8_t> destination(100);
 
         const auto error = JpegLsDecodeRect(destination.data(), destination.size(), source.data(), 0, roi, &params, error_message.data());
@@ -201,7 +206,7 @@ public:
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
 
-    TEST_METHOD(noise_image_with_custom_reset)
+    TEST_METHOD(noise_image_with_custom_reset) // NOLINT
     {
         JlsParameters params{};
         params.components = 1;
@@ -216,7 +221,7 @@ public:
         test_round_trip_legacy(noise_image, params);
     }
 
-    TEST_METHOD(JpegLsReadHeaderStream_valid_input)
+    TEST_METHOD(JpegLsReadHeaderStream_valid_input) // NOLINT
     {
         vector<uint8_t> source{read_file("DataFiles/T8C0E3.JLS")};
 
@@ -232,7 +237,7 @@ public:
         Assert::AreEqual(params.allowedLossyError, 3);
     }
 
-    TEST_METHOD(JpegLsDecodeStream_valid_input)
+    TEST_METHOD(JpegLsDecodeStream_valid_input) // NOLINT
     {
         vector<uint8_t> source{read_file("DataFiles/T8C0E3.JLS")};
 
@@ -250,7 +255,11 @@ public:
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 MSVC_WARNING_UNSUPPRESS()

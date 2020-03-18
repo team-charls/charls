@@ -100,5 +100,10 @@
   <PropertyGroup Condition="'$(Configuration)'=='Checked'">
     <LinkIncremental>true</LinkIncremental>
     <UseDebugLibraries>true</UseDebugLibraries>
+
+    <RunCodeAnalysis Condition="'$(MSBuildProjectExtension)'=='.vcxproj'" >true</RunCodeAnalysis>
+    <EnableCppCoreCheck>true</EnableCppCoreCheck>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+
   </PropertyGroup>
 </Project>

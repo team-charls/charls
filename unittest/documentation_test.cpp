@@ -7,6 +7,7 @@
 
 #include <charls/charls.h>
 
+#include <array>
 #include <tuple>
 #include <vector>
 
@@ -55,11 +56,11 @@ std::vector<uint8_t> decode_advanced(const std::vector<uint8_t>& source)
 
 std::vector<uint8_t> decode_simple_8bit_monochrome_legacy(const std::vector<uint8_t>& source)
 {
-    char error_message[ErrorMessageSize];
-    JlsParameters parameters;
-    auto error = JpegLsReadHeader(source.data(), source.size(), &parameters, error_message);
+    std::array<char, ErrorMessageSize> error_message{};
+    JlsParameters parameters{};
+    auto error = JpegLsReadHeader(source.data(), source.size(), &parameters, error_message.data());
     if (error != CharlsApiResultType::OK)
-        throw std::exception(error_message);
+        throw std::exception(error_message.data());
 
     if (parameters.components != 1 || parameters.bitsPerSample != 8)
         throw std::exception("Not a 8 bit monochrome image");
@@ -69,9 +70,9 @@ std::vector<uint8_t> decode_simple_8bit_monochrome_legacy(const std::vector<uint
 
     error = JpegLsDecode(destination.data(), destination.size(),
                          source.data(), source.size(),
-                         &parameters, error_message);
+                         &parameters, error_message.data());
     if (error != CharlsApiResultType::OK)
-        throw std::exception(error_message);
+        throw std::exception(error_message.data());
 
     return destination;
 }
@@ -102,7 +103,7 @@ std::vector<uint8_t> encode_advanced_8bit_monochrome(const std::vector<uint8_t>&
 
 std::vector<uint8_t> encode_simple_8bit_monochrome_legacy(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
 {
-    char error_message[ErrorMessageSize];
+    std::array<char, ErrorMessageSize> error_message{};
     JlsParameters parameters{};
     parameters.width = width;
     parameters.height = height;
@@ -115,9 +116,9 @@ std::vector<uint8_t> encode_simple_8bit_monochrome_legacy(const std::vector<uint
     size_t bytes_written;
     const auto error = JpegLsEncode(destination.data(), destination.size(),
                                     &bytes_written,
-                                    source.data(), source.size(), &parameters, error_message);
+                                    source.data(), source.size(), &parameters, error_message.data());
     if (error != CharlsApiResultType::OK)
-        throw std::exception(error_message);
+        throw std::exception(error_message.data());
 
     destination.resize(bytes_written);
     return destination;
@@ -137,7 +138,7 @@ namespace test {
 TEST_CLASS(documentation_test)
 {
 public:
-    TEST_METHOD(call_decode_simple_8bit_monochrome)
+    TEST_METHOD(call_decode_simple_8bit_monochrome) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
 
@@ -146,7 +147,7 @@ public:
         test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
     }
 
-    TEST_METHOD(call_decode_advanced)
+    TEST_METHOD(call_decode_advanced) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
 
@@ -155,7 +156,7 @@ public:
         test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
     }
 
-    TEST_METHOD(call_decode_simple_8bit_monochrome_legacy)
+    TEST_METHOD(call_decode_simple_8bit_monochrome_legacy) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
 
@@ -164,7 +165,7 @@ public:
         test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
     }
 
-    TEST_METHOD(call_encode_simple_8bit_monochrome)
+    TEST_METHOD(call_encode_simple_8bit_monochrome) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
@@ -174,7 +175,7 @@ public:
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
 
-    TEST_METHOD(call_encode_advanced_8bit_monochrome)
+    TEST_METHOD(call_encode_advanced_8bit_monochrome) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
@@ -184,7 +185,7 @@ public:
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
 
-    TEST_METHOD(call_encode_simple_8bit_monochrome_legacy)
+    TEST_METHOD(call_encode_simple_8bit_monochrome_legacy) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
@@ -241,5 +242,5 @@ private:
     }
 };
 
-}
-}
+} // namespace test
+} // namespace charls
