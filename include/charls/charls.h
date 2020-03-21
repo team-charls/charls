@@ -646,7 +646,7 @@ public:
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
     /// <returns>Container with the decoded data.</returns>
     template<typename Container, typename ValueType = typename Container::value_type>
-    auto decode(const uint32_t stride = 0) const
+    CHARLS_NO_DISCARD auto decode(const uint32_t stride = 0) const
     {
         Container destination(destination_size() / sizeof(ValueType));
 
