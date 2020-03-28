@@ -302,7 +302,6 @@ catch (...)
     return to_jpegls_errc();
 }
 
-
 jpegls_errc CHARLS_API_CALLING_CONVENTION
 JpegLsReadHeader(
     IN_READS_BYTES_(sourceLength) const void* source,
@@ -324,6 +323,8 @@ try
     params->interleaveMode = decoder.interleave_mode();
     params->allowedLossyError = decoder.near_lossless();
     params->colorTransformation = decoder.transformation();
+    int components = params->interleaveMode == InterleaveMode::None ? 1 : params->components;
+    params->stride = params->width * components * ((params->bitsPerSample + 7)/8);
 
     const auto& preset{decoder.preset_coding_parameters()};
     params->custom.MaximumSampleValue = preset.maximum_sample_value;
