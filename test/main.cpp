@@ -10,8 +10,8 @@
 #include "bitstreamdamage.h"
 #include "compliance.h"
 #include "dicomsamples.h"
-#include "performance.h"
 #include "legacy.h"
+#include "performance.h"
 
 #include <algorithm>
 #include <array>
@@ -644,7 +644,7 @@ void UnitTest()
 } // namespace
 
 
-int main(const int argc, const char* const argv[])  // NOLINT(bugprone-exception-escape)
+int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-escape)
 {
     if (argc == 1)
     {
@@ -774,7 +774,6 @@ int main(const int argc, const char* const argv[])  // NOLINT(bugprone-exception
             TestLegacyAPIs();
             continue;
         }
-
 
 
         cout << "Option not understood: " << argv[i] << "\n";

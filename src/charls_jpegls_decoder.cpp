@@ -323,8 +323,8 @@ try
     params->interleaveMode = decoder.interleave_mode();
     params->allowedLossyError = decoder.near_lossless();
     params->colorTransformation = decoder.transformation();
-    int components = params->interleaveMode == InterleaveMode::None ? 1 : params->components;
-    params->stride = params->width * components * ((params->bitsPerSample + 7)/8);
+    const int32_t component_count = params->interleaveMode == interleave_mode::none ? 1 : params->components;
+    params->stride = params->width * component_count * ((params->bitsPerSample + 7) / 8);
 
     const auto& preset{decoder.preset_coding_parameters()};
     params->custom.MaximumSampleValue = preset.maximum_sample_value;
