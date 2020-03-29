@@ -10,6 +10,7 @@
 #include "bitstreamdamage.h"
 #include "compliance.h"
 #include "dicomsamples.h"
+#include "legacy.h"
 #include "performance.h"
 
 #include <algorithm>
@@ -630,6 +631,9 @@ void UnitTest()
         TestDecodeBitStreamWithNoMarkerStart();
         TestDecodeBitStreamWithUnsupportedEncoding();
         TestDecodeBitStreamWithUnknownJpegMarker();
+
+        cout << "Test Legacy API\n";
+        TestLegacyAPIs();
     }
     catch (const UnitTestException&)
     {
@@ -640,11 +644,11 @@ void UnitTest()
 } // namespace
 
 
-int main(const int argc, const char* const argv[])  // NOLINT(bugprone-exception-escape)
+int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-escape)
 {
     if (argc == 1)
     {
-        cout << "CharLS test runner.\nOptions: -unittest, -bitstreamdamage, -performance[:loop-count], -decodeperformance[:loop-count], -decoderaw -encodepnm -decodetopnm -comparepnm\n";
+        cout << "CharLS test runner.\nOptions: -unittest, -bitstreamdamage, -performance[:loop-count], -decodeperformance[:loop-count], -decoderaw -encodepnm -decodetopnm -comparepnm -legacy\n";
         return EXIT_FAILURE;
     }
 
@@ -764,6 +768,13 @@ int main(const int argc, const char* const argv[])  // NOLINT(bugprone-exception
             TestDicomWG4Images();
             continue;
         }
+
+        if (str == "-legacy")
+        {
+            TestLegacyAPIs();
+            continue;
+        }
+
 
         cout << "Option not understood: " << argv[i] << "\n";
         break;

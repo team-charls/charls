@@ -16,6 +16,8 @@ target_sources(charlstest
     performance.h
     util.cpp
     util.h
+    legacy.cpp
+    legacy.h
 )
 
 set_target_properties(charlstest PROPERTIES CXX_VISIBILITY_PRESET hidden)
