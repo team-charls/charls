@@ -3,7 +3,6 @@ os: Visual Studio 2019
 configuration:
 - Debug
 - Release
-- Checked
 platform:
 - x86
 - x64

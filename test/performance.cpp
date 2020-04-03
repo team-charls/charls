@@ -25,7 +25,7 @@ void TestFile16BitAs12(const char* filename, const int offset, const Size size2,
 
     FixEndian(&uncompressedData, littleEndianFile);
 
-    const auto p = reinterpret_cast<uint16_t*>(uncompressedData.data());
+    auto* const p = reinterpret_cast<uint16_t*>(uncompressedData.data());
 
     for (size_t i = 0; i < uncompressedData.size() / 2; ++i)
     {

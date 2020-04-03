@@ -110,7 +110,7 @@ public:
 
     void WriteBytes(const void* data, const size_t dataSize)
     {
-        const auto bytes = static_cast<const uint8_t*>(data);
+        const auto* const bytes = static_cast<const uint8_t*>(data);
 
         for (std::size_t i = 0; i < dataSize; ++i)
         {

@@ -44,7 +44,7 @@ namespace {
 
 auto generate_once()
 {
-    std::vector<uint8_t> source(3);
+    const std::vector<uint8_t> source(3);
     return charls::jpegls_encoder::encode(source, {1, 1, 8, 3});
 }
 

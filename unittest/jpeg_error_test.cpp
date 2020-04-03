@@ -20,7 +20,7 @@ TEST_CLASS(jpegls_error_test)
 public:
     TEST_METHOD(get_error_message_success) // NOLINT
     {
-        const auto result = charls_get_error_message(jpegls_errc::success);
+        const auto* const result = charls_get_error_message(jpegls_errc::success);
         Assert::IsNotNull(result);
         Assert::IsTrue(strlen(result) > 0);
     }
@@ -28,7 +28,7 @@ public:
     TEST_METHOD(get_error_message_unknown) // NOLINT
     {
         constexpr jpegls_errc unknown_error_code{static_cast<jpegls_errc>(3000)};
-        const auto result = charls_get_error_message(unknown_error_code);
+        const auto* const result = charls_get_error_message(unknown_error_code);
         Assert::IsNotNull(result);
         Assert::IsTrue(strlen(result) > 0);
     }

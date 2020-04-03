@@ -544,7 +544,7 @@ int JpegStreamReader::TryReadSpiffHeaderSegment(OUT_ spiff_header& header, OUT_ 
 {
     vector<char> sourceTag;
     ReadNBytes(sourceTag, 6);
-    if (strncmp(sourceTag.data(), "SPIFF", 6) != 0)
+    if (strncmp(sourceTag.data(), "SPIFF\0", 6) != 0)
     {
         header = {};
         spiff_header_found = false;

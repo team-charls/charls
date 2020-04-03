@@ -33,6 +33,7 @@
 # -cppcoreguidelines-pro-type-union-access => Rationale: std::variant not an option as target is C++14
 # -cppcoreguidelines-non-private-member-variables-in-classes => Warning is too strict, manual review code review is preferred
 # -cppcoreguidelines-pro-bounds-constant-array-index => gsl:at is not used by design
+# -cppcoreguidelines-init-variables => reports false warnings for out parameters (other checkers are better to detect these problems)
 # -cert-msc32-c => Rationale: predictable seed is by design (random used for testing, not crypto)
 # -cert-msc51-cpp => Rationale: alias for cert-msc32-c
 # -cert-err58-cpp => Rationale: Only exception that could be thrown is out of memory
@@ -67,6 +68,7 @@ Checks:          '*,
                   -cppcoreguidelines-pro-type-union-access,
                   -cppcoreguidelines-non-private-member-variables-in-classes,
                   -cppcoreguidelines-pro-bounds-constant-array-index,
+                  -cppcoreguidelines-init-variables,
                   -cert-msc32-c,
                   -cert-msc51-cpp,
                   -cert-err58-cpp'

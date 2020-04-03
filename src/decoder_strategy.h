@@ -176,7 +176,7 @@ public:
 
     uint8_t* FindNextFF() const noexcept
     {
-        auto positionNextFF = position_;
+        auto* positionNextFF = position_;
 
         while (positionNextFF < endPosition_)
         {

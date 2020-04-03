@@ -54,13 +54,13 @@ public:
     {
     }
 
-    void NewLineRequested(void* destination, int pixelCount, int /*byteStride*/) noexcept(false) override
+    void NewLineRequested(void* destination, const int pixelCount, int /*byteStride*/) noexcept(false) override
     {
         std::memcpy(destination, rawData_, pixelCount * bytesPerPixel_);
         rawData_ += bytesPerLine_;
     }
 
-    void NewLineDecoded(const void* source, int pixelCount, int /*sourceStride*/) noexcept(false) override
+    void NewLineDecoded(const void* source, const int pixelCount, int /*sourceStride*/) noexcept(false) override
     {
         std::memcpy(rawData_, source, pixelCount * bytesPerPixel_);
         rawData_ += bytesPerLine_;
@@ -78,14 +78,14 @@ inline void ByteSwap(void* data, const int count)
     if (static_cast<unsigned int>(count) & 1U)
         throw jpegls_error{jpegls_errc::invalid_encoded_data};
 
-    const auto data32 = static_cast<unsigned int*>(data);
+    auto* const data32 = static_cast<unsigned int*>(data);
     for (auto i = 0; i < count / 4; i++)
     {
         const auto value = data32[i];
         data32[i] = ((value >> 8U) & 0x00FF00FFU) | ((value & 0x00FF00FFU) << 8U);
     }
 
-    const auto data8 = static_cast<unsigned char*>(data);
+    auto* const data8 = static_cast<unsigned char*>(data);
     if ((count % 4) != 0)
     {
         std::swap(data8[count - 2], data8[count - 1]);
@@ -102,7 +102,7 @@ public:
     {
     }
 
-    void NewLineRequested(void* destination, int pixelCount, int /*destStride*/) override
+    void NewLineRequested(void* destination, const int pixelCount, int /*destStride*/) override
     {
         auto bytesToRead = static_cast<std::streamsize>(static_cast<std::streamsize>(pixelCount) * bytesPerPixel_);
         while (bytesToRead != 0)
@@ -125,7 +125,7 @@ public:
         }
     }
 
-    void NewLineDecoded(const void* source, int pixelCount, int /*sourceStride*/) override
+    void NewLineDecoded(const void* source, const int pixelCount, int /*sourceStride*/) override
     {
         const auto bytesToWrite = pixelCount * bytesPerPixel_;
         const auto bytesWritten = static_cast<size_t>(rawData_->sputn(static_cast<const char*>(source), static_cast<std::streamsize>(bytesToWrite)));
@@ -251,7 +251,7 @@ public:
     {
     }
 
-    void NewLineRequested(void* dest, int pixelCount, int destStride) override
+    void NewLineRequested(void* dest, const int pixelCount, const int destStride) override
     {
         if (!rawPixels_.rawStream)
         {
@@ -341,7 +341,7 @@ public:
         }
     }
 
-    void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride) override
+    void NewLineDecoded(const void* pSrc, const int pixelCount, const int sourceStride) override
     {
         if (rawPixels_.rawStream)
         {

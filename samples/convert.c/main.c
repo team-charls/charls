@@ -77,7 +77,7 @@ static bool bmp_read_dib_header(FILE* fp, bmp_dib_header_t* header)
 }
 
 
-static void* bmp_read_pixel_data(FILE* fp, uint32_t offset, const bmp_dib_header_t* header, size_t* buffer_size)
+static void* bmp_read_pixel_data(FILE* fp, const uint32_t offset, const bmp_dib_header_t* header, size_t* buffer_size)
 {
     assert(fp);
     assert(header);
@@ -95,7 +95,7 @@ static void* bmp_read_pixel_data(FILE* fp, uint32_t offset, const bmp_dib_header
     return NULL;
 }
 
-static void* handle_encoder_failure(charls_jpegls_errc error, const char* step, charls_jpegls_encoder* encoder, void* buffer)
+static void* handle_encoder_failure(const charls_jpegls_errc error, const char* step, charls_jpegls_encoder* encoder, void* buffer)
 {
     printf("Failed to %s: %i, %s\n", step, error, charls_get_error_message(error));
     charls_jpegls_encoder_destroy(encoder);
@@ -104,7 +104,7 @@ static void* handle_encoder_failure(charls_jpegls_errc error, const char* step, 
 }
 
 
-static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size, const bmp_dib_header_t* header, int near_lossless, size_t* bytes_written)
+static void* encode_bmp_to_jpegls(const void* pixel_data, const size_t pixel_data_size, const bmp_dib_header_t* header, const int near_lossless, size_t* bytes_written)
 {
     assert(header->depth == 24);        // This function only supports 24-bit BMP pixel data.
     assert(header->compress_type == 0); // Data needs to be stored by pixel as RGB.
@@ -183,7 +183,7 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, size_t pixel_data_size
 }
 
 
-static bool save_jpegls_file(const char* filename, const void* buffer, size_t buffer_size)
+static bool save_jpegls_file(const char* filename, const void* buffer, const size_t buffer_size)
 {
     assert(filename);
     assert(buffer);
@@ -201,7 +201,7 @@ static bool save_jpegls_file(const char* filename, const void* buffer, size_t bu
 }
 
 
-int main(int argc, char* argv[])
+int main(const int argc, char* argv[])
 {
     if (argc < 3)
     {
@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
     int near_lossless = 0;
     if (argc > 3)
     {
-        near_lossless = strtol(argv[3], NULL, 10);
+        near_lossless = (int)strtol(argv[3], NULL, 10);
         if (near_lossless < 0 || near_lossless > 255)
         {
             printf("Argument near_lossless needs to be in the range [0,255]\n");

@@ -13,7 +13,7 @@
 
 namespace {
 
-std::vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, int near_lossless)
+std::vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, const int near_lossless)
 {
     assert(image.dib_header.depth == 24);        // This function only supports 24-bit BMP pixel data.
     assert(image.dib_header.compress_type == 0); // Data needs to be stored by pixel as RGB.
@@ -36,7 +36,7 @@ std::vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, int near
     return buffer;
 }
 
-void save_buffer_to_file(const void* buffer, size_t buffer_size, const char* filename)
+void save_buffer_to_file(const void* buffer, const size_t buffer_size, const char* filename)
 {
     assert(filename);
     assert(buffer);
