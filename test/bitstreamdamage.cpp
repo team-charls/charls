@@ -58,9 +58,8 @@ void TestFileWithRandomHeaderDamage(const char* filename)
 
     mt19937 generator(102347325);
 
-    MSVC_WARNING_SUPPRESS(26496) // cannot be marked as const as operator() is not always defined const.
-    uniform_int_distribution<uint32_t> distribution(0, 255);
-    MSVC_WARNING_UNSUPPRESS()
+    MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
+    MSVC_CONST uniform_int_distribution<uint32_t> distribution(0, 255);
 
     vector<uint8_t> destination(512 * 512);
 

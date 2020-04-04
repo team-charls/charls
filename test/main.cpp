@@ -42,8 +42,8 @@ using namespace charls;
 
 namespace {
 
-constexpr ios_base::openmode mode_input = ios_base::in | ios::binary;
-constexpr ios_base::openmode mode_output = ios_base::out | ios::binary;
+constexpr ios::openmode mode_input = ios::in | ios::binary;
+constexpr ios::openmode mode_output = ios::out | ios::binary;
 
 
 vector<uint8_t> ScanFile(const char* strNameEncoded, JlsParameters* params)
@@ -118,9 +118,7 @@ vector<uint8_t> MakeSomeNoise(const size_t length, const size_t bitCount, const 
     const auto max_value = (1U << bitCount) - 1U;
     mt19937 generator(seed);
 
-    MSVC_WARNING_SUPPRESS(26496) // cannot be marked as const as operator() is not always defined const.
-    uniform_int_distribution<uint32_t> distribution(0, max_value);
-    MSVC_WARNING_UNSUPPRESS()
+    MSVC_CONST uniform_int_distribution<uint32_t> distribution(0, max_value);
 
     vector<uint8_t> buffer(length);
     for (size_t i = 0; i < length; ++i)
@@ -136,9 +134,7 @@ vector<uint8_t> MakeSomeNoise16bit(const size_t length, const int bitCount, cons
     const auto max_value = static_cast<uint16_t>((1U << bitCount) - 1U);
     mt19937 generator(seed);
 
-    MSVC_WARNING_SUPPRESS(26496) // cannot be marked as const as operator() is not always defined const.
-    uniform_int_distribution<uint16_t> distribution(0, max_value);
-    MSVC_WARNING_UNSUPPRESS()
+    MSVC_CONST uniform_int_distribution<uint16_t> distribution(0, max_value);
 
     vector<uint8_t> buffer(length * 2);
     for (size_t i = 0; i < length; i = i + 2)

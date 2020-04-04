@@ -44,6 +44,9 @@
                      : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses)
 #define MSVC_WARNING_UNSUPPRESS() __pragma(warning(pop))
 
+#define MSVC_WARNING_SUPPRESS_NEXT_LINE(x) __pragma(warning(suppress \
+                                                       : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses, cppcoreguidelines-macro-usage)
+
 // Visual Studio 2015 supports C++14, but not all constexpr scenarios. VS 2017 has full C++14 support.
 #if _MSC_VER >= 1910
 #define CONSTEXPR constexpr
@@ -54,6 +57,7 @@
 #else
 #define MSVC_WARNING_SUPPRESS(x)
 #define MSVC_WARNING_UNSUPPRESS()
+#define MSVC_WARNING_SUPPRESS_NEXT_LINE(x)
 #define CONSTEXPR constexpr
 #endif
 

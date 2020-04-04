@@ -252,17 +252,15 @@ extern "C" {
 charls_jpegls_encoder* CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_create() noexcept
 {
-    MSVC_WARNING_SUPPRESS(26402 26409)               // don't use new and delete + scoped object and move
+    MSVC_WARNING_SUPPRESS_NEXT_LINE(26402 26409)     // don't use new and delete + scoped object and move
     return new (std::nothrow) charls_jpegls_encoder; // NOLINT(cppcoreguidelines-owning-memory)
-    MSVC_WARNING_UNSUPPRESS()
 }
 
 void CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_destroy(IN_OPT_ const charls_jpegls_encoder* encoder) noexcept
 {
-    MSVC_WARNING_SUPPRESS(26401 26409) // don't use new and delete + non-owner.
-    delete encoder;                    // NOLINT(cppcoreguidelines-owning-memory)
-    MSVC_WARNING_UNSUPPRESS()
+    MSVC_WARNING_SUPPRESS_NEXT_LINE(26401 26409) // don't use new and delete + non-owner.
+    delete encoder;                              // NOLINT(cppcoreguidelines-owning-memory)
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
