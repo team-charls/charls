@@ -117,14 +117,14 @@ vector<uint8_t> MakeSomeNoise(const size_t length, const size_t bitCount, const 
 {
     const auto max_value = (1U << bitCount) - 1U;
     mt19937 generator(seed);
-
     MSVC_CONST uniform_int_distribution<uint32_t> distribution(0, max_value);
 
     vector<uint8_t> buffer(length);
-    for (size_t i = 0; i < length; ++i)
+    for (auto& pixel_value : buffer)
     {
-        buffer[i] = static_cast<uint8_t>(distribution(generator));
+        pixel_value = static_cast<uint8_t>(distribution(generator));
     }
+
     return buffer;
 }
 
@@ -133,7 +133,6 @@ vector<uint8_t> MakeSomeNoise16bit(const size_t length, const int bitCount, cons
 {
     const auto max_value = static_cast<uint16_t>((1U << bitCount) - 1U);
     mt19937 generator(seed);
-
     MSVC_CONST uniform_int_distribution<uint16_t> distribution(0, max_value);
 
     vector<uint8_t> buffer(length * 2);
@@ -144,6 +143,7 @@ vector<uint8_t> MakeSomeNoise16bit(const size_t length, const int bitCount, cons
         buffer[i] = static_cast<uint8_t>(value);
         buffer[i] = static_cast<uint8_t>(value >> 8);
     }
+
     return buffer;
 }
 

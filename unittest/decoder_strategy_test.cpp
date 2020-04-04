@@ -84,7 +84,7 @@ public:
 
         const auto length = encoder.GetLengthForward();
         DecoderStrategyTester dec(frame_info, parameters, encBuf.data(), length);
-        for (auto i = 0U; i < sizeof(inData) / sizeof(inData[0]); i++)
+        for (auto i = 0U; i < sizeof(inData) / sizeof(inData[0]); ++i)
         {
             const auto actual = dec.Read(inData[i].bits);
             Assert::AreEqual(inData[i].value, actual);

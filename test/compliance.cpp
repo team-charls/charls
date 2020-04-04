@@ -23,7 +23,7 @@ void Triplet2Planar(vector<uint8_t>& buffer, const Size size)
     vector<uint8_t> workBuffer(buffer.size());
 
     const size_t byteCount = size.cx * size.cy;
-    for (size_t index = 0; index < byteCount; index++)
+    for (size_t index = 0; index < byteCount; ++index)
     {
         workBuffer[index] = buffer[index * 3 + 0];
         workBuffer[index + 1 * byteCount] = buffer[index * 3 + 1];

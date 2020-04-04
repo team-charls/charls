@@ -157,9 +157,9 @@ protected:
             }
 
             isFFWritten_ = *position_ == JpegMarkerStartByte;
-            position_++;
-            compressedLength_--;
-            bytesWritten_++;
+            ++position_;
+            --compressedLength_;
+            ++bytesWritten_;
         }
     }
 

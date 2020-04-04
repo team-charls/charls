@@ -50,7 +50,7 @@ vector<signed char> CreateQLutLossless(const int32_t bitCount)
 
     vector<signed char> lut(static_cast<size_t>(range) * 2);
 
-    for (int32_t diff = -range; diff < range; diff++)
+    for (int32_t diff = -range; diff < range; ++diff)
     {
         lut[static_cast<size_t>(range) + diff] = QuantizeGradientOrg(preset, 0, diff);
     }

@@ -152,7 +152,7 @@ void JpegStreamWriter::WriteStartOfScanSegment(const int componentCount,
     for (auto i = 0; i < componentCount; ++i)
     {
         segment.push_back(static_cast<uint8_t>(componentId_));
-        componentId_++;
+        ++componentId_;
         segment.push_back(0); // Mapping table selector (0 = no table)
     }
 

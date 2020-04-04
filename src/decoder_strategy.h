@@ -167,7 +167,7 @@ public:
 
             if (valueNew == JpegMarkerStartByte)
             {
-                validBits_--;
+                --validBits_;
             }
         } while (validBits_ < bufType_bit_count - 8);
 
@@ -183,7 +183,7 @@ public:
             if (*positionNextFF == JpegMarkerStartByte)
                 break;
 
-            positionNextFF++;
+            ++positionNextFF;
         }
 
         return positionNextFF;
@@ -202,7 +202,7 @@ public:
                 return compressedBytes;
 
             validBits -= lastBitsCount;
-            compressedBytes--;
+            --compressedBytes;
         }
     }
 
@@ -252,7 +252,7 @@ public:
         }
         bufType valTest = readCache_;
 
-        for (int32_t count = 0; count < 16; count++)
+        for (int32_t count = 0; count < 16; ++count)
         {
             if ((valTest & (static_cast<bufType>(1) << (bufType_bit_count - 1))) != 0)
                 return count;
@@ -272,7 +272,7 @@ public:
         }
         Skip(15);
 
-        for (int32_t highBitsCount = 15;; highBitsCount++)
+        for (int32_t highBitsCount = 15;; ++highBitsCount)
         {
             if (ReadBit())
                 return highBitsCount;

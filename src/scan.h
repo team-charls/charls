@@ -299,7 +299,7 @@ inline std::pair<int32_t, int32_t> CreateEncodedValue(const int32_t k, const int
 inline CTable InitTable(const int32_t k) noexcept
 {
     CTable table;
-    for (short nerr = 0;; nerr++)
+    for (short nerr = 0;; ++nerr)
     {
         // Q is not used when k != 0
         const int32_t merrval = GetMappedErrVal(nerr);
@@ -311,7 +311,7 @@ inline CTable InitTable(const int32_t k) noexcept
         table.AddEntry(static_cast<uint8_t>(pairCode.second), code);
     }
 
-    for (short nerr = -1;; nerr--)
+    for (short nerr = -1;; --nerr)
     {
         // Q is not used when k != 0
         const int32_t merrval = GetMappedErrVal(nerr);
@@ -641,7 +641,7 @@ int32_t JlsCodec<Traits, Strategy>::DoRunMode(int32_t index, EncoderStrategy*)
     while (traits.IsNear(ptypeCurX[runLength], Ra))
     {
         ptypeCurX[runLength] = Ra;
-        runLength++;
+        ++runLength;
 
         if (runLength == ctypeRem)
             break;
@@ -697,7 +697,7 @@ void JlsCodec<Traits, Strategy>::DoLine(SAMPLE*)
         if (Qs != 0)
         {
             currentLine_[index] = DoRegular(Qs, currentLine_[index], GetPredictedValue(Ra, Rb, Rc), static_cast<Strategy*>(nullptr));
-            index++;
+            ++index;
         }
         else
         {
@@ -736,7 +736,7 @@ void JlsCodec<Traits, Strategy>::DoLine(Triplet<SAMPLE>*)
             Rx.v2 = DoRegular(Qs2, currentLine_[index].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), static_cast<Strategy*>(nullptr));
             Rx.v3 = DoRegular(Qs3, currentLine_[index].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), static_cast<Strategy*>(nullptr));
             currentLine_[index] = Rx;
-            index++;
+            ++index;
         }
     }
 }
@@ -771,7 +771,7 @@ void JlsCodec<Traits, Strategy>::DoLine(Quad<SAMPLE>*)
             Rx.v3 = DoRegular(Qs3, currentLine_[index].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), static_cast<Strategy*>(nullptr));
             Rx.v4 = DoRegular(Qs4, currentLine_[index].v4, GetPredictedValue(Ra.v4, Rb.v4, Rc.v4), static_cast<Strategy*>(nullptr));
             currentLine_[index] = Rx;
-            index++;
+            ++index;
         }
     }
 }

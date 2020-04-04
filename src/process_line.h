@@ -79,7 +79,7 @@ inline void ByteSwap(void* data, const int count)
         throw jpegls_error{jpegls_errc::invalid_encoded_data};
 
     auto* const data32 = static_cast<unsigned int*>(data);
-    for (auto i = 0; i < count / 4; i++)
+    for (auto i = 0; i < count / 4; ++i)
     {
         const auto value = data32[i];
         data32[i] = ((value >> 8U) & 0x00FF00FFU) | ((value & 0x00FF00FFU) << 8U);
@@ -143,13 +143,13 @@ private:
 template<typename TRANSFORM, typename T>
 void TransformLineToQuad(const T* ptypeInput, const int32_t pixelStrideIn, Quad<T>* byteBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
-    const int cpixel = std::min(pixelStride, pixelStrideIn);
+    const int pixel_count = std::min(pixelStride, pixelStrideIn);
     Quad<T>* ptypeBuffer = byteBuffer;
 
-    for (auto x = 0; x < cpixel; ++x)
+    for (auto i = 0; i < pixel_count; ++i)
     {
-        const Quad<T> pixel(transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2 * pixelStrideIn]), ptypeInput[x + 3 * pixelStrideIn]);
-        ptypeBuffer[x] = pixel;
+        const Quad<T> pixel(transform(ptypeInput[i], ptypeInput[i + pixelStrideIn], ptypeInput[i + 2 * pixelStrideIn]), ptypeInput[i + 3 * pixelStrideIn]);
+        ptypeBuffer[i] = pixel;
     }
 }
 
@@ -157,18 +157,18 @@ void TransformLineToQuad(const T* ptypeInput, const int32_t pixelStrideIn, Quad<
 template<typename TRANSFORM, typename T>
 void TransformQuadToLine(const Quad<T>* byteInput, const int32_t pixelStrideIn, T* ptypeBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
-    const auto cpixel = std::min(pixelStride, pixelStrideIn);
+    const auto pixel_count = std::min(pixelStride, pixelStrideIn);
     const Quad<T>* ptypeBufferIn = byteInput;
 
-    for (auto x = 0; x < cpixel; ++x)
+    for (auto i = 0; i < pixel_count; ++i)
     {
-        const Quad<T> color = ptypeBufferIn[x];
+        const Quad<T> color = ptypeBufferIn[i];
         const Quad<T> colorTransformed(transform(color.v1, color.v2, color.v3), color.v4);
 
-        ptypeBuffer[x] = colorTransformed.v1;
-        ptypeBuffer[x + pixelStride] = colorTransformed.v2;
-        ptypeBuffer[x + 2 * pixelStride] = colorTransformed.v3;
-        ptypeBuffer[x + 3 * pixelStride] = colorTransformed.v4;
+        ptypeBuffer[i] = colorTransformed.v1;
+        ptypeBuffer[i + pixelStride] = colorTransformed.v2;
+        ptypeBuffer[i + 2 * pixelStride] = colorTransformed.v3;
+        ptypeBuffer[i + 3 * pixelStride] = colorTransformed.v4;
     }
 }
 
@@ -207,12 +207,12 @@ void TransformLine(Quad<T>* pDest, const Quad<T>* pSrc, const int pixelCount, TR
 template<typename TRANSFORM, typename T>
 void TransformLineToTriplet(const T* ptypeInput, const int32_t pixelStrideIn, Triplet<T>* byteBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
-    const auto cpixel = std::min(pixelStride, pixelStrideIn);
+    const auto pixel_count = std::min(pixelStride, pixelStrideIn);
     Triplet<T>* ptypeBuffer = byteBuffer;
 
-    for (auto x = 0; x < cpixel; ++x)
+    for (auto i = 0; i < pixel_count; ++i)
     {
-        ptypeBuffer[x] = transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2 * pixelStrideIn]);
+        ptypeBuffer[i] = transform(ptypeInput[i], ptypeInput[i + pixelStrideIn], ptypeInput[i + 2 * pixelStrideIn]);
     }
 }
 
@@ -220,17 +220,17 @@ void TransformLineToTriplet(const T* ptypeInput, const int32_t pixelStrideIn, Tr
 template<typename TRANSFORM, typename T>
 void TransformTripletToLine(const Triplet<T>* byteInput, const int32_t pixelStrideIn, T* ptypeBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
 {
-    const auto cpixel = std::min(pixelStride, pixelStrideIn);
+    const auto pixel_count = std::min(pixelStride, pixelStrideIn);
     const Triplet<T>* ptypeBufferIn = byteInput;
 
-    for (auto x = 0; x < cpixel; ++x)
+    for (auto i = 0; i < pixel_count; ++i)
     {
-        const Triplet<T> color = ptypeBufferIn[x];
+        const Triplet<T> color = ptypeBufferIn[i];
         const Triplet<T> colorTransformed = transform(color.v1, color.v2, color.v3);
 
-        ptypeBuffer[x] = colorTransformed.v1;
-        ptypeBuffer[x + pixelStride] = colorTransformed.v2;
-        ptypeBuffer[x + 2 * pixelStride] = colorTransformed.v3;
+        ptypeBuffer[i] = colorTransformed.v1;
+        ptypeBuffer[i + pixelStride] = colorTransformed.v2;
+        ptypeBuffer[i + 2 * pixelStride] = colorTransformed.v3;
     }
 }
 
