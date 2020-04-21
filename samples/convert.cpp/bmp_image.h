@@ -55,6 +55,10 @@ public:
             throw std::istream::failure("Missing BMP identifier");
 
         dib_header = read_dib_header(input);
+        if (dib_header.compress_type != 0 || dib_header.depth != 24)
+            throw std::istream::failure("Can only read uncompressed 24 bits BMP files");
+
+        pixel_data = read_pixel_data(input, header.offset, dib_header);
     }
 
     bmp_header header;
@@ -86,5 +90,15 @@ private:
         input.read(reinterpret_cast<char*>(&result.compress_type), sizeof result.compress_type);
 
         return result;
+    }
+
+    static std::vector<uint8_t> read_pixel_data(std::istream& input, const uint32_t offset, const bmp_dib_header& header)
+    {
+        input.seekg(offset);
+
+        std::vector<uint8_t> pixel_data(static_cast<size_t>(header.height) * header.width * 3);
+        input.read(reinterpret_cast<char*>(pixel_data.data()), pixel_data.size());
+
+        return pixel_data;
     }
 };
