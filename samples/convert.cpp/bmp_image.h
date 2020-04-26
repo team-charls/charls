@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include <array>
 #include <cstddef>
 #include <fstream>
 #include <vector>
@@ -13,15 +12,15 @@ class bmp_image final
 public:
     struct bmp_header final
     {
-        std::array<uint8_t, 2> magic;   // the magic number used to identify the BMP file:
-                                        // 0x42 0x4D (Hex code points for B and M).
-                                        // The following entries are possible:
-                                        // BM - Windows 3.1x, 95, NT, ... etc
-                                        // BA - OS/2 Bitmap Array
-                                        // CI - OS/2 Color Icon
-                                        // CP - OS/2 Color Pointer
-                                        // IC - OS/2 Icon
-                                        // PT - OS/2 Pointer.
+        uint16_t magic;     // the magic number used to identify the BMP file:
+                            // 0x42 0x4D (Hex code points for B and M).
+                            // The following entries are possible:
+                            // BM - Windows 3.1x, 95, NT, ... etc
+                            // BA - OS/2 Bitmap Array
+                            // CI - OS/2 Color Icon
+                            // CP - OS/2 Color Pointer
+                            // IC - OS/2 Icon
+                            // PT - OS/2 Pointer.
         uint32_t file_size; // the size of the BMP file in bytes
         uint32_t reserved;  // reserved.
         uint32_t offset;    // the offset, i.e. starting address, of the byte where the bitmap data can be found.
@@ -31,7 +30,7 @@ public:
     {
         uint32_t header_size;             // the size of this header (40 bytes)
         uint32_t width;                   // the bitmap width in pixels
-        uint32_t height;                  // the bitmap height in pixels
+        int32_t height;                   // the bitmap height in pixels
         uint16_t number_planes;           // the number of color planes being used. Must be set to 1
         uint16_t depth;                   // the number of bits per pixel,which is the color depth of the image.
                                           // Typical values are 1, 4, 8, 16, 24 and 32.
@@ -51,11 +50,11 @@ public:
         input.open(filename, std::ios_base::in | std::ios_base::binary);
 
         header = read_bmp_header(input);
-        if (header.magic[0] != 0x42 || header.magic[1] != 0x4D)
+        if (header.magic != 0x4D42)
             throw std::istream::failure("Missing BMP identifier");
 
         dib_header = read_dib_header(input);
-        if (dib_header.compress_type != 0 || dib_header.depth != 24)
+        if (dib_header.header_size < 40 || dib_header.compress_type != 0 || dib_header.depth != 24)
             throw std::istream::failure("Can only read uncompressed 24 bits BMP files");
 
         pixel_data = read_pixel_data(input, header.offset, dib_header);
@@ -70,7 +69,7 @@ private:
     {
         bmp_header result{};
 
-        input.read(reinterpret_cast<char*>(result.magic.data()), result.magic.size());
+        input.read(reinterpret_cast<char*>(&result.magic), sizeof result.magic);
         input.read(reinterpret_cast<char*>(&result.file_size), sizeof result.file_size);
         input.read(reinterpret_cast<char*>(&result.reserved), sizeof result.reserved);
         input.read(reinterpret_cast<char*>(&result.offset), sizeof result.offset);

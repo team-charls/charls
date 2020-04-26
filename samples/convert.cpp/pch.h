@@ -6,5 +6,6 @@
 #include <charls/charls.h>
 
 #include <cassert>
+#include <cstring>
 #include <iostream>
 #include <vector>
