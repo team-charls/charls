@@ -14,6 +14,7 @@
 #include <sstream>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
+// Note: the functions in this header could be moved into jpegls.cpp as they are only used in that file.
 
 namespace charls {
 
@@ -25,6 +26,9 @@ extern std::vector<signed char> rgquant8Ll;
 extern std::vector<signed char> rgquant10Ll;
 extern std::vector<signed char> rgquant12Ll;
 extern std::vector<signed char> rgquant16Ll;
+
+// Used to determine how large runs should be encoded at a time. Defined by the JPEG-LS standard, A.2.1., Initialisation step 3.
+constexpr std::array<int, 32> J = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 constexpr int32_t ApplySign(const int32_t i, const int32_t sign) noexcept
 {
