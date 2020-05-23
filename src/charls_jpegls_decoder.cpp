@@ -314,8 +314,8 @@ try
     decoder.read_header();
     *check_pointer(params) = JlsParameters{};
     const frame_info info = decoder.frame_info();
-    params->height = info.height;
-    params->width = info.width;
+    params->height = static_cast<int32_t>(info.height);
+    params->width = static_cast<int32_t>(info.width);
     params->bitsPerSample = info.bits_per_sample;
     params->components = info.component_count;
     params->interleaveMode = decoder.interleave_mode();

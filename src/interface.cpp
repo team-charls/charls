@@ -57,7 +57,7 @@ void EncodeScan(const JlsParameters& params, const int componentCount, const Byt
     };
 
     auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(frame_info, codec_parameters, preset_coding_parameters);
-    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(source, params.stride));
+    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(source, static_cast<uint32_t>(params.stride)));
     ByteStreamInfo destination{writer.OutputStream()};
     const size_t bytesWritten = codec->EncodeScan(move(processLine), destination);
 
@@ -129,7 +129,7 @@ jpegls_errc JpegLsEncodeStream(const ByteStreamInfo destination, size_t& bytesWr
                 EncodeScan(info, 1, source, writer);
 
                 // Synchronize the source stream (EncodeScan works on a local copy)
-                SkipBytes(source, byteCountComponent);
+                SkipBytes(source, static_cast<size_t>(byteCountComponent));
             }
         }
         else
@@ -181,8 +181,8 @@ jpegls_errc JpegLsReadHeaderStream(const ByteStreamInfo source, JlsParameters* p
         *params = JlsParameters{};
 
         const auto& info = reader.frame_info();
-        params->height = info.height;
-        params->width = info.width;
+        params->height = static_cast<int32_t>(info.height);
+        params->width = static_cast<int32_t>(info.width);
         params->bitsPerSample = info.bits_per_sample;
         params->components = info.component_count;
 

@@ -54,7 +54,7 @@ public:
 
 private:
     void SkipByte();
-    int ReadUInt16();
+    uint16_t ReadUInt16();
     uint32_t ReadUInt32();
     int32_t ReadSegmentSize();
     void ReadNBytes(std::vector<char>& destination, int byteCount);

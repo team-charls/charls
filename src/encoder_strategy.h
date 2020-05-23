@@ -120,7 +120,7 @@ protected:
         if (!compressedStream_)
             impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-        const std::size_t bytesCount = position_ - buffer_.data();
+        const std::size_t bytesCount = static_cast<size_t>(position_ - buffer_.data());
         const auto bytesWritten = static_cast<std::size_t>(compressedStream_->sputn(reinterpret_cast<char*>(buffer_.data()), position_ - buffer_.data()));
 
         if (bytesWritten != bytesCount)

@@ -31,7 +31,6 @@
     <ProjectGuid>{E09F024E-A125-48AA-8E9D-7D1302BEAC97}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>convertcpp</RootNamespace>
-    <VcpkgConfiguration Condition="'$(Configuration)' == 'Checked'">Debug</VcpkgConfiguration>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup>

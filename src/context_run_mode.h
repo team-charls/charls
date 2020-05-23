@@ -48,7 +48,7 @@ struct CContextRunMode final
     {
         if (errorValue < 0)
         {
-            Nn = Nn + 1;
+            Nn = Nn + 1U;
         }
         A = A + ((EMErrval + 1 - nRItype_) >> 1);
         if (N == nReset_)

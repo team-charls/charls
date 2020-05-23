@@ -458,10 +458,10 @@ void JpegStreamReader::SkipByte()
 }
 
 
-int JpegStreamReader::ReadUInt16()
+uint16_t JpegStreamReader::ReadUInt16()
 {
-    const int i = ReadByte() * 256;
-    return i + ReadByte();
+    const uint16_t value = ReadByte() * 256;
+    return value + ReadByte();
 }
 
 uint32_t JpegStreamReader::ReadUInt32()

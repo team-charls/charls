@@ -30,7 +30,6 @@
     <ProjectGuid>{4A912445-1E83-41FA-8B80-C0A9BD4E9289}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>CharLSUnitTest</ProjectName>
-    <VcpkgConfiguration Condition="'$(Configuration)' == 'Checked'">Debug</VcpkgConfiguration>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

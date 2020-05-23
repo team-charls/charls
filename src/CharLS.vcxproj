@@ -31,7 +31,6 @@
     <RootNamespace>jpegls</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>CharLS</ProjectName>
-    <VcpkgConfiguration Condition="'$(Configuration)' == 'Checked'">Debug</VcpkgConfiguration>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup>

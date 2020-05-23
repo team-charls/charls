@@ -141,6 +141,8 @@ static bool convert_bottom_up_to_top_down(char* triplet_buffer, const uint32_t w
         memcpy(&triplet_buffer[bottom_row * stride], temp_row, row_length);
     }
 
+    free(temp_row);
+
     return true;
 }
 
@@ -280,7 +282,7 @@ static bool parse_command_line_options(const int argc, char* argv[], options_t* 
 
     if (argc > 3)
     {
-        options->interleave_mode = (charls_interleave_mode)strtol(argv[3], NULL, 10);
+        options->interleave_mode = (charls_interleave_mode)(int)strtol(argv[3], NULL, 10);
         if (options->interleave_mode < CHARLS_INTERLEAVE_MODE_NONE || options->interleave_mode > CHARLS_INTERLEAVE_MODE_SAMPLE)
         {
             printf("Argument interleave_mode needs to be 0 (none), 1 (line), or 2(sample)\n");
