@@ -30,7 +30,7 @@ public:
     {
         uint32_t header_size;             // the size of this header (40 bytes)
         uint32_t width;                   // the bitmap width in pixels
-        int32_t height;                   // the bitmap height in pixels
+        int32_t height;                   // the bitmap height in pixels (if negative image is top-down)
         uint16_t number_planes;           // the number of color planes being used. Must be set to 1
         uint16_t depth;                   // the number of bits per pixel,which is the color depth of the image.
                                           // Typical values are 1, 4, 8, 16, 24 and 32.
@@ -69,10 +69,10 @@ private:
     {
         bmp_header result{};
 
-        input.read(reinterpret_cast<char*>(&result.magic), sizeof result.magic);
-        input.read(reinterpret_cast<char*>(&result.file_size), sizeof result.file_size);
-        input.read(reinterpret_cast<char*>(&result.reserved), sizeof result.reserved);
-        input.read(reinterpret_cast<char*>(&result.offset), sizeof result.offset);
+        read(input, result.magic);
+        read(input, result.file_size);
+        read(input, result.reserved);
+        read(input, result.offset);
 
         return result;
     }
@@ -81,12 +81,12 @@ private:
     {
         bmp_dib_header result{};
 
-        input.read(reinterpret_cast<char*>(&result.header_size), sizeof result.header_size);
-        input.read(reinterpret_cast<char*>(&result.width), sizeof result.width);
-        input.read(reinterpret_cast<char*>(&result.height), sizeof result.height);
-        input.read(reinterpret_cast<char*>(&result.number_planes), sizeof result.number_planes);
-        input.read(reinterpret_cast<char*>(&result.depth), sizeof result.depth);
-        input.read(reinterpret_cast<char*>(&result.compress_type), sizeof result.compress_type);
+        read(input, result.header_size);
+        read(input, result.width);
+        read(input, result.height);
+        read(input, result.number_planes);
+        read(input, result.depth);
+        read(input, result.compress_type);
 
         return result;
     }
@@ -99,5 +99,11 @@ private:
         input.read(reinterpret_cast<char*>(pixel_data.data()), pixel_data.size());
 
         return pixel_data;
+    }
+
+    template<typename T>
+    static void read(std::istream& input, T& value)
+    {
+        input.read(reinterpret_cast<char*>(&value), sizeof value);
     }
 };
