@@ -21,19 +21,24 @@ namespace test {
 TEST_CLASS(encode_test)
 {
 public:
+    TEST_METHOD(encode_monochrome_4_bit_lossless) // NOLINT
+    {
+        encode("DataFiles/4bit-monochrome.pgm");
+    }
+
     TEST_METHOD(encode_monochrome_12_bit_lossless) // NOLINT
     {
-        encode("DataFiles/TEST16.pgm", interleave_mode::none);
+        encode("DataFiles/TEST16.pgm");
     }
 
     TEST_METHOD(encode_monochrome_16_bit_lossless) // NOLINT
     {
-        encode("DataFiles/16-bit-640-480-many-dots.pgm", interleave_mode::none);
+        encode("DataFiles/16-bit-640-480-many-dots.pgm");
     }
 
     TEST_METHOD(encode_color_8_bit_interleave_none_lossless) // NOLINT
     {
-        encode("DataFiles/TEST8.PPM", interleave_mode::none);
+        encode("DataFiles/TEST8.PPM");
     }
 
     TEST_METHOD(encode_color_8_bit_interleave_line_lossless) // NOLINT
@@ -47,7 +52,7 @@ public:
     }
 
 private:
-    static void encode(const char* filename, const interleave_mode interleave_mode)
+    static void encode(const char* filename, const interleave_mode interleave_mode = interleave_mode::none)
     {
         const portable_anymap_file reference_file = read_anymap_reference_file(filename, interleave_mode);
 

@@ -152,4 +152,9 @@
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="4bit-monochrome.pgm">
+      <Filter>Test Images</Filter>
+    </None>
+  </ItemGroup>
 </Project>

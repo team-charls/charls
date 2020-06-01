@@ -309,6 +309,10 @@
     <CopyFileToFolders Include="ff_in_entropy_data.jls">
       <FileType>Document</FileType>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="4bit-monochrome.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
+    </CopyFileToFolders>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
