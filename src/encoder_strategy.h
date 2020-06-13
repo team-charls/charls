@@ -31,12 +31,12 @@ public:
 
     int32_t PeekByte();
 
-    void OnLineBegin(const int32_t cpixel, void* ptypeBuffer, const int32_t pixelStride) const
+    void OnLineBegin(const size_t cpixel, void* ptypeBuffer, const int32_t pixelStride) const
     {
         processLine_->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
     }
 
-    static void OnLineEnd(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) noexcept
+    static void OnLineEnd(size_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) noexcept
     {
     }
 
@@ -60,13 +60,13 @@ protected:
         }
     }
 
-    void AppendToBitStream(const int32_t bits, const int32_t bitCount)
+    void AppendToBitStream(const uint32_t bits, const int32_t bitCount)
     {
         ASSERT(bitCount < 32 && bitCount >= 0);
-        ASSERT((!decoder_) || (bitCount == 0 && bits == 0) || (decoder_->ReadLongValue(bitCount) == bits));
+        ASSERT((!decoder_) || (bitCount == 0 && bits == 0) || (static_cast<uint32_t>(decoder_->ReadLongValue(bitCount)) == bits));
 #ifndef NDEBUG
         const uint32_t mask = (1U << bitCount) - 1U;
-        ASSERT((static_cast<uint32_t>(bits) | mask) == mask); // Not used bits must be set to zero.
+        ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
 #endif
 
         freeBitCount_ -= bitCount;
@@ -120,7 +120,7 @@ protected:
         if (!compressedStream_)
             impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-        const std::size_t bytesCount = static_cast<size_t>(position_ - buffer_.data());
+        const auto bytesCount = static_cast<size_t>(position_ - buffer_.data());
         const auto bytesWritten = static_cast<std::size_t>(compressedStream_->sputn(reinterpret_cast<char*>(buffer_.data()), position_ - buffer_.data()));
 
         if (bytesWritten != bytesCount)
@@ -165,7 +165,7 @@ protected:
 
     std::size_t GetLength() const noexcept
     {
-        return bytesWritten_ - (freeBitCount_ - 32) / 8;
+        return bytesWritten_ - (static_cast<uint32_t>(freeBitCount_) - 32U) / 8U;
     }
 
     FORCE_INLINE void AppendOnesToBitStream(const int32_t length)

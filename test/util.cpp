@@ -129,7 +129,7 @@ void TestRoundTrip(const char* strName, const vector<uint8_t>& originalBuffer, J
 
     const auto totalDecodeDuration = steady_clock::now() - start;
 
-    const double bitsPerSample = 1.0 * encoded_actual_size * 8 / (static_cast<double>(params.components) * params.height * params.width);
+    const double bitsPerSample = 1.0 * static_cast<double>(encoded_actual_size) * 8. / (static_cast<double>(params.components) * params.height * params.width);
     cout << "RoundTrip test for: " << strName << "\n\r";
     const double encodeTime = duration<double, milli>(totalEncodeDuration).count() / loopCount;
     const double decodeTime = duration<double, milli>(totalDecodeDuration).count() / loopCount;

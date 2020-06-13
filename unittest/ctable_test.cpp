@@ -22,9 +22,9 @@ public:
     {
         const CTable golomb_table;
 
-        for (int i = 0; i < 256; i++)
+        for (uint32_t i = 0U; i < 256U; i++)
         {
-            Assert::AreEqual(0, golomb_table.Get(i).GetLength());
+            Assert::AreEqual(0U, golomb_table.Get(i).GetLength());
             Assert::AreEqual(0, golomb_table.Get(i).GetValue());
         }
     }

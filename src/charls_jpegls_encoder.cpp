@@ -83,9 +83,8 @@ struct charls_jpegls_encoder final
         if (!is_frame_info_configured())
             throw_jpegls_error(jpegls_errc::invalid_operation);
 
-        return static_cast<size_t>(frame_info_.width) * frame_info_.height *
-                   frame_info_.component_count * (frame_info_.bits_per_sample < 9 ? 1 : 2) +
-               1024 + spiff_header_size_in_bytes;
+        return static_cast<size_t>(frame_info_.component_count) * frame_info_.width * frame_info_.height *
+            (frame_info_.bits_per_sample < 9 ? 1 : 2) + 1024 + spiff_header_size_in_bytes;
     }
 
     void write_spiff_header(const spiff_header& spiff_header)
@@ -149,10 +148,10 @@ struct charls_jpegls_encoder final
 
         if (stride == 0)
         {
-            stride = frame_info_.width * ((frame_info_.bits_per_sample + 7) / 8);
+            stride = frame_info_.width * ((static_cast<uint32_t>(frame_info_.bits_per_sample) + 7U) / 8U);
             if (interleave_mode_ != charls::interleave_mode::none)
             {
-                stride *= frame_info_.component_count;
+                stride *= static_cast<uint32_t>(frame_info_.component_count);
             }
         }
 
@@ -185,7 +184,7 @@ struct charls_jpegls_encoder final
         ByteStreamInfo sourceInfo = FromByteArrayConst(source, source_size_bytes);
         if (interleave_mode_ == charls::interleave_mode::none)
         {
-            const int32_t byteCountComponent = frame_info_.width * frame_info_.height * ((frame_info_.bits_per_sample + 7) / 8);
+            const size_t byteCountComponent = frame_info_.width * frame_info_.height * ((static_cast<uint32_t>(frame_info_.bits_per_sample) + 7U) / 8U);
             for (int32_t component = 0; component < frame_info_.component_count; ++component)
             {
                 writer_.WriteStartOfScanSegment(1, near_lossless_, interleave_mode_);
@@ -454,7 +453,7 @@ try
     const auto& pc = params->custom;
     encoder.preset_coding_parameters({pc.MaximumSampleValue, pc.Threshold1, pc.Threshold2, pc.Threshold3, pc.ResetValue});
 
-    encoder.encode(check_pointer(source), sourceLength, params->stride);
+    encoder.encode(check_pointer(source), sourceLength, static_cast<uint32_t>(params->stride));
     *check_pointer(bytesWritten) = encoder.bytes_written();
 
     clear_error_message(errorMessage);

@@ -36,8 +36,8 @@ public:
     ProcessLine& operator=(const ProcessLine&) = delete;
     ProcessLine& operator=(ProcessLine&&) = delete;
 
-    virtual void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride) = 0;
-    virtual void NewLineRequested(void* pDest, int pixelCount, int destStride) = 0;
+    virtual void NewLineDecoded(const void* pSrc, size_t pixelCount, int sourceStride) = 0;
+    virtual void NewLineRequested(void* pDest, size_t pixelCount, int destStride) = 0;
 
 protected:
     ProcessLine() = default;
@@ -54,13 +54,13 @@ public:
     {
     }
 
-    void NewLineRequested(void* destination, const int pixelCount, int /*byteStride*/) noexcept(false) override
+    void NewLineRequested(void* destination, const size_t pixelCount, int /*byteStride*/) noexcept(false) override
     {
         std::memcpy(destination, rawData_, pixelCount * bytesPerPixel_);
         rawData_ += bytesPerLine_;
     }
 
-    void NewLineDecoded(const void* source, const int pixelCount, int /*sourceStride*/) noexcept(false) override
+    void NewLineDecoded(const void* source, const size_t pixelCount, int /*sourceStride*/) noexcept(false) override
     {
         std::memcpy(rawData_, source, pixelCount * bytesPerPixel_);
         rawData_ += bytesPerLine_;
@@ -73,13 +73,13 @@ private:
 };
 
 
-inline void ByteSwap(void* data, const int count)
+inline void ByteSwap(void* data, const size_t count)
 {
-    if (static_cast<unsigned int>(count) & 1U)
+    if (count & 1U)
         throw jpegls_error{jpegls_errc::invalid_encoded_data};
 
     auto* const data32 = static_cast<unsigned int*>(data);
-    for (auto i = 0; i < count / 4; ++i)
+    for (auto i = 0U; i < count / 4; ++i)
     {
         const auto value = data32[i];
         data32[i] = ((value >> 8U) & 0x00FF00FFU) | ((value & 0x00FF00FFU) << 8U);
@@ -102,7 +102,7 @@ public:
     {
     }
 
-    void NewLineRequested(void* destination, const int pixelCount, int /*destStride*/) override
+    void NewLineRequested(void* destination, const size_t pixelCount, int /*destStride*/) override
     {
         auto bytesToRead = static_cast<std::streamsize>(static_cast<std::streamsize>(pixelCount) * bytesPerPixel_);
         while (bytesToRead != 0)
@@ -116,7 +116,7 @@ public:
 
         if (bytesPerPixel_ == 2)
         {
-            ByteSwap(static_cast<unsigned char*>(destination), 2 * pixelCount);
+            ByteSwap(static_cast<unsigned char*>(destination), 2U * pixelCount);
         }
 
         if (bytesPerLine_ - pixelCount * bytesPerPixel_ > 0)
@@ -125,7 +125,7 @@ public:
         }
     }
 
-    void NewLineDecoded(const void* source, const int pixelCount, int /*sourceStride*/) override
+    void NewLineDecoded(const void* source, const size_t pixelCount, int /*sourceStride*/) override
     {
         const auto bytesToWrite = pixelCount * bytesPerPixel_;
         const auto bytesWritten = static_cast<size_t>(rawData_->sputn(static_cast<const char*>(source), static_cast<std::streamsize>(bytesToWrite)));
@@ -141,12 +141,12 @@ private:
 
 
 template<typename TRANSFORM, typename T>
-void TransformLineToQuad(const T* ptypeInput, const int32_t pixelStrideIn, Quad<T>* byteBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformLineToQuad(const T* ptypeInput, const size_t pixelStrideIn, Quad<T>* byteBuffer, const size_t pixelStride, TRANSFORM& transform) noexcept
 {
-    const int pixel_count = std::min(pixelStride, pixelStrideIn);
+    const auto pixel_count = std::min(pixelStride, pixelStrideIn);
     Quad<T>* ptypeBuffer = byteBuffer;
 
-    for (auto i = 0; i < pixel_count; ++i)
+    for (auto i = 0U; i < pixel_count; ++i)
     {
         const Quad<T> pixel(transform(ptypeInput[i], ptypeInput[i + pixelStrideIn], ptypeInput[i + 2 * pixelStrideIn]), ptypeInput[i + 3 * pixelStrideIn]);
         ptypeBuffer[i] = pixel;
@@ -155,12 +155,12 @@ void TransformLineToQuad(const T* ptypeInput, const int32_t pixelStrideIn, Quad<
 
 
 template<typename TRANSFORM, typename T>
-void TransformQuadToLine(const Quad<T>* byteInput, const int32_t pixelStrideIn, T* ptypeBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformQuadToLine(const Quad<T>* byteInput, const size_t pixelStrideIn, T* ptypeBuffer, const size_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto pixel_count = std::min(pixelStride, pixelStrideIn);
     const Quad<T>* ptypeBufferIn = byteInput;
 
-    for (auto i = 0; i < pixel_count; ++i)
+    for (auto i = 0U; i < pixel_count; ++i)
     {
         const Quad<T> color = ptypeBufferIn[i];
         const Quad<T> colorTransformed(transform(color.v1, color.v2, color.v3), color.v4);
@@ -174,9 +174,9 @@ void TransformQuadToLine(const Quad<T>* byteInput, const int32_t pixelStrideIn, 
 
 
 template<typename T>
-void TransformRgbToBgr(T* pDest, int samplesPerPixel, const int pixelCount) noexcept
+void TransformRgbToBgr(T* pDest, int samplesPerPixel, const size_t pixelCount) noexcept
 {
-    for (auto i = 0; i < pixelCount; ++i)
+    for (auto i = 0U; i < pixelCount; ++i)
     {
         std::swap(pDest[0], pDest[2]);
         pDest += samplesPerPixel;
@@ -185,9 +185,9 @@ void TransformRgbToBgr(T* pDest, int samplesPerPixel, const int pixelCount) noex
 
 
 template<typename TRANSFORM, typename T>
-void TransformLine(Triplet<T>* pDest, const Triplet<T>* pSrc, const int pixelCount, TRANSFORM& transform) noexcept
+void TransformLine(Triplet<T>* pDest, const Triplet<T>* pSrc, const size_t pixelCount, TRANSFORM& transform) noexcept
 {
-    for (auto i = 0; i < pixelCount; ++i)
+    for (auto i = 0U; i < pixelCount; ++i)
     {
         pDest[i] = transform(pSrc[i].v1, pSrc[i].v2, pSrc[i].v3);
     }
@@ -195,9 +195,9 @@ void TransformLine(Triplet<T>* pDest, const Triplet<T>* pSrc, const int pixelCou
 
 
 template<typename TRANSFORM, typename T>
-void TransformLine(Quad<T>* pDest, const Quad<T>* pSrc, const int pixelCount, TRANSFORM& transform) noexcept
+void TransformLine(Quad<T>* pDest, const Quad<T>* pSrc, const size_t pixelCount, TRANSFORM& transform) noexcept
 {
-    for (auto i = 0; i < pixelCount; ++i)
+    for (auto i = 0U; i < pixelCount; ++i)
     {
         pDest[i] = Quad<T>(transform(pSrc[i].v1, pSrc[i].v2, pSrc[i].v3), pSrc[i].v4);
     }
@@ -205,12 +205,12 @@ void TransformLine(Quad<T>* pDest, const Quad<T>* pSrc, const int pixelCount, TR
 
 
 template<typename TRANSFORM, typename T>
-void TransformLineToTriplet(const T* ptypeInput, const int32_t pixelStrideIn, Triplet<T>* byteBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformLineToTriplet(const T* ptypeInput, const size_t pixelStrideIn, Triplet<T>* byteBuffer, const size_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto pixel_count = std::min(pixelStride, pixelStrideIn);
     Triplet<T>* ptypeBuffer = byteBuffer;
 
-    for (auto i = 0; i < pixel_count; ++i)
+    for (auto i = 0U; i < pixel_count; ++i)
     {
         ptypeBuffer[i] = transform(ptypeInput[i], ptypeInput[i + pixelStrideIn], ptypeInput[i + 2 * pixelStrideIn]);
     }
@@ -218,12 +218,12 @@ void TransformLineToTriplet(const T* ptypeInput, const int32_t pixelStrideIn, Tr
 
 
 template<typename TRANSFORM, typename T>
-void TransformTripletToLine(const Triplet<T>* byteInput, const int32_t pixelStrideIn, T* ptypeBuffer, const int32_t pixelStride, TRANSFORM& transform) noexcept
+void TransformTripletToLine(const Triplet<T>* byteInput, const size_t pixelStrideIn, T* ptypeBuffer, const size_t pixelStride, TRANSFORM& transform) noexcept
 {
     const auto pixel_count = std::min(pixelStride, pixelStrideIn);
     const Triplet<T>* ptypeBufferIn = byteInput;
 
-    for (auto i = 0; i < pixel_count; ++i)
+    for (auto i = 0U; i < pixel_count; ++i)
     {
         const Triplet<T> color = ptypeBufferIn[i];
         const Triplet<T> colorTransformed = transform(color.v1, color.v2, color.v3);
@@ -243,15 +243,15 @@ public:
         frame_info_{info},
         parameters_{parameters},
         stride_{stride},
-        tempLine_(static_cast<size_t>(info.width) * info.component_count),
-        buffer_(static_cast<size_t>(info.width) * info.component_count * sizeof(size_type)),
+        tempLine_(static_cast<size_t>(info.component_count) * info.width),
+        buffer_(static_cast<size_t>(info.component_count) * info.width * sizeof(size_type)),
         transform_{transform},
         inverseTransform_{transform},
         rawPixels_{rawStream}
     {
     }
 
-    void NewLineRequested(void* dest, const int pixelCount, const int destStride) override
+    void NewLineRequested(void* dest, const size_t pixelCount, const int destStride) override
     {
         if (!rawPixels_.rawStream)
         {
@@ -263,7 +263,7 @@ public:
         Transform(rawPixels_.rawStream, dest, pixelCount, destStride);
     }
 
-    void Transform(std::basic_streambuf<char>* rawStream, void* destination, const int pixelCount, const int destinationStride)
+    void Transform(std::basic_streambuf<char>* rawStream, void* destination, const size_t pixelCount, const int destinationStride)
     {
         std::streamsize bytesToRead = static_cast<std::streamsize>(pixelCount) * frame_info_.component_count * sizeof(size_type);
         while (bytesToRead != 0)
@@ -277,7 +277,7 @@ public:
         Transform(buffer_.data(), destination, pixelCount, destinationStride);
     }
 
-    void Transform(const void* source, void* dest, int pixelCount, int destStride) noexcept
+    void Transform(const void* source, void* dest, size_t pixelCount, size_t destStride) noexcept
     {
         if (parameters_.output_bgr)
         {
@@ -310,7 +310,7 @@ public:
         }
     }
 
-    void DecodeTransform(const void* pSrc, void* rawData, int pixelCount, int byteStride) noexcept
+    void DecodeTransform(const void* pSrc, void* rawData, const size_t pixelCount, size_t byteStride) noexcept
     {
         if (frame_info_.component_count == 3)
         {
@@ -341,7 +341,7 @@ public:
         }
     }
 
-    void NewLineDecoded(const void* pSrc, const int pixelCount, const int sourceStride) override
+    void NewLineDecoded(const void* pSrc, const size_t pixelCount, const int sourceStride) override
     {
         if (rawPixels_.rawStream)
         {

@@ -789,16 +789,16 @@ void JlsCodec<Traits, Strategy>::DoLine(Quad<SAMPLE>*)
 template<typename Traits, typename Strategy>
 void JlsCodec<Traits, Strategy>::DoScan()
 {
-    const int32_t pixelStride = width_ + 4;
-    const int components = parameters().interleave_mode == interleave_mode::line ? frame_info().component_count : 1;
+    const uint32_t pixelStride = width_ + 4U;
+    const size_t component_count = parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U;
 
-    std::vector<PIXEL> vectmp(static_cast<size_t>(2) * components * pixelStride);
-    std::vector<int32_t> rgRUNindex(components);
+    std::vector<PIXEL> vectmp(static_cast<size_t>(2) * component_count * pixelStride);
+    std::vector<int32_t> rgRUNindex(component_count);
 
     for (uint32_t line = 0; line < frame_info().height; ++line)
     {
         previousLine_ = &vectmp[1];
-        currentLine_ = &vectmp[1 + static_cast<size_t>(components) * pixelStride];
+        currentLine_ = &vectmp[1 + static_cast<size_t>(component_count) * pixelStride];
         if ((line & 1) == 1)
         {
             std::swap(previousLine_, currentLine_);
@@ -806,7 +806,7 @@ void JlsCodec<Traits, Strategy>::DoScan()
 
         Strategy::OnLineBegin(width_, currentLine_, pixelStride);
 
-        for (int component = 0; component < components; ++component)
+        for (auto component = 0U; component < component_count; ++component)
         {
             RUNindex_ = rgRUNindex[component];
 
@@ -822,7 +822,7 @@ void JlsCodec<Traits, Strategy>::DoScan()
 
         if (static_cast<uint32_t>(rect_.Y) <= line && line < static_cast<uint32_t>(rect_.Y + rect_.Height))
         {
-            Strategy::OnLineEnd(rect_.Width, currentLine_ + rect_.X - (static_cast<size_t>(components) * pixelStride), pixelStride);
+            Strategy::OnLineEnd(rect_.Width, currentLine_ + rect_.X - (static_cast<size_t>(component_count) * pixelStride), pixelStride);
         }
     }
 
@@ -902,7 +902,7 @@ void JlsCodec<Traits, Strategy>::DecodeScan(std::unique_ptr<ProcessLine> process
 
     Strategy::Init(compressedData);
     DoScan();
-    SkipBytes(compressedData, Strategy::GetCurBytePos() - compressedBytes);
+    SkipBytes(compressedData, static_cast<size_t>(Strategy::GetCurBytePos() - compressedBytes));
 }
 MSVC_WARNING_UNSUPPRESS()
 

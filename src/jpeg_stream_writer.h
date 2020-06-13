@@ -57,7 +57,7 @@ public:
     /// <param name="height">The height of the frame.</param>
     /// <param name="bitsPerSample">The bits per sample.</param>
     /// <param name="componentCount">The component count.</param>
-    void WriteStartOfFrameSegment(int width, int height, int bitsPerSample, int componentCount);
+    void WriteStartOfFrameSegment(uint32_t width, uint32_t height, int bitsPerSample, int componentCount);
 
     /// <summary>
     /// Writes a JPEG-LS Start Of Scan (SOS) segment.

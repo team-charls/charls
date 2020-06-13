@@ -36,15 +36,15 @@ void JpegStreamReader::Read(ByteStreamInfo rawPixels, uint32_t stride)
 
     if (rect_.Width <= 0)
     {
-        rect_.Width = frame_info_.width;
-        rect_.Height = frame_info_.height;
+        rect_.Width = static_cast<int32_t>(frame_info_.width);
+        rect_.Height = static_cast<int32_t>(frame_info_.height);
     }
 
     if (stride == 0)
     {
-        const uint32_t width = rect_.Width != 0 ? rect_.Width : frame_info_.width;
-        const uint32_t components = parameters_.interleave_mode == interleave_mode::none ? 1 : frame_info_.component_count;
-        stride = components * width * ((frame_info_.bits_per_sample + 7) / 8);
+        const uint32_t width = rect_.Width != 0 ? static_cast<uint32_t>(rect_.Width) : frame_info_.width;
+        const uint32_t component_count = parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<uint32_t>(frame_info_.component_count);
+        stride = component_count * width * ((static_cast<uint32_t>(frame_info_.bits_per_sample) + 7U) / 8U);
     }
 
     const int64_t bytesPerPlane = static_cast<int64_t>(rect_.Width) * rect_.Height * ((frame_info_.bits_per_sample + 7) / 8);
@@ -424,12 +424,13 @@ void JpegStreamReader::ReadStartOfScan()
     }
 
     parameters_.near_lossless = ReadByte();                            // Read NEAR parameter
-    if (parameters_.near_lossless > MaximumNearLossless(maximum_sample_value()))
+    if (parameters_.near_lossless > MaximumNearLossless(static_cast<int>(maximum_sample_value())))
         throw_jpegls_error(jpegls_errc::invalid_parameter_near_lossless);
 
-    parameters_.interleave_mode = static_cast<interleave_mode>(ReadByte()); // Read ILV parameter
-    if (!(parameters_.interleave_mode == interleave_mode::none || parameters_.interleave_mode == interleave_mode::line || parameters_.interleave_mode == interleave_mode::sample))
+    const auto mode = static_cast<interleave_mode>(ReadByte()); // Read ILV parameter
+    if (!(mode == interleave_mode::none || mode == interleave_mode::line || mode == interleave_mode::sample))
         throw_jpegls_error(jpegls_errc::invalid_parameter_interleave_mode);
+    parameters_.interleave_mode = mode;
 
     if ((ReadByte() & 0xFU) != 0) // Read Ah (no meaning) and Al (point transform).
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
@@ -614,7 +615,7 @@ uint32_t JpegStreamReader::maximum_sample_value() const noexcept
     ASSERT(is_maximum_sample_value_valid());
 
     if (preset_coding_parameters_.maximum_sample_value != 0)
-        return preset_coding_parameters_.maximum_sample_value;
+        return static_cast<uint32_t>(preset_coding_parameters_.maximum_sample_value);
 
     return calculate_maximum_sample_value(frame_info_.bits_per_sample);
 }

@@ -15,7 +15,7 @@ struct Code final
 {
     Code() = default;
 
-    Code(const int32_t value, const int32_t length) noexcept :
+    Code(const int32_t value, const uint32_t length) noexcept :
         value_{value},
         length_{length}
     {
@@ -26,13 +26,13 @@ struct Code final
         return value_;
     }
 
-    int32_t GetLength() const noexcept
+    uint32_t GetLength() const noexcept
     {
         return length_;
     }
 
     int32_t value_{};
-    int32_t length_{};
+    uint32_t length_{};
 };
 
 
@@ -43,7 +43,7 @@ public:
 
     void AddEntry(const uint8_t value, const Code c) noexcept
     {
-        const int32_t length = c.GetLength();
+        const uint32_t length = c.GetLength();
         ASSERT(static_cast<size_t>(length) <= byte_bit_count);
 
         for (size_t i = 0; i < static_cast<size_t>(1U) << (byte_bit_count - length); ++i)
@@ -53,7 +53,7 @@ public:
         }
     }
 
-    FORCE_INLINE const Code& Get(const int32_t value) const noexcept
+    FORCE_INLINE const Code& Get(const uint32_t value) const noexcept
     {
         return types_[value];
     }

@@ -82,10 +82,10 @@ void JpegStreamWriter::WriteSpiffEndOfDirectoryEntry()
 }
 
 
-void JpegStreamWriter::WriteStartOfFrameSegment(const int width, const int height, const int bitsPerSample, const int componentCount)
+void JpegStreamWriter::WriteStartOfFrameSegment(const uint32_t width, const uint32_t height, const int bitsPerSample, const int componentCount)
 {
-    ASSERT(width >= 0 && width <= UINT16_MAX);
-    ASSERT(height >= 0 && height <= UINT16_MAX);
+    ASSERT(width <= UINT16_MAX);
+    ASSERT(height <= UINT16_MAX);
     ASSERT(bitsPerSample >= MinimumBitsPerSample && bitsPerSample <= MaximumBitsPerSample);
     ASSERT(componentCount > 0 && componentCount <= UINT8_MAX);
 

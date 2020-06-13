@@ -90,11 +90,11 @@ public:
         readCache_ = readCache_ << length;
     }
 
-    static void OnLineBegin(int32_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) noexcept
+    static void OnLineBegin(const size_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) noexcept
     {
     }
 
-    void OnLineEnd(const int32_t pixelCount, const void* ptypeBuffer, const int32_t pixelStride) const
+    void OnLineEnd(const size_t pixelCount, const void* ptypeBuffer, const int32_t pixelStride) const
     {
         processLine_->NewLineDecoded(ptypeBuffer, pixelCount, pixelStride);
     }

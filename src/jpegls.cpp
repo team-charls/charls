@@ -39,7 +39,7 @@ signed char QuantizeGradientOrg(const jpegls_pc_parameters& preset, const int32_
 
 vector<signed char> CreateQLutLossless(const int32_t bitCount)
 {
-    const jpegls_pc_parameters preset{compute_default((1U << static_cast<uint32_t>(bitCount)) - 1, 0)};
+    const jpegls_pc_parameters preset{compute_default((1U << static_cast<uint32_t>(bitCount)) - 1U, 0)};
     const int32_t range = preset.maximum_sample_value + 1;
 
     vector<signed char> lut(static_cast<size_t>(range) * 2);
@@ -92,13 +92,13 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateCodec(const frame_info& fr
     {
         if (frame.bits_per_sample <= 8)
         {
-            DefaultTraits<uint8_t, uint8_t> traits(calculate_maximum_sample_value(frame.bits_per_sample), parameters.near_lossless, preset_coding_parameters.reset_value);
+            DefaultTraits<uint8_t, uint8_t> traits(static_cast<int32_t>(calculate_maximum_sample_value(frame.bits_per_sample)), parameters.near_lossless, preset_coding_parameters.reset_value);
             traits.MAXVAL = preset_coding_parameters.maximum_sample_value;
             codec = make_unique<JlsCodec<DefaultTraits<uint8_t, uint8_t>, Strategy>>(traits, frame, parameters);
         }
         else
         {
-            DefaultTraits<uint16_t, uint16_t> traits(calculate_maximum_sample_value(frame.bits_per_sample), parameters.near_lossless, preset_coding_parameters.reset_value);
+            DefaultTraits<uint16_t, uint16_t> traits(static_cast<int32_t>(calculate_maximum_sample_value(frame.bits_per_sample)), parameters.near_lossless, preset_coding_parameters.reset_value);
             traits.MAXVAL = preset_coding_parameters.maximum_sample_value;
             codec = make_unique<JlsCodec<DefaultTraits<uint16_t, uint16_t>, Strategy>>(traits, frame, parameters);
         }
@@ -144,7 +144,7 @@ unique_ptr<Strategy> JlsCodecFactory<Strategy>::CreateOptimizedCodec(const frame
 
 #endif
 
-    const int maxval = calculate_maximum_sample_value(frame.bits_per_sample);
+    const auto maxval = static_cast<int>(calculate_maximum_sample_value(frame.bits_per_sample));
 
     if (frame.bits_per_sample <= 8)
     {

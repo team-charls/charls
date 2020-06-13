@@ -105,13 +105,13 @@ struct charls_jpegls_decoder final
 
         if (stride == 0)
         {
-            return static_cast<size_t>(info.width) * info.height * info.component_count * (info.bits_per_sample <= 8 ? 1 : 2);
+            return static_cast<size_t>(info.component_count) * info.height * info.width * (info.bits_per_sample <= 8 ? 1 : 2);
         }
 
         switch (interleave_mode())
         {
         case charls::interleave_mode::none:
-            return static_cast<size_t>(stride) * info.height * info.component_count;
+            return static_cast<size_t>(info.component_count) * stride * info.height;
 
         case charls::interleave_mode::line:
         case charls::interleave_mode::sample:
