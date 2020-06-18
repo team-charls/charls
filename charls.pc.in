@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Description: An optimized implementation of the JPEG-LS standard
+Name: CharLS
+Version: @VERSION@
+URL: https://github.com/team-charls/charls/
+Cflags: -I${includedir}
+Libs: -L${libdir} -lcharls

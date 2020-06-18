@@ -38,6 +38,10 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+include(GNUInstallDirs)
+CONFIGURE_FILE("charls.pc.in" "charls.pc" @ONLY)
+install(FILES "charls.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+
 # Configure the supported C++ compilers: gcc, clang and MSVC
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(PEDANTIC_CXX_COMPILE_FLAGS
