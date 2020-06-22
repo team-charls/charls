@@ -177,14 +177,14 @@ struct charls_jpegls_encoder final
         }
         else if (frame_info_.bits_per_sample > 12)
         {
-            const jpegls_pc_parameters preset = compute_default(calculate_maximum_sample_value(frame_info_.bits_per_sample), near_lossless_);
+            const jpegls_pc_parameters preset = compute_default(static_cast<int32_t>(calculate_maximum_sample_value(frame_info_.bits_per_sample)), near_lossless_);
             writer_.WriteJpegLSPresetParametersSegment(preset);
         }
 
         ByteStreamInfo sourceInfo = FromByteArrayConst(source, source_size_bytes);
         if (interleave_mode_ == charls::interleave_mode::none)
         {
-            const size_t byteCountComponent = frame_info_.width * frame_info_.height * ((static_cast<uint32_t>(frame_info_.bits_per_sample) + 7U) / 8U);
+            const size_t byteCountComponent = ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U) * frame_info_.width * frame_info_.height;
             for (int32_t component = 0; component < frame_info_.component_count; ++component)
             {
                 writer_.WriteStartOfScanSegment(1, near_lossless_, interleave_mode_);

@@ -23,8 +23,11 @@ using namespace charls;
 
 namespace {
 
-signed char QuantizeGradientOrg(const jpegls_pc_parameters& preset, const int32_t near_lossless, const int32_t Di) noexcept
+// See JPEG-LS standard ISO/IEC 14495-1, A.3.3, Code Segment A.4
+int8_t QuantizeGradientOrg(const jpegls_pc_parameters& preset, const int32_t Di) noexcept
 {
+    constexpr int32_t near_lossless = 0;
+
     if (Di <= -preset.threshold3) return -4;
     if (Di <= -preset.threshold2) return -3;
     if (Di <= -preset.threshold1) return -2;
@@ -37,17 +40,17 @@ signed char QuantizeGradientOrg(const jpegls_pc_parameters& preset, const int32_
     return 4;
 }
 
-vector<signed char> CreateQLutLossless(const int32_t bitCount)
+vector<int8_t> CreateQLutLossless(const int32_t bitCount)
 {
-    const jpegls_pc_parameters preset{compute_default((1U << static_cast<uint32_t>(bitCount)) - 1U, 0)};
+    const jpegls_pc_parameters preset{compute_default((1 << static_cast<uint32_t>(bitCount)) - 1, 0)};
     const int32_t range = preset.maximum_sample_value + 1;
 
-    vector<signed char> lut(static_cast<size_t>(range) * 2);
-
-    for (int32_t diff = -range; diff < range; ++diff)
+    vector<int8_t> lut(static_cast<size_t>(range) * 2);
+    for (size_t i = 0; i < lut.size(); ++i)
     {
-        lut[static_cast<size_t>(range) + diff] = QuantizeGradientOrg(preset, 0, diff);
+        lut[i] = QuantizeGradientOrg(preset, static_cast<int32_t>(i) - range);
     }
+
     return lut;
 }
 
@@ -72,10 +75,10 @@ array<CTable, 16> decodingTables = {InitTable(0), InitTable(1), InitTable(2), In
                                     InitTable(12), InitTable(13), InitTable(14), InitTable(15)};
 
 // Lookup tables: sample differences to bin indexes.
-vector<signed char> rgquant8Ll = CreateQLutLossless(8);   // NOLINT(clang-diagnostic-global-constructors)
-vector<signed char> rgquant10Ll = CreateQLutLossless(10); // NOLINT(clang-diagnostic-global-constructors)
-vector<signed char> rgquant12Ll = CreateQLutLossless(12); // NOLINT(clang-diagnostic-global-constructors)
-vector<signed char> rgquant16Ll = CreateQLutLossless(16); // NOLINT(clang-diagnostic-global-constructors)
+vector<int8_t> quantization_lut_lossless_8 = CreateQLutLossless(8);   // NOLINT(clang-diagnostic-global-constructors)
+vector<int8_t> quantization_lut_lossless_10 = CreateQLutLossless(10); // NOLINT(clang-diagnostic-global-constructors)
+vector<int8_t> quantization_lut_lossless_12 = CreateQLutLossless(12); // NOLINT(clang-diagnostic-global-constructors)
+vector<int8_t> quantization_lut_lossless_16 = CreateQLutLossless(16); // NOLINT(clang-diagnostic-global-constructors)
 
 
 template<typename Strategy>

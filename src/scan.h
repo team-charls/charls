@@ -22,12 +22,12 @@ class DecoderStrategy;
 class EncoderStrategy;
 
 extern std::array<CTable, 16> decodingTables;
-extern std::vector<signed char> rgquant8Ll;
-extern std::vector<signed char> rgquant10Ll;
-extern std::vector<signed char> rgquant12Ll;
-extern std::vector<signed char> rgquant16Ll;
+extern std::vector<int8_t> quantization_lut_lossless_8;
+extern std::vector<int8_t> quantization_lut_lossless_10;
+extern std::vector<int8_t> quantization_lut_lossless_12;
+extern std::vector<int8_t> quantization_lut_lossless_16;
 
-// Used to determine how large runs should be encoded at a time. Defined by the JPEG-LS standard, A.2.1., Initialisation step 3.
+// Used to determine how large runs should be encoded at a time. Defined by the JPEG-LS standard, A.2.1., Initialization step 3.
 constexpr std::array<int, 32> J = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 constexpr int32_t ApplySign(const int32_t i, const int32_t sign) noexcept
@@ -151,8 +151,8 @@ public:
 
     FORCE_INLINE int32_t QuantizeGradient(const int32_t Di) const noexcept
     {
-        ASSERT(QuantizeGradientOrg(Di) == *(pquant_ + Di));
-        return *(pquant_ + Di);
+        ASSERT(QuantizeGradientOrg(Di) == *(quantization_ + Di));
+        return *(quantization_ + Di);
     }
 
     void InitQuantizationLUT();
@@ -237,8 +237,8 @@ private:
     PIXEL* currentLine_{};
 
     // quantization lookup table
-    signed char* pquant_{};
-    std::vector<signed char> rgquant_;
+    int8_t* quantization_{};
+    std::vector<int8_t> quantization_lut_;
 };
 
 
@@ -396,35 +396,35 @@ void JlsCodec<Traits, Strategy>::InitQuantizationLUT()
         {
             if (traits.bpp == 8)
             {
-                pquant_ = &rgquant8Ll[rgquant8Ll.size() / 2];
+                quantization_ = &quantization_lut_lossless_8[quantization_lut_lossless_8.size() / 2];
                 return;
             }
             if (traits.bpp == 10)
             {
-                pquant_ = &rgquant10Ll[rgquant10Ll.size() / 2];
+                quantization_ = &quantization_lut_lossless_10[quantization_lut_lossless_10.size() / 2];
                 return;
             }
             if (traits.bpp == 12)
             {
-                pquant_ = &rgquant12Ll[rgquant12Ll.size() / 2];
+                quantization_ = &quantization_lut_lossless_12[quantization_lut_lossless_12.size() / 2];
                 return;
             }
             if (traits.bpp == 16)
             {
-                pquant_ = &rgquant16Ll[rgquant16Ll.size() / 2];
+                quantization_ = &quantization_lut_lossless_16[quantization_lut_lossless_16.size() / 2];
                 return;
             }
         }
     }
 
-    const int32_t RANGE = 1 << traits.bpp;
+    const int32_t range = 1 << traits.bpp;
 
-    rgquant_.resize(static_cast<size_t>(RANGE) * 2);
+    quantization_lut_.resize(static_cast<size_t>(range) * 2);
 
-    pquant_ = &rgquant_[RANGE];
-    for (int32_t i = -RANGE; i < RANGE; ++i)
+    quantization_ = &quantization_lut_[range];
+    for (int32_t i = -range; i < range; ++i)
     {
-        pquant_[i] = QuantizeGradientOrg(i);
+        quantization_[i] = QuantizeGradientOrg(i);
     }
 }
 
