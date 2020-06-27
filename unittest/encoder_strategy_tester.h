@@ -11,7 +11,7 @@ namespace test {
 class EncoderStrategyTester final : charls::EncoderStrategy
 {
 public:
-    explicit EncoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters) :
+    explicit EncoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters) noexcept :
         EncoderStrategy(frame_info, parameters)
     {
     }

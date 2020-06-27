@@ -108,6 +108,7 @@
     <RunCodeAnalysis Condition="'$(MSBuildProjectExtension)'=='.vcxproj'" >true</RunCodeAnalysis>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+    <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
 
   </PropertyGroup>
 </Project>

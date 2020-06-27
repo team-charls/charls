@@ -12,7 +12,7 @@ namespace charls {
 class EncoderStrategy
 {
 public:
-    explicit EncoderStrategy(const frame_info& frame, const coding_parameters& parameters) :
+    explicit EncoderStrategy(const frame_info& frame, const coding_parameters& parameters) noexcept :
         frame_info_{frame},
         parameters_{parameters}
     {

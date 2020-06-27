@@ -18,7 +18,7 @@ namespace charls {
 class DecoderStrategy
 {
 public:
-    explicit DecoderStrategy(const frame_info& frame, const coding_parameters& parameters) :
+    explicit DecoderStrategy(const frame_info& frame, const coding_parameters& parameters) noexcept :
         frame_info_{frame},
         parameters_{parameters}
     {

@@ -110,7 +110,7 @@ public:
     using PIXEL = typename Traits::PIXEL;
     using SAMPLE = typename Traits::SAMPLE;
 
-    JlsCodec(Traits inTraits, const frame_info& frame_info, const coding_parameters& parameters) :
+    JlsCodec(Traits inTraits, const frame_info& frame_info, const coding_parameters& parameters) noexcept :
         Strategy{update_component_count(frame_info, parameters), parameters},
         traits{std::move(inTraits)},
         width_{frame_info.width}
