@@ -11,16 +11,16 @@
 namespace charls {
 
 // Purpose: a JPEG-LS context with it's current statistics.
-struct JlsContext final
+struct jls_context final
 {
     int32_t A{};
     int32_t B{};
     int16_t C{};
     int16_t N{1};
 
-    JlsContext() = default;
+    jls_context() = default;
 
-    explicit JlsContext(const int32_t a) noexcept :
+    explicit jls_context(const int32_t a) noexcept :
         A{a}
     {
     }
@@ -33,13 +33,13 @@ struct JlsContext final
         return BitWiseSign(2 * B + N - 1);
     }
 
-    FORCE_INLINE void UpdateVariables(const int32_t errorValue, const int32_t NEAR, const int32_t NRESET) noexcept
+    FORCE_INLINE void UpdateVariables(const int32_t error_value, const int32_t near_lossless, const int32_t NRESET) noexcept
     {
         ASSERT(N != 0);
 
         // For performance work on copies of A,B,N (compiler will use registers).
-        int a = A + std::abs(errorValue);
-        int b = B + errorValue * (2 * NEAR + 1);
+        int a = A + std::abs(error_value);
+        int b = B + error_value * (2 * near_lossless + 1);
         int n = N;
 
         ASSERT(a < 65536 * 256);

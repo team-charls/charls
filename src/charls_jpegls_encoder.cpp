@@ -25,7 +25,7 @@ struct charls_jpegls_encoder final
         if (state_ != state::initial)
             throw_jpegls_error(jpegls_errc::invalid_operation);
 
-        writer_.UpdateDestination(destination, size);
+        writer_.update_destination(destination, size);
         state_ = state::destination_set;
     }
 
@@ -98,8 +98,8 @@ struct charls_jpegls_encoder final
         if (state_ != state::destination_set)
             throw_jpegls_error(jpegls_errc::invalid_operation);
 
-        writer_.WriteStartOfImage();
-        writer_.WriteSpiffHeaderSegment(spiff_header);
+        writer_.write_start_of_image();
+        writer_.write_spiff_header_segment(spiff_header);
         state_ = state::spiff_header;
     }
 
@@ -136,7 +136,7 @@ struct charls_jpegls_encoder final
         if (state_ != state::spiff_header)
             throw_jpegls_error(jpegls_errc::invalid_operation);
 
-        writer_.WriteSpiffDirectoryEntry(entry_tag, entry_data, entry_data_size_bytes);
+        writer_.write_spiff_directory_entry(entry_tag, entry_data, entry_data_size_bytes);
     }
 
     void encode(IN_READS_BYTES_(source_size_bytes) const void* source,
@@ -157,55 +157,55 @@ struct charls_jpegls_encoder final
 
         if (state_ == state::spiff_header)
         {
-            writer_.WriteSpiffEndOfDirectoryEntry();
+            writer_.write_spiff_end_of_directory_entry();
         }
         else
         {
-            writer_.WriteStartOfImage();
+            writer_.write_start_of_image();
         }
 
-        writer_.WriteStartOfFrameSegment(frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, frame_info_.component_count);
+        writer_.write_start_of_frame_segment(frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, frame_info_.component_count);
 
         if (color_transformation_ != charls::color_transformation::none)
         {
-            writer_.WriteColorTransformSegment(color_transformation_);
+            writer_.write_color_transform_segment(color_transformation_);
         }
 
         if (!is_default(preset_coding_parameters_))
         {
-            writer_.WriteJpegLSPresetParametersSegment(preset_coding_parameters_);
+            writer_.write_jpegls_preset_parameters_segment(preset_coding_parameters_);
         }
         else if (frame_info_.bits_per_sample > 12)
         {
             const jpegls_pc_parameters preset = compute_default(static_cast<int32_t>(calculate_maximum_sample_value(frame_info_.bits_per_sample)), near_lossless_);
-            writer_.WriteJpegLSPresetParametersSegment(preset);
+            writer_.write_jpegls_preset_parameters_segment(preset);
         }
 
-        ByteStreamInfo sourceInfo = FromByteArrayConst(source, source_size_bytes);
+        byte_stream_info sourceInfo = FromByteArrayConst(source, source_size_bytes);
         if (interleave_mode_ == charls::interleave_mode::none)
         {
             const size_t byteCountComponent = ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U) * frame_info_.width * frame_info_.height;
             for (int32_t component = 0; component < frame_info_.component_count; ++component)
             {
-                writer_.WriteStartOfScanSegment(1, near_lossless_, interleave_mode_);
+                writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
                 encode_scan(sourceInfo, stride, 1);
 
                 // Synchronize the source stream (EncodeScan works on a local copy)
-                SkipBytes(sourceInfo, byteCountComponent);
+                skip_bytes(sourceInfo, byteCountComponent);
             }
         }
         else
         {
-            writer_.WriteStartOfScanSegment(frame_info_.component_count, near_lossless_, interleave_mode_);
+            writer_.write_start_of_scan_segment(frame_info_.component_count, near_lossless_, interleave_mode_);
             encode_scan(sourceInfo, stride, frame_info_.component_count);
         }
 
-        writer_.WriteEndOfImage();
+        writer_.write_end_of_image();
     }
 
     size_t bytes_written() const noexcept
     {
-        return writer_.GetBytesWritten();
+        return writer_.bytes_written();
     }
 
 private:
@@ -222,19 +222,19 @@ private:
         return frame_info_.width != 0;
     }
 
-    void encode_scan(const ByteStreamInfo source, const uint32_t stride, const int32_t component_count)
+    void encode_scan(const byte_stream_info source, const uint32_t stride, const int32_t component_count)
     {
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, component_count};
 
-        auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(frame_info,
+        auto codec = jls_codec_factory<encoder_strategy>().CreateCodec(frame_info,
                                                                     {near_lossless_, interleave_mode_, color_transformation_, false},
                                                                     preset_coding_parameters_);
-        unique_ptr<ProcessLine> processLine(codec->CreateProcess(source, stride));
-        ByteStreamInfo destination{writer_.OutputStream()};
+        unique_ptr<process_line> processLine(codec->CreateProcess(source, stride));
+        byte_stream_info destination{writer_.OutputStream()};
         const size_t bytesWritten = codec->EncodeScan(move(processLine), destination);
 
         // Synchronize the destination encapsulated in the writer (EncodeScan works on a local copy)
-        writer_.Seek(bytesWritten);
+        writer_.seek(bytesWritten);
     }
 
     charls_frame_info frame_info_{};
@@ -242,7 +242,7 @@ private:
     charls::interleave_mode interleave_mode_{};
     charls::color_transformation color_transformation_{};
     state state_{};
-    JpegStreamWriter writer_;
+    jpeg_stream_writer writer_;
     jpegls_pc_parameters preset_coding_parameters_{};
 };
 
@@ -431,20 +431,20 @@ catch (...)
 
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsEncode(OUT_WRITES_BYTES_(destinationLength) void* destination,
-             const size_t destinationLength,
-             OUT_ size_t* bytesWritten,
-             IN_READS_BYTES_(sourceLength) const void* source,
-             const size_t sourceLength,
+JpegLsEncode(OUT_WRITES_BYTES_(destination_length) void* destination,
+             const size_t destination_length,
+             OUT_ size_t* bytes_written,
+             IN_READS_BYTES_(source_length) const void* source,
+             const size_t source_length,
              IN_ const struct JlsParameters* params,
-             OUT_OPT_ char* errorMessage)
+             OUT_OPT_ char* error_message)
 try
 {
     if (check_pointer(params)->jfif.version != 0)
         return jpegls_errc::invalid_argument;
 
     charls_jpegls_encoder encoder;
-    encoder.destination(check_pointer(destination), destinationLength);
+    encoder.destination(check_pointer(destination), destination_length);
     encoder.near_lossless(params->allowedLossyError);
 
     encoder.frame_info({static_cast<uint32_t>(params->width), static_cast<uint32_t>(params->height), params->bitsPerSample, params->components});
@@ -453,14 +453,14 @@ try
     const auto& pc = params->custom;
     encoder.preset_coding_parameters({pc.MaximumSampleValue, pc.Threshold1, pc.Threshold2, pc.Threshold3, pc.ResetValue});
 
-    encoder.encode(check_pointer(source), sourceLength, static_cast<uint32_t>(params->stride));
-    *check_pointer(bytesWritten) = encoder.bytes_written();
+    encoder.encode(check_pointer(source), source_length, static_cast<uint32_t>(params->stride));
+    *check_pointer(bytes_written) = encoder.bytes_written();
 
-    clear_error_message(errorMessage);
+    clear_error_message(error_message);
     return jpegls_errc::success;
 }
 catch (...)
 {
-    return set_error_message(to_jpegls_errc(), errorMessage);
+    return set_error_message(to_jpegls_errc(), error_message);
 }
 }

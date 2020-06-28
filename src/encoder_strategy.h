@@ -9,67 +9,67 @@
 namespace charls {
 
 // Purpose: Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
-class EncoderStrategy
+class encoder_strategy
 {
 public:
-    explicit EncoderStrategy(const frame_info& frame, const coding_parameters& parameters) noexcept :
+    explicit encoder_strategy(const frame_info& frame, const coding_parameters& parameters) noexcept :
         frame_info_{frame},
         parameters_{parameters}
     {
     }
 
-    virtual ~EncoderStrategy() = default;
+    virtual ~encoder_strategy() = default;
 
-    EncoderStrategy(const EncoderStrategy&) = delete;
-    EncoderStrategy(EncoderStrategy&&) = delete;
-    EncoderStrategy& operator=(const EncoderStrategy&) = delete;
-    EncoderStrategy& operator=(EncoderStrategy&&) = delete;
+    encoder_strategy(const encoder_strategy&) = delete;
+    encoder_strategy(encoder_strategy&&) = delete;
+    encoder_strategy& operator=(const encoder_strategy&) = delete;
+    encoder_strategy& operator=(encoder_strategy&&) = delete;
 
-    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo, uint32_t stride) = 0;
+    virtual std::unique_ptr<process_line> CreateProcess(byte_stream_info stream_info, uint32_t stride) = 0;
     virtual void SetPresets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
-    virtual std::size_t EncodeScan(std::unique_ptr<ProcessLine> rawData, ByteStreamInfo& compressedData) = 0;
+    virtual std::size_t EncodeScan(std::unique_ptr<process_line> raw_data, byte_stream_info& compressed_data) = 0;
 
     int32_t PeekByte();
 
-    void OnLineBegin(const size_t cpixel, void* ptypeBuffer, const int32_t pixelStride) const
+    void OnLineBegin(const size_t pixel_count, void* destination, const int32_t pixel_stride) const
     {
-        processLine_->NewLineRequested(ptypeBuffer, cpixel, pixelStride);
+        processLine_->NewLineRequested(destination, pixel_count, pixel_stride);
     }
 
-    static void OnLineEnd(size_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) noexcept
+    static void OnLineEnd(size_t /*pixel_count*/, void* /*destination*/, int32_t /*pixel_stride*/) noexcept
     {
     }
 
 protected:
-    void Init(ByteStreamInfo& compressedStream)
+    void Init(byte_stream_info& compressed_stream)
     {
         freeBitCount_ = sizeof(bitBuffer_) * 8;
         bitBuffer_ = 0;
 
-        if (compressedStream.rawStream)
+        if (compressed_stream.rawStream)
         {
-            compressedStream_ = compressedStream.rawStream;
+            compressedStream_ = compressed_stream.rawStream;
             buffer_.resize(4000);
             position_ = buffer_.data();
             compressedLength_ = buffer_.size();
         }
         else
         {
-            position_ = compressedStream.rawData;
-            compressedLength_ = compressedStream.count;
+            position_ = compressed_stream.rawData;
+            compressedLength_ = compressed_stream.count;
         }
     }
 
-    void AppendToBitStream(const uint32_t bits, const int32_t bitCount)
+    void AppendToBitStream(const uint32_t bits, const int32_t bit_count)
     {
-        ASSERT(bitCount < 32 && bitCount >= 0);
-        ASSERT((!decoder_) || (bitCount == 0 && bits == 0) || (static_cast<uint32_t>(decoder_->ReadLongValue(bitCount)) == bits));
+        ASSERT(bit_count < 32 && bit_count >= 0);
+        ASSERT((!decoder_) || (bit_count == 0 && bits == 0) || (static_cast<uint32_t>(decoder_->ReadLongValue(bit_count)) == bits));
 #ifndef NDEBUG
-        const uint32_t mask = (1U << bitCount) - 1U;
+        const uint32_t mask = (1U << bit_count) - 1U;
         ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
 #endif
 
-        freeBitCount_ -= bitCount;
+        freeBitCount_ -= bit_count;
         if (freeBitCount_ >= 0)
         {
             bitBuffer_ |= bits << freeBitCount_; // NOLINT
@@ -175,8 +175,8 @@ protected:
 
     frame_info frame_info_;
     coding_parameters parameters_;
-    std::unique_ptr<DecoderStrategy> decoder_;
-    std::unique_ptr<ProcessLine> processLine_;
+    std::unique_ptr<decoder_strategy> decoder_;
+    std::unique_ptr<process_line> processLine_;
 
 private:
     unsigned int bitBuffer_{};

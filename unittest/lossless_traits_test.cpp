@@ -18,8 +18,8 @@ TEST_CLASS(lossless_traits_test)
 public:
     TEST_METHOD(TestTraits16bit) // NOLINT
     {
-        using lossless_traits = LosslessTraits<uint16_t, 12>;
-        const auto traits1 = DefaultTraits<uint16_t, uint16_t>(4095,0);
+        using lossless_traits = lossless_traits<uint16_t, 12>;
+        const auto traits1 = default_traits<uint16_t, uint16_t>(4095,0);
         const lossless_traits traits2;
 
         Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
@@ -43,8 +43,8 @@ public:
 
     TEST_METHOD(TestTraits8bit) // NOLINT
     {
-        using lossless_traits = LosslessTraits<uint8_t, 8>;
-        const auto traits1 = DefaultTraits<uint8_t, uint8_t>(255,0);
+        using lossless_traits = lossless_traits<uint8_t, 8>;
+        const auto traits1 = default_traits<uint8_t, uint8_t>(255,0);
         const lossless_traits traits2;
 
         Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);

@@ -7,7 +7,7 @@
 
 #include <sal.h>
 
-// Note: these macro's are prefixed with CHARLS_, as these macro's are used for function parameters.
+// Note: these macro's are not prefixed with CHARLS_, as these macro's are used for function parameters.
 //       and long macro's would make the code harder to read.
 #define IN_ _In_
 #define IN_OPT_ _In_opt_

@@ -12,7 +12,7 @@ namespace charls {
 
 // Implements statistical modeling for the run mode context.
 // Computes model dependent parameters like the Golomb code lengths
-struct CContextRunMode final
+struct context_run_mode final
 {
     // Note: members are sorted based on their size.
     int32_t A{};
@@ -21,9 +21,9 @@ struct CContextRunMode final
     uint8_t N{};
     uint8_t Nn{};
 
-    CContextRunMode() = default;
+    context_run_mode() = default;
 
-    CContextRunMode(const int32_t a, const int32_t nRItype, const int32_t nReset) noexcept :
+    context_run_mode(const int32_t a, const int32_t nRItype, const int32_t nReset) noexcept :
         A{a},
         nRItype_{nRItype},
         nReset_{static_cast<uint8_t>(nReset)},
@@ -44,9 +44,9 @@ struct CContextRunMode final
         return k;
     }
 
-    void UpdateVariables(const int32_t errorValue, const int32_t EMErrval) noexcept
+    void UpdateVariables(const int32_t error_value, const int32_t EMErrval) noexcept
     {
-        if (errorValue < 0)
+        if (error_value < 0)
         {
             Nn = Nn + 1U;
         }
@@ -75,15 +75,15 @@ struct CContextRunMode final
         return errorValueAbs;
     }
 
-    bool ComputeMap(const int32_t errorValue, const int32_t k) const noexcept
+    bool ComputeMap(const int32_t error_value, const int32_t k) const noexcept
     {
-        if (k == 0 && errorValue > 0 && 2 * Nn < N)
+        if (k == 0 && error_value > 0 && 2 * Nn < N)
             return true;
 
-        if (errorValue < 0 && 2 * Nn >= N)
+        if (error_value < 0 && 2 * Nn >= N)
             return true;
 
-        if (errorValue < 0 && k != 0)
+        if (error_value < 0 && k != 0)
             return true;
 
         return false;

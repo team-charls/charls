@@ -24,9 +24,9 @@ constexpr int MinimumBitsPerSample = 2;
 constexpr int MaximumBitsPerSample = 16;
 constexpr int maximum_near_lossless = 255;
 
-constexpr int MaximumNearLossless(const int maximumSampleValue) noexcept
+constexpr int MaximumNearLossless(const int maximum_sample_value) noexcept
 {
-    return std::min(255, maximumSampleValue / 2); // As defined by ISO/IEC 14495-1, C.2.3
+    return std::min(255, maximum_sample_value / 2); // As defined by ISO/IEC 14495-1, C.2.3
 }
 
 // ISO/IEC 14495-1, section 4.8.1 defines the SPIFF version numbers to be used for the SPIFF header in combination with JPEG-LS.

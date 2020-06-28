@@ -139,16 +139,16 @@ vector<uint8_t> create_test_spiff_header(const uint8_t high_version, const uint8
     const size_t spiff_header_size = buffer.size();
     buffer.resize(buffer.size() + 100);
 
-    const ByteStreamInfo info = FromByteArray(buffer.data() + spiff_header_size, buffer.size() - spiff_header_size);
-    JpegStreamWriter writer(info);
+    const byte_stream_info info = FromByteArray(buffer.data() + spiff_header_size, buffer.size() - spiff_header_size);
+    jpeg_stream_writer writer(info);
 
     if (end_of_directory)
     {
-        writer.WriteSpiffEndOfDirectoryEntry();
+        writer.write_spiff_end_of_directory_entry();
     }
 
-    writer.WriteStartOfFrameSegment(100, 100, 8, 1);
-    writer.WriteStartOfScanSegment(1, 0, interleave_mode::none);
+    writer.write_start_of_frame_segment(100, 100, 8, 1);
+    writer.write_start_of_scan_segment(1, 0, interleave_mode::none);
 
     return buffer;
 }

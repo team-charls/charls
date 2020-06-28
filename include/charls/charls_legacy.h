@@ -12,7 +12,7 @@
 //
 // ByteStreamInfo describes the stream: either set rawStream to a valid stream, or rawData/count, not both.
 // it's possible to decode to memory streams, but using rawData will always be faster.
-struct ByteStreamInfo final
+struct byte_stream_info final
 {
     std::basic_streambuf<char>* rawStream;
     uint8_t* rawData;
@@ -20,17 +20,17 @@ struct ByteStreamInfo final
 };
 
 
-inline ByteStreamInfo FromByteArray(void* bytes, const std::size_t count) noexcept
+inline byte_stream_info FromByteArray(void* bytes, const std::size_t count) noexcept
 {
     return {nullptr, static_cast<uint8_t*>(bytes), count};
 }
 
 
-inline ByteStreamInfo FromByteArrayConst(const void* bytes, const std::size_t count) noexcept
+inline byte_stream_info FromByteArrayConst(const void* bytes, const std::size_t count) noexcept
 {
     return FromByteArray(const_cast<void*>(bytes), count);
 }
 
-CHARLS_API_IMPORT_EXPORT charls::jpegls_errc JpegLsEncodeStream(ByteStreamInfo destination, size_t& bytesWritten, ByteStreamInfo source, const JlsParameters& params);
-CHARLS_API_IMPORT_EXPORT charls::jpegls_errc JpegLsDecodeStream(ByteStreamInfo destination, ByteStreamInfo source, const JlsParameters* params);
-CHARLS_API_IMPORT_EXPORT charls::jpegls_errc JpegLsReadHeaderStream(ByteStreamInfo source, JlsParameters* params);
+CHARLS_API_IMPORT_EXPORT charls::jpegls_errc JpegLsEncodeStream(byte_stream_info destination, size_t& bytes_written, byte_stream_info source, const JlsParameters& params);
+CHARLS_API_IMPORT_EXPORT charls::jpegls_errc JpegLsDecodeStream(byte_stream_info destination, byte_stream_info source, const JlsParameters* params);
+CHARLS_API_IMPORT_EXPORT charls::jpegls_errc JpegLsReadHeaderStream(byte_stream_info source, JlsParameters* params);

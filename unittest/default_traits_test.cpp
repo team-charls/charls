@@ -17,7 +17,7 @@ TEST_CLASS(DefaultTraitsTest)
 public:
     TEST_METHOD(Create) // NOLINT
     {
-        const charls::DefaultTraits<uint8_t, uint8_t> traits((1 << 8) - 1, 0);
+        const charls::default_traits<uint8_t, uint8_t> traits((1 << 8) - 1, 0);
 
         Assert::AreEqual(255, traits.MAXVAL);
         Assert::AreEqual(256, traits.RANGE);
@@ -30,7 +30,7 @@ public:
 
     TEST_METHOD(ModuloRange) // NOLINT
     {
-        const charls::DefaultTraits<uint8_t, uint8_t> traits(24, 0);
+        const charls::default_traits<uint8_t, uint8_t> traits(24, 0);
 
         for (int i = -25; i < 26; ++i)
         {

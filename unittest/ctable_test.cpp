@@ -20,12 +20,12 @@ TEST_CLASS(ctable_test)
 public:
     TEST_METHOD(CTable_create) // NOLINT
     {
-        const CTable golomb_table;
+        const golomb_code_table golomb_table;
 
         for (uint32_t i = 0U; i < 256U; i++)
         {
-            Assert::AreEqual(0U, golomb_table.Get(i).GetLength());
-            Assert::AreEqual(0, golomb_table.Get(i).GetValue());
+            Assert::AreEqual(0U, golomb_table.Get(i).length());
+            Assert::AreEqual(0, golomb_table.Get(i).value());
         }
     }
 };

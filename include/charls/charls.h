@@ -367,62 +367,62 @@ charls_jpegls_encoder_get_bytes_written(IN_ const charls_jpegls_encoder* encoder
 /// </summary>
 /// <remarks>This method is considered obsolete and will be removed in the next major update.</remarks>
 /// <param name="destination">Byte array that holds the encoded bytes when the function returns.</param>
-/// <param name="destinationLength">Length of the array in bytes. If the array is too small the function will return an error.</param>
-/// <param name="bytesWritten">This parameter will hold the number of bytes written to the destination byte array. Cannot be NULL.</param>
+/// <param name="destination_length">Length of the array in bytes. If the array is too small the function will return an error.</param>
+/// <param name="bytes_written">This parameter will hold the number of bytes written to the destination byte array. Cannot be NULL.</param>
 /// <param name="source">Byte array that holds the pixels that should be encoded.</param>
-/// <param name="sourceLength">Length of the array in bytes.</param>
+/// <param name="source_length">Length of the array in bytes.</param>
 /// <param name="params">Parameter object that describes the pixel data and how to encode it.</param>
-/// <param name="errorMessage">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
+/// <param name="error_message">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsEncode(
-    OUT_WRITES_BYTES_(destinationLength) void* destination,
-    size_t destinationLength,
-    OUT_ size_t* bytesWritten,
-    IN_READS_BYTES_(sourceLength) const void* source,
-    size_t sourceLength,
+    OUT_WRITES_BYTES_(destination_length) void* destination,
+    size_t destination_length,
+    OUT_ size_t* bytes_written,
+    IN_READS_BYTES_(source_length) const void* source,
+    size_t source_length,
     IN_ const struct JlsParameters* params,
-    OUT_OPT_ char* errorMessage) CHARLS_ATTRIBUTE((nonnull(1, 3, 4, 6)));
+    OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3, 4, 6)));
 
 /// <summary>
 /// Retrieves the JPEG-LS header. This info can be used to pre-allocate the uncompressed output buffer.
 /// </summary>
 /// <remarks>This method will be removed in the next major update.</remarks>
 /// <param name="source">Byte array that holds the JPEG-LS encoded data of which the header should be extracted.</param>
-/// <param name="sourceLength">Length of the array in bytes.</param>
+/// <param name="source_length">Length of the array in bytes.</param>
 /// <param name="params">Parameter object that describes how the pixel data is encoded.</param>
-/// <param name="errorMessage">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
+/// <param name="error_message">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsReadHeader(
-    IN_READS_BYTES_(sourceLength) const void* source,
-    size_t sourceLength,
+    IN_READS_BYTES_(source_length) const void* source,
+    size_t source_length,
     OUT_ struct JlsParameters* params,
-    OUT_OPT_ char* errorMessage) CHARLS_ATTRIBUTE((nonnull(1, 3)));
+    OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 /// <summary>
 /// Encodes a JPEG-LS encoded byte array to uncompressed pixel data byte array.
 /// </summary>
 /// <remarks>This method will be removed in the next major update.</remarks>
 /// <param name="destination">Byte array that holds the uncompressed pixel data bytes when the function returns.</param>
-/// <param name="destinationLength">Length of the array in bytes. If the array is too small the function will return an error.</param>
+/// <param name="destination_length">Length of the array in bytes. If the array is too small the function will return an error.</param>
 /// <param name="source">Byte array that holds the JPEG-LS encoded data that should be decoded.</param>
-/// <param name="sourceLength">Length of the array in bytes.</param>
+/// <param name="source_length">Length of the array in bytes.</param>
 /// <param name="params">Parameter object that describes the pixel data and how to decode it.</param>
-/// <param name="errorMessage">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
+/// <param name="error_message">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsDecode(
-    OUT_WRITES_BYTES_(destinationLength) void* destination,
-    size_t destinationLength,
-    IN_READS_BYTES_(sourceLength) const void* source,
-    size_t sourceLength,
+    OUT_WRITES_BYTES_(destination_length) void* destination,
+    size_t destination_length,
+    IN_READS_BYTES_(source_length) const void* source,
+    size_t source_length,
     IN_OPT_ const struct JlsParameters* params,
-    OUT_OPT_ char* errorMessage) CHARLS_ATTRIBUTE((nonnull(1, 3)));
+    OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 /// <remarks>This method will be removed in the next major update.</remarks>
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsDecodeRect(
-    OUT_WRITES_BYTES_(destinationLength) void* destination,
-    size_t destinationLength,
-    IN_READS_BYTES_(sourceLength) const void* source,
-    size_t sourceLength,
+    OUT_WRITES_BYTES_(destination_length) void* destination,
+    size_t destination_length,
+    IN_READS_BYTES_(source_length) const void* source,
+    size_t source_length,
     struct JlsRect roi,
     IN_OPT_ const struct JlsParameters* params,
-    OUT_OPT_ char* errorMessage) CHARLS_ATTRIBUTE((nonnull(1, 3)));
+    OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 #ifdef __cplusplus
 

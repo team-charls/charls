@@ -11,22 +11,22 @@
 namespace charls {
 
 // Tables for fast decoding of short Golomb Codes.
-struct Code final
+struct golomb_code final
 {
-    Code() = default;
+    golomb_code() = default;
 
-    Code(const int32_t value, const uint32_t length) noexcept :
+    golomb_code(const int32_t value, const uint32_t length) noexcept :
         value_{value},
         length_{length}
     {
     }
 
-    int32_t GetValue() const noexcept
+    int32_t value() const noexcept
     {
         return value_;
     }
 
-    uint32_t GetLength() const noexcept
+    uint32_t length() const noexcept
     {
         return length_;
     }
@@ -36,30 +36,30 @@ struct Code final
 };
 
 
-class CTable final
+class golomb_code_table final
 {
 public:
     static constexpr size_t byte_bit_count = 8;
 
-    void AddEntry(const uint8_t value, const Code c) noexcept
+    void AddEntry(const uint8_t value, const golomb_code c) noexcept
     {
-        const uint32_t length = c.GetLength();
+        const uint32_t length = c.length();
         ASSERT(static_cast<size_t>(length) <= byte_bit_count);
 
         for (size_t i = 0; i < static_cast<size_t>(1U) << (byte_bit_count - length); ++i)
         {
-            ASSERT(types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i].GetLength() == 0);
+            ASSERT(types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i].length() == 0);
             types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i] = c;
         }
     }
 
-    FORCE_INLINE const Code& Get(const uint32_t value) const noexcept
+    FORCE_INLINE const golomb_code& Get(const uint32_t value) const noexcept
     {
         return types_[value];
     }
 
 private:
-    std::array<Code, 1 << byte_bit_count> types_;
+    std::array<golomb_code, 1 << byte_bit_count> types_;
 };
 
 } // namespace charls

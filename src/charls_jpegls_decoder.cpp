@@ -25,8 +25,8 @@ struct charls_jpegls_decoder final
         source_buffer_ = source_buffer;
         size_ = source_size_bytes;
 
-        ByteStreamInfo source{FromByteArrayConst(source_buffer_, size_)};
-        reader_ = std::make_unique<JpegStreamReader>(source);
+        byte_stream_info source{FromByteArrayConst(source_buffer_, size_)};
+        reader_ = std::make_unique<jpeg_stream_reader>(source);
         state_ = state::source_set;
     }
 
@@ -36,7 +36,7 @@ struct charls_jpegls_decoder final
             throw_jpegls_error(jpegls_errc::invalid_operation);
 
         bool spiff_header_found{};
-        reader_->ReadHeader(spiff_header, &spiff_header_found);
+        reader_->read_header(spiff_header, &spiff_header_found);
         state_ = spiff_header_found ? state::spiff_header_read : state::spiff_header_not_found;
 
         return spiff_header_found;
@@ -49,10 +49,10 @@ struct charls_jpegls_decoder final
 
         if (state_ != state::spiff_header_not_found)
         {
-            reader_->ReadHeader();
+            reader_->read_header();
         }
 
-        reader_->ReadStartOfScan();
+        reader_->read_start_of_scan();
         state_ = state::header_read;
     }
 
@@ -96,7 +96,7 @@ struct charls_jpegls_decoder final
         if (state_ < state::header_read)
             throw_jpegls_error(jpegls_errc::invalid_operation);
 
-        return reader_->GetCustomPreset();
+        return reader_->preset_coding_parameters();
     }
 
     size_t destination_size(const uint32_t stride) const
@@ -129,18 +129,18 @@ struct charls_jpegls_decoder final
         if (state_ != state::header_read)
             throw_jpegls_error(jpegls_errc::invalid_operation);
 
-        const ByteStreamInfo destination = FromByteArray(destination_buffer, destination_size_bytes);
-        reader_->Read(destination, stride);
+        const byte_stream_info destination = FromByteArray(destination_buffer, destination_size_bytes);
+        reader_->read(destination, stride);
     }
 
     void output_bgr(const bool value) const noexcept
     {
-        reader_->SetOutputBgr(value);
+        reader_->output_bgr(value);
     }
 
     void region(const JlsRect& rect) const noexcept
     {
-        reader_->SetRect(rect);
+        reader_->rect(rect);
     }
 
 private:
@@ -155,7 +155,7 @@ private:
     };
 
     state state_{};
-    unique_ptr<JpegStreamReader> reader_;
+    unique_ptr<jpeg_stream_reader> reader_;
     const void* source_buffer_{};
     size_t size_{};
 };
@@ -302,15 +302,15 @@ catch (...)
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
 JpegLsReadHeader(
-    IN_READS_BYTES_(sourceLength) const void* source,
-    const size_t sourceLength,
+    IN_READS_BYTES_(source_length) const void* source,
+    const size_t source_length,
     OUT_ JlsParameters* params,
-    OUT_OPT_ char* errorMessage)
+    OUT_OPT_ char* error_message)
 try
 {
     charls_jpegls_decoder decoder;
 
-    decoder.source(check_pointer(source), sourceLength);
+    decoder.source(check_pointer(source), source_length);
     decoder.read_header();
     *check_pointer(params) = JlsParameters{};
     const frame_info info = decoder.frame_info();
@@ -331,25 +331,25 @@ try
     params->custom.Threshold3 = preset.threshold3;
     params->custom.ResetValue = preset.reset_value;
 
-    clear_error_message(errorMessage);
+    clear_error_message(error_message);
     return jpegls_errc::success;
 }
 catch (...)
 {
-    return set_error_message(to_jpegls_errc(), errorMessage);
+    return set_error_message(to_jpegls_errc(), error_message);
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsDecode(OUT_WRITES_BYTES_(destinationLength) void* destination,
-             const size_t destinationLength,
-             IN_READS_BYTES_(sourceLength) const void* source,
-             const size_t sourceLength,
+JpegLsDecode(OUT_WRITES_BYTES_(destination_length) void* destination,
+             const size_t destination_length,
+             IN_READS_BYTES_(source_length) const void* source,
+             const size_t source_length,
              IN_OPT_ const struct JlsParameters* params,
-             OUT_OPT_ char* errorMessage)
+             OUT_OPT_ char* error_message)
 try
 {
     charls_jpegls_decoder decoder;
-    decoder.source(check_pointer(source), sourceLength);
+    decoder.source(check_pointer(source), source_length);
     decoder.read_header();
 
     int32_t stride{};
@@ -359,28 +359,28 @@ try
         stride = params->stride;
     }
 
-    decoder.decode(check_pointer(destination), destinationLength, static_cast<uint32_t>(stride));
+    decoder.decode(check_pointer(destination), destination_length, static_cast<uint32_t>(stride));
 
-    clear_error_message(errorMessage);
+    clear_error_message(error_message);
     return jpegls_errc::success;
 }
 catch (...)
 {
-    return set_error_message(to_jpegls_errc(), errorMessage);
+    return set_error_message(to_jpegls_errc(), error_message);
 }
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsDecodeRect(OUT_WRITES_BYTES_(destinationLength) void* destination,
-                 const size_t destinationLength,
-                 IN_READS_BYTES_(sourceLength) const void* source,
-                 const size_t sourceLength,
+JpegLsDecodeRect(OUT_WRITES_BYTES_(destination_length) void* destination,
+                 const size_t destination_length,
+                 IN_READS_BYTES_(source_length) const void* source,
+                 const size_t source_length,
                  const JlsRect roi,
                  IN_OPT_ const JlsParameters* params,
-                 OUT_OPT_ char* errorMessage)
+                 OUT_OPT_ char* error_message)
 try
 {
     charls_jpegls_decoder decoder;
-    decoder.source(check_pointer(source), sourceLength);
+    decoder.source(check_pointer(source), source_length);
     decoder.read_header();
 
     int32_t stride{};
@@ -391,13 +391,13 @@ try
     }
 
     decoder.region(roi);
-    decoder.decode(check_pointer(destination), destinationLength, static_cast<uint32_t>(stride));
+    decoder.decode(check_pointer(destination), destination_length, static_cast<uint32_t>(stride));
 
-    clear_error_message(errorMessage);
+    clear_error_message(error_message);
     return jpegls_errc::success;
 }
 catch (...)
 {
-    return set_error_message(to_jpegls_errc(), errorMessage);
+    return set_error_message(to_jpegls_errc(), error_message);
 }
 }

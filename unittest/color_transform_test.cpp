@@ -28,9 +28,9 @@ public:
             {
                 for (int blue = 0; blue < 255; ++blue)
                 {
-                    const charls::TransformHp1<uint8_t> transform;
+                    const charls::transform_hp1<uint8_t> transform;
                     const auto sample = transform(red, green, blue);
-                    const charls::TransformHp1<uint8_t>::Inverse inverse(transform);
+                    const charls::transform_hp1<uint8_t>::inverse inverse(transform);
 
                     const auto roundTrip = inverse(sample.v1, sample.v2, sample.v3);
 
@@ -55,9 +55,9 @@ public:
             {
                 for (int blue = 0; blue < 255; ++blue)
                 {
-                    const charls::TransformHp2<uint8_t> transform;
+                    const charls::transform_hp2<uint8_t> transform;
                     const auto sample = transform(red, green, blue);
-                    const charls::TransformHp2<uint8_t>::Inverse inverse(transform);
+                    const charls::transform_hp2<uint8_t>::inverse inverse(transform);
 
                     const auto roundTrip = inverse(sample.v1, sample.v2, sample.v3);
 
@@ -76,7 +76,7 @@ public:
         constexpr uint8_t startValue = 123;
         constexpr uint8_t endValue = 124;
 
-        const charls::TransformHp3<uint8_t> transformation;
+        const charls::transform_hp3<uint8_t> transformation;
 
         for (int red = startValue; red < endValue; ++red)
         {
@@ -85,7 +85,7 @@ public:
                 for (int blue = 0; blue < 255; ++blue)
                 {
                     const auto sample = transformation(red, green, blue);
-                    const charls::TransformHp3<uint8_t>::Inverse inverse(transformation);
+                    const charls::transform_hp3<uint8_t>::inverse inverse(transformation);
                     const auto roundTrip = inverse(sample.v1, sample.v2, sample.v3);
 
                     Assert::AreEqual(static_cast<uint8_t>(red), roundTrip.R);

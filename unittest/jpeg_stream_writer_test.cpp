@@ -21,34 +21,34 @@ TEST_CLASS(JpegStreamWriterTest)
 public:
     TEST_METHOD(LengthWillbeZeroAfterCreate) // NOLINT
     {
-        const JpegStreamWriter writer;
+        const jpeg_stream_writer writer;
         Assert::AreEqual(static_cast<size_t>(0), writer.GetLength());
     }
 
-    TEST_METHOD(WriteStartOfImage) // NOLINT
+    TEST_METHOD(write_start_of_image) // NOLINT
     {
         array<uint8_t, 2> buffer{};
-        const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
+        const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
 
-        JpegStreamWriter writer(info);
+        jpeg_stream_writer writer(info);
 
-        writer.WriteStartOfImage();
+        writer.write_start_of_image();
 
-        Assert::AreEqual(static_cast<size_t>(2), writer.GetBytesWritten());
+        Assert::AreEqual(static_cast<size_t>(2), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
         Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::StartOfImage), buffer[1]);
     }
 
-    TEST_METHOD(WriteEndOfImage) // NOLINT
+    TEST_METHOD(write_end_of_image) // NOLINT
     {
         array<uint8_t, 2> buffer{};
-        const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
+        const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
 
-        JpegStreamWriter writer(info);
+        jpeg_stream_writer writer(info);
 
-        writer.WriteEndOfImage();
+        writer.write_end_of_image();
 
-        Assert::AreEqual(static_cast<size_t>(2), writer.GetBytesWritten());
+        Assert::AreEqual(static_cast<size_t>(2), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
         Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::EndOfImage), buffer[1]);
     }
@@ -56,9 +56,9 @@ public:
     TEST_METHOD(WriteSpiffSegment) // NOLINT
     {
         array<uint8_t, 34> buffer{};
-        const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
+        const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
 
-        JpegStreamWriter writer(info);
+        jpeg_stream_writer writer(info);
 
         spiff_header header
         {
@@ -74,9 +74,9 @@ public:
             1024
         };
 
-        writer.WriteSpiffHeaderSegment(header);
+        writer.write_spiff_header_segment(header);
 
-        Assert::AreEqual(static_cast<size_t>(34), writer.GetBytesWritten());
+        Assert::AreEqual(static_cast<size_t>(34), writer.bytes_written());
 
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
         Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::ApplicationData8), buffer[1]);
@@ -132,13 +132,13 @@ public:
     TEST_METHOD(WriteSpiffEndOfDirectorySegment) // NOLINT
     {
         array<uint8_t, 10> buffer{};
-        const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
+        const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
 
-        JpegStreamWriter writer(info);
+        jpeg_stream_writer writer(info);
 
-        writer.WriteSpiffEndOfDirectoryEntry();
+        writer.write_spiff_end_of_directory_entry();
 
-        Assert::AreEqual(static_cast<size_t>(10), writer.GetBytesWritten());
+        Assert::AreEqual(static_cast<size_t>(10), writer.bytes_written());
 
         // Verify Entry Magic Number (EMN)
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
@@ -159,16 +159,16 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::StartOfImage), buffer[9]);
     }
 
-    TEST_METHOD(WriteSpiffDirectoryEntry) // NOLINT
+    TEST_METHOD(write_spiff_directory_entry) // NOLINT
     {
         array<uint8_t, 10> buffer{};
-        const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
+        const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
 
-        JpegStreamWriter writer{info};
+        jpeg_stream_writer writer{info};
 
         array<uint8_t, 2> data{0x77, 0x66};
 
-        writer.WriteSpiffDirectoryEntry(2, data.data(), data.size());
+        writer.write_spiff_directory_entry(2, data.data(), data.size());
 
         // Verify Entry Magic Number (EMN)
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
@@ -189,18 +189,18 @@ public:
         Assert::AreEqual(data[1], buffer[9]);
     }
 
-    TEST_METHOD(WriteStartOfFrameSegment) // NOLINT
+    TEST_METHOD(write_start_of_frame_segment) // NOLINT
     {
         constexpr int32_t bitsPerSample = 8;
         constexpr int32_t componentCount = 3;
 
         array<uint8_t, 19> buffer{};
-        const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamWriter writer(info);
+        const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_writer writer(info);
 
-        writer.WriteStartOfFrameSegment(100, UINT16_MAX, bitsPerSample, componentCount);
+        writer.write_start_of_frame_segment(100, UINT16_MAX, bitsPerSample, componentCount);
 
-        Assert::AreEqual(static_cast<size_t>(19), writer.GetBytesWritten());
+        Assert::AreEqual(static_cast<size_t>(19), writer.bytes_written());
 
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
         Assert::AreEqual(static_cast<uint8_t>(0xF7), buffer[1]); // JPEG_SOF_55
@@ -232,12 +232,12 @@ public:
         constexpr int32_t componentCount = 1;
 
         array<uint8_t, 13> buffer{};
-        const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamWriter writer(info);
+        const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_writer writer(info);
 
-        writer.WriteStartOfFrameSegment(0, 0, bitsPerSample, componentCount);
+        writer.write_start_of_frame_segment(0, 0, bitsPerSample, componentCount);
 
-        Assert::AreEqual(buffer.size(), writer.GetBytesWritten());
+        Assert::AreEqual(buffer.size(), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(bitsPerSample), buffer[4]);
         Assert::AreEqual(static_cast<uint8_t>(componentCount), buffer[9]);
     }
@@ -245,28 +245,28 @@ public:
     TEST_METHOD(WriteStartOfFrameMarkerSegmentWithHighBoundaryValuesAndSerialize) // NOLINT
     {
         array<uint8_t, 775> buffer{};
-        const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamWriter writer(info);
+        const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_writer writer(info);
 
-        writer.WriteStartOfFrameSegment(UINT16_MAX, UINT16_MAX, 16, UINT8_MAX);
+        writer.write_start_of_frame_segment(UINT16_MAX, UINT16_MAX, 16, UINT8_MAX);
 
-        Assert::AreEqual(buffer.size(), writer.GetBytesWritten());
+        Assert::AreEqual(buffer.size(), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(16), buffer[4]);
         Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[9]);
 
         Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[buffer.size() - 3]); // Last component index.
     }
 
-    TEST_METHOD(WriteColorTransformSegment) // NOLINT
+    TEST_METHOD(write_color_transform_segment) // NOLINT
     {
         const color_transformation transformation = color_transformation::hp1;
 
         array<uint8_t, 9> buffer{};
-        const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamWriter writer(info);
+        const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_writer writer(info);
 
-        writer.WriteColorTransformSegment(transformation);
-        Assert::AreEqual(buffer.size(), writer.GetBytesWritten());
+        writer.write_color_transform_segment(transformation);
+        Assert::AreEqual(buffer.size(), writer.bytes_written());
 
         // Verify mrfx identifier string.
         Assert::AreEqual(static_cast<uint8_t>('m'), buffer[4]);
@@ -282,11 +282,11 @@ public:
         const jpegls_pc_parameters presets{2, 1, 2, 3, 7};
 
         array<uint8_t, 15> buffer{};
-        const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamWriter writer(info);
+        const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_writer writer(info);
 
-        writer.WriteJpegLSPresetParametersSegment(presets);
-        Assert::AreEqual(buffer.size(), writer.GetBytesWritten());
+        writer.write_jpegls_preset_parameters_segment(presets);
+        Assert::AreEqual(buffer.size(), writer.bytes_written());
 
         // Parameter ID.
         Assert::AreEqual(static_cast<uint8_t>(0x1), buffer[4]);
@@ -315,12 +315,12 @@ public:
     TEST_METHOD(WriteStartOfScanMarker) // NOLINT
     {
         array<uint8_t, 10> buffer{};
-        const ByteStreamInfo info = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamWriter writer(info);
+        const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_writer writer(info);
 
-        writer.WriteStartOfScanSegment(1, 2, interleave_mode::none);
+        writer.write_start_of_scan_segment(1, 2, interleave_mode::none);
 
-        Assert::AreEqual(buffer.size(), writer.GetBytesWritten());
+        Assert::AreEqual(buffer.size(), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(1), buffer[4]);  // component count.
         Assert::AreEqual(static_cast<uint8_t>(1), buffer[5]);  // component index.
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[6]);  // table ID.

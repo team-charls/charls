@@ -27,7 +27,7 @@ public:
 
         array<uint8_t, 1024> data{};
 
-        ByteStreamInfo stream{nullptr, data.data(), data.size()};
+        byte_stream_info stream{nullptr, data.data(), data.size()};
         strategy.InitForward(stream);
 
         strategy.AppendToBitStreamForward(0, 0);
@@ -44,7 +44,7 @@ public:
         array<uint8_t, 1024> data{};
         data[13] = 0x77; // marker byte to detect overruns.
 
-        ByteStreamInfo stream{nullptr, data.data(), data.size()};
+        byte_stream_info stream{nullptr, data.data(), data.size()};
         strategy.InitForward(stream);
 
         // We want _isFFWritten == true.

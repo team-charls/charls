@@ -30,12 +30,12 @@ public:
     {
         array<uint8_t, 1> buffer{};
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), 0);
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), 0);
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -51,18 +51,18 @@ public:
         JpegTestStreamWriter writer;
 
         writer.buffer.push_back(0xFF);
-        writer.WriteStartOfImage();
+        writer.write_start_of_image();
 
         writer.buffer.push_back(0xFF);
-        writer.WriteStartOfFrameSegment(1, 1, 2, 1);
+        writer.write_start_of_frame_segment(1, 1, 2, 1);
 
         writer.buffer.push_back(0xFF);
         writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
 
-        const ByteStreamInfo byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
-        reader.ReadHeader(); // if it doesn't throw test is passed.
+        reader.read_header(); // if it doesn't throw test is passed.
     }
 
     TEST_METHOD(ReadHeaderFromBufferNotStartingWithFFShouldThrow) // NOLINT
@@ -75,12 +75,12 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xDA); // SOS: Marks the start of scan.
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -119,12 +119,12 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xF9); // SOF_57: Marks the start of a JPEG-LS extended (ISO/IEC 14495-2) encoded frame.
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -138,21 +138,21 @@ public:
     TEST_METHOD(ReadHeaderJpegLSPresetParameterSegment) // NOLINT
     {
         vector<uint8_t> source(100);
-        const ByteStreamInfo sourceInfo = FromByteArray(source.data(), source.size());
+        const byte_stream_info sourceInfo = FromByteArray(source.data(), source.size());
 
-        charls::JpegStreamWriter writer(sourceInfo);
-        writer.WriteStartOfImage();
+        charls::jpeg_stream_writer writer(sourceInfo);
+        writer.write_start_of_image();
 
         const jpegls_pc_parameters presets{1, 2, 3, 4, 5};
-        writer.WriteJpegLSPresetParametersSegment(presets);
-        writer.WriteStartOfFrameSegment(1, 1, 2, 1);
-        writer.WriteStartOfScanSegment(1, 0, interleave_mode::none);
+        writer.write_jpegls_preset_parameters_segment(presets);
+        writer.write_start_of_frame_segment(1, 1, 2, 1);
+        writer.write_start_of_scan_segment(1, 0, interleave_mode::none);
 
-        const ByteStreamInfo destinationInfo = FromByteArray(source.data(), source.size());
-        JpegStreamReader reader(destinationInfo);
+        const byte_stream_info destinationInfo = FromByteArray(source.data(), source.size());
+        jpeg_stream_reader reader(destinationInfo);
 
-        reader.ReadHeader();
-        const auto& actual = reader.GetCustomPreset();
+        reader.read_header();
+        const auto& actual = reader.preset_coding_parameters();
 
         Assert::AreEqual(presets.maximum_sample_value, actual.maximum_sample_value);
         Assert::AreEqual(presets.reset_value, actual.reset_value);
@@ -172,12 +172,12 @@ public:
         buffer.push_back(0x02);
         buffer.push_back(0x01);
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -199,12 +199,12 @@ public:
         buffer.push_back(0x0A);
         buffer.push_back(0x01);
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -226,12 +226,12 @@ public:
         buffer.push_back(0x0C);
         buffer.push_back(0x01);
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -247,16 +247,16 @@ public:
         const jpegls_pc_parameters preset_coding_parameters{256, 0, 0, 0, 0};
 
         JpegTestStreamWriter writer;
-        writer.WriteStartOfImage();
-        writer.WriteJpegLSPresetParametersSegment(preset_coding_parameters);
-        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(preset_coding_parameters);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
         writer.WriteStartOfScanSegment(0, 1, 127, charls::interleave_mode::none);
-        const ByteStreamInfo source = FromByteArray(writer.buffer.data(), writer.buffer.size());
+        const byte_stream_info source = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
-        JpegStreamReader reader(source);
+        jpeg_stream_reader reader(source);
 
         assert_expect_exception(jpegls_errc::invalid_parameter_jpegls_pc_parameters,
-            [&](){reader.ReadHeader();});
+            [&](){reader.read_header();});
     }
 
     static void ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(const uint8_t id)
@@ -270,12 +270,12 @@ public:
         buffer.push_back(0x03);
         buffer.push_back(id);
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -310,12 +310,12 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xDA); // SOS: Marks the start of scan.
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -336,12 +336,12 @@ public:
         buffer.push_back(0x00);
         buffer.push_back(0x07);
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -362,12 +362,12 @@ public:
         buffer.push_back(0x00);
         buffer.push_back(0x07);
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -381,17 +381,17 @@ public:
     TEST_METHOD(ReadHeaderWithTooLargeStartOfFrameShouldThrow) // NOLINT
     {
         JpegTestStreamWriter writer;
-        writer.WriteStartOfImage();
-        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
         writer.buffer.push_back(0);
         writer.buffer[5]++;
-        const ByteStreamInfo byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
+        const byte_stream_info byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
-        JpegStreamReader reader(byteStream);
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -405,43 +405,43 @@ public:
     TEST_METHOD(read_header_sos_before_sof_should_throw) // NOLINT
     {
         JpegTestStreamWriter writer;
-        writer.WriteStartOfImage();
+        writer.write_start_of_image();
         writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
-        const ByteStreamInfo source = FromByteArray(writer.buffer.data(), writer.buffer.size());
+        const byte_stream_info source = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
-        JpegStreamReader reader(source);
+        jpeg_stream_reader reader(source);
 
         assert_expect_exception(jpegls_errc::unexpected_marker_found,
-            [&](){reader.ReadHeader();});
+            [&](){reader.read_header();});
     }
 
     TEST_METHOD(read_header_extra_sof_should_throw) // NOLINT
     {
         JpegTestStreamWriter writer;
-        writer.WriteStartOfImage();
-        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
-        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
-        const ByteStreamInfo source = FromByteArray(writer.buffer.data(), writer.buffer.size());
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        const byte_stream_info source = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
-        JpegStreamReader reader(source);
+        jpeg_stream_reader reader(source);
 
         assert_expect_exception(jpegls_errc::duplicate_start_of_frame_marker,
-            [&](){reader.ReadHeader();});
+            [&](){reader.read_header();});
     }
 
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw) // NOLINT
     {
         JpegTestStreamWriter writer;
-        writer.WriteStartOfImage();
-        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
         writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
-        const ByteStreamInfo source = FromByteArray(writer.buffer.data(), writer.buffer.size());
+        const byte_stream_info source = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
-        JpegStreamReader reader(source);
-        reader.ReadHeader();
+        jpeg_stream_reader reader(source);
+        reader.read_header();
 
         assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless,
-            [&](){reader.ReadStartOfScan();});
+            [&](){reader.read_start_of_scan();});
     }
 
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw2) // NOLINT
@@ -449,34 +449,34 @@ public:
         const jpegls_pc_parameters preset_coding_parameters{200, 0, 0, 0, 0};
 
         JpegTestStreamWriter writer;
-        writer.WriteStartOfImage();
-        writer.WriteJpegLSPresetParametersSegment(preset_coding_parameters);
-        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(preset_coding_parameters);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
 
         constexpr int bad_near_lossless = (200 / 2) + 1;
         writer.WriteStartOfScanSegment(0, 1, bad_near_lossless, charls::interleave_mode::none);
-        const ByteStreamInfo source = FromByteArray(writer.buffer.data(), writer.buffer.size());
+        const byte_stream_info source = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
-        JpegStreamReader reader(source);
-        reader.ReadHeader();
+        jpeg_stream_reader reader(source);
+        reader.read_header();
 
         assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless,
-            [&](){reader.ReadStartOfScan();});
+            [&](){reader.read_start_of_scan();});
     }
 
     TEST_METHOD(ReadHeaderWithDuplicateComponentIdInStartOfFrameSegmentShouldThrow) // NOLINT
     {
         JpegTestStreamWriter writer;
         writer.componentIdOverride = 7;
-        writer.WriteStartOfImage();
-        writer.WriteStartOfFrameSegment(512, 512, 8, 3);
-        const ByteStreamInfo byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        const byte_stream_info byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
-        JpegStreamReader reader(byteStream);
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -507,12 +507,12 @@ public:
         buffer.push_back(0x00);
         buffer.push_back(0x03);
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -544,12 +544,12 @@ public:
         buffer.push_back(0x07);
         buffer.push_back(0x01);
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -568,12 +568,12 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xD9); // EOI.
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
         }
         catch (const system_error& error)
         {
@@ -592,12 +592,12 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xD8); // SOI.
 
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
             Assert::Fail();
         }
         catch (const system_error& error)
@@ -619,13 +619,13 @@ public:
     TEST_METHOD(read_spiff_header_high_version_to_new) // NOLINT
     {
         vector<uint8_t> buffer = create_test_spiff_header(3);
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         spiff_header spiff_header{};
         bool spiff_header_found{};
 
-        reader.ReadHeader(&spiff_header, &spiff_header_found);
+        reader.read_header(&spiff_header, &spiff_header_found);
 
         Assert::IsFalse(spiff_header_found);
     }
@@ -633,18 +633,18 @@ public:
     TEST_METHOD(read_spiff_header_without_end_of_directory) // NOLINT
     {
         vector<uint8_t> buffer = create_test_spiff_header(2, 0, false);
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         spiff_header spiff_header{};
         bool spiff_header_found{};
 
-        reader.ReadHeader(&spiff_header, &spiff_header_found);
+        reader.read_header(&spiff_header, &spiff_header_found);
         Assert::IsTrue(spiff_header_found);
 
         try
         {
-            reader.ReadHeader();
+            reader.read_header();
             Assert::Fail();
         }
         catch (const system_error& error)
@@ -657,13 +657,13 @@ private:
     static void ReadSpiffHeader(const uint8_t low_version)
     {
         vector<uint8_t> buffer = create_test_spiff_header(2, low_version);
-        const ByteStreamInfo byteStream = FromByteArray(buffer.data(), buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
         spiff_header spiff_header{};
         bool spiff_header_found{};
 
-        reader.ReadHeader(&spiff_header, &spiff_header_found);
+        reader.read_header(&spiff_header, &spiff_header_found);
 
         Assert::IsTrue(spiff_header_found);
         Assert::AreEqual(static_cast<int32_t>(spiff_profile_id::none), static_cast<int32_t>(spiff_header.profile_id));
@@ -681,20 +681,20 @@ private:
     static void ReadHeaderWithApplicationData(const uint8_t dataNumber)
     {
         JpegTestStreamWriter writer;
-        writer.WriteStartOfImage();
+        writer.write_start_of_image();
 
         writer.buffer.push_back(0xFF);
         writer.buffer.push_back(0xE0 + dataNumber);
         writer.buffer.push_back(0x00);
         writer.buffer.push_back(0x02);
 
-        writer.WriteStartOfFrameSegment(1, 1, 2, 1);
+        writer.write_start_of_frame_segment(1, 1, 2, 1);
         writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
 
-        const ByteStreamInfo byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
-        JpegStreamReader reader(byteStream);
+        const byte_stream_info byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
+        jpeg_stream_reader reader(byteStream);
 
-        reader.ReadHeader(); // if it doesn't throw test is passed.
+        reader.read_header(); // if it doesn't throw test is passed.
     }
 };
 

@@ -84,11 +84,11 @@ inline jpegls_errc to_jpegls_errc() noexcept
     }
 }
 
-inline void clear_error_message(OUT_OPT_ char* errorMessage) noexcept
+inline void clear_error_message(OUT_OPT_ char* error_message) noexcept
 {
-    if (errorMessage)
+    if (error_message)
     {
-        errorMessage[0] = 0;
+        error_message[0] = 0;
     }
 }
 
@@ -162,90 +162,90 @@ constexpr int32_t BitWiseSign(const int32_t i) noexcept
 }
 
 
-template<typename T>
-struct Triplet
+template<typename SampleType>
+struct triplet
 {
-    Triplet() noexcept :
-        v1(0),
-        v2(0),
-        v3(0)
+    triplet() noexcept :
+        v1{0},
+        v2{0},
+        v3{0}
     {
     }
 
-    Triplet(int32_t x1, int32_t x2, int32_t x3) noexcept :
-        v1(static_cast<T>(x1)),
-        v2(static_cast<T>(x2)),
-        v3(static_cast<T>(x3))
+    triplet(int32_t x1, int32_t x2, int32_t x3) noexcept :
+        v1(static_cast<SampleType>(x1)),
+        v2(static_cast<SampleType>(x2)),
+        v3(static_cast<SampleType>(x3))
     {
     }
 
     union
     {
-        T v1;
-        T R;
+        SampleType v1;
+        SampleType R;
     };
     union
     {
-        T v2;
-        T G;
+        SampleType v2;
+        SampleType G;
     };
     union
     {
-        T v3;
-        T B;
+        SampleType v3;
+        SampleType B;
     };
 };
 
 
-inline bool operator==(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs) noexcept
+inline bool operator==(const triplet<uint8_t>& lhs, const triplet<uint8_t>& rhs) noexcept
 {
     return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3;
 }
 
 
-inline bool operator!=(const Triplet<uint8_t>& lhs, const Triplet<uint8_t>& rhs) noexcept
+inline bool operator!=(const triplet<uint8_t>& lhs, const triplet<uint8_t>& rhs) noexcept
 {
     return !(lhs == rhs);
 }
 
 
-template<typename sample>
-struct Quad final : Triplet<sample>
+template<typename SampleType>
+struct quad final : triplet<SampleType>
 {
     MSVC_WARNING_SUPPRESS(26495) // false warning that v4 is uninitialized [VS 2017 15.9.4]
-    Quad() noexcept :
-        Triplet<sample>(),
-        v4(0)
+    quad() noexcept :
+        triplet<SampleType>(),
+        v4{0}
     {
     }
     MSVC_WARNING_UNSUPPRESS()
 
     MSVC_WARNING_SUPPRESS(26495) // false warning that v4 is uninitialized [VS 2017 15.9.4]
-    Quad(Triplet<sample> triplet, int32_t alpha) noexcept :
-        Triplet<sample>(triplet),
-        A(static_cast<sample>(alpha))
+    quad(triplet<SampleType> triplet_value, int32_t alpha) noexcept :
+        triplet<SampleType>(triplet_value),
+        A(static_cast<SampleType>(alpha))
     {
     }
     MSVC_WARNING_UNSUPPRESS()
 
     union
     {
-        sample v4;
-        sample A;
+        SampleType v4;
+        SampleType A;
     };
 };
 
 
 template<int size>
-struct FromBigEndian final
+struct from_big_endian final
 {
 };
 
 
 template<>
-struct FromBigEndian<4> final
+struct from_big_endian<4> final
 {
-    FORCE_INLINE static unsigned int Read(const uint8_t* buffer) noexcept
+    FORCE_INLINE static unsigned int read(const uint8_t* buffer) noexcept
     {
         return (static_cast<uint32_t>(buffer[0]) << 24U) + (static_cast<uint32_t>(buffer[1]) << 16U) +
                (static_cast<uint32_t>(buffer[2]) << 8U) + (static_cast<uint32_t>(buffer[3]) << 0U);
@@ -254,9 +254,9 @@ struct FromBigEndian<4> final
 
 
 template<>
-struct FromBigEndian<8> final
+struct from_big_endian<8> final
 {
-    FORCE_INLINE static uint64_t Read(const uint8_t* buffer) noexcept
+    FORCE_INLINE static uint64_t read(const uint8_t* buffer) noexcept
     {
         return (static_cast<uint64_t>(buffer[0]) << 56U) + (static_cast<uint64_t>(buffer[1]) << 48U) +
                (static_cast<uint64_t>(buffer[2]) << 40U) + (static_cast<uint64_t>(buffer[3]) << 32U) +
@@ -266,13 +266,13 @@ struct FromBigEndian<8> final
 };
 
 
-inline void SkipBytes(ByteStreamInfo& streamInfo, const std::size_t count) noexcept
+inline void skip_bytes(byte_stream_info& stream_info, const std::size_t count) noexcept
 {
-    if (!streamInfo.rawData)
+    if (!stream_info.rawData)
         return;
 
-    streamInfo.rawData += count;
-    streamInfo.count -= count;
+    stream_info.rawData += count;
+    stream_info.count -= count;
 }
 
 

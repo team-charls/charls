@@ -14,7 +14,7 @@ using impl::throw_jpegls_error;
 
 namespace {
 
-void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& parameters)
+void VerifyInput(const byte_stream_info& destination, const JlsParameters& parameters)
 {
     if (!destination.rawStream && !destination.rawData)
         throw_jpegls_error(jpegls_errc::invalid_operation);
@@ -44,9 +44,9 @@ void VerifyInput(const ByteStreamInfo& destination, const JlsParameters& paramet
     }
 }
 
-void EncodeScan(const JlsParameters& params, const int componentCount, const ByteStreamInfo source, JpegStreamWriter& writer)
+void EncodeScan(const JlsParameters& params, const int component_count, const byte_stream_info source, jpeg_stream_writer& writer)
 {
-    const frame_info frame_info{static_cast<uint32_t>(params.width), static_cast<uint32_t>(params.height), params.bitsPerSample, componentCount};
+    const frame_info frame_info{static_cast<uint32_t>(params.width), static_cast<uint32_t>(params.height), params.bitsPerSample, component_count};
     const coding_parameters codec_parameters{params.allowedLossyError, params.interleaveMode, params.colorTransformation, false};
     const jpegls_pc_parameters preset_coding_parameters{
         params.custom.MaximumSampleValue,
@@ -56,20 +56,20 @@ void EncodeScan(const JlsParameters& params, const int componentCount, const Byt
         params.custom.ResetValue,
     };
 
-    auto codec = JlsCodecFactory<EncoderStrategy>().CreateCodec(frame_info, codec_parameters, preset_coding_parameters);
-    std::unique_ptr<ProcessLine> processLine(codec->CreateProcess(source, static_cast<uint32_t>(params.stride)));
-    ByteStreamInfo destination{writer.OutputStream()};
+    auto codec = jls_codec_factory<encoder_strategy>().CreateCodec(frame_info, codec_parameters, preset_coding_parameters);
+    std::unique_ptr<process_line> processLine(codec->CreateProcess(source, static_cast<uint32_t>(params.stride)));
+    byte_stream_info destination{writer.OutputStream()};
     const size_t bytesWritten = codec->EncodeScan(move(processLine), destination);
 
     // Synchronize the destination encapsulated in the writer (EncodeScan works on a local copy)
-    writer.Seek(bytesWritten);
+    writer.seek(bytesWritten);
 }
 
 } // namespace
 
 
-jpegls_errc JpegLsEncodeStream(const ByteStreamInfo destination, size_t& bytesWritten,
-                               ByteStreamInfo source, const JlsParameters& params)
+jpegls_errc JpegLsEncodeStream(const byte_stream_info destination, size_t& bytes_written,
+                               byte_stream_info source, const JlsParameters& params)
 {
     if (params.width < 1 || params.width > 65535)
         return jpegls_errc::invalid_argument_width;
@@ -91,15 +91,15 @@ jpegls_errc JpegLsEncodeStream(const ByteStreamInfo destination, size_t& bytesWr
             }
         }
 
-        JpegStreamWriter writer{destination};
+        jpeg_stream_writer writer{destination};
 
-        writer.WriteStartOfImage();
+        writer.write_start_of_image();
 
-        writer.WriteStartOfFrameSegment(info.width, info.height, info.bitsPerSample, info.components);
+        writer.write_start_of_frame_segment(info.width, info.height, info.bitsPerSample, info.components);
 
         if (info.colorTransformation != color_transformation::none)
         {
-            writer.WriteColorTransformSegment(info.colorTransformation);
+            writer.write_color_transform_segment(info.colorTransformation);
         }
 
         const jpegls_pc_parameters preset_coding_parameters{
@@ -112,12 +112,12 @@ jpegls_errc JpegLsEncodeStream(const ByteStreamInfo destination, size_t& bytesWr
 
         if (!is_default(preset_coding_parameters))
         {
-            writer.WriteJpegLSPresetParametersSegment(preset_coding_parameters);
+            writer.write_jpegls_preset_parameters_segment(preset_coding_parameters);
         }
         else if (info.bitsPerSample > 12)
         {
             const auto default_preset_coding_parameters{compute_default((1U << static_cast<uint32_t>(info.bitsPerSample)) - 1, info.allowedLossyError)};
-            writer.WriteJpegLSPresetParametersSegment(default_preset_coding_parameters);
+            writer.write_jpegls_preset_parameters_segment(default_preset_coding_parameters);
         }
 
         if (info.interleaveMode == interleave_mode::none)
@@ -125,42 +125,22 @@ jpegls_errc JpegLsEncodeStream(const ByteStreamInfo destination, size_t& bytesWr
             const int32_t byteCountComponent = info.width * info.height * ((info.bitsPerSample + 7) / 8);
             for (int32_t component = 0; component < info.components; ++component)
             {
-                writer.WriteStartOfScanSegment(1, info.allowedLossyError, info.interleaveMode);
+                writer.write_start_of_scan_segment(1, info.allowedLossyError, info.interleaveMode);
                 EncodeScan(info, 1, source, writer);
 
                 // Synchronize the source stream (EncodeScan works on a local copy)
-                SkipBytes(source, static_cast<size_t>(byteCountComponent));
+                skip_bytes(source, static_cast<size_t>(byteCountComponent));
             }
         }
         else
         {
-            writer.WriteStartOfScanSegment(info.components, info.allowedLossyError, info.interleaveMode);
+            writer.write_start_of_scan_segment(info.components, info.allowedLossyError, info.interleaveMode);
             EncodeScan(info, info.components, source, writer);
         }
 
-        writer.WriteEndOfImage();
+        writer.write_end_of_image();
 
-        bytesWritten = writer.GetBytesWritten();
-
-        return jpegls_errc::success;
-    }
-    catch (...)
-    {
-        return to_jpegls_errc();
-    }
-}
-
-
-jpegls_errc JpegLsDecodeStream(const ByteStreamInfo destination, const ByteStreamInfo source, const JlsParameters* /*params*/)
-{
-    try
-    {
-        JpegStreamReader reader{source};
-
-        reader.ReadHeader();
-        reader.ReadStartOfScan();
-
-        reader.Read(destination, 0);
+        bytes_written = writer.bytes_written();
 
         return jpegls_errc::success;
     }
@@ -171,13 +151,33 @@ jpegls_errc JpegLsDecodeStream(const ByteStreamInfo destination, const ByteStrea
 }
 
 
-jpegls_errc JpegLsReadHeaderStream(const ByteStreamInfo source, JlsParameters* params)
+jpegls_errc JpegLsDecodeStream(const byte_stream_info destination, const byte_stream_info source, const JlsParameters* /*params*/)
 {
     try
     {
-        JpegStreamReader reader{source};
-        reader.ReadHeader();
-        reader.ReadStartOfScan();
+        jpeg_stream_reader reader{source};
+
+        reader.read_header();
+        reader.read_start_of_scan();
+
+        reader.read(destination, 0);
+
+        return jpegls_errc::success;
+    }
+    catch (...)
+    {
+        return to_jpegls_errc();
+    }
+}
+
+
+jpegls_errc JpegLsReadHeaderStream(const byte_stream_info source, JlsParameters* params)
+{
+    try
+    {
+        jpeg_stream_reader reader{source};
+        reader.read_header();
+        reader.read_start_of_scan();
         *params = JlsParameters{};
 
         const auto& info = reader.frame_info();

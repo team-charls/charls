@@ -18,25 +18,25 @@ using std::vector;
 
 namespace charls {
 
-JpegStreamWriter::JpegStreamWriter(const ByteStreamInfo& destination) noexcept :
+jpeg_stream_writer::jpeg_stream_writer(const byte_stream_info& destination) noexcept :
     destination_{destination}
 {
 }
 
 
-void JpegStreamWriter::WriteStartOfImage()
+void jpeg_stream_writer::write_start_of_image()
 {
     WriteMarker(JpegMarkerCode::StartOfImage);
 }
 
 
-void JpegStreamWriter::WriteEndOfImage()
+void jpeg_stream_writer::write_end_of_image()
 {
     WriteMarker(JpegMarkerCode::EndOfImage);
 }
 
 
-void JpegStreamWriter::WriteSpiffHeaderSegment(const spiff_header& header)
+void jpeg_stream_writer::write_spiff_header_segment(const spiff_header& header)
 {
     ASSERT(header.height > 0);
     ASSERT(header.width > 0);
@@ -56,51 +56,51 @@ void JpegStreamWriter::WriteSpiffHeaderSegment(const spiff_header& header)
     push_back(segment, header.vertical_resolution);
     push_back(segment, header.horizontal_resolution);
 
-    WriteSegment(JpegMarkerCode::ApplicationData8, segment.data(), segment.size());
+    write_segment(JpegMarkerCode::ApplicationData8, segment.data(), segment.size());
 }
 
 
-void JpegStreamWriter::WriteSpiffDirectoryEntry(const uint32_t entry_tag,
-                                                IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data,
-                                                const size_t entry_data_size_bytes)
+void jpeg_stream_writer::write_spiff_directory_entry(const uint32_t entry_tag,
+                                                     IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data,
+                                                     const size_t entry_data_size_bytes)
 {
     WriteMarker(JpegMarkerCode::ApplicationData8);
-    WriteUInt16(static_cast<uint16_t>(sizeof(uint16_t) + sizeof(uint32_t) + entry_data_size_bytes));
-    WriteUInt32(entry_tag);
-    WriteBytes(entry_data, entry_data_size_bytes);
+    write_uint16(static_cast<uint16_t>(sizeof(uint16_t) + sizeof(uint32_t) + entry_data_size_bytes));
+    write_uint32(entry_tag);
+    write_bytes(entry_data, entry_data_size_bytes);
 }
 
 
-void JpegStreamWriter::WriteSpiffEndOfDirectoryEntry()
+void jpeg_stream_writer::write_spiff_end_of_directory_entry()
 {
     // Note: ISO/IEC 10918-3, Annex F.2.2.3 documents that the EOD entry segment should have a length of 8
     // but only 6 data bytes. This approach allows to wrap existing bit streams\encoders with a SPIFF header.
     // In this implementation the SOI marker is added as data bytes to simplify the design.
 
     array<uint8_t, 6> segment{0, 0, 0, spiff_end_of_directory_entry_type, 0xFF, static_cast<uint8_t>(JpegMarkerCode::StartOfImage)};
-    WriteSegment(JpegMarkerCode::ApplicationData8, segment.data(), segment.size());
+    write_segment(JpegMarkerCode::ApplicationData8, segment.data(), segment.size());
 }
 
 
-void JpegStreamWriter::WriteStartOfFrameSegment(const uint32_t width, const uint32_t height, const int bitsPerSample, const int componentCount)
+void jpeg_stream_writer::write_start_of_frame_segment(const uint32_t width, const uint32_t height, const int bits_per_sample, const int component_count)
 {
     ASSERT(width <= UINT16_MAX);
     ASSERT(height <= UINT16_MAX);
-    ASSERT(bitsPerSample >= MinimumBitsPerSample && bitsPerSample <= MaximumBitsPerSample);
-    ASSERT(componentCount > 0 && componentCount <= UINT8_MAX);
+    ASSERT(bits_per_sample >= MinimumBitsPerSample && bits_per_sample <= MaximumBitsPerSample);
+    ASSERT(component_count > 0 && component_count <= UINT8_MAX);
 
     // Create a Frame Header as defined in ISO/IEC 14495-1, C.2.2 and T.81, B.2.2
     vector<uint8_t> segment;
-    segment.push_back(static_cast<uint8_t>(bitsPerSample)); // P = Sample precision
+    segment.push_back(static_cast<uint8_t>(bits_per_sample)); // P = Sample precision
     push_back(segment, static_cast<uint16_t>(height));      // Y = Number of lines
     push_back(segment, static_cast<uint16_t>(width));       // X = Number of samples per line
 
     // Components
-    segment.push_back(static_cast<uint8_t>(componentCount)); // Nf = Number of image components in frame
+    segment.push_back(static_cast<uint8_t>(component_count)); // Nf = Number of image components in frame
 
     // Use by default 1 as the start component identifier to remain compatible with the
     // code sample of ISO/IEC 14495-1, H.4 and the JPEG-LS ISO conformance sample files.
-    for (auto componentId = 1; componentId <= componentCount; ++componentId)
+    for (auto componentId = 1; componentId <= component_count; ++componentId)
     {
         // Component Specification parameters
         segment.push_back(static_cast<uint8_t>(componentId)); // Ci = Component identifier
@@ -108,18 +108,18 @@ void JpegStreamWriter::WriteStartOfFrameSegment(const uint32_t width, const uint
         segment.push_back(0);                                 // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
     }
 
-    WriteSegment(JpegMarkerCode::StartOfFrameJpegLS, segment.data(), segment.size());
+    write_segment(JpegMarkerCode::StartOfFrameJpegLS, segment.data(), segment.size());
 }
 
 
-void JpegStreamWriter::WriteColorTransformSegment(const color_transformation transformation)
+void jpeg_stream_writer::write_color_transform_segment(const color_transformation transformation)
 {
     array<uint8_t, 5> segment{'m', 'r', 'f', 'x', static_cast<uint8_t>(transformation)};
-    WriteSegment(JpegMarkerCode::ApplicationData8, segment.data(), segment.size());
+    write_segment(JpegMarkerCode::ApplicationData8, segment.data(), segment.size());
 }
 
 
-void JpegStreamWriter::WriteJpegLSPresetParametersSegment(const jpegls_pc_parameters& preset_coding_parameters)
+void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const jpegls_pc_parameters& preset_coding_parameters)
 {
     vector<uint8_t> segment;
 
@@ -131,48 +131,48 @@ void JpegStreamWriter::WriteJpegLSPresetParametersSegment(const jpegls_pc_parame
     push_back(segment, static_cast<uint16_t>(preset_coding_parameters.threshold3));
     push_back(segment, static_cast<uint16_t>(preset_coding_parameters.reset_value));
 
-    WriteSegment(JpegMarkerCode::JpegLSPresetParameters, segment.data(), segment.size());
+    write_segment(JpegMarkerCode::JpegLSPresetParameters, segment.data(), segment.size());
 }
 
 
-void JpegStreamWriter::WriteStartOfScanSegment(const int componentCount,
-                                               const int allowedLossyError,
-                                               const interleave_mode interleaveMode)
+void jpeg_stream_writer::write_start_of_scan_segment(const int component_count,
+                                                     const int near_lossless,
+                                                     const interleave_mode interleave_mode)
 {
-    ASSERT(componentCount > 0 && componentCount <= UINT8_MAX);
-    ASSERT(allowedLossyError >= 0 && allowedLossyError <= UINT8_MAX);
-    ASSERT(interleaveMode == interleave_mode::none ||
-           interleaveMode == interleave_mode::line ||
-           interleaveMode == interleave_mode::sample);
+    ASSERT(component_count > 0 && component_count <= UINT8_MAX);
+    ASSERT(near_lossless >= 0 && near_lossless <= UINT8_MAX);
+    ASSERT(interleave_mode == interleave_mode::none ||
+           interleave_mode == interleave_mode::line ||
+           interleave_mode == interleave_mode::sample);
 
     // Create a Scan Header as defined in T.87, C.2.3 and T.81, B.2.3
     vector<uint8_t> segment;
 
-    segment.push_back(static_cast<uint8_t>(componentCount));
-    for (auto i = 0; i < componentCount; ++i)
+    segment.push_back(static_cast<uint8_t>(component_count));
+    for (auto i = 0; i < component_count; ++i)
     {
         segment.push_back(static_cast<uint8_t>(componentId_));
         ++componentId_;
         segment.push_back(0); // Mapping table selector (0 = no table)
     }
 
-    segment.push_back(static_cast<uint8_t>(allowedLossyError)); // NEAR parameter
-    segment.push_back(static_cast<uint8_t>(interleaveMode));    // ILV parameter
-    segment.push_back(0);                                       // transformation
+    segment.push_back(static_cast<uint8_t>(near_lossless));   // NEAR parameter
+    segment.push_back(static_cast<uint8_t>(interleave_mode)); // ILV parameter
+    segment.push_back(0);                                     // transformation
 
-    WriteSegment(JpegMarkerCode::StartOfScan, segment.data(), segment.size());
+    write_segment(JpegMarkerCode::StartOfScan, segment.data(), segment.size());
 }
 
 
-void JpegStreamWriter::WriteSegment(const JpegMarkerCode markerCode,
-                                    IN_READS_BYTES_(dataSize) const void* data,
-                                    const size_t dataSize)
+void jpeg_stream_writer::write_segment(const JpegMarkerCode marker_code,
+                                       IN_READS_BYTES_(size) const void* data,
+                                       const size_t size)
 {
-    ASSERT(dataSize <= UINT16_MAX - sizeof(uint16_t));
+    ASSERT(size <= UINT16_MAX - sizeof(uint16_t));
 
-    WriteMarker(markerCode);
-    WriteUInt16(static_cast<uint16_t>(dataSize + sizeof(uint16_t)));
-    WriteBytes(data, dataSize);
+    WriteMarker(marker_code);
+    write_uint16(static_cast<uint16_t>(size + sizeof(uint16_t)));
+    write_bytes(data, size);
 }
 
 } // namespace charls

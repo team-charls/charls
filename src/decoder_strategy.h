@@ -15,44 +15,44 @@
 namespace charls {
 
 // Purpose: Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
-class DecoderStrategy
+class decoder_strategy
 {
 public:
-    explicit DecoderStrategy(const frame_info& frame, const coding_parameters& parameters) noexcept :
+    explicit decoder_strategy(const frame_info& frame, const coding_parameters& parameters) noexcept :
         frame_info_{frame},
         parameters_{parameters}
     {
     }
 
-    virtual ~DecoderStrategy() = default;
+    virtual ~decoder_strategy() = default;
 
-    DecoderStrategy(const DecoderStrategy&) = delete;
-    DecoderStrategy(DecoderStrategy&&) = delete;
-    DecoderStrategy& operator=(const DecoderStrategy&) = delete;
-    DecoderStrategy& operator=(DecoderStrategy&&) = delete;
+    decoder_strategy(const decoder_strategy&) = delete;
+    decoder_strategy(decoder_strategy&&) = delete;
+    decoder_strategy& operator=(const decoder_strategy&) = delete;
+    decoder_strategy& operator=(decoder_strategy&&) = delete;
 
-    virtual std::unique_ptr<ProcessLine> CreateProcess(ByteStreamInfo rawStreamInfo, uint32_t stride) = 0;
+    virtual std::unique_ptr<process_line> CreateProcess(byte_stream_info raw_stream_info, uint32_t stride) = 0;
     virtual void SetPresets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
-    virtual void DecodeScan(std::unique_ptr<ProcessLine> outputData, const JlsRect& size, ByteStreamInfo& compressedData) = 0;
+    virtual void DecodeScan(std::unique_ptr<process_line> output_data, const JlsRect& size, byte_stream_info& compressed_data) = 0;
 
-    void Init(ByteStreamInfo& compressedStream)
+    void Init(byte_stream_info& compressed_stream)
     {
         validBits_ = 0;
         readCache_ = 0;
 
-        if (compressedStream.rawStream)
+        if (compressed_stream.rawStream)
         {
             buffer_.resize(40000);
             position_ = buffer_.data();
             endPosition_ = position_;
-            byteStream_ = compressedStream.rawStream;
+            byteStream_ = compressed_stream.rawStream;
             AddBytesFromStream();
         }
         else
         {
             byteStream_ = nullptr;
-            position_ = compressedStream.rawData;
-            endPosition_ = position_ + compressedStream.count;
+            position_ = compressed_stream.rawData;
+            endPosition_ = position_ + compressed_stream.count;
         }
 
         nextFFPosition_ = FindNextFF();
@@ -90,13 +90,13 @@ public:
         readCache_ = readCache_ << length;
     }
 
-    static void OnLineBegin(const size_t /*cpixel*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) noexcept
+    static void OnLineBegin(const size_t /*pixel_count*/, void* /*ptypeBuffer*/, int32_t /*pixelStride*/) noexcept
     {
     }
 
-    void OnLineEnd(const size_t pixelCount, const void* ptypeBuffer, const int32_t pixelStride) const
+    void OnLineEnd(const size_t pixel_count, const void* source, const int32_t pixel_stride) const
     {
-        processLine_->NewLineDecoded(ptypeBuffer, pixelCount, pixelStride);
+        processLine_->NewLineDecoded(source, pixel_count, pixel_stride);
     }
 
     void EndScan()
@@ -118,7 +118,7 @@ public:
         // Easy & fast: if there is no 0xFF byte in sight, we can read without bit stuffing
         if (position_ < nextFFPosition_ - (sizeof(bufType) - 1))
         {
-            readCache_ |= FromBigEndian<sizeof(bufType)>::Read(position_) >> validBits_;
+            readCache_ |= from_big_endian<sizeof(bufType)>::read(position_) >> validBits_;
             const int bytesToRead = (bufType_bit_count - validBits_) >> 3;
             position_ += bytesToRead;
             validBits_ += bytesToRead * 8;
@@ -290,7 +290,7 @@ public:
 protected:
     frame_info frame_info_;
     coding_parameters parameters_;
-    std::unique_ptr<ProcessLine> processLine_;
+    std::unique_ptr<process_line> processLine_;
 
 private:
     using bufType = std::size_t;

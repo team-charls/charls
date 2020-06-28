@@ -53,7 +53,7 @@ vector<uint8_t> ScanFile(const char* strNameEncoded, JlsParameters* params)
     basic_filebuf<char> jlsFile;
     jlsFile.open(strNameEncoded, mode_input);
 
-    const ByteStreamInfo rawStreamInfo{&jlsFile, nullptr, 0};
+    const byte_stream_info rawStreamInfo{&jlsFile, nullptr, 0};
 
     const error_code error = JpegLsReadHeaderStream(rawStreamInfo, params);
     if (error)
@@ -65,8 +65,8 @@ vector<uint8_t> ScanFile(const char* strNameEncoded, JlsParameters* params)
 
 void TestTraits16bit()
 {
-    const auto traits1 = DefaultTraits<uint16_t, uint16_t>(4095, 0);
-    using lossless_traits = LosslessTraits<uint16_t, 12>;
+    const auto traits1 = default_traits<uint16_t, uint16_t>(4095, 0);
+    using lossless_traits = lossless_traits<uint16_t, 12>;
 
     Assert::IsTrue(traits1.LIMIT == lossless_traits::LIMIT);
     Assert::IsTrue(traits1.MAXVAL == lossless_traits::MAXVAL);
@@ -90,8 +90,8 @@ void TestTraits16bit()
 
 void TestTraits8bit()
 {
-    const auto traits1 = DefaultTraits<uint8_t, uint8_t>(255, 0);
-    using lossless_traits = LosslessTraits<uint8_t, 8>;
+    const auto traits1 = default_traits<uint8_t, uint8_t>(255, 0);
+    using lossless_traits = lossless_traits<uint8_t, 8>;
 
     Assert::IsTrue(traits1.LIMIT == lossless_traits::LIMIT);
     Assert::IsTrue(traits1.MAXVAL == lossless_traits::MAXVAL);
@@ -332,7 +332,7 @@ void TestEncodeFromStream(const char* file, const int offset, const int width, c
     Assert::IsTrue(myFile.is_open());
 
     myFile.pubseekoff(static_cast<streamoff>(offset), ios_base::cur);
-    const ByteStreamInfo rawStreamInfo = {&myFile, nullptr, 0};
+    const byte_stream_info rawStreamInfo = {&myFile, nullptr, 0};
 
     vector<uint8_t> compressed(static_cast<size_t>(width) * height * componentCount * 2);
     JlsParameters params = JlsParameters();
@@ -352,7 +352,7 @@ void TestEncodeFromStream(const char* file, const int offset, const int width, c
 
 bool DecodeToPnm(istream& input, ostream& output)
 {
-    const ByteStreamInfo inputInfo{input.rdbuf(), nullptr, 0};
+    const byte_stream_info inputInfo{input.rdbuf(), nullptr, 0};
 
     auto params = JlsParameters();
     error_code error = JpegLsReadHeaderStream(inputInfo, &params);
@@ -451,7 +451,7 @@ bool EncodePnm(istream& pnmFile, const ostream& jlsFileStream)
     }
 
     const auto rawStreamInfo = FromByteArray(inputBuffer.data(), inputBuffer.size());
-    const ByteStreamInfo jlsStreamInfo = {jlsFileStream.rdbuf(), nullptr, 0};
+    const byte_stream_info jlsStreamInfo = {jlsFileStream.rdbuf(), nullptr, 0};
 
     size_t bytesWritten = 0;
     JpegLsEncodeStream(jlsStreamInfo, bytesWritten, rawStreamInfo, params);
@@ -565,10 +565,10 @@ bool ComparePnm(istream& pnmFile1, istream& pnmFile2)
 jpegls_errc DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
 {
     fstream jlsFile(strNameEncoded, mode_input);
-    const ByteStreamInfo compressedByteStream{jlsFile.rdbuf(), nullptr, 0};
+    const byte_stream_info compressedByteStream{jlsFile.rdbuf(), nullptr, 0};
 
     fstream rawFile(strNameOutput, mode_output);
-    const ByteStreamInfo rawStream{rawFile.rdbuf(), nullptr, 0};
+    const byte_stream_info rawStream{rawFile.rdbuf(), nullptr, 0};
 
     const auto value = JpegLsDecodeStream(rawStream, compressedByteStream, nullptr);
     jlsFile.close();

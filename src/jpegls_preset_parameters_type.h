@@ -20,7 +20,7 @@ enum class JpegLSPresetParametersType : uint8_t
     StartOfFixedLengthCoding = 0x9,                  // JPEG-LS Extended (ISO/IEC 14495-2): Specification of the start of fixed length coding.
     EndOfFixedLengthCoding = 0xA,                    // JPEG-LS Extended (ISO/IEC 14495-2): Specification of the end of fixed length coding.
     ExtendedPresetCodingParameters = 0xC,            // JPEG-LS Extended (ISO/IEC 14495-2): JPEG-LS preset coding parameters.
-    InverseColorTransformSpecification = 0xD         // JPEG-LS Extended (ISO/IEC 14495-2): Inverse color transform specification.
+    InverseColorTransformSpecification = 0xD         // JPEG-LS Extended (ISO/IEC 14495-2): inverse color transform specification.
 };
 
 } // namespace charls

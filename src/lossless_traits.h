@@ -13,10 +13,10 @@ namespace charls {
 // Optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
 // This class assumes MaximumSampleValue correspond to a whole number of bits, and no custom ResetValue is set when encoding.
 // The point of this is to have the most optimized code for the most common and most demanding scenario.
-template<typename sample, int32_t bitsPerPixel>
-struct LosslessTraitsImpl
+template<typename Sample, int32_t bitsPerPixel>
+struct lossless_traits_impl
 {
-    using SAMPLE = sample;
+    using SAMPLE = Sample;
 
     enum
     {
@@ -44,14 +44,14 @@ struct LosslessTraitsImpl
     __attribute__((no_sanitize("shift")))
 #endif
     FORCE_INLINE constexpr static int32_t
-    ModuloRange(int32_t errorValue) noexcept
+    ModuloRange(int32_t error_value) noexcept
     {
-        return static_cast<int32_t>(errorValue << (int32_t_bit_count - bpp)) >> (int32_t_bit_count - bpp); //NOLINT
+        return static_cast<int32_t>(error_value << (int32_t_bit_count - bpp)) >> (int32_t_bit_count - bpp); //NOLINT
     }
 
-    FORCE_INLINE static SAMPLE ComputeReconstructedSample(const int32_t Px, const int32_t ErrVal) noexcept
+    FORCE_INLINE static SAMPLE ComputeReconstructedSample(const int32_t Px, const int32_t error_value) noexcept
     {
-        return static_cast<SAMPLE>(MAXVAL & (Px + ErrVal));
+        return static_cast<SAMPLE>(MAXVAL & (Px + error_value));
     }
 
     FORCE_INLINE static int32_t CorrectPrediction(int32_t Pxc) noexcept
@@ -64,21 +64,21 @@ struct LosslessTraitsImpl
 };
 
 
-template<typename T, int32_t bpp>
-struct LosslessTraits final : LosslessTraitsImpl<T, bpp>
+template<typename PixelType, int32_t bits_per_pixel>
+struct lossless_traits final : lossless_traits_impl<PixelType, bits_per_pixel>
 {
-    using PIXEL = T;
+    using PIXEL = PixelType;
 };
 
 
 template<>
-struct LosslessTraits<uint8_t, 8> final : LosslessTraitsImpl<uint8_t, 8>
+struct lossless_traits<uint8_t, 8> final : lossless_traits_impl<uint8_t, 8>
 {
     using PIXEL = SAMPLE;
 
-    FORCE_INLINE constexpr static signed char ModRange(const int32_t errorValue) noexcept
+    FORCE_INLINE constexpr static signed char ModRange(const int32_t error_value) noexcept
     {
-        return static_cast<signed char>(errorValue);
+        return static_cast<signed char>(error_value);
     }
 
     FORCE_INLINE constexpr static int32_t ComputeErrVal(const int32_t d) noexcept
@@ -86,21 +86,21 @@ struct LosslessTraits<uint8_t, 8> final : LosslessTraitsImpl<uint8_t, 8>
         return static_cast<signed char>(d);
     }
 
-    FORCE_INLINE constexpr static uint8_t ComputeReconstructedSample(const int32_t Px, const int32_t ErrVal) noexcept
+    FORCE_INLINE constexpr static uint8_t ComputeReconstructedSample(const int32_t Px, const int32_t error_value) noexcept
     {
-        return static_cast<uint8_t>(Px + ErrVal);
+        return static_cast<uint8_t>(Px + error_value);
     }
 };
 
 
 template<>
-struct LosslessTraits<uint16_t, 16> final : LosslessTraitsImpl<uint16_t, 16>
+struct lossless_traits<uint16_t, 16> final : lossless_traits_impl<uint16_t, 16>
 {
     using PIXEL = SAMPLE;
 
-    FORCE_INLINE constexpr static short ModRange(const int32_t errorValue) noexcept
+    FORCE_INLINE constexpr static short ModRange(const int32_t error_value) noexcept
     {
-        return static_cast<short>(errorValue);
+        return static_cast<short>(error_value);
     }
 
     FORCE_INLINE constexpr static int32_t ComputeErrVal(const int32_t d) noexcept
@@ -108,17 +108,17 @@ struct LosslessTraits<uint16_t, 16> final : LosslessTraitsImpl<uint16_t, 16>
         return static_cast<short>(d);
     }
 
-    FORCE_INLINE constexpr static SAMPLE ComputeReconstructedSample(const int32_t Px, const int32_t errorValue) noexcept
+    FORCE_INLINE constexpr static SAMPLE ComputeReconstructedSample(const int32_t Px, const int32_t error_value) noexcept
     {
-        return static_cast<SAMPLE>(Px + errorValue);
+        return static_cast<SAMPLE>(Px + error_value);
     }
 };
 
 
-template<typename T, int32_t bpp>
-struct LosslessTraits<Triplet<T>, bpp> final : LosslessTraitsImpl<T, bpp>
+template<typename PixelType, int32_t bits_per_pixel>
+struct lossless_traits<triplet<PixelType>, bits_per_pixel> final : lossless_traits_impl<PixelType, bits_per_pixel>
 {
-    using PIXEL = Triplet<T>;
+    using PIXEL = triplet<PixelType>;
 
     FORCE_INLINE constexpr static bool IsNear(const int32_t lhs, const int32_t rhs) noexcept
     {
@@ -130,17 +130,17 @@ struct LosslessTraits<Triplet<T>, bpp> final : LosslessTraitsImpl<T, bpp>
         return lhs == rhs;
     }
 
-    FORCE_INLINE static T ComputeReconstructedSample(const int32_t Px, const int32_t errorValue) noexcept
+    FORCE_INLINE static PixelType ComputeReconstructedSample(const int32_t Px, const int32_t error_value) noexcept
     {
-        return static_cast<T>(Px + errorValue);
+        return static_cast<PixelType>(Px + error_value);
     }
 };
 
 
 template<typename T, int32_t bpp>
-struct LosslessTraits<Quad<T>, bpp> final : LosslessTraitsImpl<T, bpp>
+struct lossless_traits<quad<T>, bpp> final : lossless_traits_impl<T, bpp>
 {
-    using PIXEL = Quad<T>;
+    using PIXEL = quad<T>;
 
     FORCE_INLINE constexpr static bool IsNear(const int32_t lhs, const int32_t rhs) noexcept
     {
@@ -152,9 +152,9 @@ struct LosslessTraits<Quad<T>, bpp> final : LosslessTraitsImpl<T, bpp>
         return lhs == rhs;
     }
 
-    FORCE_INLINE static T ComputeReconstructedSample(const int32_t Px, const int32_t errorValue) noexcept
+    FORCE_INLINE static T ComputeReconstructedSample(const int32_t Px, const int32_t error_value) noexcept
     {
-        return static_cast<T>(Px + errorValue);
+        return static_cast<T>(Px + error_value);
     }
 };
 

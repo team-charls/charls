@@ -20,11 +20,11 @@
 
 namespace charls {
 
-template<typename sample, typename pixel>
-struct DefaultTraits final
+template<typename Sample, typename Pixel>
+struct default_traits final
 {
-    using SAMPLE = sample;
-    using PIXEL = pixel;
+    using SAMPLE = Sample;
+    using PIXEL = Pixel;
 
     int32_t MAXVAL;
     const int32_t RANGE;
@@ -34,7 +34,7 @@ struct DefaultTraits final
     const int32_t LIMIT;
     const int32_t RESET;
 
-    DefaultTraits(const int32_t max, const int32_t near, const int32_t reset = DefaultResetValue) noexcept :
+    default_traits(const int32_t max, const int32_t near, const int32_t reset = DefaultResetValue) noexcept :
         MAXVAL{max},
         RANGE{(max + 2 * near) / (2 * near + 1) + 1},
         NEAR{near},
@@ -45,7 +45,7 @@ struct DefaultTraits final
     {
     }
 
-    DefaultTraits(const DefaultTraits& other) noexcept :
+    default_traits(const default_traits& other) noexcept :
         MAXVAL{other.MAXVAL},
         RANGE{other.RANGE},
         NEAR{other.NEAR},
@@ -56,20 +56,20 @@ struct DefaultTraits final
     {
     }
 
-    DefaultTraits() = delete;
-    DefaultTraits(DefaultTraits&&) noexcept = default;
-    ~DefaultTraits() = default;
-    DefaultTraits& operator=(const DefaultTraits&) = delete;
-    DefaultTraits& operator=(DefaultTraits&&) = delete;
+    default_traits() = delete;
+    default_traits(default_traits&&) noexcept = default;
+    ~default_traits() = default;
+    default_traits& operator=(const default_traits&) = delete;
+    default_traits& operator=(default_traits&&) = delete;
 
     FORCE_INLINE int32_t ComputeErrVal(const int32_t e) const noexcept
     {
         return ModuloRange(Quantize(e));
     }
 
-    FORCE_INLINE SAMPLE ComputeReconstructedSample(const int32_t Px, const int32_t ErrVal) const noexcept
+    FORCE_INLINE SAMPLE ComputeReconstructedSample(const int32_t Px, const int32_t error_value) const noexcept
     {
-        return FixReconstructedValue(Px + DeQuantize(ErrVal));
+        return FixReconstructedValue(Px + DeQuantize(error_value));
     }
 
     FORCE_INLINE bool IsNear(const int32_t lhs, const int32_t rhs) const noexcept
@@ -77,14 +77,14 @@ struct DefaultTraits final
         return std::abs(lhs - rhs) <= NEAR;
     }
 
-    bool IsNear(const Triplet<SAMPLE> lhs, const Triplet<SAMPLE> rhs) const noexcept
+    bool IsNear(const triplet<SAMPLE> lhs, const triplet<SAMPLE> rhs) const noexcept
     {
         return std::abs(lhs.v1 - rhs.v1) <= NEAR &&
                std::abs(lhs.v2 - rhs.v2) <= NEAR &&
                std::abs(lhs.v3 - rhs.v3) <= NEAR;
     }
 
-    bool IsNear(const Quad<SAMPLE> lhs, const Quad<SAMPLE> rhs) const noexcept
+    bool IsNear(const quad<SAMPLE> lhs, const quad<SAMPLE> rhs) const noexcept
     {
         return std::abs(lhs.v1 - rhs.v1) <= NEAR &&
                std::abs(lhs.v2 - rhs.v2) <= NEAR &&
@@ -104,36 +104,36 @@ struct DefaultTraits final
     /// Returns the value of errorValue modulo RANGE. ITU.T.87, A.4.5 (code segment A.9)
     /// This ensures the error is reduced to the range (-⌊RANGE/2⌋ .. ⌈RANGE/2⌉-1)
     /// </summary>
-    FORCE_INLINE int32_t ModuloRange(int32_t errorValue) const noexcept
+    FORCE_INLINE int32_t ModuloRange(int32_t error_value) const noexcept
     {
-        ASSERT(std::abs(errorValue) <= RANGE);
+        ASSERT(std::abs(error_value) <= RANGE);
 
-        if (errorValue < 0)
+        if (error_value < 0)
         {
-            errorValue += RANGE;
+            error_value += RANGE;
         }
 
-        if (errorValue >= (RANGE + 1) / 2)
+        if (error_value >= (RANGE + 1) / 2)
         {
-            errorValue -= RANGE;
+            error_value -= RANGE;
         }
 
-        ASSERT(-RANGE / 2 <= errorValue && errorValue <= ((RANGE + 1) / 2) - 1);
-        return errorValue;
+        ASSERT(-RANGE / 2 <= error_value && error_value <= ((RANGE + 1) / 2) - 1);
+        return error_value;
     }
 
 private:
-    int32_t Quantize(const int32_t errorValue) const noexcept
+    int32_t Quantize(const int32_t error_value) const noexcept
     {
-        if (errorValue > 0)
-            return (errorValue + NEAR) / (2 * NEAR + 1);
+        if (error_value > 0)
+            return (error_value + NEAR) / (2 * NEAR + 1);
 
-        return -(NEAR - errorValue) / (2 * NEAR + 1);
+        return -(NEAR - error_value) / (2 * NEAR + 1);
     }
 
-    FORCE_INLINE int32_t DeQuantize(const int32_t ErrorValue) const noexcept
+    FORCE_INLINE int32_t DeQuantize(const int32_t error_value) const noexcept
     {
-        return ErrorValue * (2 * NEAR + 1);
+        return error_value * (2 * NEAR + 1);
     }
 
     FORCE_INLINE SAMPLE FixReconstructedValue(int32_t value) const noexcept

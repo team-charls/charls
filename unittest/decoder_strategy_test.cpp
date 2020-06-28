@@ -15,13 +15,13 @@ using std::unique_ptr;
 
 namespace {
 
-class DecoderStrategyTester final : public charls::DecoderStrategy
+class DecoderStrategyTester final : public charls::decoder_strategy
 {
 public:
     DecoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters, uint8_t* const destination, const size_t nOutBufLen) : // NOLINT
-        DecoderStrategy(frame_info, parameters)
+        decoder_strategy(frame_info, parameters)
     {
-        ByteStreamInfo stream{nullptr, destination, nOutBufLen};
+        byte_stream_info stream{nullptr, destination, nOutBufLen};
         Init(stream);
     }
 
@@ -29,16 +29,16 @@ public:
     {
     }
 
-    unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo /*rawStreamInfo*/, uint32_t /*stride*/) noexcept(false) override
+    unique_ptr<charls::process_line> CreateProcess(byte_stream_info /*rawStreamInfo*/, uint32_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
 
-    void DecodeScan(unique_ptr<charls::ProcessLine> /*outputData*/, const JlsRect& /*size*/, ByteStreamInfo& /*compressedData*/) noexcept(false) override
+    void DecodeScan(unique_ptr<charls::process_line> /*outputData*/, const JlsRect& /*size*/, byte_stream_info& /*compressedData*/) noexcept(false) override
     {
     }
 
-    int32_t Read(const int32_t length)
+    int32_t read(const int32_t length)
     {
         return ReadLongValue(length);
     }
@@ -71,7 +71,7 @@ public:
 
         EncoderStrategyTester encoder(frame_info, parameters);
 
-        ByteStreamInfo stream{nullptr, encBuf.data(), encBuf.size()};
+        byte_stream_info stream{nullptr, encBuf.data(), encBuf.size()};
         encoder.InitForward(stream);
 
         for (const auto& data : inData)
@@ -86,7 +86,7 @@ public:
         DecoderStrategyTester dec(frame_info, parameters, encBuf.data(), length);
         for (auto i = 0U; i < sizeof(inData) / sizeof(inData[0]); ++i)
         {
-            const auto actual = dec.Read(inData[i].bits);
+            const auto actual = dec.read(inData[i].bits);
             Assert::AreEqual(inData[i].value, actual);
         }
     }

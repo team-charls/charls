@@ -10,11 +10,11 @@
 
 namespace charls {
 
-class DecoderStrategy;
-class EncoderStrategy;
+class decoder_strategy;
+class encoder_strategy;
 
 template<typename Strategy>
-class JlsCodecFactory final
+class jls_codec_factory final
 {
 public:
     std::unique_ptr<Strategy> CreateCodec(const frame_info& frame, const coding_parameters& parameters, const jpegls_pc_parameters& preset_coding_parameters);
@@ -23,7 +23,7 @@ private:
     std::unique_ptr<Strategy> CreateOptimizedCodec(const frame_info& frame, const coding_parameters& parameters);
 };
 
-extern template class JlsCodecFactory<DecoderStrategy>;
-extern template class JlsCodecFactory<EncoderStrategy>;
+extern template class jls_codec_factory<decoder_strategy>;
+extern template class jls_codec_factory<encoder_strategy>;
 
 } // namespace charls

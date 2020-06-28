@@ -8,11 +8,11 @@
 namespace charls {
 namespace test {
 
-class EncoderStrategyTester final : charls::EncoderStrategy
+class EncoderStrategyTester final : charls::encoder_strategy
 {
 public:
     explicit EncoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters) noexcept :
-        EncoderStrategy(frame_info, parameters)
+        encoder_strategy(frame_info, parameters)
     {
     }
 
@@ -20,17 +20,17 @@ public:
     {
     }
 
-    size_t EncodeScan(std::unique_ptr<charls::ProcessLine>, ByteStreamInfo&) noexcept(false) override
+    size_t EncodeScan(std::unique_ptr<charls::process_line>, byte_stream_info&) noexcept(false) override
     {
         return 0;
     }
 
-    std::unique_ptr<charls::ProcessLine> CreateProcess(ByteStreamInfo, uint32_t /*stride*/) noexcept(false) override
+    std::unique_ptr<charls::process_line> CreateProcess(byte_stream_info, uint32_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
 
-    void InitForward(ByteStreamInfo& info)
+    void InitForward(byte_stream_info& info)
     {
         Init(info);
     }
