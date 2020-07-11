@@ -60,9 +60,9 @@ void jpeg_stream_reader::read(byte_stream_info source, uint32_t stride)
             read_next_start_of_scan();
         }
 
-        unique_ptr<decoder_strategy> codec = jls_codec_factory<decoder_strategy>().CreateCodec(frame_info_, parameters_, preset_coding_parameters_);
-        unique_ptr<process_line> processLine(codec->CreateProcess(source, stride));
-        codec->DecodeScan(move(processLine), rect_, byteStream_);
+        unique_ptr<decoder_strategy> codec = jls_codec_factory<decoder_strategy>().create_codec(frame_info_, parameters_, preset_coding_parameters_);
+        unique_ptr<process_line> processLine(codec->create_process(source, stride));
+        codec->decode_scan(move(processLine), rect_, byteStream_);
         skip_bytes(source, static_cast<size_t>(bytesPerPlane));
         state_ = state::scan_section;
 

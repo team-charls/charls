@@ -62,29 +62,29 @@ struct default_traits final
     default_traits& operator=(const default_traits&) = delete;
     default_traits& operator=(default_traits&&) = delete;
 
-    FORCE_INLINE int32_t ComputeErrVal(const int32_t e) const noexcept
+    FORCE_INLINE int32_t compute_error_value(const int32_t e) const noexcept
     {
-        return ModuloRange(Quantize(e));
+        return modulo_range(quantize(e));
     }
 
-    FORCE_INLINE SAMPLE ComputeReconstructedSample(const int32_t Px, const int32_t error_value) const noexcept
+    FORCE_INLINE SAMPLE compute_reconstructed_sample(const int32_t Px, const int32_t error_value) const noexcept
     {
-        return FixReconstructedValue(Px + DeQuantize(error_value));
+        return fix_reconstructed_value(Px + dequantize(error_value));
     }
 
-    FORCE_INLINE bool IsNear(const int32_t lhs, const int32_t rhs) const noexcept
+    FORCE_INLINE bool is_near(const int32_t lhs, const int32_t rhs) const noexcept
     {
         return std::abs(lhs - rhs) <= NEAR;
     }
 
-    bool IsNear(const triplet<SAMPLE> lhs, const triplet<SAMPLE> rhs) const noexcept
+    bool is_near(const triplet<SAMPLE> lhs, const triplet<SAMPLE> rhs) const noexcept
     {
         return std::abs(lhs.v1 - rhs.v1) <= NEAR &&
                std::abs(lhs.v2 - rhs.v2) <= NEAR &&
                std::abs(lhs.v3 - rhs.v3) <= NEAR;
     }
 
-    bool IsNear(const quad<SAMPLE> lhs, const quad<SAMPLE> rhs) const noexcept
+    bool is_near(const quad<SAMPLE> lhs, const quad<SAMPLE> rhs) const noexcept
     {
         return std::abs(lhs.v1 - rhs.v1) <= NEAR &&
                std::abs(lhs.v2 - rhs.v2) <= NEAR &&
@@ -92,7 +92,7 @@ struct default_traits final
                std::abs(lhs.v4 - rhs.v4) <= NEAR;
     }
 
-    FORCE_INLINE int32_t CorrectPrediction(const int32_t Pxc) const noexcept
+    FORCE_INLINE int32_t correct_prediction(const int32_t Pxc) const noexcept
     {
         if ((Pxc & MAXVAL) == Pxc)
             return Pxc;
@@ -104,7 +104,7 @@ struct default_traits final
     /// Returns the value of errorValue modulo RANGE. ITU.T.87, A.4.5 (code segment A.9)
     /// This ensures the error is reduced to the range (-⌊RANGE/2⌋ .. ⌈RANGE/2⌉-1)
     /// </summary>
-    FORCE_INLINE int32_t ModuloRange(int32_t error_value) const noexcept
+    FORCE_INLINE int32_t modulo_range(int32_t error_value) const noexcept
     {
         ASSERT(std::abs(error_value) <= RANGE);
 
@@ -123,7 +123,7 @@ struct default_traits final
     }
 
 private:
-    int32_t Quantize(const int32_t error_value) const noexcept
+    int32_t quantize(const int32_t error_value) const noexcept
     {
         if (error_value > 0)
             return (error_value + NEAR) / (2 * NEAR + 1);
@@ -131,12 +131,12 @@ private:
         return -(NEAR - error_value) / (2 * NEAR + 1);
     }
 
-    FORCE_INLINE int32_t DeQuantize(const int32_t error_value) const noexcept
+    FORCE_INLINE int32_t dequantize(const int32_t error_value) const noexcept
     {
         return error_value * (2 * NEAR + 1);
     }
 
-    FORCE_INLINE SAMPLE FixReconstructedValue(int32_t value) const noexcept
+    FORCE_INLINE SAMPLE fix_reconstructed_value(int32_t value) const noexcept
     {
         if (value < -NEAR)
         {
@@ -147,7 +147,7 @@ private:
             value = value - RANGE * (2 * NEAR + 1);
         }
 
-        return static_cast<SAMPLE>(CorrectPrediction(value));
+        return static_cast<SAMPLE>(correct_prediction(value));
     }
 };
 

@@ -42,9 +42,9 @@ MSVC_WARNING_UNSUPPRESS()
 } // namespace
 
 
-void FixEndian(vector<uint8_t>* buffer, const bool littleEndianData) noexcept
+void FixEndian(vector<uint8_t>* buffer, const bool little_endian_data) noexcept
 {
-    if (littleEndianData == IsMachineLittleEndian())
+    if (little_endian_data == IsMachineLittleEndian())
         return;
 
     for (size_t i = 0; i < buffer->size() - 1; i += 2)
@@ -66,7 +66,7 @@ vector<uint8_t> ReadFile(const char* filename, long offset, size_t bytes)
 
     if (offset < 0)
     {
-        Assert::IsTrue(bytes != 0);
+        assert::is_true(bytes != 0);
         offset = static_cast<long>(byteCountFile - bytes);
     }
     if (bytes == 0)
@@ -81,19 +81,19 @@ vector<uint8_t> ReadFile(const char* filename, long offset, size_t bytes)
 }
 
 
-void TestRoundTrip(const char* strName, const vector<uint8_t>& decodedBuffer, const Size size, const int bitsPerSample, const int componentCount, const int loopCount)
+void TestRoundTrip(const char* name, const vector<uint8_t>& decoded_buffer, const rect_size size, const int bits_per_sample, const int component_count, const int loop_count)
 {
     JlsParameters params = JlsParameters();
-    params.components = componentCount;
-    params.bitsPerSample = bitsPerSample;
+    params.components = component_count;
+    params.bitsPerSample = bits_per_sample;
     params.height = static_cast<int>(size.cy);
     params.width = static_cast<int>(size.cx);
 
-    TestRoundTrip(strName, decodedBuffer, params, loopCount);
+    TestRoundTrip(name, decoded_buffer, params, loop_count);
 }
 
 
-void TestRoundTrip(const char* strName, const vector<uint8_t>& originalBuffer, JlsParameters& params, const int loopCount)
+void TestRoundTrip(const char* name, const vector<uint8_t>& original_buffer, JlsParameters& params, const int loop_count)
 {
     vector<uint8_t> encodedBuffer(params.height * params.width * params.components * params.bitsPerSample / 4);
 
@@ -111,28 +111,28 @@ void TestRoundTrip(const char* strName, const vector<uint8_t>& originalBuffer, J
 
     size_t encoded_actual_size{};
     auto start = steady_clock::now();
-    for (int i = 0; i < loopCount; ++i)
+    for (int i = 0; i < loop_count; ++i)
     {
         const error_code error = JpegLsEncode(encodedBuffer.data(), encodedBuffer.size(), &encoded_actual_size,
-                                              originalBuffer.data(), originalBuffer.size(), &params, nullptr);
-        Assert::IsTrue(!error);
+                                              original_buffer.data(), original_buffer.size(), &params, nullptr);
+        assert::is_true(!error);
     }
 
     const auto totalEncodeDuration = steady_clock::now() - start;
 
     start = steady_clock::now();
-    for (int i = 0; i < loopCount; ++i)
+    for (int i = 0; i < loop_count; ++i)
     {
         const error_code error = JpegLsDecode(decodedBuffer.data(), decodedBuffer.size(), encodedBuffer.data(), encoded_actual_size, nullptr, nullptr);
-        Assert::IsTrue(!error);
+        assert::is_true(!error);
     }
 
     const auto totalDecodeDuration = steady_clock::now() - start;
 
     const double bitsPerSample = 1.0 * static_cast<double>(encoded_actual_size) * 8. / (static_cast<double>(params.components) * params.height * params.width);
-    cout << "RoundTrip test for: " << strName << "\n\r";
-    const double encodeTime = duration<double, milli>(totalEncodeDuration).count() / loopCount;
-    const double decodeTime = duration<double, milli>(totalDecodeDuration).count() / loopCount;
+    cout << "RoundTrip test for: " << name << "\n\r";
+    const double encodeTime = duration<double, milli>(totalEncodeDuration).count() / loop_count;
+    const double decodeTime = duration<double, milli>(totalDecodeDuration).count() / loop_count;
     const double symbolRate = (static_cast<double>(params.components) * params.height * params.width) / (1000.0 * decodeTime);
 
     cout << "Size:" << setw(10) << params.width << "x" << params.height << setw(7) << setprecision(2) << ", Encode time:" << encodeTime << " ms, Decode time:" << decodeTime << " ms, Bits per sample:" << bitsPerSample << ", Decode rate:" << symbolRate << " M/s\n";
@@ -140,33 +140,33 @@ void TestRoundTrip(const char* strName, const vector<uint8_t>& originalBuffer, J
     const uint8_t* byteOut = decodedBuffer.data();
     for (size_t i = 0; i < decodedBuffer.size(); ++i)
     {
-        if (originalBuffer[i] != byteOut[i])
+        if (original_buffer[i] != byteOut[i])
         {
-            Assert::IsTrue(false);
+            assert::is_true(false);
             break;
         }
     }
 }
 
 
-void TestFile(const char* filename, const int offset, const Size size2, const int bitsPerSample, const int componentCount, const bool littleEndianFile, const int loopCount)
+void TestFile(const char* filename, const int offset, const rect_size size2, const int bits_per_sample, const int component_count, const bool little_endian_file, const int loop_count)
 {
-    const size_t byteCount = size2.cx * size2.cy * componentCount * ((bitsPerSample + 7) / 8);
+    const size_t byteCount = size2.cx * size2.cy * component_count * ((bits_per_sample + 7) / 8);
     vector<uint8_t> uncompressedBuffer = ReadFile(filename, offset, byteCount);
 
-    if (bitsPerSample > 8)
+    if (bits_per_sample > 8)
     {
-        FixEndian(&uncompressedBuffer, littleEndianFile);
+        FixEndian(&uncompressedBuffer, little_endian_file);
     }
 
-    TestRoundTrip(filename, uncompressedBuffer, size2, bitsPerSample, componentCount, loopCount);
+    TestRoundTrip(filename, uncompressedBuffer, size2, bits_per_sample, component_count, loop_count);
 }
 
 
-void test_portable_anymap_file(const char* filename, const int loopCount)
+void test_portable_anymap_file(const char* filename, const int loop_count)
 {
     portable_anymap_file anymapFile(filename);
 
-    TestRoundTrip(filename, anymapFile.image_data(), Size(anymapFile.width(), anymapFile.height()),
-                  anymapFile.bits_per_sample(), anymapFile.component_count(), loopCount);
+    TestRoundTrip(filename, anymapFile.image_data(), rect_size(anymapFile.width(), anymapFile.height()),
+                  anymapFile.bits_per_sample(), anymapFile.component_count(), loop_count);
 }

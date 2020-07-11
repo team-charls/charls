@@ -500,7 +500,7 @@ public:
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_16bit) // NOLINT
+    TEST_METHOD(encode_16_bit) // NOLINT
     {
         const array<uint8_t, 6> source{0, 1, 2, 3, 4, 5};
         const frame_info frame_info{3, 1, 16, 1};

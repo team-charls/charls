@@ -15,32 +15,32 @@ using std::unique_ptr;
 
 namespace {
 
-class DecoderStrategyTester final : public charls::decoder_strategy
+class decoder_strategy_tester final : public charls::decoder_strategy
 {
 public:
-    DecoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters, uint8_t* const destination, const size_t nOutBufLen) : // NOLINT
+    decoder_strategy_tester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters, uint8_t* const destination, const size_t count) : // NOLINT
         decoder_strategy(frame_info, parameters)
     {
-        byte_stream_info stream{nullptr, destination, nOutBufLen};
-        Init(stream);
+        byte_stream_info stream{nullptr, destination, count};
+        initialize(stream);
     }
 
-    void SetPresets(const charls::jpegls_pc_parameters& /*preset_coding_parameters*/) noexcept(false) override
+    void set_presets(const charls::jpegls_pc_parameters& /*preset_coding_parameters*/) noexcept(false) override
     {
     }
 
-    unique_ptr<charls::process_line> CreateProcess(byte_stream_info /*rawStreamInfo*/, uint32_t /*stride*/) noexcept(false) override
+    unique_ptr<charls::process_line> create_process(byte_stream_info /*rawStreamInfo*/, uint32_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
 
-    void DecodeScan(unique_ptr<charls::process_line> /*outputData*/, const JlsRect& /*size*/, byte_stream_info& /*compressedData*/) noexcept(false) override
+    void decode_scan(unique_ptr<charls::process_line> /*outputData*/, const JlsRect& /*size*/, byte_stream_info& /*compressedData*/) noexcept(false) override
     {
     }
 
     int32_t read(const int32_t length)
     {
-        return ReadLongValue(length);
+        return read_long_value(length);
     }
 };
 
@@ -52,10 +52,10 @@ namespace test {
 
 // clang-format off
 
-TEST_CLASS(DecoderStrategyTest)
+TEST_CLASS(decoder_strategy_test)
 {
 public:
-    TEST_METHOD(DecodeEncodedFFPattern) // NOLINT
+    TEST_METHOD(decode_encoded_ff_pattern) // NOLINT
     {
         struct data_t final
         {
@@ -69,21 +69,21 @@ public:
         const charls::frame_info frame_info{};
         const charls::coding_parameters parameters{};
 
-        EncoderStrategyTester encoder(frame_info, parameters);
+        encoder_strategy_tester encoder(frame_info, parameters);
 
         byte_stream_info stream{nullptr, encBuf.data(), encBuf.size()};
-        encoder.InitForward(stream);
+        encoder.initialize_forward(stream);
 
         for (const auto& data : inData)
         {
-            encoder.AppendToBitStreamForward(data.value, data.bits);
+            encoder.append_to_bit_stream_forward(data.value, data.bits);
         }
 
-        encoder.EndScanForward();
-        // Note: Correct encoding is tested in EncoderStrategyTest::AppendToBitStreamFFPattern.
+        encoder.end_scan_forward();
+        // Note: Correct encoding is tested in encoder_strategy_test::append_to_bit_stream_ff_pattern.
 
-        const auto length = encoder.GetLengthForward();
-        DecoderStrategyTester dec(frame_info, parameters, encBuf.data(), length);
+        const auto length = encoder.get_length_forward();
+        decoder_strategy_tester dec(frame_info, parameters, encBuf.data(), length);
         for (auto i = 0U; i < sizeof(inData) / sizeof(inData[0]); ++i)
         {
             const auto actual = dec.read(inData[i].bits);

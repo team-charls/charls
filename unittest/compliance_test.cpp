@@ -107,13 +107,13 @@ private:
         test_compliance_legacy_api(encoded_source.data(), encoded_source.size(), reference_file.image_data().data(), reference_file.image_data().size(), check_encode);
     }
 
-    static void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t>& uncompressed_source, const bool checkEncode)
+    static void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t>& uncompressed_source, const bool check_encode)
     {
         jpegls_decoder decoder;
         decoder.source(encoded_source);
         decoder.read_header();
 
-        if (checkEncode)
+        if (check_encode)
         {
             Assert::IsTrue(verify_encoded_bytes(uncompressed_source, encoded_source));
         }
@@ -162,50 +162,50 @@ private:
         }
     }
 
-    static void test_compliance_legacy_api(const uint8_t* compressedBytes, const size_t compressedLength, const uint8_t* uncompressedData, const size_t uncompressedLength, const bool checkEncode)
+    static void test_compliance_legacy_api(const uint8_t* compressed_bytes, const size_t compressed_length, const uint8_t* uncompressed_data, const size_t uncompressed_length, const bool check_encode)
     {
         JlsParameters info{};
-        error_code error = JpegLsReadHeader(compressedBytes, compressedLength, &info, nullptr);
+        error_code error = JpegLsReadHeader(compressed_bytes, compressed_length, &info, nullptr);
         Assert::IsFalse(static_cast<bool>(error));
 
-        if (checkEncode)
+        if (check_encode)
         {
-            Assert::IsTrue(verify_encoded_bytes_legacy_api(uncompressedData, uncompressedLength, compressedBytes, compressedLength));
+            Assert::IsTrue(verify_encoded_bytes_legacy_api(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
         }
 
         vector<uint8_t> destination(static_cast<size_t>(info.height) *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
 
-        error = JpegLsDecode(destination.data(), destination.size(), compressedBytes, compressedLength, nullptr, nullptr);
+        error = JpegLsDecode(destination.data(), destination.size(), compressed_bytes, compressed_length, nullptr, nullptr);
         Assert::IsTrue(!error);
 
         if (info.allowedLossyError == 0)
         {
-            for (size_t i = 0; i < uncompressedLength; ++i)
+            for (size_t i = 0; i < uncompressed_length; ++i)
             {
-                if (uncompressedData[i] != destination[i]) // AreEqual is very slow, pre-test to speed up 50X
+                if (uncompressed_data[i] != destination[i]) // AreEqual is very slow, pre-test to speed up 50X
                 {
-                    Assert::AreEqual(uncompressedData[i], destination[i]);
+                    Assert::AreEqual(uncompressed_data[i], destination[i]);
                 }
             }
         }
     }
 
-    static bool verify_encoded_bytes_legacy_api(const void* uncompressedData, const size_t uncompressedLength, const void* compressedData, const size_t compressedLength)
+    static bool verify_encoded_bytes_legacy_api(const void* uncompressed_data, const size_t uncompressed_length, const void* compressed_data, const size_t compressed_length)
     {
         JlsParameters info{};
-        error_code error = JpegLsReadHeader(compressedData, compressedLength, &info, nullptr);
+        error_code error = JpegLsReadHeader(compressed_data, compressed_length, &info, nullptr);
         if (error)
             return false;
 
-        vector<uint8_t> ourEncodedBytes(compressedLength + 16);
+        vector<uint8_t> ourEncodedBytes(compressed_length + 16);
         size_t bytesWritten;
-        error = JpegLsEncode(ourEncodedBytes.data(), ourEncodedBytes.size(), &bytesWritten, uncompressedData, uncompressedLength, &info, nullptr);
+        error = JpegLsEncode(ourEncodedBytes.data(), ourEncodedBytes.size(), &bytesWritten, uncompressed_data, uncompressed_length, &info, nullptr);
         if (error)
             return false;
 
-        for (size_t i = 0; i < compressedLength; ++i)
+        for (size_t i = 0; i < compressed_length; ++i)
         {
-            if (static_cast<const uint8_t*>(compressedData)[i] != ourEncodedBytes[i])
+            if (static_cast<const uint8_t*>(compressed_data)[i] != ourEncodedBytes[i])
             {
                 return false;
             }

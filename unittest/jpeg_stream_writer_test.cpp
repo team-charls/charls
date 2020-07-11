@@ -16,13 +16,13 @@ namespace test {
 
 // clang-format off
 
-TEST_CLASS(JpegStreamWriterTest)
+TEST_CLASS(jpeg_stream_writer_test)
 {
 public:
-    TEST_METHOD(LengthWillbeZeroAfterCreate) // NOLINT
+    TEST_METHOD(length_will_be_zero_after_create) // NOLINT
     {
         const jpeg_stream_writer writer;
-        Assert::AreEqual(static_cast<size_t>(0), writer.GetLength());
+        Assert::AreEqual(static_cast<size_t>(0), writer.get_length());
     }
 
     TEST_METHOD(write_start_of_image) // NOLINT
@@ -53,7 +53,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::EndOfImage), buffer[1]);
     }
 
-    TEST_METHOD(WriteSpiffSegment) // NOLINT
+    TEST_METHOD(write_spiff_segment) // NOLINT
     {
         array<uint8_t, 34> buffer{};
         const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
@@ -129,7 +129,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[33]);
     }
 
-    TEST_METHOD(WriteSpiffEndOfDirectorySegment) // NOLINT
+    TEST_METHOD(write_spiff_end_of_directory_segment) // NOLINT
     {
         array<uint8_t, 10> buffer{};
         const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
@@ -226,7 +226,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[18]);
     }
 
-    TEST_METHOD(WriteStartOfFrameMarkerSegmentWithLowBoundaryValues) // NOLINT
+    TEST_METHOD(write_start_of_frame_marker_segment_with_low_boundary_values) // NOLINT
     {
         constexpr int32_t bitsPerSample = 2;
         constexpr int32_t componentCount = 1;
@@ -242,7 +242,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(componentCount), buffer[9]);
     }
 
-    TEST_METHOD(WriteStartOfFrameMarkerSegmentWithHighBoundaryValuesAndSerialize) // NOLINT
+    TEST_METHOD(write_start_of_frame_marker_segment_with_high_boundary_values_and_serialize) // NOLINT
     {
         array<uint8_t, 775> buffer{};
         const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());
@@ -277,7 +277,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(transformation), buffer[8]);
     }
 
-    TEST_METHOD(WriteJpegLSExtendedParametersMarkerAndSerialize) // NOLINT
+    TEST_METHOD(write_jpegls_extended_parameters_marker_and_serialize) // NOLINT
     {
         const jpegls_pc_parameters presets{2, 1, 2, 3, 7};
 
@@ -312,7 +312,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(7), buffer[14]);
     }
 
-    TEST_METHOD(WriteStartOfScanMarker) // NOLINT
+    TEST_METHOD(write_start_of_scan_marker) // NOLINT
     {
         array<uint8_t, 10> buffer{};
         const byte_stream_info info = FromByteArray(buffer.data(), buffer.size());

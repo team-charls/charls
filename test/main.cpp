@@ -46,18 +46,18 @@ constexpr ios::openmode mode_input = ios::in | ios::binary;
 constexpr ios::openmode mode_output = ios::out | ios::binary;
 
 
-vector<uint8_t> ScanFile(const char* strNameEncoded, JlsParameters* params)
+vector<uint8_t> ScanFile(const char* name_encoded, JlsParameters* params)
 {
-    vector<uint8_t> buffer = ReadFile(strNameEncoded);
+    vector<uint8_t> buffer = ReadFile(name_encoded);
 
     basic_filebuf<char> jlsFile;
-    jlsFile.open(strNameEncoded, mode_input);
+    jlsFile.open(name_encoded, mode_input);
 
     const byte_stream_info rawStreamInfo{&jlsFile, nullptr, 0};
 
     const error_code error = JpegLsReadHeaderStream(rawStreamInfo, params);
     if (error)
-        throw UnitTestException();
+        throw unit_test_exception();
 
     return buffer;
 }
@@ -68,22 +68,22 @@ void TestTraits16bit()
     const auto traits1 = default_traits<uint16_t, uint16_t>(4095, 0);
     using lossless_traits = lossless_traits<uint16_t, 12>;
 
-    Assert::IsTrue(traits1.LIMIT == lossless_traits::LIMIT);
-    Assert::IsTrue(traits1.MAXVAL == lossless_traits::MAXVAL);
-    Assert::IsTrue(traits1.RESET == lossless_traits::RESET);
-    Assert::IsTrue(traits1.bpp == lossless_traits::bpp);
-    Assert::IsTrue(traits1.qbpp == lossless_traits::qbpp);
+    assert::is_true(traits1.LIMIT == lossless_traits::LIMIT);
+    assert::is_true(traits1.MAXVAL == lossless_traits::MAXVAL);
+    assert::is_true(traits1.RESET == lossless_traits::RESET);
+    assert::is_true(traits1.bpp == lossless_traits::bpp);
+    assert::is_true(traits1.qbpp == lossless_traits::qbpp);
 
     for (int i = -4096; i < 4096; ++i)
     {
-        Assert::IsTrue(traits1.ModuloRange(i) == lossless_traits::ModuloRange(i));
-        Assert::IsTrue(traits1.ComputeErrVal(i) == lossless_traits::ComputeErrVal(i));
+        assert::is_true(traits1.modulo_range(i) == lossless_traits::modulo_range(i));
+        assert::is_true(traits1.compute_error_value(i) == lossless_traits::compute_error_value(i));
     }
 
     for (int i = -8095; i < 8095; ++i)
     {
-        Assert::IsTrue(traits1.CorrectPrediction(i) == lossless_traits::CorrectPrediction(i));
-        Assert::IsTrue(traits1.IsNear(i, 2) == lossless_traits::IsNear(i, 2));
+        assert::is_true(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
+        assert::is_true(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
     }
 }
 
@@ -93,29 +93,29 @@ void TestTraits8bit()
     const auto traits1 = default_traits<uint8_t, uint8_t>(255, 0);
     using lossless_traits = lossless_traits<uint8_t, 8>;
 
-    Assert::IsTrue(traits1.LIMIT == lossless_traits::LIMIT);
-    Assert::IsTrue(traits1.MAXVAL == lossless_traits::MAXVAL);
-    Assert::IsTrue(traits1.RESET == lossless_traits::RESET);
-    Assert::IsTrue(traits1.bpp == lossless_traits::bpp);
-    Assert::IsTrue(traits1.qbpp == lossless_traits::qbpp);
+    assert::is_true(traits1.LIMIT == lossless_traits::LIMIT);
+    assert::is_true(traits1.MAXVAL == lossless_traits::MAXVAL);
+    assert::is_true(traits1.RESET == lossless_traits::RESET);
+    assert::is_true(traits1.bpp == lossless_traits::bpp);
+    assert::is_true(traits1.qbpp == lossless_traits::qbpp);
 
     for (int i = -255; i < 255; ++i)
     {
-        Assert::IsTrue(traits1.ModuloRange(i) == lossless_traits::ModuloRange(i));
-        Assert::IsTrue(traits1.ComputeErrVal(i) == lossless_traits::ComputeErrVal(i));
+        assert::is_true(traits1.modulo_range(i) == lossless_traits::modulo_range(i));
+        assert::is_true(traits1.compute_error_value(i) == lossless_traits::compute_error_value(i));
     }
 
     for (int i = -255; i < 512; ++i)
     {
-        Assert::IsTrue(traits1.CorrectPrediction(i) == lossless_traits::CorrectPrediction(i));
-        Assert::IsTrue(traits1.IsNear(i, 2) == lossless_traits::IsNear(i, 2));
+        assert::is_true(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
+        assert::is_true(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
     }
 }
 
 
-vector<uint8_t> MakeSomeNoise(const size_t length, const size_t bitCount, const int seed)
+vector<uint8_t> MakeSomeNoise(const size_t length, const size_t bit_count, const int seed)
 {
-    const auto max_value = (1U << bitCount) - 1U;
+    const auto max_value = (1U << bit_count) - 1U;
     mt19937 generator(seed);
     MSVC_CONST uniform_int_distribution<uint32_t> distribution(0, max_value);
 
@@ -129,9 +129,9 @@ vector<uint8_t> MakeSomeNoise(const size_t length, const size_t bitCount, const 
 }
 
 
-vector<uint8_t> MakeSomeNoise16bit(const size_t length, const int bitCount, const int seed)
+vector<uint8_t> MakeSomeNoise16bit(const size_t length, const int bit_count, const int seed)
 {
-    const auto max_value = static_cast<uint16_t>((1U << bitCount) - 1U);
+    const auto max_value = static_cast<uint16_t>((1U << bit_count) - 1U);
     mt19937 generator(seed);
     MSVC_CONST uniform_int_distribution<uint16_t> distribution(0, max_value);
 
@@ -150,7 +150,7 @@ vector<uint8_t> MakeSomeNoise16bit(const size_t length, const int bitCount, cons
 
 void TestNoiseImage()
 {
-    const Size size2 = Size(512, 512);
+    const rect_size size2 = rect_size(512, 512);
 
     for (size_t bitDepth = 8; bitDepth >= 2; --bitDepth)
     {
@@ -174,7 +174,7 @@ void TestNoiseImage()
 
 void TestNoiseImageWithCustomReset()
 {
-    const Size size{512, 512};
+    const rect_size size{512, 512};
     constexpr int bitDepth = 16;
     const vector<uint8_t> noiseBytes = MakeSomeNoise16bit(size.cx * size.cy, bitDepth, 21344);
 
@@ -204,12 +204,12 @@ void TestFailOnTooSmallOutputBuffer()
     // Trigger a "destination buffer too small" when writing the header markers.
     vector<uint8_t> outputBuffer1(1);
     auto result = JpegLsEncode(outputBuffer1.data(), outputBuffer1.size(), &compressedLength, inputBuffer.data(), inputBuffer.size(), &params, nullptr);
-    Assert::IsTrue(result == jpegls_errc::destination_buffer_too_small);
+    assert::is_true(result == jpegls_errc::destination_buffer_too_small);
 
     // Trigger a "destination buffer too small" when writing the encoded pixel bytes.
     vector<uint8_t> outputBuffer2(100);
     result = JpegLsEncode(outputBuffer2.data(), outputBuffer2.size(), &compressedLength, inputBuffer.data(), inputBuffer.size(), &params, nullptr);
-    Assert::IsTrue(result == jpegls_errc::destination_buffer_too_small);
+    assert::is_true(result == jpegls_errc::destination_buffer_too_small);
 }
 
 
@@ -219,7 +219,7 @@ void TestBgra()
     const array<uint8_t, 20> expected{'B', 'G', 'R', 'A', 'B', 'G', 'R', 'A', 'B', 'G', 'R', 'A', 'B', 'G', 'R', 'A', 1, 2, 3, 4};
 
     TransformRgbToBgr(input.data(), 4, 4);
-    Assert::IsTrue(expected == input);
+    assert::is_true(expected == input);
 }
 
 
@@ -232,14 +232,14 @@ void TestBgr()
     params.outputBgr = static_cast<char>(true);
 
     const error_code error = JpegLsDecode(decodedBuffer.data(), decodedBuffer.size(), encodedBuffer.data(), encodedBuffer.size(), &params, nullptr);
-    Assert::IsTrue(!error);
+    assert::is_true(!error);
 
-    Assert::IsTrue(decodedBuffer[0] == 0x69);
-    Assert::IsTrue(decodedBuffer[1] == 0x77);
-    Assert::IsTrue(decodedBuffer[2] == 0xa1);
-    Assert::IsTrue(decodedBuffer[static_cast<size_t>(params.width) * 6 + 3] == 0x2d);
-    Assert::IsTrue(decodedBuffer[static_cast<size_t>(params.width) * 6 + 4] == 0x43);
-    Assert::IsTrue(decodedBuffer[static_cast<size_t>(params.width) * 6 + 5] == 0x4d);
+    assert::is_true(decodedBuffer[0] == 0x69);
+    assert::is_true(decodedBuffer[1] == 0x77);
+    assert::is_true(decodedBuffer[2] == 0xa1);
+    assert::is_true(decodedBuffer[static_cast<size_t>(params.width) * 6 + 3] == 0x2d);
+    assert::is_true(decodedBuffer[static_cast<size_t>(params.width) * 6 + 4] == 0x43);
+    assert::is_true(decodedBuffer[static_cast<size_t>(params.width) * 6 + 5] == 0x4d);
 }
 
 
@@ -250,7 +250,7 @@ void TestTooSmallOutputBuffer()
     vector<uint8_t> destination(512 * 511);
     const auto error = JpegLsDecode(destination.data(), destination.size(), encoded.data(), encoded.size(), nullptr, nullptr);
 
-    Assert::IsTrue(error == jpegls_errc::destination_buffer_too_small);
+    assert::is_true(error == jpegls_errc::destination_buffer_too_small);
 }
 
 
@@ -273,7 +273,7 @@ void TestDecodeBitStreamWithNoMarkerStart()
     array<uint8_t, 1000> output{};
 
     const auto error = JpegLsDecode(output.data(), output.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
-    Assert::IsTrue(error == jpegls_errc::jpeg_marker_start_byte_not_found);
+    assert::is_true(error == jpegls_errc::jpeg_marker_start_byte_not_found);
 }
 
 
@@ -287,7 +287,7 @@ void TestDecodeBitStreamWithUnsupportedEncoding()
     array<uint8_t, 1000> output{};
 
     const auto error = JpegLsDecode(output.data(), output.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
-    Assert::IsTrue(error == jpegls_errc::encoding_not_supported);
+    assert::is_true(error == jpegls_errc::encoding_not_supported);
 }
 
 
@@ -301,7 +301,7 @@ void TestDecodeBitStreamWithUnknownJpegMarker()
     array<uint8_t, 1000> output{};
 
     const auto error = JpegLsDecode(output.data(), output.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
-    Assert::IsTrue(error == jpegls_errc::unknown_jpeg_marker_found);
+    assert::is_true(error == jpegls_errc::unknown_jpeg_marker_found);
 }
 
 
@@ -312,39 +312,39 @@ void TestDecodeRect()
     vector<uint8_t> decodedBuffer(static_cast<size_t>(params.width) * params.height * params.components);
 
     error_code error = JpegLsDecode(decodedBuffer.data(), decodedBuffer.size(), encodedData.data(), encodedData.size(), nullptr, nullptr);
-    Assert::IsTrue(!error);
+    assert::is_true(!error);
 
     const JlsRect rect = {128, 128, 256, 1};
     vector<uint8_t> decodedData(static_cast<size_t>(rect.Width) * rect.Height);
     decodedData.push_back(0x1f);
     error = JpegLsDecodeRect(decodedData.data(), decodedData.size(), encodedData.data(), encodedData.size(), rect, nullptr, nullptr);
-    Assert::IsTrue(!error);
+    assert::is_true(!error);
 
-    Assert::IsTrue(memcmp(&decodedBuffer[rect.X + static_cast<size_t>(rect.Y) * 512], decodedData.data(), static_cast<size_t>(rect.Width) * rect.Height) == 0);
-    Assert::IsTrue(decodedData[static_cast<size_t>(rect.Width) * rect.Height] == 0x1f);
+    assert::is_true(memcmp(&decodedBuffer[rect.X + static_cast<size_t>(rect.Y) * 512], decodedData.data(), static_cast<size_t>(rect.Width) * rect.Height) == 0);
+    assert::is_true(decodedData[static_cast<size_t>(rect.Width) * rect.Height] == 0x1f);
 }
 
 
-void TestEncodeFromStream(const char* file, const int offset, const int width, const int height, const int bpp, const int componentCount, const interleave_mode ilv, const size_t expectedLength)
+void TestEncodeFromStream(const char* file, const int offset, const int width, const int height, const int bpp, const int component_count, const interleave_mode ilv, const size_t expected_length)
 {
     basic_filebuf<char> myFile; // On the stack
     myFile.open(file, mode_input);
-    Assert::IsTrue(myFile.is_open());
+    assert::is_true(myFile.is_open());
 
     myFile.pubseekoff(static_cast<streamoff>(offset), ios_base::cur);
     const byte_stream_info rawStreamInfo = {&myFile, nullptr, 0};
 
-    vector<uint8_t> compressed(static_cast<size_t>(width) * height * componentCount * 2);
+    vector<uint8_t> compressed(static_cast<size_t>(width) * height * component_count * 2);
     JlsParameters params = JlsParameters();
     params.height = height;
     params.width = width;
-    params.components = componentCount;
+    params.components = component_count;
     params.bitsPerSample = bpp;
     params.interleaveMode = ilv;
     size_t bytesWritten = 0;
 
-    JpegLsEncodeStream(FromByteArray(compressed.data(), static_cast<size_t>(width) * height * componentCount * 2), bytesWritten, rawStreamInfo, params);
-    Assert::IsTrue(bytesWritten == expectedLength);
+    JpegLsEncodeStream(FromByteArray(compressed.data(), static_cast<size_t>(width) * height * component_count * 2), bytesWritten, rawStreamInfo, params);
+    assert::is_true(bytesWritten == expected_length);
 
     myFile.close();
 }
@@ -388,11 +388,11 @@ bool DecodeToPnm(istream& input, ostream& output)
 }
 
 
-vector<int> readPnmHeader(istream& pnmFile)
+vector<int> readPnmHeader(istream& pnm_file)
 {
     vector<int> readValues;
 
-    const auto first = static_cast<char>(pnmFile.get());
+    const auto first = static_cast<char>(pnm_file.get());
 
     // All portable anymap format (PNM) start with the character P.
     if (first != 'P')
@@ -401,7 +401,7 @@ vector<int> readPnmHeader(istream& pnmFile)
     while (readValues.size() < 4)
     {
         string bytes;
-        getline(pnmFile, bytes);
+        getline(pnm_file, bytes);
         stringstream line(bytes);
 
         while (readValues.size() < 4)
@@ -422,9 +422,9 @@ vector<int> readPnmHeader(istream& pnmFile)
 //          into the JPEG-LS format. The 2 binary formats P5 and P6 are supported:
 //          Portable GrayMap: P5 = binary, extension = .pgm, 0-2^16 (gray scale)
 //          Portable PixMap: P6 = binary, extension.ppm, range 0-2^16 (RGB)
-bool EncodePnm(istream& pnmFile, const ostream& jlsFileStream)
+bool EncodePnm(istream& pnm_file, const ostream& jls_file_stream)
 {
-    vector<int> readValues = readPnmHeader(pnmFile);
+    vector<int> readValues = readPnmHeader(pnm_file);
     if (readValues.size() != 4)
         return false;
 
@@ -437,8 +437,8 @@ bool EncodePnm(istream& pnmFile, const ostream& jlsFileStream)
 
     const int bytesPerSample = (params.bitsPerSample + 7) / 8;
     vector<uint8_t> inputBuffer(static_cast<size_t>(params.width) * params.height * bytesPerSample * params.components);
-    pnmFile.read(reinterpret_cast<char*>(inputBuffer.data()), inputBuffer.size());
-    if (!pnmFile.good())
+    pnm_file.read(reinterpret_cast<char*>(inputBuffer.data()), inputBuffer.size());
+    if (!pnm_file.good())
         return false;
 
     // PNM format is stored with most significant byte first (big endian).
@@ -451,7 +451,7 @@ bool EncodePnm(istream& pnmFile, const ostream& jlsFileStream)
     }
 
     const auto rawStreamInfo = FromByteArray(inputBuffer.data(), inputBuffer.size());
-    const byte_stream_info jlsStreamInfo = {jlsFileStream.rdbuf(), nullptr, 0};
+    const byte_stream_info jlsStreamInfo = {jls_file_stream.rdbuf(), nullptr, 0};
 
     size_t bytesWritten = 0;
     JpegLsEncodeStream(jlsStreamInfo, bytesWritten, rawStreamInfo, params);
@@ -459,16 +459,16 @@ bool EncodePnm(istream& pnmFile, const ostream& jlsFileStream)
 }
 
 
-bool ComparePnm(istream& pnmFile1, istream& pnmFile2)
+bool ComparePnm(istream& pnm_file1, istream& pnm_file2)
 {
-    vector<int> header1 = readPnmHeader(pnmFile1);
+    vector<int> header1 = readPnmHeader(pnm_file1);
     if (header1.size() != 4)
     {
         cout << "Cannot read header from input file 1\n";
         return false;
     }
 
-    vector<int> header2 = readPnmHeader(pnmFile2);
+    vector<int> header2 = readPnmHeader(pnm_file2);
     if (header2.size() != 4)
     {
         cout << "Cannot read header from input file 2\n";
@@ -506,8 +506,8 @@ bool ComparePnm(istream& pnmFile1, istream& pnmFile2)
     vector<uint8_t> bytes1(byteCount);
     vector<uint8_t> bytes2(byteCount);
 
-    pnmFile1.read(reinterpret_cast<char*>(&bytes1[0]), byteCount);
-    pnmFile2.read(reinterpret_cast<char*>(&bytes2[0]), byteCount);
+    pnm_file1.read(reinterpret_cast<char*>(&bytes1[0]), byteCount);
+    pnm_file2.read(reinterpret_cast<char*>(&bytes2[0]), byteCount);
 
     for (size_t x = 0; x < height; ++x)
     {
@@ -538,10 +538,10 @@ bool ComparePnm(istream& pnmFile1, istream& pnmFile2)
 }
 
 
-////void TestDecodeFromStream(const char* strNameEncoded)
+////void TestDecodeFromStream(const char* name_encoded)
 ////{
 ////    basic_filebuf<char> jlsFile;
-////    jlsFile.open(strNameEncoded, mode_input);
+////    jlsFile.open(name_encoded, mode_input);
 ////    Assert::IsTrue(jlsFile.is_open());
 ////    ByteStreamInfo compressedByteStream = {&jlsFile, nullptr, 0};
 ////
@@ -562,12 +562,12 @@ bool ComparePnm(istream& pnmFile1, istream& pnmFile2)
 ////}
 
 
-jpegls_errc DecodeRaw(const char* strNameEncoded, const char* strNameOutput)
+jpegls_errc DecodeRaw(const char* name_encoded, const char* name_output)
 {
-    fstream jlsFile(strNameEncoded, mode_input);
+    fstream jlsFile(name_encoded, mode_input);
     const byte_stream_info compressedByteStream{jlsFile.rdbuf(), nullptr, 0};
 
-    fstream rawFile(strNameOutput, mode_output);
+    fstream rawFile(name_output, mode_output);
     const byte_stream_info rawStream{rawFile.rdbuf(), nullptr, 0};
 
     const auto value = JpegLsDecodeStream(rawStream, compressedByteStream, nullptr);
@@ -631,7 +631,7 @@ void UnitTest()
         cout << "Test Legacy API\n";
         TestLegacyAPIs();
     }
-    catch (const UnitTestException&)
+    catch (const unit_test_exception&)
     {
         cout << "==> Unit test failed <==\n";
     }

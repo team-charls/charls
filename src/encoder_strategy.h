@@ -25,23 +25,23 @@ public:
     encoder_strategy& operator=(const encoder_strategy&) = delete;
     encoder_strategy& operator=(encoder_strategy&&) = delete;
 
-    virtual std::unique_ptr<process_line> CreateProcess(byte_stream_info stream_info, uint32_t stride) = 0;
-    virtual void SetPresets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
-    virtual std::size_t EncodeScan(std::unique_ptr<process_line> raw_data, byte_stream_info& compressed_data) = 0;
+    virtual std::unique_ptr<process_line> create_process(byte_stream_info stream_info, uint32_t stride) = 0;
+    virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
+    virtual std::size_t encode_scan(std::unique_ptr<process_line> raw_data, byte_stream_info& compressed_data) = 0;
 
-    int32_t PeekByte();
+    int32_t peek_byte();
 
-    void OnLineBegin(const size_t pixel_count, void* destination, const int32_t pixel_stride) const
+    void on_line_begin(const size_t pixel_count, void* destination, const int32_t pixel_stride) const
     {
-        processLine_->NewLineRequested(destination, pixel_count, pixel_stride);
+        processLine_->new_line_requested(destination, pixel_count, pixel_stride);
     }
 
-    static void OnLineEnd(size_t /*pixel_count*/, void* /*destination*/, int32_t /*pixel_stride*/) noexcept
+    static void on_line_end(size_t /*pixel_count*/, void* /*destination*/, int32_t /*pixel_stride*/) noexcept
     {
     }
 
 protected:
-    void Init(byte_stream_info& compressed_stream)
+    void initialize(byte_stream_info& compressed_stream)
     {
         freeBitCount_ = sizeof(bitBuffer_) * 8;
         bitBuffer_ = 0;
@@ -60,10 +60,10 @@ protected:
         }
     }
 
-    void AppendToBitStream(const uint32_t bits, const int32_t bit_count)
+    void append_to_bit_stream(const uint32_t bits, const int32_t bit_count)
     {
         ASSERT(bit_count < 32 && bit_count >= 0);
-        ASSERT((!decoder_) || (bit_count == 0 && bits == 0) || (static_cast<uint32_t>(decoder_->ReadLongValue(bit_count)) == bits));
+        ASSERT((!decoder_) || (bit_count == 0 && bits == 0) || (static_cast<uint32_t>(decoder_->read_long_value(bit_count)) == bits));
 #ifndef NDEBUG
         const uint32_t mask = (1U << bit_count) - 1U;
         ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
@@ -78,13 +78,13 @@ protected:
         {
             // Add as much bits in the remaining space as possible and flush.
             bitBuffer_ |= bits >> -freeBitCount_;
-            Flush();
+            flush();
 
             // A second flush may be required if extra marker detect bits were needed and not all bits could be written.
             if (freeBitCount_ < 0)
             {
                 bitBuffer_ |= bits >> -freeBitCount_;
-                Flush();
+                flush();
             }
 
             ASSERT(freeBitCount_ >= 0);
@@ -92,30 +92,30 @@ protected:
         }
     }
 
-    void EndScan()
+    void end_scan()
     {
-        Flush();
+        flush();
 
         // if a 0xff was written, Flush() will force one unset bit anyway
         if (isFFWritten_)
         {
-            AppendToBitStream(0, (freeBitCount_ - 1) % 8);
+            append_to_bit_stream(0, (freeBitCount_ - 1) % 8);
         }
         else
         {
-            AppendToBitStream(0, freeBitCount_ % 8);
+            append_to_bit_stream(0, freeBitCount_ % 8);
         }
 
-        Flush();
+        flush();
         ASSERT(freeBitCount_ == 0x20);
 
         if (compressedStream_)
         {
-            OverFlow();
+            overflow();
         }
     }
 
-    void OverFlow()
+    void overflow()
     {
         if (!compressedStream_)
             impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
@@ -130,11 +130,11 @@ protected:
         compressedLength_ = buffer_.size();
     }
 
-    void Flush()
+    void flush()
     {
         if (compressedLength_ < 4)
         {
-            OverFlow();
+            overflow();
         }
 
         for (int i = 0; i < 4; ++i)
@@ -163,14 +163,14 @@ protected:
         }
     }
 
-    std::size_t GetLength() const noexcept
+    std::size_t get_length() const noexcept
     {
         return bytesWritten_ - (static_cast<uint32_t>(freeBitCount_) - 32U) / 8U;
     }
 
-    FORCE_INLINE void AppendOnesToBitStream(const int32_t length)
+    FORCE_INLINE void append_ones_to_bit_stream(const int32_t length)
     {
-        AppendToBitStream((1 << length) - 1, length);
+        append_to_bit_stream((1 << length) - 1, length);
     }
 
     frame_info frame_info_;

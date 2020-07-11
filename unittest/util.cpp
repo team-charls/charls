@@ -49,7 +49,7 @@ vector<uint8_t> read_file(const char* filename)
     input.open(filename, ios::in | ios::binary);
 
     input.seekg(0, ios::end);
-    const auto byteCountFile = static_cast<int>(input.tellg());
+    const auto byteCountFile = static_cast<size_t>(input.tellg());
     input.seekg(0, ios::beg);
 
     vector<uint8_t> buffer(byteCountFile);

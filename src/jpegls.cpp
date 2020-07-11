@@ -55,7 +55,7 @@ vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
 }
 
 template<typename Strategy, typename Traits>
-unique_ptr<Strategy> create_codec(const Traits& traits, const frame_info& frame_info, const coding_parameters& parameters)
+unique_ptr<Strategy> make_codec(const Traits& traits, const frame_info& frame_info, const coding_parameters& parameters)
 {
     return make_unique<charls::jls_codec<Traits, Strategy>>(traits, frame_info, parameters);
 }
@@ -82,13 +82,13 @@ vector<int8_t> quantization_lut_lossless_16 = create_quantize_lut_lossless(16); 
 
 
 template<typename Strategy>
-unique_ptr<Strategy> jls_codec_factory<Strategy>::CreateCodec(const frame_info& frame, const coding_parameters& parameters, const jpegls_pc_parameters& preset_coding_parameters)
+unique_ptr<Strategy> jls_codec_factory<Strategy>::create_codec(const frame_info& frame, const coding_parameters& parameters, const jpegls_pc_parameters& preset_coding_parameters)
 {
     unique_ptr<Strategy> codec;
 
     if (preset_coding_parameters.reset_value == 0 || preset_coding_parameters.reset_value == DefaultResetValue)
     {
-        codec = CreateOptimizedCodec(frame, parameters);
+        codec = create_optimized_codec(frame, parameters);
     }
 
     if (!codec)
@@ -107,12 +107,12 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::CreateCodec(const frame_info& 
         }
     }
 
-    codec->SetPresets(preset_coding_parameters);
+    codec->set_presets(preset_coding_parameters);
     return codec;
 }
 
 template<typename Strategy>
-unique_ptr<Strategy> jls_codec_factory<Strategy>::CreateOptimizedCodec(const frame_info& frame, const coding_parameters& parameters)
+unique_ptr<Strategy> jls_codec_factory<Strategy>::create_optimized_codec(const frame_info& frame, const coding_parameters& parameters)
 {
     if (parameters.interleave_mode == interleave_mode::sample && frame.component_count != 3 && frame.component_count != 4)
         return nullptr;
@@ -125,20 +125,20 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::CreateOptimizedCodec(const fra
         if (parameters.interleave_mode == interleave_mode::sample)
         {
             if (frame.component_count == 3 && frame.bits_per_sample == 8)
-                return create_codec<Strategy>(lossless_traits<triplet<uint8_t>, 8>(), frame, parameters);
+                return make_codec<Strategy>(lossless_traits<triplet<uint8_t>, 8>(), frame, parameters);
             if (frame.component_count == 4 && frame.bits_per_sample == 8)
-                return create_codec<Strategy>(lossless_traits<quad<uint8_t>, 8>(), frame, parameters);
+                return make_codec<Strategy>(lossless_traits<quad<uint8_t>, 8>(), frame, parameters);
         }
         else
         {
             switch (frame.bits_per_sample)
             {
             case 8:
-                return create_codec<Strategy>(lossless_traits<uint8_t, 8>(), frame, parameters);
+                return make_codec<Strategy>(lossless_traits<uint8_t, 8>(), frame, parameters);
             case 12:
-                return create_codec<Strategy>(lossless_traits<uint16_t, 12>(), frame, parameters);
+                return make_codec<Strategy>(lossless_traits<uint16_t, 12>(), frame, parameters);
             case 16:
-                return create_codec<Strategy>(lossless_traits<uint16_t, 16>(), frame, parameters);
+                return make_codec<Strategy>(lossless_traits<uint16_t, 16>(), frame, parameters);
             default:
                 break;
             }
@@ -154,24 +154,24 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::CreateOptimizedCodec(const fra
         if (parameters.interleave_mode == interleave_mode::sample)
         {
             if (frame.component_count == 3)
-                return create_codec<Strategy>(default_traits<uint8_t, triplet<uint8_t>>(maxval, parameters.near_lossless), frame, parameters);
+                return make_codec<Strategy>(default_traits<uint8_t, triplet<uint8_t>>(maxval, parameters.near_lossless), frame, parameters);
             if (frame.component_count == 4)
-                return create_codec<Strategy>(default_traits<uint8_t, quad<uint8_t>>(maxval, parameters.near_lossless), frame, parameters);
+                return make_codec<Strategy>(default_traits<uint8_t, quad<uint8_t>>(maxval, parameters.near_lossless), frame, parameters);
         }
 
-        return create_codec<Strategy>(default_traits<uint8_t, uint8_t>(maxval, parameters.near_lossless), frame, parameters);
+        return make_codec<Strategy>(default_traits<uint8_t, uint8_t>(maxval, parameters.near_lossless), frame, parameters);
     }
     if (frame.bits_per_sample <= 16)
     {
         if (parameters.interleave_mode == interleave_mode::sample)
         {
             if (frame.component_count == 3)
-                return create_codec<Strategy>(default_traits<uint16_t, triplet<uint16_t>>(maxval, parameters.near_lossless), frame, parameters);
+                return make_codec<Strategy>(default_traits<uint16_t, triplet<uint16_t>>(maxval, parameters.near_lossless), frame, parameters);
             if (frame.component_count == 4)
-                return create_codec<Strategy>(default_traits<uint16_t, quad<uint16_t>>(maxval, parameters.near_lossless), frame, parameters);
+                return make_codec<Strategy>(default_traits<uint16_t, quad<uint16_t>>(maxval, parameters.near_lossless), frame, parameters);
         }
 
-        return create_codec<Strategy>(default_traits<uint16_t, uint16_t>(maxval, parameters.near_lossless), frame, parameters);
+        return make_codec<Strategy>(default_traits<uint16_t, uint16_t>(maxval, parameters.near_lossless), frame, parameters);
     }
     return nullptr;
 }

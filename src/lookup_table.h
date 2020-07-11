@@ -41,7 +41,7 @@ class golomb_code_table final
 public:
     static constexpr size_t byte_bit_count = 8;
 
-    void AddEntry(const uint8_t value, const golomb_code c) noexcept
+    void add_entry(const uint8_t value, const golomb_code c) noexcept
     {
         const uint32_t length = c.length();
         ASSERT(static_cast<size_t>(length) <= byte_bit_count);
@@ -53,7 +53,7 @@ public:
         }
     }
 
-    FORCE_INLINE const golomb_code& Get(const uint32_t value) const noexcept
+    FORCE_INLINE const golomb_code& get(const uint32_t value) const noexcept
     {
         return types_[value];
     }

@@ -247,7 +247,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_with_16bit_destination_as_return) // NOLINT
+    TEST_METHOD(decode_with_16_bit_destination_as_return) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
 
@@ -436,7 +436,7 @@ private:
         {
             it = find_scan_header(it, jpegls_source.end());
             it = jpegls_source.insert(it, pcp_segment.cbegin(), pcp_segment.cend());
-            it += pcp_segment.size() + 2;
+            it += static_cast<vector<uint8_t>::difference_type>(pcp_segment.size() + 2U);
         }
     }
 };

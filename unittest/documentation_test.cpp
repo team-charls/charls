@@ -65,7 +65,7 @@ std::vector<uint8_t> decode_simple_8bit_monochrome_legacy(const std::vector<uint
     if (parameters.components != 1 || parameters.bitsPerSample != 8)
         throw std::exception("Not a 8 bit monochrome image");
 
-    const size_t destination_size = static_cast<size_t>(parameters.width) * parameters.height;
+    const size_t destination_size = static_cast<size_t>(parameters.width) * static_cast<uint32_t>(parameters.height);
     std::vector<uint8_t> destination(destination_size);
 
     error = JpegLsDecode(destination.data(), destination.size(),
@@ -105,8 +105,8 @@ std::vector<uint8_t> encode_simple_8bit_monochrome_legacy(const std::vector<uint
 {
     std::array<char, ErrorMessageSize> error_message{};
     JlsParameters parameters{};
-    parameters.width = width;
-    parameters.height = height;
+    parameters.width = static_cast<int32_t>(width);
+    parameters.height = static_cast<int32_t>(height);
     parameters.bitsPerSample = 8;
     parameters.components = 1;
 
@@ -138,7 +138,7 @@ namespace test {
 TEST_CLASS(documentation_test)
 {
 public:
-    TEST_METHOD(call_decode_simple_8bit_monochrome) // NOLINT
+    TEST_METHOD(call_decode_simple_8_bit_monochrome) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
 
@@ -156,7 +156,7 @@ public:
         test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
     }
 
-    TEST_METHOD(call_decode_simple_8bit_monochrome_legacy) // NOLINT
+    TEST_METHOD(call_decode_simple_8_bit_monochrome_legacy) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
 
@@ -165,32 +165,32 @@ public:
         test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
     }
 
-    TEST_METHOD(call_encode_simple_8bit_monochrome) // NOLINT
+    TEST_METHOD(call_encode_simple_8_bit_monochrome) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
         const vector<uint8_t> charls_encoded = encode_simple_8bit_monochrome(reference_file.image_data(),
-            reference_file.width(), reference_file.height());
+            static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
 
-    TEST_METHOD(call_encode_advanced_8bit_monochrome) // NOLINT
+    TEST_METHOD(call_encode_advanced_8_bit_monochrome) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
         const vector<uint8_t> charls_encoded = encode_advanced_8bit_monochrome(reference_file.image_data(),
-            reference_file.width(), reference_file.height());
+            static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
 
-    TEST_METHOD(call_encode_simple_8bit_monochrome_legacy) // NOLINT
+    TEST_METHOD(call_encode_simple_8_bit_monochrome_legacy) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
         const vector<uint8_t> charls_encoded = encode_simple_8bit_monochrome_legacy(reference_file.image_data(),
-            reference_file.width(), reference_file.height());
+            static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }

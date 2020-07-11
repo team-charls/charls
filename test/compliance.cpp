@@ -18,7 +18,7 @@ using namespace charls;
 
 namespace {
 
-void Triplet2Planar(vector<uint8_t>& buffer, const Size size)
+void Triplet2Planar(vector<uint8_t>& buffer, const rect_size size)
 {
     vector<uint8_t> workBuffer(buffer.size());
 
@@ -33,22 +33,22 @@ void Triplet2Planar(vector<uint8_t>& buffer, const Size size)
 }
 
 
-bool VerifyEncodedBytes(const void* uncompressedData, const size_t uncompressedLength, const void* compressedData, const size_t compressedLength)
+bool VerifyEncodedBytes(const void* uncompressed_data, const size_t uncompressed_length, const void* compressed_data, const size_t compressed_length)
 {
     JlsParameters info{};
-    error_code error = JpegLsReadHeader(compressedData, compressedLength, &info, nullptr);
+    error_code error = JpegLsReadHeader(compressed_data, compressed_length, &info, nullptr);
     if (error)
         return false;
 
-    vector<uint8_t> ourEncodedBytes(compressedLength + 16);
+    vector<uint8_t> ourEncodedBytes(compressed_length + 16);
     size_t bytesWritten;
-    error = JpegLsEncode(ourEncodedBytes.data(), ourEncodedBytes.size(), &bytesWritten, uncompressedData, uncompressedLength, &info, nullptr);
+    error = JpegLsEncode(ourEncodedBytes.data(), ourEncodedBytes.size(), &bytesWritten, uncompressed_data, uncompressed_length, &info, nullptr);
     if (error)
         return false;
 
-    for (size_t i = 0; i < compressedLength; ++i)
+    for (size_t i = 0; i < compressed_length; ++i)
     {
-        if (static_cast<const uint8_t*>(compressedData)[i] != ourEncodedBytes[i])
+        if (static_cast<const uint8_t*>(compressed_data)[i] != ourEncodedBytes[i])
         {
             return false;
         }
@@ -58,29 +58,29 @@ bool VerifyEncodedBytes(const void* uncompressedData, const size_t uncompressedL
 }
 
 
-void TestCompliance(const uint8_t* compressedBytes, const size_t compressedLength, const uint8_t* uncompressedData, const size_t uncompressedLength, const bool checkEncode)
+void TestCompliance(const uint8_t* compressed_bytes, const size_t compressed_length, const uint8_t* uncompressed_data, const size_t uncompressed_length, const bool check_encode)
 {
     JlsParameters info{};
-    error_code error = JpegLsReadHeader(compressedBytes, compressedLength, &info, nullptr);
-    Assert::IsTrue(!error);
+    error_code error = JpegLsReadHeader(compressed_bytes, compressed_length, &info, nullptr);
+    assert::is_true(!error);
 
-    if (checkEncode)
+    if (check_encode)
     {
-        Assert::IsTrue(VerifyEncodedBytes(uncompressedData, uncompressedLength, compressedBytes, compressedLength));
+        assert::is_true(VerifyEncodedBytes(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
     }
 
     vector<uint8_t> destination(static_cast<size_t>(info.height) * info.width * ((info.bitsPerSample + 7) / 8) * info.components);
 
-    error = JpegLsDecode(destination.data(), destination.size(), compressedBytes, compressedLength, nullptr, nullptr);
-    Assert::IsTrue(!error);
+    error = JpegLsDecode(destination.data(), destination.size(), compressed_bytes, compressed_length, nullptr, nullptr);
+    assert::is_true(!error);
 
     if (info.allowedLossyError == 0)
     {
-        for (size_t i = 0; i < uncompressedLength; ++i)
+        for (size_t i = 0; i < uncompressed_length; ++i)
         {
-            if (uncompressedData[i] != destination[i])
+            if (uncompressed_data[i] != destination[i])
             {
-                Assert::IsTrue(false);
+                assert::is_true(false);
                 break;
             }
         }
@@ -88,19 +88,19 @@ void TestCompliance(const uint8_t* compressedBytes, const size_t compressedLengt
 }
 
 
-void DecompressFile(const char* strNameEncoded, const char* strNameRaw, const int offset, const bool checkEncode = true)
+void DecompressFile(const char* name_encoded, const char* name_raw, const int offset, const bool check_encode = true)
 {
-    cout << "Conformance test:" << strNameEncoded << "\n\r";
-    vector<uint8_t> encodedBuffer = ReadFile(strNameEncoded);
+    cout << "Conformance test:" << name_encoded << "\n\r";
+    vector<uint8_t> encodedBuffer = ReadFile(name_encoded);
 
     JlsParameters params{};
     if (make_error_code(JpegLsReadHeader(encodedBuffer.data(), encodedBuffer.size(), &params, nullptr)))
     {
-        Assert::IsTrue(false);
+        assert::is_true(false);
         return;
     }
 
-    vector<uint8_t> rawBuffer = ReadFile(strNameRaw, offset);
+    vector<uint8_t> rawBuffer = ReadFile(name_raw, offset);
 
     if (params.bitsPerSample > 8)
     {
@@ -109,10 +109,10 @@ void DecompressFile(const char* strNameEncoded, const char* strNameRaw, const in
 
     if (params.interleaveMode == interleave_mode::none && params.components == 3)
     {
-        Triplet2Planar(rawBuffer, Size(params.width, params.height));
+        Triplet2Planar(rawBuffer, rect_size(params.width, params.height));
     }
 
-    TestCompliance(encodedBuffer.data(), encodedBuffer.size(), rawBuffer.data(), rawBuffer.size(), checkEncode);
+    TestCompliance(encodedBuffer.data(), encodedBuffer.size(), rawBuffer.data(), rawBuffer.size(), check_encode);
 }
 
 
@@ -165,7 +165,7 @@ const array<uint8_t, 16> buffer = {0, 0, 90, 74,
 
 void TestSampleAnnexH3()
 {
-    ////Size size = Size(4,4);
+    ////rect_size size = rect_size(4,4);
     vector<uint8_t> vecRaw(16);
     memcpy(vecRaw.data(), buffer.data(), buffer.size());
     ////  TestJls(vecRaw, size, 8, 1, ILV_NONE, bufferEncoded, sizeof(bufferEncoded), false);

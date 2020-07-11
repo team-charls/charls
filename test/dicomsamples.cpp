@@ -15,22 +15,22 @@ using std::vector;
 
 namespace {
 
-bool ContainsString(const uint8_t* container, const uint8_t* bytesToFind, const size_t bytesLength) noexcept
+bool ContainsString(const uint8_t* container, const uint8_t* bytes_to_find, const size_t bytes_length) noexcept
 {
-    for (size_t j = 0; j < bytesLength; ++j)
+    for (size_t j = 0; j < bytes_length; ++j)
     {
-        if (bytesToFind[j] != container[j])
+        if (bytes_to_find[j] != container[j])
             return false;
     }
 
     return true;
 }
 
-int FindString(vector<uint8_t>& container, const uint8_t* bytesToFind, const size_t bytesLength) noexcept
+int FindString(vector<uint8_t>& container, const uint8_t* bytes_to_find, const size_t bytes_length) noexcept
 {
-    for (size_t i = 0; i < container.size() - bytesLength; ++i)
+    for (size_t i = 0; i < container.size() - bytes_length; ++i)
     {
-        if (ContainsString(&container[i], bytesToFind, bytesLength))
+        if (ContainsString(&container[i], bytes_to_find, bytes_length))
             return static_cast<int>(i);
     }
     return -1;
@@ -55,13 +55,13 @@ void TestDicomSampleImage(const char* name)
 
     JlsParameters params{};
     error_code error = JpegLsReadHeader(data.data(), data.size(), &params, nullptr);
-    Assert::IsTrue(!error);
+    assert::is_true(!error);
 
     vector<uint8_t> dataUnc;
     dataUnc.resize(static_cast<size_t>(params.stride) * params.height);
 
     error = JpegLsDecode(dataUnc.data(), dataUnc.size(), data.data(), data.size(), nullptr, nullptr);
-    Assert::IsTrue(!error);
+    assert::is_true(!error);
     cout << ".";
 }
 

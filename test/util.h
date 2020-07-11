@@ -11,9 +11,9 @@
 #include <exception>
 #include <vector>
 
-struct Size final
+struct rect_size final
 {
-    Size(const size_t width, const size_t height) noexcept :
+    rect_size(const size_t width, const size_t height) noexcept :
         cx(width),
         cy(height)
     {
@@ -23,26 +23,26 @@ struct Size final
 };
 
 
-void FixEndian(std::vector<uint8_t>* buffer, bool littleEndianData) noexcept;
+void FixEndian(std::vector<uint8_t>* buffer, bool little_endian_data) noexcept;
 std::vector<uint8_t> ReadFile(const char* filename, long offset = 0, size_t bytes = 0);
-void TestFile(const char* filename, int offset, Size size2, int bitsPerSample, int componentCount, bool littleEndianFile = false, int loopCount = 1);
-void TestRoundTrip(const char* strName, const std::vector<uint8_t>& decodedBuffer, Size size, int bitsPerSample, int componentCount, int loopCount = 1);
-void TestRoundTrip(const char* strName, const std::vector<uint8_t>& originalBuffer, JlsParameters& params, int loopCount = 1);
-void test_portable_anymap_file(const char* filename, int loopCount = 1);
+void TestFile(const char* filename, int offset, rect_size size2, int bits_per_sample, int component_count, bool little_endian_file = false, int loop_count = 1);
+void TestRoundTrip(const char* name, const std::vector<uint8_t>& decoded_buffer, rect_size size, int bits_per_sample, int component_count, int loop_count = 1);
+void TestRoundTrip(const char* name, const std::vector<uint8_t>& original_buffer, JlsParameters& params, int loop_count = 1);
+void test_portable_anymap_file(const char* filename, int loop_count = 1);
 
-class UnitTestException final : public std::exception
+class unit_test_exception final : public std::exception
 {
 public:
-    explicit UnitTestException() = default;
+    explicit unit_test_exception() = default;
 };
 
-class Assert final
+class assert final
 {
 public:
-    static void IsTrue(const bool condition)
+    static void is_true(const bool condition)
     {
         if (!condition)
-            throw UnitTestException();
+            throw unit_test_exception();
     }
 };
 

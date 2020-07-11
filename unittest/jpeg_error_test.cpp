@@ -5,8 +5,6 @@
 
 #include <charls/jpegls_error.h>
 
-#include <array>
-
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using Microsoft::VisualStudio::CppUnitTestFramework::TestClass;
 

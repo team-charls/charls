@@ -15,53 +15,53 @@ namespace test {
 
 // clang-format off
 
-TEST_CLASS(EncoderStrategyTest)
+TEST_CLASS(encoder_strategy_test)
 {
 public:
-    TEST_METHOD(AppendToBitStreamZeroLength) // NOLINT
+    TEST_METHOD(append_to_bit_stream_zero_length) // NOLINT
     {
-        const charls::frame_info frame_info{};
-        const charls::coding_parameters parameters{};
+        const frame_info frame_info{};
+        const coding_parameters parameters{};
 
-        EncoderStrategyTester strategy(frame_info, parameters);
+        encoder_strategy_tester strategy(frame_info, parameters);
 
         array<uint8_t, 1024> data{};
 
         byte_stream_info stream{nullptr, data.data(), data.size()};
-        strategy.InitForward(stream);
+        strategy.initialize_forward(stream);
 
-        strategy.AppendToBitStreamForward(0, 0);
-        strategy.FlushForward();
+        strategy.append_to_bit_stream_forward(0, 0);
+        strategy.flush_forward();
     }
 
-    TEST_METHOD(AppendToBitStreamFFPattern) // NOLINT
+    TEST_METHOD(append_to_bit_stream_ff_pattern) // NOLINT
     {
-        const charls::frame_info frame_info{};
-        const charls::coding_parameters parameters{};
+        const frame_info frame_info{};
+        const coding_parameters parameters{};
 
-        EncoderStrategyTester strategy(frame_info, parameters);
+        encoder_strategy_tester strategy(frame_info, parameters);
 
         array<uint8_t, 1024> data{};
         data[13] = 0x77; // marker byte to detect overruns.
 
         byte_stream_info stream{nullptr, data.data(), data.size()};
-        strategy.InitForward(stream);
+        strategy.initialize_forward(stream);
 
         // We want _isFFWritten == true.
-        strategy.AppendToBitStreamForward(0, 24);
-        strategy.AppendToBitStreamForward(0xff, 8);
+        strategy.append_to_bit_stream_forward(0, 24);
+        strategy.append_to_bit_stream_forward(0xff, 8);
 
         // We need the buffer filled with set bits.
-        strategy.AppendToBitStreamForward(0xffff, 16);
-        strategy.AppendToBitStreamForward(0xffff, 16);
+        strategy.append_to_bit_stream_forward(0xffff, 16);
+        strategy.append_to_bit_stream_forward(0xffff, 16);
 
         // Buffer is full with FFs and _isFFWritten = true: Flush can only write 30 date bits.
-        strategy.AppendToBitStreamForward(0x3, 31);
+        strategy.append_to_bit_stream_forward(0x3, 31);
 
-        strategy.FlushForward();
+        strategy.flush_forward();
 
         // Verify output.
-        Assert::AreEqual(static_cast<size_t>(13), strategy.GetLengthForward());
+        Assert::AreEqual(static_cast<size_t>(13), strategy.get_length_forward());
         Assert::AreEqual(static_cast<uint8_t>(0x00), data[0]);
         Assert::AreEqual(static_cast<uint8_t>(0x00), data[1]);
         Assert::AreEqual(static_cast<uint8_t>(0x00), data[2]);

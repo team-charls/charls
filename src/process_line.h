@@ -36,8 +36,8 @@ public:
     process_line& operator=(const process_line&) = delete;
     process_line& operator=(process_line&&) = delete;
 
-    virtual void NewLineDecoded(const void* source, size_t pixel_count, int source_stride) = 0;
-    virtual void NewLineRequested(void* destination, size_t pixel_count, int destination_stride) = 0;
+    virtual void new_line_decoded(const void* source, size_t pixel_count, int source_stride) = 0;
+    virtual void new_line_requested(void* destination, size_t pixel_count, int destination_stride) = 0;
 
 protected:
     process_line() = default;
@@ -54,13 +54,13 @@ public:
     {
     }
 
-    void NewLineRequested(void* destination, const size_t pixel_count, int /*destination_stride*/) noexcept(false) override
+    void new_line_requested(void* destination, const size_t pixel_count, int /*destination_stride*/) noexcept(false) override
     {
         std::memcpy(destination, rawData_, pixel_count * bytesPerPixel_);
         rawData_ += bytesPerLine_;
     }
 
-    void NewLineDecoded(const void* source, const size_t pixel_count, int /*sourceStride*/) noexcept(false) override
+    void new_line_decoded(const void* source, const size_t pixel_count, int /*sourceStride*/) noexcept(false) override
     {
         std::memcpy(rawData_, source, pixel_count * bytesPerPixel_);
         rawData_ += bytesPerLine_;
@@ -102,7 +102,7 @@ public:
     {
     }
 
-    void NewLineRequested(void* destination, const size_t pixel_count, int /*destination_stride*/) override
+    void new_line_requested(void* destination, const size_t pixel_count, int /*destination_stride*/) override
     {
         auto bytesToRead = static_cast<std::streamsize>(static_cast<std::streamsize>(pixel_count) * bytesPerPixel_);
         while (bytesToRead != 0)
@@ -125,7 +125,7 @@ public:
         }
     }
 
-    void NewLineDecoded(const void* source, const size_t pixel_count, int /*source_stride*/) override
+    void new_line_decoded(const void* source, const size_t pixel_count, int /*source_stride*/) override
     {
         const auto bytesToWrite = pixel_count * bytesPerPixel_;
         const auto bytesWritten = static_cast<size_t>(rawData_->sputn(static_cast<const char*>(source), static_cast<std::streamsize>(bytesToWrite)));
@@ -249,19 +249,19 @@ public:
     {
     }
 
-    void NewLineRequested(void* destination, const size_t pixel_count, const int destination_stride) override
+    void new_line_requested(void* destination, const size_t pixel_count, const int destination_stride) override
     {
         if (!rawPixels_.rawStream)
         {
-            Transform(rawPixels_.rawData, destination, pixel_count, destination_stride);
+            transform(rawPixels_.rawData, destination, pixel_count, destination_stride);
             rawPixels_.rawData += stride_;
             return;
         }
 
-        Transform(rawPixels_.rawStream, destination, pixel_count, destination_stride);
+        transform(rawPixels_.rawStream, destination, pixel_count, destination_stride);
     }
 
-    void Transform(std::basic_streambuf<char>* raw_stream, void* destination, const size_t pixel_count, const int destination_stride)
+    void transform(std::basic_streambuf<char>* raw_stream, void* destination, const size_t pixel_count, const int destination_stride)
     {
         std::streamsize bytesToRead = static_cast<std::streamsize>(pixel_count) * frame_info_.component_count * sizeof(size_type);
         while (bytesToRead != 0)
@@ -272,10 +272,10 @@ public:
 
             bytesToRead -= read;
         }
-        Transform(buffer_.data(), destination, pixel_count, destination_stride);
+        transform(buffer_.data(), destination, pixel_count, destination_stride);
     }
 
-    void Transform(const void* source, void* destination, const size_t pixel_count, const size_t destination_stride) noexcept
+    void transform(const void* source, void* destination, const size_t pixel_count, const size_t destination_stride) noexcept
     {
         if (parameters_.output_bgr)
         {
@@ -308,7 +308,7 @@ public:
         }
     }
 
-    void DecodeTransform(const void* source, void* destination, const size_t pixel_count, const size_t byte_stride) noexcept
+    void decode_transform(const void* source, void* destination, const size_t pixel_count, const size_t byte_stride) noexcept
     {
         if (frame_info_.component_count == 3)
         {
@@ -339,12 +339,12 @@ public:
         }
     }
 
-    void NewLineDecoded(const void* source, const size_t pixel_count, const int source_stride) override
+    void new_line_decoded(const void* source, const size_t pixel_count, const int source_stride) override
     {
         if (rawPixels_.rawStream)
         {
             const std::streamsize bytesToWrite = static_cast<std::streamsize>(pixel_count) * frame_info_.component_count * sizeof(size_type);
-            DecodeTransform(source, buffer_.data(), pixel_count, source_stride);
+            decode_transform(source, buffer_.data(), pixel_count, source_stride);
 
             const auto bytesWritten = rawPixels_.rawStream->sputn(reinterpret_cast<char*>(buffer_.data()), bytesToWrite);
             if (bytesWritten != bytesToWrite)
@@ -352,7 +352,7 @@ public:
         }
         else
         {
-            DecodeTransform(source, rawPixels_.rawData, pixel_count, source_stride);
+            decode_transform(source, rawPixels_.rawData, pixel_count, source_stride);
             rawPixels_.rawData += stride_;
         }
     }

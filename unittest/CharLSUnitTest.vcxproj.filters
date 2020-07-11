@@ -86,13 +86,13 @@
     <ClCompile Include="version_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ctable_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="encode_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="documentation_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="golomb_table_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -151,10 +151,6 @@
     <CopyFileToFolders Include="16-bit-640-480-many-dots.pgm">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="4bit-monochrome.pgm">
-      <Filter>Test Images</Filter>
-    </None>
+    <CopyFileToFolders Include="4bit-monochrome.pgm" />
   </ItemGroup>
 </Project>

@@ -12,10 +12,10 @@ namespace test {
 
 // clang-format off
 
-TEST_CLASS(ColorTransformTest)
+TEST_CLASS(color_transform_test)
 {
 public:
-    TEST_METHOD(TransformHp1RoundTrip) // NOLINT
+    TEST_METHOD(transform_hp1_round_trip) // NOLINT
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.
@@ -42,7 +42,7 @@ public:
         }
     }
 
-    TEST_METHOD(TransformHp2RoundTrip) // NOLINT
+    TEST_METHOD(transform_hp2_round_trip) // NOLINT
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.
@@ -69,7 +69,7 @@ public:
         }
     }
 
-    TEST_METHOD(TransformHp3RoundTrip) // NOLINT
+    TEST_METHOD(transform_hp3_round_trip) // NOLINT
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.

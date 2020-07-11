@@ -26,13 +26,13 @@ jpeg_stream_writer::jpeg_stream_writer(const byte_stream_info& destination) noex
 
 void jpeg_stream_writer::write_start_of_image()
 {
-    WriteMarker(JpegMarkerCode::StartOfImage);
+    write_marker(JpegMarkerCode::StartOfImage);
 }
 
 
 void jpeg_stream_writer::write_end_of_image()
 {
-    WriteMarker(JpegMarkerCode::EndOfImage);
+    write_marker(JpegMarkerCode::EndOfImage);
 }
 
 
@@ -64,7 +64,7 @@ void jpeg_stream_writer::write_spiff_directory_entry(const uint32_t entry_tag,
                                                      IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data,
                                                      const size_t entry_data_size_bytes)
 {
-    WriteMarker(JpegMarkerCode::ApplicationData8);
+    write_marker(JpegMarkerCode::ApplicationData8);
     write_uint16(static_cast<uint16_t>(sizeof(uint16_t) + sizeof(uint32_t) + entry_data_size_bytes));
     write_uint32(entry_tag);
     write_bytes(entry_data, entry_data_size_bytes);
@@ -170,7 +170,7 @@ void jpeg_stream_writer::write_segment(const JpegMarkerCode marker_code,
 {
     ASSERT(size <= UINT16_MAX - sizeof(uint16_t));
 
-    WriteMarker(marker_code);
+    write_marker(marker_code);
     write_uint16(static_cast<uint16_t>(size + sizeof(uint16_t)));
     write_bytes(data, size);
 }

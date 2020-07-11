@@ -32,7 +32,7 @@ namespace test {
 TEST_CLASS(interface_test)
 {
 public:
-    TEST_METHOD(GetMetadataInfoFromNearLosslessEncodedColorImage) // NOLINT
+    TEST_METHOD(get_metadata_info_from_near_lossless_encoded_color_image) // NOLINT
     {
         vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E3.JLS")};
 

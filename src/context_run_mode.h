@@ -31,7 +31,7 @@ struct context_run_mode final
     {
     }
 
-    FORCE_INLINE int32_t GetGolomb() const noexcept
+    FORCE_INLINE int32_t get_golomb_code() const noexcept
     {
         const int32_t TEMP = A + (N >> 1) * nRItype_;
         int32_t nTest = N;
@@ -44,7 +44,7 @@ struct context_run_mode final
         return k;
     }
 
-    void UpdateVariables(const int32_t error_value, const int32_t EMErrval) noexcept
+    void update_variables(const int32_t error_value, const int32_t EMErrval) noexcept
     {
         if (error_value < 0)
         {
@@ -60,22 +60,22 @@ struct context_run_mode final
         N = N + 1;
     }
 
-    FORCE_INLINE int32_t ComputeErrVal(const int32_t temp, const int32_t k) const noexcept
+    FORCE_INLINE int32_t compute_error_value(const int32_t temp, const int32_t k) const noexcept
     {
         const bool map = temp & 1;
         const int32_t errorValueAbs = (temp + static_cast<int32_t>(map)) / 2;
 
         if ((k != 0 || (2 * Nn >= N)) == map)
         {
-            ASSERT(map == ComputeMap(-errorValueAbs, k));
+            ASSERT(map == compute_map(-errorValueAbs, k));
             return -errorValueAbs;
         }
 
-        ASSERT(map == ComputeMap(errorValueAbs, k));
+        ASSERT(map == compute_map(errorValueAbs, k));
         return errorValueAbs;
     }
 
-    bool ComputeMap(const int32_t error_value, const int32_t k) const noexcept
+    bool compute_map(const int32_t error_value, const int32_t k) const noexcept
     {
         if (k == 0 && error_value > 0 && 2 * Nn < N)
             return true;
@@ -89,7 +89,7 @@ struct context_run_mode final
         return false;
     }
 
-    FORCE_INLINE bool ComputeMapNegativeE(const int32_t k) const noexcept
+    FORCE_INLINE bool compute_map_negative_e(const int32_t k) const noexcept
     {
         return k != 0 || 2 * Nn >= N;
     }

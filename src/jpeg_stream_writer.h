@@ -74,12 +74,12 @@ public:
         return byteOffset_;
     }
 
-    std::size_t GetLength() const noexcept
+    std::size_t get_length() const noexcept
     {
         return destination_.count - byteOffset_;
     }
 
-    byte_stream_info OutputStream() const noexcept
+    byte_stream_info output_stream() const noexcept
     {
         byte_stream_info data = destination_;
         data.count -= byteOffset_;
@@ -103,7 +103,7 @@ public:
     }
 
 private:
-    uint8_t* GetPos() const noexcept
+    uint8_t* get_pos() const noexcept
     {
         return destination_.rawData + byteOffset_;
     }
@@ -157,7 +157,7 @@ private:
         write_byte(static_cast<uint8_t>(value));
     }
 
-    void WriteMarker(const JpegMarkerCode marker_code)
+    void write_marker(const JpegMarkerCode marker_code)
     {
         write_byte(JpegMarkerStartByte);
         write_byte(static_cast<uint8_t>(marker_code));

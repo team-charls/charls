@@ -12,12 +12,12 @@ namespace test {
 
 // clang-format off
 
-TEST_CLASS(DefaultTraitsTest)
+TEST_CLASS(default_traits_test)
 {
 public:
-    TEST_METHOD(Create) // NOLINT
+    TEST_METHOD(create) // NOLINT
     {
-        const charls::default_traits<uint8_t, uint8_t> traits((1 << 8) - 1, 0);
+        const default_traits<uint8_t, uint8_t> traits((1 << 8) - 1, 0);
 
         Assert::AreEqual(255, traits.MAXVAL);
         Assert::AreEqual(256, traits.RANGE);
@@ -28,13 +28,13 @@ public:
         Assert::AreEqual(64, traits.RESET);
     }
 
-    TEST_METHOD(ModuloRange) // NOLINT
+    TEST_METHOD(modulo_range) // NOLINT
     {
-        const charls::default_traits<uint8_t, uint8_t> traits(24, 0);
+        const default_traits<uint8_t, uint8_t> traits(24, 0);
 
         for (int i = -25; i < 26; ++i)
         {
-            const auto error_value = traits.ModuloRange(i);
+            const auto error_value = traits.modulo_range(i);
             constexpr int range = 24 + 1;
             Assert::IsTrue(-range / 2 <= error_value && error_value <= ((range + 1) / 2) - 1);
         }

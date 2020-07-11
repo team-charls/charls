@@ -15,17 +15,17 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 namespace charls {
 namespace test {
 
-TEST_CLASS(ctable_test)
+TEST_CLASS(golomb_table_test)
 {
 public:
-    TEST_METHOD(CTable_create) // NOLINT
+    TEST_METHOD(golomb_table_create) // NOLINT
     {
         const golomb_code_table golomb_table;
 
         for (uint32_t i = 0U; i < 256U; i++)
         {
-            Assert::AreEqual(0U, golomb_table.Get(i).length());
-            Assert::AreEqual(0, golomb_table.Get(i).value());
+            Assert::AreEqual(0U, golomb_table.get(i).length());
+            Assert::AreEqual(0, golomb_table.get(i).value());
         }
     }
 };

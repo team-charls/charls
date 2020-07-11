@@ -25,7 +25,7 @@ struct jls_context final
     {
     }
 
-    FORCE_INLINE int32_t GetErrorCorrection(const int32_t k) const noexcept
+    FORCE_INLINE int32_t get_error_correction(const int32_t k) const noexcept
     {
         if (k != 0)
             return 0;
@@ -33,7 +33,7 @@ struct jls_context final
         return BitWiseSign(2 * B + N - 1);
     }
 
-    FORCE_INLINE void UpdateVariables(const int32_t error_value, const int32_t near_lossless, const int32_t NRESET) noexcept
+    FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless, const int32_t NRESET) noexcept
     {
         ASSERT(N != 0);
 
@@ -79,7 +79,7 @@ struct jls_context final
         ASSERT(N != 0);
     }
 
-    FORCE_INLINE int32_t GetGolomb() const noexcept
+    FORCE_INLINE int32_t get_golomb_code() const noexcept
     {
         const int32_t nTest = N;
         const int32_t aTest = A;

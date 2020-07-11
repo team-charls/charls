@@ -44,7 +44,7 @@ void VerifyInput(const byte_stream_info& destination, const JlsParameters& param
     }
 }
 
-void EncodeScan(const JlsParameters& params, const int component_count, const byte_stream_info source, jpeg_stream_writer& writer)
+void encode_scan(const JlsParameters& params, const int component_count, const byte_stream_info source, jpeg_stream_writer& writer)
 {
     const frame_info frame_info{static_cast<uint32_t>(params.width), static_cast<uint32_t>(params.height), params.bitsPerSample, component_count};
     const coding_parameters codec_parameters{params.allowedLossyError, params.interleaveMode, params.colorTransformation, false};
@@ -56,12 +56,12 @@ void EncodeScan(const JlsParameters& params, const int component_count, const by
         params.custom.ResetValue,
     };
 
-    auto codec = jls_codec_factory<encoder_strategy>().CreateCodec(frame_info, codec_parameters, preset_coding_parameters);
-    std::unique_ptr<process_line> processLine(codec->CreateProcess(source, static_cast<uint32_t>(params.stride)));
-    byte_stream_info destination{writer.OutputStream()};
-    const size_t bytesWritten = codec->EncodeScan(move(processLine), destination);
+    auto codec = jls_codec_factory<encoder_strategy>().create_codec(frame_info, codec_parameters, preset_coding_parameters);
+    std::unique_ptr<process_line> processLine(codec->create_process(source, static_cast<uint32_t>(params.stride)));
+    byte_stream_info destination{writer.output_stream()};
+    const size_t bytesWritten = codec->encode_scan(move(processLine), destination);
 
-    // Synchronize the destination encapsulated in the writer (EncodeScan works on a local copy)
+    // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
     writer.seek(bytesWritten);
 }
 
@@ -126,16 +126,16 @@ jpegls_errc JpegLsEncodeStream(const byte_stream_info destination, size_t& bytes
             for (int32_t component = 0; component < info.components; ++component)
             {
                 writer.write_start_of_scan_segment(1, info.allowedLossyError, info.interleaveMode);
-                EncodeScan(info, 1, source, writer);
+                encode_scan(info, 1, source, writer);
 
-                // Synchronize the source stream (EncodeScan works on a local copy)
+                // Synchronize the source stream (encode_scan works on a local copy)
                 skip_bytes(source, static_cast<size_t>(byteCountComponent));
             }
         }
         else
         {
             writer.write_start_of_scan_segment(info.components, info.allowedLossyError, info.interleaveMode);
-            EncodeScan(info, info.components, source, writer);
+            encode_scan(info, info.components, source, writer);
         }
 
         writer.write_end_of_image();

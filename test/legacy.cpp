@@ -17,23 +17,23 @@ using namespace charls;
 
 namespace {
 
-void TestJpegLsReadHeader(const char* fileName, const int width, const int height, const int bitsPerSample, const int stride, const int component_count, const int interleaveMode)
+void TestJpegLsReadHeader(const char* filename, const int width, const int height, const int bits_per_sample, const int stride, const int component_count, const int interleave_mode)
 {
-    cout << "LegacyAPI JpegLsReadHeader:" << fileName << "\n";
+    cout << "LegacyAPI JpegLsReadHeader:" << filename << "\n";
 
-    vector<uint8_t> encodedBuffer = ReadFile(fileName);
+    vector<uint8_t> encodedBuffer = ReadFile(filename);
 
     array<char, ErrorMessageSize> error_message{};
     JlsParameters parameters{};
     const auto error = JpegLsReadHeader(encodedBuffer.data(), encodedBuffer.size(), &parameters, error_message.data());
-    Assert::IsTrue(error == jpegls_errc::success);
+    assert::is_true(error == jpegls_errc::success);
 
-    Assert::IsTrue(parameters.width == width ||
+    assert::is_true(parameters.width == width ||
                    parameters.height == height ||
-                   parameters.bitsPerSample == bitsPerSample ||
+                   parameters.bitsPerSample == bits_per_sample ||
                    parameters.stride == stride ||
                    parameters.components == component_count ||
-                   parameters.interleaveMode == static_cast<interleave_mode>(interleaveMode));
+                   parameters.interleaveMode == static_cast<charls::interleave_mode>(interleave_mode));
 }
 
 void TestJpegLsReadHeader()

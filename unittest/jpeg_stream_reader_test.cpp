@@ -23,10 +23,10 @@ namespace test {
 
 // clang-format off
 
-TEST_CLASS(JpegStreamReaderTest)
+TEST_CLASS(jpeg_stream_reader_test)
 {
 public:
-    TEST_METHOD(ReadHeaderFromToSmallInputBuffer) // NOLINT
+    TEST_METHOD(read_header_from_to_small_input_buffer) // NOLINT
     {
         array<uint8_t, 1> buffer{};
 
@@ -46,9 +46,9 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderFromBufferPrecededWithFillBytes) // NOLINT
+    TEST_METHOD(read_header_from_buffer_preceded_with_fill_bytes) // NOLINT
     {
-        JpegTestStreamWriter writer;
+        jpeg_test_stream_writer writer;
 
         writer.buffer.push_back(0xFF);
         writer.write_start_of_image();
@@ -57,7 +57,7 @@ public:
         writer.write_start_of_frame_segment(1, 1, 2, 1);
 
         writer.buffer.push_back(0xFF);
-        writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 128, charls::interleave_mode::none);
 
         const byte_stream_info byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
         jpeg_stream_reader reader(byteStream);
@@ -65,7 +65,7 @@ public:
         reader.read_header(); // if it doesn't throw test is passed.
     }
 
-    TEST_METHOD(ReadHeaderFromBufferNotStartingWithFFShouldThrow) // NOLINT
+    TEST_METHOD(read_header_from_buffer_not_starting_with_ff_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0x0F);
@@ -91,27 +91,27 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithApplicationData) // NOLINT
+    TEST_METHOD(read_header_with_application_data) // NOLINT
     {
-        ReadHeaderWithApplicationData(0);
-        ReadHeaderWithApplicationData(1);
-        ReadHeaderWithApplicationData(2);
-        ReadHeaderWithApplicationData(3);
-        ReadHeaderWithApplicationData(4);
-        ReadHeaderWithApplicationData(5);
-        ReadHeaderWithApplicationData(6);
-        ReadHeaderWithApplicationData(7);
-        ReadHeaderWithApplicationData(8);
-        ReadHeaderWithApplicationData(9);
-        ReadHeaderWithApplicationData(10);
-        ReadHeaderWithApplicationData(11);
-        ReadHeaderWithApplicationData(12);
-        ReadHeaderWithApplicationData(13);
-        ReadHeaderWithApplicationData(14);
-        ReadHeaderWithApplicationData(15);
+        read_header_with_application_data(0);
+        read_header_with_application_data(1);
+        read_header_with_application_data(2);
+        read_header_with_application_data(3);
+        read_header_with_application_data(4);
+        read_header_with_application_data(5);
+        read_header_with_application_data(6);
+        read_header_with_application_data(7);
+        read_header_with_application_data(8);
+        read_header_with_application_data(9);
+        read_header_with_application_data(10);
+        read_header_with_application_data(11);
+        read_header_with_application_data(12);
+        read_header_with_application_data(13);
+        read_header_with_application_data(14);
+        read_header_with_application_data(15);
     }
 
-    TEST_METHOD(ReadHeaderWithJpegLSExtendedFrameShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_jpegls_extended_frame_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -135,7 +135,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderJpegLSPresetParameterSegment) // NOLINT
+    TEST_METHOD(read_header_jpegls_preset_parameter_segment) // NOLINT
     {
         vector<uint8_t> source(100);
         const byte_stream_info sourceInfo = FromByteArray(source.data(), source.size());
@@ -161,7 +161,7 @@ public:
         Assert::AreEqual(presets.threshold3, actual.threshold3);
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallJpegLSPresetParameterSegmentShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -188,7 +188,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallJpegLSPresetParameterSegmentWithCodingParametersShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_with_coding_parameters_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -215,7 +215,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooLargeJpegLSPresetParameterSegmentWithCodingParametersShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_too_large_jpegls_preset_parameter_segment_with_coding_parameters_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -246,11 +246,11 @@ public:
     {
         const jpegls_pc_parameters preset_coding_parameters{256, 0, 0, 0, 0};
 
-        JpegTestStreamWriter writer;
+        jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_jpegls_preset_parameters_segment(preset_coding_parameters);
         writer.write_start_of_frame_segment(512, 512, 8, 3);
-        writer.WriteStartOfScanSegment(0, 1, 127, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 127, charls::interleave_mode::none);
         const byte_stream_info source = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
         jpeg_stream_reader reader(source);
@@ -259,7 +259,7 @@ public:
             [&](){reader.read_header();});
     }
 
-    static void ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(const uint8_t id)
+    static void read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(const uint8_t id)
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -286,19 +286,19 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_jpegls_preset_parameter_with_extended_id_should_throw) // NOLINT
     {
-        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x5);
-        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x6);
-        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x7);
-        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x8);
-        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0x9);
-        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0xA);
-        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0xC);
-        ReadHeaderWithJpegLSPresetParameterWithExtendedIdShouldThrow(0xD);
+        read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(0x5);
+        read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(0x6);
+        read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(0x7);
+        read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(0x8);
+        read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(0x9);
+        read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(0xA);
+        read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(0xC);
+        read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(0xD);
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallSegmentSizeShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_too_small_segment_size_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -326,7 +326,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallStartOfFrameShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_frame_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -352,7 +352,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallStartOfFrameInComponentInfoShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_frame_in_component_info_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -378,9 +378,9 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooLargeStartOfFrameShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_too_large_start_of_frame_should_throw) // NOLINT
     {
-        JpegTestStreamWriter writer;
+        jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
         writer.buffer.push_back(0);
@@ -404,9 +404,9 @@ public:
 
     TEST_METHOD(read_header_sos_before_sof_should_throw) // NOLINT
     {
-        JpegTestStreamWriter writer;
+        jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 128, charls::interleave_mode::none);
         const byte_stream_info source = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
         jpeg_stream_reader reader(source);
@@ -417,7 +417,7 @@ public:
 
     TEST_METHOD(read_header_extra_sof_should_throw) // NOLINT
     {
-        JpegTestStreamWriter writer;
+        jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
         writer.write_start_of_frame_segment(512, 512, 8, 3);
@@ -431,10 +431,10 @@ public:
 
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw) // NOLINT
     {
-        JpegTestStreamWriter writer;
+        jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
-        writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 128, charls::interleave_mode::none);
         const byte_stream_info source = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
         jpeg_stream_reader reader(source);
@@ -448,13 +448,13 @@ public:
     {
         const jpegls_pc_parameters preset_coding_parameters{200, 0, 0, 0, 0};
 
-        JpegTestStreamWriter writer;
+        jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_jpegls_preset_parameters_segment(preset_coding_parameters);
         writer.write_start_of_frame_segment(512, 512, 8, 3);
 
         constexpr int bad_near_lossless = (200 / 2) + 1;
-        writer.WriteStartOfScanSegment(0, 1, bad_near_lossless, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, bad_near_lossless, charls::interleave_mode::none);
         const byte_stream_info source = FromByteArray(writer.buffer.data(), writer.buffer.size());
 
         jpeg_stream_reader reader(source);
@@ -464,9 +464,9 @@ public:
             [&](){reader.read_start_of_scan();});
     }
 
-    TEST_METHOD(ReadHeaderWithDuplicateComponentIdInStartOfFrameSegmentShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_duplicate_component_id_in_start_of_frame_segment_should_throw) // NOLINT
     {
-        JpegTestStreamWriter writer;
+        jpeg_test_stream_writer writer;
         writer.componentIdOverride = 7;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
@@ -487,7 +487,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallStartOfScanShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_scan_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -523,7 +523,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithTooSmallStartOfScanComponentCountShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_scan_component_count_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -560,7 +560,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithDirectlyEndOfImageShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_directly_end_of_image_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -584,7 +584,7 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(ReadHeaderWithDuplicateStartOfImageShouldThrow) // NOLINT
+    TEST_METHOD(read_header_with_duplicate_start_of_image_should_throw) // NOLINT
     {
         vector<uint8_t> buffer;
         buffer.push_back(0xFF);
@@ -606,14 +606,14 @@ public:
         }
     }
 
-    TEST_METHOD(ReadSpiffHeader) // NOLINT
+    TEST_METHOD(read_spiff_header) // NOLINT
     {
-        ReadSpiffHeader(0);
+        read_spiff_header(0);
     }
 
     TEST_METHOD(read_spiff_header_low_version_newer) // NOLINT
     {
-        ReadSpiffHeader(1);
+        read_spiff_header(1);
     }
 
     TEST_METHOD(read_spiff_header_high_version_to_new) // NOLINT
@@ -654,7 +654,7 @@ public:
     }
 
 private:
-    static void ReadSpiffHeader(const uint8_t low_version)
+    static void read_spiff_header(const uint8_t low_version)
     {
         vector<uint8_t> buffer = create_test_spiff_header(2, low_version);
         const byte_stream_info byteStream = FromByteArray(buffer.data(), buffer.size());
@@ -678,18 +678,18 @@ private:
         Assert::AreEqual(1024U, spiff_header.horizontal_resolution);
     }
 
-    static void ReadHeaderWithApplicationData(const uint8_t dataNumber)
+    static void read_header_with_application_data(const uint8_t data_number)
     {
-        JpegTestStreamWriter writer;
+        jpeg_test_stream_writer writer;
         writer.write_start_of_image();
 
         writer.buffer.push_back(0xFF);
-        writer.buffer.push_back(0xE0 + dataNumber);
+        writer.buffer.push_back(0xE0 + data_number);
         writer.buffer.push_back(0x00);
         writer.buffer.push_back(0x02);
 
         writer.write_start_of_frame_segment(1, 1, 2, 1);
-        writer.WriteStartOfScanSegment(0, 1, 128, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 128, charls::interleave_mode::none);
 
         const byte_stream_info byteStream = FromByteArray(writer.buffer.data(), writer.buffer.size());
         jpeg_stream_reader reader(byteStream);

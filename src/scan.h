@@ -118,7 +118,7 @@ public:
         ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) || parameters.interleave_mode != interleave_mode::none);
     }
 
-    void SetPresets(const jpegls_pc_parameters& presets) override
+    void set_presets(const jpegls_pc_parameters& presets) override
     {
         const jpegls_pc_parameters presetDefault{compute_default(traits.MAXVAL, traits.NEAR)};
 
@@ -128,7 +128,7 @@ public:
                    presets.reset_value != 0 ? presets.reset_value : presetDefault.reset_value);
     }
 
-    std::unique_ptr<process_line> CreateProcess(byte_stream_info info, uint32_t stride) override;
+    std::unique_ptr<process_line> create_process(byte_stream_info info, uint32_t stride) override;
 
     bool is_interleaved() noexcept
     {
@@ -199,12 +199,12 @@ public:
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #endif
 
-    // Note: depending on the base class EncodeScan OR DecodeScan will be virtual and abstract, cannot use override in all cases.
+    // Note: depending on the base class encode_scan OR decode_scan will be virtual and abstract, cannot use override in all cases.
     // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override)
-    size_t EncodeScan(std::unique_ptr<process_line> process_line, byte_stream_info& compressed_data);
+    size_t encode_scan(std::unique_ptr<process_line> process_line, byte_stream_info& compressed_data);
 
     // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override)
-    void DecodeScan(std::unique_ptr<process_line> process_line, const JlsRect& rect, byte_stream_info& compressed_data);
+    void decode_scan(std::unique_ptr<process_line> process_line, const JlsRect& rect, byte_stream_info& compressed_data);
 
 #if defined(__clang__)
 #pragma clang diagnostic pop
@@ -248,14 +248,14 @@ typename Traits::SAMPLE jls_codec<Traits, Strategy>::DoRegular(const int32_t Qs,
 {
     const int32_t sign = BitWiseSign(Qs);
     jls_context& ctx = contexts_[ApplySign(Qs, sign)];
-    const int32_t k = ctx.GetGolomb();
-    const int32_t Px = traits.CorrectPrediction(pred + ApplySign(ctx.C, sign));
+    const int32_t k = ctx.get_golomb_code();
+    const int32_t Px = traits.correct_prediction(pred + ApplySign(ctx.C, sign));
 
     int32_t ErrVal;
-    const golomb_code& code = decodingTables[k].Get(Strategy::PeekByte());
+    const golomb_code& code = decodingTables[k].get(Strategy::peek_byte());
     if (code.length() != 0)
     {
-        Strategy::Skip(code.length());
+        Strategy::skip(code.length());
         ErrVal = code.value();
         ASSERT(std::abs(ErrVal) < 65535);
     }
@@ -267,11 +267,11 @@ typename Traits::SAMPLE jls_codec<Traits, Strategy>::DoRegular(const int32_t Qs,
     }
     if (k == 0)
     {
-        ErrVal = ErrVal ^ ctx.GetErrorCorrection(traits.NEAR);
+        ErrVal = ErrVal ^ ctx.get_error_correction(traits.NEAR);
     }
-    ctx.UpdateVariables(ErrVal, traits.NEAR, traits.RESET);
+    ctx.update_variables(ErrVal, traits.NEAR, traits.RESET);
     ErrVal = ApplySign(ErrVal, sign);
-    return traits.ComputeReconstructedSample(Px, ErrVal);
+    return traits.compute_reconstructed_sample(Px, ErrVal);
 }
 
 
@@ -280,14 +280,14 @@ typename Traits::SAMPLE jls_codec<Traits, Strategy>::DoRegular(const int32_t Qs,
 {
     const int32_t sign = BitWiseSign(Qs);
     jls_context& ctx = contexts_[ApplySign(Qs, sign)];
-    const int32_t k = ctx.GetGolomb();
-    const int32_t Px = traits.CorrectPrediction(pred + ApplySign(ctx.C, sign));
-    const int32_t ErrVal = traits.ComputeErrVal(ApplySign(x - Px, sign));
+    const int32_t k = ctx.get_golomb_code();
+    const int32_t Px = traits.correct_prediction(pred + ApplySign(ctx.C, sign));
+    const int32_t ErrVal = traits.compute_error_value(ApplySign(x - Px, sign));
 
-    EncodeMappedValue(k, get_mapped_error_value(ctx.GetErrorCorrection(k | traits.NEAR) ^ ErrVal), traits.LIMIT);
-    ctx.UpdateVariables(ErrVal, traits.NEAR, traits.RESET);
-    ASSERT(traits.IsNear(traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)), x));
-    return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Px, ApplySign(ErrVal, sign)));
+    EncodeMappedValue(k, get_mapped_error_value(ctx.get_error_correction(k | traits.NEAR) ^ ErrVal), traits.LIMIT);
+    ctx.update_variables(ErrVal, traits.NEAR, traits.RESET);
+    ASSERT(traits.is_near(traits.compute_reconstructed_sample(Px, ApplySign(ErrVal, sign)), x));
+    return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Px, ApplySign(ErrVal, sign)));
 }
 
 
@@ -312,7 +312,7 @@ inline golomb_code_table initialize_table(const int32_t k) noexcept
             break;
 
         const golomb_code code(nerr, static_cast<short>(pairCode.first));
-        table.AddEntry(static_cast<uint8_t>(pairCode.second), code);
+        table.add_entry(static_cast<uint8_t>(pairCode.second), code);
     }
 
     for (short nerr = -1;; --nerr)
@@ -324,7 +324,7 @@ inline golomb_code_table initialize_table(const int32_t k) noexcept
             break;
 
         const golomb_code code = golomb_code(nerr, static_cast<short>(pairCode.first));
-        table.AddEntry(static_cast<uint8_t>(pairCode.second), code);
+        table.add_entry(static_cast<uint8_t>(pairCode.second), code);
     }
 
     return table;
@@ -336,15 +336,15 @@ inline golomb_code_table initialize_table(const int32_t k) noexcept
 template<typename Traits, typename Strategy>
 int32_t jls_codec<Traits, Strategy>::DecodeValue(int32_t k, const int32_t limit, int32_t qbpp)
 {
-    const int32_t highBits = Strategy::ReadHighBits();
+    const int32_t highBits = Strategy::read_high_bits();
 
     if (highBits >= limit - (qbpp + 1))
-        return Strategy::ReadValue(qbpp) + 1;
+        return Strategy::read_value(qbpp) + 1;
 
     if (k == 0)
         return highBits;
 
-    return (highBits << k) + Strategy::ReadValue(k);
+    return (highBits << k) + Strategy::read_value(k);
 }
 
 
@@ -357,24 +357,24 @@ FORCE_INLINE void jls_codec<Traits, Strategy>::EncodeMappedValue(int32_t k, cons
     {
         if (highBits + 1 > 31)
         {
-            Strategy::AppendToBitStream(0, highBits / 2);
+            Strategy::append_to_bit_stream(0, highBits / 2);
             highBits = highBits - highBits / 2;
         }
-        Strategy::AppendToBitStream(1, highBits + 1);
-        Strategy::AppendToBitStream((mapped_error & ((1 << k) - 1)), k);
+        Strategy::append_to_bit_stream(1, highBits + 1);
+        Strategy::append_to_bit_stream((mapped_error & ((1 << k) - 1)), k);
         return;
     }
 
     if (limit - traits.qbpp > 31)
     {
-        Strategy::AppendToBitStream(0, 31);
-        Strategy::AppendToBitStream(1, limit - traits.qbpp - 31);
+        Strategy::append_to_bit_stream(0, 31);
+        Strategy::append_to_bit_stream(1, limit - traits.qbpp - 31);
     }
     else
     {
-        Strategy::AppendToBitStream(1, limit - traits.qbpp);
+        Strategy::append_to_bit_stream(1, limit - traits.qbpp);
     }
-    Strategy::AppendToBitStream((mapped_error - 1) & ((1 << traits.qbpp) - 1), traits.qbpp);
+    Strategy::append_to_bit_stream((mapped_error - 1) & ((1 << traits.qbpp) - 1), traits.qbpp);
 }
 
 
@@ -451,10 +451,10 @@ signed char jls_codec<Traits, Strategy>::quantize_gradient_org(int32_t Di) const
 template<typename Traits, typename Strategy>
 int32_t jls_codec<Traits, Strategy>::DecodeRIError(context_run_mode& ctx)
 {
-    const int32_t k = ctx.GetGolomb();
+    const int32_t k = ctx.get_golomb_code();
     const int32_t EMErrval = DecodeValue(k, traits.LIMIT - J[RUNindex_] - 1, traits.qbpp);
-    const int32_t errorValue = ctx.ComputeErrVal(EMErrval + ctx.nRItype_, k);
-    ctx.UpdateVariables(errorValue, EMErrval);
+    const int32_t errorValue = ctx.compute_error_value(EMErrval + ctx.nRItype_, k);
+    ctx.update_variables(errorValue, EMErrval);
     return errorValue;
 }
 
@@ -462,13 +462,13 @@ int32_t jls_codec<Traits, Strategy>::DecodeRIError(context_run_mode& ctx)
 template<typename Traits, typename Strategy>
 void jls_codec<Traits, Strategy>::EncodeRIError(context_run_mode& context, const int32_t error_value)
 {
-    const int32_t k = context.GetGolomb();
-    const bool map = context.ComputeMap(error_value, k);
+    const int32_t k = context.get_golomb_code();
+    const bool map = context.compute_map(error_value, k);
     const int32_t EMErrval = 2 * std::abs(error_value) - context.nRItype_ - static_cast<int32_t>(map);
 
-    ASSERT(error_value == context.ComputeErrVal(EMErrval + context.nRItype_, k));
+    ASSERT(error_value == context.compute_error_value(EMErrval + context.nRItype_, k));
     EncodeMappedValue(k, EMErrval, traits.LIMIT - J[RUNindex_] - 1);
-    context.UpdateVariables(error_value, EMErrval);
+    context.update_variables(error_value, EMErrval);
 }
 
 
@@ -479,27 +479,27 @@ triplet<typename Traits::SAMPLE> jls_codec<Traits, Strategy>::DecodeRIPixel(trip
     const int32_t errorValue2 = DecodeRIError(contextRunmode_[0]);
     const int32_t errorValue3 = DecodeRIError(contextRunmode_[0]);
 
-    return triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
-                           traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
-                           traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3)));
+    return triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
+                           traits.compute_reconstructed_sample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
+                           traits.compute_reconstructed_sample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3)));
 }
 
 
 template<typename Traits, typename Strategy>
 triplet<typename Traits::SAMPLE> jls_codec<Traits, Strategy>::EncodeRIPixel(triplet<SAMPLE> x, triplet<SAMPLE> Ra, triplet<SAMPLE> Rb)
 {
-    const int32_t errorValue1 = traits.ComputeErrVal(Sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
+    const int32_t errorValue1 = traits.compute_error_value(Sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
     EncodeRIError(contextRunmode_[0], errorValue1);
 
-    const int32_t errorValue2 = traits.ComputeErrVal(Sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
+    const int32_t errorValue2 = traits.compute_error_value(Sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
     EncodeRIError(contextRunmode_[0], errorValue2);
 
-    const int32_t errorValue3 = traits.ComputeErrVal(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
+    const int32_t errorValue3 = traits.compute_error_value(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
     EncodeRIError(contextRunmode_[0], errorValue3);
 
-    return triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
-                           traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
-                           traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3)));
+    return triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
+                           traits.compute_reconstructed_sample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
+                           traits.compute_reconstructed_sample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3)));
 }
 
 template<typename Traits, typename Strategy>
@@ -510,32 +510,32 @@ quad<typename Traits::SAMPLE> jls_codec<Traits, Strategy>::DecodeRIPixel(quad<SA
     const int32_t errorValue3 = DecodeRIError(contextRunmode_[0]);
     const int32_t errorValue4 = DecodeRIError(contextRunmode_[0]);
 
-    return quad<SAMPLE>(triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
-                                        traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
-                                        traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3))),
-                        traits.ComputeReconstructedSample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
+    return quad<SAMPLE>(triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
+                                        traits.compute_reconstructed_sample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
+                                        traits.compute_reconstructed_sample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3))),
+                        traits.compute_reconstructed_sample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
 }
 
 
 template<typename Traits, typename Strategy>
 quad<typename Traits::SAMPLE> jls_codec<Traits, Strategy>::EncodeRIPixel(quad<SAMPLE> x, quad<SAMPLE> Ra, quad<SAMPLE> Rb)
 {
-    const int32_t errorValue1 = traits.ComputeErrVal(Sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
+    const int32_t errorValue1 = traits.compute_error_value(Sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
     EncodeRIError(contextRunmode_[0], errorValue1);
 
-    const int32_t errorValue2 = traits.ComputeErrVal(Sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
+    const int32_t errorValue2 = traits.compute_error_value(Sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
     EncodeRIError(contextRunmode_[0], errorValue2);
 
-    const int32_t errorValue3 = traits.ComputeErrVal(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
+    const int32_t errorValue3 = traits.compute_error_value(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
     EncodeRIError(contextRunmode_[0], errorValue3);
 
-    const int32_t errorValue4 = traits.ComputeErrVal(Sign(Rb.v4 - Ra.v4) * (x.v4 - Rb.v4));
+    const int32_t errorValue4 = traits.compute_error_value(Sign(Rb.v4 - Ra.v4) * (x.v4 - Rb.v4));
     EncodeRIError(contextRunmode_[0], errorValue4);
 
-    return quad<SAMPLE>(triplet<SAMPLE>(traits.ComputeReconstructedSample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
-                                        traits.ComputeReconstructedSample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
-                                        traits.ComputeReconstructedSample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3))),
-                        traits.ComputeReconstructedSample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
+    return quad<SAMPLE>(triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
+                                        traits.compute_reconstructed_sample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
+                                        traits.compute_reconstructed_sample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3))),
+                        traits.compute_reconstructed_sample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
 }
 
 
@@ -545,11 +545,11 @@ typename Traits::SAMPLE jls_codec<Traits, Strategy>::DecodeRIPixel(int32_t Ra, i
     if (std::abs(Ra - Rb) <= traits.NEAR)
     {
         const int32_t ErrVal = DecodeRIError(contextRunmode_[1]);
-        return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Ra, ErrVal));
+        return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Ra, ErrVal));
     }
 
     const int32_t ErrVal = DecodeRIError(contextRunmode_[0]);
-    return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Rb, ErrVal * Sign(Rb - Ra)));
+    return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Rb, ErrVal * Sign(Rb - Ra)));
 }
 
 
@@ -558,14 +558,14 @@ typename Traits::SAMPLE jls_codec<Traits, Strategy>::EncodeRIPixel(const int32_t
 {
     if (std::abs(Ra - Rb) <= traits.NEAR)
     {
-        const int32_t ErrVal = traits.ComputeErrVal(x - Ra);
+        const int32_t ErrVal = traits.compute_error_value(x - Ra);
         EncodeRIError(contextRunmode_[1], ErrVal);
-        return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Ra, ErrVal));
+        return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Ra, ErrVal));
     }
 
-    const int32_t ErrVal = traits.ComputeErrVal((x - Rb) * Sign(Rb - Ra));
+    const int32_t ErrVal = traits.compute_error_value((x - Rb) * Sign(Rb - Ra));
     EncodeRIError(contextRunmode_[0], ErrVal);
-    return static_cast<SAMPLE>(traits.ComputeReconstructedSample(Rb, ErrVal * Sign(Rb - Ra)));
+    return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Rb, ErrVal * Sign(Rb - Ra)));
 }
 
 
@@ -576,7 +576,7 @@ void jls_codec<Traits, Strategy>::EncodeRunPixels(int32_t run_length, const bool
 {
     while (run_length >= static_cast<int32_t>(1 << J[RUNindex_]))
     {
-        Strategy::AppendOnesToBitStream(1);
+        Strategy::append_ones_to_bit_stream(1);
         run_length = run_length - static_cast<int32_t>(1 << J[RUNindex_]);
         IncrementRunIndex();
     }
@@ -585,12 +585,12 @@ void jls_codec<Traits, Strategy>::EncodeRunPixels(int32_t run_length, const bool
     {
         if (run_length != 0)
         {
-            Strategy::AppendOnesToBitStream(1);
+            Strategy::append_ones_to_bit_stream(1);
         }
     }
     else
     {
-        Strategy::AppendToBitStream(run_length, J[RUNindex_] + 1); // leading 0 + actual remaining length
+        Strategy::append_to_bit_stream(run_length, J[RUNindex_] + 1); // leading 0 + actual remaining length
     }
 }
 
@@ -599,7 +599,7 @@ template<typename Traits, typename Strategy>
 int32_t jls_codec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, const int32_t cpixelMac)
 {
     int32_t index = 0;
-    while (Strategy::ReadBit())
+    while (Strategy::read_bit())
     {
         const int count = std::min(1 << J[RUNindex_], static_cast<int>(cpixelMac - index));
         index += count;
@@ -617,7 +617,7 @@ int32_t jls_codec<Traits, Strategy>::DecodeRunPixels(PIXEL Ra, PIXEL* startPos, 
     if (index != cpixelMac)
     {
         // incomplete run.
-        index += (J[RUNindex_] > 0) ? Strategy::ReadValue(J[RUNindex_]) : 0;
+        index += (J[RUNindex_] > 0) ? Strategy::read_value(J[RUNindex_]) : 0;
     }
 
     if (index > cpixelMac)
@@ -642,7 +642,7 @@ int32_t jls_codec<Traits, Strategy>::DoRunMode(int32_t index, encoder_strategy*)
 
     int32_t runLength = 0;
 
-    while (traits.IsNear(ptypeCurX[runLength], Ra))
+    while (traits.is_near(ptypeCurX[runLength], Ra))
     {
         ptypeCurX[runLength] = Ra;
         ++runLength;
@@ -804,7 +804,7 @@ void jls_codec<Traits, Strategy>::DoScan()
             std::swap(previousLine_, currentLine_);
         }
 
-        Strategy::OnLineBegin(width_, currentLine_, pixelStride);
+        Strategy::on_line_begin(width_, currentLine_, pixelStride);
 
         for (auto component = 0U; component < component_count; ++component)
         {
@@ -822,17 +822,17 @@ void jls_codec<Traits, Strategy>::DoScan()
 
         if (static_cast<uint32_t>(rect_.Y) <= line && line < static_cast<uint32_t>(rect_.Y + rect_.Height))
         {
-            Strategy::OnLineEnd(rect_.Width, currentLine_ + rect_.X - (static_cast<size_t>(component_count) * pixelStride), pixelStride);
+            Strategy::on_line_end(rect_.Width, currentLine_ + rect_.X - (static_cast<size_t>(component_count) * pixelStride), pixelStride);
         }
     }
 
-    Strategy::EndScan();
+    Strategy::end_scan();
 }
 
 
 // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
 template<typename Traits, typename Strategy>
-std::unique_ptr<process_line> jls_codec<Traits, Strategy>::CreateProcess(byte_stream_info info, const uint32_t stride)
+std::unique_ptr<process_line> jls_codec<Traits, Strategy>::create_process(byte_stream_info info, const uint32_t stride)
 {
     if (!is_interleaved())
     {
@@ -880,29 +880,29 @@ std::unique_ptr<process_line> jls_codec<Traits, Strategy>::CreateProcess(byte_st
 // Setup codec for encoding and calls DoScan
 MSVC_WARNING_SUPPRESS(26433) // C.128: Virtual functions should specify exactly one of virtual, override, or final
 template<typename Traits, typename Strategy>
-size_t jls_codec<Traits, Strategy>::EncodeScan(std::unique_ptr<process_line> process_line, byte_stream_info& compressed_data)
+size_t jls_codec<Traits, Strategy>::encode_scan(std::unique_ptr<process_line> process_line, byte_stream_info& compressed_data)
 {
     Strategy::processLine_ = std::move(process_line);
 
-    Strategy::Init(compressed_data);
+    Strategy::initialize(compressed_data);
     DoScan();
 
-    return Strategy::GetLength();
+    return Strategy::get_length();
 }
 
 
 // Setup codec for decoding and calls DoScan
 template<typename Traits, typename Strategy>
-void jls_codec<Traits, Strategy>::DecodeScan(std::unique_ptr<process_line> process_line, const JlsRect& rect, byte_stream_info& compressed_data)
+void jls_codec<Traits, Strategy>::decode_scan(std::unique_ptr<process_line> process_line, const JlsRect& rect, byte_stream_info& compressed_data)
 {
     Strategy::processLine_ = std::move(process_line);
 
     const uint8_t* compressedBytes = compressed_data.rawData;
     rect_ = rect;
 
-    Strategy::Init(compressed_data);
+    Strategy::initialize(compressed_data);
     DoScan();
-    skip_bytes(compressed_data, static_cast<size_t>(Strategy::GetCurBytePos() - compressedBytes));
+    skip_bytes(compressed_data, static_cast<size_t>(Strategy::get_cur_byte_pos() - compressedBytes));
 }
 MSVC_WARNING_UNSUPPRESS()
 

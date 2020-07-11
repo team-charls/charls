@@ -10,25 +10,25 @@
 namespace charls {
 namespace test {
 
-class JpegTestStreamWriter final
+class jpeg_test_stream_writer final
 {
 public:
     void write_start_of_image()
     {
-        WriteMarker(JpegMarkerCode::StartOfImage);
+        write_marker(JpegMarkerCode::StartOfImage);
     }
 
-    void write_start_of_frame_segment(const int width, const int height, const int bitsPerSample, const int componentCount)
+    void write_start_of_frame_segment(const int width, const int height, const int bits_per_sample, const int component_count)
     {
         // Create a Frame Header as defined in T.87, C.2.2 and T.81, B.2.2
         std::vector<uint8_t> segment;
-        segment.push_back(static_cast<uint8_t>(bitsPerSample));    // P = Sample precision
-        push_back(segment, static_cast<uint16_t>(height)); // Y = Number of lines
-        push_back(segment, static_cast<uint16_t>(width));  // X = Number of samples per line
+        segment.push_back(static_cast<uint8_t>(bits_per_sample)); // P = Sample precision
+        push_back(segment, static_cast<uint16_t>(height));      // Y = Number of lines
+        push_back(segment, static_cast<uint16_t>(width));       // X = Number of samples per line
 
         // Components
-        segment.push_back(static_cast<uint8_t>(componentCount)); // Nf = Number of image components in frame
-        for (auto componentId = 0; componentId < componentCount; ++componentId)
+        segment.push_back(static_cast<uint8_t>(component_count)); // Nf = Number of image components in frame
+        for (auto componentId = 0; componentId < component_count; ++componentId)
         {
             // Component Specification parameters
             if (componentIdOverride == 0)
@@ -61,10 +61,10 @@ public:
         write_segment(charls::JpegMarkerCode::JpegLSPresetParameters, segment.data(), segment.size());
     }
 
-    void WriteStartOfScanSegment(int component_id,
-                                 const int component_count,
-                                 const int near_lossless,
-                                 const charls::interleave_mode interleave_mode)
+    void write_start_of_scan_segment(int component_id,
+                                     const int component_count,
+                                     const int near_lossless,
+                                     const interleave_mode interleave_mode)
     {
         // Create a Scan Header as defined in T.87, C.2.3 and T.81, B.2.3
         std::vector<uint8_t> segment;
@@ -84,17 +84,17 @@ public:
         write_segment(JpegMarkerCode::StartOfScan, segment.data(), segment.size());
     }
 
-    void write_segment(const JpegMarkerCode markerCode, const void* data, const size_t dataSize)
+    void write_segment(const JpegMarkerCode marker_code, const void* data, const size_t data_size)
     {
-        WriteMarker(markerCode);
-        write_uint16(static_cast<uint16_t>(dataSize + 2));
-        write_bytes(data, dataSize);
+        write_marker(marker_code);
+        write_uint16(static_cast<uint16_t>(data_size + 2));
+        write_bytes(data, data_size);
     }
 
-    void WriteMarker(JpegMarkerCode markerCode)
+    void write_marker(JpegMarkerCode marker_code)
     {
-        write_byte(charls::JpegMarkerStartByte);
-        write_byte(static_cast<uint8_t>(markerCode));
+        write_byte(JpegMarkerStartByte);
+        write_byte(static_cast<uint8_t>(marker_code));
     }
 
     void write_uint16(const uint16_t value)
@@ -108,11 +108,11 @@ public:
         buffer.push_back(value);
     }
 
-    void write_bytes(const void* data, const size_t dataSize)
+    void write_bytes(const void* data, const size_t data_size)
     {
         const auto* const bytes = static_cast<const uint8_t*>(data);
 
-        for (std::size_t i = 0; i < dataSize; ++i)
+        for (std::size_t i = 0; i < data_size; ++i)
         {
             write_byte(bytes[i]);
         }

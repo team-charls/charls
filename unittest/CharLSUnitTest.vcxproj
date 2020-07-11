@@ -205,7 +205,7 @@
     <ClCompile Include="charls_jpegls_decoder_test.cpp" />
     <ClCompile Include="charls_jpegls_encoder_test.cpp" />
     <ClCompile Include="compliance_test.cpp" />
-    <ClCompile Include="ctable_test.cpp" />
+    <ClCompile Include="golomb_table_test.cpp" />
     <ClCompile Include="decoder_strategy_test.cpp" />
     <ClCompile Include="default_traits_test.cpp" />
     <ClCompile Include="documentation_test.cpp" />

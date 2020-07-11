@@ -17,10 +17,10 @@ template<typename Strategy>
 class jls_codec_factory final
 {
 public:
-    std::unique_ptr<Strategy> CreateCodec(const frame_info& frame, const coding_parameters& parameters, const jpegls_pc_parameters& preset_coding_parameters);
+    std::unique_ptr<Strategy> create_codec(const frame_info& frame, const coding_parameters& parameters, const jpegls_pc_parameters& preset_coding_parameters);
 
 private:
-    std::unique_ptr<Strategy> CreateOptimizedCodec(const frame_info& frame, const coding_parameters& parameters);
+    std::unique_ptr<Strategy> create_optimized_codec(const frame_info& frame, const coding_parameters& parameters);
 };
 
 extern template class jls_codec_factory<decoder_strategy>;

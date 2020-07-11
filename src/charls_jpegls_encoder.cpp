@@ -190,7 +190,7 @@ struct charls_jpegls_encoder final
                 writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
                 encode_scan(sourceInfo, stride, 1);
 
-                // Synchronize the source stream (EncodeScan works on a local copy)
+                // Synchronize the source stream (encode_scan works on a local copy)
                 skip_bytes(sourceInfo, byteCountComponent);
             }
         }
@@ -226,14 +226,14 @@ private:
     {
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, component_count};
 
-        auto codec = jls_codec_factory<encoder_strategy>().CreateCodec(frame_info,
+        auto codec = jls_codec_factory<encoder_strategy>().create_codec(frame_info,
                                                                     {near_lossless_, interleave_mode_, color_transformation_, false},
                                                                     preset_coding_parameters_);
-        unique_ptr<process_line> processLine(codec->CreateProcess(source, stride));
-        byte_stream_info destination{writer_.OutputStream()};
-        const size_t bytesWritten = codec->EncodeScan(move(processLine), destination);
+        unique_ptr<process_line> processLine(codec->create_process(source, stride));
+        byte_stream_info destination{writer_.output_stream()};
+        const size_t bytesWritten = codec->encode_scan(move(processLine), destination);
 
-        // Synchronize the destination encapsulated in the writer (EncodeScan works on a local copy)
+        // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
         writer_.seek(bytesWritten);
     }
 

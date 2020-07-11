@@ -8,51 +8,51 @@
 namespace charls {
 namespace test {
 
-class EncoderStrategyTester final : charls::encoder_strategy
+class encoder_strategy_tester final : encoder_strategy
 {
 public:
-    explicit EncoderStrategyTester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters) noexcept :
+    explicit encoder_strategy_tester(const frame_info& frame_info, const coding_parameters& parameters) noexcept :
         encoder_strategy(frame_info, parameters)
     {
     }
 
-    void SetPresets(const charls::jpegls_pc_parameters&) noexcept(false) override
+    void set_presets(const jpegls_pc_parameters&) noexcept(false) override
     {
     }
 
-    size_t EncodeScan(std::unique_ptr<charls::process_line>, byte_stream_info&) noexcept(false) override
+    size_t encode_scan(std::unique_ptr<process_line>, byte_stream_info&) noexcept(false) override
     {
         return 0;
     }
 
-    std::unique_ptr<charls::process_line> CreateProcess(byte_stream_info, uint32_t /*stride*/) noexcept(false) override
+    std::unique_ptr<process_line> create_process(byte_stream_info, uint32_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
 
-    void InitForward(byte_stream_info& info)
+    void initialize_forward(byte_stream_info& info)
     {
-        Init(info);
+        initialize(info);
     }
 
-    void AppendToBitStreamForward(const int32_t value, const int32_t length)
+    void append_to_bit_stream_forward(const uint32_t bits, const int32_t bit_count)
     {
-        AppendToBitStream(value, length);
+        append_to_bit_stream(bits, bit_count);
     }
 
-    void FlushForward()
+    void flush_forward()
     {
-        Flush();
+        flush();
     }
 
-    std::size_t GetLengthForward() const noexcept
+    std::size_t get_length_forward() const noexcept
     {
-        return GetLength();
+        return get_length();
     }
 
-    void EndScanForward()
+    void end_scan_forward()
     {
-        EndScan();
+        end_scan();
     }
 };
 

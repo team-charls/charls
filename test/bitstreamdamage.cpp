@@ -22,7 +22,7 @@ void TestDamagedBitStream1()
 
     vector<uint8_t> destination(256 * 256 * 2);
     const auto error = JpegLsDecode(destination.data(), destination.size(), encodedBuffer.data(), encodedBuffer.size(), nullptr, nullptr);
-    Assert::IsTrue(error == jpegls_errc::invalid_encoded_data);
+    assert::is_true(error == jpegls_errc::invalid_encoded_data);
 }
 
 
@@ -35,7 +35,7 @@ void TestDamagedBitStream2()
 
     vector<uint8_t> destination(512 * 512);
     const auto error = JpegLsDecode(destination.data(), destination.size(), encodedBuffer.data(), encodedBuffer.size(), nullptr, nullptr);
-    Assert::IsTrue(error == jpegls_errc::invalid_encoded_data);
+    assert::is_true(error == jpegls_errc::invalid_encoded_data);
 }
 
 
@@ -48,7 +48,7 @@ void TestDamagedBitStream3()
 
     vector<uint8_t> destination(512 * 512);
     const auto error = JpegLsDecode(destination.data(), destination.size(), encodedBuffer.data(), encodedBuffer.size(), nullptr, nullptr);
-    Assert::IsTrue(error == jpegls_errc::invalid_encoded_data);
+    assert::is_true(error == jpegls_errc::invalid_encoded_data);
 }
 
 
