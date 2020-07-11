@@ -3,6 +3,6 @@
 
 #pragma once
 
-void PerformanceTests(int loop_count);
-void DecodePerformanceTests(int loop_count);
-void TestLargeImagePerformanceRgb8(int loop_count);
+void performance_tests(int loop_count);
+void decode_performance_tests(int loop_count);
+void test_large_image_performance_rgb8(int loop_count);

@@ -15,7 +15,7 @@ using std::vector;
 
 namespace {
 
-bool ContainsString(const uint8_t* container, const uint8_t* bytes_to_find, const size_t bytes_length) noexcept
+bool contains_string(const uint8_t* container, const uint8_t* bytes_to_find, const size_t bytes_length) noexcept
 {
     for (size_t j = 0; j < bytes_length; ++j)
     {
@@ -26,24 +26,24 @@ bool ContainsString(const uint8_t* container, const uint8_t* bytes_to_find, cons
     return true;
 }
 
-int FindString(vector<uint8_t>& container, const uint8_t* bytes_to_find, const size_t bytes_length) noexcept
+int find_string(vector<uint8_t>& container, const uint8_t* bytes_to_find, const size_t bytes_length) noexcept
 {
     for (size_t i = 0; i < container.size() - bytes_length; ++i)
     {
-        if (ContainsString(&container[i], bytes_to_find, bytes_length))
+        if (contains_string(&container[i], bytes_to_find, bytes_length))
             return static_cast<int>(i);
     }
     return -1;
 }
 
 
-void TestDicomSampleImage(const char* name)
+void test_dicom_sample_image(const char* name)
 {
-    vector<uint8_t> data = ReadFile(name);
+    vector<uint8_t> data = read_file(name);
 
     const array<uint8_t, 8> pixelDataStart = {0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7};
 
-    const int offset = FindString(data, pixelDataStart.data(), pixelDataStart.size());
+    const int offset = find_string(data, pixelDataStart.data(), pixelDataStart.size());
 
     data.erase(data.begin(), data.begin() + offset - 4);
 
@@ -68,18 +68,18 @@ void TestDicomSampleImage(const char* name)
 } // namespace
 
 
-void TestDicomWG4Images()
+void test_dicom_wg4_images()
 {
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/XA1_JLSL");
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/CT2_JLSL");
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/MG1_JLSL");
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/MR1_JLSL");
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/MR2_JLSL");
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/MR3_JLSL");
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/MR4_JLSL");
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/NM1_JLSL");
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/RG1_JLSL");
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/RG2_JLSL");
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/RG3_JLSL");
-    TestDicomSampleImage("test/compsamples_jpegls/IMAGES/JLSL/SC1_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/XA1_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/CT2_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/MG1_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/MR1_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/MR2_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/MR3_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/MR4_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/NM1_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/RG1_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/RG2_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/RG3_JLSL");
+    test_dicom_sample_image("test/compsamples_jpegls/IMAGES/JLSL/SC1_JLSL");
 }

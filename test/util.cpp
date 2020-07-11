@@ -29,7 +29,7 @@ namespace {
 
 MSVC_WARNING_SUPPRESS(26497) // cannot be marked constexpr, check must be executed at runtime.
 
-bool IsMachineLittleEndian() noexcept
+bool is_machine_little_endian() noexcept
 {
     constexpr int a = 0xFF000001;  // NOLINT(bugprone-narrowing-conversions, cppcoreguidelines-narrowing-conversions)
     const auto* chars = reinterpret_cast<const char*>(&a);
@@ -42,9 +42,9 @@ MSVC_WARNING_UNSUPPRESS()
 } // namespace
 
 
-void FixEndian(vector<uint8_t>* buffer, const bool little_endian_data) noexcept
+void fix_endian(vector<uint8_t>* buffer, const bool little_endian_data) noexcept
 {
-    if (little_endian_data == IsMachineLittleEndian())
+    if (little_endian_data == is_machine_little_endian())
         return;
 
     for (size_t i = 0; i < buffer->size() - 1; i += 2)
@@ -54,7 +54,7 @@ void FixEndian(vector<uint8_t>* buffer, const bool little_endian_data) noexcept
 }
 
 
-vector<uint8_t> ReadFile(const char* filename, long offset, size_t bytes)
+vector<uint8_t> read_file(const char* filename, long offset, size_t bytes)
 {
     ifstream input;
     input.exceptions(ios::eofbit | ios::failbit | ios::badbit);
@@ -81,7 +81,7 @@ vector<uint8_t> ReadFile(const char* filename, long offset, size_t bytes)
 }
 
 
-void TestRoundTrip(const char* name, const vector<uint8_t>& decoded_buffer, const rect_size size, const int bits_per_sample, const int component_count, const int loop_count)
+void test_round_trip(const char* name, const vector<uint8_t>& decoded_buffer, const rect_size size, const int bits_per_sample, const int component_count, const int loop_count)
 {
     JlsParameters params = JlsParameters();
     params.components = component_count;
@@ -89,11 +89,11 @@ void TestRoundTrip(const char* name, const vector<uint8_t>& decoded_buffer, cons
     params.height = static_cast<int>(size.cy);
     params.width = static_cast<int>(size.cx);
 
-    TestRoundTrip(name, decoded_buffer, params, loop_count);
+    test_round_trip(name, decoded_buffer, params, loop_count);
 }
 
 
-void TestRoundTrip(const char* name, const vector<uint8_t>& original_buffer, JlsParameters& params, const int loop_count)
+void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, JlsParameters& params, const int loop_count)
 {
     vector<uint8_t> encodedBuffer(params.height * params.width * params.components * params.bitsPerSample / 4);
 
@@ -149,17 +149,17 @@ void TestRoundTrip(const char* name, const vector<uint8_t>& original_buffer, Jls
 }
 
 
-void TestFile(const char* filename, const int offset, const rect_size size2, const int bits_per_sample, const int component_count, const bool little_endian_file, const int loop_count)
+void test_file(const char* filename, const int offset, const rect_size size2, const int bits_per_sample, const int component_count, const bool little_endian_file, const int loop_count)
 {
     const size_t byteCount = size2.cx * size2.cy * component_count * ((bits_per_sample + 7) / 8);
-    vector<uint8_t> uncompressedBuffer = ReadFile(filename, offset, byteCount);
+    vector<uint8_t> uncompressedBuffer = read_file(filename, offset, byteCount);
 
     if (bits_per_sample > 8)
     {
-        FixEndian(&uncompressedBuffer, little_endian_file);
+        fix_endian(&uncompressedBuffer, little_endian_file);
     }
 
-    TestRoundTrip(filename, uncompressedBuffer, size2, bits_per_sample, component_count, loop_count);
+    test_round_trip(filename, uncompressedBuffer, size2, bits_per_sample, component_count, loop_count);
 }
 
 
@@ -167,6 +167,6 @@ void test_portable_anymap_file(const char* filename, const int loop_count)
 {
     portable_anymap_file anymapFile(filename);
 
-    TestRoundTrip(filename, anymapFile.image_data(), rect_size(anymapFile.width(), anymapFile.height()),
+    test_round_trip(filename, anymapFile.image_data(), rect_size(anymapFile.width(), anymapFile.height()),
                   anymapFile.bits_per_sample(), anymapFile.component_count(), loop_count);
 }

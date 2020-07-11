@@ -424,7 +424,7 @@ void jpeg_stream_reader::read_start_of_scan()
     }
 
     parameters_.near_lossless = read_byte(); // Read NEAR parameter
-    if (parameters_.near_lossless > MaximumNearLossless(static_cast<int>(maximum_sample_value())))
+    if (parameters_.near_lossless > compute_maximum_near_lossless(static_cast<int>(maximum_sample_value())))
         throw_jpegls_error(jpegls_errc::invalid_parameter_near_lossless);
 
     const auto mode = static_cast<interleave_mode>(read_byte()); // Read ILV parameter

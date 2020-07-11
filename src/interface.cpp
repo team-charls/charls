@@ -14,7 +14,7 @@ using impl::throw_jpegls_error;
 
 namespace {
 
-void VerifyInput(const byte_stream_info& destination, const JlsParameters& parameters)
+void verify_input(const byte_stream_info& destination, const JlsParameters& parameters)
 {
     if (!destination.rawStream && !destination.rawData)
         throw_jpegls_error(jpegls_errc::invalid_operation);
@@ -79,7 +79,7 @@ jpegls_errc JpegLsEncodeStream(const byte_stream_info destination, size_t& bytes
 
     try
     {
-        VerifyInput(source, params);
+        verify_input(source, params);
 
         JlsParameters info{params};
         if (info.stride == 0)

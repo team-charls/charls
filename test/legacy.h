@@ -3,4 +3,4 @@
 
 #pragma once
 
-void TestLegacyAPIs();
+void test_legacy_api();

@@ -18,7 +18,7 @@ namespace {
 // The following functions are used as sample code in the documentation
 // Ensure that the code compiles and works by unit testing it.
 
-std::vector<uint8_t> decode_simple_8bit_monochrome(const std::vector<uint8_t>& source)
+std::vector<uint8_t> decode_simple_8_bit_monochrome(const std::vector<uint8_t>& source)
 {
     std::vector<uint8_t> destination;
 
@@ -54,7 +54,7 @@ std::vector<uint8_t> decode_advanced(const std::vector<uint8_t>& source)
     return decoder.decode<std::vector<uint8_t>>();
 }
 
-std::vector<uint8_t> decode_simple_8bit_monochrome_legacy(const std::vector<uint8_t>& source)
+std::vector<uint8_t> decode_simple_8_bit_monochrome_legacy(const std::vector<uint8_t>& source)
 {
     std::array<char, ErrorMessageSize> error_message{};
     JlsParameters parameters{};
@@ -77,7 +77,7 @@ std::vector<uint8_t> decode_simple_8bit_monochrome_legacy(const std::vector<uint
     return destination;
 }
 
-std::vector<uint8_t> encode_simple_8bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
+std::vector<uint8_t> encode_simple_8_bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
 {
     constexpr auto bits_per_sample = 8;
     constexpr auto component_count = 1;
@@ -85,7 +85,7 @@ std::vector<uint8_t> encode_simple_8bit_monochrome(const std::vector<uint8_t>& s
                                           {width, height, bits_per_sample, component_count});
 }
 
-std::vector<uint8_t> encode_advanced_8bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
+std::vector<uint8_t> encode_advanced_8_bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
 {
     charls::jpegls_encoder encoder;
     encoder.frame_info({width, height, 8, 1});
@@ -101,7 +101,7 @@ std::vector<uint8_t> encode_advanced_8bit_monochrome(const std::vector<uint8_t>&
     return destination;
 }
 
-std::vector<uint8_t> encode_simple_8bit_monochrome_legacy(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
+std::vector<uint8_t> encode_simple_8_bit_monochrome_legacy(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
 {
     std::array<char, ErrorMessageSize> error_message{};
     JlsParameters parameters{};
@@ -142,7 +142,7 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
 
-        const vector<uint8_t> charls_decoded = decode_simple_8bit_monochrome(source);
+        const vector<uint8_t> charls_decoded = decode_simple_8_bit_monochrome(source);
 
         test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
     }
@@ -160,7 +160,7 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
 
-        const vector<uint8_t> charls_decoded = decode_simple_8bit_monochrome_legacy(source);
+        const vector<uint8_t> charls_decoded = decode_simple_8_bit_monochrome_legacy(source);
 
         test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
     }
@@ -169,7 +169,7 @@ public:
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
-        const vector<uint8_t> charls_encoded = encode_simple_8bit_monochrome(reference_file.image_data(),
+        const vector<uint8_t> charls_encoded = encode_simple_8_bit_monochrome(reference_file.image_data(),
             static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
@@ -179,7 +179,7 @@ public:
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
-        const vector<uint8_t> charls_encoded = encode_advanced_8bit_monochrome(reference_file.image_data(),
+        const vector<uint8_t> charls_encoded = encode_advanced_8_bit_monochrome(reference_file.image_data(),
             static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
@@ -189,7 +189,7 @@ public:
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
-        const vector<uint8_t> charls_encoded = encode_simple_8bit_monochrome_legacy(reference_file.image_data(),
+        const vector<uint8_t> charls_encoded = encode_simple_8_bit_monochrome_legacy(reference_file.image_data(),
             static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);

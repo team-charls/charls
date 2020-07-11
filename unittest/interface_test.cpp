@@ -216,7 +216,7 @@ public:
         params.custom.MaximumSampleValue = (1 << params.bitsPerSample) - 1;
         params.custom.ResetValue = 63;
 
-        const vector<uint8_t> noise_image = create_noise_image_16bit(static_cast<size_t>(params.height) * params.width, params.bitsPerSample, 21344);
+        const vector<uint8_t> noise_image = create_noise_image_16_bit(static_cast<size_t>(params.height) * params.width, params.bitsPerSample, 21344);
 
         test_round_trip_legacy(noise_image, params);
     }
@@ -226,7 +226,7 @@ public:
         vector<uint8_t> source{read_file("DataFiles/T8C0E3.JLS")};
 
         JlsParameters params{};
-        const auto source_info = FromByteArrayConst(source.data(), source.size());
+        const auto source_info = from_byte_array_const(source.data(), source.size());
         const jpegls_errc error = JpegLsReadHeaderStream(source_info, &params);
 
         Assert::AreEqual(jpegls_errc::success, error);
@@ -242,14 +242,14 @@ public:
         vector<uint8_t> source{read_file("DataFiles/T8C0E3.JLS")};
 
         JlsParameters params{};
-        const auto source_info = FromByteArrayConst(source.data(), source.size());
+        const auto source_info = from_byte_array_const(source.data(), source.size());
         jpegls_errc error = JpegLsReadHeaderStream(source_info, &params);
         Assert::AreEqual(jpegls_errc::success, error);
 
         const int bytesPerSample = params.bitsPerSample > 8 ? 2 : 1;
         vector<uint8_t> destination(static_cast<size_t>(params.width) * params.height * bytesPerSample * params.components);
 
-        const auto destination_info = FromByteArray(destination.data(), destination.size());
+        const auto destination_info = from_byte_array(destination.data(), destination.size());
         error = JpegLsDecodeStream(destination_info, source_info, nullptr);
         Assert::AreEqual(jpegls_errc::success, error);
     }

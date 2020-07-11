@@ -30,7 +30,7 @@ struct jls_context final
         if (k != 0)
             return 0;
 
-        return BitWiseSign(2 * B + N - 1);
+        return bit_wise_sign(2 * B + N - 1);
     }
 
     FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless, const int32_t NRESET) noexcept

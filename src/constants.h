@@ -24,7 +24,7 @@ constexpr int MinimumBitsPerSample = 2;
 constexpr int MaximumBitsPerSample = 16;
 constexpr int maximum_near_lossless = 255;
 
-constexpr int MaximumNearLossless(const int maximum_sample_value) noexcept
+constexpr int compute_maximum_near_lossless(const int maximum_sample_value) noexcept
 {
     return std::min(255, maximum_sample_value / 2); // As defined by ISO/IEC 14495-1, C.2.3
 }

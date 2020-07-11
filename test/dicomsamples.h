@@ -3,4 +3,4 @@
 
 #pragma once
 
-void TestDicomWG4Images();
+void test_dicom_wg4_images();

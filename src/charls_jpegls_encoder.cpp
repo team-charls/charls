@@ -181,7 +181,7 @@ struct charls_jpegls_encoder final
             writer_.write_jpegls_preset_parameters_segment(preset);
         }
 
-        byte_stream_info sourceInfo = FromByteArrayConst(source, source_size_bytes);
+        byte_stream_info sourceInfo = from_byte_array_const(source, source_size_bytes);
         if (interleave_mode_ == charls::interleave_mode::none)
         {
             const size_t byteCountComponent = ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U) * frame_info_.width * frame_info_.height;

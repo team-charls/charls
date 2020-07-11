@@ -139,7 +139,7 @@ vector<uint8_t> create_test_spiff_header(const uint8_t high_version, const uint8
     const size_t spiff_header_size = buffer.size();
     buffer.resize(buffer.size() + 100);
 
-    const byte_stream_info info = FromByteArray(buffer.data() + spiff_header_size, buffer.size() - spiff_header_size);
+    const byte_stream_info info = from_byte_array(buffer.data() + spiff_header_size, buffer.size() - spiff_header_size);
     jpeg_stream_writer writer(info);
 
     if (end_of_directory)
@@ -153,7 +153,7 @@ vector<uint8_t> create_test_spiff_header(const uint8_t high_version, const uint8
     return buffer;
 }
 
-vector<uint8_t> create_noise_image_16bit(const size_t pixel_count, const int bit_count, const uint32_t seed)
+vector<uint8_t> create_noise_image_16_bit(const size_t pixel_count, const int bit_count, const uint32_t seed)
 {
     const auto max_value = static_cast<uint16_t>((1U << bit_count) - 1U);
     mt19937 generator(seed);

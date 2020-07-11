@@ -20,15 +20,15 @@ struct byte_stream_info final
 };
 
 
-inline byte_stream_info FromByteArray(void* bytes, const std::size_t count) noexcept
+inline byte_stream_info from_byte_array(void* bytes, const std::size_t count) noexcept
 {
     return {nullptr, static_cast<uint8_t*>(bytes), count};
 }
 
 
-inline byte_stream_info FromByteArrayConst(const void* bytes, const std::size_t count) noexcept
+inline byte_stream_info from_byte_array_const(const void* bytes, const std::size_t count) noexcept
 {
-    return FromByteArray(const_cast<void*>(bytes), count);
+    return from_byte_array(const_cast<void*>(bytes), count);
 }
 
 CHARLS_API_IMPORT_EXPORT charls::jpegls_errc JpegLsEncodeStream(byte_stream_info destination, size_t& bytes_written, byte_stream_info source, const JlsParameters& params);

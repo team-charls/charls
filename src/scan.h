@@ -30,7 +30,7 @@ extern std::vector<int8_t> quantization_lut_lossless_16;
 // Used to determine how large runs should be encoded at a time. Defined by the JPEG-LS standard, A.2.1., Initialization step 3.
 constexpr std::array<int, 32> J = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-constexpr int32_t ApplySign(const int32_t i, const int32_t sign) noexcept
+constexpr int32_t apply_sign(const int32_t i, const int32_t sign) noexcept
 {
     return (sign ^ i) - sign;
 }
@@ -40,7 +40,7 @@ constexpr int32_t ApplySign(const int32_t i, const int32_t sign) noexcept
 
 #if 0
 
-inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
+inline int32_t get_predicted_value(int32_t Ra, int32_t Rb, int32_t Rc)
 {
     if (Ra < Rb)
     {
@@ -64,10 +64,10 @@ inline int32_t GetPredictedValue(int32_t Ra, int32_t Rb, int32_t Rc)
 
 #else
 
-inline int32_t GetPredictedValue(const int32_t Ra, const int32_t Rb, const int32_t Rc) noexcept
+inline int32_t get_predicted_value(const int32_t Ra, const int32_t Rb, const int32_t Rc) noexcept
 {
     // sign trick reduces the number of if statements (branches)
-    const int32_t sgn = BitWiseSign(Rb - Ra);
+    const int32_t sgn = bit_wise_sign(Rb - Ra);
 
     // is Ra between Rc and Rb?
     if ((sgn ^ (Rc - Ra)) < 0)
@@ -246,10 +246,10 @@ private:
 template<typename Traits, typename Strategy>
 typename Traits::SAMPLE jls_codec<Traits, Strategy>::DoRegular(const int32_t Qs, int32_t, const int32_t pred, decoder_strategy*)
 {
-    const int32_t sign = BitWiseSign(Qs);
-    jls_context& ctx = contexts_[ApplySign(Qs, sign)];
+    const int32_t sign = bit_wise_sign(Qs);
+    jls_context& ctx = contexts_[apply_sign(Qs, sign)];
     const int32_t k = ctx.get_golomb_code();
-    const int32_t Px = traits.correct_prediction(pred + ApplySign(ctx.C, sign));
+    const int32_t Px = traits.correct_prediction(pred + apply_sign(ctx.C, sign));
 
     int32_t ErrVal;
     const golomb_code& code = decodingTables[k].get(Strategy::peek_byte());
@@ -270,7 +270,7 @@ typename Traits::SAMPLE jls_codec<Traits, Strategy>::DoRegular(const int32_t Qs,
         ErrVal = ErrVal ^ ctx.get_error_correction(traits.NEAR);
     }
     ctx.update_variables(ErrVal, traits.NEAR, traits.RESET);
-    ErrVal = ApplySign(ErrVal, sign);
+    ErrVal = apply_sign(ErrVal, sign);
     return traits.compute_reconstructed_sample(Px, ErrVal);
 }
 
@@ -278,22 +278,22 @@ typename Traits::SAMPLE jls_codec<Traits, Strategy>::DoRegular(const int32_t Qs,
 template<typename Traits, typename Strategy>
 typename Traits::SAMPLE jls_codec<Traits, Strategy>::DoRegular(const int32_t Qs, int32_t x, const int32_t pred, encoder_strategy*)
 {
-    const int32_t sign = BitWiseSign(Qs);
-    jls_context& ctx = contexts_[ApplySign(Qs, sign)];
+    const int32_t sign = bit_wise_sign(Qs);
+    jls_context& ctx = contexts_[apply_sign(Qs, sign)];
     const int32_t k = ctx.get_golomb_code();
-    const int32_t Px = traits.correct_prediction(pred + ApplySign(ctx.C, sign));
-    const int32_t ErrVal = traits.compute_error_value(ApplySign(x - Px, sign));
+    const int32_t Px = traits.correct_prediction(pred + apply_sign(ctx.C, sign));
+    const int32_t ErrVal = traits.compute_error_value(apply_sign(x - Px, sign));
 
     EncodeMappedValue(k, get_mapped_error_value(ctx.get_error_correction(k | traits.NEAR) ^ ErrVal), traits.LIMIT);
     ctx.update_variables(ErrVal, traits.NEAR, traits.RESET);
-    ASSERT(traits.is_near(traits.compute_reconstructed_sample(Px, ApplySign(ErrVal, sign)), x));
-    return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Px, ApplySign(ErrVal, sign)));
+    ASSERT(traits.is_near(traits.compute_reconstructed_sample(Px, apply_sign(ErrVal, sign)), x));
+    return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Px, apply_sign(ErrVal, sign)));
 }
 
 
 // Functions to build tables used to decode short Golomb codes.
 
-inline std::pair<int32_t, int32_t> CreateEncodedValue(const int32_t k, const int32_t mapped_error) noexcept
+inline std::pair<int32_t, int32_t> create_encoded_value(const int32_t k, const int32_t mapped_error) noexcept
 {
     const int32_t highBits = mapped_error >> k;
     return std::make_pair(highBits + k + 1, (1 << k) | (mapped_error & ((1 << k) - 1)));
@@ -307,7 +307,7 @@ inline golomb_code_table initialize_table(const int32_t k) noexcept
     {
         // Q is not used when k != 0
         const int32_t merrval = get_mapped_error_value(nerr);
-        const std::pair<int32_t, int32_t> pairCode = CreateEncodedValue(k, merrval);
+        const std::pair<int32_t, int32_t> pairCode = create_encoded_value(k, merrval);
         if (static_cast<size_t>(pairCode.first) > golomb_code_table::byte_bit_count)
             break;
 
@@ -319,7 +319,7 @@ inline golomb_code_table initialize_table(const int32_t k) noexcept
     {
         // Q is not used when k != 0
         const int32_t merrval = get_mapped_error_value(nerr);
-        const std::pair<int32_t, int32_t> pairCode = CreateEncodedValue(k, merrval);
+        const std::pair<int32_t, int32_t> pairCode = create_encoded_value(k, merrval);
         if (static_cast<size_t>(pairCode.first) > golomb_code_table::byte_bit_count)
             break;
 
@@ -479,27 +479,27 @@ triplet<typename Traits::SAMPLE> jls_codec<Traits, Strategy>::DecodeRIPixel(trip
     const int32_t errorValue2 = DecodeRIError(contextRunmode_[0]);
     const int32_t errorValue3 = DecodeRIError(contextRunmode_[0]);
 
-    return triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
-                           traits.compute_reconstructed_sample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
-                           traits.compute_reconstructed_sample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3)));
+    return triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * sign(Rb.v1 - Ra.v1)),
+                           traits.compute_reconstructed_sample(Rb.v2, errorValue2 * sign(Rb.v2 - Ra.v2)),
+                           traits.compute_reconstructed_sample(Rb.v3, errorValue3 * sign(Rb.v3 - Ra.v3)));
 }
 
 
 template<typename Traits, typename Strategy>
 triplet<typename Traits::SAMPLE> jls_codec<Traits, Strategy>::EncodeRIPixel(triplet<SAMPLE> x, triplet<SAMPLE> Ra, triplet<SAMPLE> Rb)
 {
-    const int32_t errorValue1 = traits.compute_error_value(Sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
+    const int32_t errorValue1 = traits.compute_error_value(sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
     EncodeRIError(contextRunmode_[0], errorValue1);
 
-    const int32_t errorValue2 = traits.compute_error_value(Sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
+    const int32_t errorValue2 = traits.compute_error_value(sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
     EncodeRIError(contextRunmode_[0], errorValue2);
 
-    const int32_t errorValue3 = traits.compute_error_value(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
+    const int32_t errorValue3 = traits.compute_error_value(sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
     EncodeRIError(contextRunmode_[0], errorValue3);
 
-    return triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
-                           traits.compute_reconstructed_sample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
-                           traits.compute_reconstructed_sample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3)));
+    return triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * sign(Rb.v1 - Ra.v1)),
+                           traits.compute_reconstructed_sample(Rb.v2, errorValue2 * sign(Rb.v2 - Ra.v2)),
+                           traits.compute_reconstructed_sample(Rb.v3, errorValue3 * sign(Rb.v3 - Ra.v3)));
 }
 
 template<typename Traits, typename Strategy>
@@ -510,32 +510,32 @@ quad<typename Traits::SAMPLE> jls_codec<Traits, Strategy>::DecodeRIPixel(quad<SA
     const int32_t errorValue3 = DecodeRIError(contextRunmode_[0]);
     const int32_t errorValue4 = DecodeRIError(contextRunmode_[0]);
 
-    return quad<SAMPLE>(triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
-                                        traits.compute_reconstructed_sample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
-                                        traits.compute_reconstructed_sample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3))),
-                        traits.compute_reconstructed_sample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
+    return quad<SAMPLE>(triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * sign(Rb.v1 - Ra.v1)),
+                                        traits.compute_reconstructed_sample(Rb.v2, errorValue2 * sign(Rb.v2 - Ra.v2)),
+                                        traits.compute_reconstructed_sample(Rb.v3, errorValue3 * sign(Rb.v3 - Ra.v3))),
+                        traits.compute_reconstructed_sample(Rb.v4, errorValue4 * sign(Rb.v4 - Ra.v4)));
 }
 
 
 template<typename Traits, typename Strategy>
 quad<typename Traits::SAMPLE> jls_codec<Traits, Strategy>::EncodeRIPixel(quad<SAMPLE> x, quad<SAMPLE> Ra, quad<SAMPLE> Rb)
 {
-    const int32_t errorValue1 = traits.compute_error_value(Sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
+    const int32_t errorValue1 = traits.compute_error_value(sign(Rb.v1 - Ra.v1) * (x.v1 - Rb.v1));
     EncodeRIError(contextRunmode_[0], errorValue1);
 
-    const int32_t errorValue2 = traits.compute_error_value(Sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
+    const int32_t errorValue2 = traits.compute_error_value(sign(Rb.v2 - Ra.v2) * (x.v2 - Rb.v2));
     EncodeRIError(contextRunmode_[0], errorValue2);
 
-    const int32_t errorValue3 = traits.compute_error_value(Sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
+    const int32_t errorValue3 = traits.compute_error_value(sign(Rb.v3 - Ra.v3) * (x.v3 - Rb.v3));
     EncodeRIError(contextRunmode_[0], errorValue3);
 
-    const int32_t errorValue4 = traits.compute_error_value(Sign(Rb.v4 - Ra.v4) * (x.v4 - Rb.v4));
+    const int32_t errorValue4 = traits.compute_error_value(sign(Rb.v4 - Ra.v4) * (x.v4 - Rb.v4));
     EncodeRIError(contextRunmode_[0], errorValue4);
 
-    return quad<SAMPLE>(triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * Sign(Rb.v1 - Ra.v1)),
-                                        traits.compute_reconstructed_sample(Rb.v2, errorValue2 * Sign(Rb.v2 - Ra.v2)),
-                                        traits.compute_reconstructed_sample(Rb.v3, errorValue3 * Sign(Rb.v3 - Ra.v3))),
-                        traits.compute_reconstructed_sample(Rb.v4, errorValue4 * Sign(Rb.v4 - Ra.v4)));
+    return quad<SAMPLE>(triplet<SAMPLE>(traits.compute_reconstructed_sample(Rb.v1, errorValue1 * sign(Rb.v1 - Ra.v1)),
+                                        traits.compute_reconstructed_sample(Rb.v2, errorValue2 * sign(Rb.v2 - Ra.v2)),
+                                        traits.compute_reconstructed_sample(Rb.v3, errorValue3 * sign(Rb.v3 - Ra.v3))),
+                        traits.compute_reconstructed_sample(Rb.v4, errorValue4 * sign(Rb.v4 - Ra.v4)));
 }
 
 
@@ -549,7 +549,7 @@ typename Traits::SAMPLE jls_codec<Traits, Strategy>::DecodeRIPixel(int32_t Ra, i
     }
 
     const int32_t ErrVal = DecodeRIError(contextRunmode_[0]);
-    return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Rb, ErrVal * Sign(Rb - Ra)));
+    return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Rb, ErrVal * sign(Rb - Ra)));
 }
 
 
@@ -563,9 +563,9 @@ typename Traits::SAMPLE jls_codec<Traits, Strategy>::EncodeRIPixel(const int32_t
         return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Ra, ErrVal));
     }
 
-    const int32_t ErrVal = traits.compute_error_value((x - Rb) * Sign(Rb - Ra));
+    const int32_t ErrVal = traits.compute_error_value((x - Rb) * sign(Rb - Ra));
     EncodeRIError(contextRunmode_[0], ErrVal);
-    return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Rb, ErrVal * Sign(Rb - Ra)));
+    return static_cast<SAMPLE>(traits.compute_reconstructed_sample(Rb, ErrVal * sign(Rb - Ra)));
 }
 
 
@@ -700,7 +700,7 @@ void jls_codec<Traits, Strategy>::DoLine(SAMPLE*)
 
         if (Qs != 0)
         {
-            currentLine_[index] = DoRegular(Qs, currentLine_[index], GetPredictedValue(Ra, Rb, Rc), static_cast<Strategy*>(nullptr));
+            currentLine_[index] = DoRegular(Qs, currentLine_[index], get_predicted_value(Ra, Rb, Rc), static_cast<Strategy*>(nullptr));
             ++index;
         }
         else
@@ -736,9 +736,9 @@ void jls_codec<Traits, Strategy>::DoLine(triplet<SAMPLE>*)
         else
         {
             triplet<SAMPLE> Rx;
-            Rx.v1 = DoRegular(Qs1, currentLine_[index].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1), static_cast<Strategy*>(nullptr));
-            Rx.v2 = DoRegular(Qs2, currentLine_[index].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), static_cast<Strategy*>(nullptr));
-            Rx.v3 = DoRegular(Qs3, currentLine_[index].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), static_cast<Strategy*>(nullptr));
+            Rx.v1 = DoRegular(Qs1, currentLine_[index].v1, get_predicted_value(Ra.v1, Rb.v1, Rc.v1), static_cast<Strategy*>(nullptr));
+            Rx.v2 = DoRegular(Qs2, currentLine_[index].v2, get_predicted_value(Ra.v2, Rb.v2, Rc.v2), static_cast<Strategy*>(nullptr));
+            Rx.v3 = DoRegular(Qs3, currentLine_[index].v3, get_predicted_value(Ra.v3, Rb.v3, Rc.v3), static_cast<Strategy*>(nullptr));
             currentLine_[index] = Rx;
             ++index;
         }
@@ -770,10 +770,10 @@ void jls_codec<Traits, Strategy>::DoLine(quad<SAMPLE>*)
         else
         {
             quad<SAMPLE> Rx;
-            Rx.v1 = DoRegular(Qs1, currentLine_[index].v1, GetPredictedValue(Ra.v1, Rb.v1, Rc.v1), static_cast<Strategy*>(nullptr));
-            Rx.v2 = DoRegular(Qs2, currentLine_[index].v2, GetPredictedValue(Ra.v2, Rb.v2, Rc.v2), static_cast<Strategy*>(nullptr));
-            Rx.v3 = DoRegular(Qs3, currentLine_[index].v3, GetPredictedValue(Ra.v3, Rb.v3, Rc.v3), static_cast<Strategy*>(nullptr));
-            Rx.v4 = DoRegular(Qs4, currentLine_[index].v4, GetPredictedValue(Ra.v4, Rb.v4, Rc.v4), static_cast<Strategy*>(nullptr));
+            Rx.v1 = DoRegular(Qs1, currentLine_[index].v1, get_predicted_value(Ra.v1, Rb.v1, Rc.v1), static_cast<Strategy*>(nullptr));
+            Rx.v2 = DoRegular(Qs2, currentLine_[index].v2, get_predicted_value(Ra.v2, Rb.v2, Rc.v2), static_cast<Strategy*>(nullptr));
+            Rx.v3 = DoRegular(Qs3, currentLine_[index].v3, get_predicted_value(Ra.v3, Rb.v3, Rc.v3), static_cast<Strategy*>(nullptr));
+            Rx.v4 = DoRegular(Qs4, currentLine_[index].v4, get_predicted_value(Ra.v4, Rb.v4, Rc.v4), static_cast<Strategy*>(nullptr));
             currentLine_[index] = Rx;
             ++index;
         }

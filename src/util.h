@@ -150,13 +150,13 @@ CONSTEXPR int32_t log_2(const int32_t n) noexcept
 }
 
 
-constexpr int32_t Sign(const int32_t n) noexcept
+constexpr int32_t sign(const int32_t n) noexcept
 {
     return (n >> (int32_t_bit_count - 1)) | 1;
 }
 
 
-constexpr int32_t BitWiseSign(const int32_t i) noexcept
+constexpr int32_t bit_wise_sign(const int32_t i) noexcept
 {
     return i >> (int32_t_bit_count - 1);
 }

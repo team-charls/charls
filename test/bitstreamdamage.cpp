@@ -16,9 +16,9 @@ using std::vector;
 
 namespace {
 
-void TestDamagedBitStream1()
+void test_damaged_bit_stream1()
 {
-    vector<uint8_t> encodedBuffer = ReadFile("test/incorrect_images/InfiniteLoopFFMPEG.jls");
+    vector<uint8_t> encodedBuffer = read_file("test/incorrect_images/InfiniteLoopFFMPEG.jls");
 
     vector<uint8_t> destination(256 * 256 * 2);
     const auto error = JpegLsDecode(destination.data(), destination.size(), encodedBuffer.data(), encodedBuffer.size(), nullptr, nullptr);
@@ -26,9 +26,9 @@ void TestDamagedBitStream1()
 }
 
 
-void TestDamagedBitStream2()
+void test_damaged_bit_stream2()
 {
-    vector<uint8_t> encodedBuffer = ReadFile("test/lena8b.jls");
+    vector<uint8_t> encodedBuffer = read_file("test/lena8b.jls");
 
     encodedBuffer.resize(900);
     encodedBuffer.resize(40000, 3);
@@ -39,9 +39,9 @@ void TestDamagedBitStream2()
 }
 
 
-void TestDamagedBitStream3()
+void test_damaged_bit_stream3()
 {
-    vector<uint8_t> encodedBuffer = ReadFile("test/lena8b.jls");
+    vector<uint8_t> encodedBuffer = read_file("test/lena8b.jls");
 
     encodedBuffer[300] = 0xFF;
     encodedBuffer[301] = 0xFF;
@@ -52,9 +52,9 @@ void TestDamagedBitStream3()
 }
 
 
-void TestFileWithRandomHeaderDamage(const char* filename)
+void test_file_with_random_header_damage(const char* filename)
 {
-    const vector<uint8_t> encodedBufferOriginal = ReadFile(filename);
+    const vector<uint8_t> encodedBufferOriginal = read_file(filename);
 
     mt19937 generator(102347325);
 
@@ -93,25 +93,25 @@ void TestFileWithRandomHeaderDamage(const char* filename)
 }
 
 
-void TestRandomMalformedHeader()
+void test_random_malformed_header()
 {
-    TestFileWithRandomHeaderDamage("test/conformance/T8C0E0.JLS");
-    TestFileWithRandomHeaderDamage("test/conformance/T8C1E0.JLS");
-    TestFileWithRandomHeaderDamage("test/conformance/T8C2E0.JLS");
+    test_file_with_random_header_damage("test/conformance/T8C0E0.JLS");
+    test_file_with_random_header_damage("test/conformance/T8C1E0.JLS");
+    test_file_with_random_header_damage("test/conformance/T8C2E0.JLS");
 }
 
 
 } // namespace
 
 
-void DamagedBitStreamTests()
+void damaged_bit_stream_tests()
 {
     cout << "Test Damaged bit stream\r\n";
-    TestDamagedBitStream1();
-    TestDamagedBitStream2();
-    TestDamagedBitStream3();
+    test_damaged_bit_stream1();
+    test_damaged_bit_stream2();
+    test_damaged_bit_stream3();
 
     cout << "Begin random malformed bit stream tests:\n";
-    TestRandomMalformedHeader();
+    test_random_malformed_header();
     cout << "End random malformed bit stream tests:\n";
 }

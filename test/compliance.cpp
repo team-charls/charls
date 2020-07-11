@@ -18,7 +18,7 @@ using namespace charls;
 
 namespace {
 
-void Triplet2Planar(vector<uint8_t>& buffer, const rect_size size)
+void triplet2_planar(vector<uint8_t>& buffer, const rect_size size)
 {
     vector<uint8_t> workBuffer(buffer.size());
 
@@ -33,7 +33,7 @@ void Triplet2Planar(vector<uint8_t>& buffer, const rect_size size)
 }
 
 
-bool VerifyEncodedBytes(const void* uncompressed_data, const size_t uncompressed_length, const void* compressed_data, const size_t compressed_length)
+bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompressed_length, const void* compressed_data, const size_t compressed_length)
 {
     JlsParameters info{};
     error_code error = JpegLsReadHeader(compressed_data, compressed_length, &info, nullptr);
@@ -58,7 +58,7 @@ bool VerifyEncodedBytes(const void* uncompressed_data, const size_t uncompressed
 }
 
 
-void TestCompliance(const uint8_t* compressed_bytes, const size_t compressed_length, const uint8_t* uncompressed_data, const size_t uncompressed_length, const bool check_encode)
+void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_length, const uint8_t* uncompressed_data, const size_t uncompressed_length, const bool check_encode)
 {
     JlsParameters info{};
     error_code error = JpegLsReadHeader(compressed_bytes, compressed_length, &info, nullptr);
@@ -66,7 +66,7 @@ void TestCompliance(const uint8_t* compressed_bytes, const size_t compressed_len
 
     if (check_encode)
     {
-        assert::is_true(VerifyEncodedBytes(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
+        assert::is_true(verify_encoded_bytes(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
     }
 
     vector<uint8_t> destination(static_cast<size_t>(info.height) * info.width * ((info.bitsPerSample + 7) / 8) * info.components);
@@ -88,10 +88,10 @@ void TestCompliance(const uint8_t* compressed_bytes, const size_t compressed_len
 }
 
 
-void DecompressFile(const char* name_encoded, const char* name_raw, const int offset, const bool check_encode = true)
+void decompress_file(const char* name_encoded, const char* name_raw, const int offset, const bool check_encode = true)
 {
     cout << "Conformance test:" << name_encoded << "\n\r";
-    vector<uint8_t> encodedBuffer = ReadFile(name_encoded);
+    vector<uint8_t> encodedBuffer = read_file(name_encoded);
 
     JlsParameters params{};
     if (make_error_code(JpegLsReadHeader(encodedBuffer.data(), encodedBuffer.size(), &params, nullptr)))
@@ -100,19 +100,19 @@ void DecompressFile(const char* name_encoded, const char* name_raw, const int of
         return;
     }
 
-    vector<uint8_t> rawBuffer = ReadFile(name_raw, offset);
+    vector<uint8_t> rawBuffer = read_file(name_raw, offset);
 
     if (params.bitsPerSample > 8)
     {
-        FixEndian(&rawBuffer, false);
+        fix_endian(&rawBuffer, false);
     }
 
     if (params.interleaveMode == interleave_mode::none && params.components == 3)
     {
-        Triplet2Planar(rawBuffer, rect_size(params.width, params.height));
+        triplet2_planar(rawBuffer, rect_size(params.width, params.height));
     }
 
-    TestCompliance(encodedBuffer.data(), encodedBuffer.size(), rawBuffer.data(), rawBuffer.size(), check_encode);
+    test_compliance(encodedBuffer.data(), encodedBuffer.size(), rawBuffer.data(), rawBuffer.size(), check_encode);
 }
 
 
@@ -163,7 +163,7 @@ const array<uint8_t, 16> buffer = {0, 0, 90, 74,
 } // namespace
 
 
-void TestSampleAnnexH3()
+void test_sample_annex_h3()
 {
     ////rect_size size = rect_size(4,4);
     vector<uint8_t> vecRaw(16);
@@ -172,50 +172,50 @@ void TestSampleAnnexH3()
 }
 
 
-void TestColorTransforms_HpImages()
+void test_color_transforms_hp_images()
 {
-    DecompressFile("test/jlsimage/banny_normal.jls", "test/jlsimage/banny.ppm", 38, false);
-    DecompressFile("test/jlsimage/banny_HP1.jls", "test/jlsimage/banny.ppm", 38, false);
-    DecompressFile("test/jlsimage/banny_HP2.jls", "test/jlsimage/banny.ppm", 38, false);
-    DecompressFile("test/jlsimage/banny_HP3.jls", "test/jlsimage/banny.ppm", 38, false);
+    decompress_file("test/jlsimage/banny_normal.jls", "test/jlsimage/banny.ppm", 38, false);
+    decompress_file("test/jlsimage/banny_HP1.jls", "test/jlsimage/banny.ppm", 38, false);
+    decompress_file("test/jlsimage/banny_HP2.jls", "test/jlsimage/banny.ppm", 38, false);
+    decompress_file("test/jlsimage/banny_HP3.jls", "test/jlsimage/banny.ppm", 38, false);
 }
 
 
-void TestConformance()
+void test_conformance()
 {
     // Test 1
-    DecompressFile("test/conformance/T8C0E0.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/T8C0E0.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 2
-    DecompressFile("test/conformance/T8C1E0.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/T8C1E0.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 3
-    DecompressFile("test/conformance/T8C2E0.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/T8C2E0.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 4
-    DecompressFile("test/conformance/T8C0E3.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/T8C0E3.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 5
-    DecompressFile("test/conformance/T8C1E3.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/T8C1E3.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 6
-    DecompressFile("test/conformance/T8C2E3.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/T8C2E3.JLS", "test/conformance/TEST8.PPM", 15);
 
     // Test 7
     // Test 8
 
     // Test 9
-    DecompressFile("test/conformance/T8NDE0.JLS", "test/conformance/TEST8BS2.PGM", 15);
+    decompress_file("test/conformance/T8NDE0.JLS", "test/conformance/TEST8BS2.PGM", 15);
 
     // Test 10
-    DecompressFile("test/conformance/T8NDE3.JLS", "test/conformance/TEST8BS2.PGM", 15);
+    decompress_file("test/conformance/T8NDE3.JLS", "test/conformance/TEST8BS2.PGM", 15);
 
     // Test 11
-    DecompressFile("test/conformance/T16E0.JLS", "test/conformance/TEST16.PGM", 16);
+    decompress_file("test/conformance/T16E0.JLS", "test/conformance/TEST16.PGM", 16);
 
     // Test 12
-    DecompressFile("test/conformance/T16E3.JLS", "test/conformance/TEST16.PGM", 16);
+    decompress_file("test/conformance/T16E3.JLS", "test/conformance/TEST16.PGM", 16);
 
     // additional, Lena compressed with other codec (UBC?), vfy with CharLS
-    DecompressFile("test/lena8b.jls", "test/lena8b.raw", 0);
+    decompress_file("test/lena8b.jls", "test/lena8b.raw", 0);
 }

@@ -141,7 +141,7 @@ private:
 
 
 template<typename Transform, typename T>
-void TransformLineToQuad(const T* source, const size_t pixel_stride_in, quad<T>* destination, const size_t pixel_stride, Transform& transform) noexcept
+void transform_line_to_quad(const T* source, const size_t pixel_stride_in, quad<T>* destination, const size_t pixel_stride, Transform& transform) noexcept
 {
     const auto pixel_count = std::min(pixel_stride, pixel_stride_in);
 
@@ -154,7 +154,7 @@ void TransformLineToQuad(const T* source, const size_t pixel_stride_in, quad<T>*
 
 
 template<typename Transform, typename T>
-void TransformQuadToLine(const quad<T>* source, const size_t pixel_stride_in, T* destination, const size_t pixel_stride, Transform& transform) noexcept
+void transform_quad_to_line(const quad<T>* source, const size_t pixel_stride_in, T* destination, const size_t pixel_stride, Transform& transform) noexcept
 {
     const auto pixel_count = std::min(pixel_stride, pixel_stride_in);
 
@@ -172,7 +172,7 @@ void TransformQuadToLine(const quad<T>* source, const size_t pixel_stride_in, T*
 
 
 template<typename T>
-void TransformRgbToBgr(T* buffer, int samples_per_pixel, const size_t pixel_count) noexcept
+void transform_rgb_to_bgr(T* buffer, int samples_per_pixel, const size_t pixel_count) noexcept
 {
     for (auto i = 0U; i < pixel_count; ++i)
     {
@@ -183,7 +183,7 @@ void TransformRgbToBgr(T* buffer, int samples_per_pixel, const size_t pixel_coun
 
 
 template<typename Transform, typename T>
-void TransformLine(triplet<T>* destination, const triplet<T>* source, const size_t pixel_count, Transform& transform) noexcept
+void transform_line(triplet<T>* destination, const triplet<T>* source, const size_t pixel_count, Transform& transform) noexcept
 {
     for (auto i = 0U; i < pixel_count; ++i)
     {
@@ -193,7 +193,7 @@ void TransformLine(triplet<T>* destination, const triplet<T>* source, const size
 
 
 template<typename Transform, typename PixelType>
-void TransformLine(quad<PixelType>* destination, const quad<PixelType>* source, const size_t pixel_count, Transform& transform) noexcept
+void transform_line(quad<PixelType>* destination, const quad<PixelType>* source, const size_t pixel_count, Transform& transform) noexcept
 {
     for (auto i = 0U; i < pixel_count; ++i)
     {
@@ -203,7 +203,7 @@ void TransformLine(quad<PixelType>* destination, const quad<PixelType>* source, 
 
 
 template<typename Transform, typename PixelType>
-void TransformLineToTriplet(const PixelType* source, const size_t pixel_stride_in, triplet<PixelType>* destination, const size_t pixel_stride, Transform& transform) noexcept
+void transform_line_to_triplet(const PixelType* source, const size_t pixel_stride_in, triplet<PixelType>* destination, const size_t pixel_stride, Transform& transform) noexcept
 {
     const auto pixel_count = std::min(pixel_stride, pixel_stride_in);
     triplet<PixelType>* ptypeBuffer = destination;
@@ -216,7 +216,7 @@ void TransformLineToTriplet(const PixelType* source, const size_t pixel_stride_i
 
 
 template<typename Transform, typename PixelType>
-void TransformTripletToLine(const triplet<PixelType>* source, const size_t pixel_stride_in, PixelType* destination, const size_t pixel_stride, Transform& transform) noexcept
+void transform_triplet_to_line(const triplet<PixelType>* source, const size_t pixel_stride_in, PixelType* destination, const size_t pixel_stride, Transform& transform) noexcept
 {
     const auto pixel_count = std::min(pixel_stride, pixel_stride_in);
     const triplet<PixelType>* ptypeBufferIn = source;
@@ -280,7 +280,7 @@ public:
         if (parameters_.output_bgr)
         {
             memcpy(tempLine_.data(), source, sizeof(triplet<size_type>) * pixel_count);
-            TransformRgbToBgr(tempLine_.data(), frame_info_.component_count, pixel_count);
+            transform_rgb_to_bgr(tempLine_.data(), frame_info_.component_count, pixel_count);
             source = tempLine_.data();
         }
 
@@ -288,22 +288,22 @@ public:
         {
             if (parameters_.interleave_mode == interleave_mode::sample)
             {
-                TransformLine(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source), pixel_count, transform_);
+                transform_line(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source), pixel_count, transform_);
             }
             else
             {
-                TransformTripletToLine(static_cast<const triplet<size_type>*>(source), pixel_count, static_cast<size_type*>(destination), destination_stride, transform_);
+                transform_triplet_to_line(static_cast<const triplet<size_type>*>(source), pixel_count, static_cast<size_type*>(destination), destination_stride, transform_);
             }
         }
         else if (frame_info_.component_count == 4)
         {
             if (parameters_.interleave_mode == interleave_mode::sample)
             {
-                TransformLine(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source), pixel_count, transform_);
+                transform_line(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source), pixel_count, transform_);
             }
             else if (parameters_.interleave_mode == interleave_mode::line)
             {
-                TransformQuadToLine(static_cast<const quad<size_type>*>(source), pixel_count, static_cast<size_type*>(destination), destination_stride, transform_);
+                transform_quad_to_line(static_cast<const quad<size_type>*>(source), pixel_count, static_cast<size_type*>(destination), destination_stride, transform_);
             }
         }
     }
@@ -314,28 +314,28 @@ public:
         {
             if (parameters_.interleave_mode == interleave_mode::sample)
             {
-                TransformLine(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source), pixel_count, inverseTransform_);
+                transform_line(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source), pixel_count, inverseTransform_);
             }
             else
             {
-                TransformLineToTriplet(static_cast<const size_type*>(source), byte_stride, static_cast<triplet<size_type>*>(destination), pixel_count, inverseTransform_);
+                transform_line_to_triplet(static_cast<const size_type*>(source), byte_stride, static_cast<triplet<size_type>*>(destination), pixel_count, inverseTransform_);
             }
         }
         else if (frame_info_.component_count == 4)
         {
             if (parameters_.interleave_mode == interleave_mode::sample)
             {
-                TransformLine(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source), pixel_count, inverseTransform_);
+                transform_line(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source), pixel_count, inverseTransform_);
             }
             else if (parameters_.interleave_mode == interleave_mode::line)
             {
-                TransformLineToQuad(static_cast<const size_type*>(source), byte_stride, static_cast<quad<size_type>*>(destination), pixel_count, inverseTransform_);
+                transform_line_to_quad(static_cast<const size_type*>(source), byte_stride, static_cast<quad<size_type>*>(destination), pixel_count, inverseTransform_);
             }
         }
 
         if (parameters_.output_bgr)
         {
-            TransformRgbToBgr(static_cast<size_type*>(destination), frame_info_.component_count, pixel_count);
+            transform_rgb_to_bgr(static_cast<size_type*>(destination), frame_info_.component_count, pixel_count);
         }
     }
 

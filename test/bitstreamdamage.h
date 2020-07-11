@@ -3,4 +3,4 @@
 
 #pragma once
 
-void DamagedBitStreamTests();
+void damaged_bit_stream_tests();

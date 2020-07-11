@@ -9,7 +9,7 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 
 namespace {
 
-struct thresholds
+struct thresholds final
 {
     int32_t MaxVal;
     int32_t T1;
@@ -19,7 +19,7 @@ struct thresholds
 };
 
 // Threshold function of JPEG-LS reference implementation.
-constexpr thresholds ComputeDefaultsUsingReferenceImplementation(const int32_t max_value, const uint16_t near) noexcept
+constexpr thresholds compute_defaults_using_reference_implementation(const int32_t max_value, const uint16_t near) noexcept
 {
     thresholds result{max_value, 0, 0, 0, 64};
 
@@ -85,7 +85,7 @@ public:
 
     TEST_METHOD(max_value_lossless) // NOLINT
     {
-        const auto expected{ComputeDefaultsUsingReferenceImplementation(65535, 0)};
+        const auto expected{compute_defaults_using_reference_implementation(65535, 0)};
         const auto parameters{compute_default(65535, 0)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
@@ -97,7 +97,7 @@ public:
 
     TEST_METHOD(min_value_lossless) // NOLINT
     {
-        const auto expected{ComputeDefaultsUsingReferenceImplementation(3, 0)};
+        const auto expected{compute_defaults_using_reference_implementation(3, 0)};
         const auto parameters{compute_default(3, 0)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
@@ -109,7 +109,7 @@ public:
 
     TEST_METHOD(min_high_value_lossless) // NOLINT
     {
-        const auto expected{ComputeDefaultsUsingReferenceImplementation(128, 0)};
+        const auto expected{compute_defaults_using_reference_implementation(128, 0)};
         const auto parameters{compute_default(128, 0)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
@@ -121,7 +121,7 @@ public:
 
     TEST_METHOD(max_low_value_lossless) // NOLINT
     {
-        const auto expected{ComputeDefaultsUsingReferenceImplementation(127, 0)};
+        const auto expected{compute_defaults_using_reference_implementation(127, 0)};
         const auto parameters{compute_default(127, 0)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
@@ -133,7 +133,7 @@ public:
 
     TEST_METHOD(max_value_max_lossy) // NOLINT
     {
-        const auto expected{ComputeDefaultsUsingReferenceImplementation(65535, 255)};
+        const auto expected{compute_defaults_using_reference_implementation(65535, 255)};
         const auto parameters{compute_default(65535, 255)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
@@ -145,7 +145,7 @@ public:
 
     TEST_METHOD(min_value_max_lossy) // NOLINT
     {
-        const auto expected{ComputeDefaultsUsingReferenceImplementation(3, 1)};
+        const auto expected{compute_defaults_using_reference_implementation(3, 1)};
         const auto parameters{compute_default(3, 1)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
