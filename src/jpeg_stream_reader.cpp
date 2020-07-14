@@ -47,13 +47,13 @@ void jpeg_stream_reader::read(byte_stream_info source, uint32_t stride)
         stride = component_count * width * ((static_cast<uint32_t>(frame_info_.bits_per_sample) + 7U) / 8U);
     }
 
-    const int64_t bytesPerPlane = static_cast<int64_t>(rect_.Width) * rect_.Height * ((frame_info_.bits_per_sample + 7) / 8);
+    const int64_t bytes_per_plane = static_cast<int64_t>(rect_.Width) * rect_.Height * ((frame_info_.bits_per_sample + 7) / 8);
 
-    if (source.rawData && static_cast<int64_t>(source.count) < bytesPerPlane * frame_info_.component_count)
+    if (source.rawData && static_cast<int64_t>(source.count) < bytes_per_plane * frame_info_.component_count)
         throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-    int componentIndex{};
-    while (componentIndex < frame_info_.component_count)
+    int component_index{};
+    while (component_index < frame_info_.component_count)
     {
         if (state_ == state::scan_section)
         {
@@ -61,15 +61,15 @@ void jpeg_stream_reader::read(byte_stream_info source, uint32_t stride)
         }
 
         unique_ptr<decoder_strategy> codec = jls_codec_factory<decoder_strategy>().create_codec(frame_info_, parameters_, preset_coding_parameters_);
-        unique_ptr<process_line> processLine(codec->create_process(source, stride));
-        codec->decode_scan(move(processLine), rect_, byteStream_);
-        skip_bytes(source, static_cast<size_t>(bytesPerPlane));
+        unique_ptr<process_line> process_line(codec->create_process(source, stride));
+        codec->decode_scan(move(process_line), rect_, byteStream_);
+        skip_bytes(source, static_cast<size_t>(bytes_per_plane));
         state_ = state::scan_section;
 
         if (parameters_.interleave_mode != interleave_mode::none)
             return;
 
-        componentIndex++;
+        component_index++;
     }
 }
 
@@ -109,24 +109,24 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
             return;
         }
 
-        const int32_t segmentSize = read_segment_size();
-        int bytesRead;
+        const int32_t segment_size = read_segment_size();
+        int bytes_read;
         switch (state_)
         {
         case state::spiff_header_section:
-            bytesRead = read_spiff_directory_entry(marker_code, segmentSize - 2) + 2;
+            bytes_read = read_spiff_directory_entry(marker_code, segment_size - 2) + 2;
             break;
 
         default:
-            bytesRead = read_marker_segment(marker_code, segmentSize - 2, header, spiff_header_found) + 2;
+            bytes_read = read_marker_segment(marker_code, segment_size - 2, header, spiff_header_found) + 2;
             break;
         }
 
-        const int paddingToRead = segmentSize - bytesRead;
-        if (paddingToRead < 0)
+        const int padding_to_read = segment_size - bytes_read;
+        if (padding_to_read < 0)
             throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
-        for (int i = 0; i < paddingToRead; ++i)
+        for (int i = 0; i < padding_to_read; ++i)
         {
             read_byte();
         }
@@ -146,23 +146,23 @@ void jpeg_stream_reader::read_next_start_of_scan()
 
     for (;;)
     {
-        const JpegMarkerCode markerCode = read_next_marker_code();
-        validate_marker_code(markerCode);
+        const JpegMarkerCode marker_code = read_next_marker_code();
+        validate_marker_code(marker_code);
 
-        if (markerCode == JpegMarkerCode::StartOfScan)
+        if (marker_code == JpegMarkerCode::StartOfScan)
         {
             read_start_of_scan();
             return;
         }
 
-        const int32_t segmentSize = read_segment_size();
-        const int bytesRead = read_marker_segment(markerCode, segmentSize - 2) + 2;
+        const int32_t segment_size = read_segment_size();
+        const int bytes_read = read_marker_segment(marker_code, segment_size - 2) + 2;
 
-        const int paddingToRead = segmentSize - bytesRead;
-        if (paddingToRead < 0)
+        const int padding_to_read = segment_size - bytes_read;
+        if (padding_to_read < 0)
             throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
-        for (int i = 0; i < paddingToRead; ++i)
+        for (int i = 0; i < padding_to_read; ++i)
         {
             read_byte();
         }
@@ -301,8 +301,8 @@ int jpeg_stream_reader::read_spiff_directory_entry(const JpegMarkerCode marker_c
     if (segment_size < 4)
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
-    const uint32_t spiffDirectoryType = read_uint32();
-    if (spiffDirectoryType == spiff_end_of_directory_entry_type)
+    const uint32_t spiff_directory_type = read_uint32();
+    if (spiff_directory_type == spiff_end_of_directory_entry_type)
     {
         state_ = state::image_section;
     }
@@ -341,9 +341,9 @@ int jpeg_stream_reader::read_start_of_frame_segment(const int32_t segment_size)
     for (auto i = 0; i < frame_info_.component_count; ++i)
     {
         // Component specification parameters
-        add_component(read_byte());                                   // Ci = Component identifier
-        const uint8_t horizontalVerticalSamplingFactor = read_byte(); // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
-        if (horizontalVerticalSamplingFactor != 0x11)
+        add_component(read_byte());                                      // Ci = Component identifier
+        const uint8_t horizontal_vertical_sampling_factor = read_byte(); // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
+        if (horizontal_vertical_sampling_factor != 0x11)
             throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
         skip_byte(); // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
@@ -371,8 +371,8 @@ int jpeg_stream_reader::read_preset_parameters_segment(const int32_t segment_siz
     switch (type)
     {
     case JpegLSPresetParametersType::PresetCodingParameters: {
-        constexpr int32_t CodingParameterSegmentSize = 11;
-        if (segment_size != CodingParameterSegmentSize)
+        constexpr int32_t coding_parameter_segment_size = 11;
+        if (segment_size != coding_parameter_segment_size)
             throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
         preset_coding_parameters_.maximum_sample_value = read_uint16();
@@ -381,7 +381,7 @@ int jpeg_stream_reader::read_preset_parameters_segment(const int32_t segment_siz
         preset_coding_parameters_.threshold3 = read_uint16();
         preset_coding_parameters_.reset_value = read_uint16();
 
-        return CodingParameterSegmentSize;
+        return coding_parameter_segment_size;
     }
 
     case JpegLSPresetParametersType::MappingTableSpecification:
@@ -406,18 +406,18 @@ int jpeg_stream_reader::read_preset_parameters_segment(const int32_t segment_siz
 
 void jpeg_stream_reader::read_start_of_scan()
 {
-    const int32_t segmentSize = read_segment_size();
-    if (segmentSize < 6)
+    const int32_t segment_size = read_segment_size();
+    if (segment_size < 6)
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
-    const int componentCountInScan = read_byte();
-    if (componentCountInScan != 1 && componentCountInScan != frame_info_.component_count)
+    const int component_count_in_scan = read_byte();
+    if (component_count_in_scan != 1 && component_count_in_scan != frame_info_.component_count)
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
-    if (segmentSize < 6 + (2 * componentCountInScan))
+    if (segment_size < 6 + (2 * component_count_in_scan))
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
-    for (int i = 0; i < componentCountInScan; ++i)
+    for (int i = 0; i < component_count_in_scan; ++i)
     {
         read_byte(); // Read Scan component selector
         read_byte(); // Read Mapping table selector
@@ -476,11 +476,11 @@ uint32_t jpeg_stream_reader::read_uint32()
 
 int32_t jpeg_stream_reader::read_segment_size()
 {
-    const int32_t segmentSize = read_uint16();
-    if (segmentSize < 2)
+    const int32_t segment_size = read_uint16();
+    if (segment_size < 2)
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
-    return segmentSize;
+    return segment_size;
 }
 
 int jpeg_stream_reader::try_read_application_data8_segment(const int32_t segment_size,
@@ -505,19 +505,19 @@ int jpeg_stream_reader::try_read_application_data8_segment(const int32_t segment
 
 int jpeg_stream_reader::try_read_hp_color_transform_segment()
 {
-    vector<char> sourceTag;
-    read_bytes(sourceTag, 4);
-    if (strncmp(sourceTag.data(), "mrfx", 4) != 0) // mrfx = xfrm (in big endian) = colorXFoRM
+    vector<char> source_tag;
+    read_bytes(source_tag, 4);
+    if (strncmp(source_tag.data(), "mrfx", 4) != 0) // mrfx = xfrm (in big endian) = colorXFoRM
         return 4;
 
-    const auto colorTransformation = read_byte();
-    switch (colorTransformation)
+    const auto transformation = read_byte();
+    switch (transformation)
     {
     case static_cast<uint8_t>(color_transformation::none):
     case static_cast<uint8_t>(color_transformation::hp1):
     case static_cast<uint8_t>(color_transformation::hp2):
     case static_cast<uint8_t>(color_transformation::hp3):
-        parameters_.transformation = static_cast<color_transformation>(colorTransformation);
+        parameters_.transformation = static_cast<color_transformation>(transformation);
         return 5;
 
     case 4: // RgbAsYuvLossy (The standard lossy RGB to YCbCr transform used in JPEG.)
@@ -543,9 +543,9 @@ EnumType enum_cast(uint8_t value)
 
 int jpeg_stream_reader::try_read_spiff_header_segment(OUT_ spiff_header& header, OUT_ bool& spiff_header_found)
 {
-    vector<char> sourceTag;
-    read_bytes(sourceTag, 6);
-    if (strncmp(sourceTag.data(), "SPIFF\0", 6) != 0)
+    vector<char> source_tag;
+    read_bytes(source_tag, 6);
+    if (strncmp(source_tag.data(), "SPIFF\0", 6) != 0)
     {
         header = {};
         spiff_header_found = false;

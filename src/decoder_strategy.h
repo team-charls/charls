@@ -79,9 +79,9 @@ public:
         endPosition_ += offset;
         nextFFPosition_ += offset;
 
-        const std::streamsize readBytes = byteStream_->sgetn(reinterpret_cast<char*>(endPosition_),
-                                                             static_cast<std::streamsize>(buffer_.size()) - count);
-        endPosition_ += readBytes;
+        const std::streamsize read_bytes = byteStream_->sgetn(reinterpret_cast<char*>(endPosition_),
+                                                              static_cast<std::streamsize>(buffer_.size()) - count);
+        endPosition_ += read_bytes;
     }
 
     FORCE_INLINE void skip(const int32_t length) noexcept
@@ -119,9 +119,9 @@ public:
         if (position_ < nextFFPosition_ - (sizeof(bufType) - 1))
         {
             readCache_ |= from_big_endian<sizeof(bufType)>::read(position_) >> validBits_;
-            const int bytesToRead = (bufType_bit_count - validBits_) >> 3;
-            position_ += bytesToRead;
-            validBits_ += bytesToRead * 8;
+            const int bytes_to_read = (bufType_bit_count - validBits_) >> 3;
+            position_ += bytes_to_read;
+            validBits_ += bytes_to_read * 8;
             ASSERT(validBits_ >= bufType_bit_count - 8);
             return true;
         }
@@ -147,9 +147,9 @@ public:
                 return;
             }
 
-            const bufType valueNew = position_[0];
+            const bufType value_new = position_[0];
 
-            if (valueNew == JpegMarkerStartByte)
+            if (value_new == JpegMarkerStartByte)
             {
                 // JPEG bit stream rule: no FF may be followed by 0x80 or higher
                 if (position_ == endPosition_ - 1 || (position_[1] & 0x80) != 0)
@@ -161,11 +161,11 @@ public:
                 }
             }
 
-            readCache_ |= valueNew << (bufType_bit_count - 8 - validBits_);
+            readCache_ |= value_new << (bufType_bit_count - 8 - validBits_);
             position_ += 1;
             validBits_ += 8;
 
-            if (valueNew == JpegMarkerStartByte)
+            if (value_new == JpegMarkerStartByte)
             {
                 --validBits_;
             }
@@ -176,33 +176,33 @@ public:
 
     uint8_t* find_next_ff() const noexcept
     {
-        auto* positionNextFF = position_;
+        auto* position_next_ff = position_;
 
-        while (positionNextFF < endPosition_)
+        while (position_next_ff < endPosition_)
         {
-            if (*positionNextFF == JpegMarkerStartByte)
+            if (*position_next_ff == JpegMarkerStartByte)
                 break;
 
-            ++positionNextFF;
+            ++position_next_ff;
         }
 
-        return positionNextFF;
+        return position_next_ff;
     }
 
     uint8_t* get_cur_byte_pos() const noexcept
     {
-        int32_t validBits = validBits_;
-        uint8_t* compressedBytes = position_;
+        int32_t valid_bits = validBits_;
+        uint8_t* compressed_bytes = position_;
 
         for (;;)
         {
-            const int32_t lastBitsCount = compressedBytes[-1] == JpegMarkerStartByte ? 7 : 8;
+            const int32_t last_bits_count = compressed_bytes[-1] == JpegMarkerStartByte ? 7 : 8;
 
-            if (validBits < lastBitsCount)
-                return compressedBytes;
+            if (valid_bits < last_bits_count)
+                return compressed_bytes;
 
-            validBits -= lastBitsCount;
-            --compressedBytes;
+            valid_bits -= last_bits_count;
+            --compressed_bytes;
         }
     }
 
@@ -239,9 +239,9 @@ public:
             make_valid();
         }
 
-        const bool bSet = (readCache_ & (static_cast<bufType>(1) << (bufType_bit_count - 1))) != 0;
+        const bool set = (readCache_ & (static_cast<bufType>(1) << (bufType_bit_count - 1))) != 0;
         skip(1);
-        return bSet;
+        return set;
     }
 
     FORCE_INLINE int32_t peek_0_bits()
@@ -250,14 +250,14 @@ public:
         {
             make_valid();
         }
-        bufType valTest = readCache_;
+        bufType val_test = readCache_;
 
         for (int32_t count = 0; count < 16; ++count)
         {
-            if ((valTest & (static_cast<bufType>(1) << (bufType_bit_count - 1))) != 0)
+            if ((val_test & (static_cast<bufType>(1) << (bufType_bit_count - 1))) != 0)
                 return count;
 
-            valTest <<= 1;
+            val_test <<= 1;
         }
         return -1;
     }
@@ -272,10 +272,10 @@ public:
         }
         skip(15);
 
-        for (int32_t highBitsCount = 15;; ++highBitsCount)
+        for (int32_t high_bits_count = 15;; ++high_bits_count)
         {
             if (read_bit())
-                return highBitsCount;
+                return high_bits_count;
         }
     }
 

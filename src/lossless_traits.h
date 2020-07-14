@@ -49,17 +49,17 @@ struct lossless_traits_impl
         return static_cast<int32_t>(error_value << (int32_t_bit_count - bpp)) >> (int32_t_bit_count - bpp); //NOLINT
     }
 
-    FORCE_INLINE static SAMPLE compute_reconstructed_sample(const int32_t Px, const int32_t error_value) noexcept
+    FORCE_INLINE static SAMPLE compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) noexcept
     {
-        return static_cast<SAMPLE>(MAXVAL & (Px + error_value));
+        return static_cast<SAMPLE>(MAXVAL & (predicted_value + error_value));
     }
 
-    FORCE_INLINE static int32_t correct_prediction(int32_t Pxc) noexcept
+    FORCE_INLINE static int32_t correct_prediction(const int32_t predicted) noexcept
     {
-        if ((Pxc & MAXVAL) == Pxc)
-            return Pxc;
+        if ((predicted & MAXVAL) == predicted)
+            return predicted;
 
-        return (~(Pxc >> (int32_t_bit_count - 1))) & MAXVAL;
+        return (~(predicted >> (int32_t_bit_count - 1))) & MAXVAL;
     }
 };
 
@@ -86,9 +86,9 @@ struct lossless_traits<uint8_t, 8> final : lossless_traits_impl<uint8_t, 8>
         return static_cast<signed char>(d);
     }
 
-    FORCE_INLINE constexpr static uint8_t compute_reconstructed_sample(const int32_t Px, const int32_t error_value) noexcept
+    FORCE_INLINE constexpr static uint8_t compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) noexcept
     {
-        return static_cast<uint8_t>(Px + error_value);
+        return static_cast<uint8_t>(predicted_value + error_value);
     }
 };
 
@@ -108,9 +108,9 @@ struct lossless_traits<uint16_t, 16> final : lossless_traits_impl<uint16_t, 16>
         return static_cast<short>(d);
     }
 
-    FORCE_INLINE constexpr static SAMPLE compute_reconstructed_sample(const int32_t Px, const int32_t error_value) noexcept
+    FORCE_INLINE constexpr static SAMPLE compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) noexcept
     {
-        return static_cast<SAMPLE>(Px + error_value);
+        return static_cast<SAMPLE>(predicted_value + error_value);
     }
 };
 
@@ -130,9 +130,9 @@ struct lossless_traits<triplet<PixelType>, bits_per_pixel> final : lossless_trai
         return lhs == rhs;
     }
 
-    FORCE_INLINE static PixelType compute_reconstructed_sample(const int32_t Px, const int32_t error_value) noexcept
+    FORCE_INLINE static PixelType compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) noexcept
     {
-        return static_cast<PixelType>(Px + error_value);
+        return static_cast<PixelType>(predicted_value + error_value);
     }
 };
 
@@ -152,9 +152,9 @@ struct lossless_traits<quad<T>, bpp> final : lossless_traits_impl<T, bpp>
         return lhs == rhs;
     }
 
-    FORCE_INLINE static T compute_reconstructed_sample(const int32_t Px, const int32_t error_value) noexcept
+    FORCE_INLINE static T compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) noexcept
     {
-        return static_cast<T>(Px + error_value);
+        return static_cast<T>(predicted_value + error_value);
     }
 };
 

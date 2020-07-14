@@ -18,43 +18,43 @@ namespace {
 
 void test_damaged_bit_stream1()
 {
-    vector<uint8_t> encodedBuffer = read_file("test/incorrect_images/InfiniteLoopFFMPEG.jls");
+    vector<uint8_t> encoded_buffer = read_file("test/incorrect_images/InfiniteLoopFFMPEG.jls");
 
     vector<uint8_t> destination(256 * 256 * 2);
-    const auto error = JpegLsDecode(destination.data(), destination.size(), encodedBuffer.data(), encodedBuffer.size(), nullptr, nullptr);
+    const auto error = JpegLsDecode(destination.data(), destination.size(), encoded_buffer.data(), encoded_buffer.size(), nullptr, nullptr);
     assert::is_true(error == jpegls_errc::invalid_encoded_data);
 }
 
 
 void test_damaged_bit_stream2()
 {
-    vector<uint8_t> encodedBuffer = read_file("test/lena8b.jls");
+    vector<uint8_t> encoded_buffer = read_file("test/lena8b.jls");
 
-    encodedBuffer.resize(900);
-    encodedBuffer.resize(40000, 3);
+    encoded_buffer.resize(900);
+    encoded_buffer.resize(40000, 3);
 
     vector<uint8_t> destination(512 * 512);
-    const auto error = JpegLsDecode(destination.data(), destination.size(), encodedBuffer.data(), encodedBuffer.size(), nullptr, nullptr);
+    const auto error = JpegLsDecode(destination.data(), destination.size(), encoded_buffer.data(), encoded_buffer.size(), nullptr, nullptr);
     assert::is_true(error == jpegls_errc::invalid_encoded_data);
 }
 
 
 void test_damaged_bit_stream3()
 {
-    vector<uint8_t> encodedBuffer = read_file("test/lena8b.jls");
+    vector<uint8_t> encoded_buffer = read_file("test/lena8b.jls");
 
-    encodedBuffer[300] = 0xFF;
-    encodedBuffer[301] = 0xFF;
+    encoded_buffer[300] = 0xFF;
+    encoded_buffer[301] = 0xFF;
 
     vector<uint8_t> destination(512 * 512);
-    const auto error = JpegLsDecode(destination.data(), destination.size(), encodedBuffer.data(), encodedBuffer.size(), nullptr, nullptr);
+    const auto error = JpegLsDecode(destination.data(), destination.size(), encoded_buffer.data(), encoded_buffer.size(), nullptr, nullptr);
     assert::is_true(error == jpegls_errc::invalid_encoded_data);
 }
 
 
 void test_file_with_random_header_damage(const char* filename)
 {
-    const vector<uint8_t> encodedBufferOriginal = read_file(filename);
+    const vector<uint8_t> encoded_buffer_original = read_file(filename);
 
     mt19937 generator(102347325);
 
@@ -65,17 +65,17 @@ void test_file_with_random_header_damage(const char* filename)
 
     for (size_t i = 0; i < 40; ++i)
     {
-        vector<uint8_t> encodedBuffer(encodedBufferOriginal);
+        vector<uint8_t> encoded_buffer(encoded_buffer_original);
         vector<int> errors(10, 0);
 
         for (int j = 0; j < 20; ++j)
         {
-            encodedBuffer[i] = static_cast<uint8_t>(distribution(generator));
-            encodedBuffer[i + 1] = static_cast<uint8_t>(distribution(generator));
-            encodedBuffer[i + 2] = static_cast<uint8_t>(distribution(generator));
-            encodedBuffer[i + 3] = static_cast<uint8_t>(distribution(generator));
+            encoded_buffer[i] = static_cast<uint8_t>(distribution(generator));
+            encoded_buffer[i + 1] = static_cast<uint8_t>(distribution(generator));
+            encoded_buffer[i + 2] = static_cast<uint8_t>(distribution(generator));
+            encoded_buffer[i + 3] = static_cast<uint8_t>(distribution(generator));
 
-            const auto error = JpegLsDecode(destination.data(), destination.size(), &encodedBuffer[0], encodedBuffer.size(), nullptr, nullptr);
+            const auto error = JpegLsDecode(destination.data(), destination.size(), &encoded_buffer[0], encoded_buffer.size(), nullptr, nullptr);
             errors[static_cast<int>(error)]++;
         }
 

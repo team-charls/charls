@@ -24,18 +24,18 @@ using namespace charls;
 namespace {
 
 // See JPEG-LS standard ISO/IEC 14495-1, A.3.3, golomb_code Segment A.4
-int8_t quantize_gradient_org(const jpegls_pc_parameters& preset, const int32_t Di) noexcept
+int8_t quantize_gradient_org(const jpegls_pc_parameters& preset, const int32_t di) noexcept
 {
     constexpr int32_t near_lossless = 0;
 
-    if (Di <= -preset.threshold3) return -4;
-    if (Di <= -preset.threshold2) return -3;
-    if (Di <= -preset.threshold1) return -2;
-    if (Di < -near_lossless) return -1;
-    if (Di <= near_lossless) return 0;
-    if (Di < preset.threshold1) return 1;
-    if (Di < preset.threshold2) return 2;
-    if (Di < preset.threshold3) return 3;
+    if (di <= -preset.threshold3) return -4;
+    if (di <= -preset.threshold2) return -3;
+    if (di <= -preset.threshold1) return -2;
+    if (di < -near_lossless) return -1;
+    if (di <= near_lossless) return 0;
+    if (di < preset.threshold1) return 1;
+    if (di < preset.threshold2) return 2;
+    if (di < preset.threshold3) return 3;
 
     return 4;
 }

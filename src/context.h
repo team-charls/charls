@@ -33,7 +33,7 @@ struct jls_context final
         return bit_wise_sign(2 * B + N - 1);
     }
 
-    FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless, const int32_t NRESET) noexcept
+    FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless, const int32_t n_reset_threshold) noexcept
     {
         ASSERT(N != 0);
 
@@ -45,7 +45,7 @@ struct jls_context final
         ASSERT(a < 65536 * 256);
         ASSERT(std::abs(b) < 65536 * 256);
 
-        if (n == NRESET)
+        if (n == n_reset_threshold)
         {
             a = a >> 1;
             b = b >> 1;
@@ -81,17 +81,17 @@ struct jls_context final
 
     FORCE_INLINE int32_t get_golomb_code() const noexcept
     {
-        const int32_t nTest = N;
-        const int32_t aTest = A;
+        const int32_t n_test = N;
+        const int32_t a_test = A;
 
-        if (nTest >= aTest) return 0;
-        if (nTest << 1 >= aTest) return 1;
-        if (nTest << 2 >= aTest) return 2;
-        if (nTest << 3 >= aTest) return 3;
-        if (nTest << 4 >= aTest) return 4;
+        if (n_test >= a_test) return 0;
+        if (n_test << 1 >= a_test) return 1;
+        if (n_test << 2 >= a_test) return 2;
+        if (n_test << 3 >= a_test) return 3;
+        if (n_test << 4 >= a_test) return 4;
 
         int32_t k = 5;
-        for (; nTest << k < aTest; ++k)
+        for (; n_test << k < a_test; ++k)
         {
             ASSERT(k <= 32);
         }

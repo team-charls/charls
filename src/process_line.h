@@ -104,14 +104,14 @@ public:
 
     void new_line_requested(void* destination, const size_t pixel_count, int /*destination_stride*/) override
     {
-        auto bytesToRead = static_cast<std::streamsize>(static_cast<std::streamsize>(pixel_count) * bytesPerPixel_);
-        while (bytesToRead != 0)
+        auto bytes_to_read = static_cast<std::streamsize>(static_cast<std::streamsize>(pixel_count) * bytesPerPixel_);
+        while (bytes_to_read != 0)
         {
-            const auto bytesRead = rawData_->sgetn(static_cast<char*>(destination), bytesToRead);
-            if (bytesRead == 0)
+            const auto bytes_read = rawData_->sgetn(static_cast<char*>(destination), bytes_to_read);
+            if (bytes_read == 0)
                 throw jpegls_error{jpegls_errc::destination_buffer_too_small};
 
-            bytesToRead = bytesToRead - bytesRead;
+            bytes_to_read = bytes_to_read - bytes_read;
         }
 
         if (bytesPerPixel_ == 2)
@@ -121,15 +121,15 @@ public:
 
         if (bytesPerLine_ - pixel_count * bytesPerPixel_ > 0)
         {
-            rawData_->pubseekoff(static_cast<std::streamoff>(bytesPerLine_ - bytesToRead), std::ios_base::cur);
+            rawData_->pubseekoff(static_cast<std::streamoff>(bytesPerLine_ - bytes_to_read), std::ios_base::cur);
         }
     }
 
     void new_line_decoded(const void* source, const size_t pixel_count, int /*source_stride*/) override
     {
-        const auto bytesToWrite = pixel_count * bytesPerPixel_;
-        const auto bytesWritten = static_cast<size_t>(rawData_->sputn(static_cast<const char*>(source), static_cast<std::streamsize>(bytesToWrite)));
-        if (bytesWritten != bytesToWrite)
+        const auto bytes_to_write = pixel_count * bytesPerPixel_;
+        const auto bytes_written = static_cast<size_t>(rawData_->sputn(static_cast<const char*>(source), static_cast<std::streamsize>(bytes_to_write)));
+        if (bytes_written != bytes_to_write)
             throw jpegls_error{jpegls_errc::destination_buffer_too_small};
     }
 
@@ -161,12 +161,12 @@ void transform_quad_to_line(const quad<T>* source, const size_t pixel_stride_in,
     for (auto i = 0U; i < pixel_count; ++i)
     {
         const quad<T> color = source[i];
-        const quad<T> colorTransformed(transform(color.v1, color.v2, color.v3), color.v4);
+        const quad<T> color_transformed(transform(color.v1, color.v2, color.v3), color.v4);
 
-        destination[i] = colorTransformed.v1;
-        destination[i + pixel_stride] = colorTransformed.v2;
-        destination[i + 2 * pixel_stride] = colorTransformed.v3;
-        destination[i + 3 * pixel_stride] = colorTransformed.v4;
+        destination[i] = color_transformed.v1;
+        destination[i + pixel_stride] = color_transformed.v2;
+        destination[i + 2 * pixel_stride] = color_transformed.v3;
+        destination[i + 3 * pixel_stride] = color_transformed.v4;
     }
 }
 
@@ -206,11 +206,11 @@ template<typename Transform, typename PixelType>
 void transform_line_to_triplet(const PixelType* source, const size_t pixel_stride_in, triplet<PixelType>* destination, const size_t pixel_stride, Transform& transform) noexcept
 {
     const auto pixel_count = std::min(pixel_stride, pixel_stride_in);
-    triplet<PixelType>* ptypeBuffer = destination;
+    triplet<PixelType>* type_buffer = destination;
 
     for (auto i = 0U; i < pixel_count; ++i)
     {
-        ptypeBuffer[i] = transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in]);
+        type_buffer[i] = transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in]);
     }
 }
 
@@ -219,16 +219,16 @@ template<typename Transform, typename PixelType>
 void transform_triplet_to_line(const triplet<PixelType>* source, const size_t pixel_stride_in, PixelType* destination, const size_t pixel_stride, Transform& transform) noexcept
 {
     const auto pixel_count = std::min(pixel_stride, pixel_stride_in);
-    const triplet<PixelType>* ptypeBufferIn = source;
+    const triplet<PixelType>* type_buffer_in = source;
 
     for (auto i = 0U; i < pixel_count; ++i)
     {
-        const triplet<PixelType> color = ptypeBufferIn[i];
-        const triplet<PixelType> colorTransformed = transform(color.v1, color.v2, color.v3);
+        const triplet<PixelType> color = type_buffer_in[i];
+        const triplet<PixelType> color_transformed = transform(color.v1, color.v2, color.v3);
 
-        destination[i] = colorTransformed.v1;
-        destination[i + pixel_stride] = colorTransformed.v2;
-        destination[i + 2 * pixel_stride] = colorTransformed.v3;
+        destination[i] = color_transformed.v1;
+        destination[i + pixel_stride] = color_transformed.v2;
+        destination[i + 2 * pixel_stride] = color_transformed.v3;
     }
 }
 
@@ -263,14 +263,14 @@ public:
 
     void transform(std::basic_streambuf<char>* raw_stream, void* destination, const size_t pixel_count, const int destination_stride)
     {
-        std::streamsize bytesToRead = static_cast<std::streamsize>(pixel_count) * frame_info_.component_count * sizeof(size_type);
-        while (bytesToRead != 0)
+        std::streamsize bytes_to_read = static_cast<std::streamsize>(pixel_count) * frame_info_.component_count * sizeof(size_type);
+        while (bytes_to_read != 0)
         {
-            const auto read = raw_stream->sgetn(reinterpret_cast<char*>(buffer_.data()), bytesToRead);
+            const auto read = raw_stream->sgetn(reinterpret_cast<char*>(buffer_.data()), bytes_to_read);
             if (read == 0)
                 throw jpegls_error{jpegls_errc::source_buffer_too_small};
 
-            bytesToRead -= read;
+            bytes_to_read -= read;
         }
         transform(buffer_.data(), destination, pixel_count, destination_stride);
     }
@@ -343,11 +343,11 @@ public:
     {
         if (rawPixels_.rawStream)
         {
-            const std::streamsize bytesToWrite = static_cast<std::streamsize>(pixel_count) * frame_info_.component_count * sizeof(size_type);
+            const std::streamsize bytes_to_write = static_cast<std::streamsize>(pixel_count) * frame_info_.component_count * sizeof(size_type);
             decode_transform(source, buffer_.data(), pixel_count, source_stride);
 
-            const auto bytesWritten = rawPixels_.rawStream->sputn(reinterpret_cast<char*>(buffer_.data()), bytesToWrite);
-            if (bytesWritten != bytesToWrite)
+            const auto bytes_written = rawPixels_.rawStream->sputn(reinterpret_cast<char*>(buffer_.data()), bytes_to_write);
+            if (bytes_written != bytes_to_write)
                 throw jpegls_error{jpegls_errc::destination_buffer_too_small};
         }
         else

@@ -100,10 +100,10 @@ void jpeg_stream_writer::write_start_of_frame_segment(const uint32_t width, cons
 
     // Use by default 1 as the start component identifier to remain compatible with the
     // code sample of ISO/IEC 14495-1, H.4 and the JPEG-LS ISO conformance sample files.
-    for (auto componentId = 1; componentId <= component_count; ++componentId)
+    for (auto component_id = 1; component_id <= component_count; ++component_id)
     {
         // Component Specification parameters
-        segment.push_back(static_cast<uint8_t>(componentId)); // Ci = Component identifier
+        segment.push_back(static_cast<uint8_t>(component_id)); // Ci = Component identifier
         segment.push_back(0x11);                              // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
         segment.push_back(0);                                 // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
     }

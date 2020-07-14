@@ -21,18 +21,18 @@ namespace {
 
 void test_file16_bit_as12(const char* filename, const int offset, const rect_size size2, const int component_count, const bool little_endian_file)
 {
-    vector<uint8_t> uncompressedData = read_file(filename, offset);
+    vector<uint8_t> uncompressed_data = read_file(filename, offset);
 
-    fix_endian(&uncompressedData, little_endian_file);
+    fix_endian(&uncompressed_data, little_endian_file);
 
-    auto* const p = reinterpret_cast<uint16_t*>(uncompressedData.data());
+    auto* const p = reinterpret_cast<uint16_t*>(uncompressed_data.data());
 
-    for (size_t i = 0; i < uncompressedData.size() / 2; ++i)
+    for (size_t i = 0; i < uncompressed_data.size() / 2; ++i)
     {
         p[i] = p[i] >> 4;
     }
 
-    test_round_trip(filename, uncompressedData, size2, 12, component_count);
+    test_round_trip(filename, uncompressed_data, size2, 12, component_count);
 }
 
 
@@ -114,10 +114,10 @@ void decode_performance_tests(const int loop_count)
 {
     cout << "Test decode Perf (with loop count " << loop_count << ")\n";
 
-    vector<uint8_t> jpeglsCompressed = read_file("decodetest.jls");
+    vector<uint8_t> jpegls_compressed = read_file("decodetest.jls");
 
     JlsParameters params{};
-    error_code error = JpegLsReadHeader(jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
+    error_code error = JpegLsReadHeader(jpegls_compressed.data(), jpegls_compressed.size(), &params, nullptr);
     if (error)
         return;
 
@@ -126,7 +126,7 @@ void decode_performance_tests(const int loop_count)
     const auto start = steady_clock::now();
     for (int i = 0; i < loop_count; ++i)
     {
-        error = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpeglsCompressed.data(), jpeglsCompressed.size(), &params, nullptr);
+        error = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpegls_compressed.data(), jpegls_compressed.size(), &params, nullptr);
         if (error)
         {
             cout << "Decode failure: " << error.value() << "\n";

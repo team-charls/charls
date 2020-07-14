@@ -181,23 +181,23 @@ struct charls_jpegls_encoder final
             writer_.write_jpegls_preset_parameters_segment(preset);
         }
 
-        byte_stream_info sourceInfo = from_byte_array_const(source, source_size_bytes);
+        byte_stream_info source_info = from_byte_array_const(source, source_size_bytes);
         if (interleave_mode_ == charls::interleave_mode::none)
         {
-            const size_t byteCountComponent = ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U) * frame_info_.width * frame_info_.height;
+            const size_t byte_count_component = ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U) * frame_info_.width * frame_info_.height;
             for (int32_t component = 0; component < frame_info_.component_count; ++component)
             {
                 writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
-                encode_scan(sourceInfo, stride, 1);
+                encode_scan(source_info, stride, 1);
 
                 // Synchronize the source stream (encode_scan works on a local copy)
-                skip_bytes(sourceInfo, byteCountComponent);
+                skip_bytes(source_info, byte_count_component);
             }
         }
         else
         {
             writer_.write_start_of_scan_segment(frame_info_.component_count, near_lossless_, interleave_mode_);
-            encode_scan(sourceInfo, stride, frame_info_.component_count);
+            encode_scan(source_info, stride, frame_info_.component_count);
         }
 
         writer_.write_end_of_image();
@@ -229,12 +229,12 @@ private:
         auto codec = jls_codec_factory<encoder_strategy>().create_codec(frame_info,
                                                                     {near_lossless_, interleave_mode_, color_transformation_, false},
                                                                     preset_coding_parameters_);
-        unique_ptr<process_line> processLine(codec->create_process(source, stride));
+        unique_ptr<process_line> process_line(codec->create_process(source, stride));
         byte_stream_info destination{writer_.output_stream()};
-        const size_t bytesWritten = codec->encode_scan(move(processLine), destination);
+        const size_t bytes_written = codec->encode_scan(move(process_line), destination);
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
-        writer_.seek(bytesWritten);
+        writer_.seek(bytes_written);
     }
 
     charls_frame_info frame_info_{};

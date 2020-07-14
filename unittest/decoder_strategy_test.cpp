@@ -63,18 +63,18 @@ public:
             int bits;
         };
 
-        const array<data_t, 5> inData{{{0x00, 24}, {0xFF, 8}, {0xFFFF, 16 }, {0xFFFF, 16 }, {0x12345678, 31}}};
+        const array<data_t, 5> in_data{{{0x00, 24}, {0xFF, 8}, {0xFFFF, 16 }, {0xFFFF, 16 }, {0x12345678, 31}}};
 
-        array<uint8_t, 100> encBuf{};
-        const charls::frame_info frame_info{};
-        const charls::coding_parameters parameters{};
+        array<uint8_t, 100> enc_buf{};
+        const frame_info frame_info{};
+        const coding_parameters parameters{};
 
         encoder_strategy_tester encoder(frame_info, parameters);
 
-        byte_stream_info stream{nullptr, encBuf.data(), encBuf.size()};
+        byte_stream_info stream{nullptr, enc_buf.data(), enc_buf.size()};
         encoder.initialize_forward(stream);
 
-        for (const auto& data : inData)
+        for (const auto& data : in_data)
         {
             encoder.append_to_bit_stream_forward(data.value, data.bits);
         }
@@ -83,11 +83,11 @@ public:
         // Note: Correct encoding is tested in encoder_strategy_test::append_to_bit_stream_ff_pattern.
 
         const auto length = encoder.get_length_forward();
-        decoder_strategy_tester dec(frame_info, parameters, encBuf.data(), length);
-        for (auto i = 0U; i < sizeof(inData) / sizeof(inData[0]); ++i)
+        decoder_strategy_tester dec(frame_info, parameters, enc_buf.data(), length);
+        for (auto i = 0U; i < sizeof(in_data) / sizeof(in_data[0]); ++i)
         {
-            const auto actual = dec.read(inData[i].bits);
-            Assert::AreEqual(inData[i].value, actual);
+            const auto actual = dec.read(in_data[i].bits);
+            Assert::AreEqual(in_data[i].value, actual);
         }
     }
 };

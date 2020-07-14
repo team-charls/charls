@@ -17,41 +17,41 @@ struct context_run_mode final
     // Note: members are sorted based on their size.
     int32_t A{};
     int32_t nRItype_{};
-    uint8_t nReset_{};
+    uint8_t n_reset_threshold_{};
     uint8_t N{};
     uint8_t Nn{};
 
     context_run_mode() = default;
 
-    context_run_mode(const int32_t a, const int32_t nRItype, const int32_t nReset) noexcept :
+    context_run_mode(const int32_t a, const int32_t nRItype, const int32_t n_reset_threshold) noexcept :
         A{a},
         nRItype_{nRItype},
-        nReset_{static_cast<uint8_t>(nReset)},
+        n_reset_threshold_{static_cast<uint8_t>(n_reset_threshold)},
         N{1}
     {
     }
 
     FORCE_INLINE int32_t get_golomb_code() const noexcept
     {
-        const int32_t TEMP = A + (N >> 1) * nRItype_;
-        int32_t nTest = N;
+        const int32_t temp = A + (N >> 1) * nRItype_;
+        int32_t n_test = N;
         int32_t k = 0;
-        for (; nTest < TEMP; ++k)
+        for (; n_test < temp; ++k)
         {
-            nTest <<= 1;
+            n_test <<= 1;
             ASSERT(k <= 32);
         }
         return k;
     }
 
-    void update_variables(const int32_t error_value, const int32_t EMErrval) noexcept
+    void update_variables(const int32_t error_value, const int32_t e_mapped_error_value) noexcept
     {
         if (error_value < 0)
         {
             Nn = Nn + 1U;
         }
-        A = A + ((EMErrval + 1 - nRItype_) >> 1);
-        if (N == nReset_)
+        A = A + ((e_mapped_error_value + 1 - nRItype_) >> 1);
+        if (N == n_reset_threshold_)
         {
             A = A >> 1;
             N = N >> 1;
@@ -63,16 +63,16 @@ struct context_run_mode final
     FORCE_INLINE int32_t compute_error_value(const int32_t temp, const int32_t k) const noexcept
     {
         const bool map = temp & 1;
-        const int32_t errorValueAbs = (temp + static_cast<int32_t>(map)) / 2;
+        const int32_t error_value_abs = (temp + static_cast<int32_t>(map)) / 2;
 
         if ((k != 0 || (2 * Nn >= N)) == map)
         {
-            ASSERT(map == compute_map(-errorValueAbs, k));
-            return -errorValueAbs;
+            ASSERT(map == compute_map(-error_value_abs, k));
+            return -error_value_abs;
         }
 
-        ASSERT(map == compute_map(errorValueAbs, k));
-        return errorValueAbs;
+        ASSERT(map == compute_map(error_value_abs, k));
+        return error_value_abs;
     }
 
     bool compute_map(const int32_t error_value, const int32_t k) const noexcept

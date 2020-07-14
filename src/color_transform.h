@@ -115,11 +115,11 @@ struct transform_hp3 final
 
         FORCE_INLINE triplet<T> operator()(const int v1, const int v2, const int v3) const noexcept
         {
-            const int G = v1 - ((v3 + v2) >> 2) + Range / 4;
+            const int g = v1 - ((v3 + v2) >> 2) + Range / 4;
             triplet<T> rgb;
-            rgb.R = static_cast<T>(v3 + G - Range / 2); // new R
-            rgb.G = static_cast<T>(G);                  // new G
-            rgb.B = static_cast<T>(v2 + G - Range / 2); // new B
+            rgb.R = static_cast<T>(v3 + g - Range / 2); // new R
+            rgb.G = static_cast<T>(g);                  // new G
+            rgb.B = static_cast<T>(v2 + g - Range / 2); // new B
             return rgb;
         }
     };

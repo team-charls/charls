@@ -30,8 +30,8 @@ public:
     {
         array<uint8_t, 1> buffer{};
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), 0);
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info byte_stream = from_byte_array(buffer.data(), 0);
+        jpeg_stream_reader reader(byte_stream);
 
         try
         {
@@ -59,8 +59,8 @@ public:
         writer.buffer.push_back(0xFF);
         writer.write_start_of_scan_segment(0, 1, 128, charls::interleave_mode::none);
 
-        const byte_stream_info byteStream = from_byte_array(writer.buffer.data(), writer.buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info byte_stream = from_byte_array(writer.buffer.data(), writer.buffer.size());
+        jpeg_stream_reader reader(byte_stream);
 
         reader.read_header(); // if it doesn't throw test is passed.
     }
@@ -75,8 +75,8 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xDA); // SOS: Marks the start of scan.
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info byte_stream = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byte_stream);
 
         try
         {
@@ -138,9 +138,9 @@ public:
     TEST_METHOD(read_header_jpegls_preset_parameter_segment) // NOLINT
     {
         vector<uint8_t> source(100);
-        const byte_stream_info sourceInfo = from_byte_array(source.data(), source.size());
+        const byte_stream_info source_info = from_byte_array(source.data(), source.size());
 
-        charls::jpeg_stream_writer writer(sourceInfo);
+        jpeg_stream_writer writer(source_info);
         writer.write_start_of_image();
 
         const jpegls_pc_parameters presets{1, 2, 3, 4, 5};
@@ -148,8 +148,8 @@ public:
         writer.write_start_of_frame_segment(1, 1, 2, 1);
         writer.write_start_of_scan_segment(1, 0, interleave_mode::none);
 
-        const byte_stream_info destinationInfo = from_byte_array(source.data(), source.size());
-        jpeg_stream_reader reader(destinationInfo);
+        const byte_stream_info destination_info = from_byte_array(source.data(), source.size());
+        jpeg_stream_reader reader(destination_info);
 
         reader.read_header();
         const auto& actual = reader.preset_coding_parameters();
@@ -385,9 +385,9 @@ public:
         writer.write_start_of_frame_segment(512, 512, 8, 3);
         writer.buffer.push_back(0);
         writer.buffer[5]++;
-        const byte_stream_info byteStream = from_byte_array(writer.buffer.data(), writer.buffer.size());
+        const byte_stream_info byte_stream = from_byte_array(writer.buffer.data(), writer.buffer.size());
 
-        jpeg_stream_reader reader(byteStream);
+        jpeg_stream_reader reader(byte_stream);
 
         try
         {
@@ -544,8 +544,8 @@ public:
         buffer.push_back(0x07);
         buffer.push_back(0x01);
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info byte_stream = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byte_stream);
 
         try
         {
@@ -592,8 +592,8 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xD8); // SOI.
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info byte_stream = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byte_stream);
 
         try
         {
@@ -657,8 +657,8 @@ private:
     static void read_spiff_header(const uint8_t low_version)
     {
         vector<uint8_t> buffer = create_test_spiff_header(2, low_version);
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info byte_stream = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(byte_stream);
 
         spiff_header spiff_header{};
         bool spiff_header_found{};
@@ -691,8 +691,8 @@ private:
         writer.write_start_of_frame_segment(1, 1, 2, 1);
         writer.write_start_of_scan_segment(0, 1, 128, charls::interleave_mode::none);
 
-        const byte_stream_info byteStream = from_byte_array(writer.buffer.data(), writer.buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info byte_stream = from_byte_array(writer.buffer.data(), writer.buffer.size());
+        jpeg_stream_reader reader(byte_stream);
 
         reader.read_header(); // if it doesn't throw test is passed.
     }

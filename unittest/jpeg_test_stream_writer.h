@@ -28,12 +28,12 @@ public:
 
         // Components
         segment.push_back(static_cast<uint8_t>(component_count)); // Nf = Number of image components in frame
-        for (auto componentId = 0; componentId < component_count; ++componentId)
+        for (auto component_id = 0; component_id < component_count; ++component_id)
         {
             // Component Specification parameters
             if (componentIdOverride == 0)
             {
-                segment.push_back(static_cast<uint8_t>(componentId)); // Ci = Component identifier
+                segment.push_back(static_cast<uint8_t>(component_id)); // Ci = Component identifier
             }
             else
             {

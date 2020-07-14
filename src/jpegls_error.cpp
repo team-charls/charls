@@ -141,7 +141,7 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "No memory could be allocated for an internal buffer";
 
     case jpegls_errc::unexpected_failure:
-        return "An unexpected internal failure occured";
+        return "An unexpected internal failure occurred";
 
     case jpegls_errc::invalid_parameter_width:
         return "Invalid JPEG-LS stream, the width (Number of samples per line) is already defined";

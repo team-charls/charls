@@ -191,14 +191,14 @@ public:
 
     TEST_METHOD(write_start_of_frame_segment) // NOLINT
     {
-        constexpr int32_t bitsPerSample = 8;
-        constexpr int32_t componentCount = 3;
+        constexpr int32_t bits_per_sample{8};
+        constexpr int32_t component_count{3};
 
         array<uint8_t, 19> buffer{};
         const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
         jpeg_stream_writer writer(info);
 
-        writer.write_start_of_frame_segment(100, UINT16_MAX, bitsPerSample, componentCount);
+        writer.write_start_of_frame_segment(100, UINT16_MAX, bits_per_sample, component_count);
 
         Assert::AreEqual(static_cast<size_t>(19), writer.bytes_written());
 
@@ -206,12 +206,12 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0xF7), buffer[1]); // JPEG_SOF_55
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[2]);    // 6 + (3 * 3) + 2 (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(17), buffer[3]);   // 6 + (3 * 3) + 2 (in big endian)
-        Assert::AreEqual(static_cast<uint8_t>(bitsPerSample), buffer[4]);
+        Assert::AreEqual(static_cast<uint8_t>(bits_per_sample), buffer[4]);
         Assert::AreEqual(static_cast<uint8_t>(255), buffer[5]);  // height (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(255), buffer[6]);  // height (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[7]);    // width (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(100), buffer[8]);  // width (in big endian)
-        Assert::AreEqual(static_cast<uint8_t>(componentCount), buffer[9]);
+        Assert::AreEqual(static_cast<uint8_t>(component_count), buffer[9]);
 
         Assert::AreEqual(static_cast<uint8_t>(1), buffer[10]);
         Assert::AreEqual(static_cast<uint8_t>(0x11), buffer[11]);
@@ -228,18 +228,18 @@ public:
 
     TEST_METHOD(write_start_of_frame_marker_segment_with_low_boundary_values) // NOLINT
     {
-        constexpr int32_t bitsPerSample = 2;
-        constexpr int32_t componentCount = 1;
+        constexpr int32_t bits_per_sample{2};
+        constexpr int32_t component_count{1};
 
         array<uint8_t, 13> buffer{};
         const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
         jpeg_stream_writer writer(info);
 
-        writer.write_start_of_frame_segment(0, 0, bitsPerSample, componentCount);
+        writer.write_start_of_frame_segment(0, 0, bits_per_sample, component_count);
 
         Assert::AreEqual(buffer.size(), writer.bytes_written());
-        Assert::AreEqual(static_cast<uint8_t>(bitsPerSample), buffer[4]);
-        Assert::AreEqual(static_cast<uint8_t>(componentCount), buffer[9]);
+        Assert::AreEqual(static_cast<uint8_t>(bits_per_sample), buffer[4]);
+        Assert::AreEqual(static_cast<uint8_t>(component_count), buffer[9]);
     }
 
     TEST_METHOD(write_start_of_frame_marker_segment_with_high_boundary_values_and_serialize) // NOLINT

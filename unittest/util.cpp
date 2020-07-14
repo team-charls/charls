@@ -25,16 +25,16 @@ namespace {
 
 void triplet_to_planar(vector<uint8_t>& buffer, const uint32_t width, const uint32_t height)
 {
-    vector<uint8_t> workBuffer(buffer.size());
+    vector<uint8_t> work_buffer(buffer.size());
 
-    const size_t byteCount = static_cast<size_t>(width) * height;
-    for (size_t index = 0; index < byteCount; index++)
+    const size_t byte_count = static_cast<size_t>(width) * height;
+    for (size_t index = 0; index < byte_count; index++)
     {
-        workBuffer[index] = buffer[index * 3 + 0];
-        workBuffer[index + 1 * byteCount] = buffer[index * 3 + 1];
-        workBuffer[index + 2 * byteCount] = buffer[index * 3 + 2];
+        work_buffer[index] = buffer[index * 3 + 0];
+        work_buffer[index + 1 * byte_count] = buffer[index * 3 + 1];
+        work_buffer[index + 2 * byte_count] = buffer[index * 3 + 2];
     }
-    swap(buffer, workBuffer);
+    swap(buffer, work_buffer);
 }
 
 } // namespace
@@ -49,10 +49,10 @@ vector<uint8_t> read_file(const char* filename)
     input.open(filename, ios::in | ios::binary);
 
     input.seekg(0, ios::end);
-    const auto byteCountFile = static_cast<size_t>(input.tellg());
+    const auto byte_count_file = static_cast<size_t>(input.tellg());
     input.seekg(0, ios::beg);
 
-    vector<uint8_t> buffer(byteCountFile);
+    vector<uint8_t> buffer(byte_count_file);
     input.read(reinterpret_cast<char*>(buffer.data()), buffer.size());
 
     return buffer;
@@ -173,21 +173,21 @@ vector<uint8_t> create_noise_image_16_bit(const size_t pixel_count, const int bi
 
 void test_round_trip_legacy(const vector<uint8_t>& source, const JlsParameters& params)
 {
-    vector<uint8_t> encodedBuffer(params.height * params.width * params.components * params.bitsPerSample / 4);
-    vector<uint8_t> decodedBuffer(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
+    vector<uint8_t> encoded_buffer(params.height * params.width * params.components * params.bitsPerSample / 4);
+    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
 
-    size_t compressedLength = 0;
-    auto error = JpegLsEncode(encodedBuffer.data(), encodedBuffer.size(), &compressedLength,
+    size_t compressed_length{};
+    auto error = JpegLsEncode(encoded_buffer.data(), encoded_buffer.size(), &compressed_length,
                               source.data(), source.size(), &params, nullptr);
     Assert::AreEqual(jpegls_errc::success, error);
 
-    error = JpegLsDecode(decodedBuffer.data(), decodedBuffer.size(), encodedBuffer.data(), compressedLength, nullptr, nullptr);
+    error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_buffer.data(), compressed_length, nullptr, nullptr);
     Assert::AreEqual(jpegls_errc::success, error);
 
-    const uint8_t* byteOut = decodedBuffer.data();
-    for (size_t i = 0; i < decodedBuffer.size(); ++i)
+    const uint8_t* byte_out = decoded_buffer.data();
+    for (size_t i = 0; i < decoded_buffer.size(); ++i)
     {
-        if (source[i] != byteOut[i])
+        if (source[i] != byte_out[i])
         {
             Assert::IsTrue(false);
             break;

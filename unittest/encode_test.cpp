@@ -89,8 +89,8 @@ private:
         vector<uint8_t> charls_encoded(estimated_destination_size(reference_file.width(), reference_file.height(),
             reference_file.component_count(), reference_file.bits_per_sample()));
 
-        size_t bytesWritten;
-        const auto error = JpegLsEncode(charls_encoded.data(), charls_encoded.size(), &bytesWritten,
+        size_t bytes_written;
+        const auto error = JpegLsEncode(charls_encoded.data(), charls_encoded.size(), &bytes_written,
             reference_file.image_data().data(), reference_file.image_data().size(), &info, nullptr);
         Assert::AreEqual(jpegls_errc::success, error);
 

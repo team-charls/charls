@@ -197,15 +197,15 @@ private:
         if (error)
             return false;
 
-        vector<uint8_t> ourEncodedBytes(compressed_length + 16);
-        size_t bytesWritten;
-        error = JpegLsEncode(ourEncodedBytes.data(), ourEncodedBytes.size(), &bytesWritten, uncompressed_data, uncompressed_length, &info, nullptr);
+        vector<uint8_t> our_encoded_bytes(compressed_length + 16);
+        size_t bytes_written;
+        error = JpegLsEncode(our_encoded_bytes.data(), our_encoded_bytes.size(), &bytes_written, uncompressed_data, uncompressed_length, &info, nullptr);
         if (error)
             return false;
 
         for (size_t i = 0; i < compressed_length; ++i)
         {
-            if (static_cast<const uint8_t*>(compressed_data)[i] != ourEncodedBytes[i])
+            if (static_cast<const uint8_t*>(compressed_data)[i] != our_encoded_bytes[i])
             {
                 return false;
             }
@@ -226,8 +226,8 @@ private:
                .near_lossless(decoder.near_lossless())
                .preset_coding_parameters(decoder.preset_coding_parameters());
 
-        vector<uint8_t> ourEncodedBytes(encoded_source.size() + 16);
-        encoder.destination(ourEncodedBytes);
+        vector<uint8_t> our_encoded_bytes(encoded_source.size() + 16);
+        encoder.destination(our_encoded_bytes);
 
         const size_t bytes_written = encoder.encode(uncompressed_source);
 
@@ -236,7 +236,7 @@ private:
 
         for (size_t i = 0; i < encoded_source.size(); ++i)
         {
-            if (encoded_source[i] != ourEncodedBytes[i])
+            if (encoded_source[i] != our_encoded_bytes[i])
             {
                 return false;
             }

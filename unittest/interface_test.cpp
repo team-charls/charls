@@ -92,18 +92,18 @@ public:
         params.width = 10;
         params.components = 1;
 
-        size_t bytesWritten{};
+        size_t bytes_written{};
         vector<uint8_t> buffer(10000);
-        auto error = JpegLsEncode(nullptr, buffer.size(), &bytesWritten, buffer.data(), buffer.size(), &params, nullptr);
+        auto error = JpegLsEncode(nullptr, buffer.size(), &bytes_written, buffer.data(), buffer.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
         error = JpegLsEncode(buffer.data(), buffer.size(), nullptr, buffer.data(), buffer.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        error = JpegLsEncode(buffer.data(), buffer.size(),  &bytesWritten, nullptr, buffer.size(), &params, nullptr);
+        error = JpegLsEncode(buffer.data(), buffer.size(),  &bytes_written, nullptr, buffer.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        error = JpegLsEncode(buffer.data(), buffer.size(),  &bytesWritten, buffer.data(), buffer.size(), nullptr, nullptr);
+        error = JpegLsEncode(buffer.data(), buffer.size(),  &bytes_written, buffer.data(), buffer.size(), nullptr, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
@@ -117,10 +117,10 @@ public:
         params.width = 10;
         params.components = 1;
 
-        size_t bytesWritten{};
+        size_t bytes_written{};
         array<uint8_t, 1> destination{};
         vector<uint8_t> source(100);
-        const auto error = JpegLsEncode(destination.data(), 0, &bytesWritten, source.data(), source.size(), &params, error_message.data());
+        const auto error = JpegLsEncode(destination.data(), 0, &bytes_written, source.data(), source.size(), &params, error_message.data());
         Assert::AreEqual(charls::jpegls_errc::destination_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
@@ -246,8 +246,8 @@ public:
         jpegls_errc error = JpegLsReadHeaderStream(source_info, &params);
         Assert::AreEqual(jpegls_errc::success, error);
 
-        const int bytesPerSample = params.bitsPerSample > 8 ? 2 : 1;
-        vector<uint8_t> destination(static_cast<size_t>(params.width) * params.height * bytesPerSample * params.components);
+        const int bytes_per_sample = params.bitsPerSample > 8 ? 2 : 1;
+        vector<uint8_t> destination(static_cast<size_t>(params.width) * params.height * bytes_per_sample * params.components);
 
         const auto destination_info = from_byte_array(destination.data(), destination.size());
         error = JpegLsDecodeStream(destination_info, source_info, nullptr);

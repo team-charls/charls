@@ -67,9 +67,9 @@ struct default_traits final
         return modulo_range(quantize(e));
     }
 
-    FORCE_INLINE SAMPLE compute_reconstructed_sample(const int32_t Px, const int32_t error_value) const noexcept
+    FORCE_INLINE SAMPLE compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) const noexcept
     {
-        return fix_reconstructed_value(Px + dequantize(error_value));
+        return fix_reconstructed_value(predicted_value + dequantize(error_value));
     }
 
     FORCE_INLINE bool is_near(const int32_t lhs, const int32_t rhs) const noexcept
@@ -92,12 +92,12 @@ struct default_traits final
                std::abs(lhs.v4 - rhs.v4) <= NEAR;
     }
 
-    FORCE_INLINE int32_t correct_prediction(const int32_t Pxc) const noexcept
+    FORCE_INLINE int32_t correct_prediction(const int32_t predicted) const noexcept
     {
-        if ((Pxc & MAXVAL) == Pxc)
-            return Pxc;
+        if ((predicted & MAXVAL) == predicted)
+            return predicted;
 
-        return (~(Pxc >> (int32_t_bit_count - 1))) & MAXVAL;
+        return (~(predicted >> (int32_t_bit_count - 1))) & MAXVAL;
     }
 
     /// <summary>

@@ -41,9 +41,9 @@ void test_dicom_sample_image(const char* name)
 {
     vector<uint8_t> data = read_file(name);
 
-    const array<uint8_t, 8> pixelDataStart = {0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7};
+    const array<uint8_t, 8> pixel_data_start = {0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7};
 
-    const int offset = find_string(data, pixelDataStart.data(), pixelDataStart.size());
+    const int offset = find_string(data, pixel_data_start.data(), pixel_data_start.size());
 
     data.erase(data.begin(), data.begin() + offset - 4);
 
@@ -57,10 +57,10 @@ void test_dicom_sample_image(const char* name)
     error_code error = JpegLsReadHeader(data.data(), data.size(), &params, nullptr);
     assert::is_true(!error);
 
-    vector<uint8_t> dataUnc;
-    dataUnc.resize(static_cast<size_t>(params.stride) * params.height);
+    vector<uint8_t> data_unc;
+    data_unc.resize(static_cast<size_t>(params.stride) * params.height);
 
-    error = JpegLsDecode(dataUnc.data(), dataUnc.size(), data.data(), data.size(), nullptr, nullptr);
+    error = JpegLsDecode(data_unc.data(), data_unc.size(), data.data(), data.size(), nullptr, nullptr);
     assert::is_true(!error);
     cout << ".";
 }

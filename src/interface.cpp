@@ -57,12 +57,12 @@ void encode_scan(const JlsParameters& params, const int component_count, const b
     };
 
     auto codec = jls_codec_factory<encoder_strategy>().create_codec(frame_info, codec_parameters, preset_coding_parameters);
-    std::unique_ptr<process_line> processLine(codec->create_process(source, static_cast<uint32_t>(params.stride)));
+    std::unique_ptr<process_line> process_line(codec->create_process(source, static_cast<uint32_t>(params.stride)));
     byte_stream_info destination{writer.output_stream()};
-    const size_t bytesWritten = codec->encode_scan(move(processLine), destination);
+    const size_t bytes_written = codec->encode_scan(move(process_line), destination);
 
     // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
-    writer.seek(bytesWritten);
+    writer.seek(bytes_written);
 }
 
 } // namespace
@@ -122,14 +122,14 @@ jpegls_errc JpegLsEncodeStream(const byte_stream_info destination, size_t& bytes
 
         if (info.interleaveMode == interleave_mode::none)
         {
-            const int32_t byteCountComponent = info.width * info.height * ((info.bitsPerSample + 7) / 8);
+            const int32_t byte_count_component = info.width * info.height * ((info.bitsPerSample + 7) / 8);
             for (int32_t component = 0; component < info.components; ++component)
             {
                 writer.write_start_of_scan_segment(1, info.allowedLossyError, info.interleaveMode);
                 encode_scan(info, 1, source, writer);
 
                 // Synchronize the source stream (encode_scan works on a local copy)
-                skip_bytes(source, static_cast<size_t>(byteCountComponent));
+                skip_bytes(source, static_cast<size_t>(byte_count_component));
             }
         }
         else

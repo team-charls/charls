@@ -20,16 +20,16 @@ namespace {
 
 void triplet2_planar(vector<uint8_t>& buffer, const rect_size size)
 {
-    vector<uint8_t> workBuffer(buffer.size());
+    vector<uint8_t> work_buffer(buffer.size());
 
-    const size_t byteCount = size.cx * size.cy;
-    for (size_t index = 0; index < byteCount; ++index)
+    const size_t byte_count = size.cx * size.cy;
+    for (size_t index = 0; index < byte_count; ++index)
     {
-        workBuffer[index] = buffer[index * 3 + 0];
-        workBuffer[index + 1 * byteCount] = buffer[index * 3 + 1];
-        workBuffer[index + 2 * byteCount] = buffer[index * 3 + 2];
+        work_buffer[index] = buffer[index * 3 + 0];
+        work_buffer[index + 1 * byte_count] = buffer[index * 3 + 1];
+        work_buffer[index + 2 * byte_count] = buffer[index * 3 + 2];
     }
-    swap(buffer, workBuffer);
+    swap(buffer, work_buffer);
 }
 
 
@@ -40,15 +40,15 @@ bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompress
     if (error)
         return false;
 
-    vector<uint8_t> ourEncodedBytes(compressed_length + 16);
-    size_t bytesWritten;
-    error = JpegLsEncode(ourEncodedBytes.data(), ourEncodedBytes.size(), &bytesWritten, uncompressed_data, uncompressed_length, &info, nullptr);
+    vector<uint8_t> our_encoded_bytes(compressed_length + 16);
+    size_t bytes_written;
+    error = JpegLsEncode(our_encoded_bytes.data(), our_encoded_bytes.size(), &bytes_written, uncompressed_data, uncompressed_length, &info, nullptr);
     if (error)
         return false;
 
     for (size_t i = 0; i < compressed_length; ++i)
     {
-        if (static_cast<const uint8_t*>(compressed_data)[i] != ourEncodedBytes[i])
+        if (static_cast<const uint8_t*>(compressed_data)[i] != our_encoded_bytes[i])
         {
             return false;
         }
@@ -91,28 +91,28 @@ void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_le
 void decompress_file(const char* name_encoded, const char* name_raw, const int offset, const bool check_encode = true)
 {
     cout << "Conformance test:" << name_encoded << "\n\r";
-    vector<uint8_t> encodedBuffer = read_file(name_encoded);
+    vector<uint8_t> encoded_buffer = read_file(name_encoded);
 
     JlsParameters params{};
-    if (make_error_code(JpegLsReadHeader(encodedBuffer.data(), encodedBuffer.size(), &params, nullptr)))
+    if (make_error_code(JpegLsReadHeader(encoded_buffer.data(), encoded_buffer.size(), &params, nullptr)))
     {
         assert::is_true(false);
         return;
     }
 
-    vector<uint8_t> rawBuffer = read_file(name_raw, offset);
+    vector<uint8_t> raw_buffer = read_file(name_raw, offset);
 
     if (params.bitsPerSample > 8)
     {
-        fix_endian(&rawBuffer, false);
+        fix_endian(&raw_buffer, false);
     }
 
     if (params.interleaveMode == interleave_mode::none && params.components == 3)
     {
-        triplet2_planar(rawBuffer, rect_size(params.width, params.height));
+        triplet2_planar(raw_buffer, rect_size(params.width, params.height));
     }
 
-    test_compliance(encodedBuffer.data(), encodedBuffer.size(), rawBuffer.data(), rawBuffer.size(), check_encode);
+    test_compliance(encoded_buffer.data(), encoded_buffer.size(), raw_buffer.data(), raw_buffer.size(), check_encode);
 }
 
 
@@ -166,8 +166,8 @@ const array<uint8_t, 16> buffer = {0, 0, 90, 74,
 void test_sample_annex_h3()
 {
     ////rect_size size = rect_size(4,4);
-    vector<uint8_t> vecRaw(16);
-    memcpy(vecRaw.data(), buffer.data(), buffer.size());
+    vector<uint8_t> vec_raw(16);
+    memcpy(vec_raw.data(), buffer.data(), buffer.size());
     ////  TestJls(vecRaw, size, 8, 1, ILV_NONE, bufferEncoded, sizeof(bufferEncoded), false);
 }
 

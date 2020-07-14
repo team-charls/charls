@@ -21,11 +21,11 @@ void test_jpegls_read_header(const char* filename, const int width, const int he
 {
     cout << "LegacyAPI JpegLsReadHeader:" << filename << "\n";
 
-    vector<uint8_t> encodedBuffer = read_file(filename);
+    vector<uint8_t> encoded_buffer = read_file(filename);
 
     array<char, ErrorMessageSize> error_message{};
     JlsParameters parameters{};
-    const auto error = JpegLsReadHeader(encodedBuffer.data(), encodedBuffer.size(), &parameters, error_message.data());
+    const auto error = JpegLsReadHeader(encoded_buffer.data(), encoded_buffer.size(), &parameters, error_message.data());
     assert::is_true(error == jpegls_errc::success);
 
     assert::is_true(parameters.width == width ||

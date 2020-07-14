@@ -15,7 +15,7 @@ is placed in the root of the repository.
 
 ### Template: class vs typename
 
-The typename keyword is the prefered keyword to "mark" template variables.
+The typename keyword is the preferred keyword to "mark" template variables.
 
 ### Prevent header file double include
 
@@ -29,9 +29,9 @@ There are 2 methods to prevent double include:
 
 ## Exceptions and Error Handling
 
-* C++ exceptions should be derived from `std::exception`. (Common accepted idom)
+* C++ exceptions should be derived from `std::exception`. (Common accepted idiom)
 * The exception should be convertible to an error code to support the C API
-* An english error text that describes the problem is extreme usefull.
+* An english error text that describes the problem is extreme useful.
 
 => Design: std::system_error is the standard solution to throw exceptions from libraries (CharLS is a library)
 
@@ -94,13 +94,35 @@ Passing a NULL pointer as parameter into the C ABI can be handled in 2 ways:
 
 * There can be an explicit check and an error return value.
 
-* The pointer can be deferenced directly and passing NULL will just crash the process.
+* The pointer can be dereferenced directly and passing NULL will just crash the process.
 
-Passing a NULL pointer is a defect of the calling application, it is however helpfull to
+Passing a NULL pointer is a defect of the calling application, it is however helpful to
 not generate an access violation inside the library module. If the library is build without
 symbol info, it is difficult for the user to detect this mistake. Returning a "bad parameter"
-error is in this case more helpfull.
+error is in this case more helpful.
 Note: NULL is the only special value that can be checked, but also the common mistake.
+
+### Variable names versus JPEG-LS Standard
+
+The JPEG-LS standard uses pseudo-code to define certain parts of the algorithm. It makes
+sense to define a good naming convention. Not all JPEG-LS names are good C++ variable\parameter names.
+
+| JPEG-LS Symbol | C++ name | Description |
+| -------------- | -------- |------------ |
+| a, b, c, d     | a, b, c, d | positions of samples in the causal template |
+| bpp            | bits_per_pixel | number of bits needed to represent MAXVAL (not less than 2) |
+| D1, D2, D3, Di | d1, d2, d3, di | local gradients |
+| EMErrval       | e_mapped_error_value | Errval mapped to non-negative integers in run interruption mode |
+| Errval | error_value | prediction error (quantized or unquantized, before and after modulo reduction) |
+| ILV            | interleave_mode | indication of the interleave mode used for the scan |
+| J[0..31] | J[0..31] | 32 variables indicating order of run-length codes |
+| k | k (or golomb_code) | Golomb coding variable for regular mode |
+| MErrval | mapped_error_value | Errval mapped to non-negative integers in regular mode |
+| NEAR           | near_lossless | difference bound for near-lossless coding |
+| Px | predicted_value | predicted value for the current sample |
+| Q1, Q2, Q3, Qi | q1, q2, q3, qi | region numbers to quantize local gradients |
+| Ra, Rb, Rc, Rd | ra, rb, rc, rd | reconstructed values of samples in the causal template |
+| RESET | reset_threshold | threshold value at which A, B, and N are halved |
 
 ### Supported C++ language
 
@@ -143,7 +165,7 @@ It consists of the following variants
 
 ### External components \ Package Manager
 
-One of the missing features of C++ is a standard Package Manager. The following packages would be usefull to use:
+One of the missing features of C++ is a standard Package Manager. The following packages would be useful to use:
 
 * Cross-platform unit test library (for example Catch2)
 * Library to read Anymap files (for example Netpbm)
