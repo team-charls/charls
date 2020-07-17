@@ -26,7 +26,7 @@ struct lossless_traits_impl
         RANGE = (1U << bpp),
         MAXVAL = (1U << bpp) - 1,
         LIMIT = 2 * (bitsPerPixel + std::max(8, bitsPerPixel)),
-        RESET = DefaultResetValue
+        RESET = default_reset_value
     };
 
     FORCE_INLINE constexpr static int32_t compute_error_value(const int32_t d) noexcept

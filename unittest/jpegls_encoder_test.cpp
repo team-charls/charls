@@ -213,11 +213,11 @@ public:
 
         // Check that SOI marker has been written.
         Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
-        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::StartOfImage), destination[1]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that a APP8 with SPIFF has been written (details already verified by jpeg_stream_writer_test).
         Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
-        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::ApplicationData8), destination[3]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data8), destination[3]);
         Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
         Assert::AreEqual(static_cast<uint8_t>(32), destination[5]);
         Assert::AreEqual(static_cast<uint8_t>('S'), destination[6]);
@@ -278,11 +278,11 @@ public:
 
         // Check that SOI marker has been written.
         Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
-        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::StartOfImage), destination[1]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that a APP8 with SPIFF has been written (details already verified by jpeg_stream_writer_test).
         Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
-        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::ApplicationData8), destination[3]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data8), destination[3]);
         Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
         Assert::AreEqual(static_cast<uint8_t>(32), destination[5]);
         Assert::AreEqual(static_cast<uint8_t>('S'), destination[6]);

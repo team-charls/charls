@@ -15,7 +15,7 @@ class jpeg_test_stream_writer final
 public:
     void write_start_of_image()
     {
-        write_marker(JpegMarkerCode::StartOfImage);
+        write_marker(jpeg_marker_code::start_of_image);
     }
 
     void write_start_of_frame_segment(const int width, const int height, const int bits_per_sample, const int component_count)
@@ -43,14 +43,14 @@ public:
             segment.push_back(0);    // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
         }
 
-        write_segment(charls::JpegMarkerCode::StartOfFrameJpegLS, segment.data(), segment.size());
+        write_segment(charls::jpeg_marker_code::start_of_frame_jpegls, segment.data(), segment.size());
     }
 
     void write_jpegls_preset_parameters_segment(const jpegls_pc_parameters& preset_coding_parameters)
     {
         std::vector<uint8_t> segment;
 
-        segment.push_back(static_cast<uint8_t>(charls::JpegLSPresetParametersType::PresetCodingParameters));
+        segment.push_back(static_cast<uint8_t>(charls::jpegls_preset_parameters_type::preset_coding_parameters));
 
         push_back(segment, static_cast<uint16_t>(preset_coding_parameters.maximum_sample_value));
         push_back(segment, static_cast<uint16_t>(preset_coding_parameters.threshold1));
@@ -58,7 +58,7 @@ public:
         push_back(segment, static_cast<uint16_t>(preset_coding_parameters.threshold3));
         push_back(segment, static_cast<uint16_t>(preset_coding_parameters.reset_value));
 
-        write_segment(charls::JpegMarkerCode::JpegLSPresetParameters, segment.data(), segment.size());
+        write_segment(charls::jpeg_marker_code::jpegls_preset_parameters, segment.data(), segment.size());
     }
 
     void write_start_of_scan_segment(int component_id,
@@ -81,19 +81,19 @@ public:
         segment.push_back(static_cast<uint8_t>(interleave_mode)); // ILV parameter
         segment.push_back(0);                                     // transformation
 
-        write_segment(JpegMarkerCode::StartOfScan, segment.data(), segment.size());
+        write_segment(jpeg_marker_code::start_of_scan, segment.data(), segment.size());
     }
 
-    void write_segment(const JpegMarkerCode marker_code, const void* data, const size_t data_size)
+    void write_segment(const jpeg_marker_code marker_code, const void* data, const size_t data_size)
     {
         write_marker(marker_code);
         write_uint16(static_cast<uint16_t>(data_size + 2));
         write_bytes(data, data_size);
     }
 
-    void write_marker(JpegMarkerCode marker_code)
+    void write_marker(jpeg_marker_code marker_code)
     {
-        write_byte(JpegMarkerStartByte);
+        write_byte(jpeg_marker_start_byte);
         write_byte(static_cast<uint8_t>(marker_code));
     }
 

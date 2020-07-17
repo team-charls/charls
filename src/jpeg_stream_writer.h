@@ -71,19 +71,19 @@ public:
 
     std::size_t bytes_written() const noexcept
     {
-        return byteOffset_;
+        return byte_offset_;
     }
 
     std::size_t get_length() const noexcept
     {
-        return destination_.count - byteOffset_;
+        return destination_.count - byte_offset_;
     }
 
     byte_stream_info output_stream() const noexcept
     {
         byte_stream_info data = destination_;
-        data.count -= byteOffset_;
-        data.rawData += byteOffset_;
+        data.count -= byte_offset_;
+        data.rawData += byte_offset_;
         return data;
     }
 
@@ -92,7 +92,7 @@ public:
         if (destination_.rawStream)
             return;
 
-        byteOffset_ += byte_count;
+        byte_offset_ += byte_count;
     }
 
     void update_destination(OUT_WRITES_BYTES_(destination_size) void* destination_buffer,
@@ -105,10 +105,10 @@ public:
 private:
     uint8_t* get_pos() const noexcept
     {
-        return destination_.rawData + byteOffset_;
+        return destination_.rawData + byte_offset_;
     }
 
-    void write_segment(JpegMarkerCode marker_code, IN_READS_BYTES_(size) const void* data, size_t size);
+    void write_segment(jpeg_marker_code marker_code, IN_READS_BYTES_(size) const void* data, size_t size);
 
     void write_byte(const uint8_t value)
     {
@@ -118,10 +118,10 @@ private:
         }
         else
         {
-            if (byteOffset_ >= destination_.count)
+            if (byte_offset_ >= destination_.count)
                 impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-            destination_.rawData[byteOffset_++] = value;
+            destination_.rawData[byte_offset_++] = value;
         }
     }
 
@@ -157,15 +157,15 @@ private:
         write_byte(static_cast<uint8_t>(value));
     }
 
-    void write_marker(const JpegMarkerCode marker_code)
+    void write_marker(const jpeg_marker_code marker_code)
     {
-        write_byte(JpegMarkerStartByte);
+        write_byte(jpeg_marker_start_byte);
         write_byte(static_cast<uint8_t>(marker_code));
     }
 
     byte_stream_info destination_{};
-    std::size_t byteOffset_{};
-    int8_t componentId_{1};
+    std::size_t byte_offset_{};
+    int8_t component_id_{1};
 };
 
 } // namespace charls

@@ -119,8 +119,8 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xF9); // SOF_57: Marks the start of a JPEG-LS extended (ISO/IEC 14495-2) encoded frame.
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         try
         {
@@ -172,8 +172,8 @@ public:
         buffer.push_back(0x02);
         buffer.push_back(0x01);
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         try
         {
@@ -199,8 +199,8 @@ public:
         buffer.push_back(0x0A);
         buffer.push_back(0x01);
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         try
         {
@@ -226,8 +226,8 @@ public:
         buffer.push_back(0x0C);
         buffer.push_back(0x01);
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         try
         {
@@ -270,8 +270,8 @@ public:
         buffer.push_back(0x03);
         buffer.push_back(id);
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         try
         {
@@ -310,8 +310,8 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xDA); // SOS: Marks the start of scan.
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         try
         {
@@ -336,8 +336,8 @@ public:
         buffer.push_back(0x00);
         buffer.push_back(0x07);
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         try
         {
@@ -362,8 +362,8 @@ public:
         buffer.push_back(0x00);
         buffer.push_back(0x07);
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         try
         {
@@ -470,9 +470,9 @@ public:
         writer.componentIdOverride = 7;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
-        const byte_stream_info byteStream = from_byte_array(writer.buffer.data(), writer.buffer.size());
+        const byte_stream_info source = from_byte_array(writer.buffer.data(), writer.buffer.size());
 
-        jpeg_stream_reader reader(byteStream);
+        jpeg_stream_reader reader(source);
 
         try
         {
@@ -507,8 +507,8 @@ public:
         buffer.push_back(0x00);
         buffer.push_back(0x03);
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         try
         {
@@ -568,8 +568,8 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xD9); // EOI.
 
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         try
         {
@@ -619,8 +619,8 @@ public:
     TEST_METHOD(read_spiff_header_high_version_to_new) // NOLINT
     {
         vector<uint8_t> buffer = create_test_spiff_header(3);
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         spiff_header spiff_header{};
         bool spiff_header_found{};
@@ -633,8 +633,8 @@ public:
     TEST_METHOD(read_spiff_header_without_end_of_directory) // NOLINT
     {
         vector<uint8_t> buffer = create_test_spiff_header(2, 0, false);
-        const byte_stream_info byteStream = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_reader reader(byteStream);
+        const byte_stream_info source = from_byte_array(buffer.data(), buffer.size());
+        jpeg_stream_reader reader(source);
 
         spiff_header spiff_header{};
         bool spiff_header_found{};

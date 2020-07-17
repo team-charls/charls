@@ -34,7 +34,7 @@ struct default_traits final
     const int32_t LIMIT;
     const int32_t RESET;
 
-    default_traits(const int32_t max, const int32_t near, const int32_t reset = DefaultResetValue) noexcept :
+    default_traits(const int32_t max, const int32_t near, const int32_t reset = default_reset_value) noexcept :
         MAXVAL{max},
         RANGE{(max + 2 * near) / (2 * near + 1) + 1},
         NEAR{near},

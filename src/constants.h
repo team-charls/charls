@@ -11,17 +11,17 @@ namespace charls {
 // Default threshold values for JPEG-LS statistical modeling as defined in ISO/IEC 14495-1, Table C.3
 // for the case MAXVAL = 255 and NEAR = 0.
 // Can be overridden at compression time, however this is rarely done.
-constexpr int DefaultThreshold1 = 3;  // BASIC_T1
-constexpr int DefaultThreshold2 = 7;  // BASIC_T2
-constexpr int DefaultThreshold3 = 21; // BASIC_T3
+constexpr int default_threshold1 = 3;  // BASIC_T1
+constexpr int default_threshold2 = 7;  // BASIC_T2
+constexpr int default_threshold3 = 21; // BASIC_T3
 
-constexpr int DefaultResetValue = 64; // Default RESET value as defined in ISO/IEC 14495-1, table C.2
+constexpr int default_reset_value = 64; // Default RESET value as defined in ISO/IEC 14495-1, table C.2
 
 constexpr int maximum_width = 65535;
 constexpr int maximum_height = 65535;
-constexpr int MaximumComponentCount = 255;
-constexpr int MinimumBitsPerSample = 2;
-constexpr int MaximumBitsPerSample = 16;
+constexpr int maximum_component_count = 255;
+constexpr int minimum_bits_per_sample = 2;
+constexpr int maximum_bits_per_sample = 16;
 constexpr int maximum_near_lossless = 255;
 
 constexpr int compute_maximum_near_lossless(const int maximum_sample_value) noexcept

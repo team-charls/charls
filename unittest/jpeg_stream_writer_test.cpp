@@ -36,7 +36,7 @@ public:
 
         Assert::AreEqual(static_cast<size_t>(2), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
-        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::StartOfImage), buffer[1]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), buffer[1]);
     }
 
     TEST_METHOD(write_end_of_image) // NOLINT
@@ -50,7 +50,7 @@ public:
 
         Assert::AreEqual(static_cast<size_t>(2), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
-        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::EndOfImage), buffer[1]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::end_of_image), buffer[1]);
     }
 
     TEST_METHOD(write_spiff_segment) // NOLINT
@@ -79,7 +79,7 @@ public:
         Assert::AreEqual(static_cast<size_t>(34), writer.bytes_written());
 
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
-        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::ApplicationData8), buffer[1]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data8), buffer[1]);
 
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[2]);
         Assert::AreEqual(static_cast<uint8_t>(32), buffer[3]);
@@ -142,7 +142,7 @@ public:
 
         // Verify Entry Magic Number (EMN)
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
-        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::ApplicationData8), buffer[1]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data8), buffer[1]);
 
         // Verify EOD Entry Length (EOD = End Of Directory)
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[2]);
@@ -156,7 +156,7 @@ public:
 
         // Verify embedded SOI tag
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[8]);
-        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::StartOfImage), buffer[9]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), buffer[9]);
     }
 
     TEST_METHOD(write_spiff_directory_entry) // NOLINT
@@ -172,7 +172,7 @@ public:
 
         // Verify Entry Magic Number (EMN)
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
-        Assert::AreEqual(static_cast<uint8_t>(JpegMarkerCode::ApplicationData8), buffer[1]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data8), buffer[1]);
 
         // Verify Entry Length
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[2]);

@@ -31,27 +31,27 @@ inline jpegls_pc_parameters compute_default(const int32_t maximum_sample_value, 
     if (maximum_sample_value >= 128)
     {
         const int32_t factor = (std::min(maximum_sample_value, 4095) + 128) / 256;
-        const int threshold1 = clamp(factor * (DefaultThreshold1 - 2) + 2 + 3 * near_lossless, near_lossless + 1, maximum_sample_value);
-        const int threshold2 = clamp(factor * (DefaultThreshold2 - 3) + 3 + 5 * near_lossless, threshold1, maximum_sample_value); //-V537
+        const int threshold1 = clamp(factor * (default_threshold1 - 2) + 2 + 3 * near_lossless, near_lossless + 1, maximum_sample_value);
+        const int threshold2 = clamp(factor * (default_threshold2 - 3) + 3 + 5 * near_lossless, threshold1, maximum_sample_value); //-V537
 
         return {
             maximum_sample_value,
             threshold1,
             threshold2,
-            clamp(factor * (DefaultThreshold3 - 4) + 4 + 7 * near_lossless, threshold2, maximum_sample_value),
-            DefaultResetValue};
+            clamp(factor * (default_threshold3 - 4) + 4 + 7 * near_lossless, threshold2, maximum_sample_value),
+            default_reset_value};
     }
 
     const int32_t factor = 256 / (maximum_sample_value + 1);
-    const int threshold1 = clamp(std::max(2, DefaultThreshold1 / factor + 3 * near_lossless), near_lossless + 1, maximum_sample_value);
-    const int threshold2 = clamp(std::max(3, DefaultThreshold2 / factor + 5 * near_lossless), threshold1, maximum_sample_value);
+    const int threshold1 = clamp(std::max(2, default_threshold1 / factor + 3 * near_lossless), near_lossless + 1, maximum_sample_value);
+    const int threshold2 = clamp(std::max(3, default_threshold2 / factor + 5 * near_lossless), threshold1, maximum_sample_value);
 
     return {
         maximum_sample_value,
         threshold1,
         threshold2,
-        clamp(std::max(4, DefaultThreshold3 / factor + 7 * near_lossless), threshold2, maximum_sample_value),
-        DefaultResetValue};
+        clamp(std::max(4, default_threshold3 / factor + 7 * near_lossless), threshold2, maximum_sample_value),
+        default_reset_value};
 }
 
 

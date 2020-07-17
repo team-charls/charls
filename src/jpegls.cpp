@@ -69,7 +69,7 @@ namespace charls {
 // To avoid threading issues, all tables are created when the program is loaded.
 
 // Lookup table: decode symbols that are smaller or equal to 8 bit (16 tables for each value of k)
-array<golomb_code_table, 16> decodingTables = {initialize_table(0), initialize_table(1), initialize_table(2), initialize_table(3), // NOLINT(clang-diagnostic-global-constructors)
+array<golomb_code_table, 16> decoding_tables = {initialize_table(0), initialize_table(1), initialize_table(2), initialize_table(3), // NOLINT(clang-diagnostic-global-constructors)
                                     initialize_table(4), initialize_table(5), initialize_table(6), initialize_table(7),
                                     initialize_table(8), initialize_table(9), initialize_table(10), initialize_table(11),
                                     initialize_table(12), initialize_table(13), initialize_table(14), initialize_table(15)};
@@ -86,7 +86,7 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_codec(const frame_info&
 {
     unique_ptr<Strategy> codec;
 
-    if (preset_coding_parameters.reset_value == 0 || preset_coding_parameters.reset_value == DefaultResetValue)
+    if (preset_coding_parameters.reset_value == 0 || preset_coding_parameters.reset_value == default_reset_value)
     {
         codec = create_optimized_codec(frame, parameters);
     }

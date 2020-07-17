@@ -19,13 +19,13 @@ void verify_input(const byte_stream_info& destination, const JlsParameters& para
     if (!destination.rawStream && !destination.rawData)
         throw_jpegls_error(jpegls_errc::invalid_operation);
 
-    if (parameters.bitsPerSample < MinimumBitsPerSample || parameters.bitsPerSample > MaximumBitsPerSample)
+    if (parameters.bitsPerSample < minimum_bits_per_sample || parameters.bitsPerSample > maximum_bits_per_sample)
         throw_jpegls_error(jpegls_errc::invalid_argument_bits_per_sample);
 
     if (!(parameters.interleaveMode == interleave_mode::none || parameters.interleaveMode == interleave_mode::sample || parameters.interleaveMode == interleave_mode::line))
         throw_jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
 
-    if (parameters.components < 1 || parameters.components > MaximumComponentCount)
+    if (parameters.components < 1 || parameters.components > maximum_component_count)
         throw_jpegls_error(jpegls_errc::invalid_argument_component_count);
 
     if (destination.rawData &&

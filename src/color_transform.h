@@ -149,25 +149,25 @@ struct transform_shifted final
     {
         explicit inverse(const transform_shifted& transform) noexcept :
             shift_{transform.shift_},
-            inverseTransform_{transform.colorTransform_}
+            inverse_transform_{transform.color_transform_}
         {
         }
 
         FORCE_INLINE triplet<size_type> operator()(const int v1, const int v2, const int v3) noexcept
         {
-            const triplet<size_type> result = inverseTransform_(v1 << shift_, v2 << shift_, v3 << shift_);
+            const triplet<size_type> result = inverse_transform_(v1 << shift_, v2 << shift_, v3 << shift_);
             return triplet<size_type>(result.R >> shift_, result.G >> shift_, result.B >> shift_);
         }
 
         FORCE_INLINE quad<size_type> operator()(const int v1, const int v2, const int v3, int v4)
         {
-            triplet<size_type> result = inverseTransform_(v1 << shift_, v2 << shift_, v3 << shift_);
+            triplet<size_type> result = inverse_transform_(v1 << shift_, v2 << shift_, v3 << shift_);
             return quad<size_type>(result.R >> shift_, result.G >> shift_, result.B >> shift_, v4);
         }
 
     private:
         int shift_;
-        typename Transform::inverse inverseTransform_;
+        typename Transform::inverse inverse_transform_;
     };
 
     explicit transform_shifted(const int shift) noexcept :
@@ -177,19 +177,19 @@ struct transform_shifted final
 
     FORCE_INLINE triplet<size_type> operator()(const int red, const int green, const int blue) noexcept
     {
-        const triplet<size_type> result = colorTransform_(red << shift_, green << shift_, blue << shift_);
+        const triplet<size_type> result = color_transform_(red << shift_, green << shift_, blue << shift_);
         return triplet<size_type>(result.R >> shift_, result.G >> shift_, result.B >> shift_);
     }
 
     FORCE_INLINE quad<size_type> operator()(const int red, const int green, const int blue, int alpha)
     {
-        triplet<size_type> result = colorTransform_(red << shift_, green << shift_, blue << shift_);
+        triplet<size_type> result = color_transform_(red << shift_, green << shift_, blue << shift_);
         return quad<size_type>(result.R >> shift_, result.G >> shift_, result.B >> shift_, alpha);
     }
 
 private:
     int shift_;
-    Transform colorTransform_;
+    Transform color_transform_;
 };
 
 } // namespace charls

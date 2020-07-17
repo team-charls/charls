@@ -23,7 +23,7 @@ using std::vector;
 namespace charls {
 
 jpeg_stream_reader::jpeg_stream_reader(byte_stream_info byte_stream_info) noexcept :
-    byteStream_{byte_stream_info}
+    byte_stream_{byte_stream_info}
 {
 }
 
@@ -62,7 +62,7 @@ void jpeg_stream_reader::read(byte_stream_info source, uint32_t stride)
 
         unique_ptr<decoder_strategy> codec = jls_codec_factory<decoder_strategy>().create_codec(frame_info_, parameters_, preset_coding_parameters_);
         unique_ptr<process_line> process_line(codec->create_process(source, stride));
-        codec->decode_scan(move(process_line), rect_, byteStream_);
+        codec->decode_scan(move(process_line), rect_, byte_stream_);
         skip_bytes(source, static_cast<size_t>(bytes_per_plane));
         state_ = state::scan_section;
 
@@ -89,7 +89,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 
     if (state_ == state::before_start_of_image)
     {
-        if (read_next_marker_code() != JpegMarkerCode::StartOfImage)
+        if (read_next_marker_code() != jpeg_marker_code::start_of_image)
             throw_jpegls_error(jpegls_errc::start_of_image_marker_not_found);
 
         state_ = state::header_section;
@@ -97,10 +97,10 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 
     for (;;)
     {
-        const JpegMarkerCode marker_code = read_next_marker_code();
+        const jpeg_marker_code marker_code = read_next_marker_code();
         validate_marker_code(marker_code);
 
-        if (marker_code == JpegMarkerCode::StartOfScan)
+        if (marker_code == jpeg_marker_code::start_of_scan)
         {
             if (!is_maximum_sample_value_valid())
                 throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_pc_parameters);
@@ -146,10 +146,10 @@ void jpeg_stream_reader::read_next_start_of_scan()
 
     for (;;)
     {
-        const JpegMarkerCode marker_code = read_next_marker_code();
+        const jpeg_marker_code marker_code = read_next_marker_code();
         validate_marker_code(marker_code);
 
-        if (marker_code == JpegMarkerCode::StartOfScan)
+        if (marker_code == jpeg_marker_code::start_of_scan)
         {
             read_start_of_scan();
             return;
@@ -170,79 +170,79 @@ void jpeg_stream_reader::read_next_start_of_scan()
 }
 
 
-JpegMarkerCode jpeg_stream_reader::read_next_marker_code()
+jpeg_marker_code jpeg_stream_reader::read_next_marker_code()
 {
     auto byte = read_byte();
-    if (byte != JpegMarkerStartByte)
+    if (byte != jpeg_marker_start_byte)
         throw_jpegls_error(jpegls_errc::jpeg_marker_start_byte_not_found);
 
     // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see T.81, B.1.1.2)
     do
     {
         byte = read_byte();
-    } while (byte == JpegMarkerStartByte);
+    } while (byte == jpeg_marker_start_byte);
 
-    return static_cast<JpegMarkerCode>(byte);
+    return static_cast<jpeg_marker_code>(byte);
 }
 
 
-void jpeg_stream_reader::validate_marker_code(const JpegMarkerCode marker_code) const
+void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code) const
 {
     // ISO/IEC 14495-1, C.1.1. defines the following markers as valid for a JPEG-LS byte stream:
     // SOF55, LSE, SOI, EOI, SOS, DNL, DRI, RSTm, APPn and COM.
     // All other markers shall not be present.
     switch (marker_code)
     {
-    case JpegMarkerCode::StartOfScan:
+    case jpeg_marker_code::start_of_scan:
         if (state_ != state::scan_section)
             throw_jpegls_error(jpegls_errc::unexpected_marker_found);
 
         return;
 
-    case JpegMarkerCode::StartOfFrameJpegLS:
+    case jpeg_marker_code::start_of_frame_jpegls:
         if (state_ == state::scan_section)
             throw_jpegls_error(jpegls_errc::duplicate_start_of_frame_marker);
 
         return;
 
-    case JpegMarkerCode::JpegLSPresetParameters:
-    case JpegMarkerCode::Comment:
-    case JpegMarkerCode::ApplicationData0:
-    case JpegMarkerCode::ApplicationData1:
-    case JpegMarkerCode::ApplicationData2:
-    case JpegMarkerCode::ApplicationData3:
-    case JpegMarkerCode::ApplicationData4:
-    case JpegMarkerCode::ApplicationData5:
-    case JpegMarkerCode::ApplicationData6:
-    case JpegMarkerCode::ApplicationData7:
-    case JpegMarkerCode::ApplicationData8:
-    case JpegMarkerCode::ApplicationData9:
-    case JpegMarkerCode::ApplicationData10:
-    case JpegMarkerCode::ApplicationData11:
-    case JpegMarkerCode::ApplicationData12:
-    case JpegMarkerCode::ApplicationData13:
-    case JpegMarkerCode::ApplicationData14:
-    case JpegMarkerCode::ApplicationData15:
+    case jpeg_marker_code::jpegls_preset_parameters:
+    case jpeg_marker_code::comment:
+    case jpeg_marker_code::application_data0:
+    case jpeg_marker_code::application_data1:
+    case jpeg_marker_code::application_data2:
+    case jpeg_marker_code::application_data3:
+    case jpeg_marker_code::application_data4:
+    case jpeg_marker_code::application_data5:
+    case jpeg_marker_code::application_data6:
+    case jpeg_marker_code::application_data7:
+    case jpeg_marker_code::application_data8:
+    case jpeg_marker_code::application_data9:
+    case jpeg_marker_code::application_data10:
+    case jpeg_marker_code::application_data11:
+    case jpeg_marker_code::application_data12:
+    case jpeg_marker_code::application_data13:
+    case jpeg_marker_code::application_data14:
+    case jpeg_marker_code::application_data15:
         return;
 
     // Check explicit for one of the other common JPEG encodings.
-    case JpegMarkerCode::StartOfFrameBaselineJpeg:
-    case JpegMarkerCode::StartOfFrameExtendedSequential:
-    case JpegMarkerCode::StartOfFrameProgressive:
-    case JpegMarkerCode::StartOfFrameLossless:
-    case JpegMarkerCode::StartOfFrameDifferentialSequential:
-    case JpegMarkerCode::StartOfFrameDifferentialProgressive:
-    case JpegMarkerCode::StartOfFrameDifferentialLossless:
-    case JpegMarkerCode::StartOfFrameExtendedArithmetic:
-    case JpegMarkerCode::StartOfFrameProgressiveArithmetic:
-    case JpegMarkerCode::StartOfFrameLosslessArithmetic:
-    case JpegMarkerCode::StartOfFrameJpegLSExtended:
+    case jpeg_marker_code::start_of_frame_baseline_jpeg:
+    case jpeg_marker_code::start_of_frame_extended_sequential:
+    case jpeg_marker_code::start_of_frame_progressive:
+    case jpeg_marker_code::start_of_frame_lossless:
+    case jpeg_marker_code::start_of_frame_differential_sequential:
+    case jpeg_marker_code::start_of_frame_differential_progressive:
+    case jpeg_marker_code::start_of_frame_differential_lossless:
+    case jpeg_marker_code::start_of_frame_extended_arithmetic:
+    case jpeg_marker_code::start_of_frame_progressive_arithmetic:
+    case jpeg_marker_code::start_of_frame_lossless_arithmetic:
+    case jpeg_marker_code::start_of_frame_jpegls_extended:
         throw_jpegls_error(jpegls_errc::encoding_not_supported);
 
-    case JpegMarkerCode::StartOfImage:
+    case jpeg_marker_code::start_of_image:
         throw_jpegls_error(jpegls_errc::duplicate_start_of_image_marker);
 
-    case JpegMarkerCode::EndOfImage:
+    case jpeg_marker_code::end_of_image:
         throw_jpegls_error(jpegls_errc::unexpected_end_of_image_marker);
     }
 
@@ -250,40 +250,40 @@ void jpeg_stream_reader::validate_marker_code(const JpegMarkerCode marker_code) 
 }
 
 
-int jpeg_stream_reader::read_marker_segment(const JpegMarkerCode marker_code,
+int jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code,
                                             const int32_t segment_size,
                                             spiff_header* header,
                                             bool* spiff_header_found)
 {
     switch (marker_code)
     {
-    case JpegMarkerCode::StartOfFrameJpegLS:
+    case jpeg_marker_code::start_of_frame_jpegls:
         return read_start_of_frame_segment(segment_size);
 
-    case JpegMarkerCode::Comment:
+    case jpeg_marker_code::comment:
         return read_comment();
 
-    case JpegMarkerCode::JpegLSPresetParameters:
+    case jpeg_marker_code::jpegls_preset_parameters:
         return read_preset_parameters_segment(segment_size);
 
-    case JpegMarkerCode::ApplicationData0:
-    case JpegMarkerCode::ApplicationData1:
-    case JpegMarkerCode::ApplicationData2:
-    case JpegMarkerCode::ApplicationData3:
-    case JpegMarkerCode::ApplicationData4:
-    case JpegMarkerCode::ApplicationData5:
-    case JpegMarkerCode::ApplicationData6:
-    case JpegMarkerCode::ApplicationData7:
-    case JpegMarkerCode::ApplicationData9:
-    case JpegMarkerCode::ApplicationData10:
-    case JpegMarkerCode::ApplicationData11:
-    case JpegMarkerCode::ApplicationData12:
-    case JpegMarkerCode::ApplicationData13:
-    case JpegMarkerCode::ApplicationData14:
-    case JpegMarkerCode::ApplicationData15:
+    case jpeg_marker_code::application_data0:
+    case jpeg_marker_code::application_data1:
+    case jpeg_marker_code::application_data2:
+    case jpeg_marker_code::application_data3:
+    case jpeg_marker_code::application_data4:
+    case jpeg_marker_code::application_data5:
+    case jpeg_marker_code::application_data6:
+    case jpeg_marker_code::application_data7:
+    case jpeg_marker_code::application_data9:
+    case jpeg_marker_code::application_data10:
+    case jpeg_marker_code::application_data11:
+    case jpeg_marker_code::application_data12:
+    case jpeg_marker_code::application_data13:
+    case jpeg_marker_code::application_data14:
+    case jpeg_marker_code::application_data15:
         return 0;
 
-    case JpegMarkerCode::ApplicationData8:
+    case jpeg_marker_code::application_data8:
         return try_read_application_data8_segment(segment_size, header, spiff_header_found);
 
     // Other tags not supported (among which DNL DRI)
@@ -293,9 +293,9 @@ int jpeg_stream_reader::read_marker_segment(const JpegMarkerCode marker_code,
     }
 }
 
-int jpeg_stream_reader::read_spiff_directory_entry(const JpegMarkerCode marker_code, const int32_t segment_size)
+int jpeg_stream_reader::read_spiff_directory_entry(const jpeg_marker_code marker_code, const int32_t segment_size)
 {
-    if (marker_code != JpegMarkerCode::ApplicationData8)
+    if (marker_code != jpeg_marker_code::application_data8)
         throw_jpegls_error(jpegls_errc::missing_end_of_spiff_directory);
 
     if (segment_size < 4)
@@ -320,7 +320,7 @@ int jpeg_stream_reader::read_start_of_frame_segment(const int32_t segment_size)
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
     frame_info_.bits_per_sample = read_byte();
-    if (frame_info_.bits_per_sample < MinimumBitsPerSample || frame_info_.bits_per_sample > MaximumBitsPerSample)
+    if (frame_info_.bits_per_sample < minimum_bits_per_sample || frame_info_.bits_per_sample > maximum_bits_per_sample)
         throw_jpegls_error(jpegls_errc::invalid_parameter_bits_per_sample);
 
     frame_info_.height = read_uint16();
@@ -366,11 +366,11 @@ int jpeg_stream_reader::read_preset_parameters_segment(const int32_t segment_siz
     if (segment_size < 1)
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
-    const auto type = static_cast<JpegLSPresetParametersType>(read_byte());
+    const auto type = static_cast<jpegls_preset_parameters_type>(read_byte());
 
     switch (type)
     {
-    case JpegLSPresetParametersType::PresetCodingParameters: {
+    case jpegls_preset_parameters_type::preset_coding_parameters: {
         constexpr int32_t coding_parameter_segment_size = 11;
         if (segment_size != coding_parameter_segment_size)
             throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
@@ -384,19 +384,19 @@ int jpeg_stream_reader::read_preset_parameters_segment(const int32_t segment_siz
         return coding_parameter_segment_size;
     }
 
-    case JpegLSPresetParametersType::MappingTableSpecification:
-    case JpegLSPresetParametersType::MappingTableContinuation:
-    case JpegLSPresetParametersType::ExtendedWidthAndHeight:
+    case jpegls_preset_parameters_type::mapping_table_specification:
+    case jpegls_preset_parameters_type::mapping_table_continuation:
+    case jpegls_preset_parameters_type::extended_width_and_height:
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
-    case JpegLSPresetParametersType::CodingMethodSpecification:
-    case JpegLSPresetParametersType::NearLosslessErrorReSpecification:
-    case JpegLSPresetParametersType::VisuallyOrientedQuantizationSpecification:
-    case JpegLSPresetParametersType::ExtendedPredictionSpecification:
-    case JpegLSPresetParametersType::StartOfFixedLengthCoding:
-    case JpegLSPresetParametersType::EndOfFixedLengthCoding:
-    case JpegLSPresetParametersType::ExtendedPresetCodingParameters:
-    case JpegLSPresetParametersType::InverseColorTransformSpecification:
+    case jpegls_preset_parameters_type::coding_method_specification:
+    case jpegls_preset_parameters_type::near_lossless_error_re_specification:
+    case jpegls_preset_parameters_type::visually_oriented_quantization_specification:
+    case jpegls_preset_parameters_type::extended_prediction_specification:
+    case jpegls_preset_parameters_type::start_of_fixed_length_coding:
+    case jpegls_preset_parameters_type::end_of_fixed_length_coding:
+    case jpegls_preset_parameters_type::extended_preset_coding_parameters:
+    case jpegls_preset_parameters_type::inverse_color_transform_specification:
         throw_jpegls_error(jpegls_errc::jpegls_preset_extended_parameter_type_not_supported);
     }
 
@@ -441,14 +441,14 @@ void jpeg_stream_reader::read_start_of_scan()
 
 uint8_t jpeg_stream_reader::read_byte()
 {
-    if (byteStream_.rawStream)
-        return static_cast<uint8_t>(byteStream_.rawStream->sbumpc());
+    if (byte_stream_.rawStream)
+        return static_cast<uint8_t>(byte_stream_.rawStream->sbumpc());
 
-    if (byteStream_.count == 0)
+    if (byte_stream_.count == 0)
         throw_jpegls_error(jpegls_errc::source_buffer_too_small);
 
-    const uint8_t value = byteStream_.rawData[0];
-    skip_bytes(byteStream_, 1);
+    const uint8_t value = byte_stream_.rawData[0];
+    skip_bytes(byte_stream_, 1);
     return value;
 }
 
@@ -580,10 +580,10 @@ int jpeg_stream_reader::try_read_spiff_header_segment(OUT_ spiff_header& header,
 
 void jpeg_stream_reader::add_component(const uint8_t component_id)
 {
-    if (find(componentIds_.cbegin(), componentIds_.cend(), component_id) != componentIds_.cend())
+    if (find(component_ids_.cbegin(), component_ids_.cend(), component_id) != component_ids_.cend())
         throw_jpegls_error(jpegls_errc::duplicate_component_id_in_sof_segment);
 
-    componentIds_.push_back(component_id);
+    component_ids_.push_back(component_id);
 }
 
 

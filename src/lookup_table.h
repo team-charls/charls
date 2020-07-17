@@ -31,6 +31,7 @@ struct golomb_code final
         return length_;
     }
 
+private:
     int32_t value_{};
     uint32_t length_{};
 };

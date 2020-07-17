@@ -13,7 +13,7 @@
 
 namespace charls {
 
-enum class JpegMarkerCode : uint8_t;
+enum class jpeg_marker_code : uint8_t;
 
 // Purpose: minimal implementation to read a JPEG byte stream.
 class jpeg_stream_reader final
@@ -59,11 +59,11 @@ private:
     int32_t read_segment_size();
     void read_bytes(std::vector<char>& destination, int byte_count);
     void read_next_start_of_scan();
-    JpegMarkerCode read_next_marker_code();
-    void validate_marker_code(JpegMarkerCode marker_code) const;
+    jpeg_marker_code read_next_marker_code();
+    void validate_marker_code(jpeg_marker_code marker_code) const;
 
-    int read_marker_segment(JpegMarkerCode marker_code, int32_t segment_size, spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
-    int read_spiff_directory_entry(JpegMarkerCode marker_code, int32_t segment_size);
+    int read_marker_segment(jpeg_marker_code marker_code, int32_t segment_size, spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
+    int read_spiff_directory_entry(jpeg_marker_code marker_code, int32_t segment_size);
     int read_start_of_frame_segment(int32_t segment_size);
     static int read_comment() noexcept;
     int read_preset_parameters_segment(int32_t segment_size);
@@ -87,12 +87,12 @@ private:
         bit_stream_section
     };
 
-    byte_stream_info byteStream_;
+    byte_stream_info byte_stream_;
     charls::frame_info frame_info_{};
     coding_parameters parameters_{};
     jpegls_pc_parameters preset_coding_parameters_{};
     JlsRect rect_{};
-    std::vector<uint8_t> componentIds_;
+    std::vector<uint8_t> component_ids_;
     state state_{};
 };
 

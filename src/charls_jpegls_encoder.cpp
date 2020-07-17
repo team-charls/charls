@@ -37,10 +37,10 @@ struct charls_jpegls_encoder final
         if (frame_info.height < 1 || frame_info.height > maximum_height)
             throw_jpegls_error(jpegls_errc::invalid_argument_height);
 
-        if (frame_info.bits_per_sample < MinimumBitsPerSample || frame_info.bits_per_sample > MaximumBitsPerSample)
+        if (frame_info.bits_per_sample < minimum_bits_per_sample || frame_info.bits_per_sample > maximum_bits_per_sample)
             throw_jpegls_error(jpegls_errc::invalid_argument_bits_per_sample);
 
-        if (frame_info.component_count < 1 || frame_info.component_count > MaximumComponentCount)
+        if (frame_info.component_count < 1 || frame_info.component_count > maximum_component_count)
             throw_jpegls_error(jpegls_errc::invalid_argument_component_count);
 
         frame_info_ = frame_info;
