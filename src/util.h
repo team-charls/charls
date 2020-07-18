@@ -162,6 +162,24 @@ constexpr int32_t bit_wise_sign(const int32_t i) noexcept
 }
 
 
+/// <summary>
+/// Computes the parameter RANGE. When NEAR = 0, RANGE = MAXVAL + 1. (see ISO/IEC 14495-1, A.2.1)
+/// </summary>
+constexpr int32_t compute_range_parameter(const int32_t maximum_sample_value, const int32_t near_lossless) noexcept
+{
+    return (maximum_sample_value + 2 * near_lossless) / (2 * near_lossless + 1) + 1;
+}
+
+
+/// <summary>
+/// Computes the parameter LIMIT. (see ISO/IEC 14495-1, A.2.1)
+/// </summary>
+constexpr int32_t compute_limit_parameter(const int32_t bits_per_pixel)
+{
+    return 2 * (bits_per_pixel + std::max(8, bits_per_pixel));
+}
+
+
 template<typename SampleType>
 struct triplet
 {

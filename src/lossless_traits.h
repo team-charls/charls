@@ -21,9 +21,9 @@ struct lossless_traits_impl
     static constexpr int32_t maximum_sample_value{(1U << BitsPerPixel) - 1};
     static constexpr int32_t near_lossless{};
     static constexpr int32_t quantized_bits_per_pixel{BitsPerPixel};
-    static constexpr int32_t range{1U << BitsPerPixel};
+    static constexpr int32_t range{compute_range_parameter(maximum_sample_value, near_lossless)};
     static constexpr int32_t bits_per_pixel{BitsPerPixel};
-    static constexpr int32_t limit{2 * (BitsPerPixel + std::max(8, BitsPerPixel))};
+    static constexpr int32_t limit{compute_limit_parameter(BitsPerPixel)};
     static constexpr int32_t reset_threshold{default_reset_value};
 
     FORCE_INLINE constexpr static int32_t compute_error_value(const int32_t d) noexcept

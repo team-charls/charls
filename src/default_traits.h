@@ -27,8 +27,8 @@ struct default_traits final
     using pixel_type = PixelType;
 
     int32_t maximum_sample_value;
-    const int32_t range;
     const int32_t near_lossless;
+    const int32_t range;
     const int32_t quantized_bits_per_pixel;
     const int32_t bits_per_pixel;
     const int32_t limit;
@@ -36,27 +36,17 @@ struct default_traits final
 
     default_traits(const int32_t arg_maximum_sample_value, const int32_t arg_near_lossless, const int32_t reset = default_reset_value) noexcept :
         maximum_sample_value{arg_maximum_sample_value},
-        range{(arg_maximum_sample_value + 2 * arg_near_lossless) / (2 * arg_near_lossless + 1) + 1},
         near_lossless{arg_near_lossless},
+        range{compute_range_parameter(maximum_sample_value, near_lossless)},
         quantized_bits_per_pixel{log_2(range)},
-        bits_per_pixel{log_2(arg_maximum_sample_value)},
-        limit{2 * (bits_per_pixel + std::max(8, bits_per_pixel))},
+        bits_per_pixel{log_2(maximum_sample_value)},
+        limit{compute_limit_parameter(bits_per_pixel)},
         reset_threshold{reset}
     {
     }
 
-    default_traits(const default_traits& other) noexcept :
-        maximum_sample_value{other.maximum_sample_value},
-        range{other.range},
-        near_lossless{other.near_lossless},
-        quantized_bits_per_pixel{other.quantized_bits_per_pixel},
-        bits_per_pixel{other.bits_per_pixel},
-        limit{other.limit},
-        reset_threshold{other.reset_threshold}
-    {
-    }
-
     default_traits() = delete;
+    default_traits(const default_traits&) noexcept = default;
     default_traits(default_traits&&) noexcept = default;
     ~default_traits() = default;
     default_traits& operator=(const default_traits&) = delete;
