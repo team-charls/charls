@@ -19,13 +19,13 @@ public:
     {
         const default_traits<uint8_t, uint8_t> traits((1 << 8) - 1, 0);
 
-        Assert::AreEqual(255, traits.MAXVAL);
-        Assert::AreEqual(256, traits.RANGE);
-        Assert::AreEqual(0, traits.NEAR);
-        Assert::AreEqual(8, traits.qbpp);
-        Assert::AreEqual(8, traits.bpp);
-        Assert::AreEqual(32, traits.LIMIT);
-        Assert::AreEqual(64, traits.RESET);
+        Assert::AreEqual(255, traits.maximum_sample_value);
+        Assert::AreEqual(256, traits.range);
+        Assert::AreEqual(0, traits.near_lossless);
+        Assert::AreEqual(8, traits.quantized_bits_per_pixel);
+        Assert::AreEqual(8, traits.bits_per_pixel);
+        Assert::AreEqual(32, traits.limit);
+        Assert::AreEqual(64, traits.reset_threshold);
     }
 
     TEST_METHOD(modulo_range) // NOLINT

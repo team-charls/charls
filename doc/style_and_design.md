@@ -107,22 +107,26 @@ Note: NULL is the only special value that can be checked, but also the common mi
 The JPEG-LS standard uses pseudo-code to define certain parts of the algorithm. It makes
 sense to define a good naming convention. Not all JPEG-LS names are good C++ variable\parameter names.
 
-| JPEG-LS Symbol | C++ name | Description |
-| -------------- | -------- |------------ |
-| a, b, c, d     | a, b, c, d | positions of samples in the causal template |
-| bpp            | bits_per_pixel | number of bits needed to represent MAXVAL (not less than 2) |
-| D1, D2, D3, Di | d1, d2, d3, di | local gradients |
-| EMErrval       | e_mapped_error_value | Errval mapped to non-negative integers in run interruption mode |
-| Errval | error_value | prediction error (quantized or unquantized, before and after modulo reduction) |
-| ILV            | interleave_mode | indication of the interleave mode used for the scan |
-| J[0..31] | J[0..31] | 32 variables indicating order of run-length codes |
-| k | k (or golomb_code) | Golomb coding variable for regular mode |
-| MErrval | mapped_error_value | Errval mapped to non-negative integers in regular mode |
-| NEAR           | near_lossless | difference bound for near-lossless coding |
-| Px | predicted_value | predicted value for the current sample |
-| Q1, Q2, Q3, Qi | q1, q2, q3, qi | region numbers to quantize local gradients |
-| Ra, Rb, Rc, Rd | ra, rb, rc, rd | reconstructed values of samples in the causal template |
-| RESET | reset_threshold | threshold value at which A, B, and N are halved |
+| JPEG-LS Symbol | C++ name                 | Description |
+| -------------- | ------------------------ |------------ |
+| a, b, c, d     | a, b, c, d               | positions of samples in the causal template |
+| bpp            | bits_per_pixel           | number of bits needed to represent MAXVAL (not less than 2) |
+| D1, D2, D3, Di | d1, d2, d3, di           | local gradients |
+| EMErrval       | e_mapped_error_value     | Errval mapped to non-negative integers in run interruption mode |
+| Errval         | error_value              | prediction error (quantized or unquantized, before and after modulo reduction) |
+| ILV            | interleave_mode          | indication of the interleave mode used for the scan |
+| LIMIT          | limit                    | the value of glimit for a sample encoded in regular mode |
+| J[0..31]       | J[0..31]                 | 32 variables indicating order of run-length codes |
+| k              | k (or golomb_code)       | Golomb coding variable for regular mode |
+| MErrval        | mapped_error_value       | Errval mapped to non-negative integers in regular mode |
+| MAXVAL         | maximum_sample_value     | maximum possible image sample value over all components of a scan |
+| NEAR           | near_lossless            | difference bound for near-lossless coding |
+| Px             | predicted_value          | predicted value for the current sample |
+| Q1, Q2, Q3, Qi | q1, q2, q3, qi           | region numbers to quantize local gradients |
+| qbpp           | quantized_bits_per_pixel | number of bits needed to represent a mapped error value |
+| Ra, Rb, Rc, Rd | ra, rb, rc, rd           | reconstructed values of samples in the causal template |
+| RANGE          | range                    | range of prediction error representation
+| RESET          | reset_threshold          | threshold value at which A, B, and N are halved |
 
 ### Supported C++ language
 

@@ -22,11 +22,11 @@ public:
         const auto traits1 = default_traits<uint16_t, uint16_t>(4095,0);
         const lossless_traits traits2;
 
-        Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
-        Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
-        Assert::IsTrue(traits1.RESET == traits2.RESET);
-        Assert::IsTrue(traits1.bpp == traits2.bpp);
-        Assert::IsTrue(traits1.qbpp == traits2.qbpp);
+        Assert::IsTrue(traits1.limit == traits2.limit);
+        Assert::IsTrue(traits1.maximum_sample_value == traits2.maximum_sample_value);
+        Assert::IsTrue(traits1.reset_threshold == traits2.reset_threshold);
+        Assert::IsTrue(traits1.bits_per_pixel == traits2.bits_per_pixel);
+        Assert::IsTrue(traits1.quantized_bits_per_pixel == traits2.quantized_bits_per_pixel);
 
         for (int i = -4096; i <= 4096; ++i)
         {
@@ -47,11 +47,11 @@ public:
         const auto traits1 = default_traits<uint8_t, uint8_t>(255,0);
         const lossless_traits traits2;
 
-        Assert::IsTrue(traits1.LIMIT == traits2.LIMIT);
-        Assert::IsTrue(traits1.MAXVAL == traits2.MAXVAL);
-        Assert::IsTrue(traits1.RESET == traits2.RESET);
-        Assert::IsTrue(traits1.bpp == traits2.bpp);
-        Assert::IsTrue(traits1.qbpp == traits2.qbpp);
+        Assert::IsTrue(traits1.limit == traits2.limit);
+        Assert::IsTrue(traits1.maximum_sample_value == traits2.maximum_sample_value);
+        Assert::IsTrue(traits1.reset_threshold == traits2.reset_threshold);
+        Assert::IsTrue(traits1.bits_per_pixel == traits2.bits_per_pixel);
+        Assert::IsTrue(traits1.quantized_bits_per_pixel == traits2.quantized_bits_per_pixel);
 
         for (int i = -255; i <= 255; ++i)
         {

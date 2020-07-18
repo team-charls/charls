@@ -68,11 +68,11 @@ void test_traits16_bit()
     const auto traits1 = default_traits<uint16_t, uint16_t>(4095, 0);
     using lossless_traits = lossless_traits<uint16_t, 12>;
 
-    assert::is_true(traits1.LIMIT == lossless_traits::LIMIT);
-    assert::is_true(traits1.MAXVAL == lossless_traits::MAXVAL);
-    assert::is_true(traits1.RESET == lossless_traits::RESET);
-    assert::is_true(traits1.bpp == lossless_traits::bpp);
-    assert::is_true(traits1.qbpp == lossless_traits::qbpp);
+    assert::is_true(traits1.limit == lossless_traits::limit);
+    assert::is_true(traits1.maximum_sample_value == lossless_traits::maximum_sample_value);
+    assert::is_true(traits1.reset_threshold == lossless_traits::reset_threshold);
+    assert::is_true(traits1.bits_per_pixel == lossless_traits::bits_per_pixel);
+    assert::is_true(traits1.quantized_bits_per_pixel == lossless_traits::quantized_bits_per_pixel);
 
     for (int i = -4096; i < 4096; ++i)
     {
@@ -93,11 +93,11 @@ void test_traits8_bit()
     const auto traits1 = default_traits<uint8_t, uint8_t>(255, 0);
     using lossless_traits = lossless_traits<uint8_t, 8>;
 
-    assert::is_true(traits1.LIMIT == lossless_traits::LIMIT);
-    assert::is_true(traits1.MAXVAL == lossless_traits::MAXVAL);
-    assert::is_true(traits1.RESET == lossless_traits::RESET);
-    assert::is_true(traits1.bpp == lossless_traits::bpp);
-    assert::is_true(traits1.qbpp == lossless_traits::qbpp);
+    assert::is_true(traits1.limit == lossless_traits::limit);
+    assert::is_true(traits1.maximum_sample_value == lossless_traits::maximum_sample_value);
+    assert::is_true(traits1.reset_threshold == lossless_traits::reset_threshold);
+    assert::is_true(traits1.bits_per_pixel == lossless_traits::bits_per_pixel);
+    assert::is_true(traits1.quantized_bits_per_pixel == lossless_traits::quantized_bits_per_pixel);
 
     for (int i = -255; i < 255; ++i)
     {

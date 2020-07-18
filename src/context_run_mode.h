@@ -14,27 +14,22 @@ namespace charls {
 // Computes model dependent parameters like the Golomb code lengths
 struct context_run_mode final
 {
-    // Note: members are sorted based on their size.
-    int32_t A{};
-    int32_t nRItype_{};
-    uint8_t n_reset_threshold_{};
-    uint8_t N{};
-    uint8_t Nn{};
+    int32_t run_interruption_type{};
 
     context_run_mode() = default;
 
-    context_run_mode(const int32_t a, const int32_t nRItype, const int32_t n_reset_threshold) noexcept :
-        A{a},
-        nRItype_{nRItype},
-        n_reset_threshold_{static_cast<uint8_t>(n_reset_threshold)},
-        N{1}
+    context_run_mode(const int32_t arg_run_interruption_type, const int32_t a, const int32_t reset_threshold) noexcept :
+        run_interruption_type{arg_run_interruption_type},
+        a_{a},
+        reset_threshold_{static_cast<uint8_t>(reset_threshold)},
+        n_{1}
     {
     }
 
     FORCE_INLINE int32_t get_golomb_code() const noexcept
     {
-        const int32_t temp = A + (N >> 1) * nRItype_;
-        int32_t n_test = N;
+        const int32_t temp = a_ + (n_ >> 1) * run_interruption_type;
+        int32_t n_test = n_;
         int32_t k = 0;
         for (; n_test < temp; ++k)
         {
@@ -48,16 +43,16 @@ struct context_run_mode final
     {
         if (error_value < 0)
         {
-            Nn = Nn + 1U;
+            nn_ = nn_ + 1U;
         }
-        A = A + ((e_mapped_error_value + 1 - nRItype_) >> 1);
-        if (N == n_reset_threshold_)
+        a_ = a_ + ((e_mapped_error_value + 1 - run_interruption_type) >> 1);
+        if (n_ == reset_threshold_)
         {
-            A = A >> 1;
-            N = N >> 1;
-            Nn = Nn >> 1;
+            a_ = a_ >> 1;
+            n_ = n_ >> 1;
+            nn_ = nn_ >> 1;
         }
-        N = N + 1;
+        n_ = n_ + 1;
     }
 
     FORCE_INLINE int32_t compute_error_value(const int32_t temp, const int32_t k) const noexcept
@@ -65,7 +60,7 @@ struct context_run_mode final
         const bool map = temp & 1;
         const int32_t error_value_abs = (temp + static_cast<int32_t>(map)) / 2;
 
-        if ((k != 0 || (2 * Nn >= N)) == map)
+        if ((k != 0 || (2 * nn_ >= n_)) == map)
         {
             ASSERT(map == compute_map(-error_value_abs, k));
             return -error_value_abs;
@@ -77,10 +72,10 @@ struct context_run_mode final
 
     bool compute_map(const int32_t error_value, const int32_t k) const noexcept
     {
-        if (k == 0 && error_value > 0 && 2 * Nn < N)
+        if (k == 0 && error_value > 0 && 2 * nn_ < n_)
             return true;
 
-        if (error_value < 0 && 2 * Nn >= N)
+        if (error_value < 0 && 2 * nn_ >= n_)
             return true;
 
         if (error_value < 0 && k != 0)
@@ -91,8 +86,14 @@ struct context_run_mode final
 
     FORCE_INLINE bool compute_map_negative_e(const int32_t k) const noexcept
     {
-        return k != 0 || 2 * Nn >= N;
+        return k != 0 || 2 * nn_ >= n_;
     }
+
+private:
+    int32_t a_{};
+    uint8_t reset_threshold_{};
+    uint8_t n_{};
+    uint8_t nn_{};
 };
 
 } // namespace charls

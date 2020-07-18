@@ -236,7 +236,7 @@ struct quad final : triplet<SampleType>
 };
 
 
-template<int size>
+template<int Size>
 struct from_big_endian final
 {
 };

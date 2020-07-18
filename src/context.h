@@ -33,7 +33,7 @@ struct jls_context final
         return bit_wise_sign(2 * B + N - 1);
     }
 
-    FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless, const int32_t n_reset_threshold) noexcept
+    FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless, const int32_t reset_threshold) noexcept
     {
         ASSERT(N != 0);
 
@@ -45,7 +45,7 @@ struct jls_context final
         ASSERT(a < 65536 * 256);
         ASSERT(std::abs(b) < 65536 * 256);
 
-        if (n == n_reset_threshold)
+        if (n == reset_threshold)
         {
             a = a >> 1;
             b = b >> 1;

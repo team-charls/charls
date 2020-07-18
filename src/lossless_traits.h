@@ -13,21 +13,18 @@ namespace charls {
 // Optimized trait classes for lossless compression of 8 bit color and 8/16 bit monochrome images.
 // This class assumes MaximumSampleValue correspond to a whole number of bits, and no custom ResetValue is set when encoding.
 // The point of this is to have the most optimized code for the most common and most demanding scenario.
-template<typename Sample, int32_t bitsPerPixel>
+template<typename SampleType, int32_t BitsPerPixel>
 struct lossless_traits_impl
 {
-    using SAMPLE = Sample;
+    using sample_type = SampleType;
 
-    enum
-    {
-        NEAR = 0,
-        bpp = bitsPerPixel,
-        qbpp = bitsPerPixel,
-        RANGE = (1U << bpp),
-        MAXVAL = (1U << bpp) - 1,
-        LIMIT = 2 * (bitsPerPixel + std::max(8, bitsPerPixel)),
-        RESET = default_reset_value
-    };
+    static constexpr int32_t maximum_sample_value{(1U << BitsPerPixel) - 1};
+    static constexpr int32_t near_lossless{};
+    static constexpr int32_t quantized_bits_per_pixel{BitsPerPixel};
+    static constexpr int32_t range{1U << BitsPerPixel};
+    static constexpr int32_t bits_per_pixel{BitsPerPixel};
+    static constexpr int32_t limit{2 * (BitsPerPixel + std::max(8, BitsPerPixel))};
+    static constexpr int32_t reset_threshold{default_reset_value};
 
     FORCE_INLINE constexpr static int32_t compute_error_value(const int32_t d) noexcept
     {
@@ -44,37 +41,37 @@ struct lossless_traits_impl
     __attribute__((no_sanitize("shift")))
 #endif
     FORCE_INLINE constexpr static int32_t
-    modulo_range(int32_t error_value) noexcept
+    modulo_range(const int32_t error_value) noexcept
     {
-        return static_cast<int32_t>(error_value << (int32_t_bit_count - bpp)) >> (int32_t_bit_count - bpp); //NOLINT
+        return static_cast<int32_t>(error_value << (int32_t_bit_count - bits_per_pixel)) >> (int32_t_bit_count - bits_per_pixel); //NOLINT
     }
 
-    FORCE_INLINE static SAMPLE compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) noexcept
+    FORCE_INLINE static SampleType compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) noexcept
     {
-        return static_cast<SAMPLE>(MAXVAL & (predicted_value + error_value));
+        return static_cast<SampleType>(maximum_sample_value & (predicted_value + error_value));
     }
 
     FORCE_INLINE static int32_t correct_prediction(const int32_t predicted) noexcept
     {
-        if ((predicted & MAXVAL) == predicted)
+        if ((predicted & maximum_sample_value) == predicted)
             return predicted;
 
-        return (~(predicted >> (int32_t_bit_count - 1))) & MAXVAL;
+        return (~(predicted >> (int32_t_bit_count - 1))) & maximum_sample_value;
     }
 };
 
 
-template<typename PixelType, int32_t bits_per_pixel>
-struct lossless_traits final : lossless_traits_impl<PixelType, bits_per_pixel>
+template<typename PixelType, int32_t BitsPerPixel>
+struct lossless_traits final : lossless_traits_impl<PixelType, BitsPerPixel>
 {
-    using PIXEL = PixelType;
+    using pixel_type = PixelType;
 };
 
 
 template<>
 struct lossless_traits<uint8_t, 8> final : lossless_traits_impl<uint8_t, 8>
 {
-    using PIXEL = SAMPLE;
+    using pixel_type = sample_type;
 
     FORCE_INLINE constexpr static signed char mod_range(const int32_t error_value) noexcept
     {
@@ -96,7 +93,7 @@ struct lossless_traits<uint8_t, 8> final : lossless_traits_impl<uint8_t, 8>
 template<>
 struct lossless_traits<uint16_t, 16> final : lossless_traits_impl<uint16_t, 16>
 {
-    using PIXEL = SAMPLE;
+    using pixel_type = sample_type;
 
     FORCE_INLINE constexpr static short mod_range(const int32_t error_value) noexcept
     {
@@ -108,24 +105,24 @@ struct lossless_traits<uint16_t, 16> final : lossless_traits_impl<uint16_t, 16>
         return static_cast<short>(d);
     }
 
-    FORCE_INLINE constexpr static SAMPLE compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) noexcept
+    FORCE_INLINE constexpr static sample_type compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) noexcept
     {
-        return static_cast<SAMPLE>(predicted_value + error_value);
+        return static_cast<sample_type>(predicted_value + error_value);
     }
 };
 
 
-template<typename PixelType, int32_t bits_per_pixel>
-struct lossless_traits<triplet<PixelType>, bits_per_pixel> final : lossless_traits_impl<PixelType, bits_per_pixel>
+template<typename PixelType, int32_t BitsPerPixel>
+struct lossless_traits<triplet<PixelType>, BitsPerPixel> final : lossless_traits_impl<PixelType, BitsPerPixel>
 {
-    using PIXEL = triplet<PixelType>;
+    using pixel_type = triplet<PixelType>;
 
     FORCE_INLINE constexpr static bool is_near(const int32_t lhs, const int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
 
-    FORCE_INLINE static bool is_near(PIXEL lhs, PIXEL rhs) noexcept
+    FORCE_INLINE static bool is_near(pixel_type lhs, pixel_type rhs) noexcept
     {
         return lhs == rhs;
     }
@@ -137,24 +134,24 @@ struct lossless_traits<triplet<PixelType>, bits_per_pixel> final : lossless_trai
 };
 
 
-template<typename T, int32_t bpp>
-struct lossless_traits<quad<T>, bpp> final : lossless_traits_impl<T, bpp>
+template<typename PixelType, int32_t BitsPerPixel>
+struct lossless_traits<quad<PixelType>, BitsPerPixel> final : lossless_traits_impl<PixelType, BitsPerPixel>
 {
-    using PIXEL = quad<T>;
+    using pixel_type = quad<PixelType>;
 
     FORCE_INLINE constexpr static bool is_near(const int32_t lhs, const int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
 
-    FORCE_INLINE static bool is_near(PIXEL lhs, PIXEL rhs) noexcept
+    FORCE_INLINE static bool is_near(pixel_type lhs, pixel_type rhs) noexcept
     {
         return lhs == rhs;
     }
 
-    FORCE_INLINE static T compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) noexcept
+    FORCE_INLINE static PixelType compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) noexcept
     {
-        return static_cast<T>(predicted_value + error_value);
+        return static_cast<PixelType>(predicted_value + error_value);
     }
 };
 
