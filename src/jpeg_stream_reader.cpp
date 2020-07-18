@@ -61,7 +61,7 @@ void jpeg_stream_reader::read(byte_stream_info source, uint32_t stride)
         }
 
         unique_ptr<decoder_strategy> codec = jls_codec_factory<decoder_strategy>().create_codec(frame_info_, parameters_, preset_coding_parameters_);
-        unique_ptr<process_line> process_line(codec->create_process(source, stride));
+        unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
         codec->decode_scan(move(process_line), rect_, byte_stream_);
         skip_bytes(source, static_cast<size_t>(bytes_per_plane));
         state_ = state::scan_section;

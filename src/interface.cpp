@@ -57,7 +57,7 @@ void encode_scan(const JlsParameters& params, const int component_count, const b
     };
 
     auto codec = jls_codec_factory<encoder_strategy>().create_codec(frame_info, codec_parameters, preset_coding_parameters);
-    std::unique_ptr<process_line> process_line(codec->create_process(source, static_cast<uint32_t>(params.stride)));
+    std::unique_ptr<process_line> process_line(codec->create_process_line(source, static_cast<uint32_t>(params.stride)));
     byte_stream_info destination{writer.output_stream()};
     const size_t bytes_written = codec->encode_scan(move(process_line), destination);
 

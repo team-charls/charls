@@ -29,7 +29,7 @@ public:
     {
     }
 
-    unique_ptr<charls::process_line> create_process(byte_stream_info /*rawStreamInfo*/, uint32_t /*stride*/) noexcept(false) override
+    unique_ptr<charls::process_line> create_process_line(byte_stream_info /*rawStreamInfo*/, uint32_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
