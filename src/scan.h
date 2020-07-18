@@ -259,12 +259,12 @@ private:
     }
     MSVC_WARNING_UNSUPPRESS()
 
-    int32_t decode_value(int32_t k, const int32_t limit, int32_t qbpp)
+    int32_t decode_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
     {
         const int32_t high_bits = Strategy::read_high_bits();
 
-        if (high_bits >= limit - (qbpp + 1))
-            return Strategy::read_value(qbpp) + 1;
+        if (high_bits >= limit - (quantized_bits_per_pixel + 1))
+            return Strategy::read_value(quantized_bits_per_pixel) + 1;
 
         if (k == 0)
             return high_bits;
@@ -272,7 +272,7 @@ private:
         return (high_bits << k) + Strategy::read_value(k);
     }
 
-    FORCE_INLINE void encode_mapped_value(int32_t k, const int32_t mapped_error, int32_t limit)
+    FORCE_INLINE void encode_mapped_value(const int32_t k, const int32_t mapped_error, const int32_t limit)
     {
         int32_t high_bits = mapped_error >> k;
 

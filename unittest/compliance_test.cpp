@@ -173,7 +173,7 @@ private:
             Assert::IsTrue(verify_encoded_bytes_legacy_api(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
         }
 
-        vector<uint8_t> destination(static_cast<size_t>(info.height) *info.width * ((info.bitsPerSample + 7) / 8) * info.components);
+        vector<uint8_t> destination(static_cast<size_t>(info.height) *info.width * bit_to_byte_count(info.bitsPerSample) * info.components);
 
         error = JpegLsDecode(destination.data(), destination.size(), compressed_bytes, compressed_length, nullptr, nullptr);
         Assert::IsTrue(!error);

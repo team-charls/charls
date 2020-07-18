@@ -47,7 +47,7 @@ void jpeg_stream_reader::read(byte_stream_info source, uint32_t stride)
         stride = component_count * width * ((static_cast<uint32_t>(frame_info_.bits_per_sample) + 7U) / 8U);
     }
 
-    const int64_t bytes_per_plane = static_cast<int64_t>(rect_.Width) * rect_.Height * ((frame_info_.bits_per_sample + 7) / 8);
+    const int64_t bytes_per_plane = static_cast<int64_t>(rect_.Width) * rect_.Height * bit_to_byte_count(frame_info_.bits_per_sample);
 
     if (source.rawData && static_cast<int64_t>(source.count) < bytes_per_plane * frame_info_.component_count)
         throw_jpegls_error(jpegls_errc::destination_buffer_too_small);

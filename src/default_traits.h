@@ -6,7 +6,6 @@
 #include "constants.h"
 #include "util.h"
 
-#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdlib>

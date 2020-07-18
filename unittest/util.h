@@ -22,6 +22,14 @@ std::vector<uint8_t> create_test_spiff_header(uint8_t high_version = 2, uint8_t 
 std::vector<uint8_t> create_noise_image_16_bit(size_t pixel_count, int bit_count, uint32_t seed);
 void test_round_trip_legacy(const std::vector<uint8_t>& source, const JlsParameters& params);
 
+/// <summary>
+/// Computes how many bytes are needed to hold the number of bits.
+/// </summary>
+constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
+{
+    return static_cast<uint32_t>((bit_count + 7) / 8);
+}
+
 }
 } // namespace charls::test
 

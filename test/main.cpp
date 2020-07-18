@@ -435,7 +435,7 @@ bool encode_pnm(istream& pnm_file, const ostream& jls_file_stream)
     params.bitsPerSample = log_2(read_values[3] + 1);
     params.interleaveMode = params.components == 3 ? interleave_mode::line : interleave_mode::none;
 
-    const int bytes_per_sample = (params.bitsPerSample + 7) / 8;
+    const int bytes_per_sample = ::bit_to_byte_count(params.bitsPerSample);
     vector<uint8_t> input_buffer(static_cast<size_t>(params.width) * params.height * bytes_per_sample * params.components);
     pnm_file.read(reinterpret_cast<char*>(input_buffer.data()), input_buffer.size());
     if (!pnm_file.good())

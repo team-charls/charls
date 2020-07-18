@@ -84,7 +84,7 @@ jpegls_errc JpegLsEncodeStream(const byte_stream_info destination, size_t& bytes
         JlsParameters info{params};
         if (info.stride == 0)
         {
-            info.stride = info.width * ((info.bitsPerSample + 7) / 8);
+            info.stride = info.width * static_cast<int32_t>(bit_to_byte_count(info.bitsPerSample));
             if (info.interleaveMode != interleave_mode::none)
             {
                 info.stride *= info.components;
@@ -122,7 +122,7 @@ jpegls_errc JpegLsEncodeStream(const byte_stream_info destination, size_t& bytes
 
         if (info.interleaveMode == interleave_mode::none)
         {
-            const int32_t byte_count_component = info.width * info.height * ((info.bitsPerSample + 7) / 8);
+            const int32_t byte_count_component = info.width * info.height * static_cast<int32_t>(bit_to_byte_count(info.bitsPerSample));
             for (int32_t component = 0; component < info.components; ++component)
             {
                 writer.write_start_of_scan_segment(1, info.allowedLossyError, info.interleaveMode);

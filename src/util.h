@@ -7,6 +7,7 @@
 #include <charls/charls_legacy.h>
 #include <charls/jpegls_error.h>
 
+#include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <vector>
@@ -45,7 +46,7 @@
 #define MSVC_WARNING_UNSUPPRESS() __pragma(warning(pop))
 
 #define MSVC_WARNING_SUPPRESS_NEXT_LINE(x) __pragma(warning(suppress \
-                                                       : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses, cppcoreguidelines-macro-usage)
+                                                            : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses, cppcoreguidelines-macro-usage)
 
 // Visual Studio 2015 supports C++14, but not all constexpr scenarios. VS 2017 has full C++14 support.
 #if _MSC_VER >= 1910
@@ -317,6 +318,15 @@ CONSTEXPR uint32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
 {
     ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);
     return (1U << bits_per_sample) - 1;
+}
+
+
+/// <summary>
+/// Computes how many bytes are needed to hold the number of bits.
+/// </summary>
+constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
+{
+    return static_cast<uint32_t>((bit_count + 7) / 8);
 }
 
 } // namespace charls

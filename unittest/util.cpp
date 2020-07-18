@@ -174,7 +174,7 @@ vector<uint8_t> create_noise_image_16_bit(const size_t pixel_count, const int bi
 void test_round_trip_legacy(const vector<uint8_t>& source, const JlsParameters& params)
 {
     vector<uint8_t> encoded_buffer(params.height * params.width * params.components * params.bitsPerSample / 4);
-    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
+    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width * bit_to_byte_count(params.bitsPerSample) * params.components);
 
     size_t compressed_length{};
     auto error = JpegLsEncode(encoded_buffer.data(), encoded_buffer.size(), &compressed_length,

@@ -121,7 +121,7 @@ void decode_performance_tests(const int loop_count)
     if (error)
         return;
 
-    vector<uint8_t> uncompressed(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
+    vector<uint8_t> uncompressed(static_cast<size_t>(params.height) * params.width * bit_to_byte_count(params.bitsPerSample) * params.components);
 
     const auto start = steady_clock::now();
     for (int i = 0; i < loop_count; ++i)

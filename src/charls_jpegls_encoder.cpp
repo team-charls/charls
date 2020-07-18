@@ -84,7 +84,8 @@ struct charls_jpegls_encoder final
             throw_jpegls_error(jpegls_errc::invalid_operation);
 
         return static_cast<size_t>(frame_info_.component_count) * frame_info_.width * frame_info_.height *
-            (frame_info_.bits_per_sample < 9 ? 1 : 2) + 1024 + spiff_header_size_in_bytes;
+                   bit_to_byte_count(frame_info_.bits_per_sample) +
+               1024 + spiff_header_size_in_bytes;
     }
 
     void write_spiff_header(const spiff_header& spiff_header)
@@ -148,7 +149,7 @@ struct charls_jpegls_encoder final
 
         if (stride == 0)
         {
-            stride = frame_info_.width * ((static_cast<uint32_t>(frame_info_.bits_per_sample) + 7U) / 8U);
+            stride = frame_info_.width * bit_to_byte_count(frame_info_.bits_per_sample);
             if (interleave_mode_ != charls::interleave_mode::none)
             {
                 stride *= static_cast<uint32_t>(frame_info_.component_count);
@@ -184,7 +185,7 @@ struct charls_jpegls_encoder final
         byte_stream_info source_info = from_byte_array_const(source, source_size_bytes);
         if (interleave_mode_ == charls::interleave_mode::none)
         {
-            const size_t byte_count_component = ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U) * frame_info_.width * frame_info_.height;
+            const size_t byte_count_component = static_cast<size_t>(bit_to_byte_count(frame_info_.bits_per_sample)) * frame_info_.width * frame_info_.height;
             for (int32_t component = 0; component < frame_info_.component_count; ++component)
             {
                 writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
@@ -227,8 +228,8 @@ private:
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, component_count};
 
         auto codec = jls_codec_factory<encoder_strategy>().create_codec(frame_info,
-                                                                    {near_lossless_, interleave_mode_, color_transformation_, false},
-                                                                    preset_coding_parameters_);
+                                                                        {near_lossless_, interleave_mode_, color_transformation_, false},
+                                                                        preset_coding_parameters_);
         unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
         byte_stream_info destination{writer_.output_stream()};
         const size_t bytes_written = codec->encode_scan(move(process_line), destination);

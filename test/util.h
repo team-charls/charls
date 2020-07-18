@@ -30,6 +30,14 @@ void test_round_trip(const char* name, const std::vector<uint8_t>& decoded_buffe
 void test_round_trip(const char* name, const std::vector<uint8_t>& original_buffer, JlsParameters& params, int loop_count = 1);
 void test_portable_anymap_file(const char* filename, int loop_count = 1);
 
+/// <summary>
+/// Computes how many bytes are needed to hold the number of bits.
+/// </summary>
+constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
+{
+    return static_cast<uint32_t>((bit_count + 7) / 8);
+}
+
 class unit_test_exception final : public std::exception
 {
 public:

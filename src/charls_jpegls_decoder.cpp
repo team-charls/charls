@@ -105,7 +105,7 @@ struct charls_jpegls_decoder final
 
         if (stride == 0)
         {
-            return static_cast<size_t>(info.component_count) * info.height * info.width * (info.bits_per_sample <= 8 ? 1 : 2);
+            return static_cast<size_t>(info.component_count) * info.height * info.width * bit_to_byte_count(info.bits_per_sample);
         }
 
         switch (interleave_mode())
@@ -322,7 +322,7 @@ try
     params->allowedLossyError = decoder.near_lossless();
     params->colorTransformation = decoder.transformation();
     const int32_t component_count = params->interleaveMode == interleave_mode::none ? 1 : params->components;
-    params->stride = params->width * component_count * ((params->bitsPerSample + 7) / 8);
+    params->stride = params->width * component_count * static_cast<int32_t>(bit_to_byte_count(params->bitsPerSample));
 
     const auto& preset{decoder.preset_coding_parameters()};
     params->custom.MaximumSampleValue = preset.maximum_sample_value;

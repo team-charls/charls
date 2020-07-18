@@ -97,7 +97,7 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, J
 {
     vector<uint8_t> encoded_buffer(params.height * params.width * params.components * params.bitsPerSample / 4);
 
-    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width * ((params.bitsPerSample + 7) / 8) * params.components);
+    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width * bit_to_byte_count(params.bitsPerSample) * params.components);
 
     if (params.components == 4)
     {
@@ -151,7 +151,7 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, J
 
 void test_file(const char* filename, const int offset, const rect_size size2, const int bits_per_sample, const int component_count, const bool little_endian_file, const int loop_count)
 {
-    const size_t byte_count = size2.cx * size2.cy * component_count * ((bits_per_sample + 7) / 8);
+    const size_t byte_count = size2.cx * size2.cy * component_count * bit_to_byte_count(bits_per_sample);
     vector<uint8_t> uncompressed_buffer = read_file(filename, offset, byte_count);
 
     if (bits_per_sample > 8)
