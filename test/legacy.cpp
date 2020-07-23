@@ -17,6 +17,9 @@ using namespace charls;
 
 namespace {
 
+// ReSharper disable CppDeprecatedEntity
+DISABLE_DEPRECATED_WARNING
+
 void test_jpegls_read_header(const char* filename, const int width, const int height, const int bits_per_sample, const int stride, const int component_count, const int interleave_mode)
 {
     cout << "LegacyAPI JpegLsReadHeader:" << filename << "\n";
@@ -35,6 +38,9 @@ void test_jpegls_read_header(const char* filename, const int width, const int he
                    parameters.components == component_count ||
                    parameters.interleaveMode == static_cast<charls::interleave_mode>(interleave_mode));
 }
+
+// ReSharper restore CppDeprecatedEntity
+RESTORE_DEPRECATED_WARNING
 
 void test_jpegls_read_header()
 {

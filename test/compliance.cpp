@@ -11,7 +11,6 @@
 
 using std::array;
 using std::cout;
-using std::error_code;
 using std::swap;
 using std::vector;
 using namespace charls;
@@ -35,55 +34,67 @@ void triplet2_planar(vector<uint8_t>& buffer, const rect_size size)
 
 bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompressed_length, const void* compressed_data, const size_t compressed_length)
 {
-    JlsParameters info{};
-    error_code error = JpegLsReadHeader(compressed_data, compressed_length, &info, nullptr);
-    if (error)
-        return false;
-
-    vector<uint8_t> our_encoded_bytes(compressed_length + 16);
-    size_t bytes_written;
-    error = JpegLsEncode(our_encoded_bytes.data(), our_encoded_bytes.size(), &bytes_written, uncompressed_data, uncompressed_length, &info, nullptr);
-    if (error)
-        return false;
-
-    for (size_t i = 0; i < compressed_length; ++i)
+    try
     {
-        if (static_cast<const uint8_t*>(compressed_data)[i] != our_encoded_bytes[i])
-        {
-            return false;
-        }
-    }
+        jpegls_decoder decoder;
+        decoder.source(compressed_data, compressed_length).read_header();
 
-    return true;
+        vector<uint8_t> our_encoded_bytes(compressed_length + 16);
+
+        jpegls_encoder encoder;
+        encoder.destination(our_encoded_bytes);
+        encoder.frame_info(decoder.frame_info());
+        encoder.interleave_mode(decoder.interleave_mode());
+        encoder.near_lossless(decoder.near_lossless());
+        encoder.preset_coding_parameters(decoder.preset_coding_parameters());
+        static_cast<void>(encoder.encode(uncompressed_data, uncompressed_length));
+
+        for (size_t i = 0; i < compressed_length; ++i)
+        {
+            if (static_cast<const uint8_t*>(compressed_data)[i] != our_encoded_bytes[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    catch (...)
+    {
+        return false;
+    }
 }
 
 
 void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_length, const uint8_t* uncompressed_data, const size_t uncompressed_length, const bool check_encode)
 {
-    JlsParameters info{};
-    error_code error = JpegLsReadHeader(compressed_bytes, compressed_length, &info, nullptr);
-    assert::is_true(!error);
-
-    if (check_encode)
+    try
     {
-        assert::is_true(verify_encoded_bytes(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
-    }
+        jpegls_decoder decoder;
+        decoder.source(compressed_bytes, compressed_length).read_header();
 
-    vector<uint8_t> destination(static_cast<size_t>(info.height) * info.width * bit_to_byte_count(info.bitsPerSample) * info.components);
-
-    error = JpegLsDecode(destination.data(), destination.size(), compressed_bytes, compressed_length, nullptr, nullptr);
-    assert::is_true(!error);
-
-    if (info.allowedLossyError == 0)
-    {
-        for (size_t i = 0; i < uncompressed_length; ++i)
+        if (check_encode)
         {
-            if (uncompressed_data[i] != destination[i])
+            assert::is_true(verify_encoded_bytes(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
+        }
+
+        const auto destination{decoder.decode<vector<uint8_t>>()};
+
+        if (decoder.near_lossless() == 0)
+        {
+            for (size_t i = 0; i < uncompressed_length; ++i)
             {
-                assert::is_true(false);
-                break;
+                if (uncompressed_data[i] != destination[i])
+                {
+                    assert::is_true(false);
+                    break;
+                }
             }
         }
+    }
+    catch (const jpegls_error&)
+    {
+        assert::is_true(false);
     }
 }
 
@@ -91,10 +102,14 @@ void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_le
 void decompress_file(const char* name_encoded, const char* name_raw, const int offset, const bool check_encode = true)
 {
     cout << "Conformance test:" << name_encoded << "\n\r";
-    vector<uint8_t> encoded_buffer = read_file(name_encoded);
+    const vector<uint8_t> encoded_buffer = read_file(name_encoded);
 
-    JlsParameters params{};
-    if (make_error_code(JpegLsReadHeader(encoded_buffer.data(), encoded_buffer.size(), &params, nullptr)))
+    jpegls_decoder decoder;
+    try
+    {
+        decoder.source(encoded_buffer).read_header();
+    }
+    catch (...)
     {
         assert::is_true(false);
         return;
@@ -102,14 +117,15 @@ void decompress_file(const char* name_encoded, const char* name_raw, const int o
 
     vector<uint8_t> raw_buffer = read_file(name_raw, offset);
 
-    if (params.bitsPerSample > 8)
+    const auto frame_info = decoder.frame_info();
+    if (frame_info.bits_per_sample > 8)
     {
         fix_endian(&raw_buffer, false);
     }
 
-    if (params.interleaveMode == interleave_mode::none && params.components == 3)
+    if (decoder.interleave_mode() == interleave_mode::none && frame_info.component_count == 3)
     {
-        triplet2_planar(raw_buffer, rect_size(params.width, params.height));
+        triplet2_planar(raw_buffer, rect_size(frame_info.width, frame_info.height));
     }
 
     test_compliance(encoded_buffer.data(), encoded_buffer.size(), raw_buffer.data(), raw_buffer.size(), check_encode);

@@ -11,6 +11,26 @@
 
 #include <vector>
 
+
+// clang-format off
+#ifdef __clang__
+#define DISABLE_DEPRECATED_WARNING \
+    _Pragma("clang diagnostic push") \
+    _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+#elif defined(_MSC_VER)
+#define DISABLE_DEPRECATED_WARNING \
+    __pragma(warning(push)) \
+    __pragma(warning(disable : 4996)) // was declared deprecated
+#endif
+// clang-format on
+
+#ifdef __clang__
+#define RESTORE_DEPRECATED_WARNING _Pragma("clang diagnostic pop")
+#elif defined(_MSC_VER)
+#define RESTORE_DEPRECATED_WARNING __pragma(warning(pop))
+#endif
+
+
 namespace charls {
 namespace test {
 

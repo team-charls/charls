@@ -89,9 +89,16 @@ private:
         vector<uint8_t> charls_encoded(estimated_destination_size(reference_file.width(), reference_file.height(),
             reference_file.component_count(), reference_file.bits_per_sample()));
 
+        // ReSharper disable CppDeprecatedEntity
+        DISABLE_DEPRECATED_WARNING
+
         size_t bytes_written;
         const auto error = JpegLsEncode(charls_encoded.data(), charls_encoded.size(), &bytes_written,
             reference_file.image_data().data(), reference_file.image_data().size(), &info, nullptr);
+
+        // ReSharper restore CppDeprecatedEntity
+        RESTORE_DEPRECATED_WARNING
+
         Assert::AreEqual(jpegls_errc::success, error);
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode);

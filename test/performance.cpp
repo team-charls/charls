@@ -9,6 +9,8 @@
 #include <ratio>
 #include <vector>
 
+using charls::jpegls_decoder;
+using charls::jpegls_error;
 using std::cout;
 using std::error_code;
 using std::istream;
@@ -114,28 +116,25 @@ void decode_performance_tests(const int loop_count)
 {
     cout << "Test decode Perf (with loop count " << loop_count << ")\n";
 
-    vector<uint8_t> jpegls_compressed = read_file("decodetest.jls");
+    const vector<uint8_t> jpegls_compressed = read_file("decodetest.jls");
 
-    JlsParameters params{};
-    error_code error = JpegLsReadHeader(jpegls_compressed.data(), jpegls_compressed.size(), &params, nullptr);
-    if (error)
-        return;
-
-    vector<uint8_t> uncompressed(static_cast<size_t>(params.height) * params.width * bit_to_byte_count(params.bitsPerSample) * params.components);
-
-    const auto start = steady_clock::now();
-    for (int i = 0; i < loop_count; ++i)
+    try
     {
-        error = JpegLsDecode(uncompressed.data(), uncompressed.size(), jpegls_compressed.data(), jpegls_compressed.size(), &params, nullptr);
-        if (error)
-        {
-            cout << "Decode failure: " << error.value() << "\n";
-            return;
-        }
-    }
+        vector<uint8_t> uncompressed;
 
-    const auto end = steady_clock::now();
-    const auto diff = end - start;
-    cout << "Total decoding time is: " << duration<double, milli>(diff).count() << " ms\n";
-    cout << "Decoding time per image: " << duration<double, milli>(diff).count() / loop_count << " ms\n";
+        const auto start = steady_clock::now();
+        for (int i = 0; i < loop_count; ++i)
+        {
+            jpegls_decoder::decode(jpegls_compressed, uncompressed);
+        }
+
+        const auto end = steady_clock::now();
+        const auto diff = end - start;
+        cout << "Total decoding time is: " << duration<double, milli>(diff).count() << " ms\n";
+        cout << "Decoding time per image: " << duration<double, milli>(diff).count() / loop_count << " ms\n";
+    }
+    catch (const jpegls_error& e)
+    {
+        cout << "Decode failure: " << e.what() << "\n";
+    }
 }

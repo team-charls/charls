@@ -373,6 +373,7 @@ charls_jpegls_encoder_get_bytes_written(IN_ const charls_jpegls_encoder* encoder
 /// <param name="source_length">Length of the array in bytes.</param>
 /// <param name="params">Parameter object that describes the pixel data and how to encode it.</param>
 /// <param name="error_message">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
+CHARLS_DEPRECATED
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsEncode(
     OUT_WRITES_BYTES_(destination_length) void* destination,
     size_t destination_length,
@@ -390,6 +391,7 @@ CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegL
 /// <param name="source_length">Length of the array in bytes.</param>
 /// <param name="params">Parameter object that describes how the pixel data is encoded.</param>
 /// <param name="error_message">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
+CHARLS_DEPRECATED
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsReadHeader(
     IN_READS_BYTES_(source_length) const void* source,
     size_t source_length,
@@ -406,6 +408,7 @@ CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegL
 /// <param name="source_length">Length of the array in bytes.</param>
 /// <param name="params">Parameter object that describes the pixel data and how to decode it.</param>
 /// <param name="error_message">Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.</param>
+CHARLS_DEPRECATED
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsDecode(
     OUT_WRITES_BYTES_(destination_length) void* destination,
     size_t destination_length,
@@ -415,6 +418,7 @@ CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegL
     OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 /// <remarks>This method will be removed in the next major update.</remarks>
+CHARLS_DEPRECATED
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsDecodeRect(
     OUT_WRITES_BYTES_(destination_length) void* destination,
     size_t destination_length,
@@ -453,7 +457,7 @@ public:
 
         const size_t destination_size{decoder.destination_size()};
         if (destination_size > maximum_size_in_bytes)
-            throw jpegls_error(jpegls_errc::not_enough_memory);
+            impl::throw_jpegls_error(jpegls_errc::not_enough_memory);
 
         destination.resize(destination_size / sizeof(ValueType));
         decoder.decode(destination);
@@ -918,10 +922,10 @@ private:
 #if !defined(CHARLS_LIBRARY_BUILD)
 #undef CHARLS_API_IMPORT_EXPORT
 #undef CHARLS_NO_DISCARD
-#undef CHARLS_ENUM_DEPRECATED
 #undef CHARLS_FINAL
 #undef CHARLS_NOEXCEPT
 #undef CHARLS_ATTRIBUTE
+#undef CHARLS_DEPRECATED
 
 #undef IN_
 #undef IN_OPT_

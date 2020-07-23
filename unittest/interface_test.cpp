@@ -24,6 +24,9 @@ MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere t
 #pragma clang diagnostic ignored "-Wnonnull"
 #endif
 
+// ReSharper disable CppDeprecatedEntity
+DISABLE_DEPRECATED_WARNING
+
 // clang-format off
 
 namespace charls {
@@ -257,6 +260,9 @@ public:
 
 } // namespace test
 } // namespace charls
+
+// ReSharper restore CppDeprecatedEntity
+RESTORE_DEPRECATED_WARNING
 
 #if defined(__clang__)
 #pragma clang diagnostic pop

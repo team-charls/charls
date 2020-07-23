@@ -9,19 +9,31 @@
 #include <vector>
 
 using charls::jpegls_errc;
+using charls::jpegls_decoder;
+using charls::jpegls_error;
 using std::cout;
 using std::mt19937;
 using std::uniform_int_distribution;
 using std::vector;
+using std::error_code;
 
 namespace {
 
 void test_damaged_bit_stream1()
 {
-    vector<uint8_t> encoded_buffer = read_file("test/incorrect_images/InfiniteLoopFFMPEG.jls");
-
+    const vector<uint8_t> encoded_buffer = read_file("test/incorrect_images/InfiniteLoopFFMPEG.jls");
     vector<uint8_t> destination(256 * 256 * 2);
-    const auto error = JpegLsDecode(destination.data(), destination.size(), encoded_buffer.data(), encoded_buffer.size(), nullptr, nullptr);
+
+    error_code error;
+    try
+    {
+        jpegls_decoder::decode(encoded_buffer, destination);
+    }
+    catch (const jpegls_error& e)
+    {
+        error = e.code();
+    }
+
     assert::is_true(error == jpegls_errc::invalid_encoded_data);
 }
 
@@ -34,7 +46,17 @@ void test_damaged_bit_stream2()
     encoded_buffer.resize(40000, 3);
 
     vector<uint8_t> destination(512 * 512);
-    const auto error = JpegLsDecode(destination.data(), destination.size(), encoded_buffer.data(), encoded_buffer.size(), nullptr, nullptr);
+
+    error_code error;
+    try
+    {
+        jpegls_decoder::decode(encoded_buffer, destination);
+    }
+    catch (const jpegls_error& e)
+    {
+        error = e.code();
+    }
+
     assert::is_true(error == jpegls_errc::invalid_encoded_data);
 }
 
@@ -47,7 +69,17 @@ void test_damaged_bit_stream3()
     encoded_buffer[301] = 0xFF;
 
     vector<uint8_t> destination(512 * 512);
-    const auto error = JpegLsDecode(destination.data(), destination.size(), encoded_buffer.data(), encoded_buffer.size(), nullptr, nullptr);
+
+    error_code error;
+    try
+    {
+        jpegls_decoder::decode(encoded_buffer, destination);
+    }
+    catch (const jpegls_error& e)
+    {
+        error = e.code();
+    }
+
     assert::is_true(error == jpegls_errc::invalid_encoded_data);
 }
 
@@ -75,8 +107,16 @@ void test_file_with_random_header_damage(const char* filename)
             encoded_buffer[i + 2] = static_cast<uint8_t>(distribution(generator));
             encoded_buffer[i + 3] = static_cast<uint8_t>(distribution(generator));
 
-            const auto error = JpegLsDecode(destination.data(), destination.size(), &encoded_buffer[0], encoded_buffer.size(), nullptr, nullptr);
-            errors[static_cast<int>(error)]++;
+            error_code error;
+            try
+            {
+                jpegls_decoder::decode(encoded_buffer, destination);
+            }
+            catch (const jpegls_error& e)
+            {
+                error = e.code();
+            }
+            errors[static_cast<size_t>(error.value())]++;
         }
 
         cout << "With garbage input at index " << i << ": ";

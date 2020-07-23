@@ -192,24 +192,37 @@ void test_noise_image_with_custom_reset()
 
 void test_fail_on_too_small_output_buffer()
 {
-    auto input_buffer = make_some_noise(8 * 8, 8, 21344);
-    size_t compressed_length;
-
-    auto params = JlsParameters();
-    params.components = 1;
-    params.bitsPerSample = 8;
-    params.height = 8;
-    params.width = 8;
+    const auto input_buffer = make_some_noise(8 * 8, 8, 21344);
 
     // Trigger a "destination buffer too small" when writing the header markers.
-    vector<uint8_t> output_buffer1(1);
-    auto result = JpegLsEncode(output_buffer1.data(), output_buffer1.size(), &compressed_length, input_buffer.data(), input_buffer.size(), &params, nullptr);
-    assert::is_true(result == jpegls_errc::destination_buffer_too_small);
+    try
+    {
+        vector<uint8_t> output_buffer(1);
+        jpegls_encoder encoder;
+        encoder.destination(output_buffer);
+        encoder.frame_info({8, 8, 8, 1});
+        static_cast<void>(encoder.encode(input_buffer));
+        assert::is_true(false);
+    }
+    catch (const jpegls_error& e)
+    {
+        assert::is_true(e.code() == jpegls_errc::destination_buffer_too_small);
+    }
 
     // Trigger a "destination buffer too small" when writing the encoded pixel bytes.
-    vector<uint8_t> output_buffer2(100);
-    result = JpegLsEncode(output_buffer2.data(), output_buffer2.size(), &compressed_length, input_buffer.data(), input_buffer.size(), &params, nullptr);
-    assert::is_true(result == jpegls_errc::destination_buffer_too_small);
+    try
+    {
+        vector<uint8_t> output_buffer(100);
+        jpegls_encoder encoder;
+        encoder.destination(output_buffer);
+        encoder.frame_info({8, 8, 8, 1});
+        static_cast<void>(encoder.encode(input_buffer));
+        assert::is_true(false);
+    }
+    catch (const jpegls_error& e)
+    {
+        assert::is_true(e.code() == jpegls_errc::destination_buffer_too_small);
+    }
 }
 
 
@@ -231,7 +244,14 @@ void test_bgr()
 
     params.outputBgr = static_cast<char>(true);
 
+    // ReSharper disable CppDeprecatedEntity
+    DISABLE_DEPRECATED_WARNING
+
     const error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_buffer.data(), encoded_buffer.size(), &params, nullptr);
+
+    // ReSharper restore CppDeprecatedEntity
+    RESTORE_DEPRECATED_WARNING
+
     assert::is_true(!error);
 
     assert::is_true(decoded_buffer[0] == 0x69);
@@ -245,10 +265,21 @@ void test_bgr()
 
 void test_too_small_output_buffer()
 {
-    vector<uint8_t> encoded = read_file("test/lena8b.jls");
-
+    const vector<uint8_t> encoded = read_file("test/lena8b.jls");
     vector<uint8_t> destination(512 * 511);
-    const auto error = JpegLsDecode(destination.data(), destination.size(), encoded.data(), encoded.size(), nullptr, nullptr);
+
+    jpegls_decoder decoder;
+    decoder.source(encoded).read_header();
+
+    error_code error;
+    try
+    {
+        decoder.decode(destination);
+    }
+    catch (const jpegls_error& e)
+    {
+        error = e.code();
+    }
 
     assert::is_true(error == jpegls_errc::destination_buffer_too_small);
 }
@@ -269,38 +300,71 @@ void test_too_small_output_buffer()
 
 void test_decode_bit_stream_with_no_marker_start()
 {
-    const array<uint8_t, 2> encoded_data = {0x33, 0x33};
+    const array<uint8_t, 2> encoded_data{0x33, 0x33};
     array<uint8_t, 1000> output{};
 
-    const auto error = JpegLsDecode(output.data(), output.size(), encoded_data.data(), encoded_data.size(), nullptr, nullptr);
+    error_code error;
+    try
+    {
+        jpegls_decoder decoder;
+        decoder.source(encoded_data).read_header();
+        decoder.decode(output);
+    }
+    catch (const jpegls_error& e)
+    {
+        error = e.code();
+    }
+
     assert::is_true(error == jpegls_errc::jpeg_marker_start_byte_not_found);
 }
 
 
 void test_decode_bit_stream_with_unsupported_encoding()
 {
-    const array<uint8_t, 6> encoded_data = {
+    const array<uint8_t, 6> encoded_data{
         0xFF, 0xD8, // Start Of Image (JPEG_SOI)
         0xFF, 0xC3, // Start Of Frame (lossless, Huffman) (JPEG_SOF_3)
         0x00, 0x00  // Length of data of the marker
     };
     array<uint8_t, 1000> output{};
 
-    const auto error = JpegLsDecode(output.data(), output.size(), encoded_data.data(), encoded_data.size(), nullptr, nullptr);
+    error_code error;
+    try
+    {
+        jpegls_decoder decoder;
+        decoder.source(encoded_data).read_header();
+        decoder.decode(output);
+    }
+    catch (const jpegls_error& e)
+    {
+        error = e.code();
+    }
+
     assert::is_true(error == jpegls_errc::encoding_not_supported);
 }
 
 
 void test_decode_bit_stream_with_unknown_jpeg_marker()
 {
-    const array<uint8_t, 6> encoded_data = {
+    const array<uint8_t, 6> encoded_data{
         0xFF, 0xD8, // Start Of Image (JPEG_SOI)
         0xFF, 0x01, // Undefined marker
         0x00, 0x00  // Length of data of the marker
     };
     array<uint8_t, 1000> output{};
 
-    const auto error = JpegLsDecode(output.data(), output.size(), encoded_data.data(), encoded_data.size(), nullptr, nullptr);
+    error_code error;
+    try
+    {
+        jpegls_decoder decoder;
+        decoder.source(encoded_data).read_header();
+        decoder.decode(output);
+    }
+    catch (const jpegls_error& e)
+    {
+        error = e.code();
+    }
+
     assert::is_true(error == jpegls_errc::unknown_jpeg_marker_found);
 }
 
@@ -311,13 +375,21 @@ void test_decode_rect()
     vector<uint8_t> encoded_data = scan_file("test/lena8b.jls", &params);
     vector<uint8_t> decoded_buffer(static_cast<size_t>(params.width) * params.height * params.components);
 
+    // ReSharper disable CppDeprecatedEntity
+    DISABLE_DEPRECATED_WARNING
+
     error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_data.data(), encoded_data.size(), nullptr, nullptr);
     assert::is_true(!error);
 
     const JlsRect rect = {128, 128, 256, 1};
     vector<uint8_t> decoded_data(static_cast<size_t>(rect.Width) * rect.Height);
     decoded_data.push_back(0x1f);
+
     error = JpegLsDecodeRect(decoded_data.data(), decoded_data.size(), encoded_data.data(), encoded_data.size(), rect, nullptr, nullptr);
+
+    // ReSharper restore CppDeprecatedEntity
+    RESTORE_DEPRECATED_WARNING
+
     assert::is_true(!error);
 
     assert::is_true(memcmp(&decoded_buffer[rect.X + static_cast<size_t>(rect.Y) * 512], decoded_data.data(), static_cast<size_t>(rect.Width) * rect.Height) == 0);

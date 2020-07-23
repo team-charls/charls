@@ -164,6 +164,9 @@ private:
 
     static void test_compliance_legacy_api(const uint8_t* compressed_bytes, const size_t compressed_length, const uint8_t* uncompressed_data, const size_t uncompressed_length, const bool check_encode)
     {
+        // ReSharper disable CppDeprecatedEntity
+        DISABLE_DEPRECATED_WARNING
+
         JlsParameters info{};
         error_code error = JpegLsReadHeader(compressed_bytes, compressed_length, &info, nullptr);
         Assert::IsFalse(static_cast<bool>(error));
@@ -188,10 +191,16 @@ private:
                 }
             }
         }
+
+        // ReSharper restore CppDeprecatedEntity
+        RESTORE_DEPRECATED_WARNING
     }
 
     static bool verify_encoded_bytes_legacy_api(const void* uncompressed_data, const size_t uncompressed_length, const void* compressed_data, const size_t compressed_length)
     {
+        // ReSharper disable CppDeprecatedEntity
+        DISABLE_DEPRECATED_WARNING
+
         JlsParameters info{};
         error_code error = JpegLsReadHeader(compressed_data, compressed_length, &info, nullptr);
         if (error)
@@ -212,6 +221,9 @@ private:
         }
 
         return true;
+
+        // ReSharper restore CppDeprecatedEntity
+        RESTORE_DEPRECATED_WARNING
     }
 
     static bool verify_encoded_bytes(const vector<uint8_t>& uncompressed_source, const vector<uint8_t>& encoded_source)

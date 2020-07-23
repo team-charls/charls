@@ -13,6 +13,9 @@
 
 #include "../test/portable_anymap_file.h"
 
+// ReSharper disable CppDeprecatedEntity
+DISABLE_DEPRECATED_WARNING
+
 namespace {
 
 // The following functions are used as sample code in the documentation
@@ -244,3 +247,6 @@ private:
 
 } // namespace test
 } // namespace charls
+
+// ReSharper restore CppDeprecatedEntity
+RESTORE_DEPRECATED_WARNING

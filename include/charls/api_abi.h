@@ -44,13 +44,9 @@
 #endif
 
 #if defined(__cplusplus) && __cplusplus >= 201703
-
 #define CHARLS_NO_DISCARD [[nodiscard]]
-
 #else
-
 #define CHARLS_NO_DISCARD
-
 #endif
 
 #ifdef __cplusplus
@@ -58,13 +54,14 @@
 #define CHARLS_FINAL final
 #define CHARLS_NOEXCEPT noexcept
 
-#ifdef CHARLS_NO_DEPRECATED_WARNINGS
+#ifdef CHARLS_NO_DEPRECATED_WARNING
 #define CHARLS_DEPRECATED
 #else
-#define CHARLS_DEPRECATED [[deprecated]]
+#define CHARLS_DEPRECATED [[deprecated("Functionality will be removed in the next major version, use CHARLS_NO_DEPRECATED_WARNING to suppress this deprecation.")]]
 #endif
 
 #else
 #define CHARLS_FINAL
 #define CHARLS_NOEXCEPT
+#define CHARLS_DEPRECATED
 #endif

@@ -30,3 +30,5 @@
 #define OUT_WRITES_Z_(size_in_bytes)
 #define RETURN_TYPE_SUCCESS_(expr)
 #define CHARLS_ATTRIBUTE(a)
+#define DISABLE_DEPRECATED_WARNING
+#define RESTORE_DEPRECATED_WARNING

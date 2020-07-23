@@ -11,8 +11,8 @@
 #include <vector>
 
 using std::cout;
-using std::error_code;
 using std::ifstream;
+using std::ios;
 using std::milli;
 using std::setprecision;
 using std::setw;
@@ -20,7 +20,6 @@ using std::swap;
 using std::vector;
 using std::chrono::duration;
 using std::chrono::steady_clock;
-using std::ios;
 using namespace charls;
 using namespace charls_test;
 
@@ -31,7 +30,7 @@ MSVC_WARNING_SUPPRESS(26497) // cannot be marked constexpr, check must be execut
 
 bool is_machine_little_endian() noexcept
 {
-    constexpr int a = 0xFF000001;  // NOLINT(bugprone-narrowing-conversions, cppcoreguidelines-narrowing-conversions)
+    constexpr int a = 0xFF000001; // NOLINT(bugprone-narrowing-conversions, cppcoreguidelines-narrowing-conversions)
     const auto* chars = reinterpret_cast<const char*>(&a);
     return chars[0] == 0x01;
 }
@@ -93,29 +92,43 @@ void test_round_trip(const char* name, const vector<uint8_t>& decoded_buffer, co
 }
 
 
-void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, JlsParameters& params, const int loop_count)
+void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, const JlsParameters& params, const int loop_count)
 {
     vector<uint8_t> encoded_buffer(params.height * params.width * params.components * params.bitsPerSample / 4);
 
     vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width * bit_to_byte_count(params.bitsPerSample) * params.components);
 
+    interleave_mode interleave_mode{params.interleaveMode};
+    color_transformation color_transformation{params.colorTransformation};
+
     if (params.components == 4)
     {
-        params.interleaveMode = interleave_mode::line;
+        interleave_mode = interleave_mode::line;
     }
     else if (params.components == 3)
     {
-        params.interleaveMode = interleave_mode::line;
-        params.colorTransformation = color_transformation::hp1;
+        interleave_mode = interleave_mode::line;
+        color_transformation = color_transformation::hp1;
     }
 
     size_t encoded_actual_size{};
     auto start = steady_clock::now();
     for (int i = 0; i < loop_count; ++i)
     {
-        const error_code error = JpegLsEncode(encoded_buffer.data(), encoded_buffer.size(), &encoded_actual_size,
-                                              original_buffer.data(), original_buffer.size(), &params, nullptr);
-        assert::is_true(!error);
+        try
+        {
+            jpegls_encoder encoder;
+            encoder.destination(encoded_buffer)
+                .frame_info({static_cast<uint32_t>(params.width), static_cast<uint32_t>(params.height), params.bitsPerSample, params.components})
+                .interleave_mode(interleave_mode)
+                .color_transformation(color_transformation);
+
+            encoded_actual_size = encoder.encode(original_buffer);
+        }
+        catch (...)
+        {
+            assert::is_true(false);
+        }
     }
 
     const auto total_encode_duration = steady_clock::now() - start;
@@ -123,8 +136,16 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, J
     start = steady_clock::now();
     for (int i = 0; i < loop_count; ++i)
     {
-        const error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_buffer.data(), encoded_actual_size, nullptr, nullptr);
-        assert::is_true(!error);
+        try
+        {
+            jpegls_decoder decoder;
+            decoder.source(encoded_buffer.data(), encoded_actual_size).read_header();
+            decoder.decode(decoded_buffer);
+        }
+        catch (...)
+        {
+            assert::is_true(false);
+        }
     }
 
     const auto total_decode_duration = steady_clock::now() - start;
@@ -168,5 +189,5 @@ void test_portable_anymap_file(const char* filename, const int loop_count)
     portable_anymap_file anymap_file(filename);
 
     test_round_trip(filename, anymap_file.image_data(), rect_size(anymap_file.width(), anymap_file.height()),
-                  anymap_file.bits_per_sample(), anymap_file.component_count(), loop_count);
+                    anymap_file.bits_per_sample(), anymap_file.component_count(), loop_count);
 }

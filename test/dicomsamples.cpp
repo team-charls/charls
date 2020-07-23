@@ -36,6 +36,8 @@ int find_string(vector<uint8_t>& container, const uint8_t* bytes_to_find, const 
     return -1;
 }
 
+// ReSharper disable CppDeprecatedEntity
+DISABLE_DEPRECATED_WARNING
 
 void test_dicom_sample_image(const char* name)
 {
@@ -64,6 +66,9 @@ void test_dicom_sample_image(const char* name)
     assert::is_true(!error);
     cout << ".";
 }
+
+// ReSharper restore CppDeprecatedEntity
+RESTORE_DEPRECATED_WARNING
 
 } // namespace
 
