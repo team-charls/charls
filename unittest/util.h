@@ -17,18 +17,29 @@
 #define DISABLE_DEPRECATED_WARNING \
     _Pragma("clang diagnostic push") \
     _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+#elif defined(__GNUC__) || defined(__GNUG__)
+#define DISABLE_DEPRECATED_WARNING \
+    _Pragma("GCC diagnostic push") \
+    _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #elif defined(_MSC_VER)
 #define DISABLE_DEPRECATED_WARNING \
     __pragma(warning(push)) \
     __pragma(warning(disable : 4996)) // was declared deprecated
+#else
+#define DISABLE_DEPRECATED_WARNING
 #endif
 // clang-format on
 
 #ifdef __clang__
 #define RESTORE_DEPRECATED_WARNING _Pragma("clang diagnostic pop")
+#elif defined(__GNUC__) || defined(__GNUG__)
+#define RESTORE_DEPRECATED_WARNING _Pragma("GCC diagnostic pop")
 #elif defined(_MSC_VER)
 #define RESTORE_DEPRECATED_WARNING __pragma(warning(pop))
+#else
+#define RESTORE_DEPRECATED_WARNING
 #endif
+
 
 
 namespace charls {
