@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Fixed [#25](https://github.com/team-charls/charls/issues/25), CharLS fails to read LSE marker segment after first SOS segment
 - Fixed [#60](https://github.com/team-charls/charls/issues/60), Visual Studio 2015 C++ compiler cannot compile certain constexpr constructions
+- Fixed [#70](https://github.com/team-charls/charls/issues/70), The C and C++ sample don't swap the pixels from a .bmp file horizontal
 
 ### Changed
 
