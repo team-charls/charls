@@ -57,11 +57,16 @@ public:
         if (dib_header.header_size < 40 || dib_header.compress_type != 0 || dib_header.depth != 24)
             throw std::istream::failure("Can only read uncompressed 24 bits BMP files");
 
-        pixel_data = read_pixel_data(input, header.offset, dib_header);
+        // The BMP format requires that the size of each row is rounded up to a multiple of 4 bytes by padding.
+        constexpr int bytes_per_pixel = 3;
+        stride = ((dib_header.width * bytes_per_pixel) + 3) / 4 * 4;
+
+        pixel_data = read_pixel_data(input, header.offset, dib_header.height, stride);
     }
 
     bmp_header header;
     bmp_dib_header dib_header;
+    uint32_t stride{};
     std::vector<uint8_t> pixel_data;
 
 private:
@@ -91,12 +96,12 @@ private:
         return result;
     }
 
-    static std::vector<uint8_t> read_pixel_data(std::istream& input, const uint32_t offset, const bmp_dib_header& header)
+    static std::vector<uint8_t> read_pixel_data(std::istream& input, const uint32_t offset, const int32_t height, const uint32_t stride)
     {
         input.seekg(offset);
 
-        std::vector<uint8_t> pixel_data(static_cast<size_t>(header.height) * header.width * 3);
-        input.read(reinterpret_cast<char*>(pixel_data.data()), pixel_data.size());
+        std::vector<uint8_t> pixel_data(static_cast<size_t>(height) * stride);
+        input.read(reinterpret_cast<char*>(pixel_data.data()), static_cast<std::streamsize>(pixel_data.size()));
 
         return pixel_data;
     }

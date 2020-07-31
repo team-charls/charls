@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+const static size_t bytes_per_rgb_pixel = 3;
+
 typedef struct
 {
     uint8_t magic[2];   // the magic number used to identify the BMP file:
@@ -74,22 +76,32 @@ static bool bmp_read_dib_header(FILE* fp, bmp_dib_header_t* header)
 }
 
 
-static void* bmp_read_pixel_data(FILE* fp, const uint32_t offset, const bmp_dib_header_t* header, size_t* buffer_size)
+static void* bmp_read_pixel_data(FILE* fp, const uint32_t offset, const bmp_dib_header_t* dib_header, size_t* stride)
 {
     assert(fp);
-    assert(header);
-    assert(buffer_size);
+    assert(dib_header);
+    assert(stride);
+    assert(dib_header->compress_type == 0);
+    assert(dib_header->depth == 24);
 
-    if (fseek(fp, offset, SEEK_SET))
+    if (fseek(fp, (long)offset, SEEK_SET))
         return NULL;
 
-    *buffer_size = (size_t)header->height * header->width * 3;
-    void* buffer = malloc(*buffer_size);
-    if (buffer && fread(buffer, *buffer_size, 1, fp))
-        return buffer;
+    // The BMP format requires that the size of each row is rounded up to a multiple of 4 bytes by padding.
+    *stride = ((dib_header->width * bytes_per_rgb_pixel) + 3) / 4 * 4;
 
-    free(buffer);
-    return NULL;
+    const size_t buffer_size = (size_t)dib_header->height * *stride;
+    void* buffer = malloc(buffer_size);
+    if (!buffer)
+        return NULL;
+
+    if (fread(buffer, buffer_size, 1, fp) != 1)
+    {
+        free(buffer);
+        return NULL;
+    }
+
+    return buffer;
 }
 
 
@@ -102,34 +114,51 @@ static void* handle_encoder_failure(const charls_jpegls_errc error, const char* 
 }
 
 
-static void triplet_to_planar(const char* triplet_buffer, char* planar_buffer, const uint32_t width, const uint32_t height)
+static void convert_bgr_to_rgb(uint8_t* triplet_buffer, const size_t width, const size_t height, const size_t stride)
 {
-    const size_t byte_count = (size_t)width * height;
-    for (size_t index = 0; index < byte_count; ++index)
+    for (size_t line = 0; line < height; ++line)
     {
-        planar_buffer[index] = triplet_buffer[index * 3 + 0];
-        planar_buffer[index + 1 * byte_count] = triplet_buffer[index * 3 + 1];
-        planar_buffer[index + 2 * byte_count] = triplet_buffer[index * 3 + 2];
+        const size_t line_start = line * stride;
+        for (size_t pixel = 0; pixel < width; ++pixel)
+        {
+            const size_t column = pixel * bytes_per_rgb_pixel;
+
+            const size_t a = line_start + column;
+            const size_t b = line_start + column + 2;
+
+            const uint8_t temp = triplet_buffer[a];
+            triplet_buffer[a] = triplet_buffer[b];
+            triplet_buffer[b] = temp;
+        }
     }
 }
 
 
-static void convert_bgr_to_rgb(char* triplet_buffer, const size_t size)
+static void triplet_to_planar(const uint8_t* triplet_buffer, uint8_t* planar_buffer, const size_t width, const size_t height, const size_t stride)
 {
-    for (size_t i = 0; i < size; i += 3)
+    const size_t byte_count_plane = width * height;
+    size_t plane_column = 0;
+
+    for (size_t line = 0; line < height; ++line)
     {
-        const char temp = triplet_buffer[i];
-        triplet_buffer[i] = triplet_buffer[i + 2];
-        triplet_buffer[i + 2] = temp;
+        const size_t line_start = line * stride;
+        for (size_t pixel = 0; pixel < width; ++pixel)
+        {
+            const size_t column = line_start + pixel * bytes_per_rgb_pixel;
+
+            planar_buffer[plane_column] = triplet_buffer[column];
+            planar_buffer[plane_column + 1 * byte_count_plane] = triplet_buffer[column + 1];
+            planar_buffer[plane_column + 2 * byte_count_plane] = triplet_buffer[column + 2];
+            ++plane_column;
+        }
     }
 }
 
 
-static bool convert_bottom_up_to_top_down(char* triplet_buffer, const uint32_t width, const uint32_t height)
+static bool convert_bottom_up_to_top_down(uint8_t* triplet_buffer, const size_t width, const size_t height, const size_t stride)
 {
-    const size_t row_length = (size_t)width * 3;
-    const size_t stride = row_length;
-    char* temp_row = malloc(row_length);
+    const size_t row_length = width * bytes_per_rgb_pixel;
+    void* temp_row = malloc(row_length);
     if (!temp_row)
         return false;
 
@@ -147,7 +176,7 @@ static bool convert_bottom_up_to_top_down(char* triplet_buffer, const uint32_t w
 }
 
 
-static void* encode_bmp_to_jpegls(const void* pixel_data, const size_t pixel_data_size, const bmp_dib_header_t* header, const charls_interleave_mode interleave_mode, const int near_lossless, size_t* bytes_written)
+static void* encode_bmp_to_jpegls(const void* pixel_data, const size_t stride, const bmp_dib_header_t* header, const charls_interleave_mode interleave_mode, const int near_lossless, size_t* bytes_written)
 {
     assert(header->depth == 24);        // This function only supports 24-bit BMP pixel data.
     assert(header->compress_type == 0); // Data needs to be stored by pixel as RGB.
@@ -161,7 +190,7 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, const size_t pixel_dat
 
     charls_frame_info frame_info = {.bits_per_sample = 8, .component_count = 3};
     frame_info.width = header->width;
-    frame_info.height = header->height;
+    frame_info.height = (uint32_t)header->height;
     charls_jpegls_errc error = charls_jpegls_encoder_set_frame_info(encoder, &frame_info);
     if (error)
     {
@@ -210,19 +239,21 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, const size_t pixel_dat
 
     if (interleave_mode == CHARLS_INTERLEAVE_MODE_NONE)
     {
+        const size_t pixel_data_size = (size_t)header->height * header->width * bytes_per_rgb_pixel;
         void* planar_pixel_data = malloc(pixel_data_size);
         if (!planar_pixel_data)
         {
             return handle_encoder_failure(CHARLS_JPEGLS_ERRC_NOT_ENOUGH_MEMORY, "malloc", encoder, encoded_buffer);
         }
 
-        triplet_to_planar(pixel_data, planar_pixel_data, header->width, header->height);
+        triplet_to_planar(pixel_data, planar_pixel_data, header->width, (size_t)header->height, stride);
         error = charls_jpegls_encoder_encode_from_buffer(encoder, planar_pixel_data, pixel_data_size, 0);
         free(planar_pixel_data);
     }
     else
     {
-        error = charls_jpegls_encoder_encode_from_buffer(encoder, pixel_data, pixel_data_size, 0);
+        const size_t pixel_data_size = (size_t)header->height * stride;
+        error = charls_jpegls_encoder_encode_from_buffer(encoder, pixel_data, pixel_data_size, (uint32_t)stride);
     }
 
     if (error)
@@ -341,8 +372,8 @@ int main(const int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    size_t buffer_size;
-    void* pixel_data = bmp_read_pixel_data(input_stream, header.offset, &dib_header, &buffer_size);
+    size_t stride;
+    void* pixel_data = bmp_read_pixel_data(input_stream, header.offset, &dib_header, &stride);
     fclose(input_stream);
 
     if (!pixel_data)
@@ -351,13 +382,10 @@ int main(const int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    // Pixels in a .bmp file are stored as BGR, JPEG-LS only supports RGB color model.
-    convert_bgr_to_rgb(pixel_data, buffer_size);
-
-    // Pixels in a .bmp file are stored bottom up (when height is positive), JPEG-LS requires top down.
+    // Pixels in the BMP file format are stored bottom up (when the height parameter is positive), JPEG-LS requires top down.
     if (dib_header.height > 0)
     {
-        if (!convert_bottom_up_to_top_down(pixel_data, dib_header.width, dib_header.height))
+        if (!convert_bottom_up_to_top_down(pixel_data, dib_header.width, (size_t)dib_header.height, stride))
         {
             printf("Failed to convert the pixels from bottom up to top down\n");
             return EXIT_FAILURE;
@@ -368,8 +396,12 @@ int main(const int argc, char* argv[])
         dib_header.height = abs(dib_header.height);
     }
 
+    // Pixels in the BMP file format are stored as BGR. JPEG-LS (SPIFF header) only supports the RGB color model.
+    // Note: without the optional SPIFF header no color information is stored in the JPEG-LS file and the common assumption is RGB.
+    convert_bgr_to_rgb(pixel_data, dib_header.width, (size_t)dib_header.height, stride);
+
     size_t encoded_size;
-    void* encoded_data = encode_bmp_to_jpegls(pixel_data, buffer_size, &dib_header, options.interleave_mode, options.near_lossless, &encoded_size);
+    void* encoded_data = encode_bmp_to_jpegls(pixel_data, stride, &dib_header, options.interleave_mode, options.near_lossless, &encoded_size);
     free(pixel_data);
     if (!encoded_data)
         return EXIT_FAILURE; // error already printed.

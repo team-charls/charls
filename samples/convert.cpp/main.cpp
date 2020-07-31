@@ -14,33 +14,46 @@
 
 namespace {
 
-void convert_bgr_to_rgb(std::vector<uint8_t>& triplet_buffer) noexcept
+constexpr size_t bytes_per_rgb_pixel = 3;
+
+void convert_bgr_to_rgb(std::vector<uint8_t>& triplet_buffer, const size_t width, const size_t height, const size_t stride) noexcept
 {
-    for (size_t i = 0; i < triplet_buffer.size(); i += 3)
+    for (size_t line = 0; line < height; ++line)
     {
-        std::swap(triplet_buffer[i], triplet_buffer[i + 2]);
+        const auto line_start = line * stride;
+        for (size_t pixel = 0; pixel < width; ++pixel)
+        {
+            const auto column = pixel * bytes_per_rgb_pixel;
+            std::swap(triplet_buffer[line_start + column], triplet_buffer[line_start + column + 2]);
+        }
     }
 }
 
-std::vector<uint8_t> triplet_to_planar(const std::vector<uint8_t>& buffer, const uint32_t width, const uint32_t height)
+std::vector<uint8_t> triplet_to_planar(const std::vector<uint8_t>& buffer, const size_t width, const size_t height, const size_t stride)
 {
-    std::vector<uint8_t> result(buffer.size());
+    std::vector<uint8_t> result(bytes_per_rgb_pixel * width * height);
+    const size_t byte_count_plane = width * height;
 
-    const size_t byteCount = static_cast<size_t>(width) * height;
-    for (size_t index = 0; index < byteCount; index++)
+    size_t plane_column{};
+    for (size_t line = 0; line < height; ++line)
     {
-        result[index] = buffer[index * 3 + 0];
-        result[index + 1 * byteCount] = buffer[index * 3 + 1];
-        result[index + 2 * byteCount] = buffer[index * 3 + 2];
+        const auto line_start = line * stride;
+        for (size_t pixel = 0; pixel < width; ++pixel)
+        {
+            const auto column = line_start + pixel * bytes_per_rgb_pixel;
+            result[plane_column] = buffer[column];
+            result[plane_column + 1 * byte_count_plane] = buffer[column + 1];
+            result[plane_column + 2 * byte_count_plane] = buffer[column + 2];
+            ++plane_column;
+        }
     }
 
     return result;
 }
 
-void convert_bottom_up_to_top_down(uint8_t* triplet_buffer, const uint32_t width, const uint32_t height)
+void convert_bottom_up_to_top_down(uint8_t* triplet_buffer, const size_t width, const size_t height, const size_t stride)
 {
-    const size_t row_length = static_cast<size_t>(width) * 3;
-    const size_t stride = row_length;
+    const size_t row_length = width * bytes_per_rgb_pixel;
     std::vector<uint8_t> temp_row(row_length);
 
     for (size_t i = 0; i < height / 2; ++i)
@@ -58,7 +71,7 @@ std::vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, const ch
     assert(image.dib_header.compress_type == 0); // Data needs to be stored by pixel as RGB.
 
     charls::jpegls_encoder encoder;
-    encoder.frame_info({image.dib_header.width, static_cast<uint32_t>(image.dib_header.height), 8, 3})
+    encoder.frame_info({image.dib_header.width, static_cast<uint32_t>(image.dib_header.height), 8, bytes_per_rgb_pixel})
         .interleave_mode(interleave_mode)
         .near_lossless(near_lossless);
 
@@ -73,12 +86,12 @@ std::vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, const ch
     size_t encoded_size;
     if (interleave_mode == charls::interleave_mode::none)
     {
-        const auto planar_pixel_data = triplet_to_planar(image.pixel_data, image.dib_header.width, image.dib_header.height);
+        const auto planar_pixel_data = triplet_to_planar(image.pixel_data, image.dib_header.width, static_cast<size_t>(image.dib_header.height), image.stride);
         encoded_size = encoder.encode(planar_pixel_data);
     }
     else
     {
-        encoded_size = encoder.encode(image.pixel_data);
+        encoded_size = encoder.encode(image.pixel_data, image.stride);
     }
     buffer.resize(encoded_size);
 
@@ -92,7 +105,9 @@ void save_buffer_to_file(const void* buffer, const size_t buffer_size, const cha
     assert(buffer_size);
 
     std::ofstream output(filename, std::ios::binary);
-    output.write(static_cast<const char*>(buffer), buffer_size);
+    output.exceptions(std::ios::failbit | std::ios::badbit);
+
+    output.write(static_cast<const char*>(buffer), static_cast<std::streamsize>(buffer_size));
 }
 
 void log_failure(const char* message) noexcept
@@ -103,6 +118,7 @@ void log_failure(const char* message) noexcept
     }
     catch (...)
     {
+        // Catch and ignore all exceptions,to ensure a noexcept log function (but warn in debug builds)
         assert(false);
     }
 }
@@ -148,7 +164,6 @@ struct options final
     }
 };
 
-
 } // namespace
 
 
@@ -161,18 +176,19 @@ int main(const int argc, char** argv)
 
         bmp_image bmp_image{options.input_file_name};
 
-        // Pixels in a .bmp file are stored as BGR, JPEG-LS only supports RGB color model.
-        convert_bgr_to_rgb(bmp_image.pixel_data);
-
-        // Pixels in a .bmp file are stored bottom up (when height is positive), JPEG-LS requires top down.
+        // Pixels in the BMP file format are stored bottom up (when the height parameter is positive), JPEG-LS requires top down.
         if (bmp_image.dib_header.height > 0)
         {
-            convert_bottom_up_to_top_down(bmp_image.pixel_data.data(), bmp_image.dib_header.width, bmp_image.dib_header.height);
+            convert_bottom_up_to_top_down(bmp_image.pixel_data.data(), bmp_image.dib_header.width, static_cast<size_t>(bmp_image.dib_header.height), bmp_image.stride);
         }
         else
         {
             bmp_image.dib_header.height = std::abs(bmp_image.dib_header.height);
         }
+
+        // Pixels in the BMP file format are stored as BGR. JPEG-LS (SPIFF header) only supports the RGB color model.
+        // Note: without the optional SPIFF header no color information is stored in the JPEG-LS file and the common assumption is RGB.
+        convert_bgr_to_rgb(bmp_image.pixel_data, bmp_image.dib_header.width, static_cast<size_t>(bmp_image.dib_header.height), bmp_image.stride);
 
         auto encoded_buffer = encode_bmp_image_to_jpegls(bmp_image, options.interleave_mode, options.near_lossless);
         save_buffer_to_file(encoded_buffer.data(), encoded_buffer.size(), options.output_file_name);

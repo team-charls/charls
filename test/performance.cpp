@@ -12,7 +12,6 @@
 using charls::jpegls_decoder;
 using charls::jpegls_error;
 using std::cout;
-using std::error_code;
 using std::istream;
 using std::milli;
 using std::vector;
