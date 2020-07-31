@@ -125,26 +125,22 @@ void log_failure(const char* message) noexcept
 
 struct options final
 {
-    const char* input_file_name;
-    const char* output_file_name;
+    const char* input_filename;
+    const char* output_filename;
     charls::interleave_mode interleave_mode;
     int near_lossless;
 
     options(const int argc, char** argv)
     {
         if (argc < 3)
-            throw std::runtime_error("Usage: <input_file_name> <output_file_name> [interleave_mode (0, 1, or 2), default = 0 (none)] [near_lossless, default=0 (lossless)]\n");
+            throw std::runtime_error("Usage: <input_filename> <output_filename> [interleave-mode (none, line, or sample), default = none] [near-lossless, default = 0 (lossless)]\n");
 
-        input_file_name = argv[1];
-        output_file_name = argv[2];
+        input_filename = argv[1];
+        output_filename = argv[2];
 
         if (argc > 3)
         {
-            const long interleave_mode_arg = strtol(argv[3], nullptr, 10);
-            if (interleave_mode_arg < 0 || interleave_mode_arg > 2)
-                throw std::runtime_error("Argument interleave_mode needs to be 0 (none), 1 (line), or 2(sample)\n");
-
-            interleave_mode = static_cast<charls::interleave_mode>(interleave_mode_arg);
+            interleave_mode = string_to_interleave_mode(argv[3]);
         }
         else
         {
@@ -162,6 +158,21 @@ struct options final
             near_lossless = 0;
         }
     }
+
+private:
+    static charls::interleave_mode string_to_interleave_mode(const char* argument)
+    {
+        if (strcmp(argument, "none") == 0)
+            return charls::interleave_mode::none;
+
+        if (strcmp(argument, "line") == 0)
+            return charls::interleave_mode::line;
+
+        if (strcmp(argument, "sample") == 0)
+            return charls::interleave_mode::sample;
+
+        throw std::runtime_error("Argument interleave-mode needs to be: none, line or sample\n");
+    }
 };
 
 } // namespace
@@ -174,7 +185,7 @@ int main(const int argc, char** argv)
         std::ios::sync_with_stdio(false);
         const options options{argc, argv};
 
-        bmp_image bmp_image{options.input_file_name};
+        bmp_image bmp_image{options.input_filename};
 
         // Pixels in the BMP file format are stored bottom up (when the height parameter is positive), JPEG-LS requires top down.
         if (bmp_image.dib_header.height > 0)
@@ -191,7 +202,7 @@ int main(const int argc, char** argv)
         convert_bgr_to_rgb(bmp_image.pixel_data, bmp_image.dib_header.width, static_cast<size_t>(bmp_image.dib_header.height), bmp_image.stride);
 
         auto encoded_buffer = encode_bmp_image_to_jpegls(bmp_image, options.interleave_mode, options.near_lossless);
-        save_buffer_to_file(encoded_buffer.data(), encoded_buffer.size(), options.output_file_name);
+        save_buffer_to_file(encoded_buffer.data(), encoded_buffer.size(), options.output_filename);
 
         return EXIT_SUCCESS;
     }

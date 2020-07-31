@@ -293,8 +293,8 @@ static bool save_jpegls_file(const char* filename, const void* buffer, const siz
 
 typedef struct
 {
-    const char* input_file_name;
-    const char* output_file_name;
+    const char* input_filename;
+    const char* output_filename;
     charls_interleave_mode interleave_mode;
     int near_lossless;
 } options_t;
@@ -304,19 +304,30 @@ static bool parse_command_line_options(const int argc, char* argv[], options_t* 
 {
     if (argc < 3)
     {
-        printf("Usage: <input_file_name> <output_file_name> [interleave_mode (0, 1, or 2), default = 0 (none)] [near_lossless, default=0 (lossless)]\n");
+        printf("Usage: <input-filename> <output-filename> [interleave-mode (none, line or sample), default = none] [near-lossless, default=0 (lossless)]\n");
         return false;
     }
 
-    options->input_file_name = argv[1];
-    options->output_file_name = argv[2];
+    options->input_filename = argv[1];
+    options->output_filename = argv[2];
 
     if (argc > 3)
     {
-        options->interleave_mode = (charls_interleave_mode)(int)strtol(argv[3], NULL, 10);
-        if (options->interleave_mode < CHARLS_INTERLEAVE_MODE_NONE || options->interleave_mode > CHARLS_INTERLEAVE_MODE_SAMPLE)
+        if (strcmp(argv[3], "none") == 0)
         {
-            printf("Argument interleave_mode needs to be 0 (none), 1 (line), or 2(sample)\n");
+            options->interleave_mode = CHARLS_INTERLEAVE_MODE_NONE;
+        }
+        else if (strcmp(argv[3], "line") == 0)
+        {
+            options->interleave_mode = CHARLS_INTERLEAVE_MODE_LINE;
+        }
+        else if (strcmp(argv[3], "sample") == 0)
+        {
+            options->interleave_mode = CHARLS_INTERLEAVE_MODE_SAMPLE;
+        }
+        else
+        {
+            printf("Argument interleave-mode needs to be: none, line or sample\n");
             return false;
         }
     }
@@ -330,7 +341,7 @@ static bool parse_command_line_options(const int argc, char* argv[], options_t* 
         options->near_lossless = (int)strtol(argv[4], NULL, 10);
         if (options->near_lossless < 0 || options->near_lossless > 255)
         {
-            printf("Argument near_lossless needs to be in the range [0,255]\n");
+            printf("Argument near-lossless needs to be in the range [0,255]\n");
             return false;
         }
     }
@@ -349,10 +360,10 @@ int main(const int argc, char* argv[])
     if (!parse_command_line_options(argc, argv, &options))
         return EXIT_FAILURE;
 
-    FILE* input_stream = fopen(options.input_file_name, "rb");
+    FILE* input_stream = fopen(options.input_filename, "rb");
     if (!input_stream)
     {
-        printf("Failed to open file: %s, errno: %d\n", options.input_file_name, errno);
+        printf("Failed to open file: %s, errno: %d\n", options.input_filename, errno);
         return EXIT_FAILURE;
     }
 
@@ -406,11 +417,11 @@ int main(const int argc, char* argv[])
     if (!encoded_data)
         return EXIT_FAILURE; // error already printed.
 
-    const bool result = save_jpegls_file(options.output_file_name, encoded_data, encoded_size);
+    const bool result = save_jpegls_file(options.output_filename, encoded_data, encoded_size);
     free(encoded_data);
     if (!result)
     {
-        printf("Failed to write encoded data to the file: %s\n", options.output_file_name);
+        printf("Failed to write encoded data to the file: %s\n", options.output_filename);
         return EXIT_FAILURE;
     }
 
