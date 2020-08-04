@@ -6,6 +6,7 @@
 *.cpp text diff=cpp
 *.h text diff=cpp
 *.cs text diff=csharp
+*.pc text eol=lf
 
 # Explicit exclude binary files from the line ending normalization.
 *.png binary

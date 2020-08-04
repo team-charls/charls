@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Next-Release]
 
+### Added
+
+- Added pkg-config charls.pc file to help in detect the CharLS library (see  [#76](https://github.com/team-charls/charls/issues/76))
+
 ### Fixed
 
 - Fixed [#25](https://github.com/team-charls/charls/issues/25), CharLS fails to read LSE marker segment after first SOS segment
