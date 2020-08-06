@@ -72,7 +72,12 @@ static bool bmp_read_dib_header(FILE* fp, bmp_dib_header_t* header)
            fread(&header->height, sizeof header->height, 1, fp) &&
            fread(&header->number_planes, sizeof header->number_planes, 1, fp) &&
            fread(&header->depth, sizeof header->depth, 1, fp) &&
-           fread(&header->compress_type, sizeof header->compress_type, 1, fp);
+           fread(&header->compress_type, sizeof header->compress_type, 1, fp) &&
+           fread(&header->bmp_byte_size, sizeof header->bmp_byte_size, 1, fp) &&
+           fread(&header->horizontal_resolution, sizeof header->horizontal_resolution, 1, fp) &&
+           fread(&header->vertical_resolution, sizeof header->vertical_resolution, 1, fp) &&
+           fread(&header->number_colors, sizeof header->number_colors, 1, fp) &&
+           fread(&header->number_important_colors, sizeof header->number_important_colors, 1, fp);
 }
 
 
@@ -228,10 +233,24 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, const size_t stride, c
         return handle_encoder_failure(error, "set destination buffer", encoder, encoded_buffer);
     }
 
-    error = charls_jpegls_encoder_write_standard_spiff_header(encoder,
-                                                              CHARLS_SPIFF_COLOR_SPACE_RGB,
-                                                              CHARLS_SPIFF_RESOLUTION_UNITS_DOTS_PER_CENTIMETER,
-                                                              header->vertical_resolution / 100, header->vertical_resolution / 100);
+    // The resolution in BMP files is often 0 to indicate that no resolution has been defined.
+    // The SPIFF header specification requires however that VRES and HRES are never 0.
+    // The ISO 10918-3 recommendation for these cases is to define that the pixels should be interpreted as a square.
+    if (header->vertical_resolution < 100 || header->horizontal_resolution < 100)
+    {
+        error = charls_jpegls_encoder_write_standard_spiff_header(encoder,
+                                                                  CHARLS_SPIFF_COLOR_SPACE_RGB,
+                                                                  CHARLS_SPIFF_RESOLUTION_UNITS_ASPECT_RATIO,
+                                                                  1, 1);
+    }
+    else
+    {
+        error = charls_jpegls_encoder_write_standard_spiff_header(encoder,
+                                                                  CHARLS_SPIFF_COLOR_SPACE_RGB,
+                                                                  CHARLS_SPIFF_RESOLUTION_UNITS_DOTS_PER_CENTIMETER,
+                                                                  header->vertical_resolution / 100, header->horizontal_resolution / 100);
+    }
+
     if (error)
     {
         return handle_encoder_failure(error, "write_standard_spiff_header", encoder, encoded_buffer);
@@ -379,6 +398,13 @@ int main(const int argc, char* argv[])
     if (dib_header.compress_type != 0 || dib_header.depth != 24)
     {
         printf("Can only convert uncompressed 24 bits BMP files");
+        fclose(input_stream);
+        return EXIT_FAILURE;
+    }
+
+    if (dib_header.width == 0 || dib_header.height == 0)
+    {
+        printf("Can only process an image that is 1 x 1 or bigger");
         fclose(input_stream);
         return EXIT_FAILURE;
     }

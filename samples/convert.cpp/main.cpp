@@ -78,10 +78,22 @@ std::vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, const ch
     std::vector<uint8_t> buffer(encoder.estimated_destination_size());
     encoder.destination(buffer);
 
-    encoder.write_standard_spiff_header(charls::spiff_color_space::rgb,
-                                        charls::spiff_resolution_units::dots_per_centimeter,
-                                        image.dib_header.vertical_resolution / 100,
-                                        image.dib_header.horizontal_resolution / 100);
+    // The resolution in BMP files is often 0 to indicate that no resolution has been defined.
+    // The SPIFF header specification requires however that VRES and HRES are never 0.
+    // The ISO 10918-3 recommendation for these cases is to define that the pixels should be interpreted as a square.
+    if (image.dib_header.vertical_resolution < 100 || image.dib_header.horizontal_resolution < 100)
+    {
+        encoder.write_standard_spiff_header(charls::spiff_color_space::rgb,
+                                            charls::spiff_resolution_units::aspect_ratio,
+                                            1, 1);
+    }
+    else
+    {
+        encoder.write_standard_spiff_header(charls::spiff_color_space::rgb,
+                                            charls::spiff_resolution_units::dots_per_centimeter,
+                                            image.dib_header.vertical_resolution / 100,
+                                            image.dib_header.horizontal_resolution / 100);
+    }
 
     size_t encoded_size;
     if (interleave_mode == charls::interleave_mode::none)

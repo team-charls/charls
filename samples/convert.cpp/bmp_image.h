@@ -57,6 +57,9 @@ public:
         if (dib_header.header_size < 40 || dib_header.compress_type != 0 || dib_header.depth != 24)
             throw std::istream::failure("Can only read uncompressed 24 bits BMP files");
 
+        if (dib_header.width == 0 || dib_header.height == 0)
+            throw std::istream::failure("Can only process an image that is 1 x 1 or bigger");
+
         // The BMP format requires that the size of each row is rounded up to a multiple of 4 bytes by padding.
         constexpr int bytes_per_pixel = 3;
         stride = ((dib_header.width * bytes_per_pixel) + 3) / 4 * 4;
@@ -92,6 +95,11 @@ private:
         read(input, result.number_planes);
         read(input, result.depth);
         read(input, result.compress_type);
+        read(input, result.bmp_byte_size);
+        read(input, result.horizontal_resolution);
+        read(input, result.vertical_resolution);
+        read(input, result.number_colors);
+        read(input, result.number_important_colors);
 
         return result;
     }
