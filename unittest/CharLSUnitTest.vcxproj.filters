@@ -151,6 +151,11 @@
     <CopyFileToFolders Include="16-bit-640-480-many-dots.pgm">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="4bit-monochrome.pgm" />
+    <CopyFileToFolders Include="4bit-monochrome.pgm">
+      <Filter>Test Images</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="land10-10bit-rgb-hp3-invalid.jls">
+      <Filter>Test Images</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

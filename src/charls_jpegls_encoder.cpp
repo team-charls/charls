@@ -169,6 +169,9 @@ struct charls_jpegls_encoder final
 
         if (color_transformation_ != charls::color_transformation::none)
         {
+            if (!(frame_info_.bits_per_sample == 8 || frame_info_.bits_per_sample == 16))
+                throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
+
             writer_.write_color_transform_segment(color_transformation_);
         }
 

@@ -144,22 +144,6 @@ public:
             }
         }
 
-        if (frame_info().bits_per_sample > 8)
-        {
-            const int shift = 16 - frame_info().bits_per_sample;
-            switch (parameters().transformation)
-            {
-            case color_transformation::hp1:
-                return std::make_unique<process_transformed<transform_shifted<transform_hp1<uint16_t>>>>(info, stride, frame_info(), parameters(), transform_shifted<transform_hp1<uint16_t>>(shift));
-            case color_transformation::hp2:
-                return std::make_unique<process_transformed<transform_shifted<transform_hp2<uint16_t>>>>(info, stride, frame_info(), parameters(), transform_shifted<transform_hp2<uint16_t>>(shift));
-            case color_transformation::hp3:
-                return std::make_unique<process_transformed<transform_shifted<transform_hp3<uint16_t>>>>(info, stride, frame_info(), parameters(), transform_shifted<transform_hp3<uint16_t>>(shift));
-            default:
-                impl::throw_jpegls_error(jpegls_errc::color_transform_not_supported);
-            }
-        }
-
         impl::throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
     }
 

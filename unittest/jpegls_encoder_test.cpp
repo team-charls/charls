@@ -483,7 +483,7 @@ public:
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_with_color_space) // NOLINT
+    TEST_METHOD(encode_with_color_transformation) // NOLINT
     {
         const array<uint8_t, 6> source{0, 1, 2, 3, 4, 5};
         const frame_info frame_info{2, 1, 8, 3};

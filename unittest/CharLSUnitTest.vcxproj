@@ -313,6 +313,9 @@
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="land10-10bit-rgb-hp3-invalid.jls">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
