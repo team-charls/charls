@@ -26,18 +26,22 @@ set_target_properties(charls PROPERTIES
 
 target_compile_definitions(charls PRIVATE CHARLS_LIBRARY_BUILD)
 
-set(CHARLS_PUBLIC_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/api_abi.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/annotations.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/charls.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/charls_legacy.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/jpegls_error.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/public_types.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/charls/version.h"
+set(HEADERS
+    "include/charls/api_abi.h"
+    "include/charls/annotations.h"
+    "include/charls/charls.h"
+    "include/charls/charls_legacy.h"
+    "include/charls/jpegls_error.h"
+    "include/charls/public_types.h"
+    "include/charls/version.h"
 )
+foreach(header HEADERS)
+  list(APPEND CHARLS_PUBLIC_HEADER $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${header}>)
+  list(APPEND CHARLS_PUBLIC_HEADER $<INSTALL_INTERFACE:${header}>)
+endforeach()
 
 set_target_properties(charls PROPERTIES CXX_VISIBILITY_PRESET hidden)
-set_property(TARGET charls PROPERTY PUBLIC_HEADER ${CHARLS_PUBLIC_HEADERS})
+set_property(TARGET charls PROPERTY PUBLIC_HEADER ${HEADERS})
 
 target_sources(charls
   PUBLIC
@@ -84,7 +88,7 @@ endif()
 if(CHARLS_INSTALL)
   include(GNUInstallDirs)
 
-  install(TARGETS charls
+  install(TARGETS charls EXPORT charls_targets
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -95,4 +99,6 @@ if(CHARLS_INSTALL)
   # These type of configuration file can make it easier to detect if charls is installed.
   CONFIGURE_FILE("${CMAKE_CURRENT_LIST_DIR}/charls-template.pc" "charls.pc" @ONLY)
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/charls.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+
+  install (EXPORT charls_targets FILE charlsConfig.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/charls)
 endif()
