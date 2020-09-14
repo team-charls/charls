@@ -20,6 +20,12 @@ class jpeg_stream_reader final
 {
 public:
     explicit jpeg_stream_reader(byte_stream_info byte_stream_info) noexcept;
+    ~jpeg_stream_reader() = default;
+	
+    jpeg_stream_reader(const jpeg_stream_reader&) = delete;
+    jpeg_stream_reader& operator=(const jpeg_stream_reader&) = delete;
+    jpeg_stream_reader(jpeg_stream_reader&&) = default;
+    jpeg_stream_reader& operator=(jpeg_stream_reader&&) = default;
 
     const charls::frame_info& frame_info() const noexcept
     {

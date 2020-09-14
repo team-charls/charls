@@ -18,6 +18,12 @@ class jpeg_stream_writer final
 public:
     jpeg_stream_writer() = default;
     explicit jpeg_stream_writer(const byte_stream_info& destination) noexcept;
+	~jpeg_stream_writer() = default;
+	
+    jpeg_stream_writer(const jpeg_stream_writer&) = delete;
+    jpeg_stream_writer& operator=(const jpeg_stream_writer&) = delete;
+    jpeg_stream_writer(jpeg_stream_writer&&) = default;
+    jpeg_stream_writer& operator=(jpeg_stream_writer&&) = default;
 
     void write_start_of_image();
 
