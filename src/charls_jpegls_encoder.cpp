@@ -18,8 +18,6 @@ using std::unique_ptr;
 
 struct charls_jpegls_encoder final
 {
-    charls_jpegls_encoder() = default;
-
     void destination(OUT_WRITES_BYTES_(size) void* destination, const size_t size)
     {
         if (state_ != state::initial)
