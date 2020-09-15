@@ -397,7 +397,7 @@ public:
     }
 
 private:
-    static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator& begin, const vector<uint8_t>::iterator& end)
+    static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator& begin, const vector<uint8_t>::iterator& end) noexcept
     {
         constexpr uint8_t start_of_scan = 0xDA;
 
