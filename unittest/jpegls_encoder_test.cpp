@@ -527,6 +527,24 @@ public:
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
+    TEST_METHOD(encode_with_stride) // NOLINT
+    {
+        const array<uint8_t, 30> source{100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 150, 150, 150, 0, 0, 0, 0, 0, 0, 0, 200, 200, 200};
+        const frame_info frame_info{3, 1, 8, 3};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source, 10)};
+        destination.resize(bytes_written);
+
+
+        const array<uint8_t, 9> expected{100, 100, 100, 150, 150, 150, 200, 200, 200};
+        test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
+    }
+
 private:
     static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info, const uint8_t* source, const size_t source_size, const charls::interleave_mode interleave_mode)
     {

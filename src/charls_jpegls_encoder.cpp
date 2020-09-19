@@ -186,7 +186,7 @@ struct charls_jpegls_encoder final
         byte_stream_info source_info = from_byte_array_const(source, source_size_bytes);
         if (interleave_mode_ == charls::interleave_mode::none)
         {
-            const size_t byte_count_component = static_cast<size_t>(bit_to_byte_count(frame_info_.bits_per_sample)) * frame_info_.width * frame_info_.height;
+            const size_t byte_count_component = static_cast<size_t>(stride) * frame_info_.height;
             for (int32_t component = 0; component < frame_info_.component_count; ++component)
             {
                 writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
