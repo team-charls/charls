@@ -183,8 +183,10 @@ static bool convert_bottom_up_to_top_down(uint8_t* triplet_buffer, const size_t 
 
 static void* encode_bmp_to_jpegls(const void* pixel_data, const size_t stride, const bmp_dib_header_t* header, const charls_interleave_mode interleave_mode, const int near_lossless, size_t* bytes_written)
 {
-    assert(header->depth == 24);        // This function only supports 24-bit BMP pixel data.
-    assert(header->compress_type == 0); // Data needs to be stored by pixel as RGB.
+    assert(header->depth == 24 && "This function only supports 24-bit BMP pixel data.");
+    assert(header->compress_type == 0 && "Data needs to be stored by pixel as RGB.");
+    assert(header->width > 0 && "0 width not supported, may cause 0 byte malloc");
+    assert(header->height > 0 && "0 and negative height not supported, may cause 0 byte malloc");
 
     charls_jpegls_encoder* encoder = charls_jpegls_encoder_create();
     if (!encoder)
