@@ -66,7 +66,7 @@
         throwingNew = Communicate with the compiler that only the throwing variant of operator new is used.
       -->
       <AdditionalOptions>
-        /Zc:__cplusplus /Zc:throwingNew
+        /Zc:__cplusplus /Zc:throwingNew /utf-8
       </AdditionalOptions>
 
       <!-- Use all cores to speed up the compilation (MS recommended best practice). -->

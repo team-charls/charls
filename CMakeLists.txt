@@ -118,6 +118,10 @@ if(MSVC)
 
 endif()
 
+# All C and C++ source files are in utf-8 without signature (bom), MSVC requires utf-8 switch to read files correctly.
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 # When enabled apply the pedantic warnings options and warnings as errors to globally.
 if(CHARLS_PEDANTIC_WARNINGS)
 
