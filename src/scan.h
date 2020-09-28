@@ -324,7 +324,7 @@ private:
         return traits_.compute_reconstructed_sample(predicted_value, error_value);
     }
 
-    FORCE_INLINE sample_type do_regular(const int32_t qs, int32_t x, const int32_t predicted, encoder_strategy*)
+    FORCE_INLINE sample_type do_regular(const int32_t qs, const int32_t x, const int32_t predicted, encoder_strategy*)
     {
         const int32_t sign = bit_wise_sign(qs);
         jls_context& context = contexts_[apply_sign(qs, sign)];

@@ -15,12 +15,12 @@
 #include <iomanip>
 #include <memory>
 
-using charls::impl::throw_jpegls_error;
+namespace charls {
+
+using impl::throw_jpegls_error;
 using std::find;
 using std::unique_ptr;
 using std::vector;
-
-namespace charls {
 
 jpeg_stream_reader::jpeg_stream_reader(byte_stream_info byte_stream_info) noexcept :
     byte_stream_{byte_stream_info}

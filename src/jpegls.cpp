@@ -15,11 +15,12 @@
 #include <array>
 #include <vector>
 
+namespace charls {
+
 using std::array;
 using std::make_unique;
 using std::unique_ptr;
 using std::vector;
-using namespace charls;
 
 namespace {
 
@@ -62,8 +63,6 @@ unique_ptr<Strategy> make_codec(const Traits& traits, const frame_info& frame_in
 
 } // namespace
 
-
-namespace charls {
 
 // Lookup tables to replace code with lookup tables.
 // To avoid threading issues, all tables are created when the program is loaded.

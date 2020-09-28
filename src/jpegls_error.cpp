@@ -5,10 +5,10 @@
 
 #include <string>
 
+namespace charls {
+
 using std::error_category;
 using std::string;
-
-namespace charls {
 
 class jpegls_category final : public error_category
 {

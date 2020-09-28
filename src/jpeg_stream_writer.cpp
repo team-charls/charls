@@ -13,10 +13,10 @@
 #include <cassert>
 #include <vector>
 
+namespace charls {
+
 using std::array;
 using std::vector;
-
-namespace charls {
 
 jpeg_stream_writer::jpeg_stream_writer(const byte_stream_info& destination) noexcept :
     destination_{destination}
