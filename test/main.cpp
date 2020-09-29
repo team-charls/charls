@@ -25,7 +25,8 @@ using std::array;
 using std::basic_filebuf;
 using std::cout;
 using std::error_code;
-using std::fstream;
+using std::ifstream;
+using std::ofstream;
 using std::getline;
 using std::ios;
 using std::ios_base;
@@ -397,28 +398,30 @@ void test_decode_rect()
 }
 
 
-void test_encode_from_stream(const char* file, const int offset, const int width, const int height, const int bpp, const int component_count, const interleave_mode ilv, const size_t expected_length)
+void test_encode_from_stream(const char* filename, const size_t offset, const uint32_t width, const uint32_t height,
+                             const int32_t bits_per_sample, const int32_t component_count, const interleave_mode interleave_mode, const size_t expected_length)
 {
-    basic_filebuf<char> my_file; // On the stack
-    my_file.open(file, mode_input);
-    assert::is_true(my_file.is_open());
+    ifstream my_file{filename, ios::in | ios::binary};
+    assert::is_true(my_file.good());
 
-    my_file.pubseekoff(static_cast<streamoff>(offset), ios_base::cur);
-    const byte_stream_info raw_stream_info = {&my_file, nullptr, 0};
+    my_file.seekg(0, ios::end);
+    auto length{static_cast<size_t>(my_file.tellg())};
+    my_file.seekg(offset, ios::beg);
 
-    vector<uint8_t> compressed(static_cast<size_t>(width) * height * component_count * 2);
-    JlsParameters params = JlsParameters();
-    params.height = height;
-    params.width = width;
-    params.components = component_count;
-    params.bitsPerSample = bpp;
-    params.interleaveMode = ilv;
-    size_t bytes_written{};
+    assert::is_true(length >= offset);
+    length -= offset;
 
-    JpegLsEncodeStream(from_byte_array(compressed.data(), static_cast<size_t>(width) * height * component_count * 2), bytes_written, raw_stream_info, params);
-    assert::is_true(bytes_written == expected_length);
+    // Note: use a buffer until the new API provides passing a callback function to read.
+    vector<uint8_t> source(length);
+    my_file.read(reinterpret_cast<char*>(source.data()), length);
 
-    my_file.close();
+    jpegls_encoder encoder;
+    encoder.frame_info({width, height, bits_per_sample, component_count}).interleave_mode(interleave_mode);
+
+    vector<uint8_t> destination(encoder.estimated_destination_size());
+    encoder.destination(destination);
+
+    assert::is_true(encoder.encode(source) == expected_length);
 }
 
 
@@ -494,21 +497,17 @@ vector<int> read_pnm_header(istream& pnm_file)
 //          into the JPEG-LS format. The 2 binary formats P5 and P6 are supported:
 //          Portable GrayMap: P5 = binary, extension = .pgm, 0-2^16 (gray scale)
 //          Portable PixMap: P6 = binary, extension.ppm, range 0-2^16 (RGB)
-bool encode_pnm(istream& pnm_file, const ostream& jls_file_stream)
+bool encode_pnm(istream& pnm_file, ostream& jls_file_stream)
 {
     vector<int> read_values = read_pnm_header(pnm_file);
     if (read_values.size() != 4)
         return false;
 
-    JlsParameters params{};
-    params.components = read_values[0] == 6 ? 3 : 1;
-    params.width = read_values[1];
-    params.height = read_values[2];
-    params.bitsPerSample = log_2(read_values[3] + 1);
-    params.interleaveMode = params.components == 3 ? interleave_mode::line : interleave_mode::none;
+    const frame_info frame_info{static_cast<uint32_t>(read_values[1]), static_cast<uint32_t>(read_values[2]),
+                                log_2(read_values[3] + 1), read_values[0] == 6 ? 3 : 1};
 
-    const int bytes_per_sample = ::bit_to_byte_count(params.bitsPerSample);
-    vector<uint8_t> input_buffer(static_cast<size_t>(params.width) * params.height * bytes_per_sample * params.components);
+    const int bytes_per_sample = ::bit_to_byte_count(frame_info.bits_per_sample);
+    vector<uint8_t> input_buffer(static_cast<size_t>(frame_info.width) * frame_info.height * bytes_per_sample * frame_info.component_count);
     pnm_file.read(reinterpret_cast<char*>(input_buffer.data()), input_buffer.size());
     if (!pnm_file.good())
         return false;
@@ -522,12 +521,15 @@ bool encode_pnm(istream& pnm_file, const ostream& jls_file_stream)
         }
     }
 
-    const auto raw_stream_info = from_byte_array(input_buffer.data(), input_buffer.size());
-    const byte_stream_info jls_stream_info = {jls_file_stream.rdbuf(), nullptr, 0};
+    jpegls_encoder encoder;
+    encoder.frame_info(frame_info).interleave_mode(frame_info.component_count == 3 ? interleave_mode::line : interleave_mode::none);
 
-    size_t bytes_written{};
-    JpegLsEncodeStream(jls_stream_info, bytes_written, raw_stream_info, params);
-    return true;
+    vector<uint8_t> destination(encoder.estimated_destination_size());
+    encoder.destination(destination);
+    const size_t bytes_encoded{encoder.encode(input_buffer)};
+
+    jls_file_stream.write(reinterpret_cast<const char*>(destination.data()), static_cast<std::streamsize>(bytes_encoded));
+    return jls_file_stream.good();
 }
 
 
@@ -610,10 +612,10 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
 }
 
 
-////void TestDecodeFromStream(const char* name_encoded)
+////void TestDecodeFromStream(const char* filename_encoded)
 ////{
 ////    basic_filebuf<char> jlsFile;
-////    jlsFile.open(name_encoded, mode_input);
+////    jlsFile.open(filename_encoded, mode_input);
 ////    Assert::IsTrue(jlsFile.is_open());
 ////    ByteStreamInfo compressedByteStream = {&jlsFile, nullptr, 0};
 ////
@@ -634,12 +636,12 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
 ////}
 
 
-jpegls_errc decode_raw(const char* name_encoded, const char* name_output)
+jpegls_errc decode_raw(const char* filename_encoded, const char* filename_output)
 {
-    fstream jls_file(name_encoded, mode_input);
+    ifstream jls_file(filename_encoded, mode_input);
     const byte_stream_info compressed_byte_stream{jls_file.rdbuf(), nullptr, 0};
 
-    fstream raw_file(name_output, mode_output);
+    ofstream raw_file(filename_output, mode_output);
     const byte_stream_info raw_stream{raw_file.rdbuf(), nullptr, 0};
 
     const auto value = JpegLsDecodeStream(raw_stream, compressed_byte_stream, nullptr);
@@ -746,8 +748,8 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
                 cout << "Syntax: -decodetopnm inputfile outputfile\n";
                 return EXIT_FAILURE;
             }
-            fstream pnm_file(argv[3], mode_output);
-            fstream jls_file(argv[2], mode_input);
+            ofstream pnm_file(argv[3], mode_output);
+            ifstream jls_file(argv[2], mode_input);
 
             return decode_to_pnm(jls_file, pnm_file) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
@@ -759,8 +761,8 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
                 cout << "Syntax: -encodepnm inputfile outputfile\n";
                 return EXIT_FAILURE;
             }
-            fstream pnm_file(argv[2], mode_input);
-            const fstream jls_file(argv[3], mode_output);
+            ifstream pnm_file(argv[2], mode_input);
+            ofstream jls_file(argv[3], mode_output);
 
             return encode_pnm(pnm_file, jls_file) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
@@ -772,8 +774,8 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
                 cout << "Syntax: -encodepnm inputfile outputfile\n";
                 return EXIT_FAILURE;
             }
-            fstream pnm_file1(argv[2], mode_input);
-            fstream pnm_file2(argv[3], mode_input);
+            ifstream pnm_file1(argv[2], mode_input);
+            ifstream pnm_file2(argv[3], mode_input);
 
             return compare_pnm(pnm_file1, pnm_file2) ? EXIT_SUCCESS : EXIT_FAILURE;
         }

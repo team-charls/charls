@@ -16,6 +16,5 @@ EXPORTS
     JpegLsDecode
     JpegLsDecodeRect
     JpegLsReadHeader
-    JpegLsEncodeStream
     JpegLsDecodeStream
     JpegLsReadHeaderStream
