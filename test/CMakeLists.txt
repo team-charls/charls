@@ -20,6 +20,11 @@ target_sources(charlstest
     legacy.h
 )
 
+if(WIN32)
+  # Only add the manifest file when building a Windows app
+  target_sources(charlstest PRIVATE app.manifest)
+endif()
+
 set_target_properties(charlstest PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
 target_link_libraries(charlstest PRIVATE charls)

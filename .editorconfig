@@ -16,6 +16,9 @@ insert_final_newline = true
 [CMakeLists.txt]
 indent_size = 2
 
+[*.manifest]
+indent_size = 2
+
 [*.cs]
 indent_size = 4
 

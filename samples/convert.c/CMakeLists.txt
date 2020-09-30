@@ -8,6 +8,11 @@ target_sources(convert-c
     main.c
 )
 
+if(WIN32)
+  # Only add the manifest file when building a Windows app
+  target_sources(convert-c PRIVATE app.manifest)
+endif()
+
 target_link_libraries(convert-c PRIVATE charls)
 
 if(MSVC)
