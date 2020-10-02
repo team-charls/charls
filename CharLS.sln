@@ -29,9 +29,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CharLSNetTest", "dotnet\test\CharLSNetTest.csproj", "{002B897F-9D96-4A99-853F-53806C39559D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "convert-c", "samples\convert.c\convert-c.vcxproj", "{F42C0547-FEB3-40F4-9379-0FF87B44FA0F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{1E31F9F1-F175-4082-B3E2-B1F0ECA3F44C} = {1E31F9F1-F175-4082-B3E2-B1F0ECA3F44C}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSUnitTest", "unittest\CharLSUnitTest.vcxproj", "{4A912445-1E83-41FA-8B80-C0A9BD4E9289}"
 EndProject

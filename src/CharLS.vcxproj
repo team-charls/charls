@@ -241,7 +241,6 @@
   <ItemGroup>
     <ClCompile Include="version.cpp" />
     <ClCompile Include="charls_jpegls_decoder.cpp" />
-    <ClCompile Include="interface.cpp" />
     <ClCompile Include="jpegls.cpp" />
     <ClCompile Include="charls_jpegls_encoder.cpp" />
     <ClCompile Include="jpegls_error.cpp" />

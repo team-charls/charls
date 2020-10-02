@@ -57,7 +57,6 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/decoder_strategy.h"
     "${CMAKE_CURRENT_LIST_DIR}/default_traits.h"
     "${CMAKE_CURRENT_LIST_DIR}/encoder_strategy.h"
-    "${CMAKE_CURRENT_LIST_DIR}/interface.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/jls_codec_factory.h"
     "${CMAKE_CURRENT_LIST_DIR}/jpegls_error.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/jpegls.cpp"

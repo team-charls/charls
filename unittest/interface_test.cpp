@@ -223,39 +223,6 @@ public:
 
         test_round_trip_legacy(noise_image, params);
     }
-
-    TEST_METHOD(JpegLsReadHeaderStream_valid_input) // NOLINT
-    {
-        vector<uint8_t> source{read_file("DataFiles/T8C0E3.JLS")};
-
-        JlsParameters params{};
-        const auto source_info = from_byte_array_const(source.data(), source.size());
-        const jpegls_errc error = JpegLsReadHeaderStream(source_info, &params);
-
-        Assert::AreEqual(jpegls_errc::success, error);
-        Assert::AreEqual(params.height, 256);
-        Assert::AreEqual(params.width, 256);
-        Assert::AreEqual(params.bitsPerSample, 8);
-        Assert::AreEqual(params.components, 3);
-        Assert::AreEqual(params.allowedLossyError, 3);
-    }
-
-    TEST_METHOD(JpegLsDecodeStream_valid_input) // NOLINT
-    {
-        vector<uint8_t> source{read_file("DataFiles/T8C0E3.JLS")};
-
-        JlsParameters params{};
-        const auto source_info = from_byte_array_const(source.data(), source.size());
-        jpegls_errc error = JpegLsReadHeaderStream(source_info, &params);
-        Assert::AreEqual(jpegls_errc::success, error);
-
-        const int bytes_per_sample = params.bitsPerSample > 8 ? 2 : 1;
-        vector<uint8_t> destination(static_cast<size_t>(params.width) * params.height * bytes_per_sample * params.components);
-
-        const auto destination_info = from_byte_array(destination.data(), destination.size());
-        error = JpegLsDecodeStream(destination_info, source_info, nullptr);
-        Assert::AreEqual(jpegls_errc::success, error);
-    }
 };
 
 } // namespace test

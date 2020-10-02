@@ -19,24 +19,25 @@
 #include <random>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <vector>
 
 using std::array;
-using std::basic_filebuf;
 using std::cout;
 using std::error_code;
-using std::ifstream;
-using std::ofstream;
 using std::getline;
+using std::ifstream;
 using std::ios;
 using std::ios_base;
 using std::istream;
 using std::iter_swap;
 using std::mt19937;
+using std::ofstream;
 using std::ostream;
 using std::streamoff;
 using std::string;
 using std::stringstream;
+using std::system_error;
 using std::uniform_int_distribution;
 using std::vector;
 using namespace charls;
@@ -46,23 +47,20 @@ namespace {
 constexpr ios::openmode mode_input = ios::in | ios::binary;
 constexpr ios::openmode mode_output = ios::out | ios::binary;
 
-
-vector<uint8_t> scan_file(const char* name_encoded, JlsParameters* params)
+template<typename Container>
+void read(istream& input, Container& destination_container)
 {
-    vector<uint8_t> buffer = read_file(name_encoded);
-
-    basic_filebuf<char> jls_file;
-    jls_file.open(name_encoded, mode_input);
-
-    const byte_stream_info raw_stream_info{&jls_file, nullptr, 0};
-
-    const error_code error = JpegLsReadHeaderStream(raw_stream_info, params);
-    if (error)
-        throw unit_test_exception();
-
-    return buffer;
+    input.read(reinterpret_cast<char*>(destination_container.data()), destination_container.size());
 }
 
+size_t get_stream_length(istream& stream, const size_t end_offset = 0)
+{
+    stream.seekg(0, ios::end);
+    const auto length{static_cast<size_t>(stream.tellg())};
+    stream.seekg(end_offset, ios::beg);
+
+    return length;
+}
 
 void test_traits16_bit()
 {
@@ -239,16 +237,21 @@ void test_bgra()
 
 void test_bgr()
 {
-    JlsParameters params{};
-    vector<uint8_t> encoded_buffer = scan_file("test/conformance/T8C2E3.JLS", &params);
-    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.width) * params.height * params.components);
+    vector<uint8_t> encoded_source = read_file("test/conformance/T8C2E3.JLS");
 
-    params.outputBgr = static_cast<char>(true);
+    jpegls_decoder decoder;
+    decoder.source(encoded_source);
+    decoder.read_header();
+
+    vector<uint8_t> decoded_buffer(decoder.destination_size());
 
     // ReSharper disable CppDeprecatedEntity
     DISABLE_DEPRECATED_WARNING
 
-    const error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_buffer.data(), encoded_buffer.size(), &params, nullptr);
+    JlsParameters params{};
+    params.outputBgr = static_cast<char>(true);
+
+    const error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_source.data(), encoded_source.size(), &params, nullptr);
 
     // ReSharper restore CppDeprecatedEntity
     RESTORE_DEPRECATED_WARNING
@@ -258,9 +261,9 @@ void test_bgr()
     assert::is_true(decoded_buffer[0] == 0x69);
     assert::is_true(decoded_buffer[1] == 0x77);
     assert::is_true(decoded_buffer[2] == 0xa1);
-    assert::is_true(decoded_buffer[static_cast<size_t>(params.width) * 6 + 3] == 0x2d);
-    assert::is_true(decoded_buffer[static_cast<size_t>(params.width) * 6 + 4] == 0x43);
-    assert::is_true(decoded_buffer[static_cast<size_t>(params.width) * 6 + 5] == 0x4d);
+    assert::is_true(decoded_buffer[static_cast<size_t>(decoder.frame_info().width) * 6 + 3] == 0x2d);
+    assert::is_true(decoded_buffer[static_cast<size_t>(decoder.frame_info().width) * 6 + 4] == 0x43);
+    assert::is_true(decoded_buffer[static_cast<size_t>(decoder.frame_info().width) * 6 + 5] == 0x4d);
 }
 
 
@@ -372,21 +375,27 @@ void test_decode_bit_stream_with_unknown_jpeg_marker()
 
 void test_decode_rect()
 {
-    JlsParameters params{};
-    vector<uint8_t> encoded_data = scan_file("test/lena8b.jls", &params);
-    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.width) * params.height * params.components);
+    vector<uint8_t> encoded_source = read_file("test/lena8b.jls");
+
+    jpegls_decoder decoder;
+    decoder.source(encoded_source);
+    decoder.read_header();
+
+    vector<uint8_t> decoded_buffer(decoder.destination_size());
 
     // ReSharper disable CppDeprecatedEntity
     DISABLE_DEPRECATED_WARNING
 
-    error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_data.data(), encoded_data.size(), nullptr, nullptr);
+    JlsParameters params{};
+
+    error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_source.data(), encoded_source.size(), &params, nullptr);
     assert::is_true(!error);
 
     const JlsRect rect = {128, 128, 256, 1};
     vector<uint8_t> decoded_data(static_cast<size_t>(rect.Width) * rect.Height);
     decoded_data.push_back(0x1f);
 
-    error = JpegLsDecodeRect(decoded_data.data(), decoded_data.size(), encoded_data.data(), encoded_data.size(), rect, nullptr, nullptr);
+    error = JpegLsDecodeRect(decoded_data.data(), decoded_data.size(), encoded_source.data(), encoded_source.size(), rect, nullptr, nullptr);
 
     // ReSharper restore CppDeprecatedEntity
     RESTORE_DEPRECATED_WARNING
@@ -401,25 +410,22 @@ void test_decode_rect()
 void test_encode_from_stream(const char* filename, const size_t offset, const uint32_t width, const uint32_t height,
                              const int32_t bits_per_sample, const int32_t component_count, const interleave_mode interleave_mode, const size_t expected_length)
 {
-    ifstream my_file{filename, ios::in | ios::binary};
-    assert::is_true(my_file.good());
+    ifstream source_file{filename, ios::in | ios::binary};
+    assert::is_true(source_file.good());
 
-    my_file.seekg(0, ios::end);
-    auto length{static_cast<size_t>(my_file.tellg())};
-    my_file.seekg(offset, ios::beg);
-
+    size_t length = get_stream_length(source_file, offset);
     assert::is_true(length >= offset);
     length -= offset;
 
     // Note: use a buffer until the new API provides passing a callback function to read.
     vector<uint8_t> source(length);
-    my_file.read(reinterpret_cast<char*>(source.data()), length);
+    read(source_file, source);
 
     jpegls_encoder encoder;
     encoder.frame_info({width, height, bits_per_sample, component_count}).interleave_mode(interleave_mode);
 
-    vector<uint8_t> destination(encoder.estimated_destination_size());
-    encoder.destination(destination);
+    vector<uint8_t> encoded_destination(encoder.estimated_destination_size());
+    encoder.destination(encoded_destination);
 
     assert::is_true(encoder.encode(source) == expected_length);
 }
@@ -427,37 +433,35 @@ void test_encode_from_stream(const char* filename, const size_t offset, const ui
 
 bool decode_to_pnm(istream& input, ostream& output)
 {
-    const byte_stream_info input_info{input.rdbuf(), nullptr, 0};
+    const size_t length = get_stream_length(input);
+    vector<uint8_t> encoded_source(length);
+    read(input, encoded_source);
 
-    auto params = JlsParameters();
-    error_code error = JpegLsReadHeaderStream(input_info, &params);
-    if (error)
-        return false;
+    vector<uint8_t> decoded_destination;
+    frame_info frame_info;
+    interleave_mode interleave_mode;
+    std::tie(frame_info, interleave_mode) = jpegls_decoder::decode(encoded_source, decoded_destination);
 
-    input.seekg(0);
-
-    const int max_value = (1 << params.bitsPerSample) - 1;
-    const int bytes_per_sample = max_value > 255 ? 2 : 1;
-    vector<uint8_t> output_buffer(static_cast<size_t>(params.width) * params.height * bytes_per_sample * params.components);
-    const auto output_info = from_byte_array(output_buffer.data(), output_buffer.size());
-    error = JpegLsDecodeStream(output_info, input_info, &params);
-    if (error)
-        return false;
+    if (frame_info.component_count > 1 && interleave_mode == interleave_mode::none)
+        return false; // Unsupported at the moment.
 
     // PNM format requires most significant byte first (big endian).
+    const int max_value = (1 << frame_info.bits_per_sample) - 1;
+    const int bytes_per_sample = max_value > 255 ? 2 : 1;
+
     if (bytes_per_sample == 2)
     {
-        for (auto i = output_buffer.begin(); i != output_buffer.end(); i += 2)
+        for (auto i = decoded_destination.begin(); i != decoded_destination.end(); i += 2)
         {
             iter_swap(i, i + 1);
         }
     }
 
-    const int magic_number = params.components == 3 ? 6 : 5;
+    const int magic_number = frame_info.component_count == 3 ? 6 : 5;
     output << 'P' << magic_number << "\n"
-           << params.width << ' ' << params.height << "\n"
+           << frame_info.width << ' ' << frame_info.height << "\n"
            << max_value << "\n";
-    output.write(reinterpret_cast<char*>(output_buffer.data()), output_buffer.size());
+    output.write(reinterpret_cast<char*>(decoded_destination.data()), decoded_destination.size());
 
     return true;
 }
@@ -612,43 +616,20 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
 }
 
 
-////void TestDecodeFromStream(const char* filename_encoded)
-////{
-////    basic_filebuf<char> jlsFile;
-////    jlsFile.open(filename_encoded, mode_input);
-////    Assert::IsTrue(jlsFile.is_open());
-////    ByteStreamInfo compressedByteStream = {&jlsFile, nullptr, 0};
-////
-////    auto params = JlsParameters();
-////    auto err = JpegLsReadHeaderStream(compressedByteStream, &params, nullptr);
-////    Assert::IsTrue(err == jpegls_errc::OK);
-////
-////    jlsFile.pubseekpos(ios::beg, ios_base::in);
-////
-////    basic_stringbuf<char> buf;
-////    ByteStreamInfo rawStreamInfo = {&buf, nullptr, 0};
-////
-////    err = JpegLsDecodeStream(rawStreamInfo, compressedByteStream, nullptr, nullptr);
-////    ////size_t outputCount = buf.str().size();
-////
-////    Assert::IsTrue(err == jpegls_errc::OK);
-////    //Assert::IsTrue(outputCount == 512 * 512);
-////}
-
-
-jpegls_errc decode_raw(const char* filename_encoded, const char* filename_output)
+bool decode_raw(const char* filename_encoded, const char* filename_output)
 {
-    ifstream jls_file(filename_encoded, mode_input);
-    const byte_stream_info compressed_byte_stream{jls_file.rdbuf(), nullptr, 0};
-
-    ofstream raw_file(filename_output, mode_output);
-    const byte_stream_info raw_stream{raw_file.rdbuf(), nullptr, 0};
-
-    const auto value = JpegLsDecodeStream(raw_stream, compressed_byte_stream, nullptr);
-    jls_file.close();
-    raw_file.close();
-
-    return value;
+    try
+    {
+        const vector<uint8_t> encoded_source = read_file(filename_encoded);
+        vector<uint8_t> decoded_destination;
+        jpegls_decoder::decode(encoded_source, decoded_destination);
+        write_file(filename_output, decoded_destination.data(), decoded_destination.size());
+        return true;
+    }
+    catch (const system_error&)
+    {
+        return false;
+    }
 }
 
 
@@ -738,7 +719,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
                 cout << "Syntax: -decoderaw inputfile outputfile\n";
                 return EXIT_FAILURE;
             }
-            return make_error_code(decode_raw(argv[2], argv[3])) ? EXIT_FAILURE : EXIT_SUCCESS;
+            return decode_raw(argv[2], argv[3]) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         if (str == "-decodetopnm")

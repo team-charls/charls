@@ -30,6 +30,3 @@ inline byte_stream_info from_byte_array_const(const void* bytes, const std::size
 {
     return from_byte_array(const_cast<void*>(bytes), count);
 }
-
-CHARLS_API_IMPORT_EXPORT charls::jpegls_errc JpegLsDecodeStream(byte_stream_info destination, byte_stream_info source, const JlsParameters* params);
-CHARLS_API_IMPORT_EXPORT charls::jpegls_errc JpegLsReadHeaderStream(byte_stream_info source, JlsParameters* params);

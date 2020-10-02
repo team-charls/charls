@@ -14,6 +14,7 @@ using std::cout;
 using std::ifstream;
 using std::ios;
 using std::milli;
+using std::ofstream;
 using std::setprecision;
 using std::setw;
 using std::swap;
@@ -36,7 +37,6 @@ bool is_machine_little_endian() noexcept
 }
 
 MSVC_WARNING_UNSUPPRESS()
-
 
 } // namespace
 
@@ -79,6 +79,13 @@ vector<uint8_t> read_file(const char* filename, long offset, size_t bytes)
     return buffer;
 }
 
+void write_file(const char* filename, const void* data, const size_t size)
+{
+    ofstream output;
+    output.exceptions(ios::eofbit | ios::failbit | ios::badbit);
+    output.open(filename, ios::out | ios::binary);
+    output.write(static_cast<const char*>(data), size);
+}
 
 void test_round_trip(const char* name, const vector<uint8_t>& decoded_buffer, const rect_size size, const int bits_per_sample, const int component_count, const int loop_count)
 {
