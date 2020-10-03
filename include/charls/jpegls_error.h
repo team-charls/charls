@@ -6,11 +6,10 @@
 #include "public_types.h"
 
 #ifdef __cplusplus
-
 extern "C" {
 #endif
 
-CHARLS_API_IMPORT_EXPORT const void* CHARLS_API_CALLING_CONVENTION charls_get_jpegls_category(void);
+CHARLS_API_IMPORT_EXPORT const void* CHARLS_API_CALLING_CONVENTION charls_get_jpegls_category(CHARLS_C_VOID);
 CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(charls_jpegls_errc error_value);
 
 #ifdef __cplusplus

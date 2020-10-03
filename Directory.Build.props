@@ -64,10 +64,9 @@
       <!--
         __cplusplus = Use the correct value for the __cplusplus macro
         throwingNew = Communicate with the compiler that only the throwing variant of operator new is used.
+        utf-8 = interpret all source files as UTF-8 (Required as MSVC relies on UTF-8 signature, which is not used)
       -->
-      <AdditionalOptions>
-        /Zc:__cplusplus /Zc:throwingNew /utf-8
-      </AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus /Zc:throwingNew /utf-8 %(AdditionalOptions)</AdditionalOptions>
 
       <!-- Use all cores to speed up the compilation (MS recommended best practice). -->
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

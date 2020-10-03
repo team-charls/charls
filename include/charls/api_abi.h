@@ -53,6 +53,7 @@
 
 #define CHARLS_FINAL final
 #define CHARLS_NOEXCEPT noexcept
+#define CHARLS_C_VOID
 
 #ifdef CHARLS_NO_DEPRECATED_WARNING
 #define CHARLS_DEPRECATED
@@ -64,4 +65,5 @@
 #define CHARLS_FINAL
 #define CHARLS_NOEXCEPT
 #define CHARLS_DEPRECATED
+#define CHARLS_C_VOID void
 #endif

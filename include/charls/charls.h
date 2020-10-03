@@ -42,7 +42,7 @@ typedef struct charls_jpegls_encoder charls_jpegls_encoder;
 /// Returns the version of CharLS in the semver format "major.minor.patch" or "major.minor.patch-pre_release"
 /// </summary>
 CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION
-charls_get_version_string(void) CHARLS_NOEXCEPT;
+charls_get_version_string(CHARLS_C_VOID) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns the version of CharLS in its numerical format.
@@ -59,7 +59,7 @@ charls_get_version_number(OUT_OPT_ int32_t* major, OUT_OPT_ int32_t* minor, OUT_
 /// </summary>
 /// <returns>A reference to a new created decoder instance, or a null pointer when the creation fails.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_decoder* CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_create(void) CHARLS_NOEXCEPT;
+charls_jpegls_decoder_create(CHARLS_C_VOID) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Destroys a JPEG-LS decoder instance created with charls_jpegls_decoder_create and releases all internal resources attached to it.
@@ -197,7 +197,7 @@ charls_jpegls_decoder_decode_to_buffer(IN_ const charls_jpegls_decoder* decoder,
 /// </summary>
 /// <returns>A reference to a new created encoder instance, or a null pointer when the creation fails.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_encoder* CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_create(void) CHARLS_NOEXCEPT;
+charls_jpegls_encoder_create(CHARLS_C_VOID) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Destroys a JPEG-LS encoder instance created with charls_jpegls_encoder_create and releases all internal resources attached to it.
@@ -926,6 +926,7 @@ private:
 #undef CHARLS_NOEXCEPT
 #undef CHARLS_ATTRIBUTE
 #undef CHARLS_DEPRECATED
+#undef CHARLS_C_VOID
 
 #undef IN_
 #undef IN_OPT_
