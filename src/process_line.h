@@ -189,7 +189,7 @@ template<typename TransformType>
 class process_transformed final : public process_line
 {
 public:
-    process_transformed(byte_span raw_stream, const uint32_t stride, const frame_info& info, const coding_parameters& parameters, TransformType transform) :
+    process_transformed(byte_span source_pixels, const uint32_t stride, const frame_info& info, const coding_parameters& parameters, TransformType transform) :
         frame_info_{info},
         parameters_{parameters},
         stride_{stride},
@@ -197,14 +197,14 @@ public:
         buffer_(static_cast<size_t>(info.component_count) * info.width * sizeof(size_type)),
         transform_{transform},
         inverse_transform_{transform},
-        raw_pixels_{raw_stream}
+        raw_pixels_{source_pixels}
     {
     }
 
     void new_line_requested(void* destination, const size_t pixel_count, const int destination_stride) noexcept(false) override
     {
-        transform(raw_pixels_.rawData, destination, pixel_count, destination_stride);
-        raw_pixels_.rawData += stride_;
+        transform(raw_pixels_.data, destination, pixel_count, destination_stride);
+        raw_pixels_.data += stride_;
     }
 
     void transform(const void* source, void* destination, const size_t pixel_count, const size_t destination_stride) noexcept
@@ -273,8 +273,8 @@ public:
 
     void new_line_decoded(const void* source, const size_t pixel_count, const int source_stride) noexcept(false) override
     {
-        decode_transform(source, raw_pixels_.rawData, pixel_count, source_stride);
-        raw_pixels_.rawData += stride_;
+        decode_transform(source, raw_pixels_.data, pixel_count, source_stride);
+        raw_pixels_.data += stride_;
     }
 
 private:

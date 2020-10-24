@@ -22,8 +22,8 @@ using std::find;
 using std::unique_ptr;
 using std::vector;
 
-jpeg_stream_reader::jpeg_stream_reader(byte_span byte_span) noexcept :
-    byte_stream_{byte_span}
+jpeg_stream_reader::jpeg_stream_reader(const byte_span source) noexcept :
+    source_{source}
 {
 }
 
@@ -49,7 +49,7 @@ void jpeg_stream_reader::read(byte_span source, uint32_t stride)
 
     const int64_t bytes_per_plane = static_cast<int64_t>(rect_.Width) * rect_.Height * bit_to_byte_count(frame_info_.bits_per_sample);
 
-    if (static_cast<int64_t>(source.count) < bytes_per_plane * frame_info_.component_count)
+    if (static_cast<int64_t>(source.size) < bytes_per_plane * frame_info_.component_count)
         throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
     int component_index{};
@@ -62,7 +62,7 @@ void jpeg_stream_reader::read(byte_span source, uint32_t stride)
 
         unique_ptr<decoder_strategy> codec = jls_codec_factory<decoder_strategy>().create_codec(frame_info_, parameters_, preset_coding_parameters_);
         unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
-        codec->decode_scan(move(process_line), rect_, byte_stream_);
+        codec->decode_scan(move(process_line), rect_, source_);
         skip_bytes(source, static_cast<size_t>(bytes_per_plane));
         state_ = state::scan_section;
 
@@ -441,11 +441,11 @@ void jpeg_stream_reader::read_start_of_scan()
 
 uint8_t jpeg_stream_reader::read_byte()
 {
-    if (byte_stream_.count == 0)
+    if (source_.size == 0)
         throw_jpegls_error(jpegls_errc::source_buffer_too_small);
 
-    const uint8_t value = byte_stream_.rawData[0];
-    skip_bytes(byte_stream_, 1);
+    const uint8_t value = source_.data[0];
+    skip_bytes(source_, 1);
     return value;
 }
 

@@ -40,9 +40,7 @@ public:
     TEST_METHOD(write_end_of_image) // NOLINT
     {
         array<uint8_t, 2> buffer{};
-        const byte_span info{buffer.data(), buffer.size()};
-
-        jpeg_stream_writer writer(info);
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         writer.write_end_of_image();
 

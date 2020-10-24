@@ -30,7 +30,7 @@ public:
         return nullptr;
     }
 
-    void initialize_forward(byte_span& info) noexcept
+    void initialize_forward(const byte_span info) noexcept
     {
         initialize(info);
     }

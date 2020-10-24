@@ -31,17 +31,17 @@ public:
     decoder_strategy& operator=(const decoder_strategy&) = delete;
     decoder_strategy& operator=(decoder_strategy&&) = delete;
 
-    virtual std::unique_ptr<process_line> create_process_line(byte_span raw_stream_info, uint32_t stride) = 0;
+    virtual std::unique_ptr<process_line> create_process_line(byte_span destination, uint32_t stride) = 0;
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual void decode_scan(std::unique_ptr<process_line> output_data, const JlsRect& size, byte_span& compressed_data) = 0;
 
-    void initialize(byte_span& compressed_stream)
+    void initialize(const byte_span source)
     {
         valid_bits_ = 0;
         read_cache_ = 0;
 
-        position_ = compressed_stream.rawData;
-        end_position_ = position_ + compressed_stream.count;
+        position_ = source.data;
+        end_position_ = position_ + source.size;
 
         next_ff_position_ = find_next_ff();
         make_valid();

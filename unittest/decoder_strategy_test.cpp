@@ -21,8 +21,7 @@ public:
     decoder_strategy_tester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters, uint8_t* const destination, const size_t count) : // NOLINT
         decoder_strategy(frame_info, parameters)
     {
-        byte_span destination_info{destination, count};
-        initialize(destination_info);
+        initialize({destination, count});
     }
 
     void set_presets(const charls::jpegls_pc_parameters& /*preset_coding_parameters*/) noexcept(false) override
@@ -71,8 +70,7 @@ public:
 
         encoder_strategy_tester encoder(frame_info, parameters);
 
-        byte_span stream{enc_buf.data(), enc_buf.size()};
-        encoder.initialize_forward(stream);
+        encoder.initialize_forward({enc_buf.data(), enc_buf.size()});
 
         for (const auto& data : in_data)
         {

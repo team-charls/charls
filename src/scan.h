@@ -123,7 +123,7 @@ public:
     {
         if (!is_interleaved())
         {
-            return std::unique_ptr<process_line>(std::make_unique<post_process_single_component>(info.rawData, stride, sizeof(typename Traits::pixel_type)));
+            return std::unique_ptr<process_line>(std::make_unique<post_process_single_component>(info.data, stride, sizeof(typename Traits::pixel_type)));
         }
 
         if (parameters().transformation == color_transformation::none)
@@ -424,7 +424,7 @@ private:
     {
         Strategy::process_line_ = std::move(process_line);
 
-        const uint8_t* compressed_bytes = compressed_data.rawData;
+        const uint8_t* compressed_bytes = compressed_data.data;
         rect_ = rect;
 
         Strategy::initialize(compressed_data);

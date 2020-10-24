@@ -41,13 +41,13 @@ public:
     }
 
 protected:
-    void initialize(byte_span& compressed_stream) noexcept
+    void initialize(const byte_span destination) noexcept
     {
         free_bit_count_ = sizeof(bit_buffer_) * 8;
         bit_buffer_ = 0;
 
-        position_ = compressed_stream.rawData;
-        compressed_length_ = compressed_stream.count;
+        position_ = destination.data;
+        compressed_length_ = destination.size;
     }
 
     void append_to_bit_stream(const uint32_t bits, const int32_t bit_count)

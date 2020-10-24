@@ -82,14 +82,14 @@ public:
 
     std::size_t get_length() const noexcept
     {
-        return destination_.count - byte_offset_;
+        return destination_.size - byte_offset_;
     }
 
     byte_span output_stream() const noexcept
     {
         byte_span data = destination_;
-        data.count -= byte_offset_;
-        data.rawData += byte_offset_;
+        data.size -= byte_offset_;
+        data.data += byte_offset_;
         return data;
     }
 
@@ -101,24 +101,24 @@ public:
     void update_destination(OUT_WRITES_BYTES_(destination_size) void* destination_buffer,
                             const size_t destination_size) noexcept
     {
-        destination_.rawData = static_cast<uint8_t*>(destination_buffer);
-        destination_.count = destination_size;
+        destination_.data = static_cast<uint8_t*>(destination_buffer);
+        destination_.size = destination_size;
     }
 
 private:
     uint8_t* get_pos() const noexcept
     {
-        return destination_.rawData + byte_offset_;
+        return destination_.data + byte_offset_;
     }
 
     void write_segment(jpeg_marker_code marker_code, IN_READS_BYTES_(size) const void* data, size_t size);
 
     void write_byte(const uint8_t value)
     {
-        if (byte_offset_ >= destination_.count)
+        if (byte_offset_ >= destination_.size)
             impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-        destination_.rawData[byte_offset_++] = value;
+        destination_.data[byte_offset_++] = value;
     }
 
     void write_bytes(const std::vector<uint8_t>& bytes)

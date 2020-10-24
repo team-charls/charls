@@ -138,9 +138,7 @@ struct charls_jpegls_encoder final
         writer_.write_spiff_directory_entry(entry_tag, entry_data, entry_data_size_bytes);
     }
 
-    void encode(IN_READS_BYTES_(source_size_bytes) const void* source,
-                const size_t source_size_bytes,
-                uint32_t stride)
+    void encode(byte_span source, uint32_t stride)
     {
         if (!is_frame_info_configured() || state_ == state::initial)
             throw_jpegls_error(jpegls_errc::invalid_operation);
@@ -183,23 +181,22 @@ struct charls_jpegls_encoder final
             writer_.write_jpegls_preset_parameters_segment(preset);
         }
 
-        byte_span source_info{source, source_size_bytes};
         if (interleave_mode_ == charls::interleave_mode::none)
         {
             const size_t byte_count_component = static_cast<size_t>(stride) * frame_info_.height;
             for (int32_t component = 0; component < frame_info_.component_count; ++component)
             {
                 writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
-                encode_scan(source_info, stride, 1);
+                encode_scan(source, stride, 1);
 
                 // Synchronize the source stream (encode_scan works on a local copy)
-                skip_bytes(source_info, byte_count_component);
+                skip_bytes(source, byte_count_component);
             }
         }
         else
         {
             writer_.write_start_of_scan_segment(frame_info_.component_count, near_lossless_, interleave_mode_);
-            encode_scan(source_info, stride, frame_info_.component_count);
+            encode_scan(source, stride, frame_info_.component_count);
         }
 
         writer_.write_end_of_image();
@@ -376,7 +373,7 @@ charls_jpegls_encoder_encode_from_buffer(IN_ charls_jpegls_encoder* encoder,
                                          const uint32_t stride) noexcept
 try
 {
-    check_pointer(encoder)->encode(check_pointer(source_buffer), source_size_bytes, stride);
+    check_pointer(encoder)->encode({check_pointer(source_buffer), source_size_bytes}, stride);
     return jpegls_errc::success;
 }
 catch (...)
@@ -455,7 +452,7 @@ try
     const auto& pc = params->custom;
     encoder.preset_coding_parameters({pc.MaximumSampleValue, pc.Threshold1, pc.Threshold2, pc.Threshold3, pc.ResetValue});
 
-    encoder.encode(check_pointer(source), source_length, static_cast<uint32_t>(params->stride));
+    encoder.encode({check_pointer(source), source_length}, static_cast<uint32_t>(params->stride));
     *check_pointer(bytes_written) = encoder.bytes_written();
 
     clear_error_message(error_message);

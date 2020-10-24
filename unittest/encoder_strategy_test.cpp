@@ -27,8 +27,7 @@ public:
 
         array<uint8_t, 1024> data{};
 
-        byte_span stream{data.data(), data.size()};
-        strategy.initialize_forward(stream);
+        strategy.initialize_forward({data.data(), data.size()});
 
         strategy.append_to_bit_stream_forward(0, 0);
         strategy.flush_forward();
@@ -41,11 +40,10 @@ public:
 
         encoder_strategy_tester strategy(frame_info, parameters);
 
-        array<uint8_t, 1024> data{};
-        data[13] = 0x77; // marker byte to detect overruns.
+        array<uint8_t, 1024> destination{};
+        destination[13] = 0x77; // marker byte to detect overruns.
 
-        byte_span stream{data.data(), data.size()};
-        strategy.initialize_forward(stream);
+        strategy.initialize_forward({destination.data(), destination.size()});
 
         // We want _isFFWritten == true.
         strategy.append_to_bit_stream_forward(0, 24);
@@ -62,20 +60,20 @@ public:
 
         // Verify output.
         Assert::AreEqual(static_cast<size_t>(13), strategy.get_length_forward());
-        Assert::AreEqual(static_cast<uint8_t>(0x00), data[0]);
-        Assert::AreEqual(static_cast<uint8_t>(0x00), data[1]);
-        Assert::AreEqual(static_cast<uint8_t>(0x00), data[2]);
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), data[3]);
-        Assert::AreEqual(static_cast<uint8_t>(0x7F), data[4]); // extra 0 bit.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), data[5]);
-        Assert::AreEqual(static_cast<uint8_t>(0x7F), data[6]); // extra 0 bit.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), data[7]);
-        Assert::AreEqual(static_cast<uint8_t>(0x60), data[8]);
-        Assert::AreEqual(static_cast<uint8_t>(0x00), data[9]);
-        Assert::AreEqual(static_cast<uint8_t>(0x00), data[10]);
-        Assert::AreEqual(static_cast<uint8_t>(0x00), data[11]);
-        Assert::AreEqual(static_cast<uint8_t>(0xC0), data[12]);
-        Assert::AreEqual(static_cast<uint8_t>(0x77), data[13]);
+        Assert::AreEqual(static_cast<uint8_t>(0x00), destination[0]);
+        Assert::AreEqual(static_cast<uint8_t>(0x00), destination[1]);
+        Assert::AreEqual(static_cast<uint8_t>(0x00), destination[2]);
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[3]);
+        Assert::AreEqual(static_cast<uint8_t>(0x7F), destination[4]); // extra 0 bit.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[5]);
+        Assert::AreEqual(static_cast<uint8_t>(0x7F), destination[6]); // extra 0 bit.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[7]);
+        Assert::AreEqual(static_cast<uint8_t>(0x60), destination[8]);
+        Assert::AreEqual(static_cast<uint8_t>(0x00), destination[9]);
+        Assert::AreEqual(static_cast<uint8_t>(0x00), destination[10]);
+        Assert::AreEqual(static_cast<uint8_t>(0x00), destination[11]);
+        Assert::AreEqual(static_cast<uint8_t>(0xC0), destination[12]);
+        Assert::AreEqual(static_cast<uint8_t>(0x77), destination[13]);
     }
 };
 

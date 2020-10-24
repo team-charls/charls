@@ -288,8 +288,8 @@ struct from_big_endian<8> final
 
 inline void skip_bytes(byte_span& stream_info, const std::size_t count) noexcept
 {
-    stream_info.rawData += count;
-    stream_info.count -= count;
+    stream_info.data += count;
+    stream_info.size -= count;
 }
 
 

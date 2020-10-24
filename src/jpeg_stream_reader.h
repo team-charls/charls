@@ -19,7 +19,7 @@ enum class jpeg_marker_code : uint8_t;
 class jpeg_stream_reader final
 {
 public:
-    explicit jpeg_stream_reader(byte_span byte_span) noexcept;
+    explicit jpeg_stream_reader(byte_span source) noexcept;
     ~jpeg_stream_reader() = default;
 
     jpeg_stream_reader(const jpeg_stream_reader&) = delete;
@@ -93,7 +93,7 @@ private:
         bit_stream_section
     };
 
-    byte_span byte_stream_;
+    byte_span source_;
     charls::frame_info frame_info_{};
     coding_parameters parameters_{};
     jpegls_pc_parameters preset_coding_parameters_{};
