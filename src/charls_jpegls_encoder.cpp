@@ -138,17 +138,17 @@ struct charls_jpegls_encoder final
         writer_.write_spiff_directory_entry(entry_tag, entry_data, entry_data_size_bytes);
     }
 
-    void encode(byte_span source, uint32_t stride)
+    void encode(byte_span source, size_t stride)
     {
         if (!is_frame_info_configured() || state_ == state::initial)
             throw_jpegls_error(jpegls_errc::invalid_operation);
 
         if (stride == 0)
         {
-            stride = frame_info_.width * bit_to_byte_count(frame_info_.bits_per_sample);
+            stride = static_cast<size_t>(frame_info_.width) * bit_to_byte_count(frame_info_.bits_per_sample);
             if (interleave_mode_ != charls::interleave_mode::none)
             {
-                stride *= static_cast<uint32_t>(frame_info_.component_count);
+                stride *= static_cast<size_t>(frame_info_.component_count);
             }
         }
 
@@ -183,7 +183,7 @@ struct charls_jpegls_encoder final
 
         if (interleave_mode_ == charls::interleave_mode::none)
         {
-            const size_t byte_count_component = static_cast<size_t>(stride) * frame_info_.height;
+            const size_t byte_count_component = stride * frame_info_.height;
             for (int32_t component = 0; component < frame_info_.component_count; ++component)
             {
                 writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
@@ -221,7 +221,7 @@ private:
         return frame_info_.width != 0;
     }
 
-    void encode_scan(const byte_span source, const uint32_t stride, const int32_t component_count)
+    void encode_scan(const byte_span source, const size_t stride, const int32_t component_count)
     {
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, component_count};
 

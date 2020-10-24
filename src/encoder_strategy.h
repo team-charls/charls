@@ -25,7 +25,7 @@ public:
     encoder_strategy& operator=(const encoder_strategy&) = delete;
     encoder_strategy& operator=(encoder_strategy&&) = delete;
 
-    virtual std::unique_ptr<process_line> create_process_line(byte_span stream_info, uint32_t stride) = 0;
+    virtual std::unique_ptr<process_line> create_process_line(byte_span stream_info, size_t stride) = 0;
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual std::size_t encode_scan(std::unique_ptr<process_line> raw_data, byte_span& compressed_data) = 0;
 

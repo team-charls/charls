@@ -35,8 +35,8 @@ public:
     process_line& operator=(const process_line&) = delete;
     process_line& operator=(process_line&&) = delete;
 
-    virtual void new_line_decoded(const void* source, size_t pixel_count, int source_stride) = 0;
-    virtual void new_line_requested(void* destination, size_t pixel_count, int destination_stride) = 0;
+    virtual void new_line_decoded(const void* source, size_t pixel_count, size_t source_stride) = 0;
+    virtual void new_line_requested(void* destination, size_t pixel_count, size_t destination_stride) = 0;
 
 protected:
     process_line() = default;
@@ -46,20 +46,20 @@ protected:
 class post_process_single_component final : public process_line
 {
 public:
-    post_process_single_component(void* raw_data, const uint32_t stride, const size_t bytes_per_pixel) noexcept :
+    post_process_single_component(void* raw_data, const size_t stride, const size_t bytes_per_pixel) noexcept :
         raw_data_{static_cast<uint8_t*>(raw_data)},
         bytes_per_pixel_{bytes_per_pixel},
         bytes_per_line_{stride}
     {
     }
 
-    void new_line_requested(void* destination, const size_t pixel_count, int /*destination_stride*/) noexcept(false) override
+    void new_line_requested(void* destination, const size_t pixel_count, size_t /* destination_stride */) noexcept(false) override
     {
         std::memcpy(destination, raw_data_, pixel_count * bytes_per_pixel_);
         raw_data_ += bytes_per_line_;
     }
 
-    void new_line_decoded(const void* source, const size_t pixel_count, int /*sourceStride*/) noexcept(false) override
+    void new_line_decoded(const void* source, const size_t pixel_count, size_t /* source_stride */) noexcept(false) override
     {
         std::memcpy(raw_data_, source, pixel_count * bytes_per_pixel_);
         raw_data_ += bytes_per_line_;
@@ -189,7 +189,7 @@ template<typename TransformType>
 class process_transformed final : public process_line
 {
 public:
-    process_transformed(byte_span source_pixels, const uint32_t stride, const frame_info& info, const coding_parameters& parameters, TransformType transform) :
+    process_transformed(byte_span source_pixels, const size_t stride, const frame_info& info, const coding_parameters& parameters, TransformType transform) :
         frame_info_{info},
         parameters_{parameters},
         stride_{stride},
@@ -201,7 +201,7 @@ public:
     {
     }
 
-    void new_line_requested(void* destination, const size_t pixel_count, const int destination_stride) noexcept(false) override
+    void new_line_requested(void* destination, const size_t pixel_count, const size_t destination_stride) noexcept(false) override
     {
         transform(raw_pixels_.data, destination, pixel_count, destination_stride);
         raw_pixels_.data += stride_;
@@ -271,7 +271,7 @@ public:
         }
     }
 
-    void new_line_decoded(const void* source, const size_t pixel_count, const int source_stride) noexcept(false) override
+    void new_line_decoded(const void* source, const size_t pixel_count, const size_t source_stride) noexcept(false) override
     {
         decode_transform(source, raw_pixels_.data, pixel_count, source_stride);
         raw_pixels_.data += stride_;
@@ -282,7 +282,7 @@ private:
 
     const frame_info& frame_info_;
     const coding_parameters& parameters_;
-    const uint32_t stride_;
+    const size_t stride_;
     std::vector<size_type> temp_line_;
     std::vector<uint8_t> buffer_;
     TransformType transform_;

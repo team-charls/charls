@@ -25,7 +25,7 @@ public:
         return 0;
     }
 
-    std::unique_ptr<process_line> create_process_line(byte_span, uint32_t /*stride*/) noexcept(false) override
+    std::unique_ptr<process_line> create_process_line(byte_span, size_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }

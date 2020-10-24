@@ -42,7 +42,7 @@ public:
         return preset_coding_parameters_;
     }
 
-    void read(byte_span source, uint32_t stride);
+    void read(byte_span source, size_t stride);
     void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
 
     void output_bgr(const bool value) noexcept

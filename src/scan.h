@@ -119,7 +119,7 @@ public:
     }
 
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
-    std::unique_ptr<process_line> create_process_line(byte_span info, const uint32_t stride) override
+    std::unique_ptr<process_line> create_process_line(byte_span info, const size_t stride) override
     {
         if (!is_interleaved())
         {

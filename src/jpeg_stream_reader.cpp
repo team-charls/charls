@@ -28,7 +28,7 @@ jpeg_stream_reader::jpeg_stream_reader(const byte_span source) noexcept :
 }
 
 
-void jpeg_stream_reader::read(byte_span source, uint32_t stride)
+void jpeg_stream_reader::read(byte_span source, size_t stride)
 {
     ASSERT(state_ == state::bit_stream_section);
 
@@ -44,7 +44,7 @@ void jpeg_stream_reader::read(byte_span source, uint32_t stride)
     {
         const uint32_t width = rect_.Width != 0 ? static_cast<uint32_t>(rect_.Width) : frame_info_.width;
         const uint32_t component_count = parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<uint32_t>(frame_info_.component_count);
-        stride = component_count * width * ((static_cast<uint32_t>(frame_info_.bits_per_sample) + 7U) / 8U);
+        stride = static_cast<size_t>(component_count) * width * ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U);
     }
 
     const int64_t bytes_per_plane = static_cast<int64_t>(rect_.Width) * rect_.Height * bit_to_byte_count(frame_info_.bits_per_sample);

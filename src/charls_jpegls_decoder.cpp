@@ -98,7 +98,7 @@ struct charls_jpegls_decoder final
         return reader_->preset_coding_parameters();
     }
 
-    size_t destination_size(const uint32_t stride) const
+    size_t destination_size(const size_t stride) const
     {
         const charls::frame_info info{frame_info()};
 
@@ -110,11 +110,11 @@ struct charls_jpegls_decoder final
         switch (interleave_mode())
         {
         case charls::interleave_mode::none:
-            return static_cast<size_t>(info.component_count) * stride * info.height;
+            return stride * info.component_count * info.height;
 
         case charls::interleave_mode::line:
         case charls::interleave_mode::sample:
-            return static_cast<size_t>(stride) * info.height;
+            return stride * info.height;
         }
 
         ASSERT(false);
@@ -123,7 +123,7 @@ struct charls_jpegls_decoder final
 
     void decode(OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
                 const size_t destination_size_bytes,
-                const uint32_t stride) const CHARLS_ATTRIBUTE((nonnull))
+                const size_t stride) const CHARLS_ATTRIBUTE((nonnull))
     {
         if (state_ != state::header_read)
             throw_jpegls_error(jpegls_errc::invalid_operation);

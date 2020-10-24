@@ -6,7 +6,6 @@
 #include "util.h"
 
 #include <array>
-#include <cstring>
 #include <iostream>
 #include <vector>
 
