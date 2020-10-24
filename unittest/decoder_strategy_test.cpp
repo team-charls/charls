@@ -21,20 +21,20 @@ public:
     decoder_strategy_tester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters, uint8_t* const destination, const size_t count) : // NOLINT
         decoder_strategy(frame_info, parameters)
     {
-        byte_stream_info stream{nullptr, destination, count};
-        initialize(stream);
+        byte_span destination_info{destination, count};
+        initialize(destination_info);
     }
 
     void set_presets(const charls::jpegls_pc_parameters& /*preset_coding_parameters*/) noexcept(false) override
     {
     }
 
-    unique_ptr<charls::process_line> create_process_line(byte_stream_info /*rawStreamInfo*/, uint32_t /*stride*/) noexcept(false) override
+    unique_ptr<charls::process_line> create_process_line(byte_span /*rawStreamInfo*/, uint32_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
 
-    void decode_scan(unique_ptr<charls::process_line> /*outputData*/, const JlsRect& /*size*/, byte_stream_info& /*compressedData*/) noexcept(false) override
+    void decode_scan(unique_ptr<charls::process_line> /*outputData*/, const JlsRect& /*size*/, byte_span& /*compressedData*/) noexcept(false) override
     {
     }
 
@@ -71,7 +71,7 @@ public:
 
         encoder_strategy_tester encoder(frame_info, parameters);
 
-        byte_stream_info stream{nullptr, enc_buf.data(), enc_buf.size()};
+        byte_span stream{enc_buf.data(), enc_buf.size()};
         encoder.initialize_forward(stream);
 
         for (const auto& data : in_data)

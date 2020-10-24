@@ -28,9 +28,7 @@ public:
     TEST_METHOD(write_start_of_image) // NOLINT
     {
         array<uint8_t, 2> buffer{};
-        const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
-
-        jpeg_stream_writer writer(info);
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         writer.write_start_of_image();
 
@@ -42,7 +40,7 @@ public:
     TEST_METHOD(write_end_of_image) // NOLINT
     {
         array<uint8_t, 2> buffer{};
-        const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
+        const byte_span info{buffer.data(), buffer.size()};
 
         jpeg_stream_writer writer(info);
 
@@ -56,9 +54,7 @@ public:
     TEST_METHOD(write_spiff_segment) // NOLINT
     {
         array<uint8_t, 34> buffer{};
-        const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
-
-        jpeg_stream_writer writer(info);
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         spiff_header header
         {
@@ -132,9 +128,7 @@ public:
     TEST_METHOD(write_spiff_end_of_directory_segment) // NOLINT
     {
         array<uint8_t, 10> buffer{};
-        const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
-
-        jpeg_stream_writer writer(info);
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         writer.write_spiff_end_of_directory_entry();
 
@@ -162,9 +156,7 @@ public:
     TEST_METHOD(write_spiff_directory_entry) // NOLINT
     {
         array<uint8_t, 10> buffer{};
-        const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
-
-        jpeg_stream_writer writer{info};
+        jpeg_stream_writer writer{{buffer.data(), buffer.size()}};
 
         array<uint8_t, 2> data{0x77, 0x66};
 
@@ -195,8 +187,7 @@ public:
         constexpr int32_t component_count{3};
 
         array<uint8_t, 19> buffer{};
-        const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_writer writer(info);
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         writer.write_start_of_frame_segment(100, UINT16_MAX, bits_per_sample, component_count);
 
@@ -232,8 +223,7 @@ public:
         constexpr int32_t component_count{1};
 
         array<uint8_t, 13> buffer{};
-        const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_writer writer(info);
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         writer.write_start_of_frame_segment(0, 0, bits_per_sample, component_count);
 
@@ -245,8 +235,7 @@ public:
     TEST_METHOD(write_start_of_frame_marker_segment_with_high_boundary_values_and_serialize) // NOLINT
     {
         array<uint8_t, 775> buffer{};
-        const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_writer writer(info);
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         writer.write_start_of_frame_segment(UINT16_MAX, UINT16_MAX, 16, UINT8_MAX);
 
@@ -262,8 +251,7 @@ public:
         const color_transformation transformation = color_transformation::hp1;
 
         array<uint8_t, 9> buffer{};
-        const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_writer writer(info);
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         writer.write_color_transform_segment(transformation);
         Assert::AreEqual(buffer.size(), writer.bytes_written());
@@ -282,8 +270,7 @@ public:
         const jpegls_pc_parameters presets{2, 1, 2, 3, 7};
 
         array<uint8_t, 15> buffer{};
-        const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_writer writer(info);
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         writer.write_jpegls_preset_parameters_segment(presets);
         Assert::AreEqual(buffer.size(), writer.bytes_written());
@@ -315,8 +302,7 @@ public:
     TEST_METHOD(write_start_of_scan_marker) // NOLINT
     {
         array<uint8_t, 10> buffer{};
-        const byte_stream_info info = from_byte_array(buffer.data(), buffer.size());
-        jpeg_stream_writer writer(info);
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         writer.write_start_of_scan_segment(1, 2, interleave_mode::none);
 

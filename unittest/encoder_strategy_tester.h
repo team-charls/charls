@@ -20,17 +20,17 @@ public:
     {
     }
 
-    size_t encode_scan(std::unique_ptr<process_line>, byte_stream_info&) noexcept(false) override
+    size_t encode_scan(std::unique_ptr<process_line>, byte_span&) noexcept(false) override
     {
         return 0;
     }
 
-    std::unique_ptr<process_line> create_process_line(byte_stream_info, uint32_t /*stride*/) noexcept(false) override
+    std::unique_ptr<process_line> create_process_line(byte_span, uint32_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
 
-    void initialize_forward(byte_stream_info& info)
+    void initialize_forward(byte_span& info) noexcept
     {
         initialize(info);
     }

@@ -25,9 +25,9 @@ public:
     encoder_strategy& operator=(const encoder_strategy&) = delete;
     encoder_strategy& operator=(encoder_strategy&&) = delete;
 
-    virtual std::unique_ptr<process_line> create_process_line(byte_stream_info stream_info, uint32_t stride) = 0;
+    virtual std::unique_ptr<process_line> create_process_line(byte_span stream_info, uint32_t stride) = 0;
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
-    virtual std::size_t encode_scan(std::unique_ptr<process_line> raw_data, byte_stream_info& compressed_data) = 0;
+    virtual std::size_t encode_scan(std::unique_ptr<process_line> raw_data, byte_span& compressed_data) = 0;
 
     int32_t peek_byte();
 
@@ -41,23 +41,13 @@ public:
     }
 
 protected:
-    void initialize(byte_stream_info& compressed_stream)
+    void initialize(byte_span& compressed_stream) noexcept
     {
         free_bit_count_ = sizeof(bit_buffer_) * 8;
         bit_buffer_ = 0;
 
-        if (compressed_stream.rawStream)
-        {
-            compressed_stream_ = compressed_stream.rawStream;
-            buffer_.resize(4000);
-            position_ = buffer_.data();
-            compressed_length_ = buffer_.size();
-        }
-        else
-        {
-            position_ = compressed_stream.rawData;
-            compressed_length_ = compressed_stream.count;
-        }
+        position_ = compressed_stream.rawData;
+        compressed_length_ = compressed_stream.count;
     }
 
     void append_to_bit_stream(const uint32_t bits, const int32_t bit_count)
@@ -108,33 +98,13 @@ protected:
 
         flush();
         ASSERT(free_bit_count_ == 0x20);
-
-        if (compressed_stream_)
-        {
-            overflow();
-        }
-    }
-
-    void overflow()
-    {
-        if (!compressed_stream_)
-            impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
-
-        const auto bytes_count = static_cast<size_t>(position_ - buffer_.data());
-        const auto bytes_written = static_cast<size_t>(compressed_stream_->sputn(reinterpret_cast<char*>(buffer_.data()), position_ - buffer_.data()));
-
-        if (bytes_written != bytes_count)
-            impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
-
-        position_ = buffer_.data();
-        compressed_length_ = buffer_.size();
     }
 
     void flush()
     {
         if (compressed_length_ < 4)
         {
-            overflow();
+            impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
         }
 
         for (int i = 0; i < 4; ++i)
@@ -189,7 +159,6 @@ private:
     std::size_t bytes_written_{};
 
     std::vector<uint8_t> buffer_;
-    std::basic_streambuf<char>* compressed_stream_{};
 };
 
 } // namespace charls

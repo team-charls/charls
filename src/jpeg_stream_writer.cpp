@@ -18,7 +18,7 @@ namespace charls {
 using std::array;
 using std::vector;
 
-jpeg_stream_writer::jpeg_stream_writer(const byte_stream_info& destination) noexcept :
+jpeg_stream_writer::jpeg_stream_writer(const byte_span& destination) noexcept :
     destination_{destination}
 {
 }

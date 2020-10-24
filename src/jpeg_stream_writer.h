@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include <charls/charls_legacy.h>
 #include <charls/jpegls_error.h>
 
 #include "jpeg_marker_code.h"
+#include "byte_span.h"
 
 #include <vector>
 
@@ -17,9 +17,9 @@ class jpeg_stream_writer final
 {
 public:
     jpeg_stream_writer() = default;
-    explicit jpeg_stream_writer(const byte_stream_info& destination) noexcept;
-	~jpeg_stream_writer() = default;
-	
+    explicit jpeg_stream_writer(const byte_span& destination) noexcept;
+    ~jpeg_stream_writer() = default;
+
     jpeg_stream_writer(const jpeg_stream_writer&) = delete;
     jpeg_stream_writer& operator=(const jpeg_stream_writer&) = delete;
     jpeg_stream_writer(jpeg_stream_writer&&) = default;
@@ -85,9 +85,9 @@ public:
         return destination_.count - byte_offset_;
     }
 
-    byte_stream_info output_stream() const noexcept
+    byte_span output_stream() const noexcept
     {
-        byte_stream_info data = destination_;
+        byte_span data = destination_;
         data.count -= byte_offset_;
         data.rawData += byte_offset_;
         return data;
@@ -95,9 +95,6 @@ public:
 
     void seek(const std::size_t byte_count) noexcept
     {
-        if (destination_.rawStream)
-            return;
-
         byte_offset_ += byte_count;
     }
 
@@ -118,17 +115,10 @@ private:
 
     void write_byte(const uint8_t value)
     {
-        if (destination_.rawStream)
-        {
-            destination_.rawStream->sputc(static_cast<char>(value));
-        }
-        else
-        {
-            if (byte_offset_ >= destination_.count)
-                impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
+        if (byte_offset_ >= destination_.count)
+            impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-            destination_.rawData[byte_offset_++] = value;
-        }
+        destination_.rawData[byte_offset_++] = value;
     }
 
     void write_bytes(const std::vector<uint8_t>& bytes)
@@ -169,7 +159,7 @@ private:
         write_byte(static_cast<uint8_t>(marker_code));
     }
 
-    byte_stream_info destination_{};
+    byte_span destination_{};
     std::size_t byte_offset_{};
     int8_t component_id_{1};
 };

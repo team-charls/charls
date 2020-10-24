@@ -119,11 +119,11 @@ public:
     }
 
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
-    std::unique_ptr<process_line> create_process_line(byte_stream_info info, const uint32_t stride) override
+    std::unique_ptr<process_line> create_process_line(byte_span info, const uint32_t stride) override
     {
         if (!is_interleaved())
         {
-            return info.rawData ? std::unique_ptr<process_line>(std::make_unique<post_process_single_component>(info.rawData, stride, sizeof(typename Traits::pixel_type))) : std::unique_ptr<process_line>(std::make_unique<post_process_single_stream>(info.rawStream, stride, sizeof(typename Traits::pixel_type)));
+            return std::unique_ptr<process_line>(std::make_unique<post_process_single_component>(info.rawData, stride, sizeof(typename Traits::pixel_type)));
         }
 
         if (parameters().transformation == color_transformation::none)
@@ -409,7 +409,7 @@ private:
 
     // Note: depending on the base class encode_scan OR decode_scan will be virtual and abstract, cannot use override in all cases.
     // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override)
-    size_t encode_scan(std::unique_ptr<process_line> process_line, byte_stream_info& compressed_data)
+    size_t encode_scan(std::unique_ptr<process_line> process_line, byte_span& compressed_data)
     {
         Strategy::process_line_ = std::move(process_line);
 
@@ -420,7 +420,7 @@ private:
     }
 
     // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override)
-    void decode_scan(std::unique_ptr<process_line> process_line, const JlsRect& rect, byte_stream_info& compressed_data)
+    void decode_scan(std::unique_ptr<process_line> process_line, const JlsRect& rect, byte_span& compressed_data)
     {
         Strategy::process_line_ = std::move(process_line);
 

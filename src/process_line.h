@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include <charls/charls_legacy.h>
 #include <charls/jpegls_error.h>
 
 #include "coding_parameters.h"
@@ -91,53 +90,6 @@ inline void byte_swap(void* data, const size_t count)
         std::swap(data8[count - 2], data8[count - 1]);
     }
 }
-
-class post_process_single_stream final : public process_line
-{
-public:
-    post_process_single_stream(std::basic_streambuf<char>* raw_data, const uint32_t stride, const size_t bytes_per_pixel) noexcept :
-        raw_data_{raw_data},
-        bytes_per_pixel_{bytes_per_pixel},
-        bytes_per_line_{stride}
-    {
-    }
-
-    void new_line_requested(void* destination, const size_t pixel_count, int /*destination_stride*/) override
-    {
-        auto bytes_to_read = static_cast<std::streamsize>(static_cast<std::streamsize>(pixel_count) * bytes_per_pixel_);
-        while (bytes_to_read != 0)
-        {
-            const auto bytes_read = raw_data_->sgetn(static_cast<char*>(destination), bytes_to_read);
-            if (bytes_read == 0)
-                throw jpegls_error{jpegls_errc::destination_buffer_too_small};
-
-            bytes_to_read = bytes_to_read - bytes_read;
-        }
-
-        if (bytes_per_pixel_ == 2)
-        {
-            byte_swap(static_cast<unsigned char*>(destination), 2U * pixel_count);
-        }
-
-        if (bytes_per_line_ - pixel_count * bytes_per_pixel_ > 0)
-        {
-            raw_data_->pubseekoff(static_cast<std::streamoff>(bytes_per_line_ - bytes_to_read), std::ios_base::cur);
-        }
-    }
-
-    void new_line_decoded(const void* source, const size_t pixel_count, int /*source_stride*/) override
-    {
-        const auto bytes_to_write = pixel_count * bytes_per_pixel_;
-        const auto bytes_written = static_cast<size_t>(raw_data_->sputn(static_cast<const char*>(source), static_cast<std::streamsize>(bytes_to_write)));
-        if (bytes_written != bytes_to_write)
-            throw jpegls_error{jpegls_errc::destination_buffer_too_small};
-    }
-
-private:
-    std::basic_streambuf<char>* raw_data_;
-    size_t bytes_per_pixel_;
-    size_t bytes_per_line_;
-};
 
 
 template<typename Transform, typename T>
@@ -237,7 +189,7 @@ template<typename TransformType>
 class process_transformed final : public process_line
 {
 public:
-    process_transformed(byte_stream_info raw_stream, const uint32_t stride, const frame_info& info, const coding_parameters& parameters, TransformType transform) :
+    process_transformed(byte_span raw_stream, const uint32_t stride, const frame_info& info, const coding_parameters& parameters, TransformType transform) :
         frame_info_{info},
         parameters_{parameters},
         stride_{stride},
@@ -249,30 +201,10 @@ public:
     {
     }
 
-    void new_line_requested(void* destination, const size_t pixel_count, const int destination_stride) override
+    void new_line_requested(void* destination, const size_t pixel_count, const int destination_stride) noexcept(false) override
     {
-        if (!raw_pixels_.rawStream)
-        {
-            transform(raw_pixels_.rawData, destination, pixel_count, destination_stride);
-            raw_pixels_.rawData += stride_;
-            return;
-        }
-
-        transform(raw_pixels_.rawStream, destination, pixel_count, destination_stride);
-    }
-
-    void transform(std::basic_streambuf<char>* raw_stream, void* destination, const size_t pixel_count, const int destination_stride)
-    {
-        std::streamsize bytes_to_read = static_cast<std::streamsize>(pixel_count) * frame_info_.component_count * sizeof(size_type);
-        while (bytes_to_read != 0)
-        {
-            const auto read = raw_stream->sgetn(reinterpret_cast<char*>(buffer_.data()), bytes_to_read);
-            if (read == 0)
-                throw jpegls_error{jpegls_errc::source_buffer_too_small};
-
-            bytes_to_read -= read;
-        }
-        transform(buffer_.data(), destination, pixel_count, destination_stride);
+        transform(raw_pixels_.rawData, destination, pixel_count, destination_stride);
+        raw_pixels_.rawData += stride_;
     }
 
     void transform(const void* source, void* destination, const size_t pixel_count, const size_t destination_stride) noexcept
@@ -339,22 +271,10 @@ public:
         }
     }
 
-    void new_line_decoded(const void* source, const size_t pixel_count, const int source_stride) override
+    void new_line_decoded(const void* source, const size_t pixel_count, const int source_stride) noexcept(false) override
     {
-        if (raw_pixels_.rawStream)
-        {
-            const std::streamsize bytes_to_write = static_cast<std::streamsize>(pixel_count) * frame_info_.component_count * sizeof(size_type);
-            decode_transform(source, buffer_.data(), pixel_count, source_stride);
-
-            const auto bytes_written = raw_pixels_.rawStream->sputn(reinterpret_cast<char*>(buffer_.data()), bytes_to_write);
-            if (bytes_written != bytes_to_write)
-                throw jpegls_error{jpegls_errc::destination_buffer_too_small};
-        }
-        else
-        {
-            decode_transform(source, raw_pixels_.rawData, pixel_count, source_stride);
-            raw_pixels_.rawData += stride_;
-        }
+        decode_transform(source, raw_pixels_.rawData, pixel_count, source_stride);
+        raw_pixels_.rawData += stride_;
     }
 
 private:
@@ -367,7 +287,7 @@ private:
     std::vector<uint8_t> buffer_;
     TransformType transform_;
     typename TransformType::inverse inverse_transform_;
-    byte_stream_info raw_pixels_;
+    byte_span raw_pixels_;
 };
 
 } // namespace charls

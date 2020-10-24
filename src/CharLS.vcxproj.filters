@@ -90,9 +90,6 @@
     <ClInclude Include="jpegls_preset_parameters_type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\charls\charls_legacy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\charls\version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -100,6 +97,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="coding_parameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="byte_span.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

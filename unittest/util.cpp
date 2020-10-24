@@ -139,8 +139,7 @@ vector<uint8_t> create_test_spiff_header(const uint8_t high_version, const uint8
     const size_t spiff_header_size = buffer.size();
     buffer.resize(buffer.size() + 100);
 
-    const byte_stream_info info = from_byte_array(buffer.data() + spiff_header_size, buffer.size() - spiff_header_size);
-    jpeg_stream_writer writer(info);
+    jpeg_stream_writer writer({buffer.data() + spiff_header_size, buffer.size() - spiff_header_size});
 
     if (end_of_directory)
     {

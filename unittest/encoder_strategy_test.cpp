@@ -27,7 +27,7 @@ public:
 
         array<uint8_t, 1024> data{};
 
-        byte_stream_info stream{nullptr, data.data(), data.size()};
+        byte_span stream{data.data(), data.size()};
         strategy.initialize_forward(stream);
 
         strategy.append_to_bit_stream_forward(0, 0);
@@ -44,7 +44,7 @@ public:
         array<uint8_t, 1024> data{};
         data[13] = 0x77; // marker byte to detect overruns.
 
-        byte_stream_info stream{nullptr, data.data(), data.size()};
+        byte_span stream{data.data(), data.size()};
         strategy.initialize_forward(stream);
 
         // We want _isFFWritten == true.

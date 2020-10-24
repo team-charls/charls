@@ -251,7 +251,6 @@
     <ClInclude Include="..\include\charls\annotations.h" />
     <ClInclude Include="..\include\charls\api_abi.h" />
     <ClInclude Include="..\include\charls\charls.h" />
-    <ClInclude Include="..\include\charls\charls_legacy.h" />
     <ClInclude Include="..\include\charls\jpegls_error.h" />
     <ClInclude Include="..\include\charls\public_types.h" />
     <ClInclude Include="..\include\charls\version.h" />
@@ -273,6 +272,7 @@
     <ClInclude Include="jpegls_preset_parameters_type.h" />
     <ClInclude Include="process_line.h" />
     <ClInclude Include="scan.h" />
+    <ClInclude Include="byte_span.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>

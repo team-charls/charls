@@ -30,7 +30,6 @@ set(HEADERS
     "include/charls/api_abi.h"
     "include/charls/annotations.h"
     "include/charls/charls.h"
-    "include/charls/charls_legacy.h"
     "include/charls/jpegls_error.h"
     "include/charls/public_types.h"
     "include/charls/version.h"
@@ -47,6 +46,7 @@ target_sources(charls
   PUBLIC
     ${CHARLS_PUBLIC_HEADERS}
   PRIVATE
+    "${CMAKE_CURRENT_LIST_DIR}/byte_span.h"
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_decoder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_encoder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/coding_parameters.h"

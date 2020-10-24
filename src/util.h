@@ -4,8 +4,9 @@
 #pragma once
 
 #include <charls/annotations.h>
-#include <charls/charls_legacy.h>
 #include <charls/jpegls_error.h>
+
+#include "byte_span.h"
 
 #include <algorithm>
 #include <cassert>
@@ -285,11 +286,8 @@ struct from_big_endian<8> final
 };
 
 
-inline void skip_bytes(byte_stream_info& stream_info, const std::size_t count) noexcept
+inline void skip_bytes(byte_span& stream_info, const std::size_t count) noexcept
 {
-    if (!stream_info.rawData)
-        return;
-
     stream_info.rawData += count;
     stream_info.count -= count;
 }

@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include <charls/charls_legacy.h>
 #include <charls/public_types.h>
 
+#include "byte_span.h"
 #include "coding_parameters.h"
 
 #include <cstdint>
@@ -19,9 +19,9 @@ enum class jpeg_marker_code : uint8_t;
 class jpeg_stream_reader final
 {
 public:
-    explicit jpeg_stream_reader(byte_stream_info byte_stream_info) noexcept;
+    explicit jpeg_stream_reader(byte_span byte_span) noexcept;
     ~jpeg_stream_reader() = default;
-	
+
     jpeg_stream_reader(const jpeg_stream_reader&) = delete;
     jpeg_stream_reader& operator=(const jpeg_stream_reader&) = delete;
     jpeg_stream_reader(jpeg_stream_reader&&) = default;
@@ -42,7 +42,7 @@ public:
         return preset_coding_parameters_;
     }
 
-    void read(byte_stream_info source, uint32_t stride);
+    void read(byte_span source, uint32_t stride);
     void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
 
     void output_bgr(const bool value) noexcept
@@ -93,7 +93,7 @@ private:
         bit_stream_section
     };
 
-    byte_stream_info byte_stream_;
+    byte_span byte_stream_;
     charls::frame_info frame_info_{};
     coding_parameters parameters_{};
     jpegls_pc_parameters preset_coding_parameters_{};

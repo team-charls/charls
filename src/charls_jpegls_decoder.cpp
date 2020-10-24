@@ -25,8 +25,7 @@ struct charls_jpegls_decoder final
         source_buffer_ = source_buffer;
         size_ = source_size_bytes;
 
-        byte_stream_info source{from_byte_array_const(source_buffer_, size_)};
-        reader_ = std::make_unique<jpeg_stream_reader>(source);
+        reader_ = std::make_unique<jpeg_stream_reader>(byte_span{source_buffer, source_size_bytes});
         state_ = state::source_set;
     }
 
@@ -129,8 +128,7 @@ struct charls_jpegls_decoder final
         if (state_ != state::header_read)
             throw_jpegls_error(jpegls_errc::invalid_operation);
 
-        const byte_stream_info destination = from_byte_array(destination_buffer, destination_size_bytes);
-        reader_->read(destination, stride);
+        reader_->read({destination_buffer, destination_size_bytes}, stride);
     }
 
     void output_bgr(const bool value) const noexcept

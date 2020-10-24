@@ -183,7 +183,7 @@ struct charls_jpegls_encoder final
             writer_.write_jpegls_preset_parameters_segment(preset);
         }
 
-        byte_stream_info source_info = from_byte_array_const(source, source_size_bytes);
+        byte_span source_info{source, source_size_bytes};
         if (interleave_mode_ == charls::interleave_mode::none)
         {
             const size_t byte_count_component = static_cast<size_t>(stride) * frame_info_.height;
@@ -224,7 +224,7 @@ private:
         return frame_info_.width != 0;
     }
 
-    void encode_scan(const byte_stream_info source, const uint32_t stride, const int32_t component_count)
+    void encode_scan(const byte_span source, const uint32_t stride, const int32_t component_count)
     {
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, component_count};
 
@@ -232,7 +232,7 @@ private:
                                                                         {near_lossless_, interleave_mode_, color_transformation_, false},
                                                                         preset_coding_parameters_);
         unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
-        byte_stream_info destination{writer_.output_stream()};
+        byte_span destination{writer_.output_stream()};
         const size_t bytes_written = codec->encode_scan(move(process_line), destination);
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)

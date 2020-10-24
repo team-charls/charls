@@ -31,57 +31,20 @@ public:
     decoder_strategy& operator=(const decoder_strategy&) = delete;
     decoder_strategy& operator=(decoder_strategy&&) = delete;
 
-    virtual std::unique_ptr<process_line> create_process_line(byte_stream_info raw_stream_info, uint32_t stride) = 0;
+    virtual std::unique_ptr<process_line> create_process_line(byte_span raw_stream_info, uint32_t stride) = 0;
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
-    virtual void decode_scan(std::unique_ptr<process_line> output_data, const JlsRect& size, byte_stream_info& compressed_data) = 0;
+    virtual void decode_scan(std::unique_ptr<process_line> output_data, const JlsRect& size, byte_span& compressed_data) = 0;
 
-    void initialize(byte_stream_info& compressed_stream)
+    void initialize(byte_span& compressed_stream)
     {
         valid_bits_ = 0;
         read_cache_ = 0;
 
-        if (compressed_stream.rawStream)
-        {
-            buffer_.resize(40000);
-            position_ = buffer_.data();
-            end_position_ = position_;
-            byte_stream_ = compressed_stream.rawStream;
-            add_bytes_from_stream();
-        }
-        else
-        {
-            byte_stream_ = nullptr;
-            position_ = compressed_stream.rawData;
-            end_position_ = position_ + compressed_stream.count;
-        }
+        position_ = compressed_stream.rawData;
+        end_position_ = position_ + compressed_stream.count;
 
         next_ff_position_ = find_next_ff();
         make_valid();
-    }
-
-    void add_bytes_from_stream()
-    {
-        if (!byte_stream_ || byte_stream_->sgetc() == std::char_traits<char>::eof())
-            return;
-
-        const auto count = end_position_ - position_;
-
-        if (count > 64)
-            return;
-
-        for (std::size_t i = 0; i < static_cast<std::size_t>(count); ++i)
-        {
-            buffer_[i] = position_[i];
-        }
-        const auto offset = buffer_.data() - position_;
-
-        position_ += offset;
-        end_position_ += offset;
-        next_ff_position_ += offset;
-
-        const std::streamsize read_bytes = byte_stream_->sgetn(reinterpret_cast<char*>(end_position_),
-                                                              static_cast<std::streamsize>(buffer_.size()) - count);
-        end_position_ += read_bytes;
     }
 
     FORCE_INLINE void skip(const int32_t length) noexcept
@@ -134,8 +97,6 @@ public:
 
         if (optimized_read())
             return;
-
-        add_bytes_from_stream();
 
         do
         {
@@ -297,7 +258,6 @@ private:
     static constexpr auto bufType_bit_count = static_cast<int32_t>(sizeof(bufType) * 8);
 
     std::vector<uint8_t> buffer_;
-    std::basic_streambuf<char>* byte_stream_{};
 
     // decoding
     bufType read_cache_{};
