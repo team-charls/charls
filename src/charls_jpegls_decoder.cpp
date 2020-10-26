@@ -6,7 +6,6 @@
 #include "jpeg_stream_reader.h"
 #include "util.h"
 
-#include <cassert>
 #include <memory>
 #include <new>
 

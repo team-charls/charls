@@ -5,14 +5,12 @@
 
 #include "constants.h"
 #include "decoder_strategy.h"
-#include "encoder_strategy.h"
 #include "jls_codec_factory.h"
 #include "jpeg_marker_code.h"
 #include "jpegls_preset_parameters_type.h"
 #include "util.h"
 
 #include <algorithm>
-#include <iomanip>
 #include <memory>
 
 namespace charls {

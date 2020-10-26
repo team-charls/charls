@@ -5,12 +5,10 @@
 
 #include "constants.h"
 #include "jpeg_marker_code.h"
-#include "jpeg_stream_reader.h"
 #include "jpegls_preset_parameters_type.h"
 #include "util.h"
 
 #include <array>
-#include <cassert>
 #include <vector>
 
 namespace charls {

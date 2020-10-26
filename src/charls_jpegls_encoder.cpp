@@ -9,7 +9,6 @@
 #include "jpegls_preset_coding_parameters.h"
 #include "util.h"
 
-#include <cassert>
 #include <new>
 
 using namespace charls;

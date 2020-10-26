@@ -1,13 +1,10 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "decoder_strategy.h"
 #include "default_traits.h"
 #include "encoder_strategy.h"
 #include "jls_codec_factory.h"
-#include "jpeg_stream_reader.h"
 #include "jpegls_preset_coding_parameters.h"
-#include "lookup_table.h"
 #include "lossless_traits.h"
 #include "scan.h"
 #include "util.h"
@@ -69,9 +66,9 @@ unique_ptr<Strategy> make_codec(const Traits& traits, const frame_info& frame_in
 
 // Lookup table: decode symbols that are smaller or equal to 8 bit (16 tables for each value of k)
 array<golomb_code_table, 16> decoding_tables = {initialize_table(0), initialize_table(1), initialize_table(2), initialize_table(3), // NOLINT(clang-diagnostic-global-constructors)
-                                    initialize_table(4), initialize_table(5), initialize_table(6), initialize_table(7),
-                                    initialize_table(8), initialize_table(9), initialize_table(10), initialize_table(11),
-                                    initialize_table(12), initialize_table(13), initialize_table(14), initialize_table(15)};
+                                                initialize_table(4), initialize_table(5), initialize_table(6), initialize_table(7),
+                                                initialize_table(8), initialize_table(9), initialize_table(10), initialize_table(11),
+                                                initialize_table(12), initialize_table(13), initialize_table(14), initialize_table(15)};
 
 // Lookup tables: sample differences to bin indexes.
 vector<int8_t> quantization_lut_lossless_8 = create_quantize_lut_lossless(8);   // NOLINT(clang-diagnostic-global-constructors)
