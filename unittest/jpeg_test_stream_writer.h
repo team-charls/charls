@@ -74,7 +74,7 @@ public:
         {
             segment.push_back(static_cast<uint8_t>(component_id));
             ++component_id;
-            segment.push_back(0); // Mapping table selector (0 = no table)
+            segment.push_back(mapping_table_selector); // Mapping table selector (0 = no table)
         }
 
         segment.push_back(static_cast<uint8_t>(near_lossless));   // NEAR parameter
@@ -119,6 +119,7 @@ public:
     }
 
     int componentIdOverride{};
+    uint8_t mapping_table_selector{};
     std::vector<uint8_t> buffer;
 };
 

@@ -418,7 +418,9 @@ void jpeg_stream_reader::read_start_of_scan()
     for (int i = 0; i < component_count_in_scan; ++i)
     {
         read_byte(); // Read Scan component selector
-        read_byte(); // Read Mapping table selector
+        const uint8_t mapping_table_selector = read_byte();
+        if (mapping_table_selector != 0)
+            throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
     }
 
     parameters_.near_lossless = read_byte(); // Read NEAR parameter

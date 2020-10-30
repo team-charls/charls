@@ -14,6 +14,8 @@
 #include "../src/jpeg_marker_code.h"
 #include "../src/jpegls_preset_parameters_type.h"
 
+#include "jpeg_test_stream_writer.h"
+
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::error_code;
@@ -273,6 +275,21 @@ public:
         vector<uint8_t> buffer(1000);
         assert_expect_exception(jpegls_errc::invalid_operation,
             [&] { decoder.decode(buffer); });
+    }
+
+    TEST_METHOD(decode_reference_to_mapping_table_selector) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(10, 10, 8, 3);
+        writer.mapping_table_selector = 1;
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder{writer.buffer};
+
+        assert_expect_exception(jpegls_errc::parameter_value_not_supported,
+            [&] { decoder.read_header(); });
     }
 
     TEST_METHOD(read_spiff_header) // NOLINT
