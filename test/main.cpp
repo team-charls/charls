@@ -237,7 +237,7 @@ void test_bgra()
 
 void test_bgr()
 {
-    vector<uint8_t> encoded_source = read_file("test/conformance/T8C2E3.JLS");
+    vector<uint8_t> encoded_source = read_file("test/conformance/t8c2e3.jls");
 
     jpegls_decoder decoder;
     decoder.source(encoded_source);
@@ -639,8 +639,8 @@ void test_encode_from_stream()
 
     test_encode_from_stream("test/0015.raw", 0, 1024, 1024, 8, 1, interleave_mode::none, 0x3D3ee);
     ////test_encode_from_stream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
-    test_encode_from_stream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, interleave_mode::sample, 99734);
-    test_encode_from_stream("test/conformance/TEST8.PPM", 15, 256, 256, 8, 3, interleave_mode::line, 100615);
+    test_encode_from_stream("test/conformance/test8.ppm", 15, 256, 256, 8, 3, interleave_mode::sample, 99734);
+    test_encode_from_stream("test/conformance/test8.ppm", 15, 256, 256, 8, 3, interleave_mode::line, 100615);
 }
 
 

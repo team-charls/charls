@@ -34,7 +34,7 @@ TEST_CLASS(interface_test)
 public:
     TEST_METHOD(get_metadata_info_from_near_lossless_encoded_color_image) // NOLINT
     {
-        vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E3.JLS")};
+        vector<uint8_t> encoded_source{read_file("DataFiles/t8c0e3.jls")};
 
         JlsParameters params{};
         const jpegls_errc result = JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr);
@@ -50,7 +50,7 @@ public:
     TEST_METHOD(JpegLsReadHeader_nullptr) // NOLINT
     {
         JlsParameters params{};
-        vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E3.JLS")};
+        vector<uint8_t> encoded_source{read_file("DataFiles/t8c0e3.jls")};
         auto error = JpegLsReadHeader(nullptr, encoded_source.size(), &params, nullptr);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
 
@@ -71,7 +71,7 @@ public:
     TEST_METHOD(JpegLsReadHeader_custom_preset_parameters) // NOLINT
     {
         // NON-DEFAULT parameters T1=T2=T3=9,RESET=31.
-        vector<uint8_t> encoded_source{read_file("DataFiles/T8NDE0.JLS")};
+        vector<uint8_t> encoded_source{read_file("DataFiles/t8nde0.jls")};
 
         JlsParameters params{};
         const jpegls_errc result = JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr);

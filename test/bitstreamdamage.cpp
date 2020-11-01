@@ -135,9 +135,9 @@ void test_file_with_random_header_damage(const char* filename)
 
 void test_random_malformed_header()
 {
-    test_file_with_random_header_damage("test/conformance/T8C0E0.JLS");
-    test_file_with_random_header_damage("test/conformance/T8C1E0.JLS");
-    test_file_with_random_header_damage("test/conformance/T8C2E0.JLS");
+    test_file_with_random_header_damage("test/conformance/t8c0e0.jls");
+    test_file_with_random_header_damage("test/conformance/t8c1e0.jls");
+    test_file_with_random_header_damage("test/conformance/t8c2e0.jls");
 }
 
 

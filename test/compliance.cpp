@@ -200,37 +200,37 @@ void test_color_transforms_hp_images()
 void test_conformance()
 {
     // Test 1
-    decompress_file("test/conformance/T8C0E0.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/t8c0e0.jls", "test/conformance/test8.ppm", 15);
 
     // Test 2
-    decompress_file("test/conformance/T8C1E0.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/t8c1e0.jls", "test/conformance/test8.ppm", 15);
 
     // Test 3
-    decompress_file("test/conformance/T8C2E0.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/t8c2e0.jls", "test/conformance/test8.ppm", 15);
 
     // Test 4
-    decompress_file("test/conformance/T8C0E3.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/t8c0e3.jls", "test/conformance/test8.ppm", 15);
 
     // Test 5
-    decompress_file("test/conformance/T8C1E3.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/t8c1e3.jls", "test/conformance/test8.ppm", 15);
 
     // Test 6
-    decompress_file("test/conformance/T8C2E3.JLS", "test/conformance/TEST8.PPM", 15);
+    decompress_file("test/conformance/t8c2e3.jls", "test/conformance/test8.ppm", 15);
 
     // Test 7
     // Test 8
 
     // Test 9
-    decompress_file("test/conformance/T8NDE0.JLS", "test/conformance/TEST8BS2.PGM", 15);
+    decompress_file("test/conformance/t8nde0.jls", "test/conformance/test8bs2.pgm", 15);
 
     // Test 10
-    decompress_file("test/conformance/T8NDE3.JLS", "test/conformance/TEST8BS2.PGM", 15);
+    decompress_file("test/conformance/t8nde3.jls", "test/conformance/test8bs2.pgm", 15);
 
     // Test 11
-    decompress_file("test/conformance/T16E0.JLS", "test/conformance/TEST16.PGM", 16);
+    decompress_file("test/conformance/t16e0.jls", "test/conformance/test16.pgm", 16);
 
     // Test 12
-    decompress_file("test/conformance/T16E3.JLS", "test/conformance/TEST16.PGM", 16);
+    decompress_file("test/conformance/t16e3.jls", "test/conformance/test16.pgm", 16);
 
     // additional, Lena compressed with other codec (UBC?), vfy with CharLS
     decompress_file("test/lena8b.jls", "test/lena8b.raw", 0);

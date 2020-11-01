@@ -45,17 +45,17 @@ void test_jpegls_read_header()
 {
     cout << "Test JpegLsReadHeader\n";
 
-    test_jpegls_read_header("test/conformance/T8C0E0.JLS", 256, 256, 8, 256, 3, 0);
-    test_jpegls_read_header("test/conformance/T8C1E0.JLS", 256, 256, 8, 768, 3, 1);
-    test_jpegls_read_header("test/conformance/T8C2E0.JLS", 256, 256, 8, 768, 3, 2);
-    test_jpegls_read_header("test/conformance/T8C0E3.JLS", 256, 256, 8, 256, 3, 0);
-    test_jpegls_read_header("test/conformance/T8C1E3.JLS", 256, 256, 8, 768, 3, 1);
-    test_jpegls_read_header("test/conformance/T8C2E3.JLS", 256, 256, 8, 768, 3, 2);
-    test_jpegls_read_header("test/conformance/T8NDE0.JLS", 128, 128, 8, 128, 1, 0);
-    test_jpegls_read_header("test/conformance/T8NDE3.JLS", 128, 128, 8, 128, 1, 0);
-    test_jpegls_read_header("test/conformance/T16E0.JLS", 256, 256, 12, 512, 1, 0);
-    test_jpegls_read_header("test/conformance/T16E3.JLS", 256, 256, 12, 512, 1, 0);
-    test_jpegls_read_header("test/lena8b.JLS", 512, 512, 8, 512, 1, 0);
+    test_jpegls_read_header("test/conformance/t8c0e0.jls", 256, 256, 8, 256, 3, 0);
+    test_jpegls_read_header("test/conformance/t8c1e0.jls", 256, 256, 8, 768, 3, 1);
+    test_jpegls_read_header("test/conformance/t8c2e0.jls", 256, 256, 8, 768, 3, 2);
+    test_jpegls_read_header("test/conformance/t8c0e3.jls", 256, 256, 8, 256, 3, 0);
+    test_jpegls_read_header("test/conformance/t8c1e3.jls", 256, 256, 8, 768, 3, 1);
+    test_jpegls_read_header("test/conformance/t8c2e3.jls", 256, 256, 8, 768, 3, 2);
+    test_jpegls_read_header("test/conformance/t8nde0.jls", 128, 128, 8, 128, 1, 0);
+    test_jpegls_read_header("test/conformance/t8nde3.jls", 128, 128, 8, 128, 1, 0);
+    test_jpegls_read_header("test/conformance/t16e0.jls", 256, 256, 12, 512, 1, 0);
+    test_jpegls_read_header("test/conformance/t16e3.jls", 256, 256, 12, 512, 1, 0);
+    test_jpegls_read_header("test/lena8b.jls", 512, 512, 8, 512, 1, 0);
 }
 
 } // namespace

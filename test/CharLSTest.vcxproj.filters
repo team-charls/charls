@@ -90,43 +90,43 @@
     <CopyFileToFolders Include="MR2_UNC">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\T8C0E0.JLS">
+    <CopyFileToFolders Include="conformance\t8c0e0.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\T8C0E3.JLS">
+    <CopyFileToFolders Include="conformance\t8c0e3.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\T8C1E0.JLS">
+    <CopyFileToFolders Include="conformance\t8c1e0.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\T8C1E3.JLS">
+    <CopyFileToFolders Include="conformance\t8c1e3.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\T8C2E0.JLS">
+    <CopyFileToFolders Include="conformance\t8c2e0.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\T8C2E3.JLS">
+    <CopyFileToFolders Include="conformance\t8c2e3.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\T8NDE0.JLS">
+    <CopyFileToFolders Include="conformance\t8nde0.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\T8NDE3.JLS">
+    <CopyFileToFolders Include="conformance\t8nde3.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\T16E0.JLS">
+    <CopyFileToFolders Include="conformance\t16e0.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\T16E3.JLS">
+    <CopyFileToFolders Include="conformance\t16e3.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\TEST8.PPM">
+    <CopyFileToFolders Include="conformance\test8.ppm">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\TEST8BS2.PGM">
+    <CopyFileToFolders Include="conformance\test8bs2.pgm">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\TEST16.PGM">
+    <CopyFileToFolders Include="conformance\test16.pgm">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
   </ItemGroup>

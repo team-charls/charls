@@ -15,7 +15,7 @@ namespace CharLS.Test
         [Test]
         public void GetMetadataInfoFromLosslessEncodedColorImage()
         {
-            var source = ReadAllBytes("T8C0E0.JLS");
+            var source = ReadAllBytes("t8c0e0.jls");
             var info = JpegLSCodec.GetMetadataInfo(source);
             var expected = new JpegLSMetadataInfo { Height = 256, Width = 256, BitsPerComponent = 8, ComponentCount = 3 };
 
@@ -25,7 +25,7 @@ namespace CharLS.Test
         [Test]
         public void GetMetadataInfoFromNearLosslessEncodedColorImage()
         {
-            var source = ReadAllBytes("T8C0E3.JLS");
+            var source = ReadAllBytes("t8c0e3.jls");
             var info = JpegLSCodec.GetMetadataInfo(source);
             var expected = new JpegLSMetadataInfo { Height = 256, Width = 256, BitsPerComponent = 8, ComponentCount = 3, AllowedLossyError = 3 };
 
@@ -38,8 +38,8 @@ namespace CharLS.Test
         [Test]
         public void Decompress()
         {
-            var source = ReadAllBytes("T8C0E0.JLS");
-            var expected = ReadAllBytes("TEST8.PPM", 15);
+            var source = ReadAllBytes("t8c0e0.jls");
+            var expected = ReadAllBytes("test8.ppm", 15);
             var uncompressed = JpegLSCodec.Decompress(source);
 
             var info = JpegLSCodec.GetMetadataInfo(source);
@@ -56,7 +56,7 @@ namespace CharLS.Test
         {
             var info = new JpegLSMetadataInfo(256, 256, 8, 3);
 
-            var uncompressedOriginal = ReadAllBytes("TEST8.PPM", 15);
+            var uncompressedOriginal = ReadAllBytes("test8.ppm", 15);
             uncompressedOriginal = TripletToPlanar(uncompressedOriginal, info.Width, info.Height);
 
             var compressedSegment = JpegLSCodec.Compress(info, uncompressedOriginal);
@@ -77,7 +77,7 @@ namespace CharLS.Test
         {
             var info = new JpegLSMetadataInfo(256, 256, 8, 3);
 
-            var uncompressedOriginal = ReadAllBytes("TEST8.PPM", 15);
+            var uncompressedOriginal = ReadAllBytes("test8.ppm", 15);
             uncompressedOriginal = TripletToPlanar(uncompressedOriginal, info.Width, info.Height);
 
             var compressedSegment = JpegLSCodec.Compress(info, uncompressedOriginal, uncompressedOriginal.Length);

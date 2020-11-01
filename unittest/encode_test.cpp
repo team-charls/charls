@@ -38,17 +38,17 @@ public:
 
     TEST_METHOD(encode_color_8_bit_interleave_none_lossless) // NOLINT
     {
-        encode("DataFiles/TEST8.PPM");
+        encode("DataFiles/test8.ppm");
     }
 
     TEST_METHOD(encode_color_8_bit_interleave_line_lossless) // NOLINT
     {
-        encode("DataFiles/TEST8.PPM", interleave_mode::line);
+        encode("DataFiles/test8.ppm", interleave_mode::line);
     }
 
     TEST_METHOD(encode_color_8_bit_interleave_sample_lossless) // NOLINT
     {
-        encode("DataFiles/TEST8.PPM", interleave_mode::sample);
+        encode("DataFiles/test8.ppm", interleave_mode::sample);
     }
 
 private:

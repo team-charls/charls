@@ -147,7 +147,7 @@ public:
 
     TEST_METHOD(destination_size) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+        const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder{source};
         decoder.read_header();
@@ -158,7 +158,7 @@ public:
 
     TEST_METHOD(destination_size_stride_interleave_none) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+        const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder{source};
         decoder.read_header();
@@ -170,7 +170,7 @@ public:
 
     TEST_METHOD(destination_size_stride_interleave_line) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/T8C1E0.JLS")};
+        const vector<uint8_t> source{read_file("DataFiles/t8c1e0.jls")};
 
         jpegls_decoder decoder{source};
         decoder.read_header();
@@ -182,7 +182,7 @@ public:
 
     TEST_METHOD(destination_size_stride_interleave_sample) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/T8C2E0.JLS")};
+        const vector<uint8_t> source{read_file("DataFiles/t8c2e0.jls")};
 
         jpegls_decoder decoder{source};
         decoder.read_header();
@@ -194,7 +194,7 @@ public:
 
     TEST_METHOD(decode_reference_file_from_buffer) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+        const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder{source};
         decoder.read_header();
@@ -202,7 +202,7 @@ public:
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
 
-        portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/TEST8.PPM", decoder.interleave_mode(), decoder.frame_info());
+        portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info());
 
         const auto& reference_image_data = reference_file.image_data();
         for (size_t i = 0; i < destination.size(); ++i)
@@ -213,7 +213,7 @@ public:
 
     TEST_METHOD(decode_with_default_pc_parameters_before_each_sos) // NOLINT
     {
-        vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+        vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
         insert_pc_parameters_segments(source, 3);
 
         jpegls_decoder decoder{source};
@@ -222,7 +222,7 @@ public:
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
 
-        portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/TEST8.PPM", decoder.interleave_mode(), decoder.frame_info());
+        portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info());
 
         const auto& reference_image_data = reference_file.image_data();
         for (size_t i = 0; i < destination.size(); ++i)
@@ -233,14 +233,14 @@ public:
 
     TEST_METHOD(decode_with_destination_as_return) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+        const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder{source};
         decoder.read_header();
 
         const auto destination = decoder.decode<vector<uint8_t>>();
 
-        portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/TEST8.PPM", decoder.interleave_mode(), decoder.frame_info());
+        portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info());
 
         const auto& reference_image_data = reference_file.image_data();
         for (size_t i = 0; i < destination.size(); ++i)
@@ -251,14 +251,14 @@ public:
 
     TEST_METHOD(decode_with_16_bit_destination_as_return) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+        const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder{source};
         decoder.read_header();
 
         const auto destination = decoder.decode<vector<uint16_t>>();
 
-        portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/TEST8.PPM", decoder.interleave_mode(), decoder.frame_info());
+        portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info());
 
         const auto& reference_image_data = reference_file.image_data();
         const auto* destination_as_bytes = reinterpret_cast<const uint8_t*>(destination.data());
@@ -327,7 +327,7 @@ public:
 
     TEST_METHOD(read_spiff_header_from_jpegls_without_spiff) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+        const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder{source};
 
@@ -346,7 +346,7 @@ public:
 
     TEST_METHOD(read_header_twice) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/T8C0E0.JLS")};
+        const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder{source};
 
@@ -358,7 +358,7 @@ public:
 
     TEST_METHOD(simple_decode) // NOLINT
     {
-        const vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E0.JLS")};
+        const vector<uint8_t> encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
         vector<uint8_t> decoded_destination;
         frame_info frame_info;
@@ -377,7 +377,7 @@ public:
 
     TEST_METHOD(simple_decode_to_uint16_buffer) // NOLINT
     {
-        const vector<uint8_t> encoded_source{read_file("DataFiles/T8C0E0.JLS")};
+        const vector<uint8_t> encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
         vector<uint16_t> decoded_destination;
         frame_info frame_info;

@@ -103,46 +103,46 @@
     <CopyFileToFolders Include="../test/lena8b.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/T8C0E0.JLS">
+    <CopyFileToFolders Include="../test/conformance/t8c0e0.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/T8C0E3.JLS">
+    <CopyFileToFolders Include="../test/conformance/t8c0e3.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/T8C1E0.JLS">
+    <CopyFileToFolders Include="../test/conformance/t8c1e0.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/T8C1E3.JLS">
+    <CopyFileToFolders Include="../test/conformance/t8c1e3.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/T8C2E0.JLS">
+    <CopyFileToFolders Include="../test/conformance/t8c2e0.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/T8C2E3.JLS">
+    <CopyFileToFolders Include="../test/conformance/t8c2e3.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/T8NDE0.JLS">
+    <CopyFileToFolders Include="../test/conformance/t8nde0.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/T8NDE3.JLS">
+    <CopyFileToFolders Include="../test/conformance/t8nde3.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/T16E0.JLS">
+    <CopyFileToFolders Include="../test/conformance/t16e0.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/T16E3.JLS">
+    <CopyFileToFolders Include="../test/conformance/t16e3.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/T16E3.pgm">
+    <CopyFileToFolders Include="../test/conformance/t16e3.pgm">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/TEST8.PPM">
+    <CopyFileToFolders Include="../test/conformance/test8.ppm">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/TEST8BS2.PGM">
+    <CopyFileToFolders Include="../test/conformance/test8bs2.pgm">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/TEST16.PGM">
+    <CopyFileToFolders Include="../test/conformance/test16.pgm">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="ff_in_entropy_data.jls">
