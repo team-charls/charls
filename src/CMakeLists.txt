@@ -20,10 +20,12 @@ if(WIN32 AND BUILD_SHARED_LIBS)
   endif()
 endif()
 
-# GR- will disable run-time type info (dynamic cast + typeid). CharLS doesn't use this option
-# and disabling it will result in a smaller image.
-if(MSVC)
- target_compile_options(charls PRIVATE /GR-)
+# Disable C++ run-time type info (dynamic cast + typeid). CharLS doesn't use
+# this functionality and disabling it will result in a smaller image.
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(charls PRIVATE -fno-rtti)
+elseif(MSVC)
+  target_compile_options(charls PRIVATE /GR-)
 endif()
 
 set_target_properties(charls PROPERTIES
