@@ -31,27 +31,11 @@
     <RootNamespace>test</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>CharLSTest</ProjectName>
+    <TargetName>CharLSTest</TargetName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup>
     <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Checked|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -77,27 +61,21 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>CharLSTest</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>CharLSTest</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>CharLSTest</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>CharLSTest</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>CharLSTest</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>CharLSTest</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -225,210 +203,95 @@
   <ItemGroup>
     <CopyFileToFolders Include="0015.raw">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders>$(OutDir)test</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\test8.ppm">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="lena8b.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders>$(OutDir)test</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="alphatest.raw">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders>$(OutDir)test</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\t16e0.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\t8c2e3.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\t8c0e0.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\t8c1e0.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\t8c0e3.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\t8c2e0.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\t16e3.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\t8c1e3.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\t8nde0.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\t8nde3.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\test16.pgm">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="MR2_UNC">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders>$(OutDir)test</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="lena8b.raw">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test</DestinationFolders>
+      <DestinationFolders>$(OutDir)test</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\test8bs2.pgm">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\conformance</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\conformance</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="jlsimage\banny_HP1.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\jlsimage</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="jlsimage\banny_HP2.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\jlsimage</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="jlsimage\banny_HP3.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\jlsimage</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="jlsimage\banny_normal.jls">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\jlsimage</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="jlsimage\banny.ppm">
       <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)test\jlsimage</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">$(OutDir)test\jlsimage</DestinationFolders>
+      <DestinationFolders>$(OutDir)test\jlsimage</DestinationFolders>
     </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
