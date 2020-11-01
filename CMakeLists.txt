@@ -116,11 +116,19 @@ if(MSVC)
     add_compile_options("/EHsc")
   endif()
 
-endif()
+  # Remove option /GR (/GR is added by default by CMake). /GR is already the default
+  # and this makes it possible to use /GR- without warnings.
+  string(REGEX REPLACE " /GR" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-# All C and C++ source files are in utf-8 without signature (bom), MSVC requires utf-8 switch to read files correctly.
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+  # All C and C++ source files are in utf-8 without signature (bom), MSVC requires utf-8 switch to read files correctly.
+  add_compile_options("/utf-8")
+
+  # Zc:__cplusplus: Will configure the MSVC compiler to use the correct value for the __cplusplus macro
+  add_compile_options("/Zc:__cplusplus")
+
+  # /Zc:throwingNew: Will configure the MSVC compiler that only the standard throwing operator new is used.
+  add_compile_options("/Zc:throwingNew")
+endif()
 
 # When enabled apply the pedantic warnings options and warnings as errors to globally.
 if(CHARLS_PEDANTIC_WARNINGS)
