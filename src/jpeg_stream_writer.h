@@ -5,8 +5,8 @@
 
 #include <charls/jpegls_error.h>
 
-#include "jpeg_marker_code.h"
 #include "byte_span.h"
+#include "jpeg_marker_code.h"
 #include "util.h"
 
 namespace charls {
@@ -16,7 +16,7 @@ class jpeg_stream_writer final
 {
 public:
     jpeg_stream_writer() = default;
-    explicit jpeg_stream_writer(const byte_span destination) noexcept;
+    explicit jpeg_stream_writer(byte_span destination) noexcept;
     ~jpeg_stream_writer() = default;
 
     jpeg_stream_writer(const jpeg_stream_writer&) = delete;
@@ -96,7 +96,7 @@ public:
     }
 
 private:
-    void write_segment_header(jpeg_marker_code marker_code, size_t size);
+    void write_segment_header(jpeg_marker_code marker_code, size_t data_size);
 
     void write_uint8(const uint8_t value) noexcept
     {
@@ -108,7 +108,7 @@ private:
     {
         ASSERT(byte_offset_ + sizeof(uint16_t) <= destination_.size);
 
-        uint16_t* destination = reinterpret_cast<uint16_t*>(destination_.data + byte_offset_);
+        auto* destination = reinterpret_cast<uint16_t*>(destination_.data + byte_offset_);
         *destination = endian_swap(value);
         byte_offset_ += sizeof(uint16_t);
     }
@@ -123,7 +123,7 @@ private:
     {
         ASSERT(byte_offset_ + sizeof(uint32_t) <= destination_.size);
 
-        uint32_t* destination = reinterpret_cast<uint32_t*>(destination_.data + byte_offset_);
+        auto* destination = reinterpret_cast<uint32_t*>(destination_.data + byte_offset_);
         *destination = endian_swap(value);
         byte_offset_ += sizeof(uint32_t);
     }
@@ -157,7 +157,7 @@ private:
 
     static constexpr uint16_t endian_swap(const uint16_t value) noexcept
     {
-        return value >> 8 | value << 8;
+        return static_cast<uint16_t>(value >> 8 | value << 8);
     }
 
     byte_span destination_{};
