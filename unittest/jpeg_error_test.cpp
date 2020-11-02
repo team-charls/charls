@@ -11,8 +11,6 @@ using Microsoft::VisualStudio::CppUnitTestFramework::TestClass;
 namespace charls {
 namespace test {
 
-// clang-format off
-
 TEST_CLASS(jpegls_error_test)
 {
 public:
@@ -37,5 +35,5 @@ public:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test

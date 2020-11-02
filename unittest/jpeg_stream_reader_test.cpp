@@ -21,8 +21,6 @@ using std::vector;
 namespace charls {
 namespace test {
 
-// clang-format off
-
 TEST_CLASS(jpeg_stream_reader_test)
 {
 public:
@@ -244,7 +242,7 @@ public:
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
         assert_expect_exception(jpegls_errc::invalid_parameter_jpegls_pc_parameters,
-            [&](){reader.read_header();});
+                                [&]() { reader.read_header(); });
     }
 
     static void read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(const uint8_t id)
@@ -394,7 +392,7 @@ public:
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
         assert_expect_exception(jpegls_errc::unexpected_marker_found,
-            [&](){reader.read_header();});
+                                [&]() { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_extra_sof_should_throw) // NOLINT
@@ -407,7 +405,7 @@ public:
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
         assert_expect_exception(jpegls_errc::duplicate_start_of_frame_marker,
-            [&](){reader.read_header();});
+                                [&]() { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw) // NOLINT
@@ -421,7 +419,7 @@ public:
         reader.read_header();
 
         assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless,
-            [&](){reader.read_start_of_scan();});
+                                [&]() { reader.read_start_of_scan(); });
     }
 
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw2) // NOLINT
@@ -440,7 +438,7 @@ public:
         reader.read_header();
 
         assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless,
-            [&](){reader.read_start_of_scan();});
+                                [&]() { reader.read_start_of_scan(); });
     }
 
     TEST_METHOD(read_header_with_duplicate_component_id_in_start_of_frame_segment_should_throw) // NOLINT
@@ -668,5 +666,5 @@ private:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test

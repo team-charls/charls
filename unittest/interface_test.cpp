@@ -24,8 +24,6 @@ MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere t
 // ReSharper disable CppDeprecatedEntity
 DISABLE_DEPRECATED_WARNING
 
-// clang-format off
-
 namespace charls {
 namespace test {
 
@@ -100,10 +98,10 @@ public:
         error = JpegLsEncode(buffer.data(), buffer.size(), nullptr, buffer.data(), buffer.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        error = JpegLsEncode(buffer.data(), buffer.size(),  &bytes_written, nullptr, buffer.size(), &params, nullptr);
+        error = JpegLsEncode(buffer.data(), buffer.size(), &bytes_written, nullptr, buffer.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        error = JpegLsEncode(buffer.data(), buffer.size(),  &bytes_written, buffer.data(), buffer.size(), nullptr, nullptr);
+        error = JpegLsEncode(buffer.data(), buffer.size(), &bytes_written, buffer.data(), buffer.size(), nullptr, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
@@ -159,17 +157,17 @@ public:
         auto error = JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::success, error);
 
-        vector<uint8_t> decoded_destination(static_cast<size_t>(params.width) * params.height*params.components);
+        vector<uint8_t> decoded_destination(static_cast<size_t>(params.width) * params.height * params.components);
 
         error = JpegLsDecode(decoded_destination.data(), decoded_destination.size(),
-            encoded_source.data(), encoded_source.size(), &params, nullptr);
+                             encoded_source.data(), encoded_source.size(), &params, nullptr);
         Assert::IsFalse(static_cast<bool>(error));
 
-        const JlsRect rect = { 128, 128, 256, 1 };
+        const JlsRect rect = {128, 128, 256, 1};
         vector<uint8_t> decoded_rect(static_cast<size_t>(rect.Width) * rect.Height);
         decoded_rect.push_back(0x1f);
         error = JpegLsDecodeRect(decoded_rect.data(), decoded_rect.size(),
-            encoded_source.data(), encoded_source.size(), rect, &params, nullptr);
+                                 encoded_source.data(), encoded_source.size(), rect, &params, nullptr);
         Assert::IsFalse(static_cast<bool>(error));
 
         Assert::IsTrue(memcmp(&decoded_destination[rect.X + static_cast<size_t>(rect.Y) * 512], decoded_rect.data(), static_cast<size_t>(rect.Width) * rect.Height) == 0);
@@ -222,8 +220,8 @@ public:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test
 
 // ReSharper restore CppDeprecatedEntity
 RESTORE_DEPRECATED_WARNING

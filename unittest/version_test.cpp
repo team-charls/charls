@@ -12,8 +12,6 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::ostringstream;
 
-// clang-format off
-
 namespace charls {
 namespace test {
 
@@ -57,5 +55,5 @@ public:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test

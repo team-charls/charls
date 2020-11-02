@@ -13,8 +13,6 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using namespace charls_test;
 using std::vector;
 
-// clang-format off
-
 namespace charls {
 namespace test {
 
@@ -63,9 +61,8 @@ private:
     static void encode(const portable_anymap_file& reference_file, const interleave_mode interleave_mode)
     {
         jpegls_encoder encoder;
-        encoder.frame_info({
-            static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()),
-            reference_file.bits_per_sample(), reference_file.component_count()})
+        encoder.frame_info({static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()),
+                            reference_file.bits_per_sample(), reference_file.component_count()})
             .interleave_mode(interleave_mode);
 
         vector<uint8_t> charls_encoded(encoder.estimated_destination_size());
@@ -87,14 +84,14 @@ private:
         info.interleaveMode = interleave_mode;
 
         vector<uint8_t> charls_encoded(estimated_destination_size(reference_file.width(), reference_file.height(),
-            reference_file.component_count(), reference_file.bits_per_sample()));
+                                                                  reference_file.component_count(), reference_file.bits_per_sample()));
 
         // ReSharper disable CppDeprecatedEntity
         DISABLE_DEPRECATED_WARNING
 
         size_t bytes_written;
         const auto error = JpegLsEncode(charls_encoded.data(), charls_encoded.size(), &bytes_written,
-            reference_file.image_data().data(), reference_file.image_data().size(), &info, nullptr);
+                                        reference_file.image_data().data(), reference_file.image_data().size(), &info, nullptr);
 
         // ReSharper restore CppDeprecatedEntity
         RESTORE_DEPRECATED_WARNING
@@ -139,9 +136,10 @@ private:
     constexpr static size_t estimated_destination_size(const int width, const int height, const int component_count, const int bits_per_sample) noexcept
     {
         return static_cast<size_t>(width) * height *
-                   component_count * (bits_per_sample < 9 ? 1 : 2) + 1024;
+                   component_count * (bits_per_sample < 9 ? 1 : 2) +
+               1024;
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test

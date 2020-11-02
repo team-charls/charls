@@ -10,8 +10,6 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 
-// clang-format off
-
 namespace charls {
 namespace test {
 
@@ -30,5 +28,5 @@ public:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test

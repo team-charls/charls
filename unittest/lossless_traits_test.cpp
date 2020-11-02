@@ -11,15 +11,13 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 namespace charls {
 namespace test {
 
-// clang-format off
-
 TEST_CLASS(lossless_traits_test)
 {
 public:
     TEST_METHOD(test_traits_16_bit) // NOLINT
     {
         using lossless_traits = lossless_traits<uint16_t, 12>;
-        const auto traits1 = default_traits<uint16_t, uint16_t>(4095,0);
+        const auto traits1 = default_traits<uint16_t, uint16_t>(4095, 0);
         const lossless_traits traits2;
 
         Assert::IsTrue(traits1.limit == traits2.limit);
@@ -37,14 +35,14 @@ public:
         for (int i = -8095; i <= 8095; ++i)
         {
             Assert::IsTrue(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
-            Assert::IsTrue(traits1.is_near(i,2) == lossless_traits::is_near(i, 2));
+            Assert::IsTrue(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
         }
     }
 
     TEST_METHOD(test_traits_8_bit) // NOLINT
     {
         using lossless_traits = lossless_traits<uint8_t, 8>;
-        const auto traits1 = default_traits<uint8_t, uint8_t>(255,0);
+        const auto traits1 = default_traits<uint8_t, uint8_t>(255, 0);
         const lossless_traits traits2;
 
         Assert::IsTrue(traits1.limit == traits2.limit);
@@ -62,10 +60,10 @@ public:
         for (int i = -255; i <= 512; ++i)
         {
             Assert::IsTrue(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
-            Assert::IsTrue(traits1.is_near(i,2) == lossless_traits::is_near(i,2));
+            Assert::IsTrue(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
         }
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test

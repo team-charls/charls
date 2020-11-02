@@ -39,3 +39,5 @@ SpaceBeforeCpp11BracedList: false
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
+
+StatementMacros: ['TEST_CLASS', 'TEST_METHOD']

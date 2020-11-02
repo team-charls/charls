@@ -133,8 +133,6 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::vector;
 using namespace charls_test;
 
-// clang-format off
-
 namespace charls {
 namespace test {
 
@@ -173,7 +171,7 @@ public:
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
         const vector<uint8_t> charls_encoded = encode_simple_8_bit_monochrome(reference_file.image_data(),
-            static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
+                                                                              static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
@@ -183,7 +181,7 @@ public:
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
         const vector<uint8_t> charls_encoded = encode_advanced_8_bit_monochrome(reference_file.image_data(),
-            static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
+                                                                                static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
@@ -193,7 +191,7 @@ public:
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
         const vector<uint8_t> charls_encoded = encode_simple_8_bit_monochrome_legacy(reference_file.image_data(),
-            static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
+                                                                                     static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
@@ -245,8 +243,8 @@ private:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test
 
 // ReSharper restore CppDeprecatedEntity
 RESTORE_DEPRECATED_WARNING

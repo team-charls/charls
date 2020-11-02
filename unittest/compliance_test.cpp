@@ -17,8 +17,6 @@ using std::vector;
 namespace charls {
 namespace test {
 
-// clang-format off
-
 TEST_CLASS(compliance_test)
 {
 public:
@@ -176,7 +174,7 @@ private:
             Assert::IsTrue(verify_encoded_bytes_legacy_api(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
         }
 
-        vector<uint8_t> destination(static_cast<size_t>(info.height) *info.width * bit_to_byte_count(info.bitsPerSample) * info.components);
+        vector<uint8_t> destination(static_cast<size_t>(info.height) * info.width * bit_to_byte_count(info.bitsPerSample) * info.components);
 
         error = JpegLsDecode(destination.data(), destination.size(), compressed_bytes, compressed_length, nullptr, nullptr);
         Assert::IsTrue(!error);
@@ -234,9 +232,9 @@ private:
 
         jpegls_encoder encoder;
         encoder.frame_info(decoder.frame_info())
-               .interleave_mode(decoder.interleave_mode())
-               .near_lossless(decoder.near_lossless())
-               .preset_coding_parameters(decoder.preset_coding_parameters());
+            .interleave_mode(decoder.interleave_mode())
+            .near_lossless(decoder.near_lossless())
+            .preset_coding_parameters(decoder.preset_coding_parameters());
 
         vector<uint8_t> our_encoded_bytes(encoded_source.size() + 16);
         encoder.destination(our_encoded_bytes);
@@ -258,5 +256,5 @@ private:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test

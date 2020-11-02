@@ -20,8 +20,6 @@ constexpr size_t serialized_spiff_header_size = 34;
 namespace charls {
 namespace test {
 
-// clang-format off
-
 TEST_CLASS(jpegls_encoder_test)
 {
 public:
@@ -47,7 +45,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, 1, 2, 1}); // minimum.
+        encoder.frame_info({1, 1, 2, 1});                      // minimum.
         encoder.frame_info({UINT16_MAX, UINT16_MAX, 16, 255}); // maximum.
     }
 
@@ -97,16 +95,16 @@ public:
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_interleave_mode,
-            [&] { encoder.interleave_mode(static_cast<charls::interleave_mode>(-1)); });
+                                [&] { encoder.interleave_mode(static_cast<charls::interleave_mode>(-1)); });
         assert_expect_exception(jpegls_errc::invalid_argument_interleave_mode,
-            [&] { encoder.interleave_mode(static_cast<charls::interleave_mode>(3)); });
+                                [&] { encoder.interleave_mode(static_cast<charls::interleave_mode>(3)); });
     }
 
     TEST_METHOD(near_lossless) // NOLINT
     {
         jpegls_encoder encoder;
 
-        encoder.near_lossless(0); // set lowest value.
+        encoder.near_lossless(0);   // set lowest value.
         encoder.near_lossless(255); // set highest value.
     }
 
@@ -195,7 +193,7 @@ public:
         vector<uint8_t> destination(200);
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] {encoder.destination(destination); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { encoder.destination(destination); });
     }
 
     TEST_METHOD(write_standard_spiff_header) // NOLINT
@@ -232,7 +230,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({ 1, 1, 2, 1 });
+        encoder.frame_info({1, 1, 2, 1});
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
@@ -251,7 +249,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({ 1, 1, 2, 1 });
+        encoder.frame_info({1, 1, 2, 1});
 
         vector<uint8_t> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
@@ -395,10 +393,10 @@ public:
         encoder.write_standard_spiff_header(spiff_color_space::cmyk);
 
         assert_expect_exception(jpegls_errc::invalid_argument_spiff_entry_size,
-            [&] {
-                vector<uint8_t> spiff_entry(65528 + 1);
-                encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
-            });
+                                [&] {
+                                    vector<uint8_t> spiff_entry(65528 + 1);
+                                    encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
+                                });
     }
 
     TEST_METHOD(write_spiff_entry_without_spiff_header) // NOLINT
@@ -411,10 +409,10 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] {
-                vector<uint8_t> spiff_entry(65528);
-                encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
-            });
+                                [&] {
+                                    vector<uint8_t> spiff_entry(65528);
+                                    encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
+                                });
     }
 
     TEST_METHOD(set_preset_coding_parameters) // NOLINT
@@ -432,10 +430,10 @@ public:
     {
         jpegls_encoder encoder;
 
-        charls_jpegls_pc_parameters pc_parameters{1,1,1,1,1};
+        charls_jpegls_pc_parameters pc_parameters{1, 1, 1, 1, 1};
 
         assert_expect_exception(jpegls_errc::invalid_argument_jpegls_pc_parameters,
-            [&] { encoder.preset_coding_parameters(pc_parameters); });
+                                [&] { encoder.preset_coding_parameters(pc_parameters); });
     }
 
     TEST_METHOD(set_color_transformation_bad_value) // NOLINT
@@ -443,7 +441,7 @@ public:
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
-            [&] { encoder.color_transformation(static_cast<color_transformation>(100)); });
+                                [&] { encoder.color_transformation(static_cast<color_transformation>(100)); });
     }
 
     TEST_METHOD(encode_without_destination) // NOLINT
@@ -452,7 +450,7 @@ public:
 
         encoder.frame_info({1, 1, 2, 1});
         vector<uint8_t> source(20);
-        assert_expect_exception(jpegls_errc::invalid_operation,[&] { static_cast<void>(encoder.encode(source)); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(encoder.encode(source)); });
     }
 
     TEST_METHOD(encode_without_frame_info) // NOLINT
@@ -462,7 +460,7 @@ public:
         vector<uint8_t> destination(20);
         encoder.destination(destination);
         vector<uint8_t> source(20);
-        assert_expect_exception(jpegls_errc::invalid_operation,[&] { static_cast<void>(encoder.encode(source)); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(encoder.encode(source)); });
     }
 
     TEST_METHOD(encode_with_spiff_header) // NOLINT
@@ -492,7 +490,7 @@ public:
         encoder.frame_info(frame_info);
         vector<uint8_t> destination(encoder.estimated_destination_size());
         encoder.destination(destination)
-               .color_transformation(color_transformation::hp1);
+            .color_transformation(color_transformation::hp1);
 
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
@@ -577,5 +575,5 @@ private:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test

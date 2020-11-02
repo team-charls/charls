@@ -49,8 +49,6 @@ public:
 namespace charls {
 namespace test {
 
-// clang-format off
-
 TEST_CLASS(decoder_strategy_test)
 {
 public:
@@ -62,7 +60,7 @@ public:
             int bits;
         };
 
-        const array<data_t, 5> in_data{{{0x00, 24}, {0xFF, 8}, {0xFFFF, 16 }, {0xFFFF, 16 }, {0x12345678, 31}}};
+        const array<data_t, 5> in_data{{{0x00, 24}, {0xFF, 8}, {0xFFFF, 16}, {0xFFFF, 16}, {0x12345678, 31}}};
 
         array<uint8_t, 100> enc_buf{};
         const frame_info frame_info{};
@@ -90,5 +88,5 @@ public:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test

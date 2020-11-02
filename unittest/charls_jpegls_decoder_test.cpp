@@ -11,8 +11,8 @@
 #include <array>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using std::vector;
 using std::array;
+using std::vector;
 
 MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0':  this does not adhere to the specification for the function.
 
@@ -23,8 +23,6 @@ MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0':  this does not adhere 
 
 namespace charls {
 namespace test {
-
-// clang-format off
 
 TEST_CLASS(charls_jpegls_decoder_test)
 {
@@ -171,8 +169,8 @@ private:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test
 
 #if defined(__clang__)
 #pragma clang diagnostic pop

@@ -22,8 +22,6 @@ MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere t
 namespace charls {
 namespace test {
 
-// clang-format off
-
 TEST_CLASS(charls_jpegls_encoder_test)
 {
 public:
@@ -95,7 +93,7 @@ public:
         auto error = charls_jpegls_encoder_get_estimated_destination_size(nullptr, &size_in_bytes);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        charls_jpegls_encoder * const encoder = charls_jpegls_encoder_create();
+        charls_jpegls_encoder* const encoder = charls_jpegls_encoder_create();
 
         charls_frame_info frame_info{1, 1, 2, 1};
         error = charls_jpegls_encoder_set_frame_info(encoder, &frame_info);
@@ -112,7 +110,7 @@ public:
         auto error = charls_jpegls_encoder_get_bytes_written(nullptr, &bytes_written);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        charls_jpegls_encoder const * const encoder = charls_jpegls_encoder_create();
+        charls_jpegls_encoder const* const encoder = charls_jpegls_encoder_create();
         error = charls_jpegls_encoder_get_bytes_written(encoder, nullptr);
         charls_jpegls_encoder_destroy(encoder);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
@@ -145,7 +143,7 @@ public:
     TEST_METHOD(write_standard_spiff_header_nullptr) // NOLINT
     {
         const auto error = charls_jpegls_encoder_write_standard_spiff_header(nullptr, charls_spiff_color_space::cie_lab,
-                                                  charls_spiff_resolution_units::dots_per_centimeter, 1, 1);
+                                                                             charls_spiff_resolution_units::dots_per_centimeter, 1, 1);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
     }
 
@@ -162,8 +160,8 @@ public:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test
 
 #if defined(__clang__)
 #pragma clang diagnostic pop

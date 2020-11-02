@@ -64,8 +64,6 @@ constexpr thresholds compute_defaults_using_reference_implementation(const int32
 
 } // namespace
 
-// clang-format off
-
 namespace charls {
 namespace test {
 

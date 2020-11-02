@@ -13,8 +13,6 @@ using std::array;
 namespace charls {
 namespace test {
 
-// clang-format off
-
 TEST_CLASS(encoder_strategy_test)
 {
 public:
@@ -77,5 +75,5 @@ public:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test

@@ -36,8 +36,6 @@ void push_back(std::vector<uint8_t>& values, const uint16_t value)
 namespace charls {
 namespace test {
 
-// clang-format off
-
 TEST_CLASS(jpegls_decoder_test)
 {
 public:
@@ -66,7 +64,7 @@ public:
         vector<uint8_t> source(2000);
         decoder.source(source);
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] { decoder.source(source); });
+                                [&] { decoder.source(source); });
     }
 
     TEST_METHOD(read_spiff_header_without_source) // NOLINT
@@ -74,10 +72,10 @@ public:
         jpegls_decoder decoder;
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] {
-                    bool header_found;
-                    decoder.read_spiff_header(header_found);
-                });
+                                [&] {
+                                    bool header_found;
+                                    decoder.read_spiff_header(header_found);
+                                });
     }
 
     TEST_METHOD(destination_size_without_reading_header) // NOLINT
@@ -85,7 +83,7 @@ public:
         jpegls_decoder decoder;
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] { static_cast<void>(decoder.destination_size()); });
+                                [&] { static_cast<void>(decoder.destination_size()); });
     }
 
     TEST_METHOD(read_header_without_source) // NOLINT
@@ -93,7 +91,7 @@ public:
         jpegls_decoder decoder;
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] { decoder.read_header(); });
+                                [&] { decoder.read_header(); });
     }
 
     TEST_METHOD(read_header_from_non_jpegls_data) // NOLINT
@@ -113,7 +111,7 @@ public:
         jpegls_decoder decoder{source};
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] { static_cast<void>(decoder.frame_info()); });
+                                [&] { static_cast<void>(decoder.frame_info()); });
     }
 
     TEST_METHOD(interleave_mode_without_read_header) // NOLINT
@@ -122,7 +120,7 @@ public:
         jpegls_decoder decoder{source};
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] { static_cast<void>(decoder.interleave_mode()); });
+                                [&] { static_cast<void>(decoder.interleave_mode()); });
     }
 
     TEST_METHOD(near_lossless_without_read_header) // NOLINT
@@ -131,7 +129,7 @@ public:
         jpegls_decoder decoder{source};
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] { static_cast<void>(decoder.near_lossless()); });
+                                [&] { static_cast<void>(decoder.near_lossless()); });
     }
 
     TEST_METHOD(preset_coding_parameters_without_read_header) // NOLINT
@@ -142,7 +140,7 @@ public:
         decoder.source(source);
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] { static_cast<void>(decoder.preset_coding_parameters()); });
+                                [&] { static_cast<void>(decoder.preset_coding_parameters()); });
     }
 
     TEST_METHOD(destination_size) // NOLINT
@@ -274,7 +272,7 @@ public:
 
         vector<uint8_t> buffer(1000);
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] { decoder.decode(buffer); });
+                                [&] { decoder.decode(buffer); });
     }
 
     TEST_METHOD(decode_reference_to_mapping_table_selector) // NOLINT
@@ -289,7 +287,7 @@ public:
         jpegls_decoder decoder{writer.buffer};
 
         assert_expect_exception(jpegls_errc::parameter_value_not_supported,
-            [&] { decoder.read_header(); });
+                                [&] { decoder.read_header(); });
     }
 
     TEST_METHOD(read_spiff_header) // NOLINT
@@ -353,7 +351,7 @@ public:
         decoder.read_header();
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-            [&] { static_cast<void>(decoder.read_header()); });
+                                [&] { static_cast<void>(decoder.read_header()); });
     }
 
     TEST_METHOD(simple_decode) // NOLINT
@@ -410,7 +408,7 @@ public:
         vector<uint8_t> destination(decoder.destination_size());
 
         assert_expect_exception(jpegls_errc::invalid_encoded_data,
-            [&] { static_cast<void>(decoder.decode(destination)); });
+                                [&] { static_cast<void>(decoder.decode(destination)); });
     }
 
 private:
@@ -444,7 +442,7 @@ private:
         return segment;
     }
 
-    static void insert_pc_parameters_segments(vector<uint8_t>& jpegls_source, const int component_count)
+    static void insert_pc_parameters_segments(vector<uint8_t> & jpegls_source, const int component_count)
     {
         const auto pcp_segment = create_default_pc_parameters_segment();
 
@@ -458,5 +456,5 @@ private:
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test

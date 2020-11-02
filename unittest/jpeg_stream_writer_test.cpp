@@ -16,8 +16,6 @@ using std::array;
 namespace charls {
 namespace test {
 
-// clang-format off
-
 TEST_CLASS(jpeg_stream_writer_test)
 {
 public:
@@ -75,8 +73,7 @@ public:
         array<uint8_t, 34> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        spiff_header header
-        {
+        spiff_header header{
             spiff_profile_id::none,
             3,
             800,
@@ -86,8 +83,7 @@ public:
             spiff_compression_type::jpeg_ls,
             spiff_resolution_units::dots_per_inch,
             96,
-            1024
-        };
+            1024};
 
         writer.write_spiff_header_segment(header);
 
@@ -149,8 +145,7 @@ public:
         array<uint8_t, 33> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        spiff_header header
-        {
+        spiff_header header{
             spiff_profile_id::none,
             3,
             800,
@@ -160,8 +155,7 @@ public:
             spiff_compression_type::jpeg_ls,
             spiff_resolution_units::dots_per_inch,
             96,
-            1024
-        };
+            1024};
 
         assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&] { writer.write_spiff_header_segment(header); });
         Assert::AreEqual(static_cast<size_t>(0), writer.bytes_written());
@@ -240,10 +234,10 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[2]);    // 6 + (3 * 3) + 2 (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(17), buffer[3]);   // 6 + (3 * 3) + 2 (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(bits_per_sample), buffer[4]);
-        Assert::AreEqual(static_cast<uint8_t>(255), buffer[5]);  // height (in big endian)
-        Assert::AreEqual(static_cast<uint8_t>(255), buffer[6]);  // height (in big endian)
-        Assert::AreEqual(static_cast<uint8_t>(0), buffer[7]);    // width (in big endian)
-        Assert::AreEqual(static_cast<uint8_t>(100), buffer[8]);  // width (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(255), buffer[5]); // height (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(255), buffer[6]); // height (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[7]);   // width (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(100), buffer[8]); // width (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(component_count), buffer[9]);
 
         Assert::AreEqual(static_cast<uint8_t>(1), buffer[10]);
@@ -349,14 +343,14 @@ public:
         writer.write_start_of_scan_segment(1, 2, interleave_mode::none);
 
         Assert::AreEqual(buffer.size(), writer.bytes_written());
-        Assert::AreEqual(static_cast<uint8_t>(1), buffer[4]);  // component count.
-        Assert::AreEqual(static_cast<uint8_t>(1), buffer[5]);  // component index.
-        Assert::AreEqual(static_cast<uint8_t>(0), buffer[6]);  // table ID.
-        Assert::AreEqual(static_cast<uint8_t>(2), buffer[7]);  // NEAR parameter.
+        Assert::AreEqual(static_cast<uint8_t>(1), buffer[4]); // component count.
+        Assert::AreEqual(static_cast<uint8_t>(1), buffer[5]); // component index.
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[6]); // table ID.
+        Assert::AreEqual(static_cast<uint8_t>(2), buffer[7]); // NEAR parameter.
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[8]); // ILV parameter.
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[9]); // transformation.
     }
 };
 
-} // namespace test
-} // namespace charls
+}
+} // namespace charls::test
