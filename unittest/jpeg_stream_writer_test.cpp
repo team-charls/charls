@@ -8,6 +8,8 @@
 
 #include <array>
 
+#include "util.h"
+
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 
@@ -19,10 +21,11 @@ namespace test {
 TEST_CLASS(jpeg_stream_writer_test)
 {
 public:
-    TEST_METHOD(length_will_be_zero_after_create) // NOLINT
+    TEST_METHOD(remaining_destination_will_be_zero_after_create_with_default) // NOLINT
     {
         const jpeg_stream_writer writer;
-        Assert::AreEqual(static_cast<size_t>(0), writer.get_length());
+        Assert::AreEqual(static_cast<size_t>(0), writer.remaining_destination().size);
+        Assert::IsNull(writer.remaining_destination().data);
     }
 
     TEST_METHOD(write_start_of_image) // NOLINT
@@ -37,6 +40,15 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), buffer[1]);
     }
 
+    TEST_METHOD(write_start_of_image_in_too_small_buffer) // NOLINT
+    {
+        array<uint8_t, 1> buffer{};
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+
+        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&] { writer.write_start_of_image(); });
+        Assert::AreEqual(static_cast<size_t>(0), writer.bytes_written());
+    }
+
     TEST_METHOD(write_end_of_image) // NOLINT
     {
         array<uint8_t, 2> buffer{};
@@ -47,6 +59,15 @@ public:
         Assert::AreEqual(static_cast<size_t>(2), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::end_of_image), buffer[1]);
+    }
+
+    TEST_METHOD(write_end_of_image_in_too_small_buffer) // NOLINT
+    {
+        array<uint8_t, 1> buffer{};
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+
+        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&] { writer.write_end_of_image(); });
+        Assert::AreEqual(static_cast<size_t>(0), writer.bytes_written());
     }
 
     TEST_METHOD(write_spiff_segment) // NOLINT
@@ -121,6 +142,29 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[31]);
         Assert::AreEqual(static_cast<uint8_t>(4), buffer[32]);
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[33]);
+    }
+
+    TEST_METHOD(write_spiff_segment_in_too_small_buffer) // NOLINT
+    {
+        array<uint8_t, 33> buffer{};
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+
+        spiff_header header
+        {
+            spiff_profile_id::none,
+            3,
+            800,
+            600,
+            spiff_color_space::rgb,
+            8,
+            spiff_compression_type::jpeg_ls,
+            spiff_resolution_units::dots_per_inch,
+            96,
+            1024
+        };
+
+        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&] { writer.write_spiff_header_segment(header); });
+        Assert::AreEqual(static_cast<size_t>(0), writer.bytes_written());
     }
 
     TEST_METHOD(write_spiff_end_of_directory_segment) // NOLINT

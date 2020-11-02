@@ -11,7 +11,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cstring>
+#include <type_traits>
 #include <vector>
+
 
 // Use an uppercase alias for assert to make it clear that ASSERT is a pre-processor macro.
 #ifdef _MSC_VER
@@ -325,6 +327,13 @@ CONSTEXPR uint32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
 constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
 {
     return static_cast<uint32_t>((bit_count + 7) / 8);
+}
+
+
+template<typename Enum>
+constexpr auto to_underlying_type(Enum e) noexcept
+{
+    return static_cast<std::underlying_type_t<Enum>>(e);
 }
 
 } // namespace charls

@@ -409,11 +409,11 @@ private:
 
     // Note: depending on the base class encode_scan OR decode_scan will be virtual and abstract, cannot use override in all cases.
     // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override)
-    size_t encode_scan(std::unique_ptr<process_line> process_line, byte_span& compressed_data)
+    size_t encode_scan(std::unique_ptr<process_line> process_line, byte_span destination)
     {
         Strategy::process_line_ = std::move(process_line);
 
-        Strategy::initialize(compressed_data);
+        Strategy::initialize(destination);
         do_scan();
 
         return Strategy::get_length();

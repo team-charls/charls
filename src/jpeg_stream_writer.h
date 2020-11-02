@@ -7,8 +7,7 @@
 
 #include "jpeg_marker_code.h"
 #include "byte_span.h"
-
-#include <vector>
+#include "util.h"
 
 namespace charls {
 
@@ -17,7 +16,7 @@ class jpeg_stream_writer final
 {
 public:
     jpeg_stream_writer() = default;
-    explicit jpeg_stream_writer(const byte_span& destination) noexcept;
+    explicit jpeg_stream_writer(const byte_span destination) noexcept;
     ~jpeg_stream_writer() = default;
 
     jpeg_stream_writer(const jpeg_stream_writer&) = delete;
@@ -63,7 +62,7 @@ public:
     /// <param name="height">The height of the frame.</param>
     /// <param name="bits_per_sample">The bits per sample.</param>
     /// <param name="component_count">The component count.</param>
-    void write_start_of_frame_segment(uint32_t width, uint32_t height, int bits_per_sample, int component_count);
+    void write_start_of_frame_segment(uint32_t width, uint32_t height, int32_t bits_per_sample, int32_t component_count);
 
     /// <summary>
     /// Writes a JPEG-LS Start Of Scan (SOS) segment.
@@ -71,97 +70,99 @@ public:
     /// <param name="component_count">The number of components in the scan segment. Can only be > 1 when the components are interleaved.</param>
     /// <param name="near_lossless">The allowed lossy error. 0 means lossless.</param>
     /// <param name="interleave_mode">The interleave mode of the components.</param>
-    void write_start_of_scan_segment(int component_count, int near_lossless, interleave_mode interleave_mode);
+    void write_start_of_scan_segment(int32_t component_count, int32_t near_lossless, interleave_mode interleave_mode);
 
     void write_end_of_image();
 
-    std::size_t bytes_written() const noexcept
+    size_t bytes_written() const noexcept
     {
         return byte_offset_;
     }
 
-    std::size_t get_length() const noexcept
+    byte_span remaining_destination() const noexcept
     {
-        return destination_.size - byte_offset_;
+        return {destination_.data + byte_offset_, destination_.size - byte_offset_};
     }
 
-    byte_span output_stream() const noexcept
+    void seek(const size_t byte_count) noexcept
     {
-        byte_span data = destination_;
-        data.size -= byte_offset_;
-        data.data += byte_offset_;
-        return data;
-    }
-
-    void seek(const std::size_t byte_count) noexcept
-    {
+        ASSERT(byte_offset_ + byte_count <= destination_.size);
         byte_offset_ += byte_count;
     }
 
-    void update_destination(OUT_WRITES_BYTES_(destination_size) void* destination_buffer,
-                            const size_t destination_size) noexcept
+    void destination(const byte_span destination) noexcept
     {
-        destination_.data = static_cast<uint8_t*>(destination_buffer);
-        destination_.size = destination_size;
+        destination_ = destination;
     }
 
 private:
-    uint8_t* get_pos() const noexcept
+    void write_segment_header(jpeg_marker_code marker_code, size_t size);
+
+    void write_uint8(const uint8_t value) noexcept
     {
-        return destination_.data + byte_offset_;
-    }
-
-    void write_segment(jpeg_marker_code marker_code, IN_READS_BYTES_(size) const void* data, size_t size);
-
-    void write_byte(const uint8_t value)
-    {
-        if (byte_offset_ >= destination_.size)
-            impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
-
+        ASSERT(byte_offset_ + sizeof(uint8_t) <= destination_.size);
         destination_.data[byte_offset_++] = value;
     }
 
-    void write_bytes(const std::vector<uint8_t>& bytes)
+    void write_uint16(const uint16_t value) noexcept
     {
-        for (const auto value : bytes)
-        {
-            write_byte(value);
-        }
+        ASSERT(byte_offset_ + sizeof(uint16_t) <= destination_.size);
+
+        uint16_t* destination = reinterpret_cast<uint16_t*>(destination_.data + byte_offset_);
+        *destination = endian_swap(value);
+        byte_offset_ += sizeof(uint16_t);
     }
 
-    void write_bytes(IN_READS_BYTES_(size) const void* data, const size_t size)
+    void write_uint16(const int32_t value) noexcept
     {
-        const auto* bytes = static_cast<const uint8_t*>(data);
-
-        for (std::size_t i = 0; i < size; ++i)
-        {
-            write_byte(bytes[i]);
-        }
+        ASSERT(value >= 0 && value <= UINT16_MAX);
+        write_uint16(static_cast<uint16_t>(value));
     }
 
-    void write_uint16(const uint16_t value)
+    void write_uint32(const uint32_t value) noexcept
     {
-        write_byte(static_cast<uint8_t>(value / 0x100));
-        write_byte(static_cast<uint8_t>(value % 0x100));
+        ASSERT(byte_offset_ + sizeof(uint32_t) <= destination_.size);
+
+        uint32_t* destination = reinterpret_cast<uint32_t*>(destination_.data + byte_offset_);
+        *destination = endian_swap(value);
+        byte_offset_ += sizeof(uint32_t);
     }
 
-    void write_uint32(const uint32_t value)
+    void write_bytes(IN_READS_BYTES_(size) const void* data, const size_t size) noexcept
     {
-        write_byte(static_cast<uint8_t>(value >> 24));
-        write_byte(static_cast<uint8_t>(value >> 16));
-        write_byte(static_cast<uint8_t>(value >> 8));
-        write_byte(static_cast<uint8_t>(value));
+        ASSERT(byte_offset_ + size <= destination_.size);
+        memcpy(destination_.data + byte_offset_, data, size);
+        byte_offset_ += size;
     }
 
-    void write_marker(const jpeg_marker_code marker_code)
+    void write_marker(const jpeg_marker_code marker_code) noexcept
     {
-        write_byte(jpeg_marker_start_byte);
-        write_byte(static_cast<uint8_t>(marker_code));
+        write_uint8(jpeg_marker_start_byte);
+        write_uint8(static_cast<uint8_t>(marker_code));
+    }
+
+    void write_segment_without_data(const jpeg_marker_code marker_code)
+    {
+        if (byte_offset_ + 2 > destination_.size)
+            impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
+
+        write_uint8(jpeg_marker_start_byte);
+        write_uint8(static_cast<uint8_t>(marker_code));
+    }
+
+    static constexpr uint32_t endian_swap(const uint32_t value) noexcept
+    {
+        return (value & 0xFF000000) >> 24 | (value & 0x00FF0000) >> 8 | (value & 0x0000FF00) << 8 | (value & 0x000000FF) << 24;
+    }
+
+    static constexpr uint16_t endian_swap(const uint16_t value) noexcept
+    {
+        return value >> 8 | value << 8;
     }
 
     byte_span destination_{};
-    std::size_t byte_offset_{};
-    int8_t component_id_{1};
+    size_t byte_offset_{};
+    uint8_t component_id_{1};
 };
 
 } // namespace charls

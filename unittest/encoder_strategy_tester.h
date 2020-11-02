@@ -20,7 +20,7 @@ public:
     {
     }
 
-    size_t encode_scan(std::unique_ptr<process_line>, byte_span&) noexcept(false) override
+    size_t encode_scan(std::unique_ptr<process_line>, byte_span) noexcept(false) override
     {
         return 0;
     }

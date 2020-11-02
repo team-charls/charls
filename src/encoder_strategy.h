@@ -27,7 +27,7 @@ public:
 
     virtual std::unique_ptr<process_line> create_process_line(byte_span stream_info, size_t stride) = 0;
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
-    virtual std::size_t encode_scan(std::unique_ptr<process_line> raw_data, byte_span& compressed_data) = 0;
+    virtual std::size_t encode_scan(std::unique_ptr<process_line> raw_data, byte_span destination) = 0;
 
     int32_t peek_byte();
 

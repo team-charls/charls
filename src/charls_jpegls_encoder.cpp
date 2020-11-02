@@ -17,12 +17,12 @@ using std::unique_ptr;
 
 struct charls_jpegls_encoder final
 {
-    void destination(OUT_WRITES_BYTES_(size) void* destination, const size_t size)
+    void destination(const byte_span destination)
     {
         if (state_ != state::initial)
             throw_jpegls_error(jpegls_errc::invalid_operation);
 
-        writer_.update_destination(destination, size);
+        writer_.destination(destination);
         state_ = state::destination_set;
     }
 
@@ -228,8 +228,7 @@ private:
                                                                         {near_lossless_, interleave_mode_, color_transformation_, false},
                                                                         preset_coding_parameters_);
         unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
-        byte_span destination{writer_.output_stream()};
-        const size_t bytes_written = codec->encode_scan(move(process_line), destination);
+        const size_t bytes_written = codec->encode_scan(move(process_line), writer_.remaining_destination());
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
         writer_.seek(bytes_written);
@@ -266,7 +265,7 @@ charls_jpegls_encoder_set_destination_buffer(IN_ charls_jpegls_encoder* encoder,
                                              const size_t destination_size_bytes) noexcept
 try
 {
-    check_pointer(encoder)->destination(check_pointer(destination_buffer), destination_size_bytes);
+    check_pointer(encoder)->destination({check_pointer(destination_buffer), destination_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)
@@ -442,7 +441,7 @@ try
         return jpegls_errc::invalid_argument;
 
     charls_jpegls_encoder encoder;
-    encoder.destination(check_pointer(destination), destination_length);
+    encoder.destination({check_pointer(destination), destination_length});
     encoder.near_lossless(params->allowedLossyError);
 
     encoder.frame_info({static_cast<uint32_t>(params->width), static_cast<uint32_t>(params->height), params->bitsPerSample, params->components});
