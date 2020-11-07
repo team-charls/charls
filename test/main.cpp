@@ -57,7 +57,7 @@ size_t get_stream_length(istream& stream, const size_t end_offset = 0)
 {
     stream.seekg(0, ios::end);
     const auto length{static_cast<size_t>(stream.tellg())};
-    stream.seekg(end_offset, ios::beg);
+    stream.seekg(static_cast<ios::off_type>(end_offset), ios::beg);
 
     return length;
 }

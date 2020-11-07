@@ -8,6 +8,7 @@
 # -fuchsia-* => Rationale: Rules only apply to Fuchsia projects are out of scope for CharLS
 # -google-* => Rationale: Rules only apply to Google projects are out of scope for CharLS
 # -android-* => Rationale: Rules only apply to Android projects are out of scope for CharLS
+# -llvmlibc-* => Rationale: Rules only apply to LLVM Libc and are out of scope for CharLS
 # -llvm-header-guard => Rationale: #pragma once is used
 # -hicpp-no-array-decay => Rationale: alias for cppcoreguidelines-pro-bounds-constant-array-index
 # -hicpp-signed-bitwise => Rationale: Bad test, types are checked, not values.
@@ -43,6 +44,7 @@ Checks:          '*,
                   -fuchsia-*,
                   -google-*,
                   -android-*,
+                  -llvmlibc-*,
                   -llvm-header-guard,
                   -hicpp-no-array-decay,
                   -hicpp-signed-bitwise,

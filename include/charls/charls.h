@@ -673,7 +673,7 @@ private:
         charls_jpegls_decoder_destroy(decoder);
     }
 
-    std::unique_ptr<charls_jpegls_decoder, void (*)(const charls_jpegls_decoder*)> decoder_{create_decoder(), destroy_decoder};
+    std::unique_ptr<charls_jpegls_decoder, void (*)(const charls_jpegls_decoder*)> decoder_{create_decoder(), &destroy_decoder};
 };
 
 
@@ -910,7 +910,7 @@ private:
         charls_jpegls_encoder_destroy(encoder);
     }
 
-    std::unique_ptr<charls_jpegls_encoder, void (*)(const charls_jpegls_encoder*)> encoder_{create_encoder(), destroy_encoder};
+    std::unique_ptr<charls_jpegls_encoder, void (*)(const charls_jpegls_encoder*)> encoder_{create_encoder(), &destroy_encoder};
 };
 
 } // namespace charls

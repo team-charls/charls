@@ -458,8 +458,8 @@ void jpeg_stream_reader::skip_byte()
 
 uint16_t jpeg_stream_reader::read_uint16()
 {
-    const uint16_t value = read_byte() * 256;
-    return value + read_byte();
+    const uint16_t value = read_byte() * 256U;
+    return static_cast<uint16_t>(value + read_byte());
 }
 
 uint32_t jpeg_stream_reader::read_uint32()

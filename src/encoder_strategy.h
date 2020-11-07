@@ -31,12 +31,12 @@ public:
 
     int32_t peek_byte();
 
-    void on_line_begin(const size_t pixel_count, void* destination, const int32_t pixel_stride) const
+    void on_line_begin(const size_t pixel_count, void* destination, const size_t pixel_stride) const
     {
         process_line_->new_line_requested(destination, pixel_count, pixel_stride);
     }
 
-    static void on_line_end(size_t /*pixel_count*/, void* /*destination*/, int32_t /*pixel_stride*/) noexcept
+    static void on_line_end(size_t /*pixel_count*/, void* /*destination*/, size_t /*pixel_stride*/) noexcept
     {
     }
 
@@ -140,7 +140,7 @@ protected:
 
     FORCE_INLINE void append_ones_to_bit_stream(const int32_t length)
     {
-        append_to_bit_stream((1 << length) - 1, length);
+        append_to_bit_stream((1U << length) - 1U, length);
     }
 
     frame_info frame_info_;

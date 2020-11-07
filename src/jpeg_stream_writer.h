@@ -152,7 +152,7 @@ private:
 
     static constexpr uint32_t endian_swap(const uint32_t value) noexcept
     {
-        return (value & 0xFF000000) >> 24 | (value & 0x00FF0000) >> 8 | (value & 0x0000FF00) << 8 | (value & 0x000000FF) << 24;
+        return value >> 24 | (value & 0x00FF0000) >> 8 | (value & 0x0000FF00) << 8 | value << 24;
     }
 
     static constexpr uint16_t endian_swap(const uint16_t value) noexcept
