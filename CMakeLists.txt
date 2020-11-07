@@ -28,6 +28,9 @@ option(CHARLS_BUILD_FUZZ_TEST "Build AFL fuzzer application" ${MASTER_PROJECT})
 option(CHARLS_BUILD_SAMPLES "Build sample applications" ${MASTER_PROJECT})
 option(CHARLS_INSTALL "Generate the install target." ${MASTER_PROJECT})
 
+# Provide BUILD_SHARED_LIBS as an option for GUI tools
+option(BUILD_SHARED_LIBS "Will control if charls lib is build as shared lib/DLL or static library")
+
 # The options used by the CI builds to ensure the source remains warning free.
 # Not enabled by default to make CharLS package and end-user friendly.
 option(CHARLS_PEDANTIC_WARNINGS "Enable extra warnings and static analysis." OFF)
