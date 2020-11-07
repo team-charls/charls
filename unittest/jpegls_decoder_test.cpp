@@ -31,6 +31,11 @@ void push_back(std::vector<uint8_t>& values, const uint16_t value)
     values.push_back(static_cast<uint8_t>(value));
 }
 
+charls::jpegls_decoder create_decoder(const vector<uint8_t>& source)
+{
+    return {source, true};
+}
+
 } // namespace
 
 namespace charls {
@@ -73,8 +78,7 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_operation,
                                 [&] {
-                                    bool header_found;
-                                    decoder.read_spiff_header(header_found);
+                                    decoder.read_spiff_header();
                                 });
     }
 
@@ -97,7 +101,7 @@ public:
     TEST_METHOD(read_header_from_non_jpegls_data) // NOLINT
     {
         const vector<uint8_t> source(100);
-        jpegls_decoder decoder{source};
+        jpegls_decoder decoder{source, false};
 
         error_code ec;
         decoder.read_header(ec);
@@ -108,16 +112,28 @@ public:
     TEST_METHOD(frame_info_without_read_header) // NOLINT
     {
         const vector<uint8_t> source(2000);
-        jpegls_decoder decoder{source};
+        jpegls_decoder decoder{source, false};
 
-        assert_expect_exception(jpegls_errc::invalid_operation,
-                                [&] { static_cast<void>(decoder.frame_info()); });
+        Assert::AreEqual(0, decoder.frame_info().bits_per_sample);
+        Assert::AreEqual(0, decoder.frame_info().component_count);
+        Assert::AreEqual(0U, decoder.frame_info().height);
+        Assert::AreEqual(0U, decoder.frame_info().width);
+    }
+
+    TEST_METHOD(frame_info_from_temporary_object) // NOLINT
+    {
+        const frame_info info{create_decoder(read_file("DataFiles/t8c0e0.jls")).frame_info()};
+
+        Assert::AreEqual(8, info.bits_per_sample);
+        Assert::AreEqual(3, info.component_count);
+        Assert::AreEqual(256U, info.height);
+        Assert::AreEqual(256U, info.width);
     }
 
     TEST_METHOD(interleave_mode_without_read_header) // NOLINT
     {
         const vector<uint8_t> source(2000);
-        jpegls_decoder decoder{source};
+        jpegls_decoder decoder{source, false};
 
         assert_expect_exception(jpegls_errc::invalid_operation,
                                 [&] { static_cast<void>(decoder.interleave_mode()); });
@@ -126,7 +142,7 @@ public:
     TEST_METHOD(near_lossless_without_read_header) // NOLINT
     {
         const vector<uint8_t> source(2000);
-        jpegls_decoder decoder{source};
+        jpegls_decoder decoder{source, false};
 
         assert_expect_exception(jpegls_errc::invalid_operation,
                                 [&] { static_cast<void>(decoder.near_lossless()); });
@@ -147,10 +163,9 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source};
-        decoder.read_header();
+        jpegls_decoder decoder{source, true};
 
-        constexpr size_t expected_destination_size{256 * 256 * 3};
+        constexpr size_t expected_destination_size{static_cast<size_t>(256) * 256 * 3};
         Assert::AreEqual(expected_destination_size, decoder.destination_size());
     }
 
@@ -158,10 +173,9 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source};
-        decoder.read_header();
+        jpegls_decoder decoder{source, true};
 
-        constexpr uint32_t stride = 512;
+        constexpr size_t stride{512};
         constexpr size_t expected_destination_size{stride * 256 * 3};
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
@@ -170,10 +184,9 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c1e0.jls")};
 
-        jpegls_decoder decoder{source};
-        decoder.read_header();
+        jpegls_decoder decoder{source, true};
 
-        constexpr uint32_t stride = 1024;
+        constexpr size_t stride = 1024;
         constexpr size_t expected_destination_size{stride * 256};
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
@@ -182,10 +195,9 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c2e0.jls")};
 
-        jpegls_decoder decoder{source};
-        decoder.read_header();
+        jpegls_decoder decoder{source, true};
 
-        constexpr uint32_t stride = 1024;
+        constexpr size_t stride = 1024;
         constexpr size_t expected_destination_size{stride * 256};
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
@@ -194,8 +206,7 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source};
-        decoder.read_header();
+        jpegls_decoder decoder{source, true};
 
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
@@ -214,8 +225,7 @@ public:
         vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
         insert_pc_parameters_segments(source, 3);
 
-        jpegls_decoder decoder{source};
-        decoder.read_header();
+        jpegls_decoder decoder{source, true};
 
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
@@ -233,8 +243,7 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source};
-        decoder.read_header();
+        jpegls_decoder decoder{source, true};
 
         const auto destination = decoder.decode<vector<uint8_t>>();
 
@@ -251,8 +260,7 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source};
-        decoder.read_header();
+        jpegls_decoder decoder{source, true};
 
         const auto destination = decoder.decode<vector<uint16_t>>();
 
@@ -284,7 +292,7 @@ public:
         writer.mapping_table_selector = 1;
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
-        jpegls_decoder decoder{writer.buffer};
+        jpegls_decoder decoder{writer.buffer, false};
 
         assert_expect_exception(jpegls_errc::parameter_value_not_supported,
                                 [&] { decoder.read_header(); });
@@ -293,12 +301,27 @@ public:
     TEST_METHOD(read_spiff_header) // NOLINT
     {
         const vector<uint8_t> source = create_test_spiff_header();
-        const jpegls_decoder decoder{source};
+        const jpegls_decoder decoder{source, true};
 
-        bool found;
-        const auto header = decoder.read_spiff_header(found);
+        Assert::IsTrue(decoder.spiff_header_has_value());
 
-        Assert::IsTrue(found);
+        const auto& header = decoder.spiff_header();
+        Assert::AreEqual(static_cast<int32_t>(spiff_profile_id::none), static_cast<int32_t>(header.profile_id));
+        Assert::AreEqual(3, header.component_count);
+        Assert::AreEqual(800U, header.height);
+        Assert::AreEqual(600U, header.width);
+        Assert::AreEqual(static_cast<int32_t>(spiff_color_space::rgb), static_cast<int32_t>(header.color_space));
+        Assert::AreEqual(8, header.bits_per_sample);
+        Assert::AreEqual(static_cast<int32_t>(spiff_compression_type::jpeg_ls), static_cast<int32_t>(header.compression_type));
+        Assert::AreEqual(static_cast<int32_t>(spiff_resolution_units::dots_per_inch), static_cast<int32_t>(header.resolution_units));
+        Assert::AreEqual(96U, header.vertical_resolution);
+        Assert::AreEqual(1024U, header.horizontal_resolution);
+    }
+
+    TEST_METHOD(read_spiff_header_from_temporary_object) // NOLINT
+    {
+        const spiff_header header{create_decoder(create_test_spiff_header()).spiff_header()};
+
         Assert::AreEqual(static_cast<int32_t>(spiff_profile_id::none), static_cast<int32_t>(header.profile_id));
         Assert::AreEqual(3, header.component_count);
         Assert::AreEqual(800U, header.height);
@@ -314,11 +337,10 @@ public:
     TEST_METHOD(read_spiff_header_from_non_jpegls_data) // NOLINT
     {
         const vector<uint8_t> source(100);
-        const jpegls_decoder decoder{source};
+        jpegls_decoder decoder{source, false};
 
-        bool found;
         error_code ec;
-        static_cast<void>(decoder.read_spiff_header(found, ec));
+        static_cast<void>(decoder.read_spiff_header(ec));
 
         Assert::IsTrue(ec == jpegls_errc::jpeg_marker_start_byte_not_found);
     }
@@ -327,14 +349,11 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source};
+        jpegls_decoder decoder{source, true};
 
-        bool found;
-        static_cast<void>(decoder.read_spiff_header(found));
-        Assert::IsFalse(found);
+        Assert::IsFalse(decoder.spiff_header_has_value());
 
-        decoder.read_header();
-        const frame_info frame_info{decoder.frame_info()};
+        const frame_info& frame_info{decoder.frame_info()};
 
         Assert::AreEqual(3, frame_info.component_count);
         Assert::AreEqual(8, frame_info.bits_per_sample);
@@ -346,9 +365,7 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source};
-
-        decoder.read_header();
+        jpegls_decoder decoder{source, true};
 
         assert_expect_exception(jpegls_errc::invalid_operation,
                                 [&] { static_cast<void>(decoder.read_header()); });
@@ -396,10 +413,9 @@ public:
     {
         const vector<uint8_t> source{read_file("ff_in_entropy_data.jls")};
 
-        jpegls_decoder decoder{source};
-        decoder.read_header();
+        jpegls_decoder decoder{source, true};
 
-        const auto frame_info{decoder.frame_info()};
+        const auto& frame_info{decoder.frame_info()};
         Assert::AreEqual(1, frame_info.component_count);
         Assert::AreEqual(12, frame_info.bits_per_sample);
         Assert::AreEqual(1216U, frame_info.height);

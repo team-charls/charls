@@ -117,7 +117,7 @@ void decompress_file(const char* name_encoded, const char* name_raw, const int o
 
     vector<uint8_t> raw_buffer = read_file(name_raw, offset);
 
-    const auto frame_info = decoder.frame_info();
+    const auto& frame_info = decoder.frame_info();
     if (frame_info.bits_per_sample > 8)
     {
         fix_endian(&raw_buffer, false);

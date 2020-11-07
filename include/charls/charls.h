@@ -451,9 +451,7 @@ public:
     template<typename SourceContainer, typename DestinationContainer, typename ValueType = typename DestinationContainer::value_type>
     static std::pair<charls::frame_info, charls::interleave_mode> decode(const SourceContainer& source, DestinationContainer& destination, const size_t maximum_size_in_bytes = 7680 * 4320 * 3)
     {
-        jpegls_decoder decoder{source};
-
-        decoder.read_header();
+        jpegls_decoder decoder{source, true};
 
         const size_t destination_size{decoder.destination_size()};
         if (destination_size > maximum_size_in_bytes)
@@ -472,10 +470,16 @@ public:
     /// The passed container needs to remain valid until the stream is fully decoded.
     /// </summary>
     /// <param name="source_container">A STL like container that provides the functions data() and size() and the type value_type.</param>
+    /// <param name="parse_header">If true the SPIFF and JPEG header will be directly read from the source.</param>
     template<typename Container>
-    explicit jpegls_decoder(const Container& source_container)
+    jpegls_decoder(const Container& source_container, const bool parse_header)
     {
         source(source_container);
+        if (parse_header)
+        {
+            read_spiff_header();
+            read_header();
+        }
     }
 
     ~jpegls_decoder() = default;
@@ -515,13 +519,13 @@ public:
     /// Call read_header to read the normal JPEG header afterwards.
     /// </summary>
     /// <param name="header_found">Output argument, will hold true if a SPIFF header could be found, otherwise false.</param>
-    /// <returns>The SPIFF header.</returns>
-    CHARLS_NO_DISCARD spiff_header read_spiff_header(OUT_ bool& header_found) const
+    /// <returns>True if a valid SPIFF header could be found.</returns>
+    bool read_spiff_header()
     {
         std::error_code ec;
-        const spiff_header header{read_spiff_header(header_found, ec)};
+        read_spiff_header(ec);
         check_jpegls_errc(static_cast<jpegls_errc>(ec.value()));
-        return header;
+        return spiff_header_has_value_;
     }
 
     /// <summary>
@@ -532,14 +536,13 @@ public:
     /// </summary>
     /// <param name="header_found">Output argument, will hold true if a SPIFF header could be found, otherwise false.</param>
     /// <param name="ec">The out-parameter for error reporting.</param>
-    /// <returns>The SPIFF header.</returns>
-    CHARLS_NO_DISCARD spiff_header read_spiff_header(OUT_ bool& header_found, OUT_ std::error_code& ec) const noexcept
+    /// <returns>True if a valid SPIFF header could be found.</returns>
+    bool read_spiff_header(std::error_code& ec) noexcept
     {
-        spiff_header header{};
         int32_t found;
-        ec = charls_jpegls_decoder_read_spiff_header(decoder_.get(), &header, &found);
-        header_found = found != 0;
-        return header;
+        ec = charls_jpegls_decoder_read_spiff_header(decoder_.get(), &spiff_header_, &found);
+        spiff_header_has_value_ = found != 0;
+        return spiff_header_has_value_;
     }
 
     /// <summary>
@@ -548,7 +551,9 @@ public:
     /// </summary>
     jpegls_decoder& read_header()
     {
-        check_jpegls_errc(charls_jpegls_decoder_read_header(decoder_.get()));
+        std::error_code ec;
+        read_header(ec);
+        check_jpegls_errc(static_cast<jpegls_errc>(ec.value()));
         return *this;
     }
 
@@ -560,7 +565,40 @@ public:
     jpegls_decoder& read_header(OUT_ std::error_code& ec) noexcept
     {
         ec = charls_jpegls_decoder_read_header(decoder_.get());
+        if (ec == jpegls_errc::success)
+        {
+            ec = charls_jpegls_decoder_get_frame_info(decoder_.get(), &frame_info_);
+        }
         return *this;
+    }
+
+    /// <summary>
+    /// Returns true if a valid SPIFF header was found.
+    /// </summary>
+    /// <returns>True of false, depending if a SPIFF header was found.</returns>
+    CHARLS_NO_DISCARD bool spiff_header_has_value() const noexcept
+    {
+        return spiff_header_has_value_;
+    }
+
+    /// <summary>
+    /// Returns the SPIFF header, if read and found.
+    /// Function can be called after read_spiff_header and spiff_header_has_value.
+    /// </summary>
+    /// <returns>The SPIFF header.</returns>
+    CHARLS_NO_DISCARD const charls::spiff_header& spiff_header() const& noexcept
+    {
+        return spiff_header_;
+    }
+
+    /// <summary>
+    /// Returns the SPIFF header, if read and found.
+    /// Function can be called after read_spiff_header and spiff_header_has_value.
+    /// </summary>
+    /// <returns>The SPIFF header.</returns>
+    CHARLS_NO_DISCARD charls::spiff_header spiff_header() && noexcept
+    {
+        return std::move(spiff_header_);
     }
 
     /// <summary>
@@ -568,11 +606,19 @@ public:
     /// Function can be called after read_header.
     /// </summary>
     /// <returns>The frame info that describes the image stored in the JPEG-LS byte stream.</returns>
-    CHARLS_NO_DISCARD charls::frame_info frame_info() const
+    CHARLS_NO_DISCARD const charls::frame_info& frame_info() const& noexcept
     {
-        charls::frame_info frame_info;
-        check_jpegls_errc(charls_jpegls_decoder_get_frame_info(decoder_.get(), &frame_info));
-        return frame_info;
+        return frame_info_;
+    }
+
+    /// <summary>
+    /// Returns information about the frame stored in the JPEG-LS byte stream.
+    /// Function can be called after read_header.
+    /// </summary>
+    /// <returns>The frame info that describes the image stored in the JPEG-LS byte stream.</returns>
+    CHARLS_NO_DISCARD charls::frame_info frame_info() &&  noexcept
+    {
+        return std::move(frame_info_);
     }
 
     /// <summary>
@@ -674,6 +720,9 @@ private:
     }
 
     std::unique_ptr<charls_jpegls_decoder, void (*)(const charls_jpegls_decoder*)> decoder_{create_decoder(), &destroy_decoder};
+    bool spiff_header_has_value_{};
+    charls::spiff_header spiff_header_{};
+    charls::frame_info frame_info_{};
 };
 
 

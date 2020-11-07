@@ -36,17 +36,11 @@ std::vector<uint8_t> decode_simple_8_bit_monochrome(const std::vector<uint8_t>& 
 
 std::vector<uint8_t> decode_advanced(const std::vector<uint8_t>& source)
 {
-    charls::jpegls_decoder decoder;
-
-    decoder.source(source);
+    charls::jpegls_decoder decoder{source, true};
 
     // Standalone JPEG-LS files may have a SPIFF header (color space info, etc.)
-    bool spiff_header_found;
-    const auto spiff_header{decoder.read_spiff_header(spiff_header_found)};
-    if (spiff_header_found && spiff_header.color_space != charls::spiff_color_space::grayscale)
+    if (decoder.spiff_header_has_value() && decoder.spiff_header().color_space != charls::spiff_color_space::grayscale)
         throw std::exception("Not a grayscale image");
-
-    decoder.read_header();
 
     // After read_header() other properties can also be retrieved.
     if (decoder.near_lossless() != 0)
@@ -219,7 +213,7 @@ private:
         decoder.source(encoded_source);
         decoder.read_header();
 
-        const auto frame_info = decoder.frame_info();
+        const auto& frame_info = decoder.frame_info();
         Assert::AreEqual(static_cast<uint32_t>(reference_file.width()), frame_info.width);
         Assert::AreEqual(static_cast<uint32_t>(reference_file.height()), frame_info.height);
         Assert::AreEqual(reference_file.component_count(), frame_info.component_count);

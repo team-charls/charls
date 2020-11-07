@@ -105,9 +105,8 @@ public:
     {
         const vector<uint8_t> jpegls_data = read_file("land10-10bit-rgb-hp3-invalid.jls");
 
-        jpegls_decoder decoder{jpegls_data};
+        jpegls_decoder decoder{jpegls_data, true};
 
-        decoder.read_header();
         vector<uint8_t> destination(decoder.destination_size());
 
         assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported,

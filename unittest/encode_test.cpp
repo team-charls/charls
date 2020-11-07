@@ -107,7 +107,7 @@ private:
         decoder.source(encoded_source);
         decoder.read_header();
 
-        const auto frame_info = decoder.frame_info();
+        const auto& frame_info = decoder.frame_info();
         Assert::AreEqual(static_cast<uint32_t>(reference_file.width()), frame_info.width);
         Assert::AreEqual(static_cast<uint32_t>(reference_file.height()), frame_info.height);
         Assert::AreEqual(reference_file.bits_per_sample(), frame_info.bits_per_sample);
