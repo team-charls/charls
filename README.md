@@ -15,7 +15,7 @@ JPEG-LS is a low-complexity image compression standard that matches JPEG 2000 co
 ## Features
 
 * C++14 library implementation with a binary C interface for maximum interoperability.
-* Supports Windows, Linux and Solaris in 32 bit and 64 bit.
+* Supports Windows, Linux and macOS for x86, x64, arm and arm64.
 * Includes an adapter assembly for .NET based languages.
 * Excellent compression and decompression performance.
 
@@ -62,7 +62,7 @@ With [vcpkg](https://github.com/Microsoft/vcpkg) on Windows
 PS> vcpkg install charls charls:x64-windows
 ```
 
-With [vcpkg](https://github.com/Microsoft/vcpkg) on Linux or MacOS
+With [vcpkg](https://github.com/Microsoft/vcpkg) on Linux or macOS
 
 ```bash
 ~/$ ./vcpkg install charls
@@ -81,9 +81,15 @@ Support for older compiler versions will be phased out, 5 years from the moment 
 
 Before any major breaking change in the API and/or ABI a branch will be created from master to freeze that snapshot as LTS branch.
 
+## Related Projects
+
+* [CharLS.Native .NET](https://github.com/team-charls/charls-native-dotnet) - a .NET 5.0 adapter assembly for CharLS
+* [JPEG-LS WIC codec](https://github.com/team-charls/jpegls-wic-codec) - Windows Imaging Component (WIC) codec for JPEG-LS .jls files
+* [charls-js](https://github.com/chafey/charls-js) - WebAssembly build of CharLS, [Demo](https://chafey.github.io/charls-js/test/browser/index.html)
+
 ## Users & Acknowledgements
 
-CharLS is being used by [GDCM DICOM toolkit](http://sourceforge.net/projects/gdcm/), thanks for [Mathieu Malaterre](http://sourceforge.net/users/malat) for getting CharLS started on Linux. Kato Kanryu wrote an initial version of the color transforms and the DIB output format code, for an [irfanview](http://www.irfanview.com) plugin using CharLS. Thanks to Uli Schlachter, CharLS now finally runs correctly on big-endian architectures like Sun SPARC.
+CharLS is being used by [GDCM DICOM toolkit](http://sourceforge.net/projects/gdcm/), thanks for [Mathieu Malaterre](http://sourceforge.net/users/malat) for getting CharLS started on Linux. Kato Kanryu wrote an initial version of the color transforms and the DIB output format code, for an [irfanview](http://www.irfanview.com) plugin using CharLS.
 
 ## Legal
 
