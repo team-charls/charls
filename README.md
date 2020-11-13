@@ -16,7 +16,7 @@ JPEG-LS is a low-complexity image compression standard that matches JPEG 2000 co
 
 * C++14 library implementation with a binary C interface for maximum interoperability.
 * Supports Windows, Linux and macOS for x86, x64, arm and arm64.
-* Includes an adapter assembly for .NET based languages.
+* Adapters for .NET, JavaScript (WebAssembly) and Python available.
 * Excellent compression and decompression performance.
 
 ## About JPEG-LS
@@ -43,7 +43,7 @@ The following JPEG-LS options are not supported by the CharLS implementation. Mo
   or in multiple scans, but not use a mix of these in one file.
 * No support for oversize image dimension. Maximum supported image dimensions are [1, 65535] by [1, 65535].
 * No support for JPEG-LS mapping tables.
-* No support Point transform.
+* No support for point transform.
   Point transform is a lossly encoding mechanism and not used in lossless scenarios.
 
 #### Note about JPEG-LS part 2

@@ -5,11 +5,7 @@
     <OutDir>$(MSBuildThisFileDirectory)bin\$(Configuration)\$(Platform)\</OutDir>
     <OutDir Condition="'$(Platform)'=='Win32'">$(MSBuildThisFileDirectory)bin\$(Configuration)\x86\</OutDir>
 
-    <!-- C# Projects require the legagy OutputPath variable. -->
-    <OutputPath>$(OutDir)</OutputPath>
-
     <!-- C++ temp files can be redirected. -->
-    <!-- C# project files can also be redirected, but this causes rebuilds inside VS2015. -->
     <IntDir>$(MSBuildThisFileDirectory)intermediate\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
 
     <!-- The C runtime is provided by the OS on the Windows platform (Universal C Runtime (CRT)),
