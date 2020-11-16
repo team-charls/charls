@@ -18,6 +18,8 @@
 #define OUT_WRITES_BYTES_(size) _Out_writes_bytes_(size)
 #define OUT_WRITES_Z_(size_in_bytes) _Out_writes_z_(size_in_bytes)
 #define RETURN_TYPE_SUCCESS_(expr) _Return_type_success_(expr)
+#define CHARLS_CHECK_RETURN _Check_return_
+#define CHARLS_RET_MAY_BE_NULL _Ret_maybenull_
 
 #else
 
@@ -30,6 +32,8 @@
 #define OUT_WRITES_BYTES_(size)
 #define OUT_WRITES_Z_(size_in_bytes)
 #define RETURN_TYPE_SUCCESS_(expr)
+#define CHARLS_CHECK_RETURN
+#define CHARLS_RET_MAY_BE_NULL
 
 #endif
 

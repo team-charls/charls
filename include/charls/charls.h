@@ -58,6 +58,7 @@ charls_get_version_number(OUT_OPT_ int32_t* major, OUT_OPT_ int32_t* minor, OUT_
 /// Creates a JPEG-LS decoder instance, when finished with the instance destroy it with the function charls_jpegls_decoder_destroy.
 /// </summary>
 /// <returns>A reference to a new created decoder instance, or a null pointer when the creation fails.</returns>
+CHARLS_CHECK_RETURN CHARLS_RET_MAY_BE_NULL
 CHARLS_API_IMPORT_EXPORT charls_jpegls_decoder* CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_create(CHARLS_C_VOID) CHARLS_NOEXCEPT;
 
@@ -196,6 +197,7 @@ charls_jpegls_decoder_decode_to_buffer(IN_ const charls_jpegls_decoder* decoder,
 /// Creates a JPEG-LS encoder instance, when finished with the instance destroy it with the function charls_jpegls_encoder_destroy.
 /// </summary>
 /// <returns>A reference to a new created encoder instance, or a null pointer when the creation fails.</returns>
+CHARLS_CHECK_RETURN CHARLS_RET_MAY_BE_NULL
 CHARLS_API_IMPORT_EXPORT charls_jpegls_encoder* CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_create(CHARLS_C_VOID) CHARLS_NOEXCEPT;
 
@@ -518,7 +520,6 @@ public:
     /// The header_found parameter will be set to true if the spiff header could be read.
     /// Call read_header to read the normal JPEG header afterwards.
     /// </summary>
-    /// <param name="header_found">Output argument, will hold true if a SPIFF header could be found, otherwise false.</param>
     /// <returns>True if a valid SPIFF header could be found.</returns>
     bool read_spiff_header()
     {
@@ -534,7 +535,6 @@ public:
     /// The header_found parameter will be set to true if the spiff header could be read.
     /// Call read_header to read the normal JPEG header afterwards.
     /// </summary>
-    /// <param name="header_found">Output argument, will hold true if a SPIFF header could be found, otherwise false.</param>
     /// <param name="ec">The out-parameter for error reporting.</param>
     /// <returns>True if a valid SPIFF header could be found.</returns>
     bool read_spiff_header(std::error_code& ec) noexcept
@@ -596,9 +596,9 @@ public:
     /// Function can be called after read_spiff_header and spiff_header_has_value.
     /// </summary>
     /// <returns>The SPIFF header.</returns>
-    CHARLS_NO_DISCARD charls::spiff_header spiff_header() && noexcept
+    CHARLS_NO_DISCARD charls::spiff_header spiff_header() const&& noexcept
     {
-        return std::move(spiff_header_);
+        return spiff_header_;
     }
 
     /// <summary>
@@ -616,9 +616,9 @@ public:
     /// Function can be called after read_header.
     /// </summary>
     /// <returns>The frame info that describes the image stored in the JPEG-LS byte stream.</returns>
-    CHARLS_NO_DISCARD charls::frame_info frame_info() &&  noexcept
+    CHARLS_NO_DISCARD charls::frame_info frame_info() const&&  noexcept
     {
-        return std::move(frame_info_);
+        return frame_info_;
     }
 
     /// <summary>
@@ -986,5 +986,7 @@ private:
 #undef OUT_WRITES_BYTES_
 #undef OUT_WRITES_Z_
 #undef RETURN_TYPE_SUCCESS_
+#undef CHARLS_CHECK_RETURN
+#undef CHARLS_RET_MAY_BE_NULL
 
 #endif

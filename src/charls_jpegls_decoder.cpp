@@ -160,7 +160,7 @@ private:
 
 extern "C" {
 
-charls_jpegls_decoder* CHARLS_API_CALLING_CONVENTION
+CHARLS_CHECK_RETURN CHARLS_RET_MAY_BE_NULL charls_jpegls_decoder* CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_create() noexcept
 {
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26402 26409)     // don't use new and delete + scoped object and move
