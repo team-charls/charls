@@ -26,13 +26,6 @@ jobs:
         buildConfiguration: 'Release'
 
   steps:
-  - task: NuGetToolInstaller@0
-
-  - task: NuGetCommand@2
-    inputs:
-      command: 'restore'
-      restoreSolution: '**/*.sln'
-
   - task: VSBuild@1
     inputs:
       solution: '$(solution)'
