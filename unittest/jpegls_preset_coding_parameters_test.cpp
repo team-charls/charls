@@ -25,7 +25,7 @@ constexpr thresholds compute_defaults_using_reference_implementation(const int32
 
     if (result.MaxVal >= 128)
     {
-        int32_t factor = result.MaxVal;
+        int32_t factor{result.MaxVal};
         if (factor > 4095)
             factor = 4095;
         factor = (factor + 128) >> 8;
@@ -41,7 +41,7 @@ constexpr thresholds compute_defaults_using_reference_implementation(const int32
     }
     else
     {
-        const int32_t factor = 256 / (result.MaxVal + 1);
+        const int32_t factor{256 / (result.MaxVal + 1)};
         result.T1 = 3 / factor + 3 * near;
         if (result.T1 < 2)
             result.T1 = 2;
@@ -155,8 +155,8 @@ public:
 
     TEST_METHOD(is_valid_default) // NOLINT
     {
-        constexpr auto bits_per_sample = 16;
-        constexpr auto maximum_component_value = (1 << bits_per_sample) - 1;
+        constexpr auto bits_per_sample{16};
+        constexpr auto maximum_component_value{(1 << bits_per_sample) - 1};
         const jpegls_pc_parameters pc_parameters{};
 
         Assert::IsTrue(is_valid(pc_parameters, maximum_component_value, 0));
@@ -164,8 +164,8 @@ public:
 
     TEST_METHOD(is_valid_thresholds_zero) // NOLINT
     {
-        constexpr auto bits_per_sample = 16;
-        constexpr auto maximum_component_value = (1 << bits_per_sample) - 1;
+        constexpr auto bits_per_sample{16};
+        constexpr auto maximum_component_value{(1 << bits_per_sample) - 1};
         const jpegls_pc_parameters pc_parameters{maximum_component_value, 0, 0, 0, 63};
 
         Assert::IsTrue(is_valid(pc_parameters, maximum_component_value, 0));

@@ -82,7 +82,7 @@ public:
         if (position_ < next_ff_position_ - (sizeof(bufType) - 1))
         {
             read_cache_ |= from_big_endian<sizeof(bufType)>::read(position_) >> valid_bits_;
-            const int bytes_to_read = (bufType_bit_count - valid_bits_) >> 3;
+            const int bytes_to_read{(bufType_bit_count - valid_bits_) >> 3};
             position_ += bytes_to_read;
             valid_bits_ += bytes_to_read * 8;
             ASSERT(valid_bits_ >= bufType_bit_count - 8);
@@ -108,7 +108,7 @@ public:
                 return;
             }
 
-            const bufType value_new = position_[0];
+            const bufType value_new{position_[0]};
 
             if (value_new == jpeg_marker_start_byte)
             {
@@ -137,7 +137,7 @@ public:
 
     uint8_t* find_next_ff() const noexcept
     {
-        auto* position_next_ff = position_;
+        auto* position_next_ff{position_};
 
         while (position_next_ff < end_position_)
         {
@@ -152,12 +152,12 @@ public:
 
     uint8_t* get_cur_byte_pos() const noexcept
     {
-        int32_t valid_bits = valid_bits_;
-        uint8_t* compressed_bytes = position_;
+        int32_t valid_bits{valid_bits_};
+        uint8_t* compressed_bytes{position_};
 
         for (;;)
         {
-            const int32_t last_bits_count = compressed_bytes[-1] == jpeg_marker_start_byte ? 7 : 8;
+            const int32_t last_bits_count{compressed_bytes[-1] == jpeg_marker_start_byte ? 7 : 8};
 
             if (valid_bits < last_bits_count)
                 return compressed_bytes;
@@ -213,7 +213,7 @@ public:
         }
         bufType val_test = read_cache_;
 
-        for (int32_t count = 0; count < 16; ++count)
+        for (int32_t count{}; count < 16; ++count)
         {
             if ((val_test & (static_cast<bufType>(1) << (bufType_bit_count - 1))) != 0)
                 return count;
@@ -225,7 +225,7 @@ public:
 
     FORCE_INLINE int32_t read_high_bits()
     {
-        const int32_t count = peek_0_bits();
+        const int32_t count{peek_0_bits()};
         if (count >= 0)
         {
             skip(count + 1);
@@ -233,7 +233,7 @@ public:
         }
         skip(15);
 
-        for (int32_t high_bits_count = 15;; ++high_bits_count)
+        for (int32_t high_bits_count{15};; ++high_bits_count)
         {
             if (read_bit())
                 return high_bits_count;

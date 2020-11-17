@@ -145,7 +145,7 @@ inline void push_back(std::vector<uint8_t>& values, const uint32_t value)
 
 CONSTEXPR int32_t log_2(const int32_t n) noexcept
 {
-    int32_t x = 0;
+    int32_t x{};
     while (n > (1 << x))
     {
         ++x;

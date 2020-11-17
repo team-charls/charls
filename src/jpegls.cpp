@@ -24,7 +24,7 @@ namespace {
 // See JPEG-LS standard ISO/IEC 14495-1, A.3.3, golomb_code Segment A.4
 int8_t quantize_gradient_org(const jpegls_pc_parameters& preset, const int32_t di) noexcept
 {
-    constexpr int32_t near_lossless = 0;
+    constexpr int32_t near_lossless{};
 
     if (di <= -preset.threshold3) return -4;
     if (di <= -preset.threshold2) return -3;
@@ -41,10 +41,10 @@ int8_t quantize_gradient_org(const jpegls_pc_parameters& preset, const int32_t d
 vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
 {
     const jpegls_pc_parameters preset{compute_default((1 << static_cast<uint32_t>(bit_count)) - 1, 0)};
-    const int32_t range = preset.maximum_sample_value + 1;
+    const int32_t range{preset.maximum_sample_value + 1};
 
     vector<int8_t> lut(static_cast<size_t>(range) * 2);
-    for (size_t i = 0; i < lut.size(); ++i)
+    for (size_t i{}; i < lut.size(); ++i)
     {
         lut[i] = quantize_gradient_org(preset, static_cast<int32_t>(i) - range);
     }

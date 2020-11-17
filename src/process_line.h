@@ -77,14 +77,14 @@ inline void byte_swap(void* data, const size_t count)
     if (count & 1U)
         throw jpegls_error{jpegls_errc::invalid_encoded_data};
 
-    auto* const data32 = static_cast<unsigned int*>(data);
-    for (auto i = 0U; i < count / 4; ++i)
+    auto* const data32{static_cast<unsigned int*>(data)};
+    for (size_t i{}; i < count / 4; ++i)
     {
-        const auto value = data32[i];
+        const auto value{data32[i]};
         data32[i] = ((value >> 8U) & 0x00FF00FFU) | ((value & 0x00FF00FFU) << 8U);
     }
 
-    auto* const data8 = static_cast<unsigned char*>(data);
+    auto* const data8{static_cast<unsigned char*>(data)};
     if ((count % 4) != 0)
     {
         std::swap(data8[count - 2], data8[count - 1]);
@@ -95,9 +95,9 @@ inline void byte_swap(void* data, const size_t count)
 template<typename Transform, typename T>
 void transform_line_to_quad(const T* source, const size_t pixel_stride_in, quad<T>* destination, const size_t pixel_stride, Transform& transform) noexcept
 {
-    const auto pixel_count = std::min(pixel_stride, pixel_stride_in);
+    const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
 
-    for (auto i = 0U; i < pixel_count; ++i)
+    for (size_t i{}; i < pixel_count; ++i)
     {
         const quad<T> pixel(transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in]), source[i + 3 * pixel_stride_in]);
         destination[i] = pixel;
@@ -108,11 +108,11 @@ void transform_line_to_quad(const T* source, const size_t pixel_stride_in, quad<
 template<typename Transform, typename T>
 void transform_quad_to_line(const quad<T>* source, const size_t pixel_stride_in, T* destination, const size_t pixel_stride, Transform& transform) noexcept
 {
-    const auto pixel_count = std::min(pixel_stride, pixel_stride_in);
+    const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
 
-    for (auto i = 0U; i < pixel_count; ++i)
+    for (size_t i{}; i < pixel_count; ++i)
     {
-        const quad<T> color = source[i];
+        const quad<T> color{source[i]};
         const quad<T> color_transformed(transform(color.v1, color.v2, color.v3), color.v4);
 
         destination[i] = color_transformed.v1;
@@ -126,7 +126,7 @@ void transform_quad_to_line(const quad<T>* source, const size_t pixel_stride_in,
 template<typename T>
 void transform_rgb_to_bgr(T* buffer, int samples_per_pixel, const size_t pixel_count) noexcept
 {
-    for (auto i = 0U; i < pixel_count; ++i)
+    for (size_t i{}; i < pixel_count; ++i)
     {
         std::swap(buffer[0], buffer[2]);
         buffer += samples_per_pixel;
@@ -137,7 +137,7 @@ void transform_rgb_to_bgr(T* buffer, int samples_per_pixel, const size_t pixel_c
 template<typename Transform, typename T>
 void transform_line(triplet<T>* destination, const triplet<T>* source, const size_t pixel_count, Transform& transform) noexcept
 {
-    for (auto i = 0U; i < pixel_count; ++i)
+    for (size_t i{}; i < pixel_count; ++i)
     {
         destination[i] = transform(source[i].v1, source[i].v2, source[i].v3);
     }
@@ -147,7 +147,7 @@ void transform_line(triplet<T>* destination, const triplet<T>* source, const siz
 template<typename Transform, typename PixelType>
 void transform_line(quad<PixelType>* destination, const quad<PixelType>* source, const size_t pixel_count, Transform& transform) noexcept
 {
-    for (auto i = 0U; i < pixel_count; ++i)
+    for (size_t i{}; i < pixel_count; ++i)
     {
         destination[i] = quad<PixelType>(transform(source[i].v1, source[i].v2, source[i].v3), source[i].v4);
     }
@@ -157,10 +157,10 @@ void transform_line(quad<PixelType>* destination, const quad<PixelType>* source,
 template<typename Transform, typename PixelType>
 void transform_line_to_triplet(const PixelType* source, const size_t pixel_stride_in, triplet<PixelType>* destination, const size_t pixel_stride, Transform& transform) noexcept
 {
-    const auto pixel_count = std::min(pixel_stride, pixel_stride_in);
+    const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
     triplet<PixelType>* type_buffer = destination;
 
-    for (auto i = 0U; i < pixel_count; ++i)
+    for (size_t i{}; i < pixel_count; ++i)
     {
         type_buffer[i] = transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in]);
     }
@@ -170,10 +170,10 @@ void transform_line_to_triplet(const PixelType* source, const size_t pixel_strid
 template<typename Transform, typename PixelType>
 void transform_triplet_to_line(const triplet<PixelType>* source, const size_t pixel_stride_in, PixelType* destination, const size_t pixel_stride, Transform& transform) noexcept
 {
-    const auto pixel_count = std::min(pixel_stride, pixel_stride_in);
-    const triplet<PixelType>* type_buffer_in = source;
+    const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
+    const triplet<PixelType>* type_buffer_in{source};
 
-    for (auto i = 0U; i < pixel_count; ++i)
+    for (size_t i{}; i < pixel_count; ++i)
     {
         const triplet<PixelType> color = type_buffer_in[i];
         const triplet<PixelType> color_transformed = transform(color.v1, color.v2, color.v3);

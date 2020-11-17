@@ -91,7 +91,7 @@ private:
     {
         std::vector<int> result;
 
-        const auto first = static_cast<char>(pnm_file.get());
+        const auto first{static_cast<char>(pnm_file.get())};
 
         // All portable anymap format (PNM) start with the character P.
         if (first != 'P')
@@ -105,7 +105,7 @@ private:
 
             while (result.size() < 4)
             {
-                int value = -1;
+                int value{-1};
                 line >> value;
                 if (value <= 0)
                     break;
@@ -118,7 +118,7 @@ private:
 
     static CONSTEXPR int32_t log_2(const int32_t n) noexcept
     {
-        int32_t x = 0;
+        int32_t x{};
         while (n > (1 << x))
         {
             ++x;
@@ -131,7 +131,7 @@ private:
         // Anymap files with multi byte pixels are stored in big endian format in the file.
         if (bits_per_sample_ > 8)
         {
-            for (size_t i = 0; i < input_buffer_.size() - 1; i += 2)
+            for (size_t i{}; i < input_buffer_.size() - 1; i += 2)
             {
                 std::swap(input_buffer_[i], input_buffer_[i + 1]);
             }

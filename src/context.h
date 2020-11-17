@@ -38,9 +38,9 @@ struct jls_context final
         ASSERT(N != 0);
 
         // For performance work on copies of A,B,N (compiler will use registers).
-        int a = A + std::abs(error_value);
-        int b = B + error_value * (2 * near_lossless + 1);
-        int n = N;
+        int a{A + std::abs(error_value)};
+        int b{B + error_value * (2 * near_lossless + 1)};
+        int n{N};
 
         ASSERT(a < 65536 * 256);
         ASSERT(std::abs(b) < 65536 * 256);
@@ -81,8 +81,8 @@ struct jls_context final
 
     FORCE_INLINE int32_t get_golomb_code() const noexcept
     {
-        const int32_t n_test = N;
-        const int32_t a_test = A;
+        const int32_t n_test{N};
+        const int32_t a_test{A};
 
         if (n_test >= a_test) return 0;
         if (n_test << 1 >= a_test) return 1;
@@ -90,7 +90,7 @@ struct jls_context final
         if (n_test << 3 >= a_test) return 3;
         if (n_test << 4 >= a_test) return 4;
 
-        int32_t k = 5;
+        int32_t k{5};
         for (; n_test << k < a_test; ++k)
         {
             ASSERT(k <= 32);

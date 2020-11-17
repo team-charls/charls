@@ -14,16 +14,16 @@
 
 namespace {
 
-constexpr size_t bytes_per_rgb_pixel = 3;
+constexpr size_t bytes_per_rgb_pixel{3};
 
 void convert_bgr_to_rgb(std::vector<uint8_t>& triplet_buffer, const size_t width, const size_t height, const size_t stride) noexcept
 {
-    for (size_t line = 0; line < height; ++line)
+    for (size_t line{}; line < height; ++line)
     {
-        const auto line_start = line * stride;
-        for (size_t pixel = 0; pixel < width; ++pixel)
+        const auto line_start{line * stride};
+        for (size_t pixel{}; pixel < width; ++pixel)
         {
-            const auto column = pixel * bytes_per_rgb_pixel;
+            const auto column{pixel * bytes_per_rgb_pixel};
             std::swap(triplet_buffer[line_start + column], triplet_buffer[line_start + column + 2]);
         }
     }
@@ -32,15 +32,15 @@ void convert_bgr_to_rgb(std::vector<uint8_t>& triplet_buffer, const size_t width
 std::vector<uint8_t> triplet_to_planar(const std::vector<uint8_t>& buffer, const size_t width, const size_t height, const size_t stride)
 {
     std::vector<uint8_t> result(bytes_per_rgb_pixel * width * height);
-    const size_t byte_count_plane = width * height;
+    const size_t byte_count_plane{width * height};
 
     size_t plane_column{};
-    for (size_t line = 0; line < height; ++line)
+    for (size_t line{}; line < height; ++line)
     {
-        const auto line_start = line * stride;
-        for (size_t pixel = 0; pixel < width; ++pixel)
+        const auto line_start{line * stride};
+        for (size_t pixel{}; pixel < width; ++pixel)
         {
-            const auto column = line_start + pixel * bytes_per_rgb_pixel;
+            const auto column{line_start + pixel * bytes_per_rgb_pixel};
             result[plane_column] = buffer[column];
             result[plane_column + 1 * byte_count_plane] = buffer[column + 1];
             result[plane_column + 2 * byte_count_plane] = buffer[column + 2];
@@ -53,13 +53,13 @@ std::vector<uint8_t> triplet_to_planar(const std::vector<uint8_t>& buffer, const
 
 void convert_bottom_up_to_top_down(uint8_t* triplet_buffer, const size_t width, const size_t height, const size_t stride)
 {
-    const size_t row_length = width * bytes_per_rgb_pixel;
+    const size_t row_length{width * bytes_per_rgb_pixel};
     std::vector<uint8_t> temp_row(row_length);
 
-    for (size_t i = 0; i < height / 2; ++i)
+    for (size_t i{}; i < height / 2; ++i)
     {
         memcpy(temp_row.data(), &triplet_buffer[i * stride], row_length);
-        const size_t bottom_row = height - i - 1;
+        const size_t bottom_row{height - i - 1};
         memcpy(&triplet_buffer[i * stride], &triplet_buffer[bottom_row * stride], row_length);
         memcpy(&triplet_buffer[bottom_row * stride], temp_row.data(), row_length);
     }
@@ -98,7 +98,7 @@ std::vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, const ch
     size_t encoded_size;
     if (interleave_mode == charls::interleave_mode::none)
     {
-        const auto planar_pixel_data = triplet_to_planar(image.pixel_data, image.dib_header.width, static_cast<size_t>(image.dib_header.height), image.stride);
+        const auto planar_pixel_data{triplet_to_planar(image.pixel_data, image.dib_header.width, static_cast<size_t>(image.dib_header.height), image.stride)};
         encoded_size = encoder.encode(planar_pixel_data);
     }
     else
@@ -213,7 +213,7 @@ int main(const int argc, char** argv)
         // Note: without the optional SPIFF header no color information is stored in the JPEG-LS file and the common assumption is RGB.
         convert_bgr_to_rgb(bmp_image.pixel_data, bmp_image.dib_header.width, static_cast<size_t>(bmp_image.dib_header.height), bmp_image.stride);
 
-        auto encoded_buffer = encode_bmp_image_to_jpegls(bmp_image, options.interleave_mode, options.near_lossless);
+        auto encoded_buffer{encode_bmp_image_to_jpegls(bmp_image, options.interleave_mode, options.near_lossless)};
         save_buffer_to_file(encoded_buffer.data(), encoded_buffer.size(), options.output_filename);
 
         return EXIT_SUCCESS;

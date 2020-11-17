@@ -89,7 +89,7 @@ void jpeg_stream_writer::write_start_of_frame_segment(const uint32_t width, cons
     ASSERT(component_count > 0 && component_count <= UINT8_MAX);
 
     // Create a Frame Header as defined in ISO/IEC 14495-1, C.2.2 and T.81, B.2.2
-    const size_t data_size = 6 + (static_cast<size_t>(component_count) * 3);
+    const size_t data_size{6 + (static_cast<size_t>(component_count) * 3)};
     write_segment_header(jpeg_marker_code::start_of_frame_jpegls, data_size);
     write_uint8(static_cast<uint8_t>(bits_per_sample)); // P = Sample precision
     write_uint16(static_cast<uint16_t>(height));        // Y = Number of lines
@@ -100,7 +100,7 @@ void jpeg_stream_writer::write_start_of_frame_segment(const uint32_t width, cons
 
     // Use by default 1 as the start component identifier to remain compatible with the
     // code sample of ISO/IEC 14495-1, H.4 and the JPEG-LS ISO conformance sample files.
-    for (auto component_id = 1; component_id <= component_count; ++component_id)
+    for (auto component_id{1}; component_id <= component_count; ++component_id)
     {
         // Component Specification parameters
         write_uint8(static_cast<uint8_t>(component_id)); // Ci = Component identifier
@@ -145,7 +145,7 @@ void jpeg_stream_writer::write_start_of_scan_segment(const int32_t component_cou
     write_segment_header(jpeg_marker_code::start_of_scan, 1 + (static_cast<size_t>(component_count) * 2) + 3);
     write_uint8(static_cast<uint8_t>(component_count));
 
-    for (auto i = 0; i < component_count; ++i)
+    for (int32_t i{}; i < component_count; ++i)
     {
         write_uint8(component_id_);
         write_uint8(0); // Mapping table selector (0 = no table)
@@ -160,12 +160,12 @@ void jpeg_stream_writer::write_start_of_scan_segment(const int32_t component_cou
 
 void jpeg_stream_writer::write_segment_header(const jpeg_marker_code marker_code, const size_t data_size)
 {
-    constexpr size_t marker_code_size = 2;
-    constexpr size_t segment_length_size = sizeof(uint16_t);
+    constexpr size_t marker_code_size{2};
+    constexpr size_t segment_length_size{sizeof(uint16_t)};
 
     ASSERT(data_size <= UINT16_MAX - segment_length_size);
 
-    const size_t total_segment_size = marker_code_size + segment_length_size + data_size;
+    const size_t total_segment_size{marker_code_size + segment_length_size + data_size};
     if (byte_offset_ + total_segment_size > destination_.size)
         impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 

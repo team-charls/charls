@@ -40,14 +40,14 @@ private:
 class golomb_code_table final
 {
 public:
-    static constexpr size_t byte_bit_count = 8;
+    static constexpr size_t byte_bit_count{8};
 
     void add_entry(const uint8_t value, const golomb_code c) noexcept
     {
-        const uint32_t length = c.length();
+        const uint32_t length{c.length()};
         ASSERT(static_cast<size_t>(length) <= byte_bit_count);
 
-        for (size_t i = 0; i < static_cast<size_t>(1U) << (byte_bit_count - length); ++i)
+        for (size_t i{}; i < static_cast<size_t>(1U) << (byte_bit_count - length); ++i)
         {
             ASSERT(types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i].length() == 0);
             types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i] = c;

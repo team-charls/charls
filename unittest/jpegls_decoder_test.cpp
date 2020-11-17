@@ -25,12 +25,6 @@ using namespace charls_test;
 
 namespace {
 
-void push_back(std::vector<uint8_t>& values, const uint16_t value)
-{
-    values.push_back(static_cast<uint8_t>(value >> 8));
-    values.push_back(static_cast<uint8_t>(value));
-}
-
 charls::jpegls_decoder create_decoder(const vector<uint8_t>& source)
 {
     return {source, true};
@@ -112,7 +106,7 @@ public:
     TEST_METHOD(frame_info_without_read_header) // NOLINT
     {
         const vector<uint8_t> source(2000);
-        jpegls_decoder decoder{source, false};
+        const jpegls_decoder decoder{source, false};
 
         Assert::AreEqual(0, decoder.frame_info().bits_per_sample);
         Assert::AreEqual(0, decoder.frame_info().component_count);
@@ -163,7 +157,7 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source, true};
+        const jpegls_decoder decoder{source, true};
 
         constexpr size_t expected_destination_size{static_cast<size_t>(256) * 256 * 3};
         Assert::AreEqual(expected_destination_size, decoder.destination_size());
@@ -173,7 +167,7 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source, true};
+        const jpegls_decoder decoder{source, true};
 
         constexpr size_t stride{512};
         constexpr size_t expected_destination_size{stride * 256 * 3};
@@ -184,9 +178,9 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c1e0.jls")};
 
-        jpegls_decoder decoder{source, true};
+        const jpegls_decoder decoder{source, true};
 
-        constexpr size_t stride = 1024;
+        constexpr size_t stride{1024};
         constexpr size_t expected_destination_size{stride * 256};
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
@@ -195,7 +189,7 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c2e0.jls")};
 
-        jpegls_decoder decoder{source, true};
+        const jpegls_decoder decoder{source, true};
 
         constexpr size_t stride = 1024;
         constexpr size_t expected_destination_size{stride * 256};
@@ -206,7 +200,7 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source, true};
+        const jpegls_decoder decoder{source, true};
 
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
@@ -225,7 +219,7 @@ public:
         vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
         insert_pc_parameters_segments(source, 3);
 
-        jpegls_decoder decoder{source, true};
+        const jpegls_decoder decoder{source, true};
 
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
@@ -243,14 +237,14 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source, true};
+        const jpegls_decoder decoder{source, true};
 
         const auto destination = decoder.decode<vector<uint8_t>>();
 
         portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info());
 
         const auto& reference_image_data = reference_file.image_data();
-        for (size_t i = 0; i < destination.size(); ++i)
+        for (size_t i{}; i < destination.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination[i]);
         }
@@ -260,15 +254,15 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source, true};
+        const jpegls_decoder decoder{source, true};
 
         const auto destination = decoder.decode<vector<uint16_t>>();
 
         portable_anymap_file reference_file = read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info());
 
-        const auto& reference_image_data = reference_file.image_data();
-        const auto* destination_as_bytes = reinterpret_cast<const uint8_t*>(destination.data());
-        for (size_t i = 0; i < reference_image_data.size(); ++i)
+        const auto& reference_image_data{reference_file.image_data()};
+        const auto* destination_as_bytes{reinterpret_cast<const uint8_t*>(destination.data())};
+        for (size_t i{}; i < reference_image_data.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination_as_bytes[i]);
         }
@@ -305,7 +299,7 @@ public:
 
         Assert::IsTrue(decoder.spiff_header_has_value());
 
-        const auto& header = decoder.spiff_header();
+        const auto& header{decoder.spiff_header()};
         Assert::AreEqual(static_cast<int32_t>(spiff_profile_id::none), static_cast<int32_t>(header.profile_id));
         Assert::AreEqual(3, header.component_count);
         Assert::AreEqual(800U, header.height);
@@ -349,7 +343,7 @@ public:
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
-        jpegls_decoder decoder{source, true};
+        const jpegls_decoder decoder{source, true};
 
         Assert::IsFalse(decoder.spiff_header_has_value());
 
@@ -405,7 +399,7 @@ public:
         Assert::AreEqual(256U, frame_info.width);
         Assert::AreEqual(interleave_mode::none, interleave_mode);
 
-        const size_t expected_size = static_cast<size_t>(frame_info.height) * frame_info.width * frame_info.component_count;
+        const size_t expected_size{static_cast<size_t>(frame_info.height) * frame_info.width * frame_info.component_count};
         Assert::AreEqual(expected_size, decoded_destination.size() * sizeof(uint16_t));
     }
 
@@ -430,9 +424,9 @@ public:
 private:
     static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator& begin, const vector<uint8_t>::iterator& end) noexcept
     {
-        constexpr uint8_t start_of_scan = 0xDA;
+        constexpr uint8_t start_of_scan{0xDA};
 
-        for (auto it = begin; it != end; ++it)
+        for (auto it{begin}; it != end; ++it)
         {
             if (*it == 0xFF && it + 1 != end && *(it + 1) == start_of_scan)
                 return it;
@@ -460,10 +454,10 @@ private:
 
     static void insert_pc_parameters_segments(vector<uint8_t> & jpegls_source, const int component_count)
     {
-        const auto pcp_segment = create_default_pc_parameters_segment();
+        const auto pcp_segment{create_default_pc_parameters_segment()};
 
-        auto it = jpegls_source.begin();
-        for (int i = 0; i < component_count; ++i)
+        auto it{jpegls_source.begin()};
+        for (int i{}; i < component_count; ++i)
         {
             it = find_scan_header(it, jpegls_source.end());
             it = jpegls_source.insert(it, pcp_segment.cbegin(), pcp_segment.cend());

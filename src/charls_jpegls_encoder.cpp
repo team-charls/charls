@@ -176,14 +176,14 @@ struct charls_jpegls_encoder final
         }
         else if (frame_info_.bits_per_sample > 12)
         {
-            const jpegls_pc_parameters preset = compute_default(static_cast<int32_t>(calculate_maximum_sample_value(frame_info_.bits_per_sample)), near_lossless_);
+            const jpegls_pc_parameters preset{compute_default(static_cast<int32_t>(calculate_maximum_sample_value(frame_info_.bits_per_sample)), near_lossless_)};
             writer_.write_jpegls_preset_parameters_segment(preset);
         }
 
         if (interleave_mode_ == charls::interleave_mode::none)
         {
-            const size_t byte_count_component = stride * frame_info_.height;
-            for (int32_t component = 0; component < frame_info_.component_count; ++component)
+            const size_t byte_count_component{stride * frame_info_.height};
+            for (int32_t component{}; component < frame_info_.component_count; ++component)
             {
                 writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
                 encode_scan(source, stride, 1);
@@ -224,11 +224,11 @@ private:
     {
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, component_count};
 
-        auto codec = jls_codec_factory<encoder_strategy>().create_codec(frame_info,
-                                                                        {near_lossless_, interleave_mode_, color_transformation_, false},
-                                                                        preset_coding_parameters_);
+        auto codec{jls_codec_factory<encoder_strategy>().create_codec(frame_info,
+                                                                      {near_lossless_, interleave_mode_, color_transformation_, false},
+                                                                      preset_coding_parameters_)};
         unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
-        const size_t bytes_written = codec->encode_scan(move(process_line), writer_.remaining_destination());
+        const size_t bytes_written{codec->encode_scan(move(process_line), writer_.remaining_destination())};
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
         writer_.seek(bytes_written);
@@ -447,7 +447,7 @@ try
     encoder.frame_info({static_cast<uint32_t>(params->width), static_cast<uint32_t>(params->height), params->bitsPerSample, params->components});
     encoder.interleave_mode(params->interleaveMode);
     encoder.color_transformation(params->colorTransformation);
-    const auto& pc = params->custom;
+    const auto& pc{params->custom};
     encoder.preset_coding_parameters({pc.MaximumSampleValue, pc.Threshold1, pc.Threshold2, pc.Threshold3, pc.ResetValue});
 
     encoder.encode({check_pointer(source), source_length}, static_cast<uint32_t>(params->stride));

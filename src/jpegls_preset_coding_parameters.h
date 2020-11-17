@@ -30,9 +30,9 @@ inline jpegls_pc_parameters compute_default(const int32_t maximum_sample_value, 
 
     if (maximum_sample_value >= 128)
     {
-        const int32_t factor = (std::min(maximum_sample_value, 4095) + 128) / 256;
-        const int threshold1 = clamp(factor * (default_threshold1 - 2) + 2 + 3 * near_lossless, near_lossless + 1, maximum_sample_value);
-        const int threshold2 = clamp(factor * (default_threshold2 - 3) + 3 + 5 * near_lossless, threshold1, maximum_sample_value); //-V537
+        const int32_t factor{(std::min(maximum_sample_value, 4095) + 128) / 256};
+        const int threshold1{clamp(factor * (default_threshold1 - 2) + 2 + 3 * near_lossless, near_lossless + 1, maximum_sample_value)};
+        const int threshold2{clamp(factor * (default_threshold2 - 3) + 3 + 5 * near_lossless, threshold1, maximum_sample_value)}; //-V537
 
         return {
             maximum_sample_value,
@@ -42,9 +42,9 @@ inline jpegls_pc_parameters compute_default(const int32_t maximum_sample_value, 
             default_reset_value};
     }
 
-    const int32_t factor = 256 / (maximum_sample_value + 1);
-    const int threshold1 = clamp(std::max(2, default_threshold1 / factor + 3 * near_lossless), near_lossless + 1, maximum_sample_value);
-    const int threshold2 = clamp(std::max(3, default_threshold2 / factor + 5 * near_lossless), threshold1, maximum_sample_value);
+    const int32_t factor{256 / (maximum_sample_value + 1)};
+    const int threshold1{clamp(std::max(2, default_threshold1 / factor + 3 * near_lossless), near_lossless + 1, maximum_sample_value)};
+    const int threshold2{clamp(std::max(3, default_threshold2 / factor + 5 * near_lossless), threshold1, maximum_sample_value)};
 
     return {
         maximum_sample_value,
@@ -84,16 +84,16 @@ inline bool is_valid(const jpegls_pc_parameters& pc_parameters, const int32_t ma
     if (pc_parameters.maximum_sample_value != 0 && (pc_parameters.maximum_sample_value < 1 || pc_parameters.maximum_sample_value > maximum_component_value))
         return false;
 
-    const int32_t maximum_sample_value = pc_parameters.maximum_sample_value != 0 ? pc_parameters.maximum_sample_value : maximum_component_value;
+    const int32_t maximum_sample_value{pc_parameters.maximum_sample_value != 0 ? pc_parameters.maximum_sample_value : maximum_component_value};
     if (pc_parameters.threshold1 != 0 && (pc_parameters.threshold1 < near_lossless + 1 || pc_parameters.threshold1 > maximum_sample_value))
         return false;
 
     const jpegls_pc_parameters default_parameters{compute_default(maximum_sample_value, near_lossless)};
-    const int32_t threshold1 = pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : default_parameters.threshold1;
+    const int32_t threshold1{pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : default_parameters.threshold1};
     if (pc_parameters.threshold2 != 0 && (pc_parameters.threshold2 < threshold1 || pc_parameters.threshold2 > maximum_sample_value))
         return false;
 
-    const int32_t threshold2 = pc_parameters.threshold2 != 0 ? pc_parameters.threshold2 : default_parameters.threshold2;
+    const int32_t threshold2{pc_parameters.threshold2 != 0 ? pc_parameters.threshold2 : default_parameters.threshold2};
     if (pc_parameters.threshold3 != 0 && (pc_parameters.threshold3 < threshold2 || pc_parameters.threshold3 > maximum_sample_value))
         return false;
 

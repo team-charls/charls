@@ -310,7 +310,7 @@ try
     decoder.source(check_pointer(source), source_length);
     decoder.read_header();
     *check_pointer(params) = JlsParameters{};
-    const frame_info info = decoder.frame_info();
+    const frame_info info{decoder.frame_info()};
     params->height = static_cast<int32_t>(info.height);
     params->width = static_cast<int32_t>(info.width);
     params->bitsPerSample = info.bits_per_sample;
@@ -318,7 +318,7 @@ try
     params->interleaveMode = decoder.interleave_mode();
     params->allowedLossyError = decoder.near_lossless();
     params->colorTransformation = decoder.transformation();
-    const int32_t component_count = params->interleaveMode == interleave_mode::none ? 1 : params->components;
+    const int32_t component_count{params->interleaveMode == interleave_mode::none ? 1 : params->components};
     params->stride = params->width * component_count * static_cast<int32_t>(bit_to_byte_count(params->bitsPerSample));
 
     const auto& preset{decoder.preset_coding_parameters()};

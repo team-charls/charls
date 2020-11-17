@@ -27,8 +27,8 @@ void triplet_to_planar(vector<uint8_t>& buffer, const uint32_t width, const uint
 {
     vector<uint8_t> work_buffer(buffer.size());
 
-    const size_t byte_count = static_cast<size_t>(width) * height;
-    for (size_t index = 0; index < byte_count; index++)
+    const size_t byte_count{static_cast<size_t>(width) * height};
+    for (size_t index{}; index < byte_count; index++)
     {
         work_buffer[index] = buffer[index * 3 + 0];
         work_buffer[index + 1 * byte_count] = buffer[index * 3 + 1];
@@ -60,7 +60,7 @@ vector<uint8_t> read_file(const char* filename)
 
 portable_anymap_file read_anymap_reference_file(const char* filename, const interleave_mode interleave_mode, const frame_info& frame_info)
 {
-    portable_anymap_file reference_file(filename);
+    portable_anymap_file reference_file{filename};
 
     if (interleave_mode == interleave_mode::none && frame_info.component_count == 3)
     {
@@ -72,7 +72,7 @@ portable_anymap_file read_anymap_reference_file(const char* filename, const inte
 
 portable_anymap_file read_anymap_reference_file(const char* filename, const interleave_mode interleave_mode)
 {
-    portable_anymap_file reference_file(filename);
+    portable_anymap_file reference_file{filename};
 
     if (interleave_mode == interleave_mode::none && reference_file.component_count() == 3)
     {
@@ -136,7 +136,7 @@ vector<uint8_t> create_test_spiff_header(const uint8_t high_version, const uint8
     buffer.push_back(4);
     buffer.push_back(0);
 
-    const size_t spiff_header_size = buffer.size();
+    const size_t spiff_header_size{buffer.size()};
     buffer.resize(buffer.size() + 100);
 
     jpeg_stream_writer writer({buffer.data() + spiff_header_size, buffer.size() - spiff_header_size});
@@ -160,9 +160,9 @@ vector<uint8_t> create_noise_image_16_bit(const size_t pixel_count, const int bi
     MSVC_CONST uniform_int_distribution<uint16_t> distribution(0, max_value);
 
     vector<uint8_t> buffer(pixel_count * 2);
-    for (size_t i = 0; i < pixel_count; i = i + 2)
+    for (size_t i{}; i < pixel_count; i = i + 2)
     {
-        const uint16_t value = distribution(generator);
+        const uint16_t value{distribution(generator)};
 
         buffer[i] = static_cast<uint8_t>(value);
         buffer[i] = static_cast<uint8_t>(value >> 8);
@@ -179,15 +179,15 @@ void test_round_trip_legacy(const vector<uint8_t>& source, const JlsParameters& 
     vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width * bit_to_byte_count(params.bitsPerSample) * params.components);
 
     size_t compressed_length{};
-    auto error = JpegLsEncode(encoded_buffer.data(), encoded_buffer.size(), &compressed_length,
-                              source.data(), source.size(), &params, nullptr);
+    auto error{JpegLsEncode(encoded_buffer.data(), encoded_buffer.size(), &compressed_length,
+                              source.data(), source.size(), &params, nullptr)};
     Assert::AreEqual(jpegls_errc::success, error);
 
     error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_buffer.data(), compressed_length, nullptr, nullptr);
     Assert::AreEqual(jpegls_errc::success, error);
 
-    const uint8_t* byte_out = decoded_buffer.data();
-    for (size_t i = 0; i < decoded_buffer.size(); ++i)
+    const uint8_t* byte_out{decoded_buffer.data()};
+    for (size_t i{}; i < decoded_buffer.size(); ++i)
     {
         if (source[i] != byte_out[i])
         {

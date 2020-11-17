@@ -61,7 +61,7 @@ public:
             throw std::istream::failure("Can only process an image that is 1 x 1 or bigger");
 
         // The BMP format requires that the size of each row is rounded up to a multiple of 4 bytes by padding.
-        constexpr int bytes_per_pixel = 3;
+        constexpr int bytes_per_pixel{3};
         stride = ((dib_header.width * bytes_per_pixel) + 3) / 4 * 4;
 
         pixel_data = read_pixel_data(input, header.offset, dib_header.height, stride);

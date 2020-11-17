@@ -28,7 +28,7 @@ public:
 
         // Components
         segment.push_back(static_cast<uint8_t>(component_count)); // Nf = Number of image components in frame
-        for (auto component_id = 0; component_id < component_count; ++component_id)
+        for (int component_id{}; component_id < component_count; ++component_id)
         {
             // Component Specification parameters
             if (componentIdOverride == 0)
@@ -70,7 +70,7 @@ public:
         std::vector<uint8_t> segment;
 
         segment.push_back(static_cast<uint8_t>(component_count));
-        for (auto i = 0; i < component_count; ++i)
+        for (int i{}; i < component_count; ++i)
         {
             segment.push_back(static_cast<uint8_t>(component_id));
             ++component_id;
@@ -110,9 +110,9 @@ public:
 
     void write_bytes(const void* data, const size_t data_size)
     {
-        const auto* const bytes = static_cast<const uint8_t*>(data);
+        const auto* const bytes{static_cast<const uint8_t*>(data)};
 
-        for (std::size_t i = 0; i < data_size; ++i)
+        for (size_t i{}; i < data_size; ++i)
         {
             write_byte(bytes[i]);
         }

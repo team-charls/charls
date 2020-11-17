@@ -28,9 +28,9 @@ struct context_run_mode final
 
     FORCE_INLINE int32_t get_golomb_code() const noexcept
     {
-        const int32_t temp = a_ + (n_ >> 1) * run_interruption_type;
-        int32_t n_test = n_;
-        int32_t k = 0;
+        const int32_t temp{a_ + (n_ >> 1) * run_interruption_type};
+        int32_t n_test{n_};
+        int32_t k{};
         for (; n_test < temp; ++k)
         {
             n_test <<= 1;
@@ -58,7 +58,7 @@ struct context_run_mode final
     FORCE_INLINE int32_t compute_error_value(const int32_t temp, const int32_t k) const noexcept
     {
         const bool map = temp & 1;
-        const int32_t error_value_abs = (temp + static_cast<int32_t>(map)) / 2;
+        const int32_t error_value_abs{(temp + static_cast<int32_t>(map)) / 2};
 
         if ((k != 0 || (2 * nn_ >= n_)) == map)
         {

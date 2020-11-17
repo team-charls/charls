@@ -707,7 +707,7 @@ public:
 private:
     CHARLS_NO_DISCARD static charls_jpegls_decoder* create_decoder()
     {
-        charls_jpegls_decoder* decoder = charls_jpegls_decoder_create();
+        charls_jpegls_decoder* decoder{charls_jpegls_decoder_create()};
         if (!decoder)
             throw std::bad_alloc();
 
@@ -947,7 +947,7 @@ public:
 private:
     CHARLS_NO_DISCARD static charls_jpegls_encoder* create_encoder()
     {
-        charls_jpegls_encoder* encoder = charls_jpegls_encoder_create();
+        charls_jpegls_encoder* encoder{charls_jpegls_encoder_create()};
         if (!encoder)
             throw std::bad_alloc();
 

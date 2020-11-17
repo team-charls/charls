@@ -20,11 +20,11 @@ TEST_CLASS(version_test)
 public:
     TEST_METHOD(charls_get_version_string_test) // NOLINT
     {
-        const char* version = charls_get_version_string();
+        const char* version{charls_get_version_string()};
 
         ostringstream expected_stream;
         expected_stream << CHARLS_VERSION_MAJOR << "." << CHARLS_VERSION_MINOR << "." << CHARLS_VERSION_PATCH;
-        const auto expected = expected_stream.str();
+        const auto expected{expected_stream.str()};
 
         Assert::IsTrue(strncmp(expected.c_str(), version, expected.length()) == 0);
         if (expected.length() != strlen(version))

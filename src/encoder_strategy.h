@@ -55,7 +55,7 @@ protected:
         ASSERT(bit_count < 32 && bit_count >= 0);
         ASSERT((!decoder_) || (bit_count == 0 && bits == 0) || (static_cast<uint32_t>(decoder_->read_long_value(bit_count)) == bits));
 #ifndef NDEBUG
-        const uint32_t mask = (1U << bit_count) - 1U;
+        const uint32_t mask{(1U << bit_count) - 1U};
         ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
 #endif
 
@@ -107,7 +107,7 @@ protected:
             impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
         }
 
-        for (int i = 0; i < 4; ++i)
+        for (int i{}; i < 4; ++i)
         {
             if (free_bit_count_ >= 32)
                 break;

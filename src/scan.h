@@ -28,7 +28,7 @@ extern std::vector<int8_t> quantization_lut_lossless_12;
 extern std::vector<int8_t> quantization_lut_lossless_16;
 
 // Used to determine how large runs should be encoded at a time. Defined by the JPEG-LS standard, A.2.1., Initialization step 3.
-constexpr std::array<int, 32> J = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+constexpr std::array<int, 32> J{0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 constexpr int32_t apply_sign(const int32_t i, const int32_t sign) noexcept
 {
@@ -67,7 +67,7 @@ inline int32_t get_predicted_value(int32_t Ra, int32_t Rb, int32_t Rc)
 inline int32_t get_predicted_value(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
 {
     // sign trick reduces the number of if statements (branches)
-    const int32_t sign = bit_wise_sign(rb - ra);
+    const int32_t sign{bit_wise_sign(rb - ra)};
 
     // is Ra between Rc and Rb?
     if ((sign ^ (rc - ra)) < 0)
@@ -87,13 +87,13 @@ inline int32_t get_predicted_value(const int32_t ra, const int32_t rb, const int
 
 CONSTEXPR int32_t unmap_error_value(const int32_t mapped_error) noexcept
 {
-    const int32_t sign = mapped_error << (int32_t_bit_count - 1) >> (int32_t_bit_count - 1);
+    const int32_t sign{mapped_error << (int32_t_bit_count - 1) >> (int32_t_bit_count - 1)};
     return sign ^ (mapped_error >> 1);
 }
 
 CONSTEXPR int32_t get_mapped_error_value(const int32_t error_value) noexcept
 {
-    const int32_t mapped_error = (error_value >> (int32_t_bit_count - 2)) ^ (2 * error_value);
+    const int32_t mapped_error{(error_value >> (int32_t_bit_count - 2)) ^ (2 * error_value)};
     return mapped_error;
 }
 
@@ -231,7 +231,7 @@ private:
             }
         }
 
-        const int32_t range = 1 << traits_.bits_per_pixel;
+        const int32_t range{1 << traits_.bits_per_pixel};
 
         quantization_lut_.resize(static_cast<size_t>(range) * 2);
 
@@ -245,7 +245,7 @@ private:
 
     int32_t decode_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
     {
-        const int32_t high_bits = Strategy::read_high_bits();
+        const int32_t high_bits{Strategy::read_high_bits()};
 
         if (high_bits >= limit - (quantized_bits_per_pixel + 1))
             return Strategy::read_value(quantized_bits_per_pixel) + 1;
@@ -258,7 +258,7 @@ private:
 
     FORCE_INLINE void encode_mapped_value(const int32_t k, const int32_t mapped_error, const int32_t limit)
     {
-        int32_t high_bits = mapped_error >> k;
+        int32_t high_bits{mapped_error >> k};
 
         if (high_bits < limit - traits_.quantized_bits_per_pixel - 1)
         {
@@ -326,11 +326,11 @@ private:
 
     FORCE_INLINE sample_type do_regular(const int32_t qs, const int32_t x, const int32_t predicted, encoder_strategy*)
     {
-        const int32_t sign = bit_wise_sign(qs);
-        jls_context& context = contexts_[apply_sign(qs, sign)];
-        const int32_t k = context.get_golomb_code();
-        const int32_t predicted_value = traits_.correct_prediction(predicted + apply_sign(context.C, sign));
-        const int32_t error_value = traits_.compute_error_value(apply_sign(x - predicted_value, sign));
+        const int32_t sign{bit_wise_sign(qs)};
+        jls_context& context{contexts_[apply_sign(qs, sign)]};
+        const int32_t k{context.get_golomb_code()};
+        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.C, sign))};
+        const int32_t error_value{traits_.compute_error_value(apply_sign(x - predicted_value, sign))};
 
         encode_mapped_value(k, get_mapped_error_value(context.get_error_correction(k | traits_.near_lossless) ^ error_value), traits_.limit);
         context.update_variables(error_value, traits_.near_lossless, traits_.reset_threshold);
@@ -341,18 +341,18 @@ private:
     /// <summary>Encodes/Decodes a scan line of samples</summary>
     void do_line(sample_type*)
     {
-        int32_t index = 0;
-        int32_t rb = previous_line_[index - 1];
-        int32_t rd = previous_line_[index];
+        int32_t index{};
+        int32_t rb{previous_line_[index - 1]};
+        int32_t rd{previous_line_[index]};
 
         while (static_cast<uint32_t>(index) < width_)
         {
-            const int32_t ra = current_line_[index - 1];
-            const int32_t rc = rb;
+            const int32_t ra{current_line_[index - 1]};
+            const int32_t rc{rb};
             rb = rd;
             rd = previous_line_[index + 1];
 
-            const int32_t qs = compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra));
+            const int32_t qs{compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
 
             if (qs != 0)
             {
@@ -371,17 +371,17 @@ private:
     /// <summary>Encodes/Decodes a scan line of triplets in ILV_SAMPLE mode</summary>
     void do_line(triplet<sample_type>*)
     {
-        int32_t index = 0;
+        int32_t index{};
         while (static_cast<uint32_t>(index) < width_)
         {
-            const triplet<sample_type> ra = current_line_[index - 1];
-            const triplet<sample_type> rc = previous_line_[index - 1];
-            const triplet<sample_type> rb = previous_line_[index];
-            const triplet<sample_type> rd = previous_line_[index + 1];
+            const triplet<sample_type> ra{current_line_[index - 1]};
+            const triplet<sample_type> rc{previous_line_[index - 1]};
+            const triplet<sample_type> rb{previous_line_[index]};
+            const triplet<sample_type> rd{previous_line_[index + 1]};
 
-            const int32_t qs1 = compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1), quantize_gradient(rc.v1 - ra.v1));
-            const int32_t qs2 = compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2), quantize_gradient(rc.v2 - ra.v2));
-            const int32_t qs3 = compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3), quantize_gradient(rc.v3 - ra.v3));
+            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1), quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2), quantize_gradient(rc.v2 - ra.v2))};
+            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3), quantize_gradient(rc.v3 - ra.v3))};
 
             if (qs1 == 0 && qs2 == 0 && qs3 == 0)
             {
@@ -424,7 +424,7 @@ private:
     {
         Strategy::process_line_ = std::move(process_line);
 
-        const uint8_t* compressed_bytes = compressed_data.data;
+        const uint8_t* compressed_bytes{compressed_data.data};
         rect_ = rect;
 
         Strategy::initialize(compressed_data);
@@ -472,13 +472,13 @@ private:
     // In ILV_NONE mode, do_scan is called for each component
     void do_scan()
     {
-        const uint32_t pixel_stride = width_ + 4U;
-        const size_t component_count = parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U;
+        const uint32_t pixel_stride{width_ + 4U};
+        const size_t component_count{parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
 
         std::vector<pixel_type> vectmp(static_cast<size_t>(2) * component_count * pixel_stride);
         std::vector<int32_t> run_index(component_count);
 
-        for (uint32_t line = 0; line < frame_info().height; ++line)
+        for (uint32_t line{}; line < frame_info().height; ++line)
         {
             previous_line_ = &vectmp[1];
             current_line_ = &vectmp[1 + static_cast<size_t>(component_count) * pixel_stride];
@@ -489,7 +489,7 @@ private:
 
             Strategy::on_line_begin(width_, current_line_, pixel_stride);
 
-            for (auto component = 0U; component < component_count; ++component)
+            for (size_t component{}; component < component_count; ++component)
             {
                 run_index_ = run_index[component];
 
@@ -515,18 +515,18 @@ private:
     /// <summary>Encodes/Decodes a scan line of quads in ILV_SAMPLE mode</summary>
     void do_line(quad<sample_type>*)
     {
-        int32_t index = 0;
+        int32_t index{};
         while (static_cast<uint32_t>(index) < width_)
         {
-            const quad<sample_type> ra = current_line_[index - 1];
-            const quad<sample_type> rc = previous_line_[index - 1];
-            const quad<sample_type> rb = previous_line_[index];
-            const quad<sample_type> rd = previous_line_[index + 1];
+            const quad<sample_type> ra{current_line_[index - 1]};
+            const quad<sample_type> rc{previous_line_[index - 1]};
+            const quad<sample_type> rb{previous_line_[index]};
+            const quad<sample_type> rd{previous_line_[index + 1]};
 
-            const int32_t qs1 = compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1), quantize_gradient(rc.v1 - ra.v1));
-            const int32_t qs2 = compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2), quantize_gradient(rc.v2 - ra.v2));
-            const int32_t qs3 = compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3), quantize_gradient(rc.v3 - ra.v3));
-            const int32_t qs4 = compute_context_id(quantize_gradient(rd.v4 - rb.v4), quantize_gradient(rb.v4 - rc.v4), quantize_gradient(rc.v4 - ra.v4));
+            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1), quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2), quantize_gradient(rc.v2 - ra.v2))};
+            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3), quantize_gradient(rc.v3 - ra.v3))};
+            const int32_t qs4{compute_context_id(quantize_gradient(rd.v4 - rb.v4), quantize_gradient(rb.v4 - rc.v4), quantize_gradient(rc.v4 - ra.v4))};
 
             if (qs1 == 0 && qs2 == 0 && qs3 == 0 && qs4 == 0)
             {
@@ -547,18 +547,18 @@ private:
 
     int32_t decode_run_interruption_error(context_run_mode& context)
     {
-        const int32_t k = context.get_golomb_code();
-        const int32_t e_mapped_error_value = decode_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_pixel);
-        const int32_t error_value = context.compute_error_value(e_mapped_error_value + context.run_interruption_type, k);
+        const int32_t k{context.get_golomb_code()};
+        const int32_t e_mapped_error_value{decode_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_pixel)};
+        const int32_t error_value{context.compute_error_value(e_mapped_error_value + context.run_interruption_type, k)};
         context.update_variables(error_value, e_mapped_error_value);
         return error_value;
     }
 
     triplet<sample_type> decode_run_interruption_pixel(triplet<sample_type> ra, triplet<sample_type> rb)
     {
-        const int32_t error_value1 = decode_run_interruption_error(context_runmode_[0]);
-        const int32_t error_value2 = decode_run_interruption_error(context_runmode_[0]);
-        const int32_t error_value3 = decode_run_interruption_error(context_runmode_[0]);
+        const int32_t error_value1{decode_run_interruption_error(context_runmode_[0])};
+        const int32_t error_value2{decode_run_interruption_error(context_runmode_[0])};
+        const int32_t error_value3{decode_run_interruption_error(context_runmode_[0])};
 
         return triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
                                     traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
@@ -567,10 +567,10 @@ private:
 
     quad<sample_type> decode_run_interruption_pixel(quad<sample_type> ra, quad<sample_type> rb)
     {
-        const int32_t error_value1 = decode_run_interruption_error(context_runmode_[0]);
-        const int32_t error_value2 = decode_run_interruption_error(context_runmode_[0]);
-        const int32_t error_value3 = decode_run_interruption_error(context_runmode_[0]);
-        const int32_t error_value4 = decode_run_interruption_error(context_runmode_[0]);
+        const int32_t error_value1{decode_run_interruption_error(context_runmode_[0])};
+        const int32_t error_value2{decode_run_interruption_error(context_runmode_[0])};
+        const int32_t error_value3{decode_run_interruption_error(context_runmode_[0])};
+        const int32_t error_value4{decode_run_interruption_error(context_runmode_[0])};
 
         return quad<sample_type>(triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
                                                       traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
@@ -582,20 +582,20 @@ private:
     {
         if (std::abs(ra - rb) <= traits_.near_lossless)
         {
-            const int32_t error_value = decode_run_interruption_error(context_runmode_[1]);
+            const int32_t error_value{decode_run_interruption_error(context_runmode_[1])};
             return static_cast<sample_type>(traits_.compute_reconstructed_sample(ra, error_value));
         }
 
-        const int32_t error_value = decode_run_interruption_error(context_runmode_[0]);
+        const int32_t error_value{decode_run_interruption_error(context_runmode_[0])};
         return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
     }
 
     int32_t decode_run_pixels(pixel_type ra, pixel_type* start_pos, const int32_t pixel_count)
     {
-        int32_t index = 0;
+        int32_t index{};
         while (Strategy::read_bit())
         {
-            const int count = std::min(1 << J[run_index_], static_cast<int>(pixel_count - index));
+            const int count{std::min(1 << J[run_index_], static_cast<int>(pixel_count - index))};
             index += count;
             ASSERT(index <= pixel_count);
 
@@ -617,7 +617,7 @@ private:
         if (index > pixel_count)
             impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
-        for (int32_t i = 0; i < index; ++i)
+        for (int32_t i{}; i < index; ++i)
         {
             start_pos[i] = ra;
         }
@@ -625,18 +625,18 @@ private:
         return index;
     }
 
-    int32_t do_run_mode(int32_t start_index, decoder_strategy*)
+    int32_t do_run_mode(const int32_t start_index, decoder_strategy*)
     {
-        const pixel_type ra = current_line_[start_index - 1];
+        const pixel_type ra{current_line_[start_index - 1]};
 
-        const int32_t run_length = decode_run_pixels(ra, current_line_ + start_index, width_ - start_index);
-        const uint32_t end_index = start_index + run_length;
+        const int32_t run_length{decode_run_pixels(ra, current_line_ + start_index, width_ - start_index)};
+        const uint32_t end_index{static_cast<uint32_t>(start_index + run_length)};
 
         if (end_index == width_)
             return end_index - start_index;
 
         // run interruption
-        const pixel_type rb = previous_line_[end_index];
+        const pixel_type rb{previous_line_[end_index]};
         current_line_[end_index] = decode_run_interruption_pixel(ra, rb);
         decrement_run_index();
         return end_index - start_index + 1;
@@ -644,9 +644,9 @@ private:
 
     void encode_run_interruption_error(context_run_mode& context, const int32_t error_value)
     {
-        const int32_t k = context.get_golomb_code();
-        const bool map = context.compute_map(error_value, k);
-        const int32_t e_mapped_error_value = 2 * std::abs(error_value) - context.run_interruption_type - static_cast<int32_t>(map);
+        const int32_t k{context.get_golomb_code()};
+        const bool map{context.compute_map(error_value, k)};
+        const int32_t e_mapped_error_value{2 * std::abs(error_value) - context.run_interruption_type - static_cast<int32_t>(map)};
 
         ASSERT(error_value == context.compute_error_value(e_mapped_error_value + context.run_interruption_type, k));
         encode_mapped_value(k, e_mapped_error_value, traits_.limit - J[run_index_] - 1);
@@ -657,25 +657,25 @@ private:
     {
         if (std::abs(ra - rb) <= traits_.near_lossless)
         {
-            const int32_t error_value = traits_.compute_error_value(x - ra);
+            const int32_t error_value{traits_.compute_error_value(x - ra)};
             encode_run_interruption_error(context_runmode_[1], error_value);
             return static_cast<sample_type>(traits_.compute_reconstructed_sample(ra, error_value));
         }
 
-        const int32_t error_value = traits_.compute_error_value((x - rb) * sign(rb - ra));
+        const int32_t error_value{traits_.compute_error_value((x - rb) * sign(rb - ra))};
         encode_run_interruption_error(context_runmode_[0], error_value);
         return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
     }
 
     triplet<sample_type> encode_run_interruption_pixel(const triplet<sample_type> x, const triplet<sample_type> ra, const triplet<sample_type> rb)
     {
-        const int32_t error_value1 = traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1));
+        const int32_t error_value1{traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1))};
         encode_run_interruption_error(context_runmode_[0], error_value1);
 
-        const int32_t error_value2 = traits_.compute_error_value(sign(rb.v2 - ra.v2) * (x.v2 - rb.v2));
+        const int32_t error_value2{traits_.compute_error_value(sign(rb.v2 - ra.v2) * (x.v2 - rb.v2))};
         encode_run_interruption_error(context_runmode_[0], error_value2);
 
-        const int32_t error_value3 = traits_.compute_error_value(sign(rb.v3 - ra.v3) * (x.v3 - rb.v3));
+        const int32_t error_value3{traits_.compute_error_value(sign(rb.v3 - ra.v3) * (x.v3 - rb.v3))};
         encode_run_interruption_error(context_runmode_[0], error_value3);
 
         return triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
@@ -685,16 +685,16 @@ private:
 
     quad<sample_type> encode_run_interruption_pixel(const quad<sample_type> x, const quad<sample_type> ra, const quad<sample_type> rb)
     {
-        const int32_t error_value1 = traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1));
+        const int32_t error_value1{traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1))};
         encode_run_interruption_error(context_runmode_[0], error_value1);
 
-        const int32_t error_value2 = traits_.compute_error_value(sign(rb.v2 - ra.v2) * (x.v2 - rb.v2));
+        const int32_t error_value2{traits_.compute_error_value(sign(rb.v2 - ra.v2) * (x.v2 - rb.v2))};
         encode_run_interruption_error(context_runmode_[0], error_value2);
 
-        const int32_t error_value3 = traits_.compute_error_value(sign(rb.v3 - ra.v3) * (x.v3 - rb.v3));
+        const int32_t error_value3{traits_.compute_error_value(sign(rb.v3 - ra.v3) * (x.v3 - rb.v3))};
         encode_run_interruption_error(context_runmode_[0], error_value3);
 
-        const int32_t error_value4 = traits_.compute_error_value(sign(rb.v4 - ra.v4) * (x.v4 - rb.v4));
+        const int32_t error_value4{traits_.compute_error_value(sign(rb.v4 - ra.v4) * (x.v4 - rb.v4))};
         encode_run_interruption_error(context_runmode_[0], error_value4);
 
         return quad<sample_type>(triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
@@ -728,10 +728,10 @@ private:
     int32_t do_run_mode(const int32_t index, encoder_strategy*)
     {
         const int32_t ctypeRem = width_ - index;
-        pixel_type* type_cur_x = current_line_ + index;
-        const pixel_type* type_prev_x = previous_line_ + index;
+        pixel_type* type_cur_x{current_line_ + index};
+        const pixel_type* type_prev_x{previous_line_ + index};
 
-        const pixel_type ra = type_cur_x[-1];
+        const pixel_type ra{type_cur_x[-1]};
 
         int32_t run_length{};
         while (traits_.is_near(type_cur_x[run_length], ra))
@@ -778,18 +778,18 @@ private:
 
 inline std::pair<int32_t, int32_t> create_encoded_value(const int32_t k, const int32_t mapped_error) noexcept
 {
-    const int32_t high_bits = mapped_error >> k;
+    const int32_t high_bits{mapped_error >> k};
     return std::make_pair(high_bits + k + 1, (1 << k) | (mapped_error & ((1 << k) - 1)));
 }
 
 inline golomb_code_table initialize_table(const int32_t k) noexcept
 {
     golomb_code_table table;
-    for (int16_t nerr = 0;; ++nerr)
+    for (int16_t nerr{};; ++nerr)
     {
         // Q is not used when k != 0
-        const int32_t mapped_error_value = get_mapped_error_value(nerr);
-        const std::pair<int32_t, int32_t> pair_code = create_encoded_value(k, mapped_error_value);
+        const int32_t mapped_error_value{get_mapped_error_value(nerr)};
+        const std::pair<int32_t, int32_t> pair_code{create_encoded_value(k, mapped_error_value)};
         if (static_cast<size_t>(pair_code.first) > golomb_code_table::byte_bit_count)
             break;
 
@@ -797,15 +797,15 @@ inline golomb_code_table initialize_table(const int32_t k) noexcept
         table.add_entry(static_cast<uint8_t>(pair_code.second), code);
     }
 
-    for (int16_t nerr = -1;; --nerr)
+    for (int16_t nerr{-1};; --nerr)
     {
         // Q is not used when k != 0
-        const int32_t mapped_error_value = get_mapped_error_value(nerr);
-        const std::pair<int32_t, int32_t> pair_code = create_encoded_value(k, mapped_error_value);
+        const int32_t mapped_error_value{get_mapped_error_value(nerr)};
+        const std::pair<int32_t, int32_t> pair_code{create_encoded_value(k, mapped_error_value)};
         if (static_cast<size_t>(pair_code.first) > golomb_code_table::byte_bit_count)
             break;
 
-        const golomb_code code = golomb_code(nerr, static_cast<int16_t>(pair_code.first));
+        const auto code{golomb_code(nerr, static_cast<int16_t>(pair_code.first))};
         table.add_entry(static_cast<uint8_t>(pair_code.second), code);
     }
 

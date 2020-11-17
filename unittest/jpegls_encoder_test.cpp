@@ -121,7 +121,7 @@ public:
         jpegls_encoder encoder;
 
         encoder.frame_info({1, 1, 2, 1}); // = minimum.
-        const auto size = encoder.estimated_destination_size();
+        const auto size{encoder.estimated_destination_size()};
         Assert::IsTrue(size >= 1024);
     }
 
@@ -130,8 +130,8 @@ public:
         jpegls_encoder encoder;
 
         encoder.frame_info({UINT16_MAX, UINT16_MAX, 8, 1}); // = maximum.
-        const auto size = encoder.estimated_destination_size();
-        constexpr auto expected = static_cast<size_t>(UINT16_MAX) * UINT16_MAX * 1 * 1;
+        const auto size{encoder.estimated_destination_size()};
+        constexpr auto expected{static_cast<size_t>(UINT16_MAX) * UINT16_MAX * 1 * 1};
         Assert::IsTrue(size >= expected);
     }
 
@@ -140,7 +140,7 @@ public:
         jpegls_encoder encoder;
 
         encoder.frame_info({100, 100, 16, 1}); // minimum.
-        const auto size = encoder.estimated_destination_size();
+        const auto size{encoder.estimated_destination_size()};
         Assert::IsTrue(size >= 100 * 100 * 2);
     }
 
@@ -149,7 +149,7 @@ public:
         jpegls_encoder encoder;
 
         encoder.frame_info({2000, 2000, 8, 3});
-        const auto size = encoder.estimated_destination_size();
+        const auto size{encoder.estimated_destination_size()};
         Assert::IsTrue(size >= 2000 * 2000 * 3);
     }
 
@@ -158,7 +158,7 @@ public:
         jpegls_encoder encoder;
 
         encoder.frame_info({UINT16_MAX, 1, 8, 1});
-        const auto size = encoder.estimated_destination_size();
+        const auto size{encoder.estimated_destination_size()};
         Assert::IsTrue(size >= UINT16_MAX + 1024);
     }
 
@@ -167,7 +167,7 @@ public:
         jpegls_encoder encoder;
 
         encoder.frame_info({1, UINT16_MAX, 8, 1});
-        const auto size = encoder.estimated_destination_size();
+        const auto size{encoder.estimated_destination_size()};
         Assert::IsTrue(size >= UINT16_MAX + 1024);
     }
 
@@ -520,7 +520,7 @@ public:
         const vector<uint8_t> source{0, 1, 2, 3, 4, 5};
 
         const frame_info frame_info{3, 1, 16, 1};
-        const auto encoded = jpegls_encoder::encode(source, frame_info);
+        const auto encoded{jpegls_encoder::encode(source, frame_info)};
 
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
     }
@@ -537,7 +537,6 @@ public:
 
         const size_t bytes_written{encoder.encode(source, 10)};
         destination.resize(bytes_written);
-
 
         const array<uint8_t, 9> expected{100, 100, 100, 150, 150, 150, 200, 200, 200};
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
@@ -564,7 +563,7 @@ private:
 
         if (decoder.near_lossless() == 0)
         {
-            for (size_t i = 0; i < source_size; ++i)
+            for (size_t i{}; i < source_size; ++i)
             {
                 if (destination[i] != source[i]) // AreEqual is very slow, pre-test to speed up 50X
                 {
