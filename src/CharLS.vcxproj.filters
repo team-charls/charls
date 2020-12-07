@@ -102,6 +102,12 @@
     <ClInclude Include="byte_span.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\charls\charls_jpegls_decoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\charls\charls_jpegls_encoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />

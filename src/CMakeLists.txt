@@ -38,6 +38,8 @@ set(HEADERS
     "include/charls/api_abi.h"
     "include/charls/annotations.h"
     "include/charls/charls.h"
+    "include/charls/charls_jpegls_decoder.h"
+    "include/charls/charls_jpegls_encoder.h"
     "include/charls/jpegls_error.h"
     "include/charls/public_types.h"
     "include/charls/version.h"

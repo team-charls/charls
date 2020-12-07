@@ -251,6 +251,8 @@
     <ClInclude Include="..\include\charls\annotations.h" />
     <ClInclude Include="..\include\charls\api_abi.h" />
     <ClInclude Include="..\include\charls\charls.h" />
+    <ClInclude Include="..\include\charls\charls_jpegls_decoder.h" />
+    <ClInclude Include="..\include\charls\charls_jpegls_encoder.h" />
     <ClInclude Include="..\include\charls\jpegls_error.h" />
     <ClInclude Include="..\include\charls\public_types.h" />
     <ClInclude Include="..\include\charls\version.h" />

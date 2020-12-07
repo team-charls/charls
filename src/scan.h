@@ -408,7 +408,7 @@ private:
     MSVC_WARNING_SUPPRESS(26433) // C.128: Virtual functions should specify exactly one of virtual, override, or final
 
     // Note: depending on the base class encode_scan OR decode_scan will be virtual and abstract, cannot use override in all cases.
-    // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override)
+    // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override, clang-diagnostic-suggest-override)
     size_t encode_scan(std::unique_ptr<process_line> process_line, byte_span destination)
     {
         Strategy::process_line_ = std::move(process_line);
@@ -419,7 +419,7 @@ private:
         return Strategy::get_length();
     }
 
-    // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override)
+    // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override, clang-diagnostic-suggest-override)
     void decode_scan(std::unique_ptr<process_line> process_line, const JlsRect& rect, byte_span& compressed_data)
     {
         Strategy::process_line_ = std::move(process_line);

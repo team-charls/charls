@@ -1,7 +1,7 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <charls/charls.h>
+#include <charls/charls_jpegls_encoder.h>
 
 #include "encoder_strategy.h"
 #include "jls_codec_factory.h"

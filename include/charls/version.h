@@ -3,6 +3,31 @@
 
 #pragma once
 
+#include "api_abi.h"
+#include "annotations.h"
+
+#ifdef __cplusplus
+#include <cstdint>
+#else
+#include <stdint.h>
+#endif
+
+
 #define CHARLS_VERSION_MAJOR 2
 #define CHARLS_VERSION_MINOR 1
 #define CHARLS_VERSION_PATCH 1
+
+/// <summary>
+/// Returns the version of CharLS in the semver format "major.minor.patch" or "major.minor.patch-pre_release"
+/// </summary>
+CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION
+charls_get_version_string(CHARLS_C_VOID) CHARLS_NOEXCEPT;
+
+/// <summary>
+/// Returns the version of CharLS in its numerical format.
+/// </summary>
+/// <param name="major">Reference to the major number, may be NULL/nullptr when this info is not needed.</param>
+/// <param name="minor">Reference to the minor number, may be NULL/nullptr when this info is not needed.</param>
+/// <param name="patch">Reference to the patch number, may be NULL/nullptr when this info is not needed.</param>
+CHARLS_API_IMPORT_EXPORT void CHARLS_API_CALLING_CONVENTION
+charls_get_version_number(OUT_OPT_ int32_t* major, OUT_OPT_ int32_t* minor, OUT_OPT_ int32_t* patch) CHARLS_NOEXCEPT;
