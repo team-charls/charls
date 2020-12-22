@@ -21,11 +21,11 @@ namespace charls {
 class decoder_strategy;
 class encoder_strategy;
 
-extern std::array<golomb_code_table, 16> decoding_tables;
-extern std::vector<int8_t> quantization_lut_lossless_8;
-extern std::vector<int8_t> quantization_lut_lossless_10;
-extern std::vector<int8_t> quantization_lut_lossless_12;
-extern std::vector<int8_t> quantization_lut_lossless_16;
+extern const std::array<golomb_code_table, 16> decoding_tables;
+extern const std::vector<int8_t> quantization_lut_lossless_8;
+extern const std::vector<int8_t> quantization_lut_lossless_10;
+extern const std::vector<int8_t> quantization_lut_lossless_12;
+extern const std::vector<int8_t> quantization_lut_lossless_16;
 
 // Used to determine how large runs should be encoded at a time. Defined by the JPEG-LS standard, A.2.1., Initialization step 3.
 constexpr std::array<int, 32> J{0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
@@ -231,15 +231,15 @@ private:
             }
         }
 
+        // Initialize the quantization lookup table dynamic.
         const int32_t range{1 << traits_.bits_per_pixel};
-
         quantization_lut_.resize(static_cast<size_t>(range) * 2);
+        for (size_t i{}; i < quantization_lut_.size(); ++i)
+        {
+            quantization_lut_[i] = quantize_gradient_org(-range + static_cast<int32_t>(i));
+        }
 
         quantization_ = &quantization_lut_[range];
-        for (int32_t i = -range; i < range; ++i)
-        {
-            quantization_[i] = quantize_gradient_org(i);
-        }
     }
     MSVC_WARNING_UNSUPPRESS()
 
@@ -769,7 +769,7 @@ private:
     pixel_type* current_line_{};
 
     // quantization lookup table
-    int8_t* quantization_{};
+    const int8_t* quantization_{};
     std::vector<int8_t> quantization_lut_;
 };
 

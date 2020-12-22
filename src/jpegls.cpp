@@ -65,16 +65,16 @@ unique_ptr<Strategy> make_codec(const Traits& traits, const frame_info& frame_in
 // To avoid threading issues, all tables are created when the program is loaded.
 
 // Lookup table: decode symbols that are smaller or equal to 8 bit (16 tables for each value of k)
-array<golomb_code_table, 16> decoding_tables = {initialize_table(0), initialize_table(1), initialize_table(2), initialize_table(3), // NOLINT(clang-diagnostic-global-constructors)
-                                                initialize_table(4), initialize_table(5), initialize_table(6), initialize_table(7),
-                                                initialize_table(8), initialize_table(9), initialize_table(10), initialize_table(11),
-                                                initialize_table(12), initialize_table(13), initialize_table(14), initialize_table(15)};
+const array<golomb_code_table, 16> decoding_tables{initialize_table(0), initialize_table(1), initialize_table(2), initialize_table(3), // NOLINT(clang-diagnostic-global-constructors)
+                                                   initialize_table(4), initialize_table(5), initialize_table(6), initialize_table(7),
+                                                   initialize_table(8), initialize_table(9), initialize_table(10), initialize_table(11),
+                                                   initialize_table(12), initialize_table(13), initialize_table(14), initialize_table(15)};
 
 // Lookup tables: sample differences to bin indexes.
-vector<int8_t> quantization_lut_lossless_8 = create_quantize_lut_lossless(8);   // NOLINT(clang-diagnostic-global-constructors)
-vector<int8_t> quantization_lut_lossless_10 = create_quantize_lut_lossless(10); // NOLINT(clang-diagnostic-global-constructors)
-vector<int8_t> quantization_lut_lossless_12 = create_quantize_lut_lossless(12); // NOLINT(clang-diagnostic-global-constructors)
-vector<int8_t> quantization_lut_lossless_16 = create_quantize_lut_lossless(16); // NOLINT(clang-diagnostic-global-constructors)
+const vector<int8_t> quantization_lut_lossless_8{create_quantize_lut_lossless(8)};   // NOLINT(clang-diagnostic-global-constructors)
+const vector<int8_t> quantization_lut_lossless_10{create_quantize_lut_lossless(10)}; // NOLINT(clang-diagnostic-global-constructors)
+const vector<int8_t> quantization_lut_lossless_12{create_quantize_lut_lossless(12)}; // NOLINT(clang-diagnostic-global-constructors)
+const vector<int8_t> quantization_lut_lossless_16{create_quantize_lut_lossless(16)}; // NOLINT(clang-diagnostic-global-constructors)
 
 
 template<typename Strategy>
