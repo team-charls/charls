@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "api_abi.h"
 #include "annotations.h"
+#include "api_abi.h"
 
 #ifdef __cplusplus
 #include <cstdint>
@@ -20,8 +20,7 @@
 /// <summary>
 /// Returns the version of CharLS in the semver format "major.minor.patch" or "major.minor.patch-pre_release"
 /// </summary>
-CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION
-charls_get_version_string(CHARLS_C_VOID) CHARLS_NOEXCEPT;
+CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION charls_get_version_string(CHARLS_C_VOID) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns the version of CharLS in its numerical format.

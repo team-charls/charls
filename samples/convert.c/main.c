@@ -44,7 +44,8 @@ typedef struct
     uint32_t horizontal_resolution;   // the horizontal resolution of the image. (pixel per meter)
     uint32_t vertical_resolution;     // the vertical resolution of the image. (pixel per meter)
     uint32_t number_colors;           // the number of colors in the color palette, or 0 to default to 2^depth.
-    uint32_t number_important_colors; // the number of important colors used, or 0 when every color is important generally ignored.
+    uint32_t number_important_colors; // the number of important colors used, or 0 when every color is important generally
+                                      // ignored.
 } bmp_dib_header_t;
 
 
@@ -56,8 +57,7 @@ static bool bmp_read_header(FILE* fp, bmp_header_t* header)
     return fread(&header->magic, sizeof header->magic, 1, fp) &&
            fread(&header->file_size, sizeof header->file_size, 1, fp) &&
            fread(&header->reserved, sizeof header->reserved, 1, fp) &&
-           fread(&header->offset, sizeof header->offset, 1, fp) &&
-           header->magic[0] == 0x42 && header->magic[1] == 0x4D;
+           fread(&header->offset, sizeof header->offset, 1, fp) && header->magic[0] == 0x42 && header->magic[1] == 0x4D;
 }
 
 
@@ -66,10 +66,8 @@ static bool bmp_read_dib_header(FILE* fp, bmp_dib_header_t* header)
     assert(fp);
     assert(header);
 
-    return fread(&header->header_size, sizeof header->header_size, 1, fp) &&
-           header->header_size >= 40 &&
-           fread(&header->width, sizeof header->width, 1, fp) &&
-           fread(&header->height, sizeof header->height, 1, fp) &&
+    return fread(&header->header_size, sizeof header->header_size, 1, fp) && header->header_size >= 40 &&
+           fread(&header->width, sizeof header->width, 1, fp) && fread(&header->height, sizeof header->height, 1, fp) &&
            fread(&header->number_planes, sizeof header->number_planes, 1, fp) &&
            fread(&header->depth, sizeof header->depth, 1, fp) &&
            fread(&header->compress_type, sizeof header->compress_type, 1, fp) &&
@@ -110,7 +108,8 @@ static void* bmp_read_pixel_data(FILE* fp, const uint32_t offset, const bmp_dib_
 }
 
 
-static void* handle_encoder_failure(const charls_jpegls_errc error, const char* step, charls_jpegls_encoder* encoder, void* buffer)
+static void* handle_encoder_failure(const charls_jpegls_errc error, const char* step, charls_jpegls_encoder* encoder,
+                                    void* buffer)
 {
     printf("Failed to %s: %i, %s\n", step, error, charls_get_error_message(error));
     charls_jpegls_encoder_destroy(encoder);
@@ -139,7 +138,8 @@ static void convert_bgr_to_rgb(uint8_t* triplet_buffer, const size_t width, cons
 }
 
 
-static void triplet_to_planar(const uint8_t* triplet_buffer, uint8_t* planar_buffer, const size_t width, const size_t height, const size_t stride)
+static void triplet_to_planar(const uint8_t* triplet_buffer, uint8_t* planar_buffer, const size_t width, const size_t height,
+                              const size_t stride)
 {
     const size_t byte_count_plane = width * height;
     size_t plane_column = 0;
@@ -160,7 +160,8 @@ static void triplet_to_planar(const uint8_t* triplet_buffer, uint8_t* planar_buf
 }
 
 
-static bool convert_bottom_up_to_top_down(uint8_t* triplet_buffer, const size_t width, const size_t height, const size_t stride)
+static bool convert_bottom_up_to_top_down(uint8_t* triplet_buffer, const size_t width, const size_t height,
+                                          const size_t stride)
 {
     const size_t row_length = width * bytes_per_rgb_pixel;
     void* temp_row = malloc(row_length);
@@ -181,7 +182,9 @@ static bool convert_bottom_up_to_top_down(uint8_t* triplet_buffer, const size_t 
 }
 
 
-static void* encode_bmp_to_jpegls(const void* pixel_data, const size_t stride, const bmp_dib_header_t* header, const charls_interleave_mode interleave_mode, const int near_lossless, size_t* bytes_written)
+static void* encode_bmp_to_jpegls(const void* pixel_data, const size_t stride, const bmp_dib_header_t* header,
+                                  const charls_interleave_mode interleave_mode, const int near_lossless,
+                                  size_t* bytes_written)
 {
     assert(header->depth == 24 && "This function only supports 24-bit BMP pixel data.");
     assert(header->compress_type == 0 && "Data needs to be stored by pixel as RGB.");
@@ -240,17 +243,14 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, const size_t stride, c
     // The ISO 10918-3 recommendation for these cases is to define that the pixels should be interpreted as a square.
     if (header->vertical_resolution < 100 || header->horizontal_resolution < 100)
     {
-        error = charls_jpegls_encoder_write_standard_spiff_header(encoder,
-                                                                  CHARLS_SPIFF_COLOR_SPACE_RGB,
-                                                                  CHARLS_SPIFF_RESOLUTION_UNITS_ASPECT_RATIO,
-                                                                  1, 1);
+        error = charls_jpegls_encoder_write_standard_spiff_header(encoder, CHARLS_SPIFF_COLOR_SPACE_RGB,
+                                                                  CHARLS_SPIFF_RESOLUTION_UNITS_ASPECT_RATIO, 1, 1);
     }
     else
     {
-        error = charls_jpegls_encoder_write_standard_spiff_header(encoder,
-                                                                  CHARLS_SPIFF_COLOR_SPACE_RGB,
-                                                                  CHARLS_SPIFF_RESOLUTION_UNITS_DOTS_PER_CENTIMETER,
-                                                                  header->vertical_resolution / 100, header->horizontal_resolution / 100);
+        error = charls_jpegls_encoder_write_standard_spiff_header(
+            encoder, CHARLS_SPIFF_COLOR_SPACE_RGB, CHARLS_SPIFF_RESOLUTION_UNITS_DOTS_PER_CENTIMETER,
+            header->vertical_resolution / 100, header->horizontal_resolution / 100);
     }
 
     if (error)
@@ -325,7 +325,8 @@ static bool parse_command_line_options(const int argc, char* argv[], options_t* 
 {
     if (argc < 3)
     {
-        printf("Usage: <input-filename> <output-filename> [interleave-mode (none, line or sample), default = none] [near-lossless, default=0 (lossless)]\n");
+        printf("Usage: <input-filename> <output-filename> [interleave-mode (none, line or sample), default = none] "
+               "[near-lossless, default=0 (lossless)]\n");
         return false;
     }
 
@@ -436,11 +437,13 @@ int main(const int argc, char* argv[])
     }
 
     // Pixels in the BMP file format are stored as BGR. JPEG-LS (SPIFF header) only supports the RGB color model.
-    // Note: without the optional SPIFF header no color information is stored in the JPEG-LS file and the common assumption is RGB.
+    // Note: without the optional SPIFF header no color information is stored in the JPEG-LS file and the common assumption
+    // is RGB.
     convert_bgr_to_rgb(pixel_data, dib_header.width, (size_t)dib_header.height, stride);
 
     size_t encoded_size;
-    void* encoded_data = encode_bmp_to_jpegls(pixel_data, stride, &dib_header, options.interleave_mode, options.near_lossless, &encoded_size);
+    void* encoded_data =
+        encode_bmp_to_jpegls(pixel_data, stride, &dib_header, options.interleave_mode, options.near_lossless, &encoded_size);
     free(pixel_data);
     if (!encoded_data)
         return EXIT_FAILURE; // error already printed.

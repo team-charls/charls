@@ -24,8 +24,7 @@ MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere t
 // ReSharper disable CppDeprecatedEntity
 DISABLE_DEPRECATED_WARNING
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(interface_test)
 {
@@ -118,7 +117,8 @@ public:
         size_t bytes_written{};
         array<uint8_t, 1> destination{};
         vector<uint8_t> source(100);
-        const auto error = JpegLsEncode(destination.data(), 0, &bytes_written, source.data(), source.size(), &params, error_message.data());
+        const auto error =
+            JpegLsEncode(destination.data(), 0, &bytes_written, source.data(), source.size(), &params, error_message.data());
         Assert::AreEqual(charls::jpegls_errc::destination_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
@@ -145,7 +145,8 @@ public:
 
         array<uint8_t, 1> source{};
         vector<uint8_t> destination(100);
-        const auto error = JpegLsDecode(destination.data(), destination.size(), source.data(), 0, &params, error_message.data());
+        const auto error =
+            JpegLsDecode(destination.data(), destination.size(), source.data(), 0, &params, error_message.data());
         Assert::AreEqual(jpegls_errc::source_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
@@ -159,18 +160,19 @@ public:
 
         vector<uint8_t> decoded_destination(static_cast<size_t>(params.width) * params.height * params.components);
 
-        error = JpegLsDecode(decoded_destination.data(), decoded_destination.size(),
-                             encoded_source.data(), encoded_source.size(), &params, nullptr);
+        error = JpegLsDecode(decoded_destination.data(), decoded_destination.size(), encoded_source.data(),
+                             encoded_source.size(), &params, nullptr);
         Assert::IsFalse(static_cast<bool>(error));
 
         const JlsRect rect = {128, 128, 256, 1};
         vector<uint8_t> decoded_rect(static_cast<size_t>(rect.Width) * rect.Height);
         decoded_rect.push_back(0x1f);
-        error = JpegLsDecodeRect(decoded_rect.data(), decoded_rect.size(),
-                                 encoded_source.data(), encoded_source.size(), rect, &params, nullptr);
+        error = JpegLsDecodeRect(decoded_rect.data(), decoded_rect.size(), encoded_source.data(), encoded_source.size(),
+                                 rect, &params, nullptr);
         Assert::IsFalse(static_cast<bool>(error));
 
-        Assert::IsTrue(memcmp(&decoded_destination[rect.X + static_cast<size_t>(rect.Y) * 512], decoded_rect.data(), static_cast<size_t>(rect.Width) * rect.Height) == 0);
+        Assert::IsTrue(memcmp(&decoded_destination[rect.X + static_cast<size_t>(rect.Y) * 512], decoded_rect.data(),
+                              static_cast<size_t>(rect.Width) * rect.Height) == 0);
         Assert::IsTrue(decoded_rect[static_cast<size_t>(rect.Width) * rect.Height] == 0x1f);
     }
 
@@ -199,7 +201,8 @@ public:
         array<uint8_t, 1> source{};
         vector<uint8_t> destination(100);
 
-        const auto error = JpegLsDecodeRect(destination.data(), destination.size(), source.data(), 0, roi, &params, error_message.data());
+        const auto error =
+            JpegLsDecodeRect(destination.data(), destination.size(), source.data(), 0, roi, &params, error_message.data());
         Assert::AreEqual(jpegls_errc::source_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
@@ -214,14 +217,14 @@ public:
         params.custom.MaximumSampleValue = (1 << params.bitsPerSample) - 1;
         params.custom.ResetValue = 63;
 
-        const vector<uint8_t> noise_image = create_noise_image_16_bit(static_cast<size_t>(params.height) * params.width, params.bitsPerSample, 21344);
+        const vector<uint8_t> noise_image =
+            create_noise_image_16_bit(static_cast<size_t>(params.height) * params.width, params.bitsPerSample, 21344);
 
         test_round_trip_legacy(noise_image, params);
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test
 
 // ReSharper restore CppDeprecatedEntity
 RESTORE_DEPRECATED_WARNING

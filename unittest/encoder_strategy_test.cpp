@@ -10,8 +10,7 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(encoder_strategy_test)
 {
@@ -75,5 +74,4 @@ public:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test

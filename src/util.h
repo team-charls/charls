@@ -17,11 +17,8 @@
 
 // Use an uppercase alias for assert to make it clear that ASSERT is a pre-processor macro.
 #ifdef _MSC_VER
-#define ASSERT(expression)                 \
-    __pragma(warning(push))                \
-        __pragma(warning(disable : 26493)) \
-            assert(expression)             \
-                __pragma(warning(pop))
+#define ASSERT(expression) \
+    __pragma(warning(push)) __pragma(warning(disable : 26493)) assert(expression) __pragma(warning(pop))
 #else
 #define ASSERT(expression) assert(expression)
 #endif
@@ -43,13 +40,13 @@
 #endif
 
 #ifdef _MSC_VER
-#define MSVC_WARNING_SUPPRESS(x) __pragma(warning(push)) \
-    __pragma(warning(disable                             \
-                     : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses)
+#define MSVC_WARNING_SUPPRESS(x) \
+    __pragma(warning(push)) __pragma(warning(disable : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses)
 #define MSVC_WARNING_UNSUPPRESS() __pragma(warning(pop))
 
-#define MSVC_WARNING_SUPPRESS_NEXT_LINE(x) __pragma(warning(suppress \
-                                                            : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses, cppcoreguidelines-macro-usage)
+#define MSVC_WARNING_SUPPRESS_NEXT_LINE(x) \
+    __pragma(warning(suppress \
+                     : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses, cppcoreguidelines-macro-usage)
 
 // Visual Studio 2015 supports C++14, but not all constexpr scenarios. VS 2017 has full C++14 support.
 #if _MSC_VER >= 1910
@@ -100,7 +97,8 @@ inline void clear_error_message(OUT_OPT_ char* error_message) noexcept
 /// <summary>
 /// Cross platform safe version of strcpy.
 /// </summary>
-inline void string_copy(IN_Z_ const char* source, OUT_WRITES_Z_(size_in_bytes) char* destination, const size_t size_in_bytes) noexcept
+inline void string_copy(IN_Z_ const char* source, OUT_WRITES_Z_(size_in_bytes) char* destination,
+                        const size_t size_in_bytes) noexcept
 {
     ASSERT(strlen(source) < size_in_bytes && "String will be truncated");
 
@@ -187,17 +185,12 @@ constexpr int32_t compute_limit_parameter(const int32_t bits_per_pixel)
 template<typename SampleType>
 struct triplet
 {
-    triplet() noexcept :
-        v1{0},
-        v2{0},
-        v3{0}
+    triplet() noexcept : v1{0}, v2{0}, v3{0}
     {
     }
 
     triplet(int32_t x1, int32_t x2, int32_t x3) noexcept :
-        v1(static_cast<SampleType>(x1)),
-        v2(static_cast<SampleType>(x2)),
-        v3(static_cast<SampleType>(x3))
+        v1(static_cast<SampleType>(x1)), v2(static_cast<SampleType>(x2)), v3(static_cast<SampleType>(x3))
     {
     }
 
@@ -235,17 +228,14 @@ template<typename SampleType>
 struct quad final : triplet<SampleType>
 {
     MSVC_WARNING_SUPPRESS(26495) // false warning that v4 is uninitialized [VS 2017 15.9.4]
-    quad() noexcept :
-        triplet<SampleType>(),
-        v4{0}
+    quad() noexcept : triplet<SampleType>(), v4{0}
     {
     }
     MSVC_WARNING_UNSUPPRESS()
 
     MSVC_WARNING_SUPPRESS(26495) // false warning that v4 is uninitialized [VS 2017 15.9.4]
     quad(triplet<SampleType> triplet_value, int32_t alpha) noexcept :
-        triplet<SampleType>(triplet_value),
-        A(static_cast<SampleType>(alpha))
+        triplet<SampleType>(triplet_value), A(static_cast<SampleType>(alpha))
     {
     }
     MSVC_WARNING_UNSUPPRESS()

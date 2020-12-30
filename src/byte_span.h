@@ -10,15 +10,12 @@ struct byte_span final
 {
     byte_span() = default;
 
-    byte_span(void* data_arg, const size_t size_arg) noexcept :
-        data{static_cast<uint8_t*>(data_arg)},
-        size{size_arg}
+    byte_span(void* data_arg, const size_t size_arg) noexcept : data{static_cast<uint8_t*>(data_arg)}, size{size_arg}
     {
     }
 
     byte_span(const void* data_arg, const size_t size_arg) noexcept :
-        data{static_cast<uint8_t*>(const_cast<void*>(data_arg))},
-        size{size_arg}
+        data{static_cast<uint8_t*>(const_cast<void*>(data_arg))}, size{size_arg}
     {
     }
 

@@ -15,8 +15,8 @@ using impl::throw_jpegls_error;
 
 struct charls_jpegls_decoder final
 {
-    void source(IN_READS_BYTES_(source_size_bytes) const void* source_buffer,
-                const size_t source_size_bytes) CHARLS_ATTRIBUTE((nonnull))
+    void source(IN_READS_BYTES_(source_size_bytes) const void* source_buffer, const size_t source_size_bytes)
+        CHARLS_ATTRIBUTE((nonnull))
     {
         if (state_ != state::initial)
             throw_jpegls_error(jpegls_errc::invalid_operation);
@@ -103,7 +103,8 @@ struct charls_jpegls_decoder final
 
         if (stride == 0)
         {
-            return static_cast<size_t>(info.component_count) * info.height * info.width * bit_to_byte_count(info.bits_per_sample);
+            return static_cast<size_t>(info.component_count) * info.height * info.width *
+                   bit_to_byte_count(info.bits_per_sample);
         }
 
         switch (interleave_mode())
@@ -120,8 +121,7 @@ struct charls_jpegls_decoder final
         return 0;
     }
 
-    void decode(OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
-                const size_t destination_size_bytes,
+    void decode(OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer, const size_t destination_size_bytes,
                 const size_t stride) const CHARLS_ATTRIBUTE((nonnull))
     {
         if (state_ != state::header_read)
@@ -167,17 +167,16 @@ charls_jpegls_decoder_create() noexcept
     return new (std::nothrow) charls_jpegls_decoder; // NOLINT(cppcoreguidelines-owning-memory)
 }
 
-void CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_destroy(IN_OPT_ const charls_jpegls_decoder* decoder) noexcept
+void CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_destroy(IN_OPT_ const charls_jpegls_decoder* decoder) noexcept
 {
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26401 26409) // don't use new and delete + non-owner.
     delete decoder;                              // NOLINT(cppcoreguidelines-owning-memory)
 }
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_set_source_buffer(IN_ charls_jpegls_decoder* decoder,
-                                        IN_READS_BYTES_(source_size_bytes) const void* source_buffer,
-                                        const size_t source_size_bytes) noexcept
+jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_set_source_buffer(IN_ charls_jpegls_decoder* decoder,
+                                                                                  IN_READS_BYTES_(source_size_bytes)
+                                                                                      const void* source_buffer,
+                                                                                  const size_t source_size_bytes) noexcept
 try
 {
     check_pointer(decoder)->source(check_pointer(source_buffer), source_size_bytes);
@@ -188,10 +187,8 @@ catch (...)
     return to_jpegls_errc();
 }
 
-charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_read_spiff_header(IN_ charls_jpegls_decoder* const decoder,
-                                        OUT_ charls_spiff_header* spiff_header,
-                                        OUT_ int32_t* header_found) noexcept
+charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_read_spiff_header(
+    IN_ charls_jpegls_decoder* const decoder, OUT_ charls_spiff_header* spiff_header, OUT_ int32_t* header_found) noexcept
 try
 {
     *check_pointer(header_found) = static_cast<int32_t>(check_pointer(decoder)->read_header(check_pointer(spiff_header)));
@@ -214,9 +211,8 @@ catch (...)
     return to_jpegls_errc();
 }
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_frame_info(IN_ const charls_jpegls_decoder* const decoder,
-                                     OUT_ charls_frame_info* frame_info) noexcept
+jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_frame_info(
+    IN_ const charls_jpegls_decoder* const decoder, OUT_ charls_frame_info* frame_info) noexcept
 try
 {
     *check_pointer(frame_info) = check_pointer(decoder)->frame_info();
@@ -227,10 +223,8 @@ catch (...)
     return to_jpegls_errc();
 }
 
-charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_near_lossless(IN_ const charls_jpegls_decoder* decoder,
-                                        const int32_t component,
-                                        OUT_ int32_t* near_lossless) noexcept
+charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_near_lossless(
+    IN_ const charls_jpegls_decoder* decoder, const int32_t component, OUT_ int32_t* near_lossless) noexcept
 try
 {
     *check_pointer(near_lossless) = check_pointer(decoder)->near_lossless(component);
@@ -241,9 +235,8 @@ catch (...)
     return to_jpegls_errc();
 }
 
-charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_interleave_mode(IN_ const charls_jpegls_decoder* decoder,
-                                          OUT_ charls_interleave_mode* interleave_mode) noexcept
+charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_interleave_mode(
+    IN_ const charls_jpegls_decoder* decoder, OUT_ charls_interleave_mode* interleave_mode) noexcept
 try
 {
     *check_pointer(interleave_mode) = check_pointer(decoder)->interleave_mode();
@@ -255,8 +248,7 @@ catch (...)
 }
 
 charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_preset_coding_parameters(IN_ const charls_jpegls_decoder* decoder,
-                                                   const int32_t /*reserved*/,
+charls_jpegls_decoder_get_preset_coding_parameters(IN_ const charls_jpegls_decoder* decoder, const int32_t /*reserved*/,
                                                    OUT_ charls_jpegls_pc_parameters* preset_coding_parameters) noexcept
 try
 {
@@ -268,10 +260,8 @@ catch (...)
     return to_jpegls_errc();
 }
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_destination_size(IN_ const charls_jpegls_decoder* decoder,
-                                           const uint32_t stride,
-                                           OUT_ size_t* destination_size_bytes) noexcept
+jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_destination_size(
+    IN_ const charls_jpegls_decoder* decoder, const uint32_t stride, OUT_ size_t* destination_size_bytes) noexcept
 try
 {
     *check_pointer(destination_size_bytes) = check_pointer(decoder)->destination_size(stride);
@@ -282,11 +272,9 @@ catch (...)
     return to_jpegls_errc();
 }
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_decode_to_buffer(IN_ const charls_jpegls_decoder* decoder,
-                                       OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
-                                       const size_t destination_size_bytes,
-                                       const uint32_t stride) noexcept
+jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_decode_to_buffer(
+    IN_ const charls_jpegls_decoder* decoder, OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
+    const size_t destination_size_bytes, const uint32_t stride) noexcept
 try
 {
     check_pointer(decoder)->decode(check_pointer(destination_buffer), destination_size_bytes, stride);
@@ -297,12 +285,9 @@ catch (...)
     return to_jpegls_errc();
 }
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsReadHeader(
-    IN_READS_BYTES_(source_length) const void* source,
-    const size_t source_length,
-    OUT_ JlsParameters* params,
-    OUT_OPT_ char* error_message)
+jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsReadHeader(IN_READS_BYTES_(source_length) const void* source,
+                                                           const size_t source_length, OUT_ JlsParameters* params,
+                                                           OUT_OPT_ char* error_message)
 try
 {
     charls_jpegls_decoder decoder;
@@ -336,13 +321,12 @@ catch (...)
     return set_error_message(to_jpegls_errc(), error_message);
 }
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsDecode(OUT_WRITES_BYTES_(destination_length) void* destination,
-             const size_t destination_length,
-             IN_READS_BYTES_(source_length) const void* source,
-             const size_t source_length,
-             IN_OPT_ const struct JlsParameters* params,
-             OUT_OPT_ char* error_message)
+jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsDecode(OUT_WRITES_BYTES_(destination_length) void* destination,
+                                                       const size_t destination_length,
+                                                       IN_READS_BYTES_(source_length) const void* source,
+                                                       const size_t source_length,
+                                                       IN_OPT_ const struct JlsParameters* params,
+                                                       OUT_OPT_ char* error_message)
 try
 {
     charls_jpegls_decoder decoder;
@@ -366,14 +350,11 @@ catch (...)
     return set_error_message(to_jpegls_errc(), error_message);
 }
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsDecodeRect(OUT_WRITES_BYTES_(destination_length) void* destination,
-                 const size_t destination_length,
-                 IN_READS_BYTES_(source_length) const void* source,
-                 const size_t source_length,
-                 const JlsRect roi,
-                 IN_OPT_ const JlsParameters* params,
-                 OUT_OPT_ char* error_message)
+jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsDecodeRect(OUT_WRITES_BYTES_(destination_length) void* destination,
+                                                           const size_t destination_length,
+                                                           IN_READS_BYTES_(source_length) const void* source,
+                                                           const size_t source_length, const JlsRect roi,
+                                                           IN_OPT_ const JlsParameters* params, OUT_OPT_ char* error_message)
 try
 {
     charls_jpegls_decoder decoder;

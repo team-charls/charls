@@ -47,13 +47,12 @@ class post_process_single_component final : public process_line
 {
 public:
     post_process_single_component(void* raw_data, const size_t stride, const size_t bytes_per_pixel) noexcept :
-        raw_data_{static_cast<uint8_t*>(raw_data)},
-        bytes_per_pixel_{bytes_per_pixel},
-        bytes_per_line_{stride}
+        raw_data_{static_cast<uint8_t*>(raw_data)}, bytes_per_pixel_{bytes_per_pixel}, bytes_per_line_{stride}
     {
     }
 
-    void new_line_requested(void* destination, const size_t pixel_count, size_t /* destination_stride */) noexcept(false) override
+    void new_line_requested(void* destination, const size_t pixel_count,
+                            size_t /* destination_stride */) noexcept(false) override
     {
         std::memcpy(destination, raw_data_, pixel_count * bytes_per_pixel_);
         raw_data_ += bytes_per_line_;
@@ -93,20 +92,23 @@ inline void byte_swap(void* data, const size_t count)
 
 
 template<typename Transform, typename T>
-void transform_line_to_quad(const T* source, const size_t pixel_stride_in, quad<T>* destination, const size_t pixel_stride, Transform& transform) noexcept
+void transform_line_to_quad(const T* source, const size_t pixel_stride_in, quad<T>* destination, const size_t pixel_stride,
+                            Transform& transform) noexcept
 {
     const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
 
     for (size_t i{}; i < pixel_count; ++i)
     {
-        const quad<T> pixel(transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in]), source[i + 3 * pixel_stride_in]);
+        const quad<T> pixel(transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in]),
+                            source[i + 3 * pixel_stride_in]);
         destination[i] = pixel;
     }
 }
 
 
 template<typename Transform, typename T>
-void transform_quad_to_line(const quad<T>* source, const size_t pixel_stride_in, T* destination, const size_t pixel_stride, Transform& transform) noexcept
+void transform_quad_to_line(const quad<T>* source, const size_t pixel_stride_in, T* destination, const size_t pixel_stride,
+                            Transform& transform) noexcept
 {
     const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
 
@@ -135,7 +137,8 @@ void transform_rgb_to_bgr(T* buffer, int samples_per_pixel, const size_t pixel_c
 
 
 template<typename Transform, typename T>
-void transform_line(triplet<T>* destination, const triplet<T>* source, const size_t pixel_count, Transform& transform) noexcept
+void transform_line(triplet<T>* destination, const triplet<T>* source, const size_t pixel_count,
+                    Transform& transform) noexcept
 {
     for (size_t i{}; i < pixel_count; ++i)
     {
@@ -145,7 +148,8 @@ void transform_line(triplet<T>* destination, const triplet<T>* source, const siz
 
 
 template<typename Transform, typename PixelType>
-void transform_line(quad<PixelType>* destination, const quad<PixelType>* source, const size_t pixel_count, Transform& transform) noexcept
+void transform_line(quad<PixelType>* destination, const quad<PixelType>* source, const size_t pixel_count,
+                    Transform& transform) noexcept
 {
     for (size_t i{}; i < pixel_count; ++i)
     {
@@ -155,7 +159,8 @@ void transform_line(quad<PixelType>* destination, const quad<PixelType>* source,
 
 
 template<typename Transform, typename PixelType>
-void transform_line_to_triplet(const PixelType* source, const size_t pixel_stride_in, triplet<PixelType>* destination, const size_t pixel_stride, Transform& transform) noexcept
+void transform_line_to_triplet(const PixelType* source, const size_t pixel_stride_in, triplet<PixelType>* destination,
+                               const size_t pixel_stride, Transform& transform) noexcept
 {
     const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
     triplet<PixelType>* type_buffer = destination;
@@ -168,7 +173,8 @@ void transform_line_to_triplet(const PixelType* source, const size_t pixel_strid
 
 
 template<typename Transform, typename PixelType>
-void transform_triplet_to_line(const triplet<PixelType>* source, const size_t pixel_stride_in, PixelType* destination, const size_t pixel_stride, Transform& transform) noexcept
+void transform_triplet_to_line(const triplet<PixelType>* source, const size_t pixel_stride_in, PixelType* destination,
+                               const size_t pixel_stride, Transform& transform) noexcept
 {
     const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
     const triplet<PixelType>* type_buffer_in{source};
@@ -189,7 +195,8 @@ template<typename TransformType>
 class process_transformed final : public process_line
 {
 public:
-    process_transformed(byte_span source_pixels, const size_t stride, const frame_info& info, const coding_parameters& parameters, TransformType transform) :
+    process_transformed(byte_span source_pixels, const size_t stride, const frame_info& info,
+                        const coding_parameters& parameters, TransformType transform) :
         frame_info_{info},
         parameters_{parameters},
         stride_{stride},
@@ -201,7 +208,8 @@ public:
     {
     }
 
-    void new_line_requested(void* destination, const size_t pixel_count, const size_t destination_stride) noexcept(false) override
+    void new_line_requested(void* destination, const size_t pixel_count,
+                            const size_t destination_stride) noexcept(false) override
     {
         transform(raw_pixels_.data, destination, pixel_count, destination_stride);
         raw_pixels_.data += stride_;
@@ -220,22 +228,26 @@ public:
         {
             if (parameters_.interleave_mode == interleave_mode::sample)
             {
-                transform_line(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source), pixel_count, transform_);
+                transform_line(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source),
+                               pixel_count, transform_);
             }
             else
             {
-                transform_triplet_to_line(static_cast<const triplet<size_type>*>(source), pixel_count, static_cast<size_type*>(destination), destination_stride, transform_);
+                transform_triplet_to_line(static_cast<const triplet<size_type>*>(source), pixel_count,
+                                          static_cast<size_type*>(destination), destination_stride, transform_);
             }
         }
         else if (frame_info_.component_count == 4)
         {
             if (parameters_.interleave_mode == interleave_mode::sample)
             {
-                transform_line(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source), pixel_count, transform_);
+                transform_line(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source),
+                               pixel_count, transform_);
             }
             else if (parameters_.interleave_mode == interleave_mode::line)
             {
-                transform_quad_to_line(static_cast<const quad<size_type>*>(source), pixel_count, static_cast<size_type*>(destination), destination_stride, transform_);
+                transform_quad_to_line(static_cast<const quad<size_type>*>(source), pixel_count,
+                                       static_cast<size_type*>(destination), destination_stride, transform_);
             }
         }
     }
@@ -246,22 +258,26 @@ public:
         {
             if (parameters_.interleave_mode == interleave_mode::sample)
             {
-                transform_line(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source), pixel_count, inverse_transform_);
+                transform_line(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source),
+                               pixel_count, inverse_transform_);
             }
             else
             {
-                transform_line_to_triplet(static_cast<const size_type*>(source), byte_stride, static_cast<triplet<size_type>*>(destination), pixel_count, inverse_transform_);
+                transform_line_to_triplet(static_cast<const size_type*>(source), byte_stride,
+                                          static_cast<triplet<size_type>*>(destination), pixel_count, inverse_transform_);
             }
         }
         else if (frame_info_.component_count == 4)
         {
             if (parameters_.interleave_mode == interleave_mode::sample)
             {
-                transform_line(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source), pixel_count, inverse_transform_);
+                transform_line(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source),
+                               pixel_count, inverse_transform_);
             }
             else if (parameters_.interleave_mode == interleave_mode::line)
             {
-                transform_line_to_quad(static_cast<const size_type*>(source), byte_stride, static_cast<quad<size_type>*>(destination), pixel_count, inverse_transform_);
+                transform_line_to_quad(static_cast<const size_type*>(source), byte_stride,
+                                       static_cast<quad<size_type>*>(destination), pixel_count, inverse_transform_);
             }
         }
 

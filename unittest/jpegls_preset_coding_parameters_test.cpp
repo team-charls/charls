@@ -64,8 +64,7 @@ constexpr thresholds compute_defaults_using_reference_implementation(const int32
 
 } // namespace
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(jpegls_preset_coding_parameters_test)
 {
@@ -172,5 +171,4 @@ public:
     }
 };
 
-} // namespace test
-} // namespace charls
+}} // namespace charls::test

@@ -15,9 +15,7 @@ struct golomb_code final
 {
     golomb_code() = default;
 
-    golomb_code(const int32_t value, const uint32_t length) noexcept :
-        value_{value},
-        length_{length}
+    golomb_code(const int32_t value, const uint32_t length) noexcept : value_{value}, length_{length}
     {
     }
 

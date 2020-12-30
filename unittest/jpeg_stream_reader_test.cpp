@@ -18,8 +18,7 @@ using std::array;
 using std::system_error;
 using std::vector;
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(jpeg_stream_reader_test)
 {
@@ -241,8 +240,7 @@ public:
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_jpegls_pc_parameters,
-                                [&]() { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_jpegls_pc_parameters, [&]() { reader.read_header(); });
     }
 
     static void read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(const uint8_t id)
@@ -264,7 +262,8 @@ public:
         }
         catch (const system_error& error)
         {
-            Assert::AreEqual(static_cast<int>(jpegls_errc::jpegls_preset_extended_parameter_type_not_supported), error.code().value());
+            Assert::AreEqual(static_cast<int>(jpegls_errc::jpegls_preset_extended_parameter_type_not_supported),
+                             error.code().value());
             return;
         }
 
@@ -391,8 +390,7 @@ public:
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
-        assert_expect_exception(jpegls_errc::unexpected_marker_found,
-                                [&]() { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::unexpected_marker_found, [&]() { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_extra_sof_should_throw) // NOLINT
@@ -404,8 +402,7 @@ public:
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
-        assert_expect_exception(jpegls_errc::duplicate_start_of_frame_marker,
-                                [&]() { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::duplicate_start_of_frame_marker, [&]() { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw) // NOLINT
@@ -418,8 +415,7 @@ public:
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless,
-                                [&]() { reader.read_start_of_scan(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&]() { reader.read_start_of_scan(); });
     }
 
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw2) // NOLINT
@@ -437,8 +433,7 @@ public:
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless,
-                                [&]() { reader.read_start_of_scan(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&]() { reader.read_start_of_scan(); });
     }
 
     TEST_METHOD(read_header_with_duplicate_component_id_in_start_of_frame_segment_should_throw) // NOLINT
@@ -641,8 +636,10 @@ private:
         Assert::AreEqual(600U, spiff_header.width);
         Assert::AreEqual(static_cast<int32_t>(spiff_color_space::rgb), static_cast<int32_t>(spiff_header.color_space));
         Assert::AreEqual(8, spiff_header.bits_per_sample);
-        Assert::AreEqual(static_cast<int32_t>(spiff_compression_type::jpeg_ls), static_cast<int32_t>(spiff_header.compression_type));
-        Assert::AreEqual(static_cast<int32_t>(spiff_resolution_units::dots_per_inch), static_cast<int32_t>(spiff_header.resolution_units));
+        Assert::AreEqual(static_cast<int32_t>(spiff_compression_type::jpeg_ls),
+                         static_cast<int32_t>(spiff_header.compression_type));
+        Assert::AreEqual(static_cast<int32_t>(spiff_resolution_units::dots_per_inch),
+                         static_cast<int32_t>(spiff_header.resolution_units));
         Assert::AreEqual(96U, spiff_header.vertical_resolution);
         Assert::AreEqual(1024U, spiff_header.horizontal_resolution);
     }
@@ -666,5 +663,4 @@ private:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test

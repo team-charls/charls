@@ -3,14 +3,14 @@
 
 BasedOnStyle: LLVM
 Language: Cpp
-
-# Use features of C++11, C++14 and C++17 (e.g. A<A<int>> instead of A<A<int> >)
-Standard: Cpp11
+Standard: Latest
 
 UseTab: Never
 IndentWidth: 4
-ColumnLimit: 0
 PointerAlignment: Left
+
+# Use the github de facto limit of 125
+ColumnLimit: 125
 
 BreakBeforeBraces: Custom
 BraceWrapping:
@@ -28,8 +28,9 @@ BraceWrapping:
 
 AccessModifierOffset: -4
 AlignTrailingComments: true
-AllowShortFunctionsOnASingleLine: true
-AllowShortIfStatementsOnASingleLine: true
+AlignEscapedNewlines: DontAlign
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
 AlwaysBreakTemplateDeclarations: true
 BreakConstructorInitializers: AfterColon
 CompactNamespaces: true

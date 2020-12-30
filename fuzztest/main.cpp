@@ -62,8 +62,9 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
             {
                 // Write some small-ish JPEG-LS file to stdout
                 auto encoded_data{generate_once()};
-                const int result{static_cast<int>(_write(1, encoded_data.data(), static_cast<unsigned int>(encoded_data.size())))};
-                return result != -1 && result == static_cast<int>(encoded_data.size()) ? EXIT_SUCCESS: EXIT_FAILURE;
+                const int result{
+                    static_cast<int>(_write(1, encoded_data.data(), static_cast<unsigned int>(encoded_data.size())))};
+                return result != -1 && result == static_cast<int>(encoded_data.size()) ? EXIT_SUCCESS : EXIT_FAILURE;
             }
             catch (const std::exception& error)
             {

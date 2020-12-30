@@ -19,7 +19,8 @@ namespace {
 // ReSharper disable CppDeprecatedEntity
 DISABLE_DEPRECATED_WARNING
 
-void test_jpegls_read_header(const char* filename, const int width, const int height, const int bits_per_sample, const int stride, const int component_count, const int interleave_mode)
+void test_jpegls_read_header(const char* filename, const int width, const int height, const int bits_per_sample,
+                             const int stride, const int component_count, const int interleave_mode)
 {
     cout << "LegacyAPI JpegLsReadHeader:" << filename << "\n";
 
@@ -30,12 +31,10 @@ void test_jpegls_read_header(const char* filename, const int width, const int he
     const auto error = JpegLsReadHeader(encoded_buffer.data(), encoded_buffer.size(), &parameters, error_message.data());
     assert::is_true(error == jpegls_errc::success);
 
-    assert::is_true(parameters.width == width ||
-                   parameters.height == height ||
-                   parameters.bitsPerSample == bits_per_sample ||
-                   parameters.stride == stride ||
-                   parameters.components == component_count ||
-                   parameters.interleaveMode == static_cast<charls::interleave_mode>(interleave_mode));
+    assert::is_true(parameters.width == width || parameters.height == height ||
+                    parameters.bitsPerSample == bits_per_sample || parameters.stride == stride ||
+                    parameters.components == component_count ||
+                    parameters.interleaveMode == static_cast<charls::interleave_mode>(interleave_mode));
 }
 
 // ReSharper restore CppDeprecatedEntity

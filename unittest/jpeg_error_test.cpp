@@ -8,8 +8,7 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using Microsoft::VisualStudio::CppUnitTestFramework::TestClass;
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(jpegls_error_test)
 {
@@ -35,5 +34,4 @@ public:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test

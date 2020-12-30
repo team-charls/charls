@@ -40,7 +40,8 @@ public:
         uint32_t horizontal_resolution;   // the horizontal resolution of the image. (pixel per meter)
         uint32_t vertical_resolution;     // the vertical resolution of the image. (pixel per meter)
         uint32_t number_colors;           // the number of colors in the color palette, or 0 to default to 2^depth.
-        uint32_t number_important_colors; // the number of important colors used, or 0 when every color is important generally ignored.
+        uint32_t number_important_colors; // the number of important colors used, or 0 when every color is important
+                                          // generally ignored.
     };
 
     explicit bmp_image(const char* filename)
@@ -104,7 +105,8 @@ private:
         return result;
     }
 
-    static std::vector<uint8_t> read_pixel_data(std::istream& input, const uint32_t offset, const int32_t height, const uint32_t stride)
+    static std::vector<uint8_t> read_pixel_data(std::istream& input, const uint32_t offset, const int32_t height,
+                                                const uint32_t stride)
     {
         input.seekg(offset);
 

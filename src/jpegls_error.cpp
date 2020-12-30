@@ -66,7 +66,8 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "The argument for the entry size parameter is outside the range [0, 65528]";
 
     case jpegls_errc::invalid_argument_color_transformation:
-        return "The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component count";
+        return "The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component "
+               "count";
 
     case jpegls_errc::invalid_argument_jpegls_pc_parameters:
         return "The argument for the JPEG-LS preset coding parameters is not valid";
@@ -96,7 +97,8 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "Invalid JPEG-LS stream, JPEG-LS preset parameters segment contains an invalid type";
 
     case jpegls_errc::jpegls_preset_extended_parameter_type_not_supported:
-        return "Unsupported JPEG-LS stream, JPEG-LS preset parameters segment contains an JPEG-LS Extended (ISO/IEC 14495-2) type";
+        return "Unsupported JPEG-LS stream, JPEG-LS preset parameters segment contains an JPEG-LS Extended (ISO/IEC "
+               "14495-2) type";
 
     case jpegls_errc::missing_end_of_spiff_directory:
         return "Invalid JPEG-LS stream, SPIFF header without End Of Directory (EOD) entry";

@@ -18,7 +18,9 @@ namespace {
 class decoder_strategy_tester final : public charls::decoder_strategy
 {
 public:
-    decoder_strategy_tester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters, uint8_t* const destination, const size_t count) : // NOLINT
+    decoder_strategy_tester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters,
+                            uint8_t* const destination, const size_t count) :
+        // NOLINT
         decoder_strategy(frame_info, parameters)
     {
         initialize({destination, count});
@@ -28,12 +30,14 @@ public:
     {
     }
 
-    unique_ptr<charls::process_line> create_process_line(byte_span /*rawStreamInfo*/, size_t /*stride*/) noexcept(false) override
+    unique_ptr<charls::process_line> create_process_line(byte_span /*rawStreamInfo*/,
+                                                         size_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
 
-    void decode_scan(unique_ptr<charls::process_line> /*outputData*/, const JlsRect& /*size*/, byte_span& /*compressedData*/) noexcept(false) override
+    void decode_scan(unique_ptr<charls::process_line> /*outputData*/, const JlsRect& /*size*/,
+                     byte_span& /*compressedData*/) noexcept(false) override
     {
     }
 
@@ -46,8 +50,7 @@ public:
 } // namespace
 
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(decoder_strategy_test)
 {
@@ -88,5 +91,4 @@ public:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test

@@ -229,7 +229,8 @@ enum class jpegls_errc
     not_enough_memory = impl::CHARLS_JPEGLS_ERRC_NOT_ENOUGH_MEMORY,
 
     /// <summary>
-    /// This error is returned when the implementation encountered a failure it did not expect. No guarantees can be given for the state after this error.
+    /// This error is returned when the implementation encountered a failure it did not expect. No guarantees can be given
+    /// for the state after this error.
     /// </summary>
     unexpected_failure = impl::CHARLS_JPEGLS_ERRC_UNEXPECTED_FAILURE,
 
@@ -276,7 +277,8 @@ enum class jpegls_errc
     /// <summary>
     /// This error is returned when the stream contains an unsupported type parameter in the JPEG-LS segment.
     /// </summary>
-    jpegls_preset_extended_parameter_type_not_supported = impl::CHARLS_JPEGLS_ERRC_JPEGLS_PRESET_EXTENDED_PARAMETER_TYPE_NOT_SUPPORTED,
+    jpegls_preset_extended_parameter_type_not_supported =
+        impl::CHARLS_JPEGLS_ERRC_JPEGLS_PRESET_EXTENDED_PARAMETER_TYPE_NOT_SUPPORTED,
 
     /// <summary>
     /// This error is returned when the stream contains a SPIFF header but not an SPIFF end-of-directory entry.
@@ -345,7 +347,8 @@ enum class jpegls_errc
     invalid_parameter_component_count = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT,
 
     /// <summary>
-    /// This error is returned when the stream contains a bits per sample (sample precision) parameter outside the range [2,16]
+    /// This error is returned when the stream contains a bits per sample (sample precision) parameter outside the range
+    /// [2,16]
     /// </summary>
     invalid_parameter_bits_per_sample = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE,
 
@@ -355,7 +358,8 @@ enum class jpegls_errc
     invalid_parameter_interleave_mode = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE,
 
     /// <summary>
-    /// This error is returned when the stream contains a near-lossless (NEAR) parameter outside the range [0, min(255, MAXVAL/2)]
+    /// This error is returned when the stream contains a near-lossless (NEAR) parameter outside the range [0, min(255,
+    /// MAXVAL/2)]
     /// </summary>
     invalid_parameter_near_lossless = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS,
 
@@ -364,7 +368,8 @@ enum class jpegls_errc
     /// </summary>
     invalid_parameter_jpegls_pc_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PC_PARAMETERS,
 
-    // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17 extension.
+    // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17
+    // extension.
     OK = success,
     InvalidJlsParameters = invalid_argument,
     ParameterValueNotSupported = parameter_value_not_supported,
@@ -400,7 +405,8 @@ enum class interleave_mode
     /// </summary>
     sample = impl::CHARLS_INTERLEAVE_MODE_SAMPLE,
 
-    // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17 extension.
+    // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17
+    // extension.
     None = none,
     Line = line,
     Sample = sample
@@ -408,9 +414,9 @@ enum class interleave_mode
 
 /// <summary>
 /// Defines color space transformations as defined and implemented by the JPEG-LS library of HP Labs.
-/// These color space transformation decrease the correlation between the 3 color components, resulting in better encoding ratio.
-/// These options are only implemented for backwards compatibility and NOT part of the JPEG-LS standard.
-/// The JPEG-LS ISO/IEC 14495-1:1999 standard provides no capabilities to transport which color space transformation was used.
+/// These color space transformation decrease the correlation between the 3 color components, resulting in better encoding
+/// ratio. These options are only implemented for backwards compatibility and NOT part of the JPEG-LS standard. The JPEG-LS
+/// ISO/IEC 14495-1:1999 standard provides no capabilities to transport which color space transformation was used.
 /// </summary>
 enum class color_transformation
 {
@@ -443,7 +449,8 @@ enum class color_transformation
     /// </summary>
     hp3 = impl::CHARLS_COLOR_TRANSFORMATION_HP3,
 
-    // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17 extension.
+    // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17
+    // extension.
     None = none,
     HP1 = hp1,
     HP2 = hp2,
@@ -451,7 +458,8 @@ enum class color_transformation
 };
 
 /// <summary>
-/// Defines the Application profile identifier options that can be used in a SPIFF header v2, as defined in ISO/IEC 10918-3, F.1.2
+/// Defines the Application profile identifier options that can be used in a SPIFF header v2, as defined in ISO/IEC 10918-3,
+/// F.1.2
 /// </summary>
 enum class spiff_profile_id : int32_t
 {
@@ -512,7 +520,8 @@ enum class spiff_color_space : int32_t
     ycbcr_itu_bt_601_1_video = impl::CHARLS_SPIFF_COLOR_SPACE_YCBCR_ITU_BT_601_1_VIDEO,
 
     /// <summary>
-    /// Grayscale – This is a single component sample with interpretation as grayscale value, 0 is minimum, 2bps -1 is maximum.
+    /// Grayscale – This is a single component sample with interpretation as grayscale value, 0 is minimum, 2bps -1 is
+    /// maximum.
     /// </summary>
     grayscale = impl::CHARLS_SPIFF_COLOR_SPACE_GRAYSCALE,
 
@@ -629,7 +638,8 @@ enum class spiff_entry_tag : uint32_t
     transfer_characteristics = impl::CHARLS_SPIFF_ENTRY_TAG_TRANSFER_CHARACTERISTICS,
 
     /// <summary>
-    /// This entry specifies component registration, the spatial positioning of samples within components relative to the samples of other components.
+    /// This entry specifies component registration, the spatial positioning of samples within components relative to the
+    /// samples of other components.
     /// </summary>
     component_registration = impl::CHARLS_SPIFF_ENTRY_TAG_COMPONENT_REGISTRATION,
 
@@ -669,7 +679,8 @@ enum class spiff_entry_tag : uint32_t
     creator_identification = impl::CHARLS_SPIFF_ENTRY_TAG_CREATOR_IDENTIFICATION,
 
     /// <summary>
-    /// The presence of this entry, indicates that the image’s owner has retained copyright protection and usage rights for the image.
+    /// The presence of this entry, indicates that the image’s owner has retained copyright protection and usage rights for
+    /// the image.
     /// </summary>
     protection_indicator = impl::CHARLS_SPIFF_ENTRY_TAG_PROTECTION_INDICATOR,
 
@@ -769,16 +780,16 @@ typedef enum charls_color_transformation CharlsColorTransformationType;
 /// </remark>
 struct charls_spiff_header CHARLS_FINAL
 {
-    charls_spiff_profile_id profile_id;             // P: Application profile, type I.8
-    int32_t component_count;                        // NC: Number of color components, range [1, 255], type I.8
-    uint32_t height;                                // HEIGHT: Number of lines in image, range [1, 4294967295], type I.32
-    uint32_t width;                                 // WIDTH: Number of samples per line, range [1, 4294967295], type I.32
-    charls_spiff_color_space color_space;           // S: Color space used by image data, type is I.8
-    int32_t bits_per_sample;                        // BPS: Number of bits per sample, range (1, 2, 4, 8, 12, 16), type is I.8
+    charls_spiff_profile_id profile_id;   // P: Application profile, type I.8
+    int32_t component_count;              // NC: Number of color components, range [1, 255], type I.8
+    uint32_t height;                      // HEIGHT: Number of lines in image, range [1, 4294967295], type I.32
+    uint32_t width;                       // WIDTH: Number of samples per line, range [1, 4294967295], type I.32
+    charls_spiff_color_space color_space; // S: Color space used by image data, type is I.8
+    int32_t bits_per_sample;              // BPS: Number of bits per sample, range (1, 2, 4, 8, 12, 16), type is I.8
     charls_spiff_compression_type compression_type; // C: Type of data compression used, type is I.8
     charls_spiff_resolution_units resolution_units; // R: Type of resolution units, type is I.8
-    uint32_t vertical_resolution;                   // VRES: Vertical resolution, range [1, 4294967295], type can be F or I.32
-    uint32_t horizontal_resolution;                 // HRES: Horizontal resolution, range [1, 4294967295], type can be F or I.32
+    uint32_t vertical_resolution;   // VRES: Vertical resolution, range [1, 4294967295], type can be F or I.32
+    uint32_t horizontal_resolution; // HRES: Horizontal resolution, range [1, 4294967295], type can be F or I.32
 };
 
 
@@ -957,8 +968,9 @@ struct JlsParameters
 
     /// <summary>
     /// The number of valid bits per sample to encode.
-    /// Valid range 2 - 16. When greater than 8, pixels are assumed to stored as two bytes per sample, otherwise one byte per sample is assumed.
-    /// This parameter is called "Sample precision" in the JPEG-LS standard, often also called "Bit Depth".
+    /// Valid range 2 - 16. When greater than 8, pixels are assumed to stored as two bytes per sample, otherwise one byte per
+    /// sample is assumed. This parameter is called "Sample precision" in the JPEG-LS standard, often also called "Bit
+    /// Depth".
     /// </summary>
     int32_t bitsPerSample;
 

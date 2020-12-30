@@ -10,8 +10,7 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(golomb_table_test)
 {
@@ -28,5 +27,4 @@ public:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test

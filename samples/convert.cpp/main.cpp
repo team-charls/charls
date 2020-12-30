@@ -16,7 +16,8 @@ namespace {
 
 constexpr size_t bytes_per_rgb_pixel{3};
 
-void convert_bgr_to_rgb(std::vector<uint8_t>& triplet_buffer, const size_t width, const size_t height, const size_t stride) noexcept
+void convert_bgr_to_rgb(std::vector<uint8_t>& triplet_buffer, const size_t width, const size_t height,
+                        const size_t stride) noexcept
 {
     for (size_t line{}; line < height; ++line)
     {
@@ -29,7 +30,8 @@ void convert_bgr_to_rgb(std::vector<uint8_t>& triplet_buffer, const size_t width
     }
 }
 
-std::vector<uint8_t> triplet_to_planar(const std::vector<uint8_t>& buffer, const size_t width, const size_t height, const size_t stride)
+std::vector<uint8_t> triplet_to_planar(const std::vector<uint8_t>& buffer, const size_t width, const size_t height,
+                                       const size_t stride)
 {
     std::vector<uint8_t> result(bytes_per_rgb_pixel * width * height);
     const size_t byte_count_plane{width * height};
@@ -65,7 +67,8 @@ void convert_bottom_up_to_top_down(uint8_t* triplet_buffer, const size_t width, 
     }
 }
 
-std::vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, const charls::interleave_mode interleave_mode, const int near_lossless)
+std::vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, const charls::interleave_mode interleave_mode,
+                                                const int near_lossless)
 {
     assert(image.dib_header.depth == 24);        // This function only supports 24-bit BMP pixel data.
     assert(image.dib_header.compress_type == 0); // Data needs to be stored by pixel as RGB.
@@ -83,22 +86,21 @@ std::vector<uint8_t> encode_bmp_image_to_jpegls(const bmp_image& image, const ch
     // The ISO 10918-3 recommendation for these cases is to define that the pixels should be interpreted as a square.
     if (image.dib_header.vertical_resolution < 100 || image.dib_header.horizontal_resolution < 100)
     {
-        encoder.write_standard_spiff_header(charls::spiff_color_space::rgb,
-                                            charls::spiff_resolution_units::aspect_ratio,
-                                            1, 1);
+        encoder.write_standard_spiff_header(charls::spiff_color_space::rgb, charls::spiff_resolution_units::aspect_ratio, 1,
+                                            1);
     }
     else
     {
-        encoder.write_standard_spiff_header(charls::spiff_color_space::rgb,
-                                            charls::spiff_resolution_units::dots_per_centimeter,
-                                            image.dib_header.vertical_resolution / 100,
-                                            image.dib_header.horizontal_resolution / 100);
+        encoder.write_standard_spiff_header(
+            charls::spiff_color_space::rgb, charls::spiff_resolution_units::dots_per_centimeter,
+            image.dib_header.vertical_resolution / 100, image.dib_header.horizontal_resolution / 100);
     }
 
     size_t encoded_size;
     if (interleave_mode == charls::interleave_mode::none)
     {
-        const auto planar_pixel_data{triplet_to_planar(image.pixel_data, image.dib_header.width, static_cast<size_t>(image.dib_header.height), image.stride)};
+        const auto planar_pixel_data{triplet_to_planar(image.pixel_data, image.dib_header.width,
+                                                       static_cast<size_t>(image.dib_header.height), image.stride)};
         encoded_size = encoder.encode(planar_pixel_data);
     }
     else
@@ -145,7 +147,8 @@ struct options final
     options(const int argc, char** argv)
     {
         if (argc < 3)
-            throw std::runtime_error("Usage: <input_filename> <output_filename> [interleave-mode (none, line, or sample), default = none] [near-lossless, default = 0 (lossless)]\n");
+            throw std::runtime_error("Usage: <input_filename> <output_filename> [interleave-mode (none, line, or sample), "
+                                     "default = none] [near-lossless, default = 0 (lossless)]\n");
 
         input_filename = argv[1];
         output_filename = argv[2];
@@ -199,10 +202,12 @@ int main(const int argc, char** argv)
 
         bmp_image bmp_image{options.input_filename};
 
-        // Pixels in the BMP file format are stored bottom up (when the height parameter is positive), JPEG-LS requires top down.
+        // Pixels in the BMP file format are stored bottom up (when the height parameter is positive), JPEG-LS requires top
+        // down.
         if (bmp_image.dib_header.height > 0)
         {
-            convert_bottom_up_to_top_down(bmp_image.pixel_data.data(), bmp_image.dib_header.width, static_cast<size_t>(bmp_image.dib_header.height), bmp_image.stride);
+            convert_bottom_up_to_top_down(bmp_image.pixel_data.data(), bmp_image.dib_header.width,
+                                          static_cast<size_t>(bmp_image.dib_header.height), bmp_image.stride);
         }
         else
         {
@@ -210,8 +215,10 @@ int main(const int argc, char** argv)
         }
 
         // Pixels in the BMP file format are stored as BGR. JPEG-LS (SPIFF header) only supports the RGB color model.
-        // Note: without the optional SPIFF header no color information is stored in the JPEG-LS file and the common assumption is RGB.
-        convert_bgr_to_rgb(bmp_image.pixel_data, bmp_image.dib_header.width, static_cast<size_t>(bmp_image.dib_header.height), bmp_image.stride);
+        // Note: without the optional SPIFF header no color information is stored in the JPEG-LS file and the common
+        // assumption is RGB.
+        convert_bgr_to_rgb(bmp_image.pixel_data, bmp_image.dib_header.width,
+                           static_cast<size_t>(bmp_image.dib_header.height), bmp_image.stride);
 
         auto encoded_buffer{encode_bmp_image_to_jpegls(bmp_image, options.interleave_mode, options.near_lossless)};
         save_buffer_to_file(encoded_buffer.data(), encoded_buffer.size(), options.output_filename);

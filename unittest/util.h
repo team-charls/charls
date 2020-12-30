@@ -41,15 +41,15 @@
 #endif
 
 
-
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 std::vector<uint8_t> read_file(const char* filename);
 
-charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, charls::interleave_mode interleave_mode, const charls::frame_info& frame_info);
+charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, charls::interleave_mode interleave_mode,
+                                                             const charls::frame_info& frame_info);
 charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, charls::interleave_mode interleave_mode);
-std::vector<uint8_t> create_test_spiff_header(uint8_t high_version = 2, uint8_t low_version = 0, bool end_of_directory = true);
+std::vector<uint8_t> create_test_spiff_header(uint8_t high_version = 2, uint8_t low_version = 0,
+                                              bool end_of_directory = true);
 std::vector<uint8_t> create_noise_image_16_bit(size_t pixel_count, int bit_count, uint32_t seed);
 void test_round_trip_legacy(const std::vector<uint8_t>& source, const JlsParameters& params);
 
@@ -61,12 +61,9 @@ constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
     return static_cast<uint32_t>((bit_count + 7) / 8);
 }
 
-}
-} // namespace charls::test
+}} // namespace charls::test
 
-namespace Microsoft {
-namespace VisualStudio {
-namespace CppUnitTestFramework {
+namespace Microsoft { namespace VisualStudio { namespace CppUnitTestFramework {
 
 template<>
 inline std::wstring ToString<charls::jpegls_errc>(const charls::jpegls_errc& q)
@@ -80,13 +77,10 @@ inline std::wstring ToString<charls::interleave_mode>(const charls::interleave_m
     RETURN_WIDE_STRING(static_cast<int>(q));
 }
 
-}
-}
-} // namespace Microsoft::VisualStudio::CppUnitTestFramework
+}}} // namespace Microsoft::VisualStudio::CppUnitTestFramework
 
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 template<typename Functor>
 void assert_expect_exception(const jpegls_errc error_value, Functor functor)
@@ -110,5 +104,4 @@ void assert_expect_exception(const jpegls_errc error_value, Functor functor)
     Microsoft::VisualStudio::CppUnitTestFramework::Assert::Fail();
 }
 
-}
-} // namespace charls::test
+}} // namespace charls::test

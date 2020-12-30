@@ -14,8 +14,7 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::vector;
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(color_transform_test)
 {
@@ -109,8 +108,7 @@ public:
 
         vector<uint8_t> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported,
-                                [&] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported, [&] { decoder.decode(destination); });
     }
 
     TEST_METHOD(encode_non_8_or_16_bit_is_not_supported) // NOLINT
@@ -126,5 +124,4 @@ public:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test

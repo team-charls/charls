@@ -19,8 +19,7 @@ MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere t
 #pragma clang diagnostic ignored "-Wnonnull"
 #endif
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(charls_jpegls_encoder_test)
 {
@@ -142,8 +141,8 @@ public:
 
     TEST_METHOD(write_standard_spiff_header_nullptr) // NOLINT
     {
-        const auto error = charls_jpegls_encoder_write_standard_spiff_header(nullptr, charls_spiff_color_space::cie_lab,
-                                                                             charls_spiff_resolution_units::dots_per_centimeter, 1, 1);
+        const auto error = charls_jpegls_encoder_write_standard_spiff_header(
+            nullptr, charls_spiff_color_space::cie_lab, charls_spiff_resolution_units::dots_per_centimeter, 1, 1);
         Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
     }
 
@@ -160,8 +159,7 @@ public:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test
 
 #if defined(__clang__)
 #pragma clang diagnostic pop

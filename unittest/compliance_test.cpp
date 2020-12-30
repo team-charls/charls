@@ -14,8 +14,7 @@ using namespace charls_test;
 using std::error_code;
 using std::vector;
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(compliance_test)
 {
@@ -99,13 +98,16 @@ private:
         decoder.source(encoded_source);
         decoder.read_header();
 
-        portable_anymap_file reference_file = read_anymap_reference_file(raw_filename, decoder.interleave_mode(), decoder.frame_info());
+        portable_anymap_file reference_file =
+            read_anymap_reference_file(raw_filename, decoder.interleave_mode(), decoder.frame_info());
 
         test_compliance(encoded_source, reference_file.image_data(), check_encode);
-        test_compliance_legacy_api(encoded_source.data(), encoded_source.size(), reference_file.image_data().data(), reference_file.image_data().size(), check_encode);
+        test_compliance_legacy_api(encoded_source.data(), encoded_source.size(), reference_file.image_data().data(),
+                                   reference_file.image_data().size(), check_encode);
     }
 
-    static void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t>& uncompressed_source, const bool check_encode)
+    static void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t>& uncompressed_source,
+                                const bool check_encode)
     {
         jpegls_decoder decoder;
         decoder.source(encoded_source);
@@ -138,7 +140,8 @@ private:
             {
                 for (size_t i = 0; i < uncompressed_source.size(); ++i)
                 {
-                    if (abs(uncompressed_source[i] - destination[i]) > near_lossless) // AreEqual is very slow, pre-test to speed up 50X
+                    if (abs(uncompressed_source[i] - destination[i]) >
+                        near_lossless) // AreEqual is very slow, pre-test to speed up 50X
                     {
                         Assert::AreEqual(uncompressed_source[i], destination[i]);
                     }
@@ -151,7 +154,8 @@ private:
 
                 for (size_t i = 0; i < uncompressed_source.size() / 2; ++i)
                 {
-                    if (abs(source16[i] - destination16[i]) > near_lossless) // AreEqual is very slow, pre-test to speed up 50X
+                    if (abs(source16[i] - destination16[i]) >
+                        near_lossless) // AreEqual is very slow, pre-test to speed up 50X
                     {
                         Assert::AreEqual(static_cast<int>(source16[i]), static_cast<int>(destination16[i]));
                     }
@@ -160,7 +164,9 @@ private:
         }
     }
 
-    static void test_compliance_legacy_api(const uint8_t* compressed_bytes, const size_t compressed_length, const uint8_t* uncompressed_data, const size_t uncompressed_length, const bool check_encode)
+    static void test_compliance_legacy_api(const uint8_t* compressed_bytes, const size_t compressed_length,
+                                           const uint8_t* uncompressed_data, const size_t uncompressed_length,
+                                           const bool check_encode)
     {
         // ReSharper disable CppDeprecatedEntity
         DISABLE_DEPRECATED_WARNING
@@ -171,10 +177,12 @@ private:
 
         if (check_encode)
         {
-            Assert::IsTrue(verify_encoded_bytes_legacy_api(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
+            Assert::IsTrue(verify_encoded_bytes_legacy_api(uncompressed_data, uncompressed_length, compressed_bytes,
+                                                           compressed_length));
         }
 
-        vector<uint8_t> destination(static_cast<size_t>(info.height) * info.width * bit_to_byte_count(info.bitsPerSample) * info.components);
+        vector<uint8_t> destination(static_cast<size_t>(info.height) * info.width * bit_to_byte_count(info.bitsPerSample) *
+                                    info.components);
 
         error = JpegLsDecode(destination.data(), destination.size(), compressed_bytes, compressed_length, nullptr, nullptr);
         Assert::IsTrue(!error);
@@ -194,7 +202,8 @@ private:
         RESTORE_DEPRECATED_WARNING
     }
 
-    static bool verify_encoded_bytes_legacy_api(const void* uncompressed_data, const size_t uncompressed_length, const void* compressed_data, const size_t compressed_length)
+    static bool verify_encoded_bytes_legacy_api(const void* uncompressed_data, const size_t uncompressed_length,
+                                                const void* compressed_data, const size_t compressed_length)
     {
         // ReSharper disable CppDeprecatedEntity
         DISABLE_DEPRECATED_WARNING
@@ -206,7 +215,8 @@ private:
 
         vector<uint8_t> our_encoded_bytes(compressed_length + 16);
         size_t bytes_written;
-        error = JpegLsEncode(our_encoded_bytes.data(), our_encoded_bytes.size(), &bytes_written, uncompressed_data, uncompressed_length, &info, nullptr);
+        error = JpegLsEncode(our_encoded_bytes.data(), our_encoded_bytes.size(), &bytes_written, uncompressed_data,
+                             uncompressed_length, &info, nullptr);
         if (error)
             return false;
 
@@ -256,5 +266,4 @@ private:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test

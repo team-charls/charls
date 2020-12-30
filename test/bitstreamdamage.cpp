@@ -8,14 +8,14 @@
 #include <random>
 #include <vector>
 
-using charls::jpegls_errc;
 using charls::jpegls_decoder;
+using charls::jpegls_errc;
 using charls::jpegls_error;
 using std::cout;
+using std::error_code;
 using std::mt19937;
 using std::uniform_int_distribution;
 using std::vector;
-using std::error_code;
 
 namespace {
 

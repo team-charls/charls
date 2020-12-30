@@ -17,8 +17,7 @@ using std::vector;
 
 constexpr size_t serialized_spiff_header_size = 34;
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(jpegls_encoder_test)
 {
@@ -62,7 +61,9 @@ public:
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_height, [&] { encoder.frame_info({1, 0, 2, 1}); });
-        assert_expect_exception(jpegls_errc::invalid_argument_height, [&] { encoder.frame_info({1, UINT16_MAX + 1, 2, 1}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_height, [&] {
+            encoder.frame_info({1, UINT16_MAX + 1, 2, 1});
+        });
     }
 
     TEST_METHOD(frame_info_bad_bits_per_sample) // NOLINT
@@ -175,7 +176,8 @@ public:
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(encoder.estimated_destination_size()); });
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&] { static_cast<void>(encoder.estimated_destination_size()); });
     }
 
     TEST_METHOD(destination) // NOLINT
@@ -232,7 +234,8 @@ public:
 
         encoder.frame_info({1, 1, 2, 1});
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
 
     TEST_METHOD(write_standard_spiff_header_without_frame_info) // NOLINT
@@ -242,7 +245,8 @@ public:
         vector<uint8_t> destination(100);
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
 
     TEST_METHOD(write_standard_spiff_header_twice) // NOLINT
@@ -255,7 +259,8 @@ public:
         encoder.destination(destination);
         encoder.write_standard_spiff_header(spiff_color_space::cmyk);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
 
     TEST_METHOD(write_spiff_header) // NOLINT
@@ -392,11 +397,10 @@ public:
         encoder.destination(destination);
         encoder.write_standard_spiff_header(spiff_color_space::cmyk);
 
-        assert_expect_exception(jpegls_errc::invalid_argument_spiff_entry_size,
-                                [&] {
-                                    vector<uint8_t> spiff_entry(65528 + 1);
-                                    encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
-                                });
+        assert_expect_exception(jpegls_errc::invalid_argument_spiff_entry_size, [&] {
+            vector<uint8_t> spiff_entry(65528 + 1);
+            encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
+        });
     }
 
     TEST_METHOD(write_spiff_entry_without_spiff_header) // NOLINT
@@ -408,11 +412,10 @@ public:
         vector<uint8_t> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_operation,
-                                [&] {
-                                    vector<uint8_t> spiff_entry(65528);
-                                    encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
-                                });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] {
+            vector<uint8_t> spiff_entry(65528);
+            encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
+        });
     }
 
     TEST_METHOD(set_preset_coding_parameters) // NOLINT
@@ -489,8 +492,7 @@ public:
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
         vector<uint8_t> destination(encoder.estimated_destination_size());
-        encoder.destination(destination)
-            .color_transformation(color_transformation::hp1);
+        encoder.destination(destination).color_transformation(color_transformation::hp1);
 
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
@@ -527,7 +529,8 @@ public:
 
     TEST_METHOD(encode_with_stride) // NOLINT
     {
-        const array<uint8_t, 30> source{100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 150, 150, 150, 0, 0, 0, 0, 0, 0, 0, 200, 200, 200};
+        const array<uint8_t, 30> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
+                                        150, 0,   0,   0, 0, 0, 0, 0, 200, 200, 200};
         const frame_info frame_info{3, 1, 8, 3};
 
         jpegls_encoder encoder;
@@ -543,7 +546,9 @@ public:
     }
 
 private:
-    static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info, const uint8_t* source, const size_t source_size, const charls::interleave_mode interleave_mode)
+    static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info,
+                                 const uint8_t* source, const size_t source_size,
+                                 const charls::interleave_mode interleave_mode)
     {
         jpegls_decoder decoder;
         decoder.source(encoded_source);
@@ -574,5 +579,4 @@ private:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test

@@ -39,8 +39,7 @@ void triplet_to_planar(vector<uint8_t>& buffer, const uint32_t width, const uint
 
 } // namespace
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 vector<uint8_t> read_file(const char* filename)
 {
@@ -58,7 +57,8 @@ vector<uint8_t> read_file(const char* filename)
     return buffer;
 }
 
-portable_anymap_file read_anymap_reference_file(const char* filename, const interleave_mode interleave_mode, const frame_info& frame_info)
+portable_anymap_file read_anymap_reference_file(const char* filename, const interleave_mode interleave_mode,
+                                                const frame_info& frame_info)
 {
     portable_anymap_file reference_file{filename};
 
@@ -176,14 +176,16 @@ void test_round_trip_legacy(const vector<uint8_t>& source, const JlsParameters& 
     DISABLE_DEPRECATED_WARNING
 
     vector<uint8_t> encoded_buffer(params.height * params.width * params.components * params.bitsPerSample / 4);
-    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width * bit_to_byte_count(params.bitsPerSample) * params.components);
+    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width *
+                                   bit_to_byte_count(params.bitsPerSample) * params.components);
 
     size_t compressed_length{};
-    auto error{JpegLsEncode(encoded_buffer.data(), encoded_buffer.size(), &compressed_length,
-                              source.data(), source.size(), &params, nullptr)};
+    auto error{JpegLsEncode(encoded_buffer.data(), encoded_buffer.size(), &compressed_length, source.data(), source.size(),
+                            &params, nullptr)};
     Assert::AreEqual(jpegls_errc::success, error);
 
-    error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_buffer.data(), compressed_length, nullptr, nullptr);
+    error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_buffer.data(), compressed_length, nullptr,
+                         nullptr);
     Assert::AreEqual(jpegls_errc::success, error);
 
     const uint8_t* byte_out{decoded_buffer.data()};
@@ -200,5 +202,4 @@ void test_round_trip_legacy(const vector<uint8_t>& source, const JlsParameters& 
     RESTORE_DEPRECATED_WARNING
 }
 
-} // namespace test
-} // namespace charls
+}} // namespace charls::test

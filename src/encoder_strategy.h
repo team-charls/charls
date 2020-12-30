@@ -13,8 +13,7 @@ class encoder_strategy
 {
 public:
     explicit encoder_strategy(const frame_info& frame, const coding_parameters& parameters) noexcept :
-        frame_info_{frame},
-        parameters_{parameters}
+        frame_info_{frame}, parameters_{parameters}
     {
     }
 
@@ -53,7 +52,8 @@ protected:
     void append_to_bit_stream(const uint32_t bits, const int32_t bit_count)
     {
         ASSERT(bit_count < 32 && bit_count >= 0);
-        ASSERT((!decoder_) || (bit_count == 0 && bits == 0) || (static_cast<uint32_t>(decoder_->read_long_value(bit_count)) == bits));
+        ASSERT((!decoder_) || (bit_count == 0 && bits == 0) ||
+               (static_cast<uint32_t>(decoder_->read_long_value(bit_count)) == bits));
 #ifndef NDEBUG
         const uint32_t mask{(1U << bit_count) - 1U};
         ASSERT((bits | mask) == mask); // Not used bits must be set to zero.

@@ -20,8 +20,7 @@ struct jls_context final
 
     jls_context() = default;
 
-    explicit jls_context(const int32_t a) noexcept :
-        A{a}
+    explicit jls_context(const int32_t a) noexcept : A{a}
     {
     }
 
@@ -33,7 +32,8 @@ struct jls_context final
         return bit_wise_sign(2 * B + N - 1);
     }
 
-    FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless, const int32_t reset_threshold) noexcept
+    FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless,
+                                       const int32_t reset_threshold) noexcept
     {
         ASSERT(N != 0);
 
@@ -84,11 +84,16 @@ struct jls_context final
         const int32_t n_test{N};
         const int32_t a_test{A};
 
-        if (n_test >= a_test) return 0;
-        if (n_test << 1 >= a_test) return 1;
-        if (n_test << 2 >= a_test) return 2;
-        if (n_test << 3 >= a_test) return 3;
-        if (n_test << 4 >= a_test) return 4;
+        if (n_test >= a_test)
+            return 0;
+        if (n_test << 1 >= a_test)
+            return 1;
+        if (n_test << 2 >= a_test)
+            return 2;
+        if (n_test << 3 >= a_test)
+            return 3;
+        if (n_test << 4 >= a_test)
+            return 4;
 
         int32_t k{5};
         for (; n_test << k < a_test; ++k)

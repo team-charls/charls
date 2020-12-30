@@ -68,7 +68,8 @@ private:
     jpeg_marker_code read_next_marker_code();
     void validate_marker_code(jpeg_marker_code marker_code) const;
 
-    int read_marker_segment(jpeg_marker_code marker_code, int32_t segment_size, spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
+    int read_marker_segment(jpeg_marker_code marker_code, int32_t segment_size, spiff_header* header = nullptr,
+                            bool* spiff_header_found = nullptr);
     int read_spiff_directory_entry(jpeg_marker_code marker_code, int32_t segment_size);
     int read_start_of_frame_segment(int32_t segment_size);
     static int read_comment() noexcept;

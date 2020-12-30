@@ -15,7 +15,8 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_version_string() noexcept
     return TO_STRING(CHARLS_VERSION_MAJOR) "." TO_STRING(CHARLS_VERSION_MINOR) "." TO_STRING(CHARLS_VERSION_PATCH);
 }
 
-void CHARLS_API_CALLING_CONVENTION charls_get_version_number(OUT_OPT_ int32_t* major, OUT_OPT_ int32_t* minor, OUT_OPT_ int32_t* patch) noexcept
+void CHARLS_API_CALLING_CONVENTION charls_get_version_number(OUT_OPT_ int32_t* major, OUT_OPT_ int32_t* minor,
+                                                             OUT_OPT_ int32_t* patch) noexcept
 {
     if (major)
     {

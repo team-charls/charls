@@ -32,7 +32,8 @@ void triplet2_planar(vector<uint8_t>& buffer, const rect_size size)
 }
 
 
-bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompressed_length, const void* compressed_data, const size_t compressed_length)
+bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompressed_length, const void* compressed_data,
+                          const size_t compressed_length)
 {
     try
     {
@@ -66,7 +67,8 @@ bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompress
 }
 
 
-void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_length, const uint8_t* uncompressed_data, const size_t uncompressed_length, const bool check_encode)
+void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_length, const uint8_t* uncompressed_data,
+                     const size_t uncompressed_length, const bool check_encode)
 {
     try
     {
@@ -75,7 +77,8 @@ void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_le
 
         if (check_encode)
         {
-            assert::is_true(verify_encoded_bytes(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
+            assert::is_true(
+                verify_encoded_bytes(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
         }
 
         const auto destination{decoder.decode<vector<uint8_t>>()};
@@ -167,14 +170,11 @@ void decompress_file(const char* name_encoded, const char* name_raw, const int o
 ////};
 
 
-const array<uint8_t, 16> buffer = {0, 0, 90, 74,
-                                   68, 50, 43, 205,
-                                   64, 145, 145, 145,
-                                   100, 145, 145, 145};
-////const uint8_t bufferEncoded[] =   {   0xFF, 0xD8, 0xFF, 0xF7, 0x00, 0x0B, 0x08, 0x00, 0x04, 0x00, 0x04, 0x01, 0x01, 0x11, 0x00, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00,
-////0xC0, 0x00, 0x00, 0x6C, 0x80, 0x20, 0x8E,
-////0x01, 0xC0, 0x00, 0x00, 0x57, 0x40, 0x00, 0x00, 0x6E, 0xE6, 0x00, 0x00, 0x01, 0xBC, 0x18, 0x00,
-////0x00, 0x05, 0xD8, 0x00, 0x00, 0x91, 0x60, 0xFF, 0xD9};
+const array<uint8_t, 16> buffer = {0, 0, 90, 74, 68, 50, 43, 205, 64, 145, 145, 145, 100, 145, 145, 145};
+////const uint8_t bufferEncoded[] =   {   0xFF, 0xD8, 0xFF, 0xF7, 0x00, 0x0B, 0x08, 0x00, 0x04, 0x00, 0x04, 0x01, 0x01, 0x11,
+///0x00, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, /0xC0, 0x00, 0x00, 0x6C, 0x80, 0x20, 0x8E, /0x01, 0xC0,
+///0x00, 0x00, 0x57, 0x40, 0x00, 0x00, 0x6E, 0xE6, 0x00, 0x00, 0x01, 0xBC, 0x18, 0x00, /0x00, 0x05, 0xD8, 0x00, 0x00, 0x91,
+///0x60, 0xFF, 0xD9};
 
 } // namespace
 

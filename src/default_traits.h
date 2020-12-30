@@ -33,7 +33,8 @@ struct default_traits final
     const int32_t limit;
     const int32_t reset_threshold;
 
-    default_traits(const int32_t arg_maximum_sample_value, const int32_t arg_near_lossless, const int32_t reset = default_reset_value) noexcept :
+    default_traits(const int32_t arg_maximum_sample_value, const int32_t arg_near_lossless,
+                   const int32_t reset = default_reset_value) noexcept :
         maximum_sample_value{arg_maximum_sample_value},
         near_lossless{arg_near_lossless},
         range{compute_range_parameter(maximum_sample_value, near_lossless)},
@@ -56,7 +57,8 @@ struct default_traits final
         return modulo_range(quantize(e));
     }
 
-    FORCE_INLINE SampleType compute_reconstructed_sample(const int32_t predicted_value, const int32_t error_value) const noexcept
+    FORCE_INLINE SampleType compute_reconstructed_sample(const int32_t predicted_value,
+                                                         const int32_t error_value) const noexcept
     {
         return fix_reconstructed_value(predicted_value + dequantize(error_value));
     }
@@ -68,17 +70,14 @@ struct default_traits final
 
     bool is_near(const triplet<SampleType> lhs, const triplet<SampleType> rhs) const noexcept
     {
-        return std::abs(lhs.v1 - rhs.v1) <= near_lossless &&
-               std::abs(lhs.v2 - rhs.v2) <= near_lossless &&
+        return std::abs(lhs.v1 - rhs.v1) <= near_lossless && std::abs(lhs.v2 - rhs.v2) <= near_lossless &&
                std::abs(lhs.v3 - rhs.v3) <= near_lossless;
     }
 
     bool is_near(const quad<SampleType> lhs, const quad<SampleType> rhs) const noexcept
     {
-        return std::abs(lhs.v1 - rhs.v1) <= near_lossless &&
-               std::abs(lhs.v2 - rhs.v2) <= near_lossless &&
-               std::abs(lhs.v3 - rhs.v3) <= near_lossless &&
-               std::abs(lhs.v4 - rhs.v4) <= near_lossless;
+        return std::abs(lhs.v1 - rhs.v1) <= near_lossless && std::abs(lhs.v2 - rhs.v2) <= near_lossless &&
+               std::abs(lhs.v3 - rhs.v3) <= near_lossless && std::abs(lhs.v4 - rhs.v4) <= near_lossless;
     }
 
     FORCE_INLINE int32_t correct_prediction(const int32_t predicted) const noexcept

@@ -87,7 +87,8 @@ void write_file(const char* filename, const void* data, const size_t size)
     output.write(static_cast<const char*>(data), size);
 }
 
-void test_round_trip(const char* name, const vector<uint8_t>& decoded_buffer, const rect_size size, const int bits_per_sample, const int component_count, const int loop_count)
+void test_round_trip(const char* name, const vector<uint8_t>& decoded_buffer, const rect_size size,
+                     const int bits_per_sample, const int component_count, const int loop_count)
 {
     JlsParameters params = JlsParameters();
     params.components = component_count;
@@ -99,11 +100,13 @@ void test_round_trip(const char* name, const vector<uint8_t>& decoded_buffer, co
 }
 
 
-void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, const JlsParameters& params, const int loop_count)
+void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, const JlsParameters& params,
+                     const int loop_count)
 {
     vector<uint8_t> encoded_buffer(params.height * params.width * params.components * params.bitsPerSample / 4);
 
-    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width * bit_to_byte_count(params.bitsPerSample) * params.components);
+    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width *
+                                   bit_to_byte_count(params.bitsPerSample) * params.components);
 
     interleave_mode interleave_mode{params.interleaveMode};
     color_transformation color_transformation{params.colorTransformation};
@@ -126,7 +129,8 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
         {
             jpegls_encoder encoder;
             encoder.destination(encoded_buffer)
-                .frame_info({static_cast<uint32_t>(params.width), static_cast<uint32_t>(params.height), params.bitsPerSample, params.components})
+                .frame_info({static_cast<uint32_t>(params.width), static_cast<uint32_t>(params.height), params.bitsPerSample,
+                             params.components})
                 .interleave_mode(interleave_mode)
                 .color_transformation(color_transformation);
 
@@ -157,13 +161,17 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
 
     const auto total_decode_duration = steady_clock::now() - start;
 
-    const double bits_per_sample = 1.0 * static_cast<double>(encoded_actual_size) * 8. / (static_cast<double>(params.components) * params.height * params.width);
+    const double bits_per_sample = 1.0 * static_cast<double>(encoded_actual_size) * 8. /
+                                   (static_cast<double>(params.components) * params.height * params.width);
     cout << "RoundTrip test for: " << name << "\n\r";
     const double encode_time = duration<double, milli>(total_encode_duration).count() / loop_count;
     const double decode_time = duration<double, milli>(total_decode_duration).count() / loop_count;
-    const double symbol_rate = (static_cast<double>(params.components) * params.height * params.width) / (1000.0 * decode_time);
+    const double symbol_rate =
+        (static_cast<double>(params.components) * params.height * params.width) / (1000.0 * decode_time);
 
-    cout << "Size:" << setw(10) << params.width << "x" << params.height << setw(7) << setprecision(2) << ", Encode time:" << encode_time << " ms, Decode time:" << decode_time << " ms, Bits per sample:" << bits_per_sample << ", Decode rate:" << symbol_rate << " M/s\n";
+    cout << "Size:" << setw(10) << params.width << "x" << params.height << setw(7) << setprecision(2)
+         << ", Encode time:" << encode_time << " ms, Decode time:" << decode_time
+         << " ms, Bits per sample:" << bits_per_sample << ", Decode rate:" << symbol_rate << " M/s\n";
 
     const uint8_t* byte_out = decoded_buffer.data();
     for (size_t i = 0; i < decoded_buffer.size(); ++i)
@@ -177,7 +185,8 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
 }
 
 
-void test_file(const char* filename, const int offset, const rect_size size2, const int bits_per_sample, const int component_count, const bool little_endian_file, const int loop_count)
+void test_file(const char* filename, const int offset, const rect_size size2, const int bits_per_sample,
+               const int component_count, const bool little_endian_file, const int loop_count)
 {
     const size_t byte_count = size2.cx * size2.cy * component_count * bit_to_byte_count(bits_per_sample);
     vector<uint8_t> uncompressed_buffer = read_file(filename, offset, byte_count);

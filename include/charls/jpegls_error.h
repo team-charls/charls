@@ -34,13 +34,11 @@ CHARLS_NO_DISCARD inline std::error_code make_error_code(jpegls_errc error_value
 class jpegls_error final : public std::system_error
 {
 public:
-    explicit jpegls_error(const std::error_code ec) :
-        system_error{ec}
+    explicit jpegls_error(const std::error_code ec) : system_error{ec}
     {
     }
 
-    explicit jpegls_error(const jpegls_errc error_value) :
-        system_error{error_value}
+    explicit jpegls_error(const jpegls_errc error_value) : system_error{error_value}
     {
     }
 };

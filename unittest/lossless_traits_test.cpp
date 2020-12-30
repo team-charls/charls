@@ -8,8 +8,7 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(lossless_traits_test)
 {
@@ -65,5 +64,4 @@ public:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test

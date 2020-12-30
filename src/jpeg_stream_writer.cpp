@@ -14,8 +14,7 @@ namespace charls {
 
 using std::array;
 
-jpeg_stream_writer::jpeg_stream_writer(const byte_span destination) noexcept :
-    destination_{destination}
+jpeg_stream_writer::jpeg_stream_writer(const byte_span destination) noexcept : destination_{destination}
 {
 }
 
@@ -72,8 +71,8 @@ void jpeg_stream_writer::write_spiff_end_of_directory_entry()
     // Note: ISO/IEC 10918-3, Annex F.2.2.3 documents that the EOD entry segment should have a length of 8
     // but only 6 data bytes. This approach allows to wrap existing bit streams\encoders with a SPIFF header.
     // In this implementation the SOI marker is added as data bytes to simplify the design.
-    static constexpr array<uint8_t, 6> spiff_end_of_directory{0, 0, 0, spiff_end_of_directory_entry_type, 0xFF,
-                                                              static_cast<uint8_t>(charls::jpeg_marker_code::start_of_image)};
+    static constexpr array<uint8_t, 6> spiff_end_of_directory{
+        0, 0, 0, spiff_end_of_directory_entry_type, 0xFF, static_cast<uint8_t>(charls::jpeg_marker_code::start_of_image)};
 
     write_segment_header(jpeg_marker_code::application_data8, spiff_end_of_directory.size());
     write_bytes(spiff_end_of_directory.data(), spiff_end_of_directory.size());
@@ -105,7 +104,7 @@ void jpeg_stream_writer::write_start_of_frame_segment(const uint32_t width, cons
         // Component Specification parameters
         write_uint8(static_cast<uint8_t>(component_id)); // Ci = Component identifier
         write_uint8(0x11);                               // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
-        write_uint8(0);                                  // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
+        write_uint8(0); // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
     }
 }
 
@@ -131,14 +130,12 @@ void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const jpegls_pc_
 }
 
 
-void jpeg_stream_writer::write_start_of_scan_segment(const int32_t component_count,
-                                                     const int32_t near_lossless,
+void jpeg_stream_writer::write_start_of_scan_segment(const int32_t component_count, const int32_t near_lossless,
                                                      const interleave_mode interleave_mode)
 {
     ASSERT(component_count > 0 && component_count <= UINT8_MAX);
     ASSERT(near_lossless >= 0 && near_lossless <= UINT8_MAX);
-    ASSERT(interleave_mode == interleave_mode::none ||
-           interleave_mode == interleave_mode::line ||
+    ASSERT(interleave_mode == interleave_mode::none || interleave_mode == interleave_mode::line ||
            interleave_mode == interleave_mode::sample);
 
     // Create a Scan Header as defined in T.87, C.2.3 and T.81, B.2.3

@@ -20,8 +20,7 @@ using std::find;
 using std::unique_ptr;
 using std::vector;
 
-jpeg_stream_reader::jpeg_stream_reader(const byte_span source) noexcept :
-    source_{source}
+jpeg_stream_reader::jpeg_stream_reader(const byte_span source) noexcept : source_{source}
 {
 }
 
@@ -41,11 +40,14 @@ void jpeg_stream_reader::read(byte_span source, size_t stride)
     if (stride == 0)
     {
         const uint32_t width{rect_.Width != 0 ? static_cast<uint32_t>(rect_.Width) : frame_info_.width};
-        const uint32_t component_count{parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<uint32_t>(frame_info_.component_count)};
-        stride = static_cast<size_t>(component_count) * width * ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U);
+        const uint32_t component_count{
+            parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<uint32_t>(frame_info_.component_count)};
+        stride =
+            static_cast<size_t>(component_count) * width * ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U);
     }
 
-    const int64_t bytes_per_plane{static_cast<int64_t>(rect_.Width) * rect_.Height * bit_to_byte_count(frame_info_.bits_per_sample)};
+    const int64_t bytes_per_plane{static_cast<int64_t>(rect_.Width) * rect_.Height *
+                                  bit_to_byte_count(frame_info_.bits_per_sample)};
 
     if (static_cast<int64_t>(source.size) < bytes_per_plane * frame_info_.component_count)
         throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
@@ -58,7 +60,8 @@ void jpeg_stream_reader::read(byte_span source, size_t stride)
             read_next_start_of_scan();
         }
 
-        unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(frame_info_, parameters_, preset_coding_parameters_)};
+        unique_ptr<decoder_strategy> codec{
+            jls_codec_factory<decoder_strategy>().create_codec(frame_info_, parameters_, preset_coding_parameters_)};
         unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
         codec->decode_scan(move(process_line), rect_, source_);
         skip_bytes(source, static_cast<size_t>(bytes_per_plane));
@@ -248,10 +251,8 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
 }
 
 
-int jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code,
-                                            const int32_t segment_size,
-                                            spiff_header* header,
-                                            bool* spiff_header_found)
+int jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code, const int32_t segment_size,
+                                            spiff_header* header, bool* spiff_header_found)
 {
     switch (marker_code)
     {
@@ -339,8 +340,9 @@ int jpeg_stream_reader::read_start_of_frame_segment(const int32_t segment_size)
     for (int32_t i{}; i < frame_info_.component_count; ++i)
     {
         // Component specification parameters
-        add_component(read_byte());                                     // Ci = Component identifier
-        const uint8_t horizontal_vertical_sampling_factor{read_byte()}; // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
+        add_component(read_byte()); // Ci = Component identifier
+        const uint8_t horizontal_vertical_sampling_factor{
+            read_byte()}; // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
         if (horizontal_vertical_sampling_factor != 0x11)
             throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
@@ -479,8 +481,7 @@ int32_t jpeg_stream_reader::read_segment_size()
     return segment_size;
 }
 
-int jpeg_stream_reader::try_read_application_data8_segment(const int32_t segment_size,
-                                                           spiff_header* header,
+int jpeg_stream_reader::try_read_application_data8_segment(const int32_t segment_size, spiff_header* header,
                                                            bool* spiff_header_found)
 {
     if (spiff_header_found)
@@ -602,7 +603,8 @@ void jpeg_stream_reader::check_parameter_coherent() const
 bool jpeg_stream_reader::is_maximum_sample_value_valid() const noexcept
 {
     return preset_coding_parameters_.maximum_sample_value == 0 ||
-           static_cast<uint32_t>(preset_coding_parameters_.maximum_sample_value) <= calculate_maximum_sample_value(frame_info_.bits_per_sample);
+           static_cast<uint32_t>(preset_coding_parameters_.maximum_sample_value) <=
+               calculate_maximum_sample_value(frame_info_.bits_per_sample);
 }
 
 

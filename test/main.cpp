@@ -228,7 +228,8 @@ void test_fail_on_too_small_output_buffer()
 void test_bgra()
 {
     array<uint8_t, 20> input{'R', 'G', 'B', 'A', 'R', 'G', 'B', 'A', 'R', 'G', 'B', 'A', 'R', 'G', 'B', 'A', 1, 2, 3, 4};
-    const array<uint8_t, 20> expected{'B', 'G', 'R', 'A', 'B', 'G', 'R', 'A', 'B', 'G', 'R', 'A', 'B', 'G', 'R', 'A', 1, 2, 3, 4};
+    const array<uint8_t, 20> expected{'B', 'G', 'R', 'A', 'B', 'G', 'R', 'A', 'B', 'G',
+                                      'R', 'A', 'B', 'G', 'R', 'A', 1,   2,   3,   4};
 
     transform_rgb_to_bgr(input.data(), 4, 4);
     assert::is_true(expected == input);
@@ -251,7 +252,8 @@ void test_bgr()
     JlsParameters params{};
     params.outputBgr = static_cast<char>(true);
 
-    const error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_source.data(), encoded_source.size(), &params, nullptr);
+    const error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_source.data(),
+                                          encoded_source.size(), &params, nullptr);
 
     // ReSharper restore CppDeprecatedEntity
     RESTORE_DEPRECATED_WARNING
@@ -296,7 +298,8 @@ void test_too_small_output_buffer()
 ////        return;
 ////
 ////    vector<uint8_t> rgbyteOut(2500 * 3000 * 2);
-////    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr, nullptr);
+////    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr,
+///nullptr);
 ////
 ////    Assert::IsTrue(error == jpegls_errc::UncompressedBufferTooSmall);
 ////}
@@ -388,27 +391,31 @@ void test_decode_rect()
 
     JlsParameters params{};
 
-    error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_source.data(), encoded_source.size(), &params, nullptr);
+    error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_source.data(),
+                                    encoded_source.size(), &params, nullptr);
     assert::is_true(!error);
 
     const JlsRect rect = {128, 128, 256, 1};
     vector<uint8_t> decoded_data(static_cast<size_t>(rect.Width) * rect.Height);
     decoded_data.push_back(0x1f);
 
-    error = JpegLsDecodeRect(decoded_data.data(), decoded_data.size(), encoded_source.data(), encoded_source.size(), rect, nullptr, nullptr);
+    error = JpegLsDecodeRect(decoded_data.data(), decoded_data.size(), encoded_source.data(), encoded_source.size(), rect,
+                             nullptr, nullptr);
 
     // ReSharper restore CppDeprecatedEntity
     RESTORE_DEPRECATED_WARNING
 
     assert::is_true(!error);
 
-    assert::is_true(memcmp(&decoded_buffer[rect.X + static_cast<size_t>(rect.Y) * 512], decoded_data.data(), static_cast<size_t>(rect.Width) * rect.Height) == 0);
+    assert::is_true(memcmp(&decoded_buffer[rect.X + static_cast<size_t>(rect.Y) * 512], decoded_data.data(),
+                           static_cast<size_t>(rect.Width) * rect.Height) == 0);
     assert::is_true(decoded_data[static_cast<size_t>(rect.Width) * rect.Height] == 0x1f);
 }
 
 
 void test_encode_from_stream(const char* filename, const size_t offset, const uint32_t width, const uint32_t height,
-                             const int32_t bits_per_sample, const int32_t component_count, const interleave_mode interleave_mode, const size_t expected_length)
+                             const int32_t bits_per_sample, const int32_t component_count,
+                             const interleave_mode interleave_mode, const size_t expected_length)
 {
     ifstream source_file{filename, ios::in | ios::binary};
     assert::is_true(source_file.good());
@@ -458,9 +465,7 @@ bool decode_to_pnm(istream& input, ostream& output)
     }
 
     const int magic_number = frame_info.component_count == 3 ? 6 : 5;
-    output << 'P' << magic_number << "\n"
-           << frame_info.width << ' ' << frame_info.height << "\n"
-           << max_value << "\n";
+    output << 'P' << magic_number << "\n" << frame_info.width << ' ' << frame_info.height << "\n" << max_value << "\n";
     output.write(reinterpret_cast<char*>(decoded_destination.data()), decoded_destination.size());
 
     return true;
@@ -511,7 +516,8 @@ bool encode_pnm(istream& pnm_file, ostream& jls_file_stream)
                                 log_2(read_values[3] + 1), read_values[0] == 6 ? 3 : 1};
 
     const int bytes_per_sample = ::bit_to_byte_count(frame_info.bits_per_sample);
-    vector<uint8_t> input_buffer(static_cast<size_t>(frame_info.width) * frame_info.height * bytes_per_sample * frame_info.component_count);
+    vector<uint8_t> input_buffer(static_cast<size_t>(frame_info.width) * frame_info.height * bytes_per_sample *
+                                 frame_info.component_count);
     pnm_file.read(reinterpret_cast<char*>(input_buffer.data()), input_buffer.size());
     if (!pnm_file.good())
         return false;
@@ -526,7 +532,8 @@ bool encode_pnm(istream& pnm_file, ostream& jls_file_stream)
     }
 
     jpegls_encoder encoder;
-    encoder.frame_info(frame_info).interleave_mode(frame_info.component_count == 3 ? interleave_mode::line : interleave_mode::none);
+    encoder.frame_info(frame_info)
+        .interleave_mode(frame_info.component_count == 3 ? interleave_mode::line : interleave_mode::none);
 
     vector<uint8_t> destination(encoder.estimated_destination_size());
     encoder.destination(destination);
@@ -699,7 +706,8 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 {
     if (argc == 1)
     {
-        cout << "CharLS test runner.\nOptions: -unittest, -bitstreamdamage, -performance[:loop-count], -decodeperformance[:loop-count], -decoderaw -encodepnm -decodetopnm -comparepnm -legacy\n";
+        cout << "CharLS test runner.\nOptions: -unittest, -bitstreamdamage, -performance[:loop-count], "
+                "-decodeperformance[:loop-count], -decoderaw -encodepnm -decodetopnm -comparepnm -legacy\n";
         return EXIT_FAILURE;
     }
 
@@ -771,7 +779,8 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         {
             int loop_count{1};
 
-            // Extract the optional loop count from the command line. Longer running tests make the measurements more reliable.
+            // Extract the optional loop count from the command line. Longer running tests make the measurements more
+            // reliable.
             auto index = str.find(':');
             if (index != string::npos)
             {
@@ -798,7 +807,8 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         {
             int loop_count{1};
 
-            // Extract the optional loop count from the command line. Longer running tests make the measurements more reliable.
+            // Extract the optional loop count from the command line. Longer running tests make the measurements more
+            // reliable.
             auto index = str.find(':');
             if (index != string::npos)
             {

@@ -7,8 +7,7 @@
 #include "../src/jpegls_preset_parameters_type.h"
 #include "../src/util.h"
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 class jpeg_test_stream_writer final
 {
@@ -18,13 +17,14 @@ public:
         write_marker(jpeg_marker_code::start_of_image);
     }
 
-    void write_start_of_frame_segment(const int width, const int height, const int bits_per_sample, const int component_count)
+    void write_start_of_frame_segment(const int width, const int height, const int bits_per_sample,
+                                      const int component_count)
     {
         // Create a Frame Header as defined in T.87, C.2.2 and T.81, B.2.2
         std::vector<uint8_t> segment;
         segment.push_back(static_cast<uint8_t>(bits_per_sample)); // P = Sample precision
-        push_back(segment, static_cast<uint16_t>(height));      // Y = Number of lines
-        push_back(segment, static_cast<uint16_t>(width));       // X = Number of samples per line
+        push_back(segment, static_cast<uint16_t>(height));        // Y = Number of lines
+        push_back(segment, static_cast<uint16_t>(width));         // X = Number of samples per line
 
         // Components
         segment.push_back(static_cast<uint8_t>(component_count)); // Nf = Number of image components in frame
@@ -40,7 +40,7 @@ public:
                 segment.push_back(static_cast<uint8_t>(componentIdOverride)); // Ci = Component identifier
             }
             segment.push_back(0x11); // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
-            segment.push_back(0);    // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
+            segment.push_back(0); // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
         }
 
         write_segment(charls::jpeg_marker_code::start_of_frame_jpegls, segment.data(), segment.size());
@@ -61,9 +61,7 @@ public:
         write_segment(charls::jpeg_marker_code::jpegls_preset_parameters, segment.data(), segment.size());
     }
 
-    void write_start_of_scan_segment(int component_id,
-                                     const int component_count,
-                                     const int near_lossless,
+    void write_start_of_scan_segment(int component_id, const int component_count, const int near_lossless,
                                      const interleave_mode interleave_mode)
     {
         // Create a Scan Header as defined in T.87, C.2.3 and T.81, B.2.3
@@ -123,5 +121,4 @@ public:
     std::vector<uint8_t> buffer;
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test

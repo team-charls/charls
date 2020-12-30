@@ -24,16 +24,18 @@ enum class jpeg_marker_code : uint8_t
     start_of_scan = 0xDA,  // SOS: Marks the start of scan.
 
     // The following markers are defined in ISO/IEC 10918-1 | ITU T.81.
-    start_of_frame_baseline_jpeg = 0xC0,            // SOF_0:  Marks the start of a baseline jpeg encoded frame.
-    start_of_frame_extended_sequential = 0xC1,      // SOF_1:  Marks the start of a extended sequential Huffman encoded frame.
-    start_of_frame_progressive = 0xC2,              // SOF_2:  Marks the start of a progressive Huffman encoded frame.
-    start_of_frame_lossless = 0xC3,                 // SOF_3:  Marks the start of a lossless Huffman encoded frame.
-    start_of_frame_differential_sequential = 0xC5,  // SOF_5:  Marks the start of a differential sequential Huffman encoded frame.
-    start_of_frame_differential_progressive = 0xC6, // SOF_6:  Marks the start of a differential progressive Huffman encoded frame.
-    start_of_frame_differential_lossless = 0xC7,    // SOF_7:  Marks the start of a differential lossless Huffman encoded frame.
-    start_of_frame_extended_arithmetic = 0xC9,      // SOF_9:  Marks the start of a extended sequential arithmetic encoded frame.
-    start_of_frame_progressive_arithmetic = 0xCA,   // SOF_10: Marks the start of a progressive arithmetic encoded frame.
-    start_of_frame_lossless_arithmetic = 0xCB,      // SOF_11: Marks the start of a lossless arithmetic encoded frame.
+    start_of_frame_baseline_jpeg = 0xC0,       // SOF_0:  Marks the start of a baseline jpeg encoded frame.
+    start_of_frame_extended_sequential = 0xC1, // SOF_1:  Marks the start of a extended sequential Huffman encoded frame.
+    start_of_frame_progressive = 0xC2,         // SOF_2:  Marks the start of a progressive Huffman encoded frame.
+    start_of_frame_lossless = 0xC3,            // SOF_3:  Marks the start of a lossless Huffman encoded frame.
+    start_of_frame_differential_sequential =
+        0xC5, // SOF_5:  Marks the start of a differential sequential Huffman encoded frame.
+    start_of_frame_differential_progressive =
+        0xC6, // SOF_6:  Marks the start of a differential progressive Huffman encoded frame.
+    start_of_frame_differential_lossless = 0xC7, // SOF_7:  Marks the start of a differential lossless Huffman encoded frame.
+    start_of_frame_extended_arithmetic = 0xC9, // SOF_9:  Marks the start of a extended sequential arithmetic encoded frame.
+    start_of_frame_progressive_arithmetic = 0xCA, // SOF_10: Marks the start of a progressive arithmetic encoded frame.
+    start_of_frame_lossless_arithmetic = 0xCB,    // SOF_11: Marks the start of a lossless arithmetic encoded frame.
 
     // The following markers are defined in ISO/IEC 14495-1 | ITU T.87.
     start_of_frame_jpegls = 0xF7,          // SOF_55: Marks the start of a JPEG-LS encoded frame.

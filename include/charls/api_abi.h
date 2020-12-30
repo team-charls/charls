@@ -58,7 +58,9 @@
 #ifdef CHARLS_NO_DEPRECATED_WARNING
 #define CHARLS_DEPRECATED
 #else
-#define CHARLS_DEPRECATED [[deprecated("Functionality will be removed in the next major version, use CHARLS_NO_DEPRECATED_WARNING to suppress this deprecation.")]]
+#define CHARLS_DEPRECATED \
+    [[deprecated("Functionality will be removed in the next major version, use CHARLS_NO_DEPRECATED_WARNING to suppress " \
+                 "this deprecation.")]]
 #endif
 
 #else

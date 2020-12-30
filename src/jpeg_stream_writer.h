@@ -33,8 +33,7 @@ public:
     /// <param name="header">Header info to write into the SPIFF segment.</param>
     void write_spiff_header_segment(const spiff_header& header);
 
-    void write_spiff_directory_entry(uint32_t entry_tag,
-                                     IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data,
+    void write_spiff_directory_entry(uint32_t entry_tag, IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data,
                                      size_t entry_data_size_bytes);
 
     /// <summary>
@@ -67,7 +66,9 @@ public:
     /// <summary>
     /// Writes a JPEG-LS Start Of Scan (SOS) segment.
     /// </summary>
-    /// <param name="component_count">The number of components in the scan segment. Can only be > 1 when the components are interleaved.</param>
+    /// <param name="component_count">
+    /// The number of components in the scan segment. Can only be > 1 when the components are interleaved.
+    /// </param>
     /// <param name="near_lossless">The allowed lossy error. 0 means lossless.</param>
     /// <param name="interleave_mode">The interleave mode of the components.</param>
     void write_start_of_scan_segment(int32_t component_count, int32_t near_lossless, interleave_mode interleave_mode);

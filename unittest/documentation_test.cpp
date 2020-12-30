@@ -65,24 +65,24 @@ std::vector<uint8_t> decode_simple_8_bit_monochrome_legacy(const std::vector<uin
     const size_t destination_size = static_cast<size_t>(parameters.width) * static_cast<uint32_t>(parameters.height);
     std::vector<uint8_t> destination(destination_size);
 
-    error = JpegLsDecode(destination.data(), destination.size(),
-                         source.data(), source.size(),
-                         &parameters, error_message.data());
+    error = JpegLsDecode(destination.data(), destination.size(), source.data(), source.size(), &parameters,
+                         error_message.data());
     if (error != CharlsApiResultType::OK)
         throw std::exception(error_message.data());
 
     return destination;
 }
 
-std::vector<uint8_t> encode_simple_8_bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
+std::vector<uint8_t> encode_simple_8_bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width,
+                                                    const uint32_t height)
 {
     constexpr auto bits_per_sample = 8;
     constexpr auto component_count = 1;
-    return charls::jpegls_encoder::encode(source,
-                                          {width, height, bits_per_sample, component_count});
+    return charls::jpegls_encoder::encode(source, {width, height, bits_per_sample, component_count});
 }
 
-std::vector<uint8_t> encode_advanced_8_bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
+std::vector<uint8_t> encode_advanced_8_bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width,
+                                                      const uint32_t height)
 {
     charls::jpegls_encoder encoder;
     encoder.frame_info({width, height, 8, 1});
@@ -98,7 +98,8 @@ std::vector<uint8_t> encode_advanced_8_bit_monochrome(const std::vector<uint8_t>
     return destination;
 }
 
-std::vector<uint8_t> encode_simple_8_bit_monochrome_legacy(const std::vector<uint8_t>& source, const uint32_t width, const uint32_t height)
+std::vector<uint8_t> encode_simple_8_bit_monochrome_legacy(const std::vector<uint8_t>& source, const uint32_t width,
+                                                           const uint32_t height)
 {
     std::array<char, ErrorMessageSize> error_message{};
     JlsParameters parameters{};
@@ -111,9 +112,8 @@ std::vector<uint8_t> encode_simple_8_bit_monochrome_legacy(const std::vector<uin
     std::vector<uint8_t> destination(estimated_destination_size);
 
     size_t bytes_written;
-    const auto error = JpegLsEncode(destination.data(), destination.size(),
-                                    &bytes_written,
-                                    source.data(), source.size(), &parameters, error_message.data());
+    const auto error = JpegLsEncode(destination.data(), destination.size(), &bytes_written, source.data(), source.size(),
+                                    &parameters, error_message.data());
     if (error != CharlsApiResultType::OK)
         throw std::exception(error_message.data());
 
@@ -127,8 +127,7 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::vector;
 using namespace charls_test;
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(documentation_test)
 {
@@ -164,8 +163,9 @@ public:
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
-        const vector<uint8_t> charls_encoded = encode_simple_8_bit_monochrome(reference_file.image_data(),
-                                                                              static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
+        const vector<uint8_t> charls_encoded =
+            encode_simple_8_bit_monochrome(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()),
+                                           static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
@@ -174,8 +174,9 @@ public:
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
-        const vector<uint8_t> charls_encoded = encode_advanced_8_bit_monochrome(reference_file.image_data(),
-                                                                                static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
+        const vector<uint8_t> charls_encoded =
+            encode_advanced_8_bit_monochrome(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()),
+                                             static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
@@ -184,8 +185,9 @@ public:
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
 
-        const vector<uint8_t> charls_encoded = encode_simple_8_bit_monochrome_legacy(reference_file.image_data(),
-                                                                                     static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
+        const vector<uint8_t> charls_encoded =
+            encode_simple_8_bit_monochrome_legacy(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()),
+                                                  static_cast<uint32_t>(reference_file.height()));
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
@@ -207,7 +209,8 @@ private:
         }
     }
 
-    static void test_by_decoding(const vector<uint8_t>& encoded_source, const portable_anymap_file& reference_file, const interleave_mode interleave_mode)
+    static void test_by_decoding(const vector<uint8_t>& encoded_source, const portable_anymap_file& reference_file,
+                                 const interleave_mode interleave_mode)
     {
         jpegls_decoder decoder;
         decoder.source(encoded_source);
@@ -237,8 +240,7 @@ private:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test
 
 // ReSharper restore CppDeprecatedEntity
 RESTORE_DEPRECATED_WARNING

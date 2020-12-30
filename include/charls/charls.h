@@ -4,9 +4,9 @@
 #pragma once
 
 
-#include "version.h"
 #include "charls_jpegls_decoder.h"
 #include "charls_jpegls_encoder.h"
+#include "version.h"
 
 
 // Undefine CHARLS macros to prevent global macro namespace pollution

@@ -20,7 +20,8 @@ using std::chrono::steady_clock;
 
 namespace {
 
-void test_file16_bit_as12(const char* filename, const int offset, const rect_size size2, const int component_count, const bool little_endian_file)
+void test_file16_bit_as12(const char* filename, const int offset, const rect_size size2, const int component_count,
+                          const bool little_endian_file)
 {
     vector<uint8_t> uncompressed_data = read_file(filename, offset);
 

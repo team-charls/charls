@@ -27,8 +27,10 @@ extern const std::vector<int8_t> quantization_lut_lossless_10;
 extern const std::vector<int8_t> quantization_lut_lossless_12;
 extern const std::vector<int8_t> quantization_lut_lossless_16;
 
-// Used to determine how large runs should be encoded at a time. Defined by the JPEG-LS standard, A.2.1., Initialization step 3.
-constexpr std::array<int, 32> J{0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+// Used to determine how large runs should be encoded at a time. Defined by the JPEG-LS standard, A.2.1., Initialization
+// step 3.
+constexpr std::array<int, 32> J{0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2,  2,  3,  3,  3,  3,
+                                4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 constexpr int32_t apply_sign(const int32_t i, const int32_t sign) noexcept
 {
@@ -115,7 +117,8 @@ public:
         traits_{std::move(traits)},
         width_{frame_info.width}
     {
-        ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) || parameters.interleave_mode != interleave_mode::none);
+        ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) ||
+               parameters.interleave_mode != interleave_mode::none);
     }
 
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
@@ -123,22 +126,27 @@ public:
     {
         if (!is_interleaved())
         {
-            return std::unique_ptr<process_line>(std::make_unique<post_process_single_component>(info.data, stride, sizeof(typename Traits::pixel_type)));
+            return std::unique_ptr<process_line>(
+                std::make_unique<post_process_single_component>(info.data, stride, sizeof(typename Traits::pixel_type)));
         }
 
         if (parameters().transformation == color_transformation::none)
-            return std::make_unique<process_transformed<transform_none<typename Traits::sample_type>>>(info, stride, frame_info(), parameters(), transform_none<sample_type>());
+            return std::make_unique<process_transformed<transform_none<typename Traits::sample_type>>>(
+                info, stride, frame_info(), parameters(), transform_none<sample_type>());
 
         if (frame_info().bits_per_sample == sizeof(sample_type) * 8)
         {
             switch (parameters().transformation)
             {
             case color_transformation::hp1:
-                return std::make_unique<process_transformed<transform_hp1<sample_type>>>(info, stride, frame_info(), parameters(), transform_hp1<sample_type>());
+                return std::make_unique<process_transformed<transform_hp1<sample_type>>>(
+                    info, stride, frame_info(), parameters(), transform_hp1<sample_type>());
             case color_transformation::hp2:
-                return std::make_unique<process_transformed<transform_hp2<sample_type>>>(info, stride, frame_info(), parameters(), transform_hp2<sample_type>());
+                return std::make_unique<process_transformed<transform_hp2<sample_type>>>(
+                    info, stride, frame_info(), parameters(), transform_hp2<sample_type>());
             case color_transformation::hp3:
-                return std::make_unique<process_transformed<transform_hp3<sample_type>>>(info, stride, frame_info(), parameters(), transform_hp3<sample_type>());
+                return std::make_unique<process_transformed<transform_hp3<sample_type>>>(
+                    info, stride, frame_info(), parameters(), transform_hp3<sample_type>());
             default:
                 impl::throw_jpegls_error(jpegls_errc::color_transform_not_supported);
             }
@@ -160,7 +168,8 @@ private:
 
     bool is_interleaved() noexcept
     {
-        ASSERT((parameters().interleave_mode == interleave_mode::none && frame_info().component_count == 1) || parameters().interleave_mode != interleave_mode::none);
+        ASSERT((parameters().interleave_mode == interleave_mode::none && frame_info().component_count == 1) ||
+               parameters().interleave_mode != interleave_mode::none);
 
         return parameters().interleave_mode != interleave_mode::none;
     }
@@ -177,14 +186,22 @@ private:
 
     int8_t quantize_gradient_org(const int32_t di) const noexcept
     {
-        if (di <= -t3_) return -4;
-        if (di <= -t2_) return -3;
-        if (di <= -t1_) return -2;
-        if (di < -traits_.near_lossless) return -1;
-        if (di <= traits_.near_lossless) return 0;
-        if (di < t1_) return 1;
-        if (di < t2_) return 2;
-        if (di < t3_) return 3;
+        if (di <= -t3_)
+            return -4;
+        if (di <= -t2_)
+            return -3;
+        if (di <= -t1_)
+            return -2;
+        if (di < -traits_.near_lossless)
+            return -1;
+        if (di <= traits_.near_lossless)
+            return 0;
+        if (di < t1_)
+            return 1;
+        if (di < t2_)
+            return 2;
+        if (di < t3_)
+            return 3;
 
         return 4;
     }
@@ -196,8 +213,9 @@ private:
     }
 
     // C4127 = conditional expression is constant (caused by some template methods that are not fully specialized) [VS2017]
-    // C6326 = Potential comparison of a constant with another constant. (false warning, triggered by template construction in Checked build)
-    // C26814 = The const variable 'RANGE' can be computed at compile-time. [incorrect warning, VS 16.3.0 P3]
+    // C6326 = Potential comparison of a constant with another constant. (false warning, triggered by template construction
+    // in Checked build) C26814 = The const variable 'RANGE' can be computed at compile-time. [incorrect warning, VS 16.3.0
+    // P3]
     MSVC_WARNING_SUPPRESS(4127 6326 26814)
 
     void initialize_quantization_lut()
@@ -281,7 +299,8 @@ private:
         {
             Strategy::append_to_bit_stream(1, limit - traits_.quantized_bits_per_pixel);
         }
-        Strategy::append_to_bit_stream((mapped_error - 1) & ((1 << traits_.quantized_bits_per_pixel) - 1), traits_.quantized_bits_per_pixel);
+        Strategy::append_to_bit_stream((mapped_error - 1) & ((1 << traits_.quantized_bits_per_pixel) - 1),
+                                       traits_.quantized_bits_per_pixel);
     }
 
     void increment_run_index() noexcept
@@ -332,10 +351,12 @@ private:
         const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.C, sign))};
         const int32_t error_value{traits_.compute_error_value(apply_sign(x - predicted_value, sign))};
 
-        encode_mapped_value(k, get_mapped_error_value(context.get_error_correction(k | traits_.near_lossless) ^ error_value), traits_.limit);
+        encode_mapped_value(k, get_mapped_error_value(context.get_error_correction(k | traits_.near_lossless) ^ error_value),
+                            traits_.limit);
         context.update_variables(error_value, traits_.near_lossless, traits_.reset_threshold);
         ASSERT(traits_.is_near(traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)), x));
-        return static_cast<sample_type>(traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)));
+        return static_cast<sample_type>(
+            traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)));
     }
 
     /// <summary>Encodes/Decodes a scan line of samples</summary>
@@ -352,11 +373,13 @@ private:
             rb = rd;
             rd = previous_line_[index + 1];
 
-            const int32_t qs{compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
+            const int32_t qs{
+                compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
 
             if (qs != 0)
             {
-                current_line_[index] = do_regular(qs, current_line_[index], get_predicted_value(ra, rb, rc), static_cast<Strategy*>(nullptr));
+                current_line_[index] =
+                    do_regular(qs, current_line_[index], get_predicted_value(ra, rb, rc), static_cast<Strategy*>(nullptr));
                 ++index;
             }
             else
@@ -379,9 +402,12 @@ private:
             const triplet<sample_type> rb{previous_line_[index]};
             const triplet<sample_type> rd{previous_line_[index + 1]};
 
-            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1), quantize_gradient(rc.v1 - ra.v1))};
-            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2), quantize_gradient(rc.v2 - ra.v2))};
-            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3), quantize_gradient(rc.v3 - ra.v3))};
+            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
+                                                 quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
+                                                 quantize_gradient(rc.v2 - ra.v2))};
+            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
+                                                 quantize_gradient(rc.v3 - ra.v3))};
 
             if (qs1 == 0 && qs2 == 0 && qs3 == 0)
             {
@@ -390,9 +416,12 @@ private:
             else
             {
                 triplet<sample_type> rx;
-                rx.v1 = do_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1), static_cast<Strategy*>(nullptr));
-                rx.v2 = do_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2), static_cast<Strategy*>(nullptr));
-                rx.v3 = do_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3), static_cast<Strategy*>(nullptr));
+                rx.v1 = do_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1),
+                                   static_cast<Strategy*>(nullptr));
+                rx.v2 = do_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2),
+                                   static_cast<Strategy*>(nullptr));
+                rx.v3 = do_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3),
+                                   static_cast<Strategy*>(nullptr));
                 current_line_[index] = rx;
                 ++index;
             }
@@ -407,8 +436,10 @@ private:
 
     MSVC_WARNING_SUPPRESS(26433) // C.128: Virtual functions should specify exactly one of virtual, override, or final
 
-    // Note: depending on the base class encode_scan OR decode_scan will be virtual and abstract, cannot use override in all cases.
-    // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override, clang-diagnostic-suggest-override)
+    // Note: depending on the base class encode_scan OR decode_scan will be virtual and abstract,
+    // cannot use override in all cases.
+    // clang-format off
+    // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override,clang-diagnostic-suggest-override)
     size_t encode_scan(std::unique_ptr<process_line> process_line, byte_span destination)
     {
         Strategy::process_line_ = std::move(process_line);
@@ -431,6 +462,8 @@ private:
         do_scan();
         skip_bytes(compressed_data, static_cast<size_t>(Strategy::get_cur_byte_pos() - compressed_bytes));
     }
+
+    // clang-format on
     MSVC_WARNING_UNSUPPRESS()
 
 #if defined(__clang__)
@@ -473,7 +506,8 @@ private:
     void do_scan()
     {
         const uint32_t pixel_stride{width_ + 4U};
-        const size_t component_count{parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
+        const size_t component_count{
+            parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
 
         std::vector<pixel_type> vectmp(static_cast<size_t>(2) * component_count * pixel_stride);
         std::vector<int32_t> run_index(component_count);
@@ -505,7 +539,9 @@ private:
 
             if (static_cast<uint32_t>(rect_.Y) <= line && line < static_cast<uint32_t>(rect_.Y + rect_.Height))
             {
-                Strategy::on_line_end(rect_.Width, current_line_ + rect_.X - (static_cast<size_t>(component_count) * pixel_stride), pixel_stride);
+                Strategy::on_line_end(rect_.Width,
+                                      current_line_ + rect_.X - (static_cast<size_t>(component_count) * pixel_stride),
+                                      pixel_stride);
             }
         }
 
@@ -523,10 +559,14 @@ private:
             const quad<sample_type> rb{previous_line_[index]};
             const quad<sample_type> rd{previous_line_[index + 1]};
 
-            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1), quantize_gradient(rc.v1 - ra.v1))};
-            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2), quantize_gradient(rc.v2 - ra.v2))};
-            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3), quantize_gradient(rc.v3 - ra.v3))};
-            const int32_t qs4{compute_context_id(quantize_gradient(rd.v4 - rb.v4), quantize_gradient(rb.v4 - rc.v4), quantize_gradient(rc.v4 - ra.v4))};
+            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
+                                                 quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
+                                                 quantize_gradient(rc.v2 - ra.v2))};
+            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
+                                                 quantize_gradient(rc.v3 - ra.v3))};
+            const int32_t qs4{compute_context_id(quantize_gradient(rd.v4 - rb.v4), quantize_gradient(rb.v4 - rc.v4),
+                                                 quantize_gradient(rc.v4 - ra.v4))};
 
             if (qs1 == 0 && qs2 == 0 && qs3 == 0 && qs4 == 0)
             {
@@ -535,10 +575,14 @@ private:
             else
             {
                 quad<sample_type> rx;
-                rx.v1 = do_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1), static_cast<Strategy*>(nullptr));
-                rx.v2 = do_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2), static_cast<Strategy*>(nullptr));
-                rx.v3 = do_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3), static_cast<Strategy*>(nullptr));
-                rx.v4 = do_regular(qs4, current_line_[index].v4, get_predicted_value(ra.v4, rb.v4, rc.v4), static_cast<Strategy*>(nullptr));
+                rx.v1 = do_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1),
+                                   static_cast<Strategy*>(nullptr));
+                rx.v2 = do_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2),
+                                   static_cast<Strategy*>(nullptr));
+                rx.v3 = do_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3),
+                                   static_cast<Strategy*>(nullptr));
+                rx.v4 = do_regular(qs4, current_line_[index].v4, get_predicted_value(ra.v4, rb.v4, rc.v4),
+                                   static_cast<Strategy*>(nullptr));
                 current_line_[index] = rx;
                 ++index;
             }
@@ -548,7 +592,8 @@ private:
     int32_t decode_run_interruption_error(context_run_mode& context)
     {
         const int32_t k{context.get_golomb_code()};
-        const int32_t e_mapped_error_value{decode_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_pixel)};
+        const int32_t e_mapped_error_value{
+            decode_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_pixel)};
         const int32_t error_value{context.compute_error_value(e_mapped_error_value + context.run_interruption_type, k)};
         context.update_variables(error_value, e_mapped_error_value);
         return error_value;
@@ -572,10 +617,11 @@ private:
         const int32_t error_value3{decode_run_interruption_error(context_runmode_[0])};
         const int32_t error_value4{decode_run_interruption_error(context_runmode_[0])};
 
-        return quad<sample_type>(triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
-                                                      traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
-                                                      traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3))),
-                                 traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4)));
+        return quad<sample_type>(
+            triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
+                                 traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
+                                 traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3))),
+            traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4)));
     }
 
     sample_type decode_run_interruption_pixel(int32_t ra, int32_t rb)
@@ -646,7 +692,8 @@ private:
     {
         const int32_t k{context.get_golomb_code()};
         const bool map{context.compute_map(error_value, k)};
-        const int32_t e_mapped_error_value{2 * std::abs(error_value) - context.run_interruption_type - static_cast<int32_t>(map)};
+        const int32_t e_mapped_error_value{2 * std::abs(error_value) - context.run_interruption_type -
+                                           static_cast<int32_t>(map)};
 
         ASSERT(error_value == context.compute_error_value(e_mapped_error_value + context.run_interruption_type, k));
         encode_mapped_value(k, e_mapped_error_value, traits_.limit - J[run_index_] - 1);
@@ -667,7 +714,8 @@ private:
         return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
     }
 
-    triplet<sample_type> encode_run_interruption_pixel(const triplet<sample_type> x, const triplet<sample_type> ra, const triplet<sample_type> rb)
+    triplet<sample_type> encode_run_interruption_pixel(const triplet<sample_type> x, const triplet<sample_type> ra,
+                                                       const triplet<sample_type> rb)
     {
         const int32_t error_value1{traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1))};
         encode_run_interruption_error(context_runmode_[0], error_value1);
@@ -683,7 +731,8 @@ private:
                                     traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3)));
     }
 
-    quad<sample_type> encode_run_interruption_pixel(const quad<sample_type> x, const quad<sample_type> ra, const quad<sample_type> rb)
+    quad<sample_type> encode_run_interruption_pixel(const quad<sample_type> x, const quad<sample_type> ra,
+                                                    const quad<sample_type> rb)
     {
         const int32_t error_value1{traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1))};
         encode_run_interruption_error(context_runmode_[0], error_value1);
@@ -697,10 +746,11 @@ private:
         const int32_t error_value4{traits_.compute_error_value(sign(rb.v4 - ra.v4) * (x.v4 - rb.v4))};
         encode_run_interruption_error(context_runmode_[0], error_value4);
 
-        return quad<sample_type>(triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
-                                                      traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
-                                                      traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3))),
-                                 traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4)));
+        return quad<sample_type>(
+            triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
+                                 traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
+                                 traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3))),
+            traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4)));
     }
 
     void encode_run_pixels(int32_t run_length, const bool end_of_line)

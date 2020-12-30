@@ -13,8 +13,7 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 
-namespace charls {
-namespace test {
+namespace charls { namespace test {
 
 TEST_CLASS(jpeg_stream_writer_test)
 {
@@ -73,17 +72,16 @@ public:
         array<uint8_t, 34> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        spiff_header header{
-            spiff_profile_id::none,
-            3,
-            800,
-            600,
-            spiff_color_space::rgb,
-            8,
-            spiff_compression_type::jpeg_ls,
-            spiff_resolution_units::dots_per_inch,
-            96,
-            1024};
+        spiff_header header{spiff_profile_id::none,
+                            3,
+                            800,
+                            600,
+                            spiff_color_space::rgb,
+                            8,
+                            spiff_compression_type::jpeg_ls,
+                            spiff_resolution_units::dots_per_inch,
+                            96,
+                            1024};
 
         writer.write_spiff_header_segment(header);
 
@@ -145,19 +143,19 @@ public:
         array<uint8_t, 33> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        spiff_header header{
-            spiff_profile_id::none,
-            3,
-            800,
-            600,
-            spiff_color_space::rgb,
-            8,
-            spiff_compression_type::jpeg_ls,
-            spiff_resolution_units::dots_per_inch,
-            96,
-            1024};
+        spiff_header header{spiff_profile_id::none,
+                            3,
+                            800,
+                            600,
+                            spiff_color_space::rgb,
+                            8,
+                            spiff_compression_type::jpeg_ls,
+                            spiff_resolution_units::dots_per_inch,
+                            96,
+                            1024};
 
-        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&] { writer.write_spiff_header_segment(header); });
+        assert_expect_exception(jpegls_errc::destination_buffer_too_small,
+                                [&] { writer.write_spiff_header_segment(header); });
         Assert::AreEqual(static_cast<size_t>(0), writer.bytes_written());
     }
 
@@ -352,5 +350,4 @@ public:
     }
 };
 
-}
-} // namespace charls::test
+}} // namespace charls::test
