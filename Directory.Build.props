@@ -26,6 +26,7 @@
 
     <VcpkgConfiguration Condition="'$(Configuration)' == 'Checked'">Debug</VcpkgConfiguration>
   </PropertyGroup>
+
   <ItemDefinitionGroup>
     <ClCompile>
       <!-- To ensure high quality C++ code use Warning level All and treat warnings as errors to ensure warnings are fixed promptly. -->
@@ -80,6 +81,14 @@
 
       <!-- For checked builds, enable the MS static analyzer build into the compiler. -->
       <EnablePREfast Condition="'$(Configuration)'=='Checked'">true</EnablePREfast>
+
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
+
+      <!-- Enables recommended Security Development Lifecycle (SDL) checks.
+           This checks consist of compile-time checks and runtime checks. -->
+      <SDLCheck>true</SDLCheck>
+
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </ClCompile>
 
     <Link>
@@ -89,21 +98,50 @@
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include</AdditionalIncludeDirectories>
     </ResourceCompile>
-
   </ItemDefinitionGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug' OR '$(Configuration)'=='Checked'">
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Checked'">
-    <LinkIncremental>true</LinkIncremental>
-    <UseDebugLibraries>true</UseDebugLibraries>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' OR '$(Configuration)'=='Checked'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='Checked'">
     <RunCodeAnalysis Condition="'$(MSBuildProjectExtension)'=='.vcxproj'" >true</RunCodeAnalysis>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
     <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
-
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <LinkIncremental>false</LinkIncremental>
+    </Link>
+  </ItemDefinitionGroup>
+
 </Project>

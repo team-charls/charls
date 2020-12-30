@@ -28,11 +28,11 @@
 #endif
 
 #ifndef __AFL_INIT
-#define __AFL_INIT()
+#define __AFL_INIT() // NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
 #endif
 
 #ifndef __AFL_LOOP
-#define __AFL_LOOP(a) true
+#define __AFL_LOOP(a) true // NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
 #endif
 
 #if defined(__clang__)
