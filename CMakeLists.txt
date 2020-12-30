@@ -1,7 +1,7 @@
 # Copyright (c) Team CharLS.
 # SPDX-License-Identifier: BSD-3-Clause
 
-cmake_minimum_required(VERSION 3.9...3.18)
+cmake_minimum_required(VERSION 3.13...3.19)
 
 # Extract the version info from version.h
 file(READ "include/charls/version.h" version)
@@ -131,6 +131,10 @@ if(MSVC)
 
   # /Zc:throwingNew: Will configure the MSVC compiler that only the standard throwing operator new is used.
   add_compile_options("/Zc:throwingNew")
+
+  # /guard:cf: Will enable Control Flow Guard, which provides addition compile time and runtime checks.
+  add_compile_options("/guard:cf")
+  add_link_options("/guard:cf")
 endif()
 
 # When enabled apply the pedantic warnings options and warnings as errors to globally.

@@ -2,11 +2,12 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- Build to a folder outside the source folders, making it easier to clean. -->
-    <OutDir>$(MSBuildThisFileDirectory)bin\$(Configuration)\$(Platform)\</OutDir>
-    <OutDir Condition="'$(Platform)'=='Win32'">$(MSBuildThisFileDirectory)bin\$(Configuration)\x86\</OutDir>
+    <OutDir>$(MSBuildThisFileDirectory)bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Platform)'=='Win32'">$(MSBuildThisFileDirectory)bin\x86\$(Configuration)\</OutDir>
 
     <!-- C++ temp files can be redirected. -->
     <IntDir>$(MSBuildThisFileDirectory)intermediate\$(MSBuildProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Platform)'=='Win32'">$(MSBuildThisFileDirectory)intermediate\$(MSBuildProjectName)\x86\$(Configuration)\</IntDir>
 
     <!-- The C runtime is provided by the OS on the Windows platform (Universal C Runtime (CRT)),
          it is necesarry to explicitly define which version to use.
