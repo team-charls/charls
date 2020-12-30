@@ -36,6 +36,7 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
+            VALUE "CompanyName", "Team CharLS"
             VALUE "FileDescription", "CharLS JPEG-LS codec"
             VALUE "FileVersion", VERSION_STR
             VALUE "InternalName", "CharLS.dll"
