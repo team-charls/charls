@@ -73,22 +73,25 @@ unique_ptr<Strategy> make_codec(const Traits& traits, const frame_info& frame_in
 // To avoid threading issues, all tables are created when the program is loaded.
 
 // Lookup table: decode symbols that are smaller or equal to 8 bit (16 tables for each value of k)
-const array<golomb_code_table, 16> decoding_tables{initialize_table(0),  initialize_table(1),  initialize_table(2),
-                                                   initialize_table(3), // NOLINT(clang-diagnostic-global-constructors)
-                                                   initialize_table(4),  initialize_table(5),  initialize_table(6),
-                                                   initialize_table(7),  initialize_table(8),  initialize_table(9),
-                                                   initialize_table(10), initialize_table(11), initialize_table(12),
-                                                   initialize_table(13), initialize_table(14), initialize_table(15)};
+// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
+const array<golomb_code_table, 16> decoding_tables{
+    initialize_table(0),  initialize_table(1),  initialize_table(2),  initialize_table(3),
+    initialize_table(4),  initialize_table(5),  initialize_table(6),  initialize_table(7),
+    initialize_table(8),  initialize_table(9),  initialize_table(10), initialize_table(11),
+    initialize_table(12), initialize_table(13), initialize_table(14), initialize_table(15)};
 
 // Lookup tables: sample differences to bin indexes.
-const vector<int8_t> quantization_lut_lossless_8{
-    create_quantize_lut_lossless(8)}; // NOLINT(clang-diagnostic-global-constructors)
-const vector<int8_t> quantization_lut_lossless_10{
-    create_quantize_lut_lossless(10)}; // NOLINT(clang-diagnostic-global-constructors)
-const vector<int8_t> quantization_lut_lossless_12{
-    create_quantize_lut_lossless(12)}; // NOLINT(clang-diagnostic-global-constructors)
-const vector<int8_t> quantization_lut_lossless_16{
-    create_quantize_lut_lossless(16)}; // NOLINT(clang-diagnostic-global-constructors)
+// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
+const vector<int8_t> quantization_lut_lossless_8{create_quantize_lut_lossless(8)};
+
+// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
+const vector<int8_t> quantization_lut_lossless_10{create_quantize_lut_lossless(10)};
+
+// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
+const vector<int8_t> quantization_lut_lossless_12{create_quantize_lut_lossless(12)};
+
+// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
+const vector<int8_t> quantization_lut_lossless_16{create_quantize_lut_lossless(16)};
 
 
 template<typename Strategy>
@@ -99,7 +102,7 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_codec(const frame_info&
 
     if (preset_coding_parameters.reset_value == 0 || preset_coding_parameters.reset_value == default_reset_value)
     {
-        codec = create_optimized_codec(frame, parameters);
+        codec = try_create_optimized_codec(frame, parameters);
     }
 
     if (!codec)
@@ -127,7 +130,7 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_codec(const frame_info&
 }
 
 template<typename Strategy>
-unique_ptr<Strategy> jls_codec_factory<Strategy>::create_optimized_codec(const frame_info& frame,
+unique_ptr<Strategy> jls_codec_factory<Strategy>::try_create_optimized_codec(const frame_info& frame,
                                                                          const coding_parameters& parameters)
 {
     if (parameters.interleave_mode == interleave_mode::sample && frame.component_count != 3 && frame.component_count != 4)
@@ -170,11 +173,16 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_optimized_codec(const f
         if (parameters.interleave_mode == interleave_mode::sample)
         {
             if (frame.component_count == 3)
+            {
                 return make_codec<Strategy>(default_traits<uint8_t, triplet<uint8_t>>(maxval, parameters.near_lossless),
                                             frame, parameters);
+            }
+
             if (frame.component_count == 4)
+            {
                 return make_codec<Strategy>(default_traits<uint8_t, quad<uint8_t>>(maxval, parameters.near_lossless), frame,
                                             parameters);
+            }
         }
 
         return make_codec<Strategy>(default_traits<uint8_t, uint8_t>(maxval, parameters.near_lossless), frame, parameters);
@@ -184,11 +192,16 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_optimized_codec(const f
         if (parameters.interleave_mode == interleave_mode::sample)
         {
             if (frame.component_count == 3)
+            {
                 return make_codec<Strategy>(default_traits<uint16_t, triplet<uint16_t>>(maxval, parameters.near_lossless),
                                             frame, parameters);
+            }
+
             if (frame.component_count == 4)
+            {
                 return make_codec<Strategy>(default_traits<uint16_t, quad<uint16_t>>(maxval, parameters.near_lossless),
                                             frame, parameters);
+            }
         }
 
         return make_codec<Strategy>(default_traits<uint16_t, uint16_t>(maxval, parameters.near_lossless), frame, parameters);

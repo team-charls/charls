@@ -126,8 +126,14 @@ public:
     {
         if (!is_interleaved())
         {
-            return std::unique_ptr<process_line>(
-                std::make_unique<post_process_single_component>(info.data, stride, sizeof(typename Traits::pixel_type)));
+            if (frame_info().bits_per_sample == sizeof(sample_type) * 8)
+            {
+                return std::make_unique<post_process_single_component>(info.data, stride,
+                                                                       sizeof(typename Traits::pixel_type));
+            }
+
+            return std::make_unique<post_process_single_component_masked>(
+                info.data, stride, sizeof(typename Traits::pixel_type), frame_info().bits_per_sample);
         }
 
         if (parameters().transformation == color_transformation::none)

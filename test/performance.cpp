@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "performance.h"
+
+#include "portable_anymap_file.h"
 #include "util.h"
 
 #include <chrono>
@@ -9,7 +11,9 @@
 #include <ratio>
 #include <vector>
 
+using charls::frame_info;
 using charls::jpegls_decoder;
+using charls::jpegls_encoder;
 using charls::jpegls_error;
 using std::cout;
 using std::istream;
@@ -114,7 +118,7 @@ void test_large_image_performance_rgb8(const int loop_count)
 
 void decode_performance_tests(const int loop_count)
 {
-    cout << "Test decode Perf (with loop count " << loop_count << ")\n";
+    cout << "Test decode performance with loop count " << loop_count << "\n";
 
     const vector<uint8_t> jpegls_compressed = read_file("decodetest.jls");
 
@@ -136,5 +140,43 @@ void decode_performance_tests(const int loop_count)
     catch (const jpegls_error& e)
     {
         cout << "Decode failure: " << e.what() << "\n";
+    }
+}
+
+void encode_performance_tests(const int loop_count)
+{
+    cout << "Test encode performance with loop count " << loop_count << "\n";
+
+    const charls_test::portable_anymap_file anymap_file("encode-test.pnm");
+
+    try
+    {
+        const frame_info info{static_cast<uint32_t>(anymap_file.width()), static_cast<uint32_t>(anymap_file.height()),
+                              anymap_file.bits_per_sample(), anymap_file.component_count()};
+        const auto interleave_mode =
+            anymap_file.component_count() > 1 ? charls::interleave_mode::sample : charls::interleave_mode::none;
+
+        jpegls_encoder encoder1;
+        encoder1.frame_info(info).interleave_mode(interleave_mode);
+        vector<uint8_t> destination(encoder1.estimated_destination_size());
+
+        const auto start = steady_clock::now();
+        for (int i = 0; i < loop_count; ++i)
+        {
+            jpegls_encoder encoder2;
+            encoder2.frame_info(info).interleave_mode(interleave_mode);
+            encoder2.destination(destination);
+
+            static_cast<void>(encoder2.encode(anymap_file.image_data()));
+        }
+
+        const auto end = steady_clock::now();
+        const auto diff = end - start;
+        cout << "Total encoding time is: " << duration<double, milli>(diff).count() << " ms\n";
+        cout << "Encoding time per image: " << duration<double, milli>(diff).count() / loop_count << " ms\n";
+    }
+    catch (const jpegls_error& e)
+    {
+        cout << "Encoding failure: " << e.what() << "\n";
     }
 }

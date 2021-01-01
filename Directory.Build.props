@@ -89,18 +89,20 @@
            This checks consist of compile-time checks and runtime checks. -->
       <SDLCheck>true</SDLCheck>
 
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
 
     <Link>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+
+      <!-- use FULL debug info to ensure code coverage works out of the box. -->
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
 
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemDefinitionGroup>
-
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug' OR '$(Configuration)'=='Checked'">
     <UseDebugLibraries>true</UseDebugLibraries>

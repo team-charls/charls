@@ -25,7 +25,7 @@ public:
 
     TEST_METHOD(encode_monochrome_12_bit_lossless) // NOLINT
     {
-        encode("DataFiles/TEST16.pgm");
+        encode("DataFiles/test16.pgm");
     }
 
     TEST_METHOD(encode_monochrome_16_bit_lossless) // NOLINT

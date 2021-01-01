@@ -824,6 +824,27 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
             continue;
         }
 
+        if (str.compare(0, 19, "-encode-performance") == 0)
+        {
+            int loop_count{1};
+
+            // Extract the optional loop count from the command line. Longer running tests make the measurements more
+            // reliable.
+            auto index = str.find(':');
+            if (index != string::npos)
+            {
+                loop_count = stoi(str.substr(++index));
+                if (loop_count < 1)
+                {
+                    cout << "Loop count not understood or invalid: " << str << "\n";
+                    break;
+                }
+            }
+
+            encode_performance_tests(loop_count);
+            continue;
+        }
+
         if (str == "-dicom")
         {
             test_dicom_wg4_images();
