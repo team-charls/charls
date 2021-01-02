@@ -647,7 +647,7 @@ private:
         int32_t index{};
         while (Strategy::read_bit())
         {
-            const int count{std::min(1 << J[run_index_], static_cast<int>(pixel_count - index))};
+            const int count{std::min(1 << J[run_index_], pixel_count - index)};
             index += count;
             ASSERT(index <= pixel_count);
 
@@ -761,10 +761,10 @@ private:
 
     void encode_run_pixels(int32_t run_length, const bool end_of_line)
     {
-        while (run_length >= static_cast<int32_t>(1 << J[run_index_]))
+        while (run_length >= 1 << J[run_index_])
         {
             Strategy::append_ones_to_bit_stream(1);
-            run_length = run_length - static_cast<int32_t>(1 << J[run_index_]);
+            run_length = run_length - (1 << J[run_index_]);
             increment_run_index();
         }
 

@@ -43,8 +43,7 @@ struct lossless_traits_impl
     FORCE_INLINE constexpr static int32_t
     modulo_range(const int32_t error_value) noexcept
     {
-        return static_cast<int32_t>(error_value << (int32_t_bit_count - bits_per_pixel)) >>
-               (int32_t_bit_count - bits_per_pixel); // NOLINT
+        return (error_value << (int32_t_bit_count - bits_per_pixel)) >> (int32_t_bit_count - bits_per_pixel); // NOLINT
     }
 
     FORCE_INLINE static SampleType compute_reconstructed_sample(const int32_t predicted_value,
