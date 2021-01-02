@@ -33,7 +33,7 @@ struct jls_context final
     }
 
     FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless,
-                                       const int32_t reset_threshold) noexcept
+                                       const int32_t reset_threshold)
     {
         ASSERT(N != 0);
 
@@ -42,8 +42,9 @@ struct jls_context final
         int b{B + error_value * (2 * near_lossless + 1)};
         int n{N};
 
-        ASSERT(a < 65536 * 256);
-        ASSERT(std::abs(b) < 65536 * 256);
+        constexpr int limit{65536 * 256};
+        if (a >= limit || std::abs(b) >= limit)
+            impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
         if (n == reset_threshold)
         {
