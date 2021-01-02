@@ -81,7 +81,7 @@ struct charls_jpegls_decoder final
         return reader_->parameters().interleave_mode;
     }
 
-    color_transformation color_transformation() const
+    charls::color_transformation color_transformation() const
     {
         if (state_ < state::header_read)
             throw_jpegls_error(jpegls_errc::invalid_operation);

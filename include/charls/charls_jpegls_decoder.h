@@ -452,7 +452,7 @@ public:
     /// Returns the HP color transformation that was used to encode the scan.
     /// </summary>
     /// <returns>The value of the color transformation.</returns>
-    CHARLS_NO_DISCARD color_transformation color_transformation() const
+    CHARLS_NO_DISCARD charls::color_transformation color_transformation() const
     {
         charls::color_transformation color_transformation;
         check_jpegls_errc(charls_jpegls_decoder_get_color_transformation(decoder_.get(), &color_transformation));
