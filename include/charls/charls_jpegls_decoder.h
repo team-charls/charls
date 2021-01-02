@@ -100,7 +100,7 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
     CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
-/// Returns the interleave mode that was used to encode the scan(s).
+/// Returns the interleave mode that was used to encode the scan.
 /// </summary>
 /// <remarks>
 /// Function should be called after calling the function charls_jpegls_decoder_read_header.
@@ -125,6 +125,19 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_preset_coding_parameters(
     IN_ const charls_jpegls_decoder* decoder, int32_t reserved,
     OUT_ charls_jpegls_pc_parameters* preset_coding_parameters) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+
+/// <summary>
+/// Returns the color transformation that was used to encode the scan.
+/// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_read_header.
+/// </remarks>
+/// <param name="decoder">Reference to the decoder instance.</param>
+/// <param name="color_transformation">Reference that will hold the value of the color transformation.</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
+CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_color_transformation(
+    IN_ const charls_jpegls_decoder* decoder, OUT_ charls_color_transformation* color_transformation) CHARLS_NOEXCEPT
+    CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
 /// Returns the size required for the destination buffer in bytes to hold the decoded pixel data.
@@ -414,7 +427,7 @@ public:
     }
 
     /// <summary>
-    /// Returns the interleave mode that was used to encode the scan(s).
+    /// Returns the interleave mode that was used to encode the scan.
     /// </summary>
     /// <returns>The value of the interleave mode.</returns>
     CHARLS_NO_DISCARD charls::interleave_mode interleave_mode() const
@@ -433,6 +446,17 @@ public:
         jpegls_pc_parameters preset_coding_parameters;
         check_jpegls_errc(charls_jpegls_decoder_get_preset_coding_parameters(decoder_.get(), 0, &preset_coding_parameters));
         return preset_coding_parameters;
+    }
+
+    /// <summary>
+    /// Returns the HP color transformation that was used to encode the scan.
+    /// </summary>
+    /// <returns>The value of the color transformation.</returns>
+    CHARLS_NO_DISCARD color_transformation color_transformation() const
+    {
+        charls::color_transformation color_transformation;
+        check_jpegls_errc(charls_jpegls_decoder_get_color_transformation(decoder_.get(), &color_transformation));
+        return color_transformation;
     }
 
     /// <summary>

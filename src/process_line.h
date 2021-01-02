@@ -126,26 +126,6 @@ private:
 };
 
 
-inline void byte_swap(void* data, const size_t count)
-{
-    if (count & 1U)
-        throw jpegls_error{jpegls_errc::invalid_encoded_data};
-
-    auto* const data32{static_cast<unsigned int*>(data)};
-    for (size_t i{}; i < count / 4; ++i)
-    {
-        const auto value{data32[i]};
-        data32[i] = ((value >> 8U) & 0x00FF00FFU) | ((value & 0x00FF00FFU) << 8U);
-    }
-
-    auto* const data8{static_cast<unsigned char*>(data)};
-    if ((count % 4) != 0)
-    {
-        std::swap(data8[count - 2], data8[count - 1]);
-    }
-}
-
-
 template<typename Transform, typename PixelType>
 void transform_line_to_quad(const PixelType* source, const size_t pixel_stride_in, quad<PixelType>* destination,
                             const size_t pixel_stride,

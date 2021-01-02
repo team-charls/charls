@@ -34,7 +34,7 @@ inline jpegls_pc_parameters compute_default(const int32_t maximum_sample_value, 
         const int threshold1{
             clamp(factor * (default_threshold1 - 2) + 2 + 3 * near_lossless, near_lossless + 1, maximum_sample_value)};
         const int threshold2{
-            clamp(factor * (default_threshold2 - 3) + 3 + 5 * near_lossless, threshold1, maximum_sample_value)}; //-V537
+            clamp(factor * (default_threshold2 - 3) + 3 + 5 * near_lossless, threshold1, maximum_sample_value)};
 
         return {maximum_sample_value, threshold1, threshold2,
                 clamp(factor * (default_threshold3 - 4) + 4 + 7 * near_lossless, threshold2, maximum_sample_value),

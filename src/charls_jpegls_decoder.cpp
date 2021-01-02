@@ -81,7 +81,7 @@ struct charls_jpegls_decoder final
         return reader_->parameters().interleave_mode;
     }
 
-    color_transformation transformation() const
+    color_transformation color_transformation() const
     {
         if (state_ < state::header_read)
             throw_jpegls_error(jpegls_errc::invalid_operation);
@@ -260,6 +260,18 @@ catch (...)
     return to_jpegls_errc();
 }
 
+charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_color_transformation(
+    IN_ const charls_jpegls_decoder* decoder, OUT_ charls_color_transformation* color_transformation) noexcept
+try
+{
+    *check_pointer(color_transformation) = check_pointer(decoder)->color_transformation();
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_destination_size(
     IN_ const charls_jpegls_decoder* decoder, const uint32_t stride, OUT_ size_t* destination_size_bytes) noexcept
 try
@@ -302,7 +314,7 @@ try
     params->components = info.component_count;
     params->interleaveMode = decoder.interleave_mode();
     params->allowedLossyError = decoder.near_lossless();
-    params->colorTransformation = decoder.transformation();
+    params->colorTransformation = decoder.color_transformation();
     const int32_t component_count{params->interleaveMode == interleave_mode::none ? 1 : params->components};
     params->stride = params->width * component_count * static_cast<int32_t>(bit_to_byte_count(params->bitsPerSample));
 

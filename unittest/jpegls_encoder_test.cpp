@@ -497,7 +497,8 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
+        test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none,
+                         color_transformation::hp1);
     }
 
     TEST_METHOD(encode_16_bit) // NOLINT
@@ -728,7 +729,8 @@ public:
 private:
     static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info,
                                  const void* expected_destination, const size_t expected_destination_size,
-                                 const charls::interleave_mode interleave_mode)
+                                 const charls::interleave_mode interleave_mode,
+                                 const charls::color_transformation color_transformation = color_transformation::none)
     {
         jpegls_decoder decoder;
         decoder.source(encoded_source);
@@ -740,6 +742,7 @@ private:
         Assert::AreEqual(source_frame_info.bits_per_sample, frame_info.bits_per_sample);
         Assert::AreEqual(source_frame_info.component_count, frame_info.component_count);
         Assert::IsTrue(interleave_mode == decoder.interleave_mode());
+        Assert::IsTrue(color_transformation == decoder.color_transformation());
 
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
@@ -748,7 +751,7 @@ private:
 
         if (decoder.near_lossless() == 0)
         {
-            const auto* expected_destination_byte{static_cast<const uint8_t *>(expected_destination)};
+            const auto* expected_destination_byte{static_cast<const uint8_t*>(expected_destination)};
 
             for (size_t i{}; i < expected_destination_size; ++i)
             {
