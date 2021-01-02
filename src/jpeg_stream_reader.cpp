@@ -406,14 +406,14 @@ int jpeg_stream_reader::read_preset_parameters_segment(const int32_t segment_siz
 void jpeg_stream_reader::read_start_of_scan()
 {
     const int32_t segment_size{read_segment_size()};
-    if (segment_size < 6)
+    if (segment_size < 3)
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
     const int component_count_in_scan{read_byte()};
     if (component_count_in_scan != 1 && component_count_in_scan != frame_info_.component_count)
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
-    if (segment_size < 6 + (2 * component_count_in_scan))
+    if (segment_size != 6 + (2 * component_count_in_scan))
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
     for (int i{}; i < component_count_in_scan; ++i)
