@@ -80,27 +80,20 @@ struct jls_context final
         ASSERT(N != 0);
     }
 
-    FORCE_INLINE int32_t get_golomb_code() const noexcept
+    /// <summary>
+    /// <para>Computes the Golomb coding parameter using the algorithm as defined in ISO/IEC 14495-1, code segment A.10 </para>
+    /// <para>Original algorithm is: for (k = 0; (N[Q] << k) < A[Q]; k++) </para>
+    /// </summary>
+    FORCE_INLINE int32_t get_golomb_coding_parameter() const
     {
-        const int32_t n_test{N};
-        const int32_t a_test{A};
-
-        if (n_test >= a_test)
-            return 0;
-        if (n_test << 1 >= a_test)
-            return 1;
-        if (n_test << 2 >= a_test)
-            return 2;
-        if (n_test << 3 >= a_test)
-            return 3;
-        if (n_test << 4 >= a_test)
-            return 4;
-
-        int32_t k{5};
-        for (; n_test << k < a_test; ++k)
+        int32_t k{0};
+        for (; N << k < A && k < max_k_value; ++k)
         {
-            ASSERT(k <= 32);
         }
+
+        if (k == max_k_value)
+            impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+
         return k;
     }
 };

@@ -74,7 +74,7 @@ unique_ptr<Strategy> make_codec(const Traits& traits, const frame_info& frame_in
 
 // Lookup table: decode symbols that are smaller or equal to 8 bit (16 tables for each value of k)
 // NOLINTNEXTLINE(clang-diagnostic-global-constructors)
-const array<golomb_code_table, 16> decoding_tables{
+const array<golomb_code_table, max_k_value> decoding_tables{
     initialize_table(0),  initialize_table(1),  initialize_table(2),  initialize_table(3),
     initialize_table(4),  initialize_table(5),  initialize_table(6),  initialize_table(7),
     initialize_table(8),  initialize_table(9),  initialize_table(10), initialize_table(11),

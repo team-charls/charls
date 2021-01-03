@@ -5,6 +5,7 @@
 
 #include "coding_parameters.h"
 #include "color_transform.h"
+#include "constants.h"
 #include "context.h"
 #include "context_run_mode.h"
 #include "lookup_table.h"
@@ -21,7 +22,7 @@ namespace charls {
 class decoder_strategy;
 class encoder_strategy;
 
-extern const std::array<golomb_code_table, 16> decoding_tables;
+extern const std::array<golomb_code_table, max_k_value> decoding_tables;
 extern const std::vector<int8_t> quantization_lut_lossless_8;
 extern const std::vector<int8_t> quantization_lut_lossless_10;
 extern const std::vector<int8_t> quantization_lut_lossless_12;
@@ -323,7 +324,7 @@ private:
     {
         const int32_t sign = bit_wise_sign(qs);
         jls_context& context = contexts_[apply_sign(qs, sign)];
-        const int32_t k = context.get_golomb_code();
+        const int32_t k = context.get_golomb_coding_parameter();
         const int32_t predicted_value = traits_.correct_prediction(predicted + apply_sign(context.C, sign));
 
         int32_t error_value;
@@ -353,7 +354,7 @@ private:
     {
         const int32_t sign{bit_wise_sign(qs)};
         jls_context& context{contexts_[apply_sign(qs, sign)]};
-        const int32_t k{context.get_golomb_code()};
+        const int32_t k{context.get_golomb_coding_parameter()};
         const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.C, sign))};
         const int32_t error_value{traits_.compute_error_value(apply_sign(x - predicted_value, sign))};
 

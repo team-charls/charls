@@ -24,6 +24,8 @@ constexpr int minimum_bits_per_sample{2};
 constexpr int maximum_bits_per_sample{16};
 constexpr int maximum_near_lossless{255};
 
+constexpr int max_k_value{16}; // This is an implementation limit (theoretical limit is 32)
+
 constexpr int compute_maximum_near_lossless(const int maximum_sample_value) noexcept
 {
     return std::min(255, maximum_sample_value / 2); // As defined by ISO/IEC 14495-1, C.2.3

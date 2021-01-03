@@ -147,8 +147,10 @@ struct options final
     options(const int argc, char** argv)
     {
         if (argc < 3)
+        {
             throw std::runtime_error("Usage: <input_filename> <output_filename> [interleave-mode (none, line, or sample), "
                                      "default = none] [near-lossless, default = 0 (lossless)]\n");
+        }
 
         input_filename = argv[1];
         output_filename = argv[2];
