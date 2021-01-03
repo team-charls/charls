@@ -52,11 +52,9 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-
   <PropertyGroup Condition="'$(Configuration)'=='Checked'">
     <EnableClangTidyCodeAnalysis>false</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
-
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -69,7 +67,6 @@
       <AdditionalDependencies>jpegls.obj;jpegls_error.obj;jpeg_stream_writer.obj;jpeg_stream_reader.obj;charls_jpegls_decoder.obj;charls_jpegls_encoder.obj;version.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-
   <ItemGroup>
     <ClInclude Include="encoder_strategy_tester.h" />
     <ClInclude Include="jpeg_test_stream_writer.h" />
@@ -184,6 +181,9 @@
       <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="land10-10bit-rgb-hp3-invalid.jls">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="fuzzy_input_golomb_16.jls">
       <FileType>Document</FileType>
     </CopyFileToFolders>
   </ItemGroup>

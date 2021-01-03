@@ -157,5 +157,8 @@
     <CopyFileToFolders Include="land10-10bit-rgb-hp3-invalid.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="fuzzy_input_golomb_16.jls">
+      <Filter>Test Images</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

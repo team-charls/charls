@@ -416,6 +416,24 @@ public:
         assert_expect_exception(jpegls_errc::invalid_encoded_data, [&] { static_cast<void>(decoder.decode(destination)); });
     }
 
+    TEST_METHOD(decode_file_with_golomb_large_then_k_max) // NOLINT
+    {
+        const vector<uint8_t> source{read_file("fuzzy_input_golomb_16.jls")};
+
+        jpegls_decoder decoder{source, true};
+
+        const auto& frame_info{decoder.frame_info()};
+        Assert::AreEqual(3, frame_info.component_count);
+        Assert::AreEqual(16, frame_info.bits_per_sample);
+        Assert::AreEqual(65516U, frame_info.height);
+        Assert::AreEqual(1U, frame_info.width);
+
+        vector<uint8_t> destination(decoder.destination_size());
+
+        assert_expect_exception(jpegls_errc::invalid_encoded_data, [&] { static_cast<void>(decoder.decode(destination)); });
+    }
+
+
 private:
     static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator& begin,
                                                       const vector<uint8_t>::iterator& end) noexcept
