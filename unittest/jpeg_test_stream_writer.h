@@ -43,14 +43,14 @@ public:
             segment.push_back(0); // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
         }
 
-        write_segment(charls::jpeg_marker_code::start_of_frame_jpegls, segment.data(), segment.size());
+        write_segment(jpeg_marker_code::start_of_frame_jpegls, segment.data(), segment.size());
     }
 
     void write_jpegls_preset_parameters_segment(const jpegls_pc_parameters& preset_coding_parameters)
     {
         std::vector<uint8_t> segment;
 
-        segment.push_back(static_cast<uint8_t>(charls::jpegls_preset_parameters_type::preset_coding_parameters));
+        segment.push_back(static_cast<uint8_t>(jpegls_preset_parameters_type::preset_coding_parameters));
 
         push_back(segment, static_cast<uint16_t>(preset_coding_parameters.maximum_sample_value));
         push_back(segment, static_cast<uint16_t>(preset_coding_parameters.threshold1));
@@ -58,7 +58,7 @@ public:
         push_back(segment, static_cast<uint16_t>(preset_coding_parameters.threshold3));
         push_back(segment, static_cast<uint16_t>(preset_coding_parameters.reset_value));
 
-        write_segment(charls::jpeg_marker_code::jpegls_preset_parameters, segment.data(), segment.size());
+        write_segment(jpeg_marker_code::jpegls_preset_parameters, segment.data(), segment.size());
     }
 
     void write_start_of_scan_segment(int component_id, const int component_count, const int near_lossless,

@@ -291,20 +291,6 @@ void test_too_small_output_buffer()
 }
 
 
-////void TestBadImage()
-////{
-////    vector<uint8_t> rgbyteCompressed;
-////    if (!ReadFile("test/BadCompressedStream.jls", &rgbyteCompressed, 0))
-////        return;
-////
-////    vector<uint8_t> rgbyteOut(2500 * 3000 * 2);
-////    auto error = JpegLsDecode(&rgbyteOut[0], rgbyteOut.size(), &rgbyteCompressed[0], rgbyteCompressed.size(), nullptr,
-///nullptr);
-////
-////    Assert::IsTrue(error == jpegls_errc::UncompressedBufferTooSmall);
-////}
-
-
 void test_decode_bit_stream_with_no_marker_start()
 {
     const array<uint8_t, 2> encoded_data{0x33, 0x33};
@@ -724,7 +710,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         {
             if (i != 1 || argc != 4)
             {
-                cout << "Syntax: -decoderaw inputfile outputfile\n";
+                cout << "Syntax: -decoderaw input-file output-file\n";
                 return EXIT_FAILURE;
             }
             return decode_raw(argv[2], argv[3]) ? EXIT_SUCCESS : EXIT_FAILURE;
@@ -734,7 +720,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         {
             if (i != 1 || argc != 4)
             {
-                cout << "Syntax: -decodetopnm inputfile outputfile\n";
+                cout << "Syntax: -decodetopnm input-file output-file\n";
                 return EXIT_FAILURE;
             }
             ofstream pnm_file(argv[3], mode_output);
@@ -747,7 +733,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         {
             if (i != 1 || argc != 4)
             {
-                cout << "Syntax: -encodepnm inputfile outputfile\n";
+                cout << "Syntax: -encodepnm input-file output-file\n";
                 return EXIT_FAILURE;
             }
             ifstream pnm_file(argv[2], mode_input);
@@ -760,7 +746,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         {
             if (i != 1 || argc != 4)
             {
-                cout << "Syntax: -encodepnm inputfile outputfile\n";
+                cout << "Syntax: -encodepnm input-file output-file\n";
                 return EXIT_FAILURE;
             }
             ifstream pnm_file1(argv[2], mode_input);

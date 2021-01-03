@@ -730,7 +730,7 @@ private:
     static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info,
                                  const void* expected_destination, const size_t expected_destination_size,
                                  const charls::interleave_mode interleave_mode,
-                                 const charls::color_transformation color_transformation = color_transformation::none)
+                                 const color_transformation color_transformation = color_transformation::none)
     {
         jpegls_decoder decoder;
         decoder.source(encoded_source);

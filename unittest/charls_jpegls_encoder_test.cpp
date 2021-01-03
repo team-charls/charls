@@ -143,7 +143,7 @@ public:
     {
         const auto error = charls_jpegls_encoder_write_standard_spiff_header(
             nullptr, charls_spiff_color_space::cie_lab, charls_spiff_resolution_units::dots_per_centimeter, 1, 1);
-        Assert::AreEqual(charls::jpegls_errc::invalid_argument, error);
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
     TEST_METHOD(write_spiff_entry_nullptr) // NOLINT

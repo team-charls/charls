@@ -516,13 +516,13 @@ private:
         const size_t component_count{
             parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
 
-        std::vector<pixel_type> vectmp(static_cast<size_t>(2) * component_count * pixel_stride);
+        std::vector<pixel_type> line_buffer(static_cast<size_t>(2) * component_count * pixel_stride);
         std::vector<int32_t> run_index(component_count);
 
         for (uint32_t line{}; line < frame_info().height; ++line)
         {
-            previous_line_ = &vectmp[1];
-            current_line_ = &vectmp[1 + static_cast<size_t>(component_count) * pixel_stride];
+            previous_line_ = &line_buffer[1];
+            current_line_ = &line_buffer[1 + static_cast<size_t>(component_count) * pixel_stride];
             if ((line & 1) == 1)
             {
                 std::swap(previous_line_, current_line_);
@@ -784,7 +784,7 @@ private:
 
     int32_t do_run_mode(const int32_t index, encoder_strategy*)
     {
-        const int32_t ctypeRem = width_ - index;
+        const int32_t count_type_remain = width_ - index;
         pixel_type* type_cur_x{current_line_ + index};
         const pixel_type* type_prev_x{previous_line_ + index};
 
@@ -796,13 +796,13 @@ private:
             type_cur_x[run_length] = ra;
             ++run_length;
 
-            if (run_length == ctypeRem)
+            if (run_length == count_type_remain)
                 break;
         }
 
-        encode_run_pixels(run_length, run_length == ctypeRem);
+        encode_run_pixels(run_length, run_length == count_type_remain);
 
-        if (run_length == ctypeRem)
+        if (run_length == count_type_remain)
             return run_length;
 
         type_cur_x[run_length] = encode_run_interruption_pixel(type_cur_x[run_length], ra, type_prev_x[run_length]);
@@ -842,27 +842,27 @@ inline std::pair<int32_t, int32_t> create_encoded_value(const int32_t k, const i
 inline golomb_code_table initialize_table(const int32_t k) noexcept
 {
     golomb_code_table table;
-    for (int16_t nerr{};; ++nerr)
+    for (int16_t error_value{};; ++error_value)
     {
         // Q is not used when k != 0
-        const int32_t mapped_error_value{get_mapped_error_value(nerr)};
+        const int32_t mapped_error_value{get_mapped_error_value(error_value)};
         const std::pair<int32_t, int32_t> pair_code{create_encoded_value(k, mapped_error_value)};
         if (static_cast<size_t>(pair_code.first) > golomb_code_table::byte_bit_count)
             break;
 
-        const golomb_code code(nerr, static_cast<int16_t>(pair_code.first));
+        const golomb_code code(error_value, static_cast<int16_t>(pair_code.first));
         table.add_entry(static_cast<uint8_t>(pair_code.second), code);
     }
 
-    for (int16_t nerr{-1};; --nerr)
+    for (int16_t error_value{-1};; --error_value)
     {
         // Q is not used when k != 0
-        const int32_t mapped_error_value{get_mapped_error_value(nerr)};
+        const int32_t mapped_error_value{get_mapped_error_value(error_value)};
         const std::pair<int32_t, int32_t> pair_code{create_encoded_value(k, mapped_error_value)};
         if (static_cast<size_t>(pair_code.first) > golomb_code_table::byte_bit_count)
             break;
 
-        const auto code{golomb_code(nerr, static_cast<int16_t>(pair_code.first))};
+        const auto code{golomb_code(error_value, static_cast<int16_t>(pair_code.first))};
         table.add_entry(static_cast<uint8_t>(pair_code.second), code);
     }
 

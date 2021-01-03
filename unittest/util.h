@@ -45,9 +45,9 @@ namespace charls { namespace test {
 
 std::vector<uint8_t> read_file(const char* filename);
 
-charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, charls::interleave_mode interleave_mode,
-                                                             const charls::frame_info& frame_info);
-charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, charls::interleave_mode interleave_mode);
+charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode,
+                                                             const frame_info& frame_info);
+charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode);
 std::vector<uint8_t> create_test_spiff_header(uint8_t high_version = 2, uint8_t low_version = 0,
                                               bool end_of_directory = true);
 std::vector<uint8_t> create_noise_image_16_bit(size_t pixel_count, int bit_count, uint32_t seed);
@@ -63,7 +63,9 @@ constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
 
 }} // namespace charls::test
 
+// ReSharper disable CppInconsistentNaming
 namespace Microsoft { namespace VisualStudio { namespace CppUnitTestFramework {
+// ReSharper restore CppInconsistentNaming
 
 template<>
 inline std::wstring ToString<charls::jpegls_errc>(const charls::jpegls_errc& q)

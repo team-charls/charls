@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <charls/jpegls_error.h>
-
 #include "coding_parameters.h"
 #include "util.h"
 

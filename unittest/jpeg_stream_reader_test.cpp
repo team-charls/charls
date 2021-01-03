@@ -52,7 +52,7 @@ public:
         writer.write_start_of_frame_segment(1, 1, 2, 1);
 
         writer.buffer.push_back(0xFF);
-        writer.write_start_of_scan_segment(0, 1, 128, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 128, interleave_mode::none);
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
@@ -236,7 +236,7 @@ public:
         writer.write_start_of_image();
         writer.write_jpegls_preset_parameters_segment(preset_coding_parameters);
         writer.write_start_of_frame_segment(512, 512, 8, 3);
-        writer.write_start_of_scan_segment(0, 1, 127, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 127, interleave_mode::none);
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
@@ -386,7 +386,7 @@ public:
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        writer.write_start_of_scan_segment(0, 1, 128, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 128, interleave_mode::none);
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
@@ -410,7 +410,7 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
-        writer.write_start_of_scan_segment(0, 1, 128, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 128, interleave_mode::none);
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
@@ -428,7 +428,7 @@ public:
         writer.write_start_of_frame_segment(512, 512, 8, 3);
 
         constexpr int bad_near_lossless = (200 / 2) + 1;
-        writer.write_start_of_scan_segment(0, 1, bad_near_lossless, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, bad_near_lossless, interleave_mode::none);
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
@@ -655,7 +655,7 @@ private:
         writer.buffer.push_back(0x02);
 
         writer.write_start_of_frame_segment(1, 1, 2, 1);
-        writer.write_start_of_scan_segment(0, 1, 128, charls::interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 128, interleave_mode::none);
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
