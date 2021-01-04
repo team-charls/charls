@@ -435,7 +435,7 @@ bool decode_to_pnm(istream& input, ostream& output)
     interleave_mode interleave_mode;
     std::tie(frame_info, interleave_mode) = jpegls_decoder::decode(encoded_source, decoded_destination);
 
-    if (frame_info.component_count > 1 && interleave_mode == interleave_mode::none)
+    if (frame_info.component_count > 1 && interleave_mode == charls::interleave_mode::none)
         return false; // Unsupported at the moment.
 
     // PNM format requires most significant byte first (big endian).

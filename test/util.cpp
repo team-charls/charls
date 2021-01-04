@@ -113,12 +113,12 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
 
     if (params.components == 4)
     {
-        interleave_mode = interleave_mode::line;
+        interleave_mode = charls::interleave_mode::line;
     }
     else if (params.components == 3)
     {
-        interleave_mode = interleave_mode::line;
-        color_transformation = color_transformation::hp1;
+        interleave_mode = charls::interleave_mode::line;
+        color_transformation = charls::color_transformation::hp1;
     }
 
     size_t encoded_actual_size{};
