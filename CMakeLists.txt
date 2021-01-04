@@ -127,7 +127,10 @@ if(MSVC)
   add_compile_options("/utf-8")
 
   # Zc:__cplusplus: Will configure the MSVC compiler to use the correct value for the __cplusplus macro
-  add_compile_options("/Zc:__cplusplus")
+  # (introduced with Visual Studio 2017 version 15.7)
+  if(MSVC_VERSION GREATER_EQUAL 1914)
+    add_compile_options("/Zc:__cplusplus")
+  endif()
 
   # /Zc:throwingNew: Will configure the MSVC compiler that only the standard throwing operator new is used.
   add_compile_options("/Zc:throwingNew")

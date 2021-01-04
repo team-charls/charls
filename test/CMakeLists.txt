@@ -20,7 +20,7 @@ target_sources(charlstest
     legacy.h
 )
 
-if(WIN32)
+if(WIN32 AND MSVC_VERSION GREATER_EQUAL 1920)
   # Only add the manifest file when building a Windows app
   target_sources(charlstest PRIVATE app.manifest)
 endif()
