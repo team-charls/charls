@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Next-Release]
 
-## [2.2.0] - 2021-1-X
+## [2.2.0] - 2021-1-10
 
 ### Added
 
