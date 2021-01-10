@@ -37,10 +37,6 @@
       <!--
         Disable level All warnings that are not useful:
         C4061 = enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label [Handled by default case]
-        C4191 = operator/operation' : unsafe conversion from 'type of expression' to 'type required'
-        C4263 = function' : member function does not override any base class virtual member function
-        C4264 = virtual_function' : no override available for virtual member function from base 'class'; function is hidden
-        C4266 = function' : no override available for virtual member function from base 'type'; function is hidden
         C4365 = action' : conversion from 'type_1' to 'type_2', signed/unsigned mismatch
         C4464 = A #include directive has a path that includes a '..' parent directory specifier. [Just informational]
         C4514 = function' : unreferenced inline function has been removed [Just informational]
@@ -57,7 +53,7 @@
         C5027 = 'type': move assignment operator was implicitly defined as deleted [Just informational]
         C5045 = Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified [Just informational]
       -->
-      <DisableSpecificWarnings>4061;4191;4263;4264;4266;4365;4464;4514;4571;4623;4625;4626;4668;4710;4711;4738;4820;5026;5027;5045</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4061;4365;4464;4514;4571;4623;4625;4626;4668;4710;4711;4738;4820;5026;5027;5045</DisableSpecificWarnings>
 
       <!--
         __cplusplus = Use the correct value for the __cplusplus macro
