@@ -107,11 +107,7 @@ private:
 
     void write_uint16(const uint16_t value) noexcept
     {
-        ASSERT(byte_offset_ + sizeof(uint16_t) <= destination_.size);
-
-        auto* destination = reinterpret_cast<uint16_t*>(destination_.data + byte_offset_);
-        *destination = endian_swap(value);
-        byte_offset_ += sizeof(uint16_t);
+        write_uint<uint16_t>(value);
     }
 
     void write_uint16(const int32_t value) noexcept
@@ -122,11 +118,18 @@ private:
 
     void write_uint32(const uint32_t value) noexcept
     {
-        ASSERT(byte_offset_ + sizeof(uint32_t) <= destination_.size);
+        write_uint<uint32_t>(value);
+    }
 
-        auto* destination = reinterpret_cast<uint32_t*>(destination_.data + byte_offset_);
-        *destination = endian_swap(value);
-        byte_offset_ += sizeof(uint32_t);
+    template<typename UnsignedIntType>
+    void write_uint(const UnsignedIntType value) noexcept
+    {
+        ASSERT(byte_offset_ + sizeof(UnsignedIntType) <= destination_.size);
+
+        // Use write_bytes to write to the unaligned byte array.
+        // The compiler will perform the correct optimization when the target platform support unaligned writes.
+        const UnsignedIntType big_endian_value{endian_swap(value)};
+        write_bytes(&big_endian_value, sizeof big_endian_value);
     }
 
     void write_bytes(IN_READS_BYTES_(size) const void* data, const size_t size) noexcept

@@ -22,9 +22,11 @@ endif()
 
 # Disable C++ run-time type info (dynamic cast + typeid). CharLS doesn't use
 # this functionality and disabling it will result in a smaller image.
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  target_compile_options(charls PRIVATE -fno-rtti)
-elseif(MSVC)
+# Don't do this for gcc and clang (normally done with -fno-rtti) as it will cause
+# UBSAN warnings as jpegls_category is derived from std::error_category
+# If the base class was built with RTTI and has virtual functions, the derived class
+# also needs to be build with RTTI.
+if(MSVC)
   target_compile_options(charls PRIVATE /GR-)
 endif()
 

@@ -14,7 +14,7 @@
 
 namespace charls {
 
-// Purpose: Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
+// Purpose: Implements encoding to stream of bits. In encoding mode jls_codec inherits from decoder_strategy
 class decoder_strategy
 {
 public:
@@ -253,7 +253,7 @@ protected:
     std::unique_ptr<process_line> process_line_;
 
 private:
-    using bufType = std::size_t;
+    using bufType = size_t;
     static constexpr auto bufType_bit_count = static_cast<int32_t>(sizeof(bufType) * 8);
 
     std::vector<uint8_t> buffer_;

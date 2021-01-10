@@ -88,14 +88,25 @@ inline int32_t get_predicted_value(const int32_t ra, const int32_t rb, const int
 
 #endif
 
+/// <summary>
+/// This is the optimized inverse algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
+/// It will map unsigned values back to signed values.
+/// </summary>
 CONSTEXPR int32_t unmap_error_value(const int32_t mapped_error) noexcept
 {
-    const int32_t sign{mapped_error << (int32_t_bit_count - 1) >> (int32_t_bit_count - 1)};
+    const int32_t sign{static_cast<int32_t>(static_cast<uint32_t>(mapped_error) << (int32_t_bit_count - 1)) >>
+                       (int32_t_bit_count - 1)};
     return sign ^ (mapped_error >> 1);
 }
 
-CONSTEXPR int32_t get_mapped_error_value(const int32_t error_value) noexcept
+/// <summary>
+/// This is the algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
+/// It will map signed values to unsigned values. It has been optimized to prevent branching.
+/// </summary>
+CONSTEXPR int32_t map_error_value(const int32_t error_value) noexcept
 {
+    ASSERT(error_value <= INT32_MAX / 2);
+
     const int32_t mapped_error{(error_value >> (int32_t_bit_count - 2)) ^ (2 * error_value)};
     return mapped_error;
 }
@@ -358,7 +369,7 @@ private:
         const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.C, sign))};
         const int32_t error_value{traits_.compute_error_value(apply_sign(x - predicted_value, sign))};
 
-        encode_mapped_value(k, get_mapped_error_value(context.get_error_correction(k | traits_.near_lossless) ^ error_value),
+        encode_mapped_value(k, map_error_value(context.get_error_correction(k | traits_.near_lossless) ^ error_value),
                             traits_.limit);
         context.update_variables(error_value, traits_.near_lossless, traits_.reset_threshold);
         ASSERT(traits_.is_near(traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)), x));
@@ -845,7 +856,7 @@ inline golomb_code_table initialize_table(const int32_t k) noexcept
     for (int16_t error_value{};; ++error_value)
     {
         // Q is not used when k != 0
-        const int32_t mapped_error_value{get_mapped_error_value(error_value)};
+        const int32_t mapped_error_value{map_error_value(error_value)};
         const std::pair<int32_t, int32_t> pair_code{create_encoded_value(k, mapped_error_value)};
         if (static_cast<size_t>(pair_code.first) > golomb_code_table::byte_bit_count)
             break;
@@ -857,7 +868,7 @@ inline golomb_code_table initialize_table(const int32_t k) noexcept
     for (int16_t error_value{-1};; --error_value)
     {
         // Q is not used when k != 0
-        const int32_t mapped_error_value{get_mapped_error_value(error_value)};
+        const int32_t mapped_error_value{map_error_value(error_value)};
         const std::pair<int32_t, int32_t> pair_code{create_encoded_value(k, mapped_error_value)};
         if (static_cast<size_t>(pair_code.first) > golomb_code_table::byte_bit_count)
             break;

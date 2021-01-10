@@ -32,6 +32,14 @@ public:
     {
         Assert::IsTrue(strlen(jpegls_category().name()) > 0);
     }
+
+    TEST_METHOD(jpegls_category_call_message) // NOLINT
+    {
+        const std::error_category& category{jpegls_category()};
+
+        std::string message{category.message(0)};
+        Assert::IsTrue(message.size() > 0);
+    }
 };
 
 }} // namespace charls::test

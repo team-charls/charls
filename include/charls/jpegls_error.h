@@ -7,9 +7,9 @@
 
 #ifdef __cplusplus
 extern "C" {
+CHARLS_API_IMPORT_EXPORT const std::error_category* CHARLS_API_CALLING_CONVENTION charls_get_jpegls_category();
 #endif
 
-CHARLS_API_IMPORT_EXPORT const void* CHARLS_API_CALLING_CONVENTION charls_get_jpegls_category(CHARLS_C_VOID);
 CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(charls_jpegls_errc error_value);
 
 #ifdef __cplusplus
@@ -19,7 +19,7 @@ namespace charls {
 
 CHARLS_NO_DISCARD inline const std::error_category& jpegls_category() noexcept
 {
-    return *static_cast<const std::error_category*>(charls_get_jpegls_category());
+    return *(charls_get_jpegls_category());
 }
 
 CHARLS_NO_DISCARD inline std::error_code make_error_code(jpegls_errc error_value) noexcept
@@ -55,6 +55,8 @@ namespace impl {
 #define CHARLS_NO_INLINE
 #endif
 
+// Not inlined by design, as this code path is the exceptional case.
+// It will help to allow the compiler to inline other functions.
 [[noreturn]] inline CHARLS_NO_INLINE void throw_jpegls_error(const jpegls_errc error_value)
 {
     throw jpegls_error(error_value);
@@ -68,7 +70,7 @@ inline void check_jpegls_errc(const jpegls_errc error_value)
 {
     if (error_value != jpegls_errc::success)
     {
-        impl::throw_jpegls_error(error_value); // not inlined by design, as this code path is the exceptional case.
+        impl::throw_jpegls_error(error_value);
     }
 }
 

@@ -8,7 +8,6 @@
 namespace charls {
 
 using std::error_category;
-using std::string;
 
 class jpegls_category final : public error_category
 {
@@ -18,7 +17,7 @@ public:
         return "charls::jpegls";
     }
 
-    string message(int error_value) const override
+    std::string message(int error_value) const override
     {
         return charls_get_error_message(static_cast<jpegls_errc>(error_value));
     }
@@ -28,7 +27,7 @@ public:
 
 using namespace charls;
 
-const void* CHARLS_API_CALLING_CONVENTION charls_get_jpegls_category()
+const error_category* CHARLS_API_CALLING_CONVENTION charls_get_jpegls_category()
 {
     static class jpegls_category instance;
     return &instance;

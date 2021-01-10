@@ -8,7 +8,7 @@
 
 namespace charls {
 
-// Purpose: Implements encoding to stream of bits. In encoding mode JpegLsCodec inherits from EncoderStrategy
+// Purpose: Implements encoding to stream of bits. In encoding mode jls_codec inherits from encoder_strategy
 class encoder_strategy
 {
 public:
@@ -26,7 +26,7 @@ public:
 
     virtual std::unique_ptr<process_line> create_process_line(byte_span stream_info, size_t stride) = 0;
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
-    virtual std::size_t encode_scan(std::unique_ptr<process_line> raw_data, byte_span destination) = 0;
+    virtual size_t encode_scan(std::unique_ptr<process_line> raw_data, byte_span destination) = 0;
 
     int32_t peek_byte();
 
@@ -62,7 +62,7 @@ protected:
         free_bit_count_ -= bit_count;
         if (free_bit_count_ >= 0)
         {
-            bit_buffer_ |= bits << free_bit_count_; // NOLINT
+            bit_buffer_ |= bits << free_bit_count_;
         }
         else
         {
@@ -91,26 +91,23 @@ protected:
         {
             append_to_bit_stream(0, (free_bit_count_ - 1) % 8);
         }
-        else
-        {
-            append_to_bit_stream(0, free_bit_count_ % 8);
-        }
 
         flush();
-        ASSERT(free_bit_count_ == 0x20);
+        ASSERT(free_bit_count_ == 32);
     }
 
     void flush()
     {
         if (compressed_length_ < 4)
-        {
             impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
-        }
 
         for (int i{}; i < 4; ++i)
         {
             if (free_bit_count_ >= 32)
+            {
+                free_bit_count_ = 32;
                 break;
+            }
 
             if (is_ff_written_)
             {
@@ -133,9 +130,9 @@ protected:
         }
     }
 
-    std::size_t get_length() const noexcept
+    size_t get_length() const noexcept
     {
-        return bytes_written_ - (static_cast<uint32_t>(free_bit_count_) - 32U) / 8U;
+        return bytes_written_ - (static_cast<size_t>(free_bit_count_) - 32U) / 8U;
     }
 
     FORCE_INLINE void append_ones_to_bit_stream(const int32_t length)
@@ -151,12 +148,12 @@ protected:
 private:
     unsigned int bit_buffer_{};
     int32_t free_bit_count_{sizeof bit_buffer_ * 8};
-    std::size_t compressed_length_{};
+    size_t compressed_length_{};
 
     // encoding
     uint8_t* position_{};
     bool is_ff_written_{};
-    std::size_t bytes_written_{};
+    size_t bytes_written_{};
 
     std::vector<uint8_t> buffer_;
 };

@@ -44,7 +44,7 @@ public:
         flush();
     }
 
-    std::size_t get_length_forward() const noexcept
+    size_t get_length_forward() const noexcept
     {
         return get_length();
     }

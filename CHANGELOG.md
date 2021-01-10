@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 
+- Fixed [#21](https://github.com/team-charls/charls/issues/21), Building with UBSAN, will report runtime error: left shift
+  of 4031 by 63 places cannot be represented in type 'long int'
 - Fixed [#25](https://github.com/team-charls/charls/issues/25), CharLS fails to read LSE marker segment after first SOS segment
 - Fixed [#26](https://github.com/team-charls/charls/issues/26), CharLS should only use the valid bits from the passed input buffer
 - Fixed [#36](https://github.com/team-charls/charls/issues/36), CharLS should remain stable from bad input (several issues found by fuzzy testing)

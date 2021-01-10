@@ -36,14 +36,11 @@ struct lossless_traits_impl
         return lhs == rhs;
     }
 
-// The following optimization is implementation-dependent (works on x86 and ARM, see charlstest).
-#if defined(__clang__)
-    __attribute__((no_sanitize("shift")))
-#endif
     FORCE_INLINE constexpr static int32_t
     modulo_range(const int32_t error_value) noexcept
     {
-        return (error_value << (int32_t_bit_count - bits_per_pixel)) >> (int32_t_bit_count - bits_per_pixel); // NOLINT
+        return (static_cast<int32_t>(static_cast<uint32_t>(error_value) << (int32_t_bit_count - bits_per_pixel))) >>
+               (int32_t_bit_count - bits_per_pixel);
     }
 
     FORCE_INLINE static SampleType compute_reconstructed_sample(const int32_t predicted_value,
