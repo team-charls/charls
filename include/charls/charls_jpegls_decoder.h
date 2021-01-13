@@ -230,10 +230,13 @@ public:
     /// Decodes a JPEG-LS buffer in 1 simple operation.
     /// </summary>
     /// <param name="source">Source container with the JPEG-LS encoded bytes.</param>
-    /// <param name="destination">Destination container that will hold the image data on return. Container will be resized
-    /// automatically.</param> <param name="maximum_size_in_bytes">The maximum output size that may be allocated, default is
-    /// 94 MiB (enough to decode 8 bit color 8K image).</param> <returns>Frame info of the decoded image and the interleave
-    /// mode.</returns>
+    /// <param name="destination">
+    /// Destination container that will hold the image data on return. Container will be resized automatically.
+    /// </param>
+    /// <param name="maximum_size_in_bytes">
+    /// The maximum output size that may be allocated, default is 94 MiB (enough to decode 8 bit color 8K image).
+    /// </param>
+    /// <returns>Frame info of the decoded image and the interleave mode.</returns>
     template<typename SourceContainer, typename DestinationContainer,
              typename ValueType = typename DestinationContainer::value_type>
     static std::pair<charls::frame_info, charls::interleave_mode>
@@ -274,13 +277,6 @@ public:
             read_header();
         }
     }
-
-    ~jpegls_decoder() = default;
-
-    jpegls_decoder(const jpegls_decoder&) = delete;
-    jpegls_decoder(jpegls_decoder&&) noexcept = default;
-    jpegls_decoder& operator=(const jpegls_decoder&) = delete;
-    jpegls_decoder& operator=(jpegls_decoder&&) noexcept = default;
 
     /// <summary>
     /// Set the reference to a source buffer that contains the encoded JPEG-LS byte stream data.

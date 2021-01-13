@@ -240,14 +240,6 @@ public:
         return destination;
     }
 
-    jpegls_encoder() = default;
-    ~jpegls_encoder() = default;
-
-    jpegls_encoder(const jpegls_encoder&) = delete;
-    jpegls_encoder(jpegls_encoder&&) noexcept = default;
-    jpegls_encoder& operator=(const jpegls_encoder&) = delete;
-    jpegls_encoder& operator=(jpegls_encoder&&) noexcept = default;
-
     /// <summary>
     /// Configures the frame that needs to be encoded.
     /// This information will be written to the Start of Frame (SOF) segment during the encode phase.
