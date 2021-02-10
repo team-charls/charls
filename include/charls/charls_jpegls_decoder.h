@@ -188,7 +188,7 @@ JpegLsReadHeader(IN_READS_BYTES_(source_length) const void* source, size_t sourc
                  OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 /// <summary>
-/// Encodes a JPEG-LS encoded byte array to uncompressed pixel data byte array.
+/// Decodes a JPEG-LS encoded byte array to uncompressed pixel data byte array.
 /// </summary>
 /// <remarks>This method will be removed in the next major update.</remarks>
 /// <param name="destination">Byte array that holds the uncompressed pixel data bytes when the function returns.</param>
