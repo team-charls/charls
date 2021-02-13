@@ -156,7 +156,7 @@ namespace charls {
 /// Defines the result values that are returned by the CharLS API functions.
 /// </summary>
 RETURN_TYPE_SUCCESS_(return == 0)
-enum class jpegls_errc
+enum class CHARLS_NO_DISCARD jpegls_errc
 {
     /// <summary>
     /// The operation completed without errors.

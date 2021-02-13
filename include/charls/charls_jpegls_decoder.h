@@ -28,7 +28,7 @@ typedef struct charls_jpegls_decoder charls_jpegls_decoder;
 /// charls_jpegls_decoder_destroy.
 /// </summary>
 /// <returns>A reference to a new created decoder instance, or a null pointer when the creation fails.</returns>
-CHARLS_CHECK_RETURN CHARLS_RET_MAY_BE_NULL CHARLS_API_IMPORT_EXPORT charls_jpegls_decoder*
+CHARLS_NO_DISCARD CHARLS_CHECK_RETURN CHARLS_RET_MAY_BE_NULL CHARLS_API_IMPORT_EXPORT charls_jpegls_decoder*
     CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_create(CHARLS_C_VOID) CHARLS_NOEXCEPT;
 
 /// <summary>

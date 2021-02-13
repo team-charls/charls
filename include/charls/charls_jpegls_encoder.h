@@ -26,7 +26,7 @@ typedef struct charls_jpegls_encoder charls_jpegls_encoder;
 /// charls_jpegls_encoder_destroy.
 /// </summary>
 /// <returns>A reference to a new created encoder instance, or a null pointer when the creation fails.</returns>
-CHARLS_CHECK_RETURN CHARLS_RET_MAY_BE_NULL CHARLS_API_IMPORT_EXPORT charls_jpegls_encoder*
+CHARLS_NO_DISCARD CHARLS_CHECK_RETURN CHARLS_RET_MAY_BE_NULL CHARLS_API_IMPORT_EXPORT charls_jpegls_encoder*
     CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_create(CHARLS_C_VOID) CHARLS_NOEXCEPT;
 
 /// <summary>
