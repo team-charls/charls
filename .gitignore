@@ -6,6 +6,7 @@ Win32/
 x64/
 .vscode/
 .vs/
+.idea
 build/
 [Dd]ebug/
 [Rr]elease/
