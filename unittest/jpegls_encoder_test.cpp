@@ -726,6 +726,50 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::line);
     }
 
+    TEST_METHOD(rewind) // NOLINT
+    {
+        const array<uint8_t, 6> source{0, 1, 2, 3, 4, 5};
+        const frame_info frame_info{3, 1, 16, 1};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written1{encoder.encode(source)};
+        destination.resize(bytes_written1);
+
+        test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
+
+        const vector<uint8_t> destination_backup(destination);
+
+        encoder.rewind();
+        const size_t bytes_written2{encoder.encode(source)};
+
+        Assert::AreEqual(bytes_written1, bytes_written2);
+        Assert::IsTrue(destination_backup == destination);
+    }
+
+    TEST_METHOD(rewind_before_destination) // NOLINT
+    {
+        const array<uint8_t, 6> source{0, 1, 2, 3, 4, 5};
+        const frame_info frame_info{3, 1, 16, 1};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.rewind();
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source)};
+        destination.resize(bytes_written);
+
+        test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
+    }
+
+
 private:
     static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info,
                                  const void* expected_destination, const size_t expected_destination_size,

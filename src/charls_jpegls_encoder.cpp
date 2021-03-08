@@ -199,6 +199,15 @@ struct charls_jpegls_encoder final
         return writer_.bytes_written();
     }
 
+    void rewind() noexcept
+    {
+        if (state_ == state::initial)
+            return; // Nothing to do, stay in the same state.
+
+        writer_.rewind();
+        state_ = state::destination_set;
+    }
+
 private:
     enum class state
     {
@@ -399,6 +408,17 @@ try
         return jpegls_errc::invalid_argument;
 
     check_pointer(encoder)->write_spiff_entry(entry_tag, entry_data, entry_data_size_bytes);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_rewind(IN_ charls_jpegls_encoder* encoder) noexcept
+try
+{
+    check_pointer(encoder)->rewind();
     return jpegls_errc::success;
 }
 catch (...)

@@ -96,6 +96,12 @@ public:
         destination_ = destination;
     }
 
+    void rewind() noexcept
+    {
+        byte_offset_ = 0;
+        component_id_ = 1;
+    }
+
 private:
     void write_segment_header(jpeg_marker_code marker_code, size_t data_size);
 

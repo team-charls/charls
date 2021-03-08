@@ -348,6 +348,20 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[8]); // ILV parameter.
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[9]); // transformation.
     }
+
+    TEST_METHOD(rewind) // NOLINT
+    {
+        array<uint8_t, 10> buffer{};
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+
+        writer.write_start_of_scan_segment(1, 2, interleave_mode::none);
+        writer.rewind();
+        buffer[4] = 0;
+        writer.write_start_of_scan_segment(1, 2, interleave_mode::none);
+
+        Assert::AreEqual(buffer.size(), writer.bytes_written());
+        Assert::AreEqual(static_cast<uint8_t>(1), buffer[4]); // component count.
+    }
 };
 
 }} // namespace charls::test

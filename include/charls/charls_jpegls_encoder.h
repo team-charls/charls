@@ -179,8 +179,15 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_get_bytes_written(
     IN_ const charls_jpegls_encoder* encoder, OUT_ size_t* bytes_written) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
+/// <summary>
+/// Resets the write position of the destination buffer to the beginning.
+/// </summary>
+/// <param name="encoder">Reference to the encoder instance.</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
+CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_rewind(IN_ charls_jpegls_encoder* encoder) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
-// Note: The 4 methods below are considered obsolete and will be removed in the next major update.
+// Note: The method below is considered obsolete and will be removed in the next major update.
 
 /// <summary>
 /// Encodes a byte array with pixel data to a JPEG-LS encoded (compressed) byte array.
@@ -425,6 +432,14 @@ public:
         size_t bytes_written;
         check_jpegls_errc(charls_jpegls_encoder_get_bytes_written(encoder_.get(), &bytes_written));
         return bytes_written;
+    }
+
+    /// <summary>
+    /// Resets the write position of the destination buffer to the beginning.
+    /// </summary>
+    void rewind() const
+    {
+        check_jpegls_errc(charls_jpegls_encoder_rewind(encoder_.get()));
     }
 
 private:

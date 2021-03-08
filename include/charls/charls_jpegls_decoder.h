@@ -171,6 +171,7 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
     IN_ const charls_jpegls_decoder* decoder, OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
     size_t destination_size_bytes, uint32_t stride) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
+// Note: The 3 methods below are considered obsolete and will be removed in the next major update.
 
 /// <summary>
 /// Retrieves the JPEG-LS header. This info can be used to pre-allocate the uncompressed output buffer.

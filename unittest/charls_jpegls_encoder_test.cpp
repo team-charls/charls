@@ -157,6 +157,12 @@ public:
         charls_jpegls_encoder_destroy(encoder);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
+
+    TEST_METHOD(rewind_nullptr) // NOLINT
+    {
+        const auto error = charls_jpegls_encoder_rewind(nullptr);
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+    }
 };
 
 }} // namespace charls::test
