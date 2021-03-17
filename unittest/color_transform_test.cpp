@@ -23,14 +23,14 @@ public:
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.
-        constexpr int start_value = 123;
-        constexpr int end_value = 124;
+        constexpr int start_value{123};
+        constexpr int end_value{124};
 
-        for (int red = start_value; red < end_value; ++red)
+        for (int red{start_value}; red < end_value; ++red)
         {
-            for (int green = 0; green < 255; ++green)
+            for (int green{}; green < 255; ++green)
             {
-                for (int blue = 0; blue < 255; ++blue)
+                for (int blue{}; blue < 255; ++blue)
                 {
                     const transform_hp1<uint8_t> transform;
                     const auto sample = transform(red, green, blue);
@@ -50,14 +50,14 @@ public:
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.
-        constexpr int start_value = 123;
-        constexpr int end_value = 124;
+        constexpr int start_value{123};
+        constexpr int end_value{124};
 
-        for (int red = start_value; red < end_value; ++red)
+        for (int red{start_value}; red < end_value; ++red)
         {
-            for (int green = 0; green < 255; ++green)
+            for (int green{}; green < 255; ++green)
             {
-                for (int blue = 0; blue < 255; ++blue)
+                for (int blue{}; blue < 255; ++blue)
                 {
                     const transform_hp2<uint8_t> transform;
                     const auto sample = transform(red, green, blue);
@@ -77,17 +77,16 @@ public:
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.
-        constexpr uint8_t start_value = 123;
-        constexpr uint8_t end_value = 124;
-
-        const transform_hp3<uint8_t> transformation;
+        constexpr uint8_t start_value{123};
+        constexpr uint8_t end_value{124};
 
         for (int red = start_value; red < end_value; ++red)
         {
-            for (int green = 0; green < 255; ++green)
+            for (int green{}; green < 255; ++green)
             {
-                for (int blue = 0; blue < 255; ++blue)
+                for (int blue{}; blue < 255; ++blue)
                 {
+                    const transform_hp3<uint8_t> transformation;
                     const auto sample = transformation(red, green, blue);
                     const transform_hp3<uint8_t>::inverse inverse(transformation);
                     const auto round_trip = inverse(sample.v1, sample.v2, sample.v3);
@@ -102,7 +101,7 @@ public:
 
     TEST_METHOD(decode_non_8_or_16_bit_is_not_supported) // NOLINT
     {
-        const vector<uint8_t> jpegls_data = read_file("land10-10bit-rgb-hp3-invalid.jls");
+        const vector<uint8_t> jpegls_data{read_file("land10-10bit-rgb-hp3-invalid.jls")};
 
         jpegls_decoder decoder{jpegls_data, true};
 

@@ -21,12 +21,12 @@ void triplet2_planar(vector<uint8_t>& buffer, const rect_size size)
 {
     vector<uint8_t> work_buffer(buffer.size());
 
-    const size_t byte_count = size.cx * size.cy;
-    for (size_t index = 0; index < byte_count; ++index)
+    const size_t byte_count{size.cx * size.cy};
+    for (size_t i{}; i < byte_count; ++i)
     {
-        work_buffer[index] = buffer[index * 3 + 0];
-        work_buffer[index + 1 * byte_count] = buffer[index * 3 + 1];
-        work_buffer[index + 2 * byte_count] = buffer[index * 3 + 2];
+        work_buffer[i] = buffer[i * 3 + 0];
+        work_buffer[i + 1 * byte_count] = buffer[i * 3 + 1];
+        work_buffer[i + 2 * byte_count] = buffer[i * 3 + 2];
     }
     swap(buffer, work_buffer);
 }
@@ -50,7 +50,7 @@ bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompress
         encoder.preset_coding_parameters(decoder.preset_coding_parameters());
         static_cast<void>(encoder.encode(uncompressed_data, uncompressed_length));
 
-        for (size_t i = 0; i < compressed_length; ++i)
+        for (size_t i{}; i < compressed_length; ++i)
         {
             if (static_cast<const uint8_t*>(compressed_data)[i] != our_encoded_bytes[i])
             {
@@ -85,7 +85,7 @@ void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_le
 
         if (decoder.near_lossless() == 0)
         {
-            for (size_t i = 0; i < uncompressed_length; ++i)
+            for (size_t i{}; i < uncompressed_length; ++i)
             {
                 if (uncompressed_data[i] != destination[i])
                 {

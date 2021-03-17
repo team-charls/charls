@@ -46,7 +46,7 @@ void fix_endian(vector<uint8_t>* buffer, const bool little_endian_data) noexcept
     if (little_endian_data == is_machine_little_endian())
         return;
 
-    for (size_t i = 0; i < buffer->size() - 1; i += 2)
+    for (size_t i{}; i < buffer->size() - 1; i += 2)
     {
         swap((*buffer)[i], (*buffer)[i + 1]);
     }
@@ -122,8 +122,8 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
     }
 
     size_t encoded_actual_size{};
-    auto start = steady_clock::now();
-    for (int i = 0; i < loop_count; ++i)
+    auto start{steady_clock::now()};
+    for (int i{}; i < loop_count; ++i)
     {
         try
         {
@@ -145,7 +145,7 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
     const auto total_encode_duration = steady_clock::now() - start;
 
     start = steady_clock::now();
-    for (int i = 0; i < loop_count; ++i)
+    for (int i{}; i < loop_count; ++i)
     {
         try
         {
@@ -159,10 +159,10 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
         }
     }
 
-    const auto total_decode_duration = steady_clock::now() - start;
+    const auto total_decode_duration{steady_clock::now() - start};
 
-    const double bits_per_sample = 1.0 * static_cast<double>(encoded_actual_size) * 8. /
-                                   (static_cast<double>(params.components) * params.height * params.width);
+    const double bits_per_sample{1.0 * static_cast<double>(encoded_actual_size) * 8. /
+                                 (static_cast<double>(params.components) * params.height * params.width)};
     cout << "RoundTrip test for: " << name << "\n\r";
     const double encode_time = duration<double, milli>(total_encode_duration).count() / loop_count;
     const double decode_time = duration<double, milli>(total_decode_duration).count() / loop_count;
@@ -173,8 +173,8 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
          << ", Encode time:" << encode_time << " ms, Decode time:" << decode_time
          << " ms, Bits per sample:" << bits_per_sample << ", Decode rate:" << symbol_rate << " M/s\n";
 
-    const uint8_t* byte_out = decoded_buffer.data();
-    for (size_t i = 0; i < decoded_buffer.size(); ++i)
+    const uint8_t* byte_out{decoded_buffer.data()};
+    for (size_t i{}; i < decoded_buffer.size(); ++i)
     {
         if (original_buffer[i] != byte_out[i])
         {
@@ -188,8 +188,8 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
 void test_file(const char* filename, const int offset, const rect_size size2, const int bits_per_sample,
                const int component_count, const bool little_endian_file, const int loop_count)
 {
-    const size_t byte_count = size2.cx * size2.cy * component_count * bit_to_byte_count(bits_per_sample);
-    vector<uint8_t> uncompressed_buffer = read_file(filename, offset, byte_count);
+    const size_t byte_count{size2.cx * size2.cy * component_count * bit_to_byte_count(bits_per_sample)};
+    vector<uint8_t> uncompressed_buffer{read_file(filename, offset, byte_count)};
 
     if (bits_per_sample > 8)
     {

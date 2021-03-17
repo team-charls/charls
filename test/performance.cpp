@@ -27,13 +27,11 @@ namespace {
 void test_file16_bit_as12(const char* filename, const int offset, const rect_size size2, const int component_count,
                           const bool little_endian_file)
 {
-    vector<uint8_t> uncompressed_data = read_file(filename, offset);
-
+    vector<uint8_t> uncompressed_data{read_file(filename, offset)};
     fix_endian(&uncompressed_data, little_endian_file);
 
-    auto* const p = reinterpret_cast<uint16_t*>(uncompressed_data.data());
-
-    for (size_t i = 0; i < uncompressed_data.size() / 2; ++i)
+    auto* const p{reinterpret_cast<uint16_t*>(uncompressed_data.data())};
+    for (size_t i{}; i < uncompressed_data.size() / 2; ++i)
     {
         p[i] = p[i] >> 4;
     }
@@ -120,20 +118,19 @@ void decode_performance_tests(const int loop_count)
 {
     cout << "Test decode performance with loop count " << loop_count << "\n";
 
-    const vector<uint8_t> jpegls_compressed = read_file("decodetest.jls");
+    const vector<uint8_t> jpegls_compressed{read_file("decodetest.jls")};
 
     try
     {
-        vector<uint8_t> uncompressed;
-
-        const auto start = steady_clock::now();
-        for (int i = 0; i < loop_count; ++i)
+        const auto start{steady_clock::now()};
+        for (int i{}; i < loop_count; ++i)
         {
+            vector<uint8_t> uncompressed;
             jpegls_decoder::decode(jpegls_compressed, uncompressed);
         }
 
-        const auto end = steady_clock::now();
-        const auto diff = end - start;
+        const auto end{steady_clock::now()};
+        const auto diff{end - start};
         cout << "Total decoding time is: " << duration<double, milli>(diff).count() << " ms\n";
         cout << "Decoding time per image: " << duration<double, milli>(diff).count() / loop_count << " ms\n";
     }
@@ -153,15 +150,15 @@ void encode_performance_tests(const int loop_count)
     {
         const frame_info info{static_cast<uint32_t>(anymap_file.width()), static_cast<uint32_t>(anymap_file.height()),
                               anymap_file.bits_per_sample(), anymap_file.component_count()};
-        const auto interleave_mode =
-            anymap_file.component_count() > 1 ? charls::interleave_mode::sample : charls::interleave_mode::none;
+        const auto interleave_mode{anymap_file.component_count() > 1 ? charls::interleave_mode::sample
+                                                                     : charls::interleave_mode::none};
 
         jpegls_encoder encoder1;
         encoder1.frame_info(info).interleave_mode(interleave_mode);
         vector<uint8_t> destination(encoder1.estimated_destination_size());
 
-        const auto start = steady_clock::now();
-        for (int i = 0; i < loop_count; ++i)
+        const auto start{steady_clock::now()};
+        for (int i{}; i < loop_count; ++i)
         {
             jpegls_encoder encoder2;
             encoder2.frame_info(info).interleave_mode(interleave_mode);
@@ -170,8 +167,8 @@ void encode_performance_tests(const int loop_count)
             static_cast<void>(encoder2.encode(anymap_file.image_data()));
         }
 
-        const auto end = steady_clock::now();
-        const auto diff = end - start;
+        const auto end{steady_clock::now()};
+        const auto diff{end - start};
         cout << "Total encoding time is: " << duration<double, milli>(diff).count() << " ms\n";
         cout << "Encoding time per image: " << duration<double, milli>(diff).count() / loop_count << " ms\n";
     }

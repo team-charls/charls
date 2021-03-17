@@ -17,7 +17,7 @@ namespace {
 
 bool contains_string(const uint8_t* container, const uint8_t* bytes_to_find, const size_t bytes_length) noexcept
 {
-    for (size_t j = 0; j < bytes_length; ++j)
+    for (size_t j{}; j < bytes_length; ++j)
     {
         if (bytes_to_find[j] != container[j])
             return false;
@@ -28,7 +28,7 @@ bool contains_string(const uint8_t* container, const uint8_t* bytes_to_find, con
 
 int find_string(vector<uint8_t>& container, const uint8_t* bytes_to_find, const size_t bytes_length) noexcept
 {
-    for (size_t i = 0; i < container.size() - bytes_length; ++i)
+    for (size_t i{}; i < container.size() - bytes_length; ++i)
     {
         if (contains_string(&container[i], bytes_to_find, bytes_length))
             return static_cast<int>(i);
@@ -41,16 +41,16 @@ DISABLE_DEPRECATED_WARNING
 
 void test_dicom_sample_image(const char* name)
 {
-    vector<uint8_t> data = read_file(name);
+    vector<uint8_t> data{read_file(name)};
 
-    const array<uint8_t, 8> pixel_data_start = {0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7};
+    const array<uint8_t, 8> pixel_data_start{0x00, 0x00, 0x01, 0x00, 0xFF, 0xD8, 0xFF, 0xF7};
 
-    const int offset = find_string(data, pixel_data_start.data(), pixel_data_start.size());
+    const int offset{find_string(data, pixel_data_start.data(), pixel_data_start.size())};
 
     data.erase(data.begin(), data.begin() + offset - 4);
 
     // remove the DICOM fragment headers (in the concerned images they occur every 64k)
-    for (unsigned int i = 0; i < data.size(); i += 64 * 1024)
+    for (unsigned int i{}; i < data.size(); i += 64 * 1024)
     {
         data.erase(data.begin() + i, data.begin() + i + 8);
     }

@@ -73,13 +73,13 @@ void test_traits16_bit()
     assert::is_true(traits1.bits_per_pixel == lossless_traits::bits_per_pixel);
     assert::is_true(traits1.quantized_bits_per_pixel == lossless_traits::quantized_bits_per_pixel);
 
-    for (int i = -4096; i < 4096; ++i)
+    for (int i{-4096}; i < 4096; ++i)
     {
         assert::is_true(traits1.modulo_range(i) == lossless_traits::modulo_range(i));
         assert::is_true(traits1.compute_error_value(i) == lossless_traits::compute_error_value(i));
     }
 
-    for (int i = -8095; i < 8095; ++i)
+    for (int i{-8095}; i < 8095; ++i)
     {
         assert::is_true(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
         assert::is_true(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
@@ -89,7 +89,7 @@ void test_traits16_bit()
 
 void test_traits8_bit()
 {
-    const auto traits1 = default_traits<uint8_t, uint8_t>(255, 0);
+    const auto traits1{default_traits<uint8_t, uint8_t>(255, 0)};
     using lossless_traits = lossless_traits<uint8_t, 8>;
 
     assert::is_true(traits1.limit == lossless_traits::limit);
@@ -98,13 +98,13 @@ void test_traits8_bit()
     assert::is_true(traits1.bits_per_pixel == lossless_traits::bits_per_pixel);
     assert::is_true(traits1.quantized_bits_per_pixel == lossless_traits::quantized_bits_per_pixel);
 
-    for (int i = -255; i < 255; ++i)
+    for (int i{-255}; i < 255; ++i)
     {
         assert::is_true(traits1.modulo_range(i) == lossless_traits::modulo_range(i));
         assert::is_true(traits1.compute_error_value(i) == lossless_traits::compute_error_value(i));
     }
 
-    for (int i = -255; i < 512; ++i)
+    for (int i{-255}; i < 512; ++i)
     {
         assert::is_true(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
         assert::is_true(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
@@ -114,7 +114,7 @@ void test_traits8_bit()
 
 vector<uint8_t> make_some_noise(const size_t length, const size_t bit_count, const int seed)
 {
-    const auto max_value = (1U << bit_count) - 1U;
+    const auto max_value{(1U << bit_count) - 1U};
     mt19937 generator(seed);
     MSVC_CONST uniform_int_distribution<uint32_t> distribution(0, max_value);
 
@@ -130,12 +130,12 @@ vector<uint8_t> make_some_noise(const size_t length, const size_t bit_count, con
 
 vector<uint8_t> make_some_noise16_bit(const size_t length, const int bit_count, const int seed)
 {
-    const auto max_value = static_cast<uint16_t>((1U << bit_count) - 1U);
+    const auto max_value{static_cast<uint16_t>((1U << bit_count) - 1U)};
     mt19937 generator(seed);
     MSVC_CONST uniform_int_distribution<uint16_t> distribution(0, max_value);
 
     vector<uint8_t> buffer(length * 2);
-    for (size_t i = 0; i < length; i = i + 2)
+    for (size_t i{}; i < length; i = i + 2)
     {
         const uint16_t value = distribution(generator);
 
@@ -151,7 +151,7 @@ void test_noise_image()
 {
     const rect_size size2 = rect_size(512, 512);
 
-    for (size_t bit_depth = 8; bit_depth >= 2; --bit_depth)
+    for (size_t bit_depth{8}; bit_depth >= 2; --bit_depth)
     {
         stringstream label;
         label << "noise, bit depth: " << bit_depth;
@@ -160,7 +160,7 @@ void test_noise_image()
         test_round_trip(label.str().c_str(), noise_bytes, size2, static_cast<int>(bit_depth), 1);
     }
 
-    for (int bit_depth = 16; bit_depth > 8; --bit_depth)
+    for (int bit_depth{16}; bit_depth > 8; --bit_depth)
     {
         stringstream label;
         label << "noise, bit depth: " << bit_depth;
@@ -191,7 +191,7 @@ void test_noise_image_with_custom_reset()
 
 void test_fail_on_too_small_output_buffer()
 {
-    const auto input_buffer = make_some_noise(8 * 8, 8, 21344);
+    const auto input_buffer{make_some_noise(8 * 8, 8, 21344)};
 
     // Trigger a "destination buffer too small" when writing the header markers.
     try
@@ -271,7 +271,7 @@ void test_bgr()
 
 void test_too_small_output_buffer()
 {
-    const vector<uint8_t> encoded = read_file("test/lena8b.jls");
+    const vector<uint8_t> encoded{read_file("test/lena8b.jls")};
     vector<uint8_t> destination(512 * 511);
 
     jpegls_decoder decoder;
@@ -364,7 +364,7 @@ void test_decode_bit_stream_with_unknown_jpeg_marker()
 
 void test_decode_rect()
 {
-    vector<uint8_t> encoded_source = read_file("test/lena8b.jls");
+    vector<uint8_t> encoded_source{read_file("test/lena8b.jls")};
 
     jpegls_decoder decoder;
     decoder.source(encoded_source);
@@ -381,7 +381,7 @@ void test_decode_rect()
                                     encoded_source.size(), &params, nullptr);
     assert::is_true(!error);
 
-    const JlsRect rect = {128, 128, 256, 1};
+    const JlsRect rect{128, 128, 256, 1};
     vector<uint8_t> decoded_data(static_cast<size_t>(rect.Width) * rect.Height);
     decoded_data.push_back(0x1f);
 
@@ -406,7 +406,7 @@ void test_encode_from_stream(const char* filename, const size_t offset, const ui
     ifstream source_file{filename, ios::in | ios::binary};
     assert::is_true(source_file.good());
 
-    size_t length = get_stream_length(source_file, offset);
+    size_t length{get_stream_length(source_file, offset)};
     assert::is_true(length >= offset);
     length -= offset;
 
@@ -426,7 +426,7 @@ void test_encode_from_stream(const char* filename, const size_t offset, const ui
 
 bool decode_to_pnm(istream& input, ostream& output)
 {
-    const size_t length = get_stream_length(input);
+    const size_t length{get_stream_length(input)};
     vector<uint8_t> encoded_source(length);
     read(input, encoded_source);
 
@@ -494,7 +494,7 @@ vector<int> read_pnm_header(istream& pnm_file)
 //          Portable PixMap: P6 = binary, extension.ppm, range 0-2^16 (RGB)
 bool encode_pnm(istream& pnm_file, ostream& jls_file_stream)
 {
-    vector<int> read_values = read_pnm_header(pnm_file);
+    vector<int> read_values{read_pnm_header(pnm_file)};
     if (read_values.size() != 4)
         return false;
 
@@ -532,7 +532,7 @@ bool encode_pnm(istream& pnm_file, ostream& jls_file_stream)
 
 bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
 {
-    vector<int> header1 = read_pnm_header(pnm_file1);
+    vector<int> header1{read_pnm_header(pnm_file1)};
     if (header1.size() != 4)
     {
         cout << "Cannot read header from input file 1\n";
@@ -571,18 +571,18 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
         cout << "max-value " << header1[3] << " is not equal with max-value " << header2[3] << "\n";
         return false;
     }
-    const auto bytes_per_sample = header1[3] > 255 ? 2 : 1;
+    const auto bytes_per_sample{header1[3] > 255 ? 2 : 1};
 
-    const size_t byte_count = width * height * bytes_per_sample;
+    const size_t byte_count{width * height * bytes_per_sample};
     vector<uint8_t> bytes1(byte_count);
     vector<uint8_t> bytes2(byte_count);
 
-    pnm_file1.read(reinterpret_cast<char*>(&bytes1[0]), byte_count);
-    pnm_file2.read(reinterpret_cast<char*>(&bytes2[0]), byte_count);
+    pnm_file1.read(reinterpret_cast<char*>(bytes1.data()), byte_count);
+    pnm_file2.read(reinterpret_cast<char*>(bytes2.data()), byte_count);
 
-    for (size_t x = 0; x < height; ++x)
+    for (size_t x{}; x < height; ++x)
     {
-        for (size_t y = 0; y < width; y += bytes_per_sample)
+        for (size_t y{}; y < width; y += bytes_per_sample)
         {
             if (bytes_per_sample == 1)
             {
@@ -613,7 +613,7 @@ bool decode_raw(const char* filename_encoded, const char* filename_output)
 {
     try
     {
-        const vector<uint8_t> encoded_source = read_file(filename_encoded);
+        const vector<uint8_t> encoded_source{read_file(filename_encoded)};
         vector<uint8_t> decoded_destination;
         jpegls_decoder::decode(encoded_source, decoded_destination);
         write_file(filename_output, decoded_destination.data(), decoded_destination.size());
@@ -697,9 +697,9 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         return EXIT_FAILURE;
     }
 
-    for (int i = 1; i < argc; ++i)
+    for (int i{1}; i < argc; ++i)
     {
-        string str = argv[i];
+        string str{argv[i]};
         if (str == "-unittest")
         {
             unit_test();

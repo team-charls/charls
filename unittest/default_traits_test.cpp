@@ -29,7 +29,7 @@ public:
     {
         const default_traits<uint8_t, uint8_t> traits(24, 0);
 
-        for (int i = -25; i < 26; ++i)
+        for (int i{-25}; i < 26; ++i)
         {
             const auto error_value = traits.modulo_range(i);
             constexpr int range = 24 + 1;

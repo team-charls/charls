@@ -196,11 +196,11 @@ public:
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
 
-        portable_anymap_file reference_file =
-            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info());
+        portable_anymap_file reference_file{
+            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
 
         const auto& reference_image_data = reference_file.image_data();
-        for (size_t i = 0; i < destination.size(); ++i)
+        for (size_t i{}; i < destination.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination[i]);
         }
@@ -216,11 +216,11 @@ public:
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
 
-        portable_anymap_file reference_file =
-            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info());
+        portable_anymap_file reference_file{
+            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
 
         const auto& reference_image_data = reference_file.image_data();
-        for (size_t i = 0; i < destination.size(); ++i)
+        for (size_t i{}; i < destination.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination[i]);
         }
@@ -229,15 +229,13 @@ public:
     TEST_METHOD(decode_with_destination_as_return) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
-
         const jpegls_decoder decoder{source, true};
+        const auto destination{decoder.decode<vector<uint8_t>>()};
 
-        const auto destination = decoder.decode<vector<uint8_t>>();
+        portable_anymap_file reference_file{
+            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
 
-        portable_anymap_file reference_file =
-            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info());
-
-        const auto& reference_image_data = reference_file.image_data();
+        const auto& reference_image_data{reference_file.image_data()};
         for (size_t i{}; i < destination.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination[i]);
@@ -247,13 +245,11 @@ public:
     TEST_METHOD(decode_with_16_bit_destination_as_return) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
-
         const jpegls_decoder decoder{source, true};
+        const auto destination{decoder.decode<vector<uint16_t>>()};
 
-        const auto destination = decoder.decode<vector<uint16_t>>();
-
-        portable_anymap_file reference_file =
-            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info());
+        portable_anymap_file reference_file{
+            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
 
         const auto& reference_image_data{reference_file.image_data()};
         const auto* destination_as_bytes{reinterpret_cast<const uint8_t*>(destination.data())};

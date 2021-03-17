@@ -135,8 +135,7 @@ public:
     TEST_METHOD(call_decode_simple_8_bit_monochrome) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
-
-        const vector<uint8_t> charls_decoded = decode_simple_8_bit_monochrome(source);
+        const vector<uint8_t> charls_decoded{decode_simple_8_bit_monochrome(source)};
 
         test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
     }
@@ -144,8 +143,7 @@ public:
     TEST_METHOD(call_decode_advanced) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
-
-        const vector<uint8_t> charls_decoded = decode_advanced(source);
+        const vector<uint8_t> charls_decoded{decode_advanced(source)};
 
         test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
     }
@@ -153,8 +151,7 @@ public:
     TEST_METHOD(call_decode_simple_8_bit_monochrome_legacy) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
-
-        const vector<uint8_t> charls_decoded = decode_simple_8_bit_monochrome_legacy(source);
+        const vector<uint8_t> charls_decoded{decode_simple_8_bit_monochrome_legacy(source)};
 
         test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
     }
@@ -162,10 +159,9 @@ public:
     TEST_METHOD(call_encode_simple_8_bit_monochrome) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
-
-        const vector<uint8_t> charls_encoded =
-            encode_simple_8_bit_monochrome(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()),
-                                           static_cast<uint32_t>(reference_file.height()));
+        const vector<uint8_t> charls_encoded{encode_simple_8_bit_monochrome(reference_file.image_data(),
+                                                                            static_cast<uint32_t>(reference_file.width()),
+                                                                            static_cast<uint32_t>(reference_file.height()))};
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
@@ -173,10 +169,9 @@ public:
     TEST_METHOD(call_encode_advanced_8_bit_monochrome) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
-
-        const vector<uint8_t> charls_encoded =
+        const vector<uint8_t> charls_encoded{
             encode_advanced_8_bit_monochrome(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()),
-                                             static_cast<uint32_t>(reference_file.height()));
+                                             static_cast<uint32_t>(reference_file.height()))};
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
@@ -184,10 +179,9 @@ public:
     TEST_METHOD(call_encode_simple_8_bit_monochrome_legacy) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/lena8b.pgm");
-
-        const vector<uint8_t> charls_encoded =
+        const vector<uint8_t> charls_encoded{
             encode_simple_8_bit_monochrome_legacy(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()),
-                                                  static_cast<uint32_t>(reference_file.height()));
+                                                  static_cast<uint32_t>(reference_file.height()))};
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
@@ -195,12 +189,12 @@ public:
 private:
     static void test_decoded_data(const vector<uint8_t>& decoded_source, const char* raw_filename)
     {
-        portable_anymap_file reference_file = read_anymap_reference_file(raw_filename, interleave_mode::none);
-        const vector<uint8_t>& uncompressed_source = reference_file.image_data();
+        portable_anymap_file reference_file{read_anymap_reference_file(raw_filename, interleave_mode::none)};
+        const vector<uint8_t>& uncompressed_source{reference_file.image_data()};
 
         Assert::AreEqual(decoded_source.size(), uncompressed_source.size());
 
-        for (size_t i = 0; i < uncompressed_source.size(); ++i)
+        for (size_t i{}; i < uncompressed_source.size(); ++i)
         {
             if (decoded_source[i] != uncompressed_source[i]) // AreEqual is very slow, pre-test to speed up 50X
             {
@@ -216,7 +210,7 @@ private:
         decoder.source(encoded_source);
         decoder.read_header();
 
-        const auto& frame_info = decoder.frame_info();
+        const auto& frame_info{decoder.frame_info()};
         Assert::AreEqual(static_cast<uint32_t>(reference_file.width()), frame_info.width);
         Assert::AreEqual(static_cast<uint32_t>(reference_file.height()), frame_info.height);
         Assert::AreEqual(reference_file.component_count(), frame_info.component_count);
@@ -226,11 +220,11 @@ private:
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
 
-        const vector<uint8_t>& uncompressed_source = reference_file.image_data();
+        const vector<uint8_t>& uncompressed_source{reference_file.image_data()};
 
         Assert::AreEqual(destination.size(), uncompressed_source.size());
 
-        for (size_t i = 0; i < uncompressed_source.size(); ++i)
+        for (size_t i{}; i < uncompressed_source.size(); ++i)
         {
             if (destination[i] != uncompressed_source[i]) // AreEqual is very slow, pre-test to speed up 50X
             {

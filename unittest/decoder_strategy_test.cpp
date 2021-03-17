@@ -82,11 +82,11 @@ public:
         // Note: Correct encoding is tested in encoder_strategy_test::append_to_bit_stream_ff_pattern.
 
         const auto length = encoder.get_length_forward();
-        decoder_strategy_tester dec(frame_info, parameters, enc_buf.data(), length);
-        for (auto i = 0U; i < sizeof(in_data) / sizeof(in_data[0]); ++i)
+        decoder_strategy_tester decoder(frame_info, parameters, enc_buf.data(), length);
+        for (const auto& data: in_data)
         {
-            const auto actual = dec.read(in_data[i].bits);
-            Assert::AreEqual(in_data[i].value, actual);
+            const auto actual = decoder.read(data.bits);
+            Assert::AreEqual(data.value, actual);
         }
     }
 };
