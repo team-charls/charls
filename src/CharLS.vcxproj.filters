@@ -123,6 +123,7 @@
     <None Include="design\Strategy.cd">
       <Filter>Design</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
