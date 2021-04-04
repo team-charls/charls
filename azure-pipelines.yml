@@ -198,22 +198,22 @@ jobs:
         CXX: g++-9
         Shared: 'ON'
 
-      Clang-8 Debug:
+      Clang-9 Debug:
         buildType: Debug
-        CC: clang-8
-        CXX: clang++-8
-        Shared: 'OFF'
-
-      Clang-9 Release:
-        buildType: Release
         CC: clang-9
         CXX: clang++-9
         Shared: 'OFF'
 
-      Clang-10 Release Shared:
+      Clang-10 Release:
         buildType: Release
         CC: clang-10
         CXX: clang++-10
+        Shared: 'OFF'
+
+      Clang-11 Release Shared:
+        buildType: Release
+        CC: clang-11
+        CXX: clang++-11
         Shared: 'ON'
 
   steps:
