@@ -180,22 +180,22 @@ jobs:
 
   strategy:
     matrix:
-      GCC-7 Debug:
+      GCC-79Debug:
         buildType: Debug
-        CC: gcc-7
-        CXX: g++-7
+        CC: gcc-9
+        CXX: g++-9
         Shared: 'OFF'
 
-      GCC-7 Release:
+      GCC-9 Release:
         buildType: Release
-        CC: gcc-7
-        CXX: g++-7
+        CC: gcc-9
+        CXX: g++-9
         Shared: 'OFF'
 
-      GCC-7 Release Shared:
+      GCC-9 Release Shared:
         buildType: Release
-        CC: gcc-7
-        CXX: g++-7
+        CC: gcc-9
+        CXX: g++-9
         Shared: 'ON'
 
       Clang-8 Debug:
