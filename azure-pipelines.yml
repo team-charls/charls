@@ -26,6 +26,13 @@ jobs:
         buildConfiguration: 'Release'
 
   steps:
+
+  - task: NuGetCommand@2
+    inputs:
+      command: 'restore'
+      includeNuGetOrg: true
+      restoreSolution: '*.sln'
+
   - task: VSBuild@1
     inputs:
       solution: '$(solution)'
