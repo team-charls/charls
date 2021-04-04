@@ -180,7 +180,7 @@ jobs:
 
   strategy:
     matrix:
-      GCC-79Debug:
+      GCC-9 Debug:
         buildType: Debug
         CC: gcc-9
         CXX: g++-9
