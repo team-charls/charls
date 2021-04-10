@@ -304,6 +304,19 @@ T* check_pointer(T* pointer)
 }
 
 
+/// <summary>
+/// Validates the boolean 'expression'.
+/// </summary>
+/// <exception cref="charls::jpegls_error">Throws jpegls_errc::invalid_operation if 'expression' is false.</exception>
+inline void check_operation(const bool expression)
+{
+    if (!expression)
+    {
+        impl::throw_jpegls_error(jpegls_errc::invalid_operation);
+    }
+}
+
+
 CONSTEXPR uint32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
 {
     ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);

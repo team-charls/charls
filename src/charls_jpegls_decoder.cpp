@@ -9,17 +9,14 @@
 #include <memory>
 #include <new>
 
-using std::unique_ptr;
 using namespace charls;
-using impl::throw_jpegls_error;
 
 struct charls_jpegls_decoder final
 {
     void source(IN_READS_BYTES_(source_size_bytes) const void* source_buffer, const size_t source_size_bytes)
         CHARLS_ATTRIBUTE((nonnull))
     {
-        if (state_ != state::initial)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
+        check_operation(state_ == state::initial);
 
         source_buffer_ = source_buffer;
         size_ = source_size_bytes;
@@ -30,8 +27,7 @@ struct charls_jpegls_decoder final
 
     bool read_header(OUT_ spiff_header* spiff_header)
     {
-        if (state_ != state::source_set)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
+        check_operation(state_ == state::source_set);
 
         bool spiff_header_found{};
         reader_->read_header(spiff_header, &spiff_header_found);
@@ -42,8 +38,7 @@ struct charls_jpegls_decoder final
 
     void read_header()
     {
-        if (state_ == state::initial || state_ >= state::header_read)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
+        check_operation(state_ >= state::source_set && state_ < state::header_read);
 
         if (state_ != state::spiff_header_not_found)
         {
@@ -56,16 +51,13 @@ struct charls_jpegls_decoder final
 
     charls::frame_info frame_info() const
     {
-        if (state_ < state::header_read)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
-
+        check_operation(state_ >= state::header_read);
         return reader_->frame_info();
     }
 
     int32_t near_lossless(int32_t /*component*/ = 0) const
     {
-        if (state_ < state::header_read)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
+        check_operation(state_ >= state::header_read);
 
         // Note: The JPEG-LS standard allows to define different NEAR parameter for every scan.
         return reader_->parameters().near_lossless;
@@ -73,8 +65,7 @@ struct charls_jpegls_decoder final
 
     charls::interleave_mode interleave_mode() const
     {
-        if (state_ < state::header_read)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
+        check_operation(state_ >= state::header_read);
 
         // Note: The JPEG-LS standard allows to define different interleave modes for every scan.
         //       CharLS doesn't support mixed interleave modes, first scan determines the mode.
@@ -83,17 +74,13 @@ struct charls_jpegls_decoder final
 
     charls::color_transformation color_transformation() const
     {
-        if (state_ < state::header_read)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
-
+        check_operation(state_ >= state::header_read);
         return reader_->parameters().transformation;
     }
 
     const jpegls_pc_parameters& preset_coding_parameters() const
     {
-        if (state_ < state::header_read)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
-
+        check_operation(state_ >= state::header_read);
         return reader_->preset_coding_parameters();
     }
 
@@ -124,9 +111,7 @@ struct charls_jpegls_decoder final
     void decode(OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer, const size_t destination_size_bytes,
                 const size_t stride) const CHARLS_ATTRIBUTE((nonnull))
     {
-        if (state_ != state::header_read)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
-
+        check_operation(state_ == state::header_read);
         reader_->read({destination_buffer, destination_size_bytes}, stride);
     }
 
@@ -152,7 +137,7 @@ private:
     };
 
     state state_{};
-    unique_ptr<jpeg_stream_reader> reader_;
+    std::unique_ptr<jpeg_stream_reader> reader_;
     const void* source_buffer_{};
     size_t size_{};
 };

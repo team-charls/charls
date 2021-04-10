@@ -13,15 +13,12 @@
 
 using namespace charls;
 using impl::throw_jpegls_error;
-using std::unique_ptr;
 
 struct charls_jpegls_encoder final
 {
     void destination(const byte_span destination)
     {
-        if (state_ != state::initial)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
-
+        check_operation(state_ == state::initial);
         writer_.destination(destination);
         state_ = state::destination_set;
     }
@@ -78,9 +75,7 @@ struct charls_jpegls_encoder final
 
     size_t estimated_destination_size() const
     {
-        if (!is_frame_info_configured())
-            throw_jpegls_error(jpegls_errc::invalid_operation);
-
+        check_operation(is_frame_info_configured());
         return static_cast<size_t>(frame_info_.component_count) * frame_info_.width * frame_info_.height *
                    bit_to_byte_count(frame_info_.bits_per_sample) +
                1024 + spiff_header_size_in_bytes;
@@ -94,9 +89,7 @@ struct charls_jpegls_encoder final
         if (spiff_header.width == 0)
             throw_jpegls_error(jpegls_errc::invalid_argument_width);
 
-        if (state_ != state::destination_set)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
-
+        check_operation(state_ == state::destination_set);
         writer_.write_start_of_image();
         writer_.write_spiff_header_segment(spiff_header);
         state_ = state::spiff_header;
@@ -105,9 +98,7 @@ struct charls_jpegls_encoder final
     void write_standard_spiff_header(const spiff_color_space color_space, const spiff_resolution_units resolution_units,
                                      const uint32_t vertical_resolution, const uint32_t horizontal_resolution)
     {
-        if (!is_frame_info_configured())
-            throw_jpegls_error(jpegls_errc::invalid_operation);
-
+        check_operation(is_frame_info_configured());
         write_spiff_header({spiff_profile_id::none, frame_info_.component_count, frame_info_.height, frame_info_.width,
                             color_space, frame_info_.bits_per_sample, spiff_compression_type::jpeg_ls, resolution_units,
                             vertical_resolution, horizontal_resolution});
@@ -122,16 +113,13 @@ struct charls_jpegls_encoder final
         if (entry_data_size_bytes > 65528)
             throw_jpegls_error(jpegls_errc::invalid_argument_spiff_entry_size);
 
-        if (state_ != state::spiff_header)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
-
+        check_operation(state_ == state::spiff_header);
         writer_.write_spiff_directory_entry(entry_tag, entry_data, entry_data_size_bytes);
     }
 
     void encode(byte_span source, size_t stride)
     {
-        if (!is_frame_info_configured() || state_ == state::initial)
-            throw_jpegls_error(jpegls_errc::invalid_operation);
+        check_operation(is_frame_info_configured() && state_ != state::initial);
 
         if (stride == 0)
         {
@@ -229,7 +217,7 @@ private:
 
         auto codec{jls_codec_factory<encoder_strategy>().create_codec(
             frame_info, {near_lossless_, interleave_mode_, color_transformation_, false}, preset_coding_parameters_)};
-        unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
+        std::unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
         const size_t bytes_written{codec->encode_scan(move(process_line), writer_.remaining_destination())};
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
