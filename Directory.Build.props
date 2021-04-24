@@ -26,6 +26,9 @@
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
 
+      <!-- Explicit set the 'external' warning level to W3 (Supported since Visual Studio 2019 16.10) -->
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+
       <!--
         Disable level All warnings that are not useful:
         C4061 = enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label [Handled by default case]

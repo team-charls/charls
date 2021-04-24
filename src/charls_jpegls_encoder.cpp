@@ -12,63 +12,61 @@
 #include <new>
 
 using namespace charls;
-using impl::throw_jpegls_error;
 
 struct charls_jpegls_encoder final
 {
     void destination(const byte_span destination)
     {
+        check_argument(destination.data || destination.size == 0);
         check_operation(state_ == state::initial);
+
         writer_.destination(destination);
         state_ = state::destination_set;
     }
 
     void frame_info(const charls_frame_info& frame_info)
     {
-        if (frame_info.width < 1 || frame_info.width > maximum_width)
-            throw_jpegls_error(jpegls_errc::invalid_argument_width);
-
-        if (frame_info.height < 1 || frame_info.height > maximum_height)
-            throw_jpegls_error(jpegls_errc::invalid_argument_height);
-
-        if (frame_info.bits_per_sample < minimum_bits_per_sample || frame_info.bits_per_sample > maximum_bits_per_sample)
-            throw_jpegls_error(jpegls_errc::invalid_argument_bits_per_sample);
-
-        if (frame_info.component_count < 1 || frame_info.component_count > maximum_component_count)
-            throw_jpegls_error(jpegls_errc::invalid_argument_component_count);
+        check_argument(frame_info.width > 0 && frame_info.width <= maximum_width, jpegls_errc::invalid_argument_width);
+        check_argument(frame_info.height > 0 && frame_info.height <= maximum_height, jpegls_errc::invalid_argument_height);
+        check_argument(frame_info.bits_per_sample >= minimum_bits_per_sample &&
+                           frame_info.bits_per_sample <= maximum_bits_per_sample,
+                       jpegls_errc::invalid_argument_bits_per_sample);
+        check_argument(frame_info.component_count > 0 && frame_info.component_count <= maximum_component_count,
+                       jpegls_errc::invalid_argument_component_count);
 
         frame_info_ = frame_info;
     }
 
     void interleave_mode(const charls::interleave_mode interleave_mode)
     {
-        if (interleave_mode < charls::interleave_mode::none || interleave_mode > charls::interleave_mode::sample)
-            throw_jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
+        check_argument(interleave_mode >= charls::interleave_mode::none &&
+                           interleave_mode <= charls::interleave_mode::sample,
+                       jpegls_errc::invalid_argument_interleave_mode);
 
         interleave_mode_ = interleave_mode;
     }
 
     void near_lossless(const int32_t near_lossless)
     {
-        if (near_lossless < 0 || near_lossless > maximum_near_lossless)
-            throw_jpegls_error(jpegls_errc::invalid_argument_near_lossless);
+        check_argument(near_lossless >= 0 && near_lossless <= maximum_near_lossless,
+                       jpegls_errc::invalid_argument_near_lossless);
 
         near_lossless_ = near_lossless;
     }
 
     void preset_coding_parameters(const jpegls_pc_parameters& preset_coding_parameters)
     {
-        if (!is_valid(preset_coding_parameters, UINT16_MAX, near_lossless_))
-            throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
+        check_argument(is_valid(preset_coding_parameters, UINT16_MAX, near_lossless_),
+                       jpegls_errc::invalid_argument_jpegls_pc_parameters);
 
         preset_coding_parameters_ = preset_coding_parameters;
     }
 
     void color_transformation(const charls::color_transformation color_transformation)
     {
-        if (color_transformation < charls::color_transformation::none ||
-            color_transformation > charls::color_transformation::hp3)
-            throw_jpegls_error(jpegls_errc::invalid_argument_color_transformation);
+        check_argument(color_transformation >= charls::color_transformation::none &&
+                           color_transformation <= charls::color_transformation::hp3,
+                       jpegls_errc::invalid_argument_color_transformation);
 
         color_transformation_ = color_transformation;
     }
@@ -83,13 +81,10 @@ struct charls_jpegls_encoder final
 
     void write_spiff_header(const spiff_header& spiff_header)
     {
-        if (spiff_header.height == 0)
-            throw_jpegls_error(jpegls_errc::invalid_argument_height);
-
-        if (spiff_header.width == 0)
-            throw_jpegls_error(jpegls_errc::invalid_argument_width);
-
+        check_argument(spiff_header.height > 0, jpegls_errc::invalid_argument_height);
+        check_argument(spiff_header.width > 0, jpegls_errc::invalid_argument_width);
         check_operation(state_ == state::destination_set);
+
         writer_.write_start_of_image();
         writer_.write_spiff_header_segment(spiff_header);
         state_ = state::spiff_header;
@@ -107,18 +102,17 @@ struct charls_jpegls_encoder final
     void write_spiff_entry(const uint32_t entry_tag, IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data,
                            const size_t entry_data_size_bytes)
     {
-        if (entry_tag == spiff_end_of_directory_entry_type)
-            throw_jpegls_error(jpegls_errc::invalid_argument);
-
-        if (entry_data_size_bytes > 65528)
-            throw_jpegls_error(jpegls_errc::invalid_argument_spiff_entry_size);
-
+        check_argument(entry_data || entry_data_size_bytes == 0);
+        check_argument(entry_tag != spiff_end_of_directory_entry_type);
+        check_argument(entry_data_size_bytes <= 65528, jpegls_errc::invalid_argument_spiff_entry_size);
         check_operation(state_ == state::spiff_header);
+
         writer_.write_spiff_directory_entry(entry_tag, entry_data, entry_data_size_bytes);
     }
 
     void encode(byte_span source, size_t stride)
     {
+        check_argument(source.data || source.size == 0);
         check_operation(is_frame_info_configured() && state_ != state::initial);
 
         if (stride == 0)
@@ -145,7 +139,7 @@ struct charls_jpegls_encoder final
         if (color_transformation_ != charls::color_transformation::none)
         {
             if (!(frame_info_.bits_per_sample == 8 || frame_info_.bits_per_sample == 16))
-                throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
+                impl::throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
 
             writer_.write_color_transform_segment(color_transformation_);
         }
@@ -242,24 +236,27 @@ charls_jpegls_encoder_create() noexcept
     return new (std::nothrow) charls_jpegls_encoder; // NOLINT(cppcoreguidelines-owning-memory)
 }
 
+
 void CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_destroy(IN_OPT_ const charls_jpegls_encoder* encoder) noexcept
 {
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26401 26409) // don't use new and delete + non-owner.
     delete encoder;                              // NOLINT(cppcoreguidelines-owning-memory)
 }
 
+
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_destination_buffer(
     IN_ charls_jpegls_encoder* encoder, OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
     const size_t destination_size_bytes) noexcept
 try
 {
-    check_pointer(encoder)->destination({check_pointer(destination_buffer), destination_size_bytes});
+    check_pointer(encoder)->destination({destination_buffer, destination_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)
 {
     return to_jpegls_errc();
 }
+
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_set_frame_info(IN_ charls_jpegls_encoder* encoder, IN_ const charls_frame_info* frame_info) noexcept
@@ -273,6 +270,7 @@ catch (...)
     return to_jpegls_errc();
 }
 
+
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_near_lossless(IN_ charls_jpegls_encoder* encoder,
                                                                                   const int32_t near_lossless) noexcept
 try
@@ -284,6 +282,7 @@ catch (...)
 {
     return to_jpegls_errc();
 }
+
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_interleave_mode(
     IN_ charls_jpegls_encoder* encoder, const charls_interleave_mode interleave_mode) noexcept
@@ -297,6 +296,7 @@ catch (...)
     return to_jpegls_errc();
 }
 
+
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_preset_coding_parameters(
     IN_ charls_jpegls_encoder* encoder, IN_ const charls_jpegls_pc_parameters* preset_coding_parameters) noexcept
 try
@@ -308,6 +308,7 @@ catch (...)
 {
     return to_jpegls_errc();
 }
+
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_color_transformation(
     IN_ charls_jpegls_encoder* encoder, const charls_color_transformation color_transformation) noexcept
@@ -321,6 +322,7 @@ catch (...)
     return to_jpegls_errc();
 }
 
+
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_get_estimated_destination_size(
     IN_ const charls_jpegls_encoder* encoder, OUT_ size_t* size_in_bytes) noexcept
 try
@@ -332,6 +334,7 @@ catch (...)
 {
     return to_jpegls_errc();
 }
+
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_get_bytes_written(IN_ const charls_jpegls_encoder* encoder,
                                                                                   OUT_ size_t* bytes_written) noexcept
@@ -345,6 +348,7 @@ catch (...)
     return to_jpegls_errc();
 }
 
+
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_encode_from_buffer(IN_ charls_jpegls_encoder* encoder,
                                                                                    IN_READS_BYTES_(source_size_bytes)
                                                                                        const void* source_buffer,
@@ -352,13 +356,14 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_encode_from_buff
                                                                                    const uint32_t stride) noexcept
 try
 {
-    check_pointer(encoder)->encode({check_pointer(source_buffer), source_size_bytes}, stride);
+    check_pointer(encoder)->encode({source_buffer, source_size_bytes}, stride);
     return jpegls_errc::success;
 }
 catch (...)
 {
     return to_jpegls_errc();
 }
+
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_spiff_header(
     IN_ charls_jpegls_encoder* encoder, IN_ const charls_spiff_header* spiff_header) noexcept
@@ -371,6 +376,7 @@ catch (...)
 {
     return to_jpegls_errc();
 }
+
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_standard_spiff_header(
     IN_ charls_jpegls_encoder* encoder, const charls_spiff_color_space color_space,
@@ -387,14 +393,12 @@ catch (...)
     return to_jpegls_errc();
 }
 
+
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_spiff_entry(
     IN_ charls_jpegls_encoder* encoder, const uint32_t entry_tag,
     IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data, const size_t entry_data_size_bytes) noexcept
 try
 {
-    if (!entry_data && entry_data_size_bytes != 0)
-        return jpegls_errc::invalid_argument;
-
     check_pointer(encoder)->write_spiff_entry(entry_tag, entry_data, entry_data_size_bytes);
     return jpegls_errc::success;
 }
@@ -402,6 +406,7 @@ catch (...)
 {
     return to_jpegls_errc();
 }
+
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_rewind(IN_ charls_jpegls_encoder* encoder) noexcept
 try
@@ -422,8 +427,7 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsEncode(OUT_WRITES_BYTES_(destina
                                                        OUT_OPT_ char* error_message)
 try
 {
-    if (check_pointer(params)->jfif.version != 0)
-        return jpegls_errc::invalid_argument;
+    check_argument(check_pointer(params)->jfif.version == 0);
 
     charls_jpegls_encoder encoder;
     encoder.destination({check_pointer(destination), destination_length});

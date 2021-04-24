@@ -317,6 +317,19 @@ inline void check_operation(const bool expression)
 }
 
 
+/// <summary>
+/// Validates the boolean 'expression'.
+/// </summary>
+/// <exception cref="charls::jpegls_error">Throws jpegls_errc if 'expression' is false.</exception>
+inline void check_argument(const bool expression, const jpegls_errc error_value = jpegls_errc::invalid_argument)
+{
+    if (!expression)
+    {
+        impl::throw_jpegls_error(error_value);
+    }
+}
+
+
 CONSTEXPR uint32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
 {
     ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);

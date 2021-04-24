@@ -154,6 +154,28 @@ public:
         charls_jpegls_decoder_destroy(decoder);
     }
 
+    TEST_METHOD(read_header_from_zero_size_buffer) // NOLINT
+    {
+        auto* decoder = charls_jpegls_decoder_create();
+        auto error = charls_jpegls_decoder_set_source_buffer(decoder, nullptr, 0);
+        Assert::AreEqual(jpegls_errc::success, error);
+
+        error = charls_jpegls_decoder_read_header(decoder);
+        Assert::AreEqual(jpegls_errc::source_buffer_too_small, error);
+
+        charls_jpegls_decoder_destroy(decoder);
+    }
+
+    TEST_METHOD(decode_to_zero_size_buffer) // NOLINT
+    {
+        const auto* decoder = get_initialized_decoder();
+
+        const auto error = charls_jpegls_decoder_decode_to_buffer(decoder, nullptr, 0, 0);
+        Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);
+
+        charls_jpegls_decoder_destroy(decoder);
+    }
+
 private:
     static charls_jpegls_decoder* get_initialized_decoder()
     {

@@ -163,6 +163,41 @@ public:
         const auto error = charls_jpegls_encoder_rewind(nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
+
+    TEST_METHOD(encode_to_zero_size_buffer) // NOLINT
+    {
+        auto* encoder = charls_jpegls_encoder_create();
+        auto error = charls_jpegls_encoder_set_destination_buffer(encoder, nullptr, 0);
+        Assert::AreEqual(jpegls_errc::success, error);
+
+        charls_frame_info frame_info{1, 1, 2, 1};
+        error = charls_jpegls_encoder_set_frame_info(encoder, &frame_info);
+        Assert::AreEqual(jpegls_errc::success, error);
+
+        array<uint8_t, 10> buffer{};
+        error = charls_jpegls_encoder_encode_from_buffer(encoder, buffer.data(), buffer.size(), 0);
+        Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);
+
+        charls_jpegls_encoder_destroy(encoder);
+    }
+
+    TEST_METHOD(encode_from_zero_size_buffer) // NOLINT
+    {
+        auto* encoder = charls_jpegls_encoder_create();
+
+        array<uint8_t, 10> buffer{};
+        auto error = charls_jpegls_encoder_set_destination_buffer(encoder, buffer.data(), buffer.size());
+        Assert::AreEqual(jpegls_errc::success, error);
+
+        charls_frame_info frame_info{1, 1, 2, 1};
+        error = charls_jpegls_encoder_set_frame_info(encoder, &frame_info);
+        Assert::AreEqual(jpegls_errc::success, error);
+
+        error = charls_jpegls_encoder_encode_from_buffer(encoder, nullptr, 0, 0);
+        Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);
+
+        charls_jpegls_encoder_destroy(encoder);
+    }
 };
 
 }} // namespace charls::test
