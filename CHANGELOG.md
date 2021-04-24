@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Next-Release]
 
+### Fixed
+
+- Fixed [#84](https://github.com/team-charls/charls/issues/84), Default preset coding parameters not computed for unset values.
+
+### Changed
+
+- CMakeSettings.json has been replaced with CMakePresets.json.
+- The encoder API has been extended with a rewind method that can be used to re-use a configered encoder to encode multiple images in a loop.
+
 ## [2.2.0] - 2021-1-10
 
 ### Added
