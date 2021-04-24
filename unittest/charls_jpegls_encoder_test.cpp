@@ -70,7 +70,7 @@ public:
 
     TEST_METHOD(set_preset_coding_parameters_nullptr) // NOLINT
     {
-        charls_jpegls_pc_parameters parameters{};
+        jpegls_pc_parameters parameters{};
         auto error = charls_jpegls_encoder_set_preset_coding_parameters(nullptr, &parameters);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 

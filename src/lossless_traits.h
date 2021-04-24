@@ -56,6 +56,13 @@ struct lossless_traits_impl
 
         return (~(predicted >> (int32_t_bit_count - 1))) & maximum_sample_value;
     }
+
+#ifndef NDEBUG
+    bool is_valid() const noexcept
+    {
+        return true;
+    }
+#endif
 };
 
 

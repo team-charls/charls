@@ -7,6 +7,7 @@
 #include "decoder_strategy.h"
 #include "jls_codec_factory.h"
 #include "jpeg_marker_code.h"
+#include "jpegls_preset_coding_parameters.h"
 #include "jpegls_preset_parameters_type.h"
 #include "util.h"
 
@@ -60,8 +61,8 @@ void jpeg_stream_reader::read(byte_span source, size_t stride)
             read_next_start_of_scan();
         }
 
-        unique_ptr<decoder_strategy> codec{
-            jls_codec_factory<decoder_strategy>().create_codec(frame_info_, parameters_, preset_coding_parameters_)};
+        unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
+            frame_info_, parameters_, get_validated_preset_coding_parameters())};
         unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
         codec->decode_scan(move(process_line), rect_, source_);
         skip_bytes(source, static_cast<size_t>(bytes_per_plane));
@@ -103,9 +104,6 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 
         if (marker_code == jpeg_marker_code::start_of_scan)
         {
-            if (!is_maximum_sample_value_valid())
-                throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_pc_parameters);
-
             state_ = state::scan_section;
             return;
         }
@@ -251,6 +249,18 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
 }
 
 
+jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters()
+{
+    jpegls_pc_parameters preset_coding_parameters;
+
+    if (!is_valid(preset_coding_parameters_, calculate_maximum_sample_value(frame_info_.bits_per_sample),
+                  parameters_.near_lossless, &preset_coding_parameters))
+        throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_pc_parameters);
+
+    return preset_coding_parameters;
+}
+
+
 int jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code, const int32_t segment_size,
                                             spiff_header* header, bool* spiff_header_found)
 {
@@ -374,6 +384,7 @@ int jpeg_stream_reader::read_preset_parameters_segment(const int32_t segment_siz
         if (segment_size != coding_parameter_segment_size)
             throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
+        // Note: validation will be done, just before decoding as more info is needed for validation.
         preset_coding_parameters_.maximum_sample_value = read_uint16();
         preset_coding_parameters_.threshold1 = read_uint16();
         preset_coding_parameters_.threshold2 = read_uint16();
@@ -600,18 +611,8 @@ void jpeg_stream_reader::check_parameter_coherent() const
 }
 
 
-bool jpeg_stream_reader::is_maximum_sample_value_valid() const noexcept
-{
-    return preset_coding_parameters_.maximum_sample_value == 0 ||
-           static_cast<uint32_t>(preset_coding_parameters_.maximum_sample_value) <=
-               calculate_maximum_sample_value(frame_info_.bits_per_sample);
-}
-
-
 uint32_t jpeg_stream_reader::maximum_sample_value() const noexcept
 {
-    ASSERT(is_maximum_sample_value_valid());
-
     if (preset_coding_parameters_.maximum_sample_value != 0)
         return static_cast<uint32_t>(preset_coding_parameters_.maximum_sample_value);
 

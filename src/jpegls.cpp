@@ -100,7 +100,7 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_codec(const frame_info&
 {
     unique_ptr<Strategy> codec;
 
-    if (preset_coding_parameters.reset_value == 0 || preset_coding_parameters.reset_value == default_reset_value)
+    if (preset_coding_parameters.reset_value == default_reset_value)
     {
         codec = try_create_optimized_codec(frame, parameters);
     }

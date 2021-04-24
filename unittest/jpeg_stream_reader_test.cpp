@@ -228,21 +228,6 @@ public:
         Assert::Fail();
     }
 
-    TEST_METHOD(read_header_bad_jpegls_preset_coding_parameters_should_throw) // NOLINT
-    {
-        const jpegls_pc_parameters preset_coding_parameters{256, 0, 0, 0, 0};
-
-        jpeg_test_stream_writer writer;
-        writer.write_start_of_image();
-        writer.write_jpegls_preset_parameters_segment(preset_coding_parameters);
-        writer.write_start_of_frame_segment(512, 512, 8, 3);
-        writer.write_start_of_scan_segment(0, 1, 127, interleave_mode::none);
-
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
-
-        assert_expect_exception(jpegls_errc::invalid_parameter_jpegls_pc_parameters, [&]() { reader.read_header(); });
-    }
-
     static void read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(const uint8_t id)
     {
         vector<uint8_t> buffer;

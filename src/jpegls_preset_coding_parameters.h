@@ -75,9 +75,9 @@ inline bool is_default(const jpegls_pc_parameters& preset_coding_parameters) noe
 
 
 inline bool is_valid(const jpegls_pc_parameters& pc_parameters, const int32_t maximum_component_value,
-                     const int32_t near_lossless) noexcept
+                     const int32_t near_lossless, jpegls_pc_parameters* validated_parameters = nullptr) noexcept
 {
-    ASSERT(maximum_component_value <= UINT16_MAX);
+    ASSERT(maximum_component_value >= 3 && maximum_component_value <= UINT16_MAX);
 
     // ISO/IEC 14495-1, C.2.4.1.1, Table C.1 defines the valid JPEG-LS preset coding parameters values.
     if (pc_parameters.maximum_sample_value != 0 &&
@@ -104,6 +104,19 @@ inline bool is_valid(const jpegls_pc_parameters& pc_parameters, const int32_t ma
     if (pc_parameters.reset_value != 0 &&
         (pc_parameters.reset_value < 3 || pc_parameters.reset_value > std::max(255, maximum_sample_value)))
         return false;
+
+    if (validated_parameters)
+    {
+        validated_parameters->maximum_sample_value = maximum_sample_value;
+        validated_parameters->threshold1 =
+            pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : default_parameters.threshold1;
+        validated_parameters->threshold2 =
+            pc_parameters.threshold2 != 0 ? pc_parameters.threshold2 : default_parameters.threshold2;
+        validated_parameters->threshold3 =
+            pc_parameters.threshold3 != 0 ? pc_parameters.threshold3 : default_parameters.threshold3;
+        validated_parameters->reset_value =
+            pc_parameters.reset_value != 0 ? pc_parameters.reset_value : default_parameters.reset_value;
+    }
 
     return true;
 }

@@ -67,6 +67,7 @@ private:
     void read_next_start_of_scan();
     jpeg_marker_code read_next_marker_code();
     void validate_marker_code(jpeg_marker_code marker_code) const;
+    jpegls_pc_parameters get_validated_preset_coding_parameters();
 
     int read_marker_segment(jpeg_marker_code marker_code, int32_t segment_size, spiff_header* header = nullptr,
                             bool* spiff_header_found = nullptr);
@@ -80,7 +81,6 @@ private:
     int try_read_hp_color_transform_segment();
     void add_component(uint8_t component_id);
     void check_parameter_coherent() const;
-    bool is_maximum_sample_value_valid() const noexcept;
     uint32_t maximum_sample_value() const noexcept;
 
     enum class state

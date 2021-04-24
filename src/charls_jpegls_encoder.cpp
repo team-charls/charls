@@ -54,11 +54,9 @@ struct charls_jpegls_encoder final
         near_lossless_ = near_lossless;
     }
 
-    void preset_coding_parameters(const jpegls_pc_parameters& preset_coding_parameters)
+    void preset_coding_parameters(const jpegls_pc_parameters& preset_coding_parameters) noexcept
     {
-        check_argument(is_valid(preset_coding_parameters, UINT16_MAX, near_lossless_),
-                       jpegls_errc::invalid_argument_jpegls_pc_parameters);
-
+        // Note: validation will be done just before decoding, as more info is needed for the validation.
         preset_coding_parameters_ = preset_coding_parameters;
     }
 
@@ -115,6 +113,10 @@ struct charls_jpegls_encoder final
         check_argument(source.data || source.size == 0);
         check_operation(is_frame_info_configured() && state_ != state::initial);
 
+        if (!is_valid(preset_coding_parameters_, calculate_maximum_sample_value(frame_info_.bits_per_sample), near_lossless_,
+                 &validated_pc_parameters_))
+            impl::throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
+
         if (stride == 0)
         {
             stride = static_cast<size_t>(frame_info_.width) * bit_to_byte_count(frame_info_.bits_per_sample);
@@ -150,9 +152,8 @@ struct charls_jpegls_encoder final
         }
         else if (frame_info_.bits_per_sample > 12)
         {
-            const jpegls_pc_parameters preset{compute_default(
-                static_cast<int32_t>(calculate_maximum_sample_value(frame_info_.bits_per_sample)), near_lossless_)};
-            writer_.write_jpegls_preset_parameters_segment(preset);
+            // The Java JPEG-LS decoder uses invalid default PC parameters, as a workaround write the used values explicitly.
+            writer_.write_jpegls_preset_parameters_segment(validated_pc_parameters_);
         }
 
         if (interleave_mode_ == charls::interleave_mode::none)
@@ -210,7 +211,7 @@ private:
                                             component_count};
 
         auto codec{jls_codec_factory<encoder_strategy>().create_codec(
-            frame_info, {near_lossless_, interleave_mode_, color_transformation_, false}, preset_coding_parameters_)};
+            frame_info, {near_lossless_, interleave_mode_, color_transformation_, false}, validated_pc_parameters_)};
         std::unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
         const size_t bytes_written{codec->encode_scan(move(process_line), writer_.remaining_destination())};
 
@@ -225,6 +226,7 @@ private:
     state state_{};
     jpeg_stream_writer writer_;
     jpegls_pc_parameters preset_coding_parameters_{};
+    jpegls_pc_parameters validated_pc_parameters_{};
 };
 
 extern "C" {

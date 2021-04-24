@@ -422,7 +422,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        const charls_jpegls_pc_parameters pc_parameters{};
+        const jpegls_pc_parameters pc_parameters{};
         encoder.preset_coding_parameters(pc_parameters);
 
         // No explicit test possible, code should remain stable.
@@ -431,12 +431,28 @@ public:
 
     TEST_METHOD(set_preset_coding_parameters_bad_values) // NOLINT
     {
+        const array<uint8_t, 5> source{0, 1, 1, 1, 0};
+        const frame_info frame_info{5, 1, 8, 1};
         jpegls_encoder encoder;
 
-        charls_jpegls_pc_parameters pc_parameters{1, 1, 1, 1, 1};
+        encoder.frame_info(frame_info);
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_argument_jpegls_pc_parameters,
-                                [&] { encoder.preset_coding_parameters(pc_parameters); });
+        jpegls_pc_parameters bad_pc_parameters{1, 1, 1, 1, 1};
+        encoder.preset_coding_parameters(bad_pc_parameters);
+
+        assert_expect_exception(jpegls_errc::invalid_argument_jpegls_pc_parameters, [&] { encoder.encode(source); });
+    }
+
+    TEST_METHOD(encode_with_preset_coding_parameters_non_default_values) // NOLINT
+    {
+        encode_with_custom_preset_coding_parameters_({1, 0, 0, 0, 0});
+        encode_with_custom_preset_coding_parameters_({0, 1, 0, 0, 0});
+        encode_with_custom_preset_coding_parameters_({0, 0, 4, 0, 0});
+        encode_with_custom_preset_coding_parameters_({0, 0, 0, 8, 0});
+        encode_with_custom_preset_coding_parameters_({0, 1, 2, 3, 0});
+        encode_with_custom_preset_coding_parameters_({0, 0, 0, 0, 63});
     }
 
     TEST_METHOD(set_color_transformation_bad_value) // NOLINT
@@ -805,6 +821,24 @@ private:
                 }
             }
         }
+    }
+
+    static void encode_with_custom_preset_coding_parameters_(const jpegls_pc_parameters& pc_parameters)
+    {
+        const array<uint8_t, 5> source{0, 1, 1, 1, 0};
+        const frame_info frame_info{5, 1, 8, 1};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        encoder.preset_coding_parameters(pc_parameters);
+
+        const size_t bytes_written{encoder.encode(source)};
+        destination.resize(bytes_written);
+
+        test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 };
 

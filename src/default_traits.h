@@ -110,6 +110,19 @@ struct default_traits final
         return error_value;
     }
 
+#ifndef NDEBUG
+    bool is_valid() const noexcept
+    {
+        if (maximum_sample_value < 1 || maximum_sample_value > UINT16_MAX)
+            return false;
+
+        if (bits_per_pixel < 1 || bits_per_pixel > 16)
+            return false;
+
+        return true;
+    }
+#endif
+
 private:
     int32_t quantize(const int32_t error_value) const noexcept
     {

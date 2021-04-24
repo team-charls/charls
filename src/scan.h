@@ -131,6 +131,7 @@ public:
     {
         ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) ||
                parameters.interleave_mode != interleave_mode::none);
+        ASSERT(traits.is_valid());
     }
 
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
@@ -176,12 +177,7 @@ public:
 private:
     void set_presets(const jpegls_pc_parameters& presets) override
     {
-        const jpegls_pc_parameters preset_default{compute_default(traits_.maximum_sample_value, traits_.near_lossless)};
-
-        initialize_parameters(presets.threshold1 != 0 ? presets.threshold1 : preset_default.threshold1,
-                              presets.threshold2 != 0 ? presets.threshold2 : preset_default.threshold2,
-                              presets.threshold3 != 0 ? presets.threshold3 : preset_default.threshold3,
-                              presets.reset_value != 0 ? presets.reset_value : preset_default.reset_value);
+        initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
     }
 
     bool is_interleaved() noexcept
