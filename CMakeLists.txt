@@ -135,6 +135,12 @@ if(MSVC)
   # /Zc:throwingNew: Will configure the MSVC compiler that only the standard throwing operator new is used.
   add_compile_options("/Zc:throwingNew")
 
+  # /permissive-: Will configure the MSVC compiler to accept only standards conformance C++
+  add_compile_options("/permissive-")
+
+  # /ZH:SHA_256: Wiill use SHA 256 for checksums between source code and debug symbols (more secure)
+  add_compile_options("/ZH:SHA_256")
+
   # /guard:cf: Will enable Control Flow Guard, which provides addition compile time and runtime checks.
   add_compile_options("/guard:cf")
   add_link_options("/guard:cf")

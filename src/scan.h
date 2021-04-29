@@ -131,7 +131,7 @@ public:
     {
         ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) ||
                parameters.interleave_mode != interleave_mode::none);
-        ASSERT(traits.is_valid());
+        ASSERT(traits_.is_valid());
     }
 
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
