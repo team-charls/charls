@@ -139,6 +139,9 @@
 
       <!-- Store only the filename of the PDB file into the .exe/.dll for deterministic builds. -->
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
+
+      <!-- Mark executable image compatible with the Control-flow Enforcement Technology (CET) Shadow Stack. -->
+      <CETCompat>true</CETCompat>
     </Link>
   </ItemDefinitionGroup>
 

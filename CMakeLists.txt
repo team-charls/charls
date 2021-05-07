@@ -144,6 +144,13 @@ if(MSVC)
   # /guard:cf: Will enable Control Flow Guard, which provides addition compile time and runtime checks.
   add_compile_options("/guard:cf")
   add_link_options("/guard:cf")
+
+  # /CETCOMPAT: Mark executable image compatible with the Control-flow Enforcement Technology (CET) Shadow Stack.
+  # CET is only supported by x64 and x86 CPUs (11th generation Intel and AMD Zen3 and newer)
+  if(${ARM_DETECTED} EQUAL 0)
+    add_link_options("/CETCOMPAT")
+  endif()
+
 endif()
 
 # When enabled apply the pedantic warnings options and warnings as errors to globally.
