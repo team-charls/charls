@@ -18,6 +18,11 @@ namespace charls { namespace test {
 TEST_CLASS(encode_test)
 {
 public:
+    TEST_METHOD(encode_monochrome_2_bit_lossless) // NOLINT
+    {
+        encode("DataFiles/2bit_parrot_150x200.pgm");
+    }
+
     TEST_METHOD(encode_monochrome_4_bit_lossless) // NOLINT
     {
         encode("DataFiles/4bit-monochrome.pgm");

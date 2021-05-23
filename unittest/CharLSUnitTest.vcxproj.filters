@@ -163,5 +163,8 @@
     <CopyFileToFolders Include="fuzzy_input_golomb_16.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="2bit_parrot_150x200.pgm">
+      <Filter>Test Images</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

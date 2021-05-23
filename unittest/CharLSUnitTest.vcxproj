@@ -187,6 +187,10 @@
     <CopyFileToFolders Include="fuzzy_input_golomb_16.jls">
       <FileType>Document</FileType>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="2bit_parrot_150x200.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
+    </CopyFileToFolders>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
