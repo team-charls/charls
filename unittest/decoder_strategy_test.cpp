@@ -83,7 +83,7 @@ public:
 
         const auto length = encoder.get_length_forward();
         decoder_strategy_tester decoder(frame_info, parameters, enc_buf.data(), length);
-        for (const auto& data: in_data)
+        for (const auto& data : in_data)
         {
             const auto actual = decoder.read(data.bits);
             Assert::AreEqual(data.value, actual);

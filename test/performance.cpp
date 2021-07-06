@@ -31,7 +31,7 @@ void test_file16_bit_as12(const char* filename, const int offset, const rect_siz
     fix_endian(&uncompressed_data, little_endian_file);
 
     auto* const p{reinterpret_cast<uint16_t*>(uncompressed_data.data())};
-    for (size_t i{}; i < uncompressed_data.size() / 2; ++i)
+    for (size_t i{}; i != uncompressed_data.size() / 2; ++i)
     {
         p[i] = p[i] >> 4;
     }
@@ -123,7 +123,7 @@ void decode_performance_tests(const int loop_count)
     try
     {
         const auto start{steady_clock::now()};
-        for (int i{}; i < loop_count; ++i)
+        for (int i{}; i != loop_count; ++i)
         {
             vector<uint8_t> uncompressed;
             jpegls_decoder::decode(jpegls_compressed, uncompressed);
@@ -158,7 +158,7 @@ void encode_performance_tests(const int loop_count)
         vector<uint8_t> destination(encoder1.estimated_destination_size());
 
         const auto start{steady_clock::now()};
-        for (int i{}; i < loop_count; ++i)
+        for (int i{}; i != loop_count; ++i)
         {
             jpegls_encoder encoder2;
             encoder2.frame_info(info).interleave_mode(interleave_mode);

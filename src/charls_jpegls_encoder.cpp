@@ -158,7 +158,7 @@ struct charls_jpegls_encoder final
         if (interleave_mode_ == charls::interleave_mode::none)
         {
             const size_t byte_count_component{stride * frame_info_.height};
-            for (int32_t component{}; component < frame_info_.component_count; ++component)
+            for (int32_t component{}; component != frame_info_.component_count; ++component)
             {
                 writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
                 encode_scan(source, stride, 1);
@@ -209,7 +209,7 @@ private:
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample,
                                             component_count};
 
-        auto codec{jls_codec_factory<encoder_strategy>().create_codec(
+        const auto codec{jls_codec_factory<encoder_strategy>().create_codec(
             frame_info, {near_lossless_, interleave_mode_, color_transformation_, false}, validated_pc_parameters_)};
         std::unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
         const size_t bytes_written{codec->encode_scan(move(process_line), writer_.remaining_destination())};

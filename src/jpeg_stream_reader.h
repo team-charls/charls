@@ -62,11 +62,11 @@ private:
     uint16_t read_uint16();
     uint32_t read_uint32();
     int32_t read_segment_size();
-    void read_bytes(std::vector<char>& destination, int byte_count);
+    std::vector<uint8_t> read_bytes(size_t byte_count);
     void read_next_start_of_scan();
     jpeg_marker_code read_next_marker_code();
     void validate_marker_code(jpeg_marker_code marker_code) const;
-    jpegls_pc_parameters get_validated_preset_coding_parameters();
+    jpegls_pc_parameters get_validated_preset_coding_parameters() const;
 
     int read_marker_segment(jpeg_marker_code marker_code, int32_t segment_size, spiff_header* header = nullptr,
                             bool* spiff_header_found = nullptr);

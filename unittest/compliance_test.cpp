@@ -123,7 +123,7 @@ private:
 
         if (decoder.near_lossless() == 0)
         {
-            for (size_t i{}; i < uncompressed_source.size(); ++i)
+            for (size_t i{}; i != uncompressed_source.size(); ++i)
             {
                 if (uncompressed_source[i] != destination[i]) // AreEqual is very slow, pre-test to speed up 50X
                 {
@@ -138,7 +138,7 @@ private:
 
             if (frame_info.bits_per_sample <= 8)
             {
-                for (size_t i{}; i < uncompressed_source.size(); ++i)
+                for (size_t i{}; i != uncompressed_source.size(); ++i)
                 {
                     if (abs(uncompressed_source[i] - destination[i]) >
                         near_lossless) // AreEqual is very slow, pre-test to speed up 50X
@@ -152,7 +152,7 @@ private:
                 const auto* source16 = reinterpret_cast<const uint16_t*>(uncompressed_source.data());
                 const auto* destination16 = reinterpret_cast<const uint16_t*>(destination.data());
 
-                for (size_t i{}; i < uncompressed_source.size() / 2; ++i)
+                for (size_t i{}; i != uncompressed_source.size() / 2; ++i)
                 {
                     if (abs(source16[i] - destination16[i]) >
                         near_lossless) // AreEqual is very slow, pre-test to speed up 50X
@@ -189,7 +189,7 @@ private:
 
         if (info.allowedLossyError == 0)
         {
-            for (size_t i{}; i < uncompressed_length; ++i)
+            for (size_t i{}; i != uncompressed_length; ++i)
             {
                 if (uncompressed_data[i] != destination[i]) // AreEqual is very slow, pre-test to speed up 50X
                 {
@@ -220,7 +220,7 @@ private:
         if (error)
             return false;
 
-        for (size_t i{}; i < compressed_length; ++i)
+        for (size_t i{}; i != compressed_length; ++i)
         {
             if (static_cast<const uint8_t*>(compressed_data)[i] != our_encoded_bytes[i])
             {
@@ -253,7 +253,7 @@ private:
         if (bytes_written != encoded_source.size())
             return false;
 
-        for (size_t i{}; i < encoded_source.size(); ++i)
+        for (size_t i{}; i != encoded_source.size(); ++i)
         {
             if (encoded_source[i] != our_encoded_bytes[i])
             {

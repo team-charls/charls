@@ -200,7 +200,7 @@ public:
             read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
 
         const auto& reference_image_data = reference_file.image_data();
-        for (size_t i{}; i < destination.size(); ++i)
+        for (size_t i{}; i != destination.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination[i]);
         }
@@ -220,7 +220,7 @@ public:
             read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
 
         const auto& reference_image_data = reference_file.image_data();
-        for (size_t i{}; i < destination.size(); ++i)
+        for (size_t i{}; i != destination.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination[i]);
         }
@@ -236,7 +236,7 @@ public:
             read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
 
         const auto& reference_image_data{reference_file.image_data()};
-        for (size_t i{}; i < destination.size(); ++i)
+        for (size_t i{}; i != destination.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination[i]);
         }
@@ -253,7 +253,7 @@ public:
 
         const auto& reference_image_data{reference_file.image_data()};
         const auto* destination_as_bytes{reinterpret_cast<const uint8_t*>(destination.data())};
-        for (size_t i{}; i < reference_image_data.size(); ++i)
+        for (size_t i{}; i != reference_image_data.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination_as_bytes[i]);
         }
@@ -467,7 +467,7 @@ private:
         const auto pcp_segment{create_default_pc_parameters_segment()};
 
         auto it{jpegls_source.begin()};
-        for (int i{}; i < component_count; ++i)
+        for (int i{}; i != component_count; ++i)
         {
             it = find_scan_header(it, jpegls_source.end());
             it = jpegls_source.insert(it, pcp_segment.cbegin(), pcp_segment.cend());

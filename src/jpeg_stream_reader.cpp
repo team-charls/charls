@@ -12,11 +12,14 @@
 #include "util.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 namespace charls {
 
 using impl::throw_jpegls_error;
+using std::array;
+using std::equal;
 using std::find;
 using std::unique_ptr;
 using std::vector;
@@ -61,7 +64,7 @@ void jpeg_stream_reader::read(byte_span source, size_t stride)
             read_next_start_of_scan();
         }
 
-        unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
+        const unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
             frame_info_, parameters_, get_validated_preset_coding_parameters())};
         unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
         codec->decode_scan(move(process_line), rect_, source_);
@@ -76,12 +79,17 @@ void jpeg_stream_reader::read(byte_span source, size_t stride)
 }
 
 
-void jpeg_stream_reader::read_bytes(std::vector<char>& destination, const int byte_count)
+vector<uint8_t> jpeg_stream_reader::read_bytes(const size_t byte_count)
 {
-    for (int i{}; i < byte_count; ++i)
+    vector<uint8_t> result;
+    result.reserve(byte_count);
+
+    for (size_t i{}; i != byte_count; ++i)
     {
-        destination.push_back(static_cast<char>(read_byte()));
+        result.push_back(read_byte());
     }
+
+    return result;
 }
 
 
@@ -125,7 +133,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
         if (padding_to_read < 0)
             throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
-        for (int i{}; i < padding_to_read; ++i)
+        for (int i{}; i != padding_to_read; ++i)
         {
             read_byte();
         }
@@ -161,7 +169,7 @@ void jpeg_stream_reader::read_next_start_of_scan()
         if (padding_to_read < 0)
             throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
-        for (int i{}; i < padding_to_read; ++i)
+        for (int i{}; i != padding_to_read; ++i)
         {
             read_byte();
         }
@@ -249,7 +257,7 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
 }
 
 
-jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters()
+jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters() const
 {
     jpegls_pc_parameters preset_coding_parameters;
 
@@ -347,7 +355,7 @@ int jpeg_stream_reader::read_start_of_frame_segment(const int32_t segment_size)
     if (segment_size != 6 + (frame_info_.component_count * 3))
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
-    for (int32_t i{}; i < frame_info_.component_count; ++i)
+    for (int32_t i{}; i != frame_info_.component_count; ++i)
     {
         // Component specification parameters
         add_component(read_byte()); // Ci = Component identifier
@@ -427,7 +435,7 @@ void jpeg_stream_reader::read_start_of_scan()
     if (segment_size != 6 + (2 * component_count_in_scan))
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
-    for (int i{}; i < component_count_in_scan; ++i)
+    for (int i{}; i != component_count_in_scan; ++i)
     {
         read_byte(); // Read Scan component selector
         const uint8_t mapping_table_selector{read_byte()};
@@ -513,9 +521,8 @@ int jpeg_stream_reader::try_read_application_data8_segment(const int32_t segment
 
 int jpeg_stream_reader::try_read_hp_color_transform_segment()
 {
-    vector<char> source_tag;
-    read_bytes(source_tag, 4);
-    if (strncmp(source_tag.data(), "mrfx", 4) != 0) // mrfx = xfrm (in big endian) = colorXFoRM
+    const array<uint8_t, 4> mrfx_tag{'m', 'r', 'f', 'x'}; // mrfx = xfrm (in big endian) = colorXFoRM
+    if (!equal(mrfx_tag.cbegin(), mrfx_tag.cend(), read_bytes(4).cbegin()))
         return 4;
 
     const auto transformation{read_byte()};
@@ -551,9 +558,8 @@ EnumType enum_cast(uint8_t value)
 
 int jpeg_stream_reader::try_read_spiff_header_segment(OUT_ spiff_header& header, OUT_ bool& spiff_header_found)
 {
-    vector<char> source_tag;
-    read_bytes(source_tag, 6);
-    if (strncmp(source_tag.data(), "SPIFF\0", 6) != 0)
+    const array<uint8_t, 6> spiff_tag{'S', 'P', 'I', 'F', 'F', 0};
+    if (!equal(spiff_tag.cbegin(), spiff_tag.cend(), read_bytes(6).cbegin()))
     {
         header = {};
         spiff_header_found = false;

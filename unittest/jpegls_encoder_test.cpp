@@ -9,11 +9,13 @@
 #include <charls/charls.h>
 
 #include <array>
+#include <tuple>
 #include <vector>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::vector;
+using std::ignore;
 
 constexpr size_t serialized_spiff_header_size = 34;
 
@@ -174,7 +176,7 @@ public:
 
     TEST_METHOD(estimated_destination_size_too_soon) // NOLINT
     {
-        jpegls_encoder encoder;
+        const jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_operation,
                                 [&] { static_cast<void>(encoder.estimated_destination_size()); });
@@ -439,20 +441,20 @@ public:
         vector<uint8_t> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
-        jpegls_pc_parameters bad_pc_parameters{1, 1, 1, 1, 1};
+        const jpegls_pc_parameters bad_pc_parameters{1, 1, 1, 1, 1};
         encoder.preset_coding_parameters(bad_pc_parameters);
 
-        assert_expect_exception(jpegls_errc::invalid_argument_jpegls_pc_parameters, [&] { encoder.encode(source); });
+        assert_expect_exception(jpegls_errc::invalid_argument_jpegls_pc_parameters, [&] { ignore = encoder.encode(source); });
     }
 
     TEST_METHOD(encode_with_preset_coding_parameters_non_default_values) // NOLINT
     {
-        encode_with_custom_preset_coding_parameters_({1, 0, 0, 0, 0});
-        encode_with_custom_preset_coding_parameters_({0, 1, 0, 0, 0});
-        encode_with_custom_preset_coding_parameters_({0, 0, 4, 0, 0});
-        encode_with_custom_preset_coding_parameters_({0, 0, 0, 8, 0});
-        encode_with_custom_preset_coding_parameters_({0, 1, 2, 3, 0});
-        encode_with_custom_preset_coding_parameters_({0, 0, 0, 0, 63});
+        encode_with_custom_preset_coding_parameters({1, 0, 0, 0, 0});
+        encode_with_custom_preset_coding_parameters({0, 1, 0, 0, 0});
+        encode_with_custom_preset_coding_parameters({0, 0, 4, 0, 0});
+        encode_with_custom_preset_coding_parameters({0, 0, 0, 8, 0});
+        encode_with_custom_preset_coding_parameters({0, 1, 2, 3, 0});
+        encode_with_custom_preset_coding_parameters({0, 0, 0, 0, 63});
     }
 
     TEST_METHOD(set_color_transformation_bad_value) // NOLINT
@@ -469,7 +471,7 @@ public:
 
         encoder.frame_info({1, 1, 2, 1});
         vector<uint8_t> source(20);
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(encoder.encode(source)); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = encoder.encode(source); });
     }
 
     TEST_METHOD(encode_without_frame_info) // NOLINT
@@ -478,8 +480,8 @@ public:
 
         vector<uint8_t> destination(20);
         encoder.destination(destination);
-        vector<uint8_t> source(20);
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(encoder.encode(source)); });
+        const vector<uint8_t> source(20);
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = encoder.encode(source); });
     }
 
     TEST_METHOD(encode_with_spiff_header) // NOLINT
@@ -813,7 +815,7 @@ private:
         {
             const auto* expected_destination_byte{static_cast<const uint8_t*>(expected_destination)};
 
-            for (size_t i{}; i < expected_destination_size; ++i)
+            for (size_t i{}; i != expected_destination_size; ++i)
             {
                 if (expected_destination_byte[i] != destination[i]) // AreEqual is very slow, pre-test to speed up 50X
                 {
@@ -823,7 +825,7 @@ private:
         }
     }
 
-    static void encode_with_custom_preset_coding_parameters_(const jpegls_pc_parameters& pc_parameters)
+    static void encode_with_custom_preset_coding_parameters(const jpegls_pc_parameters& pc_parameters)
     {
         const array<uint8_t, 5> source{0, 1, 1, 1, 0};
         const frame_info frame_info{5, 1, 8, 1};

@@ -28,7 +28,7 @@ void triplet_to_planar(vector<uint8_t>& buffer, const uint32_t width, const uint
     vector<uint8_t> work_buffer(buffer.size());
 
     const size_t byte_count{static_cast<size_t>(width) * height};
-    for (size_t index{}; index < byte_count; index++)
+    for (size_t index{}; index != byte_count; index++)
     {
         work_buffer[index] = buffer[index * 3 + 0];
         work_buffer[index + 1 * byte_count] = buffer[index * 3 + 1];
@@ -160,7 +160,7 @@ vector<uint8_t> create_noise_image_16_bit(const size_t pixel_count, const int bi
     MSVC_CONST uniform_int_distribution<uint16_t> distribution(0, max_value);
 
     vector<uint8_t> buffer(pixel_count * 2);
-    for (size_t i{}; i < pixel_count; i = i + 2)
+    for (size_t i{}; i != pixel_count; i = i + 2)
     {
         const uint16_t value{distribution(generator)};
 
@@ -189,7 +189,7 @@ void test_round_trip_legacy(const vector<uint8_t>& source, const JlsParameters& 
     Assert::AreEqual(jpegls_errc::success, error);
 
     const uint8_t* byte_out{decoded_buffer.data()};
-    for (size_t i{}; i < decoded_buffer.size(); ++i)
+    for (size_t i{}; i != decoded_buffer.size(); ++i)
     {
         if (source[i] != byte_out[i])
         {

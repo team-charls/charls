@@ -73,13 +73,13 @@ void test_traits16_bit()
     assert::is_true(traits1.bits_per_pixel == lossless_traits::bits_per_pixel);
     assert::is_true(traits1.quantized_bits_per_pixel == lossless_traits::quantized_bits_per_pixel);
 
-    for (int i{-4096}; i < 4096; ++i)
+    for (int i{-4096}; i != 4096; ++i)
     {
         assert::is_true(traits1.modulo_range(i) == lossless_traits::modulo_range(i));
         assert::is_true(traits1.compute_error_value(i) == lossless_traits::compute_error_value(i));
     }
 
-    for (int i{-8095}; i < 8095; ++i)
+    for (int i{-8095}; i != 8095; ++i)
     {
         assert::is_true(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
         assert::is_true(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
@@ -98,13 +98,13 @@ void test_traits8_bit()
     assert::is_true(traits1.bits_per_pixel == lossless_traits::bits_per_pixel);
     assert::is_true(traits1.quantized_bits_per_pixel == lossless_traits::quantized_bits_per_pixel);
 
-    for (int i{-255}; i < 255; ++i)
+    for (int i{-255}; i != 255; ++i)
     {
         assert::is_true(traits1.modulo_range(i) == lossless_traits::modulo_range(i));
         assert::is_true(traits1.compute_error_value(i) == lossless_traits::compute_error_value(i));
     }
 
-    for (int i{-255}; i < 512; ++i)
+    for (int i{-255}; i != 512; ++i)
     {
         assert::is_true(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
         assert::is_true(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
@@ -135,7 +135,7 @@ vector<uint8_t> make_some_noise16_bit(const size_t length, const int bit_count, 
     MSVC_CONST uniform_int_distribution<uint16_t> distribution(0, max_value);
 
     vector<uint8_t> buffer(length * 2);
-    for (size_t i{}; i < length; i = i + 2)
+    for (size_t i{}; i != length; i = i + 2)
     {
         const uint16_t value = distribution(generator);
 
@@ -580,7 +580,7 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
     pnm_file1.read(reinterpret_cast<char*>(bytes1.data()), byte_count);
     pnm_file2.read(reinterpret_cast<char*>(bytes2.data()), byte_count);
 
-    for (size_t x{}; x < height; ++x)
+    for (size_t x{}; x != height; ++x)
     {
         for (size_t y{}; y < width; y += bytes_per_sample)
         {
@@ -697,7 +697,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         return EXIT_FAILURE;
     }
 
-    for (int i{1}; i < argc; ++i)
+    for (int i{1}; i != argc; ++i)
     {
         string str{argv[i]};
         if (str == "-unittest")

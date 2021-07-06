@@ -19,10 +19,10 @@ constexpr size_t bytes_per_rgb_pixel{3};
 void convert_bgr_to_rgb(std::vector<uint8_t>& triplet_buffer, const size_t width, const size_t height,
                         const size_t stride) noexcept
 {
-    for (size_t line{}; line < height; ++line)
+    for (size_t line{}; line != height; ++line)
     {
         const auto line_start{line * stride};
-        for (size_t pixel{}; pixel < width; ++pixel)
+        for (size_t pixel{}; pixel != width; ++pixel)
         {
             const auto column{pixel * bytes_per_rgb_pixel};
             std::swap(triplet_buffer[line_start + column], triplet_buffer[line_start + column + 2]);
@@ -37,10 +37,10 @@ std::vector<uint8_t> triplet_to_planar(const std::vector<uint8_t>& buffer, const
     const size_t byte_count_plane{width * height};
 
     size_t plane_column{};
-    for (size_t line{}; line < height; ++line)
+    for (size_t line{}; line != height; ++line)
     {
         const auto line_start{line * stride};
-        for (size_t pixel{}; pixel < width; ++pixel)
+        for (size_t pixel{}; pixel != width; ++pixel)
         {
             const auto column{line_start + pixel * bytes_per_rgb_pixel};
             result[plane_column] = buffer[column];
@@ -58,7 +58,7 @@ void convert_bottom_up_to_top_down(uint8_t* triplet_buffer, const size_t width, 
     const size_t row_length{width * bytes_per_rgb_pixel};
     std::vector<uint8_t> temp_row(row_length);
 
-    for (size_t i{}; i < height / 2; ++i)
+    for (size_t i{}; i != height / 2; ++i)
     {
         memcpy(temp_row.data(), &triplet_buffer[i * stride], row_length);
         const size_t bottom_row{height - i - 1};

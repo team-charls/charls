@@ -26,11 +26,11 @@ public:
         constexpr int start_value{123};
         constexpr int end_value{124};
 
-        for (int red{start_value}; red < end_value; ++red)
+        for (int red{start_value}; red != end_value; ++red)
         {
-            for (int green{}; green < 255; ++green)
+            for (int green{}; green != 255; ++green)
             {
-                for (int blue{}; blue < 255; ++blue)
+                for (int blue{}; blue != 255; ++blue)
                 {
                     const transform_hp1<uint8_t> transform;
                     const auto sample = transform(red, green, blue);
@@ -53,11 +53,11 @@ public:
         constexpr int start_value{123};
         constexpr int end_value{124};
 
-        for (int red{start_value}; red < end_value; ++red)
+        for (int red{start_value}; red != end_value; ++red)
         {
-            for (int green{}; green < 255; ++green)
+            for (int green{}; green != 255; ++green)
             {
-                for (int blue{}; blue < 255; ++blue)
+                for (int blue{}; blue != 255; ++blue)
                 {
                     const transform_hp2<uint8_t> transform;
                     const auto sample = transform(red, green, blue);
@@ -80,11 +80,11 @@ public:
         constexpr uint8_t start_value{123};
         constexpr uint8_t end_value{124};
 
-        for (int red = start_value; red < end_value; ++red)
+        for (int red = start_value; red != end_value; ++red)
         {
-            for (int green{}; green < 255; ++green)
+            for (int green{}; green != 255; ++green)
             {
-                for (int blue{}; blue < 255; ++blue)
+                for (int blue{}; blue != 255; ++blue)
                 {
                     const transform_hp3<uint8_t> transformation;
                     const auto sample = transformation(red, green, blue);
@@ -103,7 +103,7 @@ public:
     {
         const vector<uint8_t> jpegls_data{read_file("land10-10bit-rgb-hp3-invalid.jls")};
 
-        jpegls_decoder decoder{jpegls_data, true};
+        const jpegls_decoder decoder{jpegls_data, true};
 
         vector<uint8_t> destination(decoder.destination_size());
 
@@ -117,7 +117,7 @@ public:
 
         vector<uint8_t> destination(40);
         encoder.destination(destination).frame_info(frame_info).color_transformation(color_transformation::hp3);
-        vector<uint8_t> source(20);
+        const vector<uint8_t> source(20);
         assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported,
                                 [&] { static_cast<void>(encoder.encode(source)); });
     }

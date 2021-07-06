@@ -95,12 +95,12 @@ void test_file_with_random_header_damage(const char* filename)
 
     vector<uint8_t> destination(512 * 512);
 
-    for (size_t i{}; i < 40; ++i)
+    for (size_t i{}; i != 40; ++i)
     {
         vector<uint8_t> encoded_buffer(encoded_buffer_original);
         vector<int> errors(10, 0);
 
-        for (int j{}; j < 20; ++j)
+        for (int j{}; j != 20; ++j)
         {
             encoded_buffer[i] = static_cast<uint8_t>(distribution(generator));
             encoded_buffer[i + 1] = static_cast<uint8_t>(distribution(generator));
@@ -120,7 +120,7 @@ void test_file_with_random_header_damage(const char* filename)
         }
 
         cout << "With garbage input at index " << i << ": ";
-        for (unsigned int error{}; error < errors.size(); ++error)
+        for (size_t error{}; error != errors.size(); ++error)
         {
             if (errors[error] == 0)
                 continue;

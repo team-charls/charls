@@ -194,7 +194,7 @@ private:
 
         Assert::AreEqual(decoded_source.size(), uncompressed_source.size());
 
-        for (size_t i{}; i < uncompressed_source.size(); ++i)
+        for (size_t i{}; i != uncompressed_source.size(); ++i)
         {
             if (decoded_source[i] != uncompressed_source[i]) // AreEqual is very slow, pre-test to speed up 50X
             {
@@ -224,7 +224,7 @@ private:
 
         Assert::AreEqual(destination.size(), uncompressed_source.size());
 
-        for (size_t i{}; i < uncompressed_source.size(); ++i)
+        for (size_t i{}; i != uncompressed_source.size(); ++i)
         {
             if (destination[i] != uncompressed_source[i]) // AreEqual is very slow, pre-test to speed up 50X
             {

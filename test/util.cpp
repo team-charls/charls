@@ -123,7 +123,7 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
 
     size_t encoded_actual_size{};
     auto start{steady_clock::now()};
-    for (int i{}; i < loop_count; ++i)
+    for (int i{}; i != loop_count; ++i)
     {
         try
         {
@@ -145,7 +145,7 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
     const auto total_encode_duration = steady_clock::now() - start;
 
     start = steady_clock::now();
-    for (int i{}; i < loop_count; ++i)
+    for (int i{}; i != loop_count; ++i)
     {
         try
         {
@@ -174,7 +174,7 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
          << " ms, Bits per sample:" << bits_per_sample << ", Decode rate:" << symbol_rate << " M/s\n";
 
     const uint8_t* byte_out{decoded_buffer.data()};
-    for (size_t i{}; i < decoded_buffer.size(); ++i)
+    for (size_t i{}; i != decoded_buffer.size(); ++i)
     {
         if (original_buffer[i] != byte_out[i])
         {

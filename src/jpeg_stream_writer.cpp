@@ -142,7 +142,7 @@ void jpeg_stream_writer::write_start_of_scan_segment(const int32_t component_cou
     write_segment_header(jpeg_marker_code::start_of_scan, 1 + (static_cast<size_t>(component_count) * 2) + 3);
     write_uint8(static_cast<uint8_t>(component_count));
 
-    for (int32_t i{}; i < component_count; ++i)
+    for (int32_t i{}; i != component_count; ++i)
     {
         write_uint8(component_id_);
         write_uint8(0); // Mapping table selector (0 = no table)

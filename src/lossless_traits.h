@@ -58,7 +58,7 @@ struct lossless_traits_impl
     }
 
 #ifndef NDEBUG
-    bool is_valid() const noexcept
+    static bool is_valid() noexcept
     {
         return true;
     }

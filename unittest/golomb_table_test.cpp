@@ -19,7 +19,7 @@ public:
     {
         const golomb_code_table golomb_table;
 
-        for (uint32_t i{}; i < 256U; i++)
+        for (uint32_t i{}; i != 256U; i++)
         {
             Assert::AreEqual(0U, golomb_table.get(i).length());
             Assert::AreEqual(0, golomb_table.get(i).value());
