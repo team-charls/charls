@@ -3,9 +3,8 @@
 
 #pragma once
 
-#include <charls/public_types.h>
-
 #include "byte_span.h"
+#include "charls/public_types.h"
 #include "coding_parameters.h"
 
 #include <cstdint>

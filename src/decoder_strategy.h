@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include <charls/jpegls_error.h>
-
+#include "charls/jpegls_error.h"
 #include "jpeg_marker_code.h"
 #include "process_line.h"
 #include "util.h"

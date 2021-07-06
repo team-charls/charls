@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 /// <summary>Simplified span class for C++14.</summary>

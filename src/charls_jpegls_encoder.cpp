@@ -1,8 +1,7 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <charls/charls_jpegls_encoder.h>
-
+#include "charls/charls_jpegls_encoder.h"
 #include "encoder_strategy.h"
 #include "jls_codec_factory.h"
 #include "jpeg_stream_writer.h"
@@ -114,7 +113,7 @@ struct charls_jpegls_encoder final
         check_operation(is_frame_info_configured() && state_ != state::initial);
 
         if (!is_valid(preset_coding_parameters_, calculate_maximum_sample_value(frame_info_.bits_per_sample), near_lossless_,
-                 &validated_pc_parameters_))
+                      &validated_pc_parameters_))
             impl::throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
 
         if (stride == 0)

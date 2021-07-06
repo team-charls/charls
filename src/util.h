@@ -3,10 +3,9 @@
 
 #pragma once
 
-#include <charls/annotations.h>
-#include <charls/jpegls_error.h>
-
 #include "byte_span.h"
+#include "charls/annotations.h"
+#include "charls/jpegls_error.h"
 
 #include <algorithm>
 #include <cassert>
