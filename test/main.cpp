@@ -501,7 +501,7 @@ bool encode_pnm(istream& pnm_file, ostream& jls_file_stream)
     const frame_info frame_info{static_cast<uint32_t>(read_values[1]), static_cast<uint32_t>(read_values[2]),
                                 log_2(read_values[3] + 1), read_values[0] == 6 ? 3 : 1};
 
-    const int bytes_per_sample = ::bit_to_byte_count(frame_info.bits_per_sample);
+    const auto bytes_per_sample = static_cast<int32_t>(::bit_to_byte_count(frame_info.bits_per_sample));
     vector<uint8_t> input_buffer(static_cast<size_t>(frame_info.width) * frame_info.height * bytes_per_sample *
                                  frame_info.component_count);
     pnm_file.read(reinterpret_cast<char*>(input_buffer.data()), input_buffer.size());

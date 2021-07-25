@@ -110,7 +110,7 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_codec(const frame_info&
         if (frame.bits_per_sample <= 8)
         {
             default_traits<uint8_t, uint8_t> traits(
-                static_cast<int32_t>(calculate_maximum_sample_value(frame.bits_per_sample)), parameters.near_lossless,
+                calculate_maximum_sample_value(frame.bits_per_sample), parameters.near_lossless,
                 preset_coding_parameters.reset_value);
             traits.maximum_sample_value = preset_coding_parameters.maximum_sample_value;
             codec = make_unique<jls_codec<default_traits<uint8_t, uint8_t>, Strategy>>(traits, frame, parameters);
@@ -118,7 +118,7 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_codec(const frame_info&
         else
         {
             default_traits<uint16_t, uint16_t> traits(
-                static_cast<int32_t>(calculate_maximum_sample_value(frame.bits_per_sample)), parameters.near_lossless,
+                calculate_maximum_sample_value(frame.bits_per_sample), parameters.near_lossless,
                 preset_coding_parameters.reset_value);
             traits.maximum_sample_value = preset_coding_parameters.maximum_sample_value;
             codec = make_unique<jls_codec<default_traits<uint16_t, uint16_t>, Strategy>>(traits, frame, parameters);
@@ -166,7 +166,7 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::try_create_optimized_codec(con
 
 #endif
 
-    const auto maxval = static_cast<int>(calculate_maximum_sample_value(frame.bits_per_sample));
+    const auto maxval = calculate_maximum_sample_value(frame.bits_per_sample);
 
     if (frame.bits_per_sample <= 8)
     {

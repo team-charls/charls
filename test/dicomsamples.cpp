@@ -52,7 +52,7 @@ void test_dicom_sample_image(const char* name)
     // remove the DICOM fragment headers (in the concerned images they occur every 64k)
     for (unsigned int i{}; i != data.size(); i += 64 * 1024)
     {
-        data.erase(data.begin() + i, data.begin() + i + 8);
+        data.erase(data.begin() + static_cast<int>(i), data.begin() + static_cast<int>(i) + 8);
     }
 
     JlsParameters params{};

@@ -38,6 +38,9 @@
 # -cert-msc32-c => Rationale: predictable seed is by design (random used for testing, not crypto)
 # -cert-msc51-cpp => Rationale: alias for cert-msc32-c
 # -cert-err58-cpp => Rationale: Only exception that could be thrown is out of memory
+# -altera-struct-pack-align => Rationale: Not applicable (Altera is for openCL)
+# -readability-function-cognitive-complexity => Warning is too strict, manual review code review is preferred
+# -concurrency-mt-unsafe => Reports a false warning for strerror in main (not useful for CharLS)
 
 ---
 Checks:          '*,
@@ -74,7 +77,10 @@ Checks:          '*,
                   -cert-msc32-c,
                   -cert-msc51-cpp,
                   -cert-err58-cpp,
-                  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling'
+                  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+                  -altera-struct-pack-align,
+                  -readability-function-cognitive-complexity,
+                  -concurrency-mt-unsafe'
 WarningsAsErrors: false
 HeaderFilterRegex: ''
 FormatStyle:     none

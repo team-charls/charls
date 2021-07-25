@@ -622,7 +622,7 @@ uint32_t jpeg_stream_reader::maximum_sample_value() const noexcept
     if (preset_coding_parameters_.maximum_sample_value != 0)
         return static_cast<uint32_t>(preset_coding_parameters_.maximum_sample_value);
 
-    return calculate_maximum_sample_value(frame_info_.bits_per_sample);
+    return static_cast<uint32_t>(calculate_maximum_sample_value(frame_info_.bits_per_sample));
 }
 
 
