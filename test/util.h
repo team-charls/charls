@@ -6,6 +6,8 @@
 #include <charls/charls.h>
 
 #include <exception>
+#include <istream>
+#include <ostream>
 #include <vector>
 
 struct rect_size final
@@ -36,6 +38,19 @@ constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
 {
     return static_cast<uint32_t>((bit_count + 7) / 8);
 }
+
+template<typename Container>
+void read(std::istream& input, Container& destination)
+{
+    input.read(reinterpret_cast<char*>(destination.data()), static_cast<std::streamsize>(destination.size()));
+}
+
+template<typename Container>
+void write(std::ostream& output, const Container& source, const size_t size)
+{
+    output.write(reinterpret_cast<const char*>(source.data()), static_cast<std::streamsize>(size));
+}
+
 
 class unit_test_exception final : public std::exception
 {

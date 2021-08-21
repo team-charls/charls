@@ -452,7 +452,7 @@ bool decode_to_pnm(istream& input, ostream& output)
 
     const int magic_number = frame_info.component_count == 3 ? 6 : 5;
     output << 'P' << magic_number << "\n" << frame_info.width << ' ' << frame_info.height << "\n" << max_value << "\n";
-    output.write(reinterpret_cast<char*>(decoded_destination.data()), decoded_destination.size());
+    write(output, decoded_destination, decoded_destination.size());
 
     return true;
 }
@@ -504,14 +504,14 @@ bool encode_pnm(istream& pnm_file, ostream& jls_file_stream)
     const auto bytes_per_sample = static_cast<int32_t>(::bit_to_byte_count(frame_info.bits_per_sample));
     vector<uint8_t> input_buffer(static_cast<size_t>(frame_info.width) * frame_info.height * bytes_per_sample *
                                  frame_info.component_count);
-    pnm_file.read(reinterpret_cast<char*>(input_buffer.data()), input_buffer.size());
+    read(pnm_file, input_buffer);
     if (!pnm_file.good())
         return false;
 
     // PNM format is stored with most significant byte first (big endian).
     if (bytes_per_sample == 2)
     {
-        for (auto i = input_buffer.begin(); i != input_buffer.end(); i += 2)
+        for (auto i{input_buffer.begin()}; i != input_buffer.end(); i += 2)
         {
             iter_swap(i, i + 1);
         }
@@ -525,7 +525,7 @@ bool encode_pnm(istream& pnm_file, ostream& jls_file_stream)
     encoder.destination(destination);
     const size_t bytes_encoded{encoder.encode(input_buffer)};
 
-    jls_file_stream.write(reinterpret_cast<const char*>(destination.data()), static_cast<std::streamsize>(bytes_encoded));
+    write(jls_file_stream, destination, bytes_encoded);
     return jls_file_stream.good();
 }
 
@@ -577,8 +577,8 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
     vector<uint8_t> bytes1(byte_count);
     vector<uint8_t> bytes2(byte_count);
 
-    pnm_file1.read(reinterpret_cast<char*>(bytes1.data()), byte_count);
-    pnm_file2.read(reinterpret_cast<char*>(bytes2.data()), byte_count);
+    read(pnm_file1, bytes1);
+    read(pnm_file2, bytes2);
 
     for (size_t x{}; x != height; ++x)
     {
