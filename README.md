@@ -15,7 +15,7 @@ JPEG-LS is a low-complexity image compression standard that matches JPEG 2000 co
 ## Features
 
 * C++14 library implementation with a binary C interface for maximum interoperability.
-* Supports Windows, Linux and macOS on x86, x64, arm, arm64 and ppc64le.
+* Supports Windows, Linux and macOS on x86, x64, arm, arm64, mips, s390x and ppc64le.
 * Adapters for .NET, JavaScript (WebAssembly) and Python applications available.
 * Excellent compression and decompression performance.
 
