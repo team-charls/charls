@@ -34,7 +34,7 @@ option(BUILD_SHARED_LIBS "Will control if charls lib is build as shared lib/DLL 
 # The options used by the CI builds to ensure the source remains warning free.
 # Not enabled by default to make CharLS package and end-user friendly.
 option(CHARLS_PEDANTIC_WARNINGS "Enable extra warnings and static analysis." OFF)
-option(CHARLS_THREAT_WARNINGS_AS_ERRORS "Treat Warnings as Errors." OFF)
+option(CHARLS_TREAT_WARNING_AS_ERROR "Treat warning as error." OFF)
 
 # CharLS requires C++14 or newer.
 set(CMAKE_CXX_STANDARD 14)
@@ -155,7 +155,6 @@ endif()
 
 # When enabled apply the pedantic warnings options and warnings as errors to globally.
 if(CHARLS_PEDANTIC_WARNINGS)
-
   if(MSVC)
     # Remove existing warning level (W3 is added by default by CMake), duplicate level will generate cmd-line warnings.
     string(REGEX REPLACE " /W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -164,7 +163,7 @@ if(CHARLS_PEDANTIC_WARNINGS)
   add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:${PEDANTIC_CXX_COMPILE_FLAGS}>")
 endif()
 
-if(CHARLS_THREAT_WARNINGS_AS_ERRORS)
+if(CHARLS_TREAT_WARNING_AS_ERROR)
   add_compile_options(${WERROR_FLAG})
 endif()
 
