@@ -19,9 +19,10 @@ constexpr uint8_t jpeg_marker_start_byte{0xFF};
 
 enum class jpeg_marker_code : uint8_t
 {
-    start_of_image = 0xD8, // SOI: Marks the start of an image.
-    end_of_image = 0xD9,   // EOI: Marks the end of an image.
-    start_of_scan = 0xDA,  // SOS: Marks the start of scan.
+    start_of_image = 0xD8,          // SOI: Marks the start of an image.
+    end_of_image = 0xD9,            // EOI: Marks the end of an image.
+    start_of_scan = 0xDA,           // SOS: Marks the start of scan.
+    define_restart_interval = 0xDD, // DRI: Defines the restart interval used in succeeding scans.
 
     // The following markers are defined in ISO/IEC 10918-1 | ITU T.81.
     start_of_frame_baseline_jpeg = 0xC0,       // SOF_0:  Marks the start of a baseline jpeg encoded frame.

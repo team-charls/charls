@@ -82,6 +82,21 @@ public:
         write_segment(jpeg_marker_code::start_of_scan, segment.data(), segment.size());
     }
 
+    void write_define_restart_interval(const uint32_t restart_interval)
+    {
+        std::vector<uint8_t> segment;
+        if (restart_interval <= UINT16_MAX)
+        {
+            push_back(segment, static_cast<uint16_t>(restart_interval));
+        }
+        else
+        {
+            push_back(segment, restart_interval);
+        }
+
+        write_segment(jpeg_marker_code::define_restart_interval, segment.data(), segment.size());
+    }
+
     void write_segment(const jpeg_marker_code marker_code, const void* data, const size_t data_size)
     {
         write_marker(marker_code);

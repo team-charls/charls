@@ -212,6 +212,7 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
 
         return;
 
+    case jpeg_marker_code::define_restart_interval:
     case jpeg_marker_code::jpegls_preset_parameters:
     case jpeg_marker_code::comment:
     case jpeg_marker_code::application_data0:
@@ -282,6 +283,9 @@ int jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code, 
 
     case jpeg_marker_code::jpegls_preset_parameters:
         return read_preset_parameters_segment(segment_size);
+
+    case jpeg_marker_code::define_restart_interval:
+        return read_define_restart_interval(segment_size);
 
     case jpeg_marker_code::application_data0:
     case jpeg_marker_code::application_data1:
@@ -419,6 +423,26 @@ int jpeg_stream_reader::read_preset_parameters_segment(const int32_t segment_siz
     }
 
     throw_jpegls_error(jpegls_errc::invalid_jpegls_preset_parameter_type);
+}
+
+
+int jpeg_stream_reader::read_define_restart_interval(const int32_t segment_size)
+{
+    // Note: The JPEG-LS standard supports a 16 or 32 bit restart interval (see ISO/IEC 14495-1, C.2.5)
+    //       The original JPEG standard only supports 16 bit.
+    switch (segment_size)
+    {
+    case 2:
+        parameters_.restart_interval = read_uint16();
+        return 2;
+
+    case 4:
+        parameters_.restart_interval = read_uint32();
+        return 4;
+
+    default:
+        throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
+    }
 }
 
 
