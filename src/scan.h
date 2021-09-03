@@ -13,6 +13,7 @@
 
 #include <array>
 #include <sstream>
+#include <iostream> // FIXMENC
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
 // Note: the functions in this header could be moved into jpegls.cpp as they are only used in that file.
@@ -491,6 +492,7 @@ private:
         t1_ = t1;
         t2_ = t2;
         t3_ = t3;
+        reset_threshold_ = reset_threshold;
 
         initialize_quantization_lut();
 
@@ -558,6 +560,17 @@ private:
                 Strategy::on_line_end(rect_.Width,
                                       current_line_ + rect_.X - (static_cast<size_t>(component_count) * pixel_stride),
                                       pixel_stride);
+
+                // FIXMENC
+                std::cerr << "DRI: " << frame_info().restart_interval << ", line: " << line << "\n";
+                const int restart_interval = frame_info().restart_interval;
+                if (restart_interval > 0 &&
+                    (line + 1) % restart_interval == 0 &&
+                    Strategy::is_at_restart_marker())
+                {
+                    Strategy::read_restart_marker();
+                    initialize_parameters(t1_, t2_, t3_, reset_threshold_);
+                }
             }
         }
 
@@ -826,6 +839,7 @@ private:
     int32_t t1_{};
     int32_t t2_{};
     int32_t t3_{};
+    int32_t reset_threshold_{};
 
     // compression context
     std::array<jls_context, 365> contexts_;

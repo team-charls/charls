@@ -23,6 +23,9 @@ enum class jpeg_marker_code : uint8_t
     end_of_image = 0xD9,   // EOI: Marks the end of an image.
     start_of_scan = 0xDA,  // SOS: Marks the start of scan.
 
+    define_restart_interval = 0xDD,  // DRI
+
+
     // The following markers are defined in ISO/IEC 10918-1 | ITU T.81.
     start_of_frame_baseline_jpeg = 0xC0,       // SOF_0:  Marks the start of a baseline jpeg encoded frame.
     start_of_frame_extended_sequential = 0xC1, // SOF_1:  Marks the start of a extended sequential Huffman encoded frame.

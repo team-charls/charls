@@ -39,6 +39,14 @@ public:
     {
     }
 
+    bool is_at_restart_marker()
+    {
+        return false;
+    }
+
+    void read_restart_marker()
+    {}
+
 protected:
     void initialize(const byte_span destination) noexcept
     {

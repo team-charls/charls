@@ -72,6 +72,8 @@ private:
                             bool* spiff_header_found = nullptr);
     int read_spiff_directory_entry(jpeg_marker_code marker_code, int32_t segment_size);
     int read_start_of_frame_segment(int32_t segment_size);
+    int read_restart_interval(int32_t segment_size);
+
     static int read_comment() noexcept;
     int read_preset_parameters_segment(int32_t segment_size);
     int try_read_application_data8_segment(int32_t segment_size, spiff_header* header, bool* spiff_header_found);

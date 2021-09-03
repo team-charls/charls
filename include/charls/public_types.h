@@ -821,6 +821,11 @@ struct charls_frame_info CHARLS_FINAL
     /// Number of components contained in the frame, range [1, 255]
     /// </summary>
     int32_t component_count;
+
+    /// <summary>
+    /// Restart interval (DRI) in number of MCUs. 0 if restart is disabled.
+    /// </summary>
+    int32_t restart_interval;
 };
 
 /// <summary>
@@ -1024,7 +1029,8 @@ using frame_info = charls_frame_info;
 using jpegls_pc_parameters = charls_jpegls_pc_parameters;
 
 static_assert(sizeof(spiff_header) == 40, "size of struct is incorrect, check padding settings");
-static_assert(sizeof(frame_info) == 16, "size of struct is incorrect, check padding settings");
+// FIXMENC: why is this check important?
+static_assert(sizeof(frame_info) == 20, "size of struct is incorrect, check padding settings");
 static_assert(sizeof(jpegls_pc_parameters) == 20, "size of struct is incorrect, check padding settings");
 
 } // namespace charls

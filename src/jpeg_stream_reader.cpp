@@ -230,6 +230,8 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
     case jpeg_marker_code::application_data13:
     case jpeg_marker_code::application_data14:
     case jpeg_marker_code::application_data15:
+    case jpeg_marker_code::define_restart_interval:
+
         return;
 
     // Check explicit for one of the other common JPEG encodings.
@@ -300,10 +302,13 @@ int jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code, 
     case jpeg_marker_code::application_data15:
         return 0;
 
+    case jpeg_marker_code::define_restart_interval:
+        return read_restart_interval(segment_size);
+
     case jpeg_marker_code::application_data8:
         return try_read_application_data8_segment(segment_size, header, spiff_header_found);
 
-    // Other tags not supported (among which DNL DRI)
+    // Other tags not supported (among which DNL)
     default:
         ASSERT(false);
         return 0;
@@ -336,6 +341,7 @@ int jpeg_stream_reader::read_start_of_frame_segment(const int32_t segment_size)
     if (segment_size < 6)
         throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
 
+    frame_info_.restart_interval = 0;
     frame_info_.bits_per_sample = read_byte();
     if (frame_info_.bits_per_sample < minimum_bits_per_sample || frame_info_.bits_per_sample > maximum_bits_per_sample)
         throw_jpegls_error(jpegls_errc::invalid_parameter_bits_per_sample);
@@ -372,6 +378,15 @@ int jpeg_stream_reader::read_start_of_frame_segment(const int32_t segment_size)
     return segment_size;
 }
 
+int jpeg_stream_reader::read_restart_interval(const int32_t segment_size)
+{
+    if (segment_size != 2)
+        throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
+
+    frame_info_.restart_interval = read_uint16();
+
+    return segment_size;
+}
 
 int jpeg_stream_reader::read_comment() noexcept
 {

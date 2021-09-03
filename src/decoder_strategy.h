@@ -74,6 +74,24 @@ public:
             impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
     }
 
+    bool is_at_restart_marker()
+    {
+        return
+            position_[0] == 0xFF &&
+            (position_[1] & 0xF8) == 0xD0;
+    }
+
+    void read_restart_marker()
+    {
+        position_ += 2;
+        valid_bits_ = 0;
+        read_cache_ = 0;
+        if (position_ > next_ff_position_) {
+            next_ff_position_ = find_next_ff();
+        }
+        make_valid();
+    }
+
     FORCE_INLINE bool optimized_read() noexcept
     {
         // Easy & fast: if there is no 0xFF byte in sight, we can read without bit stuffing
