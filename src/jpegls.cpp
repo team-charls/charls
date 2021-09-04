@@ -125,7 +125,7 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_codec(const frame_info&
         }
     }
 
-    codec->set_presets(preset_coding_parameters);
+    codec->set_presets(preset_coding_parameters, parameters.restart_interval);
     return codec;
 }
 

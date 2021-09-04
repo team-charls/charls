@@ -26,7 +26,8 @@ public:
         initialize({destination, count});
     }
 
-    void set_presets(const charls::jpegls_pc_parameters& /*preset_coding_parameters*/) noexcept(false) override
+    void set_presets(const charls::jpegls_pc_parameters& /*preset_coding_parameters*/,
+                     uint32_t /*restart_interval*/) noexcept(false) override
     {
     }
 

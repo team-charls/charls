@@ -8,6 +8,7 @@
 #include "constants.h"
 #include "context.h"
 #include "context_run_mode.h"
+#include "jpeg_marker_code.h"
 #include "lookup_table.h"
 #include "process_line.h"
 
@@ -175,9 +176,10 @@ public:
     }
 
 private:
-    void set_presets(const jpegls_pc_parameters& presets) override
+    void set_presets(const jpegls_pc_parameters& presets, const uint32_t restart_interval) override
     {
         initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
+        restart_interval_ = restart_interval;
     }
 
     bool is_interleaved() noexcept
@@ -475,7 +477,16 @@ private:
         rect_ = rect;
 
         Strategy::initialize(compressed_data);
-        do_scan();
+
+        if (restart_interval_)
+        {
+            decode_scan_with_restarts();
+        }
+        else
+        {
+            do_scan();
+        }
+
         skip_bytes(compressed_data, static_cast<size_t>(Strategy::get_cur_byte_pos() - compressed_bytes));
     }
 
@@ -491,17 +502,22 @@ private:
         t1_ = t1;
         t2_ = t2;
         t3_ = t3;
+        reset_threshold_ = reset_threshold;
 
         initialize_quantization_lut();
+        reset_parameters();
+    }
 
+    void reset_parameters() noexcept
+    {
         const jls_context context_initial_value(std::max(2, (traits_.range + 32) / 64));
         for (auto& context : contexts_)
         {
             context = context_initial_value;
         }
 
-        context_runmode_[0] = context_run_mode(0, std::max(2, (traits_.range + 32) / 64), reset_threshold);
-        context_runmode_[1] = context_run_mode(1, std::max(2, (traits_.range + 32) / 64), reset_threshold);
+        context_runmode_[0] = context_run_mode(0, std::max(2, (traits_.range + 32) / 64), reset_threshold_);
+        context_runmode_[1] = context_run_mode(1, std::max(2, (traits_.range + 32) / 64), reset_threshold_);
         run_index_ = 0;
     }
 
@@ -562,6 +578,83 @@ private:
         }
 
         Strategy::end_scan();
+    }
+
+    void decode_scan_with_restarts()
+    {
+        const uint32_t pixel_stride{width_ + 4U};
+        const size_t component_count{
+            parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
+
+        std::vector<pixel_type> line_buffer(static_cast<size_t>(2) * component_count * pixel_stride);
+        std::vector<int32_t> run_index(component_count);
+
+        for (uint32_t line{}; line < frame_info().height;)
+        {
+            const uint32_t lines_in_interval{std::min(frame_info().height - line, restart_interval_)};
+
+            for (uint32_t mcu{}; mcu < lines_in_interval; ++mcu, ++line)
+            {
+                previous_line_ = &line_buffer[1];
+                current_line_ = &line_buffer[1 + static_cast<size_t>(component_count) * pixel_stride];
+                if ((line & 1) == 1)
+                {
+                    std::swap(previous_line_, current_line_);
+                }
+
+                Strategy::on_line_begin(width_, current_line_, pixel_stride);
+
+                for (size_t component{}; component < component_count; ++component)
+                {
+                    run_index_ = run_index[component];
+
+                    // initialize edge pixels used for prediction
+                    previous_line_[width_] = previous_line_[width_ - 1];
+                    current_line_[-1] = previous_line_[0];
+                    do_line(static_cast<pixel_type*>(nullptr)); // dummy argument for overload resolution
+
+                    run_index[component] = run_index_;
+                    previous_line_ += pixel_stride;
+                    current_line_ += pixel_stride;
+                }
+
+                if (static_cast<uint32_t>(rect_.Y) <= line && line < static_cast<uint32_t>(rect_.Y + rect_.Height))
+                {
+                    Strategy::on_line_end(rect_.Width,
+                                          current_line_ + rect_.X - (static_cast<size_t>(component_count) * pixel_stride),
+                                          pixel_stride);
+                }
+            }
+
+            if (line < frame_info().height)
+            {
+                read_restart_marker();
+                Strategy::reset();
+                std::fill(line_buffer.begin(), line_buffer.end(), pixel_type{});
+                std::fill(run_index.begin(), run_index.end(), 0);
+                reset_parameters();
+            }
+        }
+
+        Strategy::end_scan();
+    }
+
+    void read_restart_marker()
+    {
+        auto byte{Strategy::read_byte()};
+        if (byte != jpeg_marker_start_byte)
+            impl::throw_jpegls_error(jpegls_errc::jpeg_marker_start_byte_not_found);
+
+        // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see T.81, B.1.1.2)
+        do
+        {
+            byte = Strategy::read_byte();
+        } while (byte == jpeg_marker_start_byte);
+
+        if (static_cast<jpeg_marker_code>(byte) != static_cast<jpeg_marker_code>(0xD0 + restart_interval_counter_))
+            impl::throw_jpegls_error(jpegls_errc::jpeg_marker_start_byte_not_found); // TODO: throw specific error.
+
+        restart_interval_counter_ = (restart_interval_counter_ + 1) % 7;
     }
 
     /// <summary>Encodes/Decodes a scan line of quads in ILV_SAMPLE mode</summary>
@@ -826,6 +919,9 @@ private:
     int32_t t1_{};
     int32_t t2_{};
     int32_t t3_{};
+    int32_t reset_threshold_{};
+    uint32_t restart_interval_{};
+    uint32_t restart_interval_counter_{};
 
     // compression context
     std::array<jls_context, 365> contexts_;

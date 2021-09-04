@@ -30,7 +30,7 @@ public:
     decoder_strategy& operator=(decoder_strategy&&) = delete;
 
     virtual std::unique_ptr<process_line> create_process_line(byte_span destination, size_t stride) = 0;
-    virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
+    virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters, uint32_t restart_interval) = 0;
     virtual void decode_scan(std::unique_ptr<process_line> output_data, const JlsRect& size, byte_span& compressed_data) = 0;
 
     void initialize(const byte_span source)
@@ -40,6 +40,15 @@ public:
 
         position_ = source.data;
         end_position_ = position_ + source.size;
+
+        next_ff_position_ = find_next_ff();
+        make_valid();
+    }
+
+    void reset()
+    {
+        valid_bits_ = 0;
+        read_cache_ = 0;
 
         next_ff_position_ = find_next_ff();
         make_valid();
@@ -244,6 +253,14 @@ public:
             return read_value(length);
 
         return (read_value(length - 24) << 24) + read_value(24);
+    }
+
+    uint8_t read_byte() noexcept
+    {
+        // TODO: check end_position first.
+        const uint8_t value = *position_;
+        ++position_;
+        return value;
     }
 
 protected:
