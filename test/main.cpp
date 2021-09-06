@@ -238,7 +238,7 @@ void test_bgra()
 
 void test_bgr()
 {
-    vector<uint8_t> encoded_source = read_file("test/conformance/t8c2e3.jls");
+    const vector<uint8_t> encoded_source{read_file("test/conformance/t8c2e3.jls")};
 
     jpegls_decoder decoder;
     decoder.source(encoded_source);
@@ -364,7 +364,7 @@ void test_decode_bit_stream_with_unknown_jpeg_marker()
 
 void test_decode_rect()
 {
-    vector<uint8_t> encoded_source{read_file("test/lena8b.jls")};
+    const vector<uint8_t> encoded_source{read_file("test/lena8b.jls")};
 
     jpegls_decoder decoder;
     decoder.source(encoded_source);
@@ -375,13 +375,13 @@ void test_decode_rect()
     // ReSharper disable CppDeprecatedEntity
     DISABLE_DEPRECATED_WARNING
 
-    JlsParameters params{};
+    constexpr JlsParameters params{};
 
     error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_source.data(),
                                     encoded_source.size(), &params, nullptr);
     assert::is_true(!error);
 
-    const JlsRect rect{128, 128, 256, 1};
+    constexpr JlsRect rect{128, 128, 256, 1};
     vector<uint8_t> decoded_data(static_cast<size_t>(rect.Width) * rect.Height);
     decoded_data.push_back(0x1f);
 
@@ -424,8 +424,11 @@ void test_encode_from_stream(const char* filename, const size_t offset, const ui
 }
 
 
-bool decode_to_pnm(istream& input, ostream& output)
+bool decode_to_pnm(const char* filename_input, const char* filename_output)
+try
 {
+    ifstream input(filename_input, mode_input);
+    ofstream output(filename_output, mode_output);
     const size_t length{get_stream_length(input)};
     vector<uint8_t> encoded_source(length);
     read(input, encoded_source);
@@ -455,6 +458,11 @@ bool decode_to_pnm(istream& input, ostream& output)
     write(output, decoded_destination, decoded_destination.size());
 
     return true;
+}
+catch (const system_error& error)
+{
+    cout << "Failed to decode " << filename_input << " to " << filename_output << ", reason: " << error.what() << '\n';
+    return false;
 }
 
 
@@ -492,9 +500,13 @@ vector<int> read_pnm_header(istream& pnm_file)
 //          into the JPEG-LS format. The 2 binary formats P5 and P6 are supported:
 //          Portable GrayMap: P5 = binary, extension = .pgm, 0-2^16 (gray scale)
 //          Portable PixMap: P6 = binary, extension.ppm, range 0-2^16 (RGB)
-bool encode_pnm(istream& pnm_file, ostream& jls_file_stream)
+bool encode_pnm(const char* filename_input, const char* filename_output)
+try
 {
-    vector<int> read_values{read_pnm_header(pnm_file)};
+    ifstream pnm_file(filename_input, mode_input);
+    ofstream jls_file_stream(filename_output, mode_output);
+
+    const vector<int> read_values{read_pnm_header(pnm_file)};
     if (read_values.size() != 4)
         return false;
 
@@ -528,18 +540,24 @@ bool encode_pnm(istream& pnm_file, ostream& jls_file_stream)
     write(jls_file_stream, destination, bytes_encoded);
     return jls_file_stream.good();
 }
+catch (const system_error& error)
+{
+    cout << "Failed to encode " << filename_input << " to " << filename_output << ", reason: " << error.what() << '\n';
+    return false;
+}
+
 
 
 bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
 {
-    vector<int> header1{read_pnm_header(pnm_file1)};
+    const vector<int> header1{read_pnm_header(pnm_file1)};
     if (header1.size() != 4)
     {
         cout << "Cannot read header from input file 1\n";
         return false;
     }
 
-    vector<int> header2 = read_pnm_header(pnm_file2);
+    const vector<int> header2 = read_pnm_header(pnm_file2);
     if (header2.size() != 4)
     {
         cout << "Cannot read header from input file 2\n";
@@ -610,19 +628,18 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
 
 
 bool decode_raw(const char* filename_encoded, const char* filename_output)
+try
 {
-    try
-    {
-        const vector<uint8_t> encoded_source{read_file(filename_encoded)};
-        vector<uint8_t> decoded_destination;
-        jpegls_decoder::decode(encoded_source, decoded_destination);
-        write_file(filename_output, decoded_destination.data(), decoded_destination.size());
-        return true;
-    }
-    catch (const system_error&)
-    {
-        return false;
-    }
+    const vector<uint8_t> encoded_source{read_file(filename_encoded)};
+    vector<uint8_t> decoded_destination;
+    jpegls_decoder::decode(encoded_source, decoded_destination);
+    write_file(filename_output, decoded_destination.data(), decoded_destination.size());
+    return true;
+}
+catch (const system_error& error)
+{
+    cout << "Failed to decode " << filename_encoded << " to " << filename_output << ", reason: " << error.what() << '\n';
+    return false;
 }
 
 
@@ -723,10 +740,8 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
                 cout << "Syntax: -decodetopnm input-file output-file\n";
                 return EXIT_FAILURE;
             }
-            ofstream pnm_file(argv[3], mode_output);
-            ifstream jls_file(argv[2], mode_input);
 
-            return decode_to_pnm(jls_file, pnm_file) ? EXIT_SUCCESS : EXIT_FAILURE;
+            return decode_to_pnm(argv[2], argv[3]) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         if (str == "-encodepnm")
@@ -736,10 +751,8 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
                 cout << "Syntax: -encodepnm input-file output-file\n";
                 return EXIT_FAILURE;
             }
-            ifstream pnm_file(argv[2], mode_input);
-            ofstream jls_file(argv[3], mode_output);
 
-            return encode_pnm(pnm_file, jls_file) ? EXIT_SUCCESS : EXIT_FAILURE;
+            return encode_pnm(argv[2], argv[3]) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         if (str == "-comparepnm")
