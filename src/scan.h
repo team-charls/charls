@@ -654,7 +654,7 @@ private:
         if (static_cast<jpeg_marker_code>(byte) != static_cast<jpeg_marker_code>(0xD0 + restart_interval_counter_))
             impl::throw_jpegls_error(jpegls_errc::jpeg_marker_start_byte_not_found); // TODO: throw specific error.
 
-        restart_interval_counter_ = (restart_interval_counter_ + 1) % 7;
+        restart_interval_counter_ = (restart_interval_counter_ + 1) % 8;
     }
 
     /// <summary>Encodes/Decodes a scan line of quads in ILV_SAMPLE mode</summary>
