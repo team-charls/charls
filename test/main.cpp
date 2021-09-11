@@ -53,6 +53,7 @@ void read(istream& input, Container& destination_container)
     input.read(reinterpret_cast<char*>(destination_container.data()), destination_container.size());
 }
 
+
 size_t get_stream_length(istream& stream, const size_t end_offset = 0)
 {
     stream.seekg(0, ios::end);
@@ -61,6 +62,34 @@ size_t get_stream_length(istream& stream, const size_t end_offset = 0)
 
     return length;
 }
+
+
+template<typename SizeType>
+static void convert_planar_to_pixel(const size_t width, const size_t height, const void* source, void* destination) noexcept
+{
+    const size_t stride_in_pixels = width * 3;
+    const auto* plane0{static_cast<const SizeType*>(source)};
+    const auto* plane1{static_cast<const SizeType*>(source) + (width * height)};
+    const auto* plane2{static_cast<const SizeType*>(source) + (width * height * 2)};
+
+    auto* pixels{static_cast<SizeType*>(destination)};
+
+    for (size_t row{}; row != height; ++row)
+    {
+        for (size_t column{}, offset = 0; column != width; ++column, offset += 3)
+        {
+            pixels[offset + 0] = plane0[column];
+            pixels[offset + 1] = plane1[column];
+            pixels[offset + 2] = plane2[column];
+        }
+
+        plane0 += width;
+        plane1 += width;
+        plane2 += width;
+        pixels += stride_in_pixels;
+    }
+}
+
 
 void test_traits16_bit()
 {
@@ -438,8 +467,27 @@ try
     interleave_mode interleave_mode;
     std::tie(frame_info, interleave_mode) = jpegls_decoder::decode(encoded_source, decoded_destination);
 
-    if (frame_info.component_count > 1 && interleave_mode == charls::interleave_mode::none)
-        return false; // Unsupported at the moment.
+    if (!(frame_info.component_count == 1 || frame_info.component_count == 3))
+    {
+        cout << "Only JPEG-LS images with component count 1 or 3 are supported to decode to pnm\n";
+        return false;
+    }
+
+    // PPM format only supports by-pixel, convert if needed.
+    if (interleave_mode == charls::interleave_mode::none && frame_info.component_count == 3)
+    {
+        vector<uint8_t> pixels(decoded_destination.size());
+        if (frame_info.bits_per_sample > 8)
+        {
+            convert_planar_to_pixel<uint16_t>(frame_info.width, frame_info.height, decoded_destination.data(), pixels.data());
+        }
+        else
+        {
+            convert_planar_to_pixel<uint8_t>(frame_info.width, frame_info.height, decoded_destination.data(), pixels.data());
+        }
+
+        swap(decoded_destination, pixels);
+    }
 
     // PNM format requires most significant byte first (big endian).
     const int max_value = (1 << frame_info.bits_per_sample) - 1;
@@ -545,7 +593,6 @@ catch (const system_error& error)
     cout << "Failed to encode " << filename_input << " to " << filename_output << ", reason: " << error.what() << '\n';
     return false;
 }
-
 
 
 bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
