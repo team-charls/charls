@@ -428,13 +428,17 @@ int jpeg_stream_reader::read_preset_parameters_segment(const int32_t segment_siz
 
 int jpeg_stream_reader::read_define_restart_interval(const int32_t segment_size)
 {
-    // Note: The JPEG-LS standard supports a 16 or 32 bit restart interval (see ISO/IEC 14495-1, C.2.5)
-    //       The original JPEG standard only supports 16 bit.
+    // Note: The JPEG-LS standard supports a 2,3 or 4 byte restart interval (see ISO/IEC 14495-1, C.2.5)
+    //       The original JPEG standard only supports 2 bytes (16 bit big endian).
     switch (segment_size)
     {
     case 2:
         parameters_.restart_interval = read_uint16();
         return 2;
+
+    case 3:
+        parameters_.restart_interval = read_uint24();
+        return 3;
 
     case 4:
         parameters_.restart_interval = read_uint32();
@@ -502,9 +506,17 @@ void jpeg_stream_reader::skip_byte()
 
 uint16_t jpeg_stream_reader::read_uint16()
 {
-    const uint16_t value = read_byte() * 256U;
+    const uint32_t value{read_byte() * 256U};
     return static_cast<uint16_t>(value + read_byte());
 }
+
+
+uint32_t jpeg_stream_reader::read_uint24()
+{
+    const uint32_t value{static_cast<uint32_t>(read_byte()) << 16U};
+    return value + read_uint16();
+}
+
 
 uint32_t jpeg_stream_reader::read_uint32()
 {
@@ -514,6 +526,7 @@ uint32_t jpeg_stream_reader::read_uint32()
 
     return value;
 }
+
 
 int32_t jpeg_stream_reader::read_segment_size()
 {

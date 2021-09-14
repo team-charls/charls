@@ -82,16 +82,26 @@ public:
         write_segment(jpeg_marker_code::start_of_scan, segment.data(), segment.size());
     }
 
-    void write_define_restart_interval(const uint32_t restart_interval)
+    void write_define_restart_interval(const uint32_t restart_interval, const int size)
     {
         std::vector<uint8_t> segment;
-        if (restart_interval <= UINT16_MAX)
+        switch (size)
         {
+        case 2:
             push_back(segment, static_cast<uint16_t>(restart_interval));
-        }
-        else
-        {
+            break;
+
+        case 3:
+            push_back_uint24(segment, restart_interval);
+            break;
+
+        case 4:
             push_back(segment, restart_interval);
+            break;
+
+        default:
+            assert(false);
+            break;
         }
 
         write_segment(jpeg_marker_code::define_restart_interval, segment.data(), segment.size());
@@ -134,6 +144,14 @@ public:
     int componentIdOverride{};
     uint8_t mapping_table_selector{};
     std::vector<uint8_t> buffer;
+
+private:
+    static void push_back_uint24(std::vector<uint8_t>& values, const uint32_t value)
+    {
+        values.push_back(static_cast<uint8_t>(value >> 16));
+        values.push_back(static_cast<uint8_t>(value >> 8));
+        values.push_back(static_cast<uint8_t>(value));
+    }
 };
 
 }} // namespace charls::test

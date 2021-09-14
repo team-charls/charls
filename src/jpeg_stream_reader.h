@@ -60,6 +60,7 @@ public:
 private:
     void skip_byte();
     uint16_t read_uint16();
+    uint32_t read_uint24();
     uint32_t read_uint32();
     int32_t read_segment_size();
     std::vector<uint8_t> read_bytes(size_t byte_count);
