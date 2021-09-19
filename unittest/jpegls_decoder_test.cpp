@@ -21,6 +21,7 @@ using std::array;
 using std::error_code;
 using std::tie;
 using std::vector;
+using std::ignore;
 using namespace charls_test;
 
 namespace {
@@ -75,7 +76,7 @@ public:
     {
         const jpegls_decoder decoder;
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(decoder.destination_size()); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = decoder.destination_size(); });
     }
 
     TEST_METHOD(read_header_without_source) // NOLINT
@@ -122,7 +123,7 @@ public:
         const vector<uint8_t> source(2000);
         const jpegls_decoder decoder{source, false};
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(decoder.interleave_mode()); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = decoder.interleave_mode(); });
     }
 
     TEST_METHOD(near_lossless_without_read_header) // NOLINT
@@ -130,7 +131,7 @@ public:
         const vector<uint8_t> source(2000);
         const jpegls_decoder decoder{source, false};
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(decoder.near_lossless()); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = decoder.near_lossless(); });
     }
 
     TEST_METHOD(preset_coding_parameters_without_read_header) // NOLINT
@@ -140,8 +141,7 @@ public:
         const vector<uint8_t> source(2000);
         decoder.source(source);
 
-        assert_expect_exception(jpegls_errc::invalid_operation,
-                                [&] { static_cast<void>(decoder.preset_coding_parameters()); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = decoder.preset_coding_parameters(); });
     }
 
     TEST_METHOD(destination_size) // NOLINT
@@ -327,7 +327,7 @@ public:
         jpegls_decoder decoder{source, false};
 
         error_code ec;
-        static_cast<void>(decoder.read_spiff_header(ec));
+        ignore = decoder.read_spiff_header(ec);
 
         Assert::IsTrue(ec == jpegls_errc::jpeg_marker_start_byte_not_found);
     }
@@ -354,7 +354,7 @@ public:
 
         jpegls_decoder decoder{source, true};
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(decoder.read_header()); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = decoder.read_header(); });
     }
 
     TEST_METHOD(simple_decode) // NOLINT

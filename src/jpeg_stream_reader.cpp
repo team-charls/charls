@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <tuple>
 
 namespace charls {
 
@@ -500,7 +501,7 @@ uint8_t jpeg_stream_reader::read_byte()
 
 void jpeg_stream_reader::skip_byte()
 {
-    static_cast<void>(read_byte());
+    std::ignore = read_byte();
 }
 
 

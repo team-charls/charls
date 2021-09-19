@@ -9,6 +9,7 @@
 
 #include <charls/charls.h>
 
+#include <tuple>
 #include <vector>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
@@ -32,7 +33,7 @@ public:
             {
                 for (int blue{}; blue != 255; ++blue)
                 {
-                    const transform_hp1<uint8_t> transform;
+                    constexpr transform_hp1<uint8_t> transform{};
                     const auto sample = transform(red, green, blue);
                     const transform_hp1<uint8_t>::inverse inverse(transform);
 
@@ -59,7 +60,7 @@ public:
             {
                 for (int blue{}; blue != 255; ++blue)
                 {
-                    const transform_hp2<uint8_t> transform;
+                    constexpr transform_hp2<uint8_t> transform{};
                     const auto sample = transform(red, green, blue);
                     const transform_hp2<uint8_t>::inverse inverse(transform);
 
@@ -86,7 +87,7 @@ public:
             {
                 for (int blue{}; blue != 255; ++blue)
                 {
-                    const transform_hp3<uint8_t> transformation;
+                    constexpr transform_hp3<uint8_t> transformation{};
                     const auto sample = transformation(red, green, blue);
                     const transform_hp3<uint8_t>::inverse inverse(transformation);
                     const auto round_trip = inverse(sample.v1, sample.v2, sample.v3);
@@ -112,14 +113,14 @@ public:
 
     TEST_METHOD(encode_non_8_or_16_bit_is_not_supported) // NOLINT
     {
-        const frame_info frame_info{2, 1, 10, 3};
+        constexpr frame_info frame_info{2, 1, 10, 3};
         jpegls_encoder encoder;
 
         vector<uint8_t> destination(40);
         encoder.destination(destination).frame_info(frame_info).color_transformation(color_transformation::hp3);
         const vector<uint8_t> source(20);
         assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported,
-                                [&] { static_cast<void>(encoder.encode(source)); });
+                                [&] { std::ignore = encoder.encode(source); });
     }
 };
 

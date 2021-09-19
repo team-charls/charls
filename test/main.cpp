@@ -229,7 +229,7 @@ void test_fail_on_too_small_output_buffer()
         jpegls_encoder encoder;
         encoder.destination(output_buffer);
         encoder.frame_info({8, 8, 8, 1});
-        static_cast<void>(encoder.encode(input_buffer));
+        std::ignore = encoder.encode(input_buffer);
         assert::is_true(false);
     }
     catch (const jpegls_error& e)
@@ -244,7 +244,7 @@ void test_fail_on_too_small_output_buffer()
         jpegls_encoder encoder;
         encoder.destination(output_buffer);
         encoder.frame_info({8, 8, 8, 1});
-        static_cast<void>(encoder.encode(input_buffer));
+        std::ignore = encoder.encode(input_buffer);
         assert::is_true(false);
     }
     catch (const jpegls_error& e)

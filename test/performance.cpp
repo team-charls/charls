@@ -9,6 +9,7 @@
 #include <chrono>
 #include <iostream>
 #include <ratio>
+#include <tuple>
 #include <vector>
 
 using charls::frame_info;
@@ -164,7 +165,7 @@ void encode_performance_tests(const int loop_count)
             encoder2.frame_info(info).interleave_mode(interleave_mode);
             encoder2.destination(destination);
 
-            static_cast<void>(encoder2.encode(anymap_file.image_data()));
+            std::ignore = encoder2.encode(anymap_file.image_data());
         }
 
         const auto end{steady_clock::now()};

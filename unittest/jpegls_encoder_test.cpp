@@ -178,8 +178,7 @@ public:
     {
         const jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_operation,
-                                [&] { static_cast<void>(encoder.estimated_destination_size()); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = encoder.estimated_destination_size(); });
     }
 
     TEST_METHOD(destination) // NOLINT
