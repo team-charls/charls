@@ -50,7 +50,7 @@ public:
         jpegls_decoder decoder2(std::move(decoder1));
 
         jpegls_decoder decoder3;
-        const array<uint8_t, 10> buffer{};
+        constexpr array<uint8_t, 10> buffer{};
         decoder3.source(buffer.data(), buffer.size());
         decoder3 = std::move(decoder2);
     }
@@ -59,7 +59,7 @@ public:
     {
         jpegls_decoder decoder;
 
-        vector<uint8_t> source(2000);
+        const vector<uint8_t> source(2000);
         decoder.source(source);
         assert_expect_exception(jpegls_errc::invalid_operation, [&] { decoder.source(source); });
     }
@@ -73,7 +73,7 @@ public:
 
     TEST_METHOD(destination_size_without_reading_header) // NOLINT
     {
-        jpegls_decoder decoder;
+        const jpegls_decoder decoder;
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(decoder.destination_size()); });
     }
@@ -120,7 +120,7 @@ public:
     TEST_METHOD(interleave_mode_without_read_header) // NOLINT
     {
         const vector<uint8_t> source(2000);
-        jpegls_decoder decoder{source, false};
+        const jpegls_decoder decoder{source, false};
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(decoder.interleave_mode()); });
     }
@@ -128,7 +128,7 @@ public:
     TEST_METHOD(near_lossless_without_read_header) // NOLINT
     {
         const vector<uint8_t> source(2000);
-        jpegls_decoder decoder{source, false};
+        const jpegls_decoder decoder{source, false};
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&] { static_cast<void>(decoder.near_lossless()); });
     }
@@ -261,7 +261,7 @@ public:
 
     TEST_METHOD(decode_without_reading_header) // NOLINT
     {
-        jpegls_decoder decoder;
+        const jpegls_decoder decoder;
 
         vector<uint8_t> buffer(1000);
         assert_expect_exception(jpegls_errc::invalid_operation, [&] { decoder.decode(buffer); });
@@ -399,7 +399,7 @@ public:
     {
         const vector<uint8_t> source{read_file("ff_in_entropy_data.jls")};
 
-        jpegls_decoder decoder{source, true};
+        const jpegls_decoder decoder{source, true};
 
         const auto& frame_info{decoder.frame_info()};
         Assert::AreEqual(1, frame_info.component_count);
@@ -409,14 +409,14 @@ public:
 
         vector<uint8_t> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::invalid_encoded_data, [&] { static_cast<void>(decoder.decode(destination)); });
+        assert_expect_exception(jpegls_errc::invalid_encoded_data, [&] { decoder.decode(destination); });
     }
 
     TEST_METHOD(decode_file_with_golomb_large_then_k_max) // NOLINT
     {
         const vector<uint8_t> source{read_file("fuzzy_input_golomb_16.jls")};
 
-        jpegls_decoder decoder{source, true};
+        const jpegls_decoder decoder{source, true};
 
         const auto& frame_info{decoder.frame_info()};
         Assert::AreEqual(3, frame_info.component_count);
@@ -426,7 +426,7 @@ public:
 
         vector<uint8_t> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::invalid_encoded_data, [&] { static_cast<void>(decoder.decode(destination)); });
+        assert_expect_exception(jpegls_errc::invalid_encoded_data, [&] { decoder.decode(destination); });
     }
 
 

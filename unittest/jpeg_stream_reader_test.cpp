@@ -133,7 +133,7 @@ public:
         jpeg_stream_writer writer({source.data(), source.size()});
         writer.write_start_of_image();
 
-        const jpegls_pc_parameters presets{1, 2, 3, 4, 5};
+        constexpr jpegls_pc_parameters presets{1, 2, 3, 4, 5};
         writer.write_jpegls_preset_parameters_segment(presets);
         writer.write_start_of_frame_segment(1, 1, 2, 1);
         writer.write_start_of_scan_segment(1, 0, interleave_mode::none);
@@ -666,7 +666,7 @@ public:
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
 
-        array<uint8_t, 1> buffer{};
+        constexpr array<uint8_t, 1> buffer{};
         writer.write_segment(jpeg_marker_code::define_restart_interval, buffer.data(), buffer.size());
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 

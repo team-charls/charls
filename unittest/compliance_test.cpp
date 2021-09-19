@@ -89,17 +89,39 @@ public:
         decompress_file("DataFiles/lena8b.jls", "DataFiles/lena8b.pgm");
     }
 
+    TEST_METHOD(decompress_color_8_bit_interleave_none_lossless_restart_7) // NOLINT
+    {
+        // ISO 14495-1: official test image 1 but with restart markers.
+        decompress_file("DataFiles/test8_ilv_none_rm_7.jls", "DataFiles/test8.ppm", false);
+    }
+
+    TEST_METHOD(decompress_color_8_bit_interleave_line_lossless_restart_7) // NOLINT
+    {
+        // ISO 14495-1: official test image 2 but with restart markers.
+        decompress_file("DataFiles/test8_ilv_line_rm_7.jls", "DataFiles/test8.ppm", false);
+    }
+
+    TEST_METHOD(decompress_color_8_bit_interleave_sample_lossless_restart_7) // NOLINT
+    {
+        // ISO 14495-1: official test image 3 but with restart markers.
+        decompress_file("DataFiles/test8_ilv_sample_rm_7.jls", "DataFiles/test8.ppm", false);
+    }
+
+    TEST_METHOD(decompress_color_8_bit_interleave_sample_lossless_restart_300) // NOLINT
+    {
+        // ISO 14495-1: official test image 3 but with restart markers and restart interval 300
+        decompress_file("DataFiles/test8_ilv_sample_rm_300.jls", "DataFiles/test8.ppm", false);
+    }
+
+
 private:
     static void decompress_file(const char* encoded_filename, const char* raw_filename, const bool check_encode = true)
     {
-        vector<uint8_t> encoded_source = read_file(encoded_filename);
+        const vector<uint8_t> encoded_source{read_file(encoded_filename)};
+        const jpegls_decoder decoder{encoded_source, true};
 
-        jpegls_decoder decoder;
-        decoder.source(encoded_source);
-        decoder.read_header();
-
-        portable_anymap_file reference_file =
-            read_anymap_reference_file(raw_filename, decoder.interleave_mode(), decoder.frame_info());
+        portable_anymap_file reference_file{
+            read_anymap_reference_file(raw_filename, decoder.interleave_mode(), decoder.frame_info())};
 
         test_compliance(encoded_source, reference_file.image_data(), check_encode);
         test_compliance_legacy_api(encoded_source.data(), encoded_source.size(), reference_file.image_data().data(),
@@ -109,9 +131,7 @@ private:
     static void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t>& uncompressed_source,
                                 const bool check_encode)
     {
-        jpegls_decoder decoder;
-        decoder.source(encoded_source);
-        decoder.read_header();
+        const jpegls_decoder decoder{encoded_source, true};
 
         if (check_encode)
         {

@@ -191,6 +191,22 @@
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="test8_ilv_none_rm_7.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="test8_ilv_line_rm_7.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="test8_ilv_sample_rm_7.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="test8_ilv_sample_rm_300.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
+    </CopyFileToFolders>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
