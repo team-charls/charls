@@ -128,62 +128,6 @@ private:
                                    reference_file.image_data().size(), check_encode);
     }
 
-    static void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t>& uncompressed_source,
-                                const bool check_encode)
-    {
-        const jpegls_decoder decoder{encoded_source, true};
-
-        if (check_encode)
-        {
-            Assert::IsTrue(verify_encoded_bytes(uncompressed_source, encoded_source));
-        }
-
-        vector<uint8_t> destination(decoder.destination_size());
-        decoder.decode(destination);
-
-        if (decoder.near_lossless() == 0)
-        {
-            for (size_t i{}; i != uncompressed_source.size(); ++i)
-            {
-                if (uncompressed_source[i] != destination[i]) // AreEqual is very slow, pre-test to speed up 50X
-                {
-                    Assert::AreEqual(uncompressed_source[i], destination[i]);
-                }
-            }
-        }
-        else
-        {
-            const frame_info frame_info{decoder.frame_info()};
-            const auto near_lossless{decoder.near_lossless()};
-
-            if (frame_info.bits_per_sample <= 8)
-            {
-                for (size_t i{}; i != uncompressed_source.size(); ++i)
-                {
-                    if (abs(uncompressed_source[i] - destination[i]) >
-                        near_lossless) // AreEqual is very slow, pre-test to speed up 50X
-                    {
-                        Assert::AreEqual(uncompressed_source[i], destination[i]);
-                    }
-                }
-            }
-            else
-            {
-                const auto* source16 = reinterpret_cast<const uint16_t*>(uncompressed_source.data());
-                const auto* destination16 = reinterpret_cast<const uint16_t*>(destination.data());
-
-                for (size_t i{}; i != uncompressed_source.size() / 2; ++i)
-                {
-                    if (abs(source16[i] - destination16[i]) >
-                        near_lossless) // AreEqual is very slow, pre-test to speed up 50X
-                    {
-                        Assert::AreEqual(static_cast<int>(source16[i]), static_cast<int>(destination16[i]));
-                    }
-                }
-            }
-        }
-    }
-
     static void test_compliance_legacy_api(const uint8_t* compressed_bytes, const size_t compressed_length,
                                            const uint8_t* uncompressed_data, const size_t uncompressed_length,
                                            const bool check_encode)
@@ -252,36 +196,6 @@ private:
 
         // ReSharper restore CppDeprecatedEntity
         RESTORE_DEPRECATED_WARNING
-    }
-
-    static bool verify_encoded_bytes(const vector<uint8_t>& uncompressed_source, const vector<uint8_t>& encoded_source)
-    {
-        jpegls_decoder decoder;
-        decoder.source(encoded_source);
-        decoder.read_header();
-
-        jpegls_encoder encoder;
-        encoder.frame_info(decoder.frame_info())
-            .interleave_mode(decoder.interleave_mode())
-            .near_lossless(decoder.near_lossless())
-            .preset_coding_parameters(decoder.preset_coding_parameters());
-
-        vector<uint8_t> our_encoded_bytes(encoded_source.size() + 16);
-        encoder.destination(our_encoded_bytes);
-
-        const size_t bytes_written{encoder.encode(uncompressed_source)};
-        if (bytes_written != encoded_source.size())
-            return false;
-
-        for (size_t i{}; i != encoded_source.size(); ++i)
-        {
-            if (encoded_source[i] != our_encoded_bytes[i])
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 };
 

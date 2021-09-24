@@ -429,6 +429,54 @@ public:
         assert_expect_exception(jpegls_errc::invalid_encoded_data, [&] { decoder.decode(destination); });
     }
 
+    TEST_METHOD(decode_file_with_missing_restart_marker) // NOLINT
+    {
+        vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
+
+        // Insert a DRI marker segment to trigger that restart markers are used.
+        jpeg_test_stream_writer stream_writer;
+        stream_writer.write_define_restart_interval(10, 3);
+        const auto it = source.begin() + 2;
+        source.insert(it, stream_writer.buffer.cbegin(), stream_writer.buffer.cend());
+
+        const jpegls_decoder decoder{source, true};
+        vector<uint8_t> destination(decoder.destination_size());
+
+        assert_expect_exception(jpegls_errc::restart_marker_not_found, [&] { decoder.decode(destination); });
+    }
+
+    TEST_METHOD(decode_file_with_incorrect_restart_marker) // NOLINT
+    {
+        vector<uint8_t> source{read_file("DataFiles/test8_ilv_none_rm_7.jls")};
+
+        // Change the first restart marker to the second.
+        auto it{find_scan_header(source.begin(), source.end())};
+        it = find_first_restart_marker(it + 1, source.end());
+        ++it;
+        *it = 0xD1;
+
+        const jpegls_decoder decoder{source, true};
+        vector<uint8_t> destination(decoder.destination_size());
+
+        assert_expect_exception(jpegls_errc::restart_marker_not_found, [&] { decoder.decode(destination); });
+    }
+
+    TEST_METHOD(decode_file_with_extra_begin_bytes_for_restart_marker_code) // NOLINT
+    {
+        vector<uint8_t> source{read_file("DataFiles/test8_ilv_none_rm_7.jls")};
+
+        // Add additional 0xFF marker begin bytes
+        auto it{find_scan_header(source.begin(), source.end())};
+        it = find_first_restart_marker(it + 1, source.end());
+        const array<uint8_t, 7> extra_begin_bytes{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+        source.insert(it, extra_begin_bytes.cbegin(), extra_begin_bytes.cend());
+
+        const jpegls_decoder decoder{source, true};
+        portable_anymap_file reference_file{
+            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
+
+        test_compliance(source, reference_file.image_data(), false);
+    }
 
 private:
     static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator& begin,
@@ -439,6 +487,20 @@ private:
         for (auto it{begin}; it != end; ++it)
         {
             if (*it == 0xFF && it + 1 != end && *(it + 1) == start_of_scan)
+                return it;
+        }
+
+        return end;
+    }
+
+    static vector<uint8_t>::iterator find_first_restart_marker(const vector<uint8_t>::iterator& begin,
+                                                      const vector<uint8_t>::iterator& end) noexcept
+    {
+        constexpr uint8_t first_restart_marker{0xD0};
+
+        for (auto it{begin}; it != end; ++it)
+        {
+            if (*it == 0xFF && it + 1 != end && *(it + 1) == first_restart_marker)
                 return it;
         }
 

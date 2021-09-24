@@ -672,15 +672,18 @@ public:
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
-        try
-        {
-            reader.read_header();
-            Assert::Fail();
-        }
-        catch (const system_error& error)
-        {
-            Assert::AreEqual(static_cast<int>(jpegls_errc::invalid_marker_segment_size), error.code().value());
-        }
+        assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&] { reader.read_header(); });
+    }
+
+    TEST_METHOD(read_jpegls_stream_with_restart_marker_outside_entropy_data) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_restart_marker(0);
+
+        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::unexpected_restart_marker, [&] { reader.read_header(); });
     }
 
 private:

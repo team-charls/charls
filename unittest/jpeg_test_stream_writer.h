@@ -107,6 +107,11 @@ public:
         write_segment(jpeg_marker_code::define_restart_interval, segment.data(), segment.size());
     }
 
+    void write_restart_marker(const uint8_t interval_index)
+    {
+        write_marker(static_cast<jpeg_marker_code>(jpeg_restart_marker_base + interval_index));
+    }
+
     void write_segment(const jpeg_marker_code marker_code, const void* data, const size_t data_size)
     {
         write_marker(marker_code);

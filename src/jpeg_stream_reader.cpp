@@ -25,6 +25,16 @@ using std::find;
 using std::unique_ptr;
 using std::vector;
 
+namespace {
+
+constexpr bool is_restart_marker_code(const jpeg_marker_code marker_code) noexcept
+{
+    return static_cast<uint8_t>(marker_code) >= jpeg_restart_marker_base &&
+           static_cast<uint8_t>(marker_code) < jpeg_restart_marker_base + jpeg_restart_marker_range;
+}
+
+} // namespace
+
 jpeg_stream_reader::jpeg_stream_reader(const byte_span source) noexcept : source_{source}
 {
 }
@@ -254,6 +264,9 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
     case jpeg_marker_code::end_of_image:
         throw_jpegls_error(jpegls_errc::unexpected_end_of_image_marker);
     }
+
+    if (is_restart_marker_code(marker_code))
+        throw_jpegls_error(jpegls_errc::unexpected_restart_marker);
 
     throw_jpegls_error(jpegls_errc::unknown_jpeg_marker_found);
 }

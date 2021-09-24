@@ -102,6 +102,12 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
     case jpegls_errc::missing_end_of_spiff_directory:
         return "Invalid JPEG-LS stream, SPIFF header without End Of Directory (EOD) entry";
 
+    case jpegls_errc::unexpected_restart_marker:
+        return "Invalid JPEG-LS stream, restart (RTSm) marker found outside encoded entropy data";
+
+    case jpegls_errc::restart_marker_not_found:
+        return "Invalid JPEG-LS stream, missing expected restart (RTSm) marker";
+
     case jpegls_errc::invalid_parameter_bits_per_sample:
         return "Invalid JPEG-LS stream, The bit per sample (sample precision) parameter is not in the range [2, 16]";
 

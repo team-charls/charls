@@ -47,6 +47,26 @@ namespace {
 constexpr ios::openmode mode_input = ios::in | ios::binary;
 constexpr ios::openmode mode_output = ios::out | ios::binary;
 
+ifstream open_input_stream(const char* filename)
+{
+    ifstream stream;
+    stream.exceptions(ios::eofbit | ios::failbit | ios::badbit);
+    stream.open(filename, mode_input);
+
+    return stream;
+}
+
+
+ofstream open_output_stream(const char* filename)
+{
+    ofstream stream;
+    stream.exceptions(ios::eofbit | ios::failbit | ios::badbit);
+    stream.open(filename, mode_output);
+
+    return stream;
+}
+
+
 template<typename Container>
 void read(istream& input, Container& destination_container)
 {
@@ -65,7 +85,7 @@ size_t get_stream_length(istream& stream, const size_t end_offset = 0)
 
 
 template<typename SizeType>
-static void convert_planar_to_pixel(const size_t width, const size_t height, const void* source, void* destination) noexcept
+void convert_planar_to_pixel(const size_t width, const size_t height, const void* source, void* destination) noexcept
 {
     const size_t stride_in_pixels = width * 3;
     const auto* plane0{static_cast<const SizeType*>(source)};
@@ -395,10 +415,7 @@ void test_decode_rect()
 {
     const vector<uint8_t> encoded_source{read_file("test/lena8b.jls")};
 
-    jpegls_decoder decoder;
-    decoder.source(encoded_source);
-    decoder.read_header();
-
+    const jpegls_decoder decoder{encoded_source, true};
     vector<uint8_t> decoded_buffer(decoder.destination_size());
 
     // ReSharper disable CppDeprecatedEntity
@@ -432,8 +449,7 @@ void test_encode_from_stream(const char* filename, const size_t offset, const ui
                              const int32_t bits_per_sample, const int32_t component_count,
                              const interleave_mode interleave_mode, const size_t expected_length)
 {
-    ifstream source_file{filename, ios::in | ios::binary};
-    assert::is_true(source_file.good());
+    ifstream source_file{open_input_stream(filename)};
 
     size_t length{get_stream_length(source_file, offset)};
     assert::is_true(length >= offset);
@@ -456,8 +472,8 @@ void test_encode_from_stream(const char* filename, const size_t offset, const ui
 bool decode_to_pnm(const char* filename_input, const char* filename_output)
 try
 {
-    ifstream input(filename_input, mode_input);
-    ofstream output(filename_output, mode_output);
+    ifstream input{open_input_stream(filename_input)};
+
     const size_t length{get_stream_length(input)};
     vector<uint8_t> encoded_source(length);
     read(input, encoded_source);
@@ -502,6 +518,8 @@ try
     }
 
     const int magic_number = frame_info.component_count == 3 ? 6 : 5;
+
+    ofstream output{open_output_stream(filename_output)};
     output << 'P' << magic_number << "\n" << frame_info.width << ' ' << frame_info.height << "\n" << max_value << "\n";
     write(output, decoded_destination, decoded_destination.size());
 
@@ -551,8 +569,7 @@ vector<int> read_pnm_header(istream& pnm_file)
 bool encode_pnm(const char* filename_input, const char* filename_output)
 try
 {
-    ifstream pnm_file(filename_input, mode_input);
-    ofstream jls_file_stream(filename_output, mode_output);
+    ifstream pnm_file(open_input_stream(filename_input));
 
     const vector<int> read_values{read_pnm_header(pnm_file)};
     if (read_values.size() != 4)
@@ -585,8 +602,9 @@ try
     encoder.destination(destination);
     const size_t bytes_encoded{encoder.encode(input_buffer)};
 
+    ofstream jls_file_stream(open_output_stream(filename_output));
     write(jls_file_stream, destination, bytes_encoded);
-    return jls_file_stream.good();
+    return true;
 }
 catch (const system_error& error)
 {

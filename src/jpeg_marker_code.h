@@ -16,6 +16,8 @@ namespace charls {
 // 0x4F - 0x6F, 0x90 - 0x93 are defined in ISO/IEC 15444-1: JPEG 2000
 
 constexpr uint8_t jpeg_marker_start_byte{0xFF};
+constexpr uint8_t jpeg_restart_marker_base{0xD0}; // RSTm: Marks the next restart interval (range is D0..D7)
+constexpr uint32_t jpeg_restart_marker_range{8};
 
 enum class jpeg_marker_code : uint8_t
 {

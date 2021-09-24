@@ -52,6 +52,10 @@ std::vector<uint8_t> create_test_spiff_header(uint8_t high_version = 2, uint8_t 
                                               bool end_of_directory = true);
 std::vector<uint8_t> create_noise_image_16_bit(size_t pixel_count, int bit_count, uint32_t seed);
 void test_round_trip_legacy(const std::vector<uint8_t>& source, const JlsParameters& params);
+bool verify_encoded_bytes(const std::vector<uint8_t>& uncompressed_source, const std::vector<uint8_t>& encoded_source);
+void test_compliance(const std::vector<uint8_t>& encoded_source, const std::vector<uint8_t>& uncompressed_source,
+                     bool check_encode);
+
 
 /// <summary>
 /// Computes how many bytes are needed to hold the number of bits.
@@ -60,29 +64,6 @@ constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
 {
     return static_cast<uint32_t>((bit_count + 7) / 8);
 }
-
-}} // namespace charls::test
-
-// ReSharper disable CppInconsistentNaming
-namespace Microsoft { namespace VisualStudio { namespace CppUnitTestFramework {
-// ReSharper restore CppInconsistentNaming
-
-template<>
-inline std::wstring ToString<charls::jpegls_errc>(const charls::jpegls_errc& q)
-{
-    RETURN_WIDE_STRING(static_cast<int>(q));
-}
-
-template<>
-inline std::wstring ToString<charls::interleave_mode>(const charls::interleave_mode& q)
-{
-    RETURN_WIDE_STRING(static_cast<int>(q));
-}
-
-}}} // namespace Microsoft::VisualStudio::CppUnitTestFramework
-
-
-namespace charls { namespace test {
 
 template<typename Functor>
 void assert_expect_exception(const jpegls_errc error_value, Functor functor)
@@ -106,4 +87,23 @@ void assert_expect_exception(const jpegls_errc error_value, Functor functor)
     Microsoft::VisualStudio::CppUnitTestFramework::Assert::Fail();
 }
 
+
 }} // namespace charls::test
+
+// ReSharper disable CppInconsistentNaming
+namespace Microsoft { namespace VisualStudio { namespace CppUnitTestFramework {
+// ReSharper restore CppInconsistentNaming
+
+template<>
+inline std::wstring ToString<charls::jpegls_errc>(const charls::jpegls_errc& q)
+{
+    RETURN_WIDE_STRING(static_cast<int>(q));
+}
+
+template<>
+inline std::wstring ToString<charls::interleave_mode>(const charls::interleave_mode& q)
+{
+    RETURN_WIDE_STRING(static_cast<int>(q));
+}
+
+}}} // namespace Microsoft::VisualStudio::CppUnitTestFramework

@@ -629,6 +629,8 @@ private:
             if (line < frame_info().height)
             {
                 read_restart_marker();
+                restart_interval_counter_ = (restart_interval_counter_ + 1) % jpeg_restart_marker_range;
+
                 Strategy::reset();
                 std::fill(line_buffer.begin(), line_buffer.end(), pixel_type{});
                 std::fill(run_index.begin(), run_index.end(), 0);
@@ -643,7 +645,7 @@ private:
     {
         auto byte{Strategy::read_byte()};
         if (byte != jpeg_marker_start_byte)
-            impl::throw_jpegls_error(jpegls_errc::jpeg_marker_start_byte_not_found);
+            impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
 
         // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see T.81, B.1.1.2)
         do
@@ -651,10 +653,8 @@ private:
             byte = Strategy::read_byte();
         } while (byte == jpeg_marker_start_byte);
 
-        if (static_cast<jpeg_marker_code>(byte) != static_cast<jpeg_marker_code>(0xD0 + restart_interval_counter_))
-            impl::throw_jpegls_error(jpegls_errc::jpeg_marker_start_byte_not_found); // TODO: throw specific error.
-
-        restart_interval_counter_ = (restart_interval_counter_ + 1) % 8;
+        if (byte != jpeg_restart_marker_base + restart_interval_counter_)
+            impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
     }
 
     /// <summary>Encodes/Decodes a scan line of quads in ILV_SAMPLE mode</summary>
