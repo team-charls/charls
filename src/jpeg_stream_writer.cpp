@@ -111,7 +111,7 @@ void jpeg_stream_writer::write_start_of_frame_segment(const uint32_t width, cons
 
 void jpeg_stream_writer::write_color_transform_segment(const color_transformation transformation)
 {
-    array<uint8_t, 5> segment{'m', 'r', 'f', 'x', static_cast<uint8_t>(transformation)};
+    const array<uint8_t, 5> segment{'m', 'r', 'f', 'x', static_cast<uint8_t>(transformation)};
 
     write_segment_header(jpeg_marker_code::application_data8, segment.size());
     write_bytes(segment.data(), segment.size());

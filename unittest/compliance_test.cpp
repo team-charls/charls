@@ -113,6 +113,11 @@ public:
         decompress_file("DataFiles/test8_ilv_sample_rm_300.jls", "DataFiles/test8.ppm", false);
     }
 
+    TEST_METHOD(decompress_monochrome_16_bit_restart_5) // NOLINT
+    {
+        // ISO 14495-1: official test image 12 but with restart markers and restart interval 5
+        decompress_file("DataFiles/test16_rm_5.jls", "DataFiles/test16.pgm", false);
+    }
 
 private:
     static void decompress_file(const char* encoded_filename, const char* raw_filename, const bool check_encode = true)

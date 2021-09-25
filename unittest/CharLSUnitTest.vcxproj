@@ -207,6 +207,10 @@
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="test16_rm_5.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
+    </CopyFileToFolders>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

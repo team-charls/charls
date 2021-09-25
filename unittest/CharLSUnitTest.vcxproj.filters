@@ -178,5 +178,8 @@
     <CopyFileToFolders Include="test8_ilv_sample_rm_300.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="test16_rm_5.jls">
+      <Filter>Test Images</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

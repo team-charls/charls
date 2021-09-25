@@ -58,8 +58,8 @@ enum class jpeg_marker_code : uint8_t
     application_data10 = 0xEA, // APP10: Application data 10.
     application_data11 = 0xEB, // APP11: Application data 11.
     application_data12 = 0xEC, // APP12: Application data 12: used for Picture info.
-    application_data13 = 0xEE, // APP13: Application data 13: used by PhotoShop IRB
-    application_data14 = 0xED, // APP14: Application data 14: used by Adobe
+    application_data13 = 0xED, // APP13: Application data 13: used by PhotoShop IRB
+    application_data14 = 0xEE, // APP14: Application data 14: used by Adobe
     application_data15 = 0xEF, // APP15: Application data 15.
     comment = 0xFE             // COM:   Comment block.
 };
