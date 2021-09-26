@@ -50,6 +50,8 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_JPEGLS_PRESET_PARAMETER_TYPE = 22,
     CHARLS_JPEGLS_ERRC_JPEGLS_PRESET_EXTENDED_PARAMETER_TYPE_NOT_SUPPORTED = 23,
     CHARLS_JPEGLS_ERRC_MISSING_END_OF_SPIFF_DIRECTORY = 24,
+    CHARLS_JPEGLS_ERRC_UNEXPECTED_RESTART_MARKER = 25,
+    CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND = 26,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH = 100,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_HEIGHT = 101,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COMPONENT_COUNT = 102,
@@ -284,6 +286,16 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     /// This error is returned when the stream contains a SPIFF header but not an SPIFF end-of-directory entry.
     /// </summary>
     missing_end_of_spiff_directory = impl::CHARLS_JPEGLS_ERRC_MISSING_END_OF_SPIFF_DIRECTORY,
+
+    /// <summary>
+    /// This error is returned when a restart marker is found outside the encoded entropy data.
+    /// </summary>
+    unexpected_restart_marker = impl::CHARLS_JPEGLS_ERRC_UNEXPECTED_RESTART_MARKER,
+
+    /// <summary>
+    /// This error is returned when an expected restart marker is not found. It may indicate data corruption in the JPEG-LS byte stream.
+    /// </summary>
+    restart_marker_not_found = impl::CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND,
 
     /// <summary>
     /// The argument for the width parameter is outside the range [1, 65535].

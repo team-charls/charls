@@ -26,7 +26,8 @@ public:
         initialize({destination, count});
     }
 
-    void set_presets(const charls::jpegls_pc_parameters& /*preset_coding_parameters*/) noexcept(false) override
+    void set_presets(const charls::jpegls_pc_parameters& /*preset_coding_parameters*/,
+                     uint32_t /*restart_interval*/) noexcept(false) override
     {
     }
 
@@ -63,11 +64,11 @@ public:
             int bits;
         };
 
-        const array<data_t, 5> in_data{{{0x00, 24}, {0xFF, 8}, {0xFFFF, 16}, {0xFFFF, 16}, {0x12345678, 31}}};
+        constexpr array<data_t, 5> in_data{{{0x00, 24}, {0xFF, 8}, {0xFFFF, 16}, {0xFFFF, 16}, {0x12345678, 31}}};
 
         array<uint8_t, 100> enc_buf{};
-        const frame_info frame_info{};
-        const coding_parameters parameters{};
+        constexpr frame_info frame_info{};
+        constexpr coding_parameters parameters{};
 
         encoder_strategy_tester encoder(frame_info, parameters);
 

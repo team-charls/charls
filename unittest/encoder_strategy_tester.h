@@ -15,7 +15,7 @@ public:
     {
     }
 
-    void set_presets(const jpegls_pc_parameters&) noexcept(false) override
+    void set_presets(const jpegls_pc_parameters&, uint32_t /*restart_interval*/) noexcept(false) override
     {
     }
 
@@ -29,9 +29,9 @@ public:
         return nullptr;
     }
 
-    void initialize_forward(const byte_span info) noexcept
+    void initialize_forward(const byte_span destination) noexcept
     {
-        initialize(info);
+        initialize(destination);
     }
 
     void append_to_bit_stream_forward(const uint32_t bits, const int32_t bit_count)

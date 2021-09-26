@@ -130,7 +130,7 @@ vector<uint8_t> create_test_spiff_header(const uint8_t high_version, const uint8
     buffer.push_back(0);
     buffer.push_back(96);
 
-    // header.horizontal_resolution = 1024;
+    // header.horizontal_resolution = 1024
     buffer.push_back(0);
     buffer.push_back(0);
     buffer.push_back(4);
@@ -201,5 +201,90 @@ void test_round_trip_legacy(const vector<uint8_t>& source, const JlsParameters& 
     // ReSharper restore CppDeprecatedEntity
     RESTORE_DEPRECATED_WARNING
 }
+
+bool verify_encoded_bytes(const vector<uint8_t>& uncompressed_source, const vector<uint8_t>& encoded_source)
+{
+    const jpegls_decoder decoder{encoded_source, true};
+
+    jpegls_encoder encoder;
+    encoder.frame_info(decoder.frame_info())
+        .interleave_mode(decoder.interleave_mode())
+        .near_lossless(decoder.near_lossless())
+        .preset_coding_parameters(decoder.preset_coding_parameters());
+
+    vector<uint8_t> our_encoded_bytes(encoded_source.size() + 16);
+    encoder.destination(our_encoded_bytes);
+
+    const size_t bytes_written{encoder.encode(uncompressed_source)};
+    if (bytes_written != encoded_source.size())
+        return false;
+
+    for (size_t i{}; i != encoded_source.size(); ++i)
+    {
+        if (encoded_source[i] != our_encoded_bytes[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t>& uncompressed_source,
+                     const bool check_encode)
+{
+    const jpegls_decoder decoder{encoded_source, true};
+
+    if (check_encode)
+    {
+        Assert::IsTrue(verify_encoded_bytes(uncompressed_source, encoded_source));
+    }
+
+    vector<uint8_t> destination(decoder.destination_size());
+    decoder.decode(destination);
+
+    if (decoder.near_lossless() == 0)
+    {
+        for (size_t i{}; i != uncompressed_source.size(); ++i)
+        {
+            if (uncompressed_source[i] != destination[i]) // AreEqual is very slow, pre-test to speed up 50X
+            {
+                Assert::AreEqual(uncompressed_source[i], destination[i]);
+            }
+        }
+    }
+    else
+    {
+        const frame_info frame_info{decoder.frame_info()};
+        const auto near_lossless{decoder.near_lossless()};
+
+        if (frame_info.bits_per_sample <= 8)
+        {
+            for (size_t i{}; i != uncompressed_source.size(); ++i)
+            {
+                if (abs(uncompressed_source[i] - destination[i]) >
+                    near_lossless) // AreEqual is very slow, pre-test to speed up 50X
+                {
+                    Assert::AreEqual(uncompressed_source[i], destination[i]);
+                }
+            }
+        }
+        else
+        {
+            const auto* source16 = reinterpret_cast<const uint16_t*>(uncompressed_source.data());
+            const auto* destination16 = reinterpret_cast<const uint16_t*>(destination.data());
+
+            for (size_t i{}; i != uncompressed_source.size() / 2; ++i)
+            {
+                if (abs(source16[i] - destination16[i]) > near_lossless) // AreEqual is very slow, pre-test to speed up 50X
+                {
+                    Assert::AreEqual(static_cast<int>(source16[i]), static_cast<int>(destination16[i]));
+                }
+            }
+        }
+    }
+}
+
 
 }} // namespace charls::test

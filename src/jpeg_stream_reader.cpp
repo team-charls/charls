@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <tuple>
 
 namespace charls {
 
@@ -23,6 +24,16 @@ using std::equal;
 using std::find;
 using std::unique_ptr;
 using std::vector;
+
+namespace {
+
+constexpr bool is_restart_marker_code(const jpeg_marker_code marker_code) noexcept
+{
+    return static_cast<uint8_t>(marker_code) >= jpeg_restart_marker_base &&
+           static_cast<uint8_t>(marker_code) < jpeg_restart_marker_base + jpeg_restart_marker_range;
+}
+
+} // namespace
 
 jpeg_stream_reader::jpeg_stream_reader(const byte_span source) noexcept : source_{source}
 {
@@ -212,6 +223,7 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
 
         return;
 
+    case jpeg_marker_code::define_restart_interval:
     case jpeg_marker_code::jpegls_preset_parameters:
     case jpeg_marker_code::comment:
     case jpeg_marker_code::application_data0:
@@ -253,6 +265,9 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
         throw_jpegls_error(jpegls_errc::unexpected_end_of_image_marker);
     }
 
+    if (is_restart_marker_code(marker_code))
+        throw_jpegls_error(jpegls_errc::unexpected_restart_marker);
+
     throw_jpegls_error(jpegls_errc::unknown_jpeg_marker_found);
 }
 
@@ -282,6 +297,9 @@ int jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code, 
 
     case jpeg_marker_code::jpegls_preset_parameters:
         return read_preset_parameters_segment(segment_size);
+
+    case jpeg_marker_code::define_restart_interval:
+        return read_define_restart_interval(segment_size);
 
     case jpeg_marker_code::application_data0:
     case jpeg_marker_code::application_data1:
@@ -422,6 +440,30 @@ int jpeg_stream_reader::read_preset_parameters_segment(const int32_t segment_siz
 }
 
 
+int jpeg_stream_reader::read_define_restart_interval(const int32_t segment_size)
+{
+    // Note: The JPEG-LS standard supports a 2,3 or 4 byte restart interval (see ISO/IEC 14495-1, C.2.5)
+    //       The original JPEG standard only supports 2 bytes (16 bit big endian).
+    switch (segment_size)
+    {
+    case 2:
+        parameters_.restart_interval = read_uint16();
+        return 2;
+
+    case 3:
+        parameters_.restart_interval = read_uint24();
+        return 3;
+
+    case 4:
+        parameters_.restart_interval = read_uint32();
+        return 4;
+
+    default:
+        throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
+    }
+}
+
+
 void jpeg_stream_reader::read_start_of_scan()
 {
     const int32_t segment_size{read_segment_size()};
@@ -472,15 +514,23 @@ uint8_t jpeg_stream_reader::read_byte()
 
 void jpeg_stream_reader::skip_byte()
 {
-    static_cast<void>(read_byte());
+    std::ignore = read_byte();
 }
 
 
 uint16_t jpeg_stream_reader::read_uint16()
 {
-    const uint16_t value = read_byte() * 256U;
+    const uint32_t value{read_byte() * 256U};
     return static_cast<uint16_t>(value + read_byte());
 }
+
+
+uint32_t jpeg_stream_reader::read_uint24()
+{
+    const uint32_t value{static_cast<uint32_t>(read_byte()) << 16U};
+    return value + read_uint16();
+}
+
 
 uint32_t jpeg_stream_reader::read_uint32()
 {
@@ -490,6 +540,7 @@ uint32_t jpeg_stream_reader::read_uint32()
 
     return value;
 }
+
 
 int32_t jpeg_stream_reader::read_segment_size()
 {

@@ -15,7 +15,7 @@ namespace {
 
 /// <summary>
 /// This is the original algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
-/// It will map signed values to unsiged values.
+/// It will map signed values to unsigned values.
 /// </summary>
 int32_t map_error_value_original(const int32_t error_value) noexcept
 {

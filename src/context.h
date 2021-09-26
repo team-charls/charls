@@ -64,7 +64,7 @@ struct jls_context final
             {
                 b = -n + 1;
             }
-            C = C - (C > -128);
+            C = C - static_cast<int16_t>(C > -128);
         }
         else if (b > 0)
         {
@@ -73,7 +73,7 @@ struct jls_context final
             {
                 b = 0;
             }
-            C = C + (C < 127);
+            C = C + static_cast<int16_t>(C < 127);
         }
         B = b;
 

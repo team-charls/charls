@@ -9,6 +9,7 @@
 #include <chrono>
 #include <iostream>
 #include <ratio>
+#include <tuple>
 #include <vector>
 
 using charls::frame_info;
@@ -47,8 +48,8 @@ void test_performance(const int loop_count)
     // RGBA image (This is a common PNG sample)
     test_file("test/alphatest.raw", 0, rect_size(380, 287), 8, 4, false, loop_count);
 
-    const rect_size size1024 = rect_size(1024, 1024);
-    const rect_size size512 = rect_size(512, 512);
+    const rect_size size1024{1024, 1024};
+    const rect_size size512{512, 512};
 
     // 16 bit mono
     test_file("test/MR2_UNC", 1728, size1024, 16, 1, true, loop_count);
@@ -164,7 +165,7 @@ void encode_performance_tests(const int loop_count)
             encoder2.frame_info(info).interleave_mode(interleave_mode);
             encoder2.destination(destination);
 
-            static_cast<void>(encoder2.encode(anymap_file.image_data()));
+            std::ignore = encoder2.encode(anymap_file.image_data());
         }
 
         const auto end{steady_clock::now()};

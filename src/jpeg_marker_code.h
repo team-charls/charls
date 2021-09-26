@@ -16,12 +16,15 @@ namespace charls {
 // 0x4F - 0x6F, 0x90 - 0x93 are defined in ISO/IEC 15444-1: JPEG 2000
 
 constexpr uint8_t jpeg_marker_start_byte{0xFF};
+constexpr uint8_t jpeg_restart_marker_base{0xD0}; // RSTm: Marks the next restart interval (range is D0..D7)
+constexpr uint32_t jpeg_restart_marker_range{8};
 
 enum class jpeg_marker_code : uint8_t
 {
-    start_of_image = 0xD8, // SOI: Marks the start of an image.
-    end_of_image = 0xD9,   // EOI: Marks the end of an image.
-    start_of_scan = 0xDA,  // SOS: Marks the start of scan.
+    start_of_image = 0xD8,          // SOI: Marks the start of an image.
+    end_of_image = 0xD9,            // EOI: Marks the end of an image.
+    start_of_scan = 0xDA,           // SOS: Marks the start of scan.
+    define_restart_interval = 0xDD, // DRI: Defines the restart interval used in succeeding scans.
 
     // The following markers are defined in ISO/IEC 10918-1 | ITU T.81.
     start_of_frame_baseline_jpeg = 0xC0,       // SOF_0:  Marks the start of a baseline jpeg encoded frame.
@@ -55,8 +58,8 @@ enum class jpeg_marker_code : uint8_t
     application_data10 = 0xEA, // APP10: Application data 10.
     application_data11 = 0xEB, // APP11: Application data 11.
     application_data12 = 0xEC, // APP12: Application data 12: used for Picture info.
-    application_data13 = 0xEE, // APP13: Application data 13: used by PhotoShop IRB
-    application_data14 = 0xED, // APP14: Application data 14: used by Adobe
+    application_data13 = 0xED, // APP13: Application data 13: used by PhotoShop IRB
+    application_data14 = 0xEE, // APP14: Application data 14: used by Adobe
     application_data15 = 0xEF, // APP15: Application data 15.
     comment = 0xFE             // COM:   Comment block.
 };

@@ -36,7 +36,7 @@ public:
 
     TEST_METHOD(set_source_buffer_nullptr) // NOLINT
     {
-        const array<uint8_t, 10> buffer{};
+        constexpr array<uint8_t, 10> buffer{};
 
         auto error = charls_jpegls_decoder_set_source_buffer(nullptr, buffer.data(), buffer.size());
         Assert::AreEqual(jpegls_errc::invalid_argument, error);

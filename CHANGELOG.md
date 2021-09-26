@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Next-Release]
 
+### Added
+
+- The encoder API has been extended with a rewind method that can be used to re-use a configered encoder to encode multiple images in a loop.
+- Added support to decode JPEG-LS images that use restart markers [#92](https://github.com/team-charls/charls/issues/92)
+
 ### Fixed
 
 - Fixed [#84](https://github.com/team-charls/charls/issues/84), Default preset coding parameters not computed for unset values.
@@ -13,7 +18,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 
 - CMakeSettings.json has been replaced with CMakePresets.json.
-- The encoder API has been extended with a rewind method that can be used to re-use a configered encoder to encode multiple images in a loop.
 
 ## [2.2.0] - 2021-1-10
 

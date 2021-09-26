@@ -29,7 +29,7 @@ std::vector<uint8_t> decode_simple_8_bit_monochrome(const std::vector<uint8_t>& 
     std::tie(frame_info, std::ignore) = charls::jpegls_decoder::decode(source, destination);
 
     if (frame_info.component_count != 1 || frame_info.bits_per_sample != 8)
-        throw std::exception("Not a 8 bit monochrome image");
+        throw std::runtime_error("Not a 8 bit monochrome image");
 
     return destination;
 }
@@ -40,7 +40,7 @@ std::vector<uint8_t> decode_advanced(const std::vector<uint8_t>& source)
 
     // Standalone JPEG-LS files may have a SPIFF header (color space info, etc.)
     if (decoder.spiff_header_has_value() && decoder.spiff_header().color_space != charls::spiff_color_space::grayscale)
-        throw std::exception("Not a grayscale image");
+        throw std::runtime_error("Not a grayscale image");
 
     // After read_header() other properties can also be retrieved.
     if (decoder.near_lossless() != 0)
@@ -57,10 +57,10 @@ std::vector<uint8_t> decode_simple_8_bit_monochrome_legacy(const std::vector<uin
     JlsParameters parameters{};
     auto error = JpegLsReadHeader(source.data(), source.size(), &parameters, error_message.data());
     if (error != CharlsApiResultType::OK)
-        throw std::exception(error_message.data());
+        throw std::runtime_error(error_message.data());
 
     if (parameters.components != 1 || parameters.bitsPerSample != 8)
-        throw std::exception("Not a 8 bit monochrome image");
+        throw std::runtime_error("Not a 8 bit monochrome image");
 
     const size_t destination_size = static_cast<size_t>(parameters.width) * static_cast<uint32_t>(parameters.height);
     std::vector<uint8_t> destination(destination_size);
@@ -68,7 +68,7 @@ std::vector<uint8_t> decode_simple_8_bit_monochrome_legacy(const std::vector<uin
     error = JpegLsDecode(destination.data(), destination.size(), source.data(), source.size(), &parameters,
                          error_message.data());
     if (error != CharlsApiResultType::OK)
-        throw std::exception(error_message.data());
+        throw std::runtime_error(error_message.data());
 
     return destination;
 }
@@ -115,7 +115,7 @@ std::vector<uint8_t> encode_simple_8_bit_monochrome_legacy(const std::vector<uin
     const auto error = JpegLsEncode(destination.data(), destination.size(), &bytes_written, source.data(), source.size(),
                                     &parameters, error_message.data());
     if (error != CharlsApiResultType::OK)
-        throw std::exception(error_message.data());
+        throw std::runtime_error(error_message.data());
 
     destination.resize(bytes_written);
     return destination;

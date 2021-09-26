@@ -42,7 +42,7 @@ public:
         array<uint8_t, 1> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&] { writer.write_start_of_image(); });
+        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&writer] { writer.write_start_of_image(); });
         Assert::AreEqual(static_cast<size_t>(0), writer.bytes_written());
     }
 
@@ -63,7 +63,7 @@ public:
         array<uint8_t, 1> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&] { writer.write_end_of_image(); });
+        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&writer] { writer.write_end_of_image(); });
         Assert::AreEqual(static_cast<size_t>(0), writer.bytes_written());
     }
 
@@ -131,7 +131,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[28]);
         Assert::AreEqual(static_cast<uint8_t>(96), buffer[29]);
 
-        // header.horizontal_resolution = 1024;
+        // header.horizontal_resolution = 1024
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[30]);
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[31]);
         Assert::AreEqual(static_cast<uint8_t>(4), buffer[32]);
@@ -155,7 +155,7 @@ public:
                             1024};
 
         assert_expect_exception(jpegls_errc::destination_buffer_too_small,
-                                [&] { writer.write_spiff_header_segment(header); });
+                                [&writer, &header] { writer.write_spiff_header_segment(header); });
         Assert::AreEqual(static_cast<size_t>(0), writer.bytes_written());
     }
 
@@ -192,7 +192,7 @@ public:
         array<uint8_t, 10> buffer{};
         jpeg_stream_writer writer{{buffer.data(), buffer.size()}};
 
-        array<uint8_t, 2> data{0x77, 0x66};
+        const array<uint8_t, 2> data{0x77, 0x66};
 
         writer.write_spiff_directory_entry(2, data.data(), data.size());
 
@@ -275,14 +275,14 @@ public:
 
         Assert::AreEqual(buffer.size(), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(16), buffer[4]);
-        Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[9]);
+        Assert::AreEqual(UINT8_MAX, buffer[9]);
 
-        Assert::AreEqual(static_cast<uint8_t>(UINT8_MAX), buffer[buffer.size() - 3]); // Last component index.
+        Assert::AreEqual(UINT8_MAX, buffer[buffer.size() - 3]); // Last component index.
     }
 
     TEST_METHOD(write_color_transform_segment) // NOLINT
     {
-        const color_transformation transformation = color_transformation::hp1;
+        constexpr color_transformation transformation = color_transformation::hp1;
 
         array<uint8_t, 9> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
@@ -301,7 +301,7 @@ public:
 
     TEST_METHOD(write_jpegls_extended_parameters_marker_and_serialize) // NOLINT
     {
-        const jpegls_pc_parameters presets{2, 1, 2, 3, 7};
+        constexpr jpegls_pc_parameters presets{2, 1, 2, 3, 7};
 
         array<uint8_t, 15> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});

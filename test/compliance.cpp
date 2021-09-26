@@ -7,6 +7,7 @@
 #include <array>
 #include <cstring>
 #include <iostream>
+#include <tuple>
 #include <vector>
 
 using std::array;
@@ -48,7 +49,7 @@ bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompress
         encoder.interleave_mode(decoder.interleave_mode());
         encoder.near_lossless(decoder.near_lossless());
         encoder.preset_coding_parameters(decoder.preset_coding_parameters());
-        static_cast<void>(encoder.encode(uncompressed_data, uncompressed_length));
+        std::ignore = encoder.encode(uncompressed_data, uncompressed_length);
 
         for (size_t i{}; i != compressed_length; ++i)
         {

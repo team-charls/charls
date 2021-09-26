@@ -60,6 +60,7 @@ public:
 private:
     void skip_byte();
     uint16_t read_uint16();
+    uint32_t read_uint24();
     uint32_t read_uint32();
     int32_t read_segment_size();
     std::vector<uint8_t> read_bytes(size_t byte_count);
@@ -74,6 +75,7 @@ private:
     int read_start_of_frame_segment(int32_t segment_size);
     static int read_comment() noexcept;
     int read_preset_parameters_segment(int32_t segment_size);
+    int read_define_restart_interval(int32_t segment_size);
     int try_read_application_data8_segment(int32_t segment_size, spiff_header* header, bool* spiff_header_found);
     int try_read_spiff_header_segment(OUT_ spiff_header& header, OUT_ bool& spiff_header_found);
 

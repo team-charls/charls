@@ -34,8 +34,8 @@ According to preliminary test results published on <http://imagecompression.info
 
 The following JPEG-LS options are not supported by the CharLS implementation. Most of these options are rarely used in practice.
 
-* No support for JPEG restart markers (RST).
-  Restart markers make it possible to recover from corrupted JPEG files, but are seldom used for data recovery scenarios.
+* No support to encode JPEG restart markers  
+  Decoding is supported, but no recovery mechanisme is implemented for corrupted JPEG-LS files.
 * No support for sub-sampled scans.
   Sub-sampling is a lossly encoding mechanism and not used in lossless scenarios.
 * No support for multi component frames with mixed component counts in a single scan.

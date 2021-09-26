@@ -14,8 +14,8 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
-using std::vector;
 using std::ignore;
+using std::vector;
 
 constexpr size_t serialized_spiff_header_size = 34;
 
@@ -54,16 +54,18 @@ public:
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument_width, [&] { encoder.frame_info({0, 1, 2, 1}); });
-        assert_expect_exception(jpegls_errc::invalid_argument_width, [&] { encoder.frame_info({UINT16_MAX + 1, 1, 2, 1}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] { encoder.frame_info({0, 1, 2, 1}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] {
+            encoder.frame_info({UINT16_MAX + 1, 1, 2, 1});
+        });
     }
 
     TEST_METHOD(frame_info_bad_height) // NOLINT
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument_height, [&] { encoder.frame_info({1, 0, 2, 1}); });
-        assert_expect_exception(jpegls_errc::invalid_argument_height, [&] {
+        assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] { encoder.frame_info({1, 0, 2, 1}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] {
             encoder.frame_info({1, UINT16_MAX + 1, 2, 1});
         });
     }
@@ -72,16 +74,24 @@ public:
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample, [&] { encoder.frame_info({1, 1, 1, 1}); });
-        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample, [&] { encoder.frame_info({1, 1, 17, 1}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample, [&encoder] {
+            encoder.frame_info({1, 1, 1, 1});
+        });
+        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample, [&encoder] {
+            encoder.frame_info({1, 1, 17, 1});
+        });
     }
 
     TEST_METHOD(frame_info_bad_component_count) // NOLINT
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument_component_count, [&] { encoder.frame_info({1, 1, 2, 0}); });
-        assert_expect_exception(jpegls_errc::invalid_argument_component_count, [&] { encoder.frame_info({1, 1, 2, 256}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_component_count, [&encoder] {
+            encoder.frame_info({1, 1, 2, 0});
+        });
+        assert_expect_exception(jpegls_errc::invalid_argument_component_count, [&encoder] {
+            encoder.frame_info({1, 1, 2, 256});
+        });
     }
 
     TEST_METHOD(interleave_mode) // NOLINT
@@ -98,9 +108,9 @@ public:
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_interleave_mode,
-                                [&] { encoder.interleave_mode(static_cast<charls::interleave_mode>(-1)); });
+                                [&encoder] { encoder.interleave_mode(static_cast<charls::interleave_mode>(-1)); });
         assert_expect_exception(jpegls_errc::invalid_argument_interleave_mode,
-                                [&] { encoder.interleave_mode(static_cast<charls::interleave_mode>(3)); });
+                                [&encoder] { encoder.interleave_mode(static_cast<charls::interleave_mode>(3)); });
     }
 
     TEST_METHOD(near_lossless) // NOLINT
@@ -115,8 +125,8 @@ public:
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument_near_lossless, [&] { encoder.near_lossless(-1); });
-        assert_expect_exception(jpegls_errc::invalid_argument_near_lossless, [&] { encoder.near_lossless(256); });
+        assert_expect_exception(jpegls_errc::invalid_argument_near_lossless, [&encoder] { encoder.near_lossless(-1); });
+        assert_expect_exception(jpegls_errc::invalid_argument_near_lossless, [&encoder] { encoder.near_lossless(256); });
     }
 
     TEST_METHOD(estimated_destination_size_minimal_frame_info) // NOLINT
@@ -179,7 +189,7 @@ public:
         const jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-                                [&] { static_cast<void>(encoder.estimated_destination_size()); });
+                                [&encoder] { ignore = encoder.estimated_destination_size(); });
     }
 
     TEST_METHOD(destination) // NOLINT
@@ -197,7 +207,8 @@ public:
         vector<uint8_t> destination(200);
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { encoder.destination(destination); });
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&encoder, &destination] { encoder.destination(destination); });
     }
 
     TEST_METHOD(write_standard_spiff_header) // NOLINT
@@ -237,7 +248,7 @@ public:
         encoder.frame_info({1, 1, 2, 1});
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-                                [&] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
+                                [&encoder] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
 
     TEST_METHOD(write_standard_spiff_header_without_frame_info) // NOLINT
@@ -248,7 +259,7 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-                                [&] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
+                                [&encoder] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
 
     TEST_METHOD(write_standard_spiff_header_twice) // NOLINT
@@ -262,7 +273,7 @@ public:
         encoder.write_standard_spiff_header(spiff_color_space::cmyk);
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-                                [&] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
+                                [&encoder] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
 
     TEST_METHOD(write_spiff_header) // NOLINT
@@ -310,7 +321,8 @@ public:
         spiff_header spiff_header{};
         spiff_header.width = 1;
 
-        assert_expect_exception(jpegls_errc::invalid_argument_height, [&] { encoder.write_spiff_header(spiff_header); });
+        assert_expect_exception(jpegls_errc::invalid_argument_height,
+                                [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
         Assert::AreEqual(static_cast<size_t>(0), encoder.bytes_written());
     }
 
@@ -326,7 +338,8 @@ public:
         spiff_header spiff_header{};
         spiff_header.height = 1;
 
-        assert_expect_exception(jpegls_errc::invalid_argument_width, [&] { encoder.write_spiff_header(spiff_header); });
+        assert_expect_exception(jpegls_errc::invalid_argument_width,
+                                [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
         Assert::AreEqual(static_cast<size_t>(0), encoder.bytes_written());
     }
 
@@ -386,7 +399,7 @@ public:
         encoder.destination(destination);
         encoder.write_standard_spiff_header(spiff_color_space::cmyk);
 
-        assert_expect_exception(jpegls_errc::invalid_argument, [&] { encoder.write_spiff_entry(1, "test", 4); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] { encoder.write_spiff_entry(1, "test", 4); });
     }
 
     TEST_METHOD(write_spiff_entry_with_invalid_size) // NOLINT
@@ -399,8 +412,8 @@ public:
         encoder.destination(destination);
         encoder.write_standard_spiff_header(spiff_color_space::cmyk);
 
-        assert_expect_exception(jpegls_errc::invalid_argument_spiff_entry_size, [&] {
-            vector<uint8_t> spiff_entry(65528 + 1);
+        assert_expect_exception(jpegls_errc::invalid_argument_spiff_entry_size, [&encoder] {
+            const vector<uint8_t> spiff_entry(65528 + 1);
             encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
         });
     }
@@ -414,8 +427,8 @@ public:
         vector<uint8_t> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] {
-            vector<uint8_t> spiff_entry(65528);
+        assert_expect_exception(jpegls_errc::invalid_operation, [&encoder] {
+            const vector<uint8_t> spiff_entry(65528);
             encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
         });
     }
@@ -424,7 +437,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        const jpegls_pc_parameters pc_parameters{};
+        constexpr jpegls_pc_parameters pc_parameters{};
         encoder.preset_coding_parameters(pc_parameters);
 
         // No explicit test possible, code should remain stable.
@@ -434,17 +447,18 @@ public:
     TEST_METHOD(set_preset_coding_parameters_bad_values) // NOLINT
     {
         const array<uint8_t, 5> source{0, 1, 1, 1, 0};
-        const frame_info frame_info{5, 1, 8, 1};
+        constexpr frame_info frame_info{5, 1, 8, 1};
         jpegls_encoder encoder;
 
         encoder.frame_info(frame_info);
         vector<uint8_t> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
-        const jpegls_pc_parameters bad_pc_parameters{1, 1, 1, 1, 1};
+        constexpr jpegls_pc_parameters bad_pc_parameters{1, 1, 1, 1, 1};
         encoder.preset_coding_parameters(bad_pc_parameters);
 
-        assert_expect_exception(jpegls_errc::invalid_argument_jpegls_pc_parameters, [&] { ignore = encoder.encode(source); });
+        assert_expect_exception(jpegls_errc::invalid_argument_jpegls_pc_parameters,
+                                [&encoder, &source] { ignore = encoder.encode(source); });
     }
 
     TEST_METHOD(encode_with_preset_coding_parameters_non_default_values) // NOLINT
@@ -462,7 +476,7 @@ public:
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
-                                [&] { encoder.color_transformation(static_cast<color_transformation>(100)); });
+                                [&encoder] { encoder.color_transformation(static_cast<color_transformation>(100)); });
     }
 
     TEST_METHOD(encode_without_destination) // NOLINT
@@ -471,7 +485,7 @@ public:
 
         encoder.frame_info({1, 1, 2, 1});
         vector<uint8_t> source(20);
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = encoder.encode(source); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&encoder, &source] { ignore = encoder.encode(source); });
     }
 
     TEST_METHOD(encode_without_frame_info) // NOLINT
@@ -481,13 +495,13 @@ public:
         vector<uint8_t> destination(20);
         encoder.destination(destination);
         const vector<uint8_t> source(20);
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = encoder.encode(source); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&encoder, &source] { ignore = encoder.encode(source); });
     }
 
     TEST_METHOD(encode_with_spiff_header) // NOLINT
     {
         const array<uint8_t, 5> source{0, 1, 2, 3, 4};
-        const frame_info frame_info{5, 1, 8, 1};
+        constexpr frame_info frame_info{5, 1, 8, 1};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
@@ -505,7 +519,7 @@ public:
     TEST_METHOD(encode_with_color_transformation) // NOLINT
     {
         const array<uint8_t, 6> source{0, 1, 2, 3, 4, 5};
-        const frame_info frame_info{2, 1, 8, 3};
+        constexpr frame_info frame_info{2, 1, 8, 3};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
@@ -522,7 +536,7 @@ public:
     TEST_METHOD(encode_16_bit) // NOLINT
     {
         const array<uint8_t, 6> source{0, 1, 2, 3, 4, 5};
-        const frame_info frame_info{3, 1, 16, 1};
+        constexpr frame_info frame_info{3, 1, 16, 1};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
@@ -540,7 +554,7 @@ public:
     {
         const vector<uint8_t> source{0, 1, 2, 3, 4, 5};
 
-        const frame_info frame_info{3, 1, 16, 1};
+        constexpr frame_info frame_info{3, 1, 16, 1};
         const auto encoded{jpegls_encoder::encode(source, frame_info)};
 
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
@@ -550,7 +564,7 @@ public:
     {
         const array<uint8_t, 30> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
                                         150, 0,   0,   0, 0, 0, 0, 0, 200, 200, 200};
-        const frame_info frame_info{3, 1, 8, 3};
+        constexpr frame_info frame_info{3, 1, 8, 3};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
@@ -567,7 +581,7 @@ public:
     TEST_METHOD(encode_1_component_4_bit_with_high_bits_set) // NOLINT
     {
         const vector<uint8_t> source(512 * 512, 0xFF);
-        const frame_info frame_info{512, 512, 4, 1};
+        constexpr frame_info frame_info{512, 512, 4, 1};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
@@ -585,7 +599,7 @@ public:
     TEST_METHOD(encode_1_component_12_bit_with_high_bits_set) // NOLINT
     {
         const vector<uint8_t> source(512 * 512 * 2, 0xFF);
-        const frame_info frame_info{512, 512, 12, 1};
+        constexpr frame_info frame_info{512, 512, 12, 1};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
@@ -603,7 +617,7 @@ public:
     TEST_METHOD(encode_3_components_6_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
         const vector<uint8_t> source(512 * 512 * 3, 0xFF);
-        const frame_info frame_info{512, 512, 6, 3};
+        constexpr frame_info frame_info{512, 512, 6, 3};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
@@ -621,7 +635,7 @@ public:
     TEST_METHOD(encode_3_components_6_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
         const vector<uint8_t> source(512 * 512 * 3, 0xFF);
-        const frame_info frame_info{512, 512, 6, 3};
+        constexpr frame_info frame_info{512, 512, 6, 3};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::line);
@@ -639,7 +653,7 @@ public:
     TEST_METHOD(encode_3_components_10_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
         const vector<uint8_t> source(512 * 512 * 2 * 3, 0xFF);
-        const frame_info frame_info{512, 512, 10, 3};
+        constexpr frame_info frame_info{512, 512, 10, 3};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
@@ -657,7 +671,7 @@ public:
     TEST_METHOD(encode_3_components_10_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
         const vector<uint8_t> source(512 * 512 * 2 * 3, 0xFF);
-        const frame_info frame_info{512, 512, 10, 3};
+        constexpr frame_info frame_info{512, 512, 10, 3};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::line);
@@ -675,7 +689,7 @@ public:
     TEST_METHOD(encode_4_components_6_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
         const vector<uint8_t> source(512 * 512 * 4, 0xFF);
-        const frame_info frame_info{512, 512, 6, 4};
+        constexpr frame_info frame_info{512, 512, 6, 4};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
@@ -693,7 +707,7 @@ public:
     TEST_METHOD(encode_4_components_6_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
         const vector<uint8_t> source(512 * 512 * 4, 0xFF);
-        const frame_info frame_info{512, 512, 6, 4};
+        constexpr frame_info frame_info{512, 512, 6, 4};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::line);
@@ -711,7 +725,7 @@ public:
     TEST_METHOD(encode_4_components_10_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
         const vector<uint8_t> source(512 * 512 * 2 * 4, 0xFF);
-        const frame_info frame_info{512, 512, 10, 4};
+        constexpr frame_info frame_info{512, 512, 10, 4};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
@@ -729,7 +743,7 @@ public:
     TEST_METHOD(encode_4_components_10_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
         const vector<uint8_t> source(512 * 512 * 2 * 4, 0xFF);
-        const frame_info frame_info{512, 512, 10, 4};
+        constexpr frame_info frame_info{512, 512, 10, 4};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::line);
@@ -747,7 +761,7 @@ public:
     TEST_METHOD(rewind) // NOLINT
     {
         const array<uint8_t, 6> source{0, 1, 2, 3, 4, 5};
-        const frame_info frame_info{3, 1, 16, 1};
+        constexpr frame_info frame_info{3, 1, 16, 1};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
@@ -772,7 +786,7 @@ public:
     TEST_METHOD(rewind_before_destination) // NOLINT
     {
         const array<uint8_t, 6> source{0, 1, 2, 3, 4, 5};
-        const frame_info frame_info{3, 1, 16, 1};
+        constexpr frame_info frame_info{3, 1, 16, 1};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
@@ -828,7 +842,7 @@ private:
     static void encode_with_custom_preset_coding_parameters(const jpegls_pc_parameters& pc_parameters)
     {
         const array<uint8_t, 5> source{0, 1, 1, 1, 0};
-        const frame_info frame_info{5, 1, 8, 1};
+        constexpr frame_info frame_info{5, 1, 8, 1};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
