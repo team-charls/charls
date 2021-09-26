@@ -108,7 +108,8 @@ public:
 
         vector<uint8_t> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported, [&] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported,
+                                [&decoder, &destination] { decoder.decode(destination); });
     }
 
     TEST_METHOD(encode_non_8_or_16_bit_is_not_supported) // NOLINT
@@ -120,7 +121,7 @@ public:
         encoder.destination(destination).frame_info(frame_info).color_transformation(color_transformation::hp3);
         const vector<uint8_t> source(20);
         assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported,
-                                [&] { std::ignore = encoder.encode(source); });
+                                [&encoder, &source] { std::ignore = encoder.encode(source); });
     }
 };
 

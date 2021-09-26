@@ -672,7 +672,7 @@ public:
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
-        assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&] { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_jpegls_stream_with_restart_marker_outside_entropy_data) // NOLINT
@@ -683,7 +683,7 @@ public:
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
-        assert_expect_exception(jpegls_errc::unexpected_restart_marker, [&] { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::unexpected_restart_marker, [&reader] { reader.read_header(); });
     }
 
 private:

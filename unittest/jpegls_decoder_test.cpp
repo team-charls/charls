@@ -19,9 +19,9 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::error_code;
+using std::ignore;
 using std::tie;
 using std::vector;
-using std::ignore;
 using namespace charls_test;
 
 namespace {
@@ -62,28 +62,28 @@ public:
 
         const vector<uint8_t> source(2000);
         decoder.source(source);
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { decoder.source(source); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder, &source] { decoder.source(source); });
     }
 
     TEST_METHOD(read_spiff_header_without_source) // NOLINT
     {
         jpegls_decoder decoder;
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { decoder.read_spiff_header(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { decoder.read_spiff_header(); });
     }
 
     TEST_METHOD(destination_size_without_reading_header) // NOLINT
     {
         const jpegls_decoder decoder;
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = decoder.destination_size(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.destination_size(); });
     }
 
     TEST_METHOD(read_header_without_source) // NOLINT
     {
         jpegls_decoder decoder;
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { decoder.read_header(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { decoder.read_header(); });
     }
 
     TEST_METHOD(read_header_from_non_jpegls_data) // NOLINT
@@ -123,7 +123,7 @@ public:
         const vector<uint8_t> source(2000);
         const jpegls_decoder decoder{source, false};
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = decoder.interleave_mode(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.interleave_mode(); });
     }
 
     TEST_METHOD(near_lossless_without_read_header) // NOLINT
@@ -131,7 +131,7 @@ public:
         const vector<uint8_t> source(2000);
         const jpegls_decoder decoder{source, false};
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = decoder.near_lossless(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.near_lossless(); });
     }
 
     TEST_METHOD(preset_coding_parameters_without_read_header) // NOLINT
@@ -141,7 +141,7 @@ public:
         const vector<uint8_t> source(2000);
         decoder.source(source);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = decoder.preset_coding_parameters(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.preset_coding_parameters(); });
     }
 
     TEST_METHOD(destination_size) // NOLINT
@@ -264,7 +264,7 @@ public:
         const jpegls_decoder decoder;
 
         vector<uint8_t> buffer(1000);
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { decoder.decode(buffer); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder, &buffer] { decoder.decode(buffer); });
     }
 
     TEST_METHOD(decode_reference_to_mapping_table_selector) // NOLINT
@@ -278,7 +278,7 @@ public:
 
         jpegls_decoder decoder{writer.buffer, false};
 
-        assert_expect_exception(jpegls_errc::parameter_value_not_supported, [&] { decoder.read_header(); });
+        assert_expect_exception(jpegls_errc::parameter_value_not_supported, [&decoder] { decoder.read_header(); });
     }
 
     TEST_METHOD(read_spiff_header) // NOLINT
@@ -354,7 +354,7 @@ public:
 
         jpegls_decoder decoder{source, true};
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&] { ignore = decoder.read_header(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.read_header(); });
     }
 
     TEST_METHOD(simple_decode) // NOLINT
@@ -409,7 +409,8 @@ public:
 
         vector<uint8_t> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::invalid_encoded_data, [&] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::invalid_encoded_data,
+                                [&decoder, &destination] { decoder.decode(destination); });
     }
 
     TEST_METHOD(decode_file_with_golomb_large_then_k_max) // NOLINT
@@ -426,7 +427,8 @@ public:
 
         vector<uint8_t> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::invalid_encoded_data, [&] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::invalid_encoded_data,
+                                [&decoder, &destination] { decoder.decode(destination); });
     }
 
     TEST_METHOD(decode_file_with_missing_restart_marker) // NOLINT
@@ -442,7 +444,7 @@ public:
         const jpegls_decoder decoder{source, true};
         vector<uint8_t> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::restart_marker_not_found, [&] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::restart_marker_not_found, [&decoder, &destination] { decoder.decode(destination); });
     }
 
     TEST_METHOD(decode_file_with_incorrect_restart_marker) // NOLINT
@@ -458,7 +460,7 @@ public:
         const jpegls_decoder decoder{source, true};
         vector<uint8_t> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::restart_marker_not_found, [&] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::restart_marker_not_found, [&decoder, &destination] { decoder.decode(destination); });
     }
 
     TEST_METHOD(decode_file_with_extra_begin_bytes_for_restart_marker_code) // NOLINT
@@ -494,7 +496,7 @@ private:
     }
 
     static vector<uint8_t>::iterator find_first_restart_marker(const vector<uint8_t>::iterator& begin,
-                                                      const vector<uint8_t>::iterator& end) noexcept
+                                                               const vector<uint8_t>::iterator& end) noexcept
     {
         constexpr uint8_t first_restart_marker{0xD0};
 

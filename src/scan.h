@@ -478,14 +478,13 @@ private:
 
         Strategy::initialize(compressed_data);
 
-        if (restart_interval_)
+        // Process images without a restart interval, as 1 large restart interval.
+        if (restart_interval_ == 0)
         {
-            decode_scan_with_restarts();
+            restart_interval_ = frame_info().height;
         }
-        else
-        {
-            do_scan();
-        }
+
+        decode_lines();
 
         skip_bytes(compressed_data, static_cast<size_t>(Strategy::get_cur_byte_pos() - compressed_bytes));
     }
@@ -531,7 +530,7 @@ private:
         return frame;
     }
 
-    // do_scan: Encodes or decodes a scan.
+    // do_scan: Encodes a scan.
     // In ILV_SAMPLE mode, multiple components are handled in do_line
     // In ILV_LINE mode, a call do do_line is made for every component
     // In ILV_NONE mode, do_scan is called for each component
@@ -580,7 +579,7 @@ private:
         Strategy::end_scan();
     }
 
-    void decode_scan_with_restarts()
+    void decode_lines()
     {
         const uint32_t pixel_stride{width_ + 4U};
         const size_t component_count{
@@ -589,7 +588,7 @@ private:
         std::vector<pixel_type> line_buffer(static_cast<size_t>(2) * component_count * pixel_stride);
         std::vector<int32_t> run_index(component_count);
 
-        for (uint32_t line{}; line < frame_info().height;)
+        for (uint32_t line{};;)
         {
             const uint32_t lines_in_interval{std::min(frame_info().height - line, restart_interval_)};
 
@@ -626,16 +625,17 @@ private:
                 }
             }
 
-            if (line < frame_info().height)
-            {
-                read_restart_marker();
-                restart_interval_counter_ = (restart_interval_counter_ + 1) % jpeg_restart_marker_range;
+            if (line == frame_info().height)
+                break;
 
-                Strategy::reset();
-                std::fill(line_buffer.begin(), line_buffer.end(), pixel_type{});
-                std::fill(run_index.begin(), run_index.end(), 0);
-                reset_parameters();
-            }
+            read_restart_marker();
+            restart_interval_counter_ = (restart_interval_counter_ + 1) % jpeg_restart_marker_range;
+
+            // After a restart marker it is required to reset the decoder.
+            Strategy::reset();
+            std::fill(line_buffer.begin(), line_buffer.end(), pixel_type{});
+            std::fill(run_index.begin(), run_index.end(), 0);
+            reset_parameters();
         }
 
         Strategy::end_scan();

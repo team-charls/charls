@@ -130,7 +130,7 @@ vector<uint8_t> create_test_spiff_header(const uint8_t high_version, const uint8
     buffer.push_back(0);
     buffer.push_back(96);
 
-    // header.horizontal_resolution = 1024;
+    // header.horizontal_resolution = 1024
     buffer.push_back(0);
     buffer.push_back(0);
     buffer.push_back(4);

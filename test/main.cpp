@@ -198,7 +198,7 @@ vector<uint8_t> make_some_noise16_bit(const size_t length, const int bit_count, 
 
 void test_noise_image()
 {
-    const rect_size size2 = rect_size(512, 512);
+    const rect_size size2{512, 512};
 
     for (size_t bit_depth{8}; bit_depth >= 2; --bit_depth)
     {

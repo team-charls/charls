@@ -46,7 +46,7 @@ public:
 
     TEST_METHOD(set_frame_info_buffer_nullptr) // NOLINT
     {
-        charls_frame_info frame_info{};
+        constexpr charls_frame_info frame_info{};
         auto error = charls_jpegls_encoder_set_frame_info(nullptr, &frame_info);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -70,7 +70,7 @@ public:
 
     TEST_METHOD(set_preset_coding_parameters_nullptr) // NOLINT
     {
-        jpegls_pc_parameters parameters{};
+        constexpr jpegls_pc_parameters parameters{};
         auto error = charls_jpegls_encoder_set_preset_coding_parameters(nullptr, &parameters);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -94,7 +94,7 @@ public:
 
         charls_jpegls_encoder* const encoder = charls_jpegls_encoder_create();
 
-        charls_frame_info frame_info{1, 1, 2, 1};
+        constexpr charls_frame_info frame_info{1, 1, 2, 1};
         error = charls_jpegls_encoder_set_frame_info(encoder, &frame_info);
         Assert::AreEqual(jpegls_errc::success, error);
 
@@ -117,7 +117,7 @@ public:
 
     TEST_METHOD(encode_from_buffer_nullptr) // NOLINT
     {
-        const array<uint8_t, 10> source_buffer{};
+        constexpr array<uint8_t, 10> source_buffer{};
         auto error = charls_jpegls_encoder_encode_from_buffer(nullptr, source_buffer.data(), source_buffer.size(), 0);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -129,7 +129,7 @@ public:
 
     TEST_METHOD(write_spiff_header_nullptr) // NOLINT
     {
-        charls_spiff_header spiff_header{};
+        constexpr charls_spiff_header spiff_header{};
         auto error = charls_jpegls_encoder_write_spiff_header(nullptr, &spiff_header);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -148,7 +148,7 @@ public:
 
     TEST_METHOD(write_spiff_entry_nullptr) // NOLINT
     {
-        const array<uint8_t, 10> entry_data{};
+        constexpr array<uint8_t, 10> entry_data{};
         auto error = charls_jpegls_encoder_write_spiff_entry(nullptr, 5, entry_data.data(), entry_data.size());
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -170,11 +170,11 @@ public:
         auto error = charls_jpegls_encoder_set_destination_buffer(encoder, nullptr, 0);
         Assert::AreEqual(jpegls_errc::success, error);
 
-        charls_frame_info frame_info{1, 1, 2, 1};
+        constexpr charls_frame_info frame_info{1, 1, 2, 1};
         error = charls_jpegls_encoder_set_frame_info(encoder, &frame_info);
         Assert::AreEqual(jpegls_errc::success, error);
 
-        array<uint8_t, 10> buffer{};
+        constexpr array<uint8_t, 10> buffer{};
         error = charls_jpegls_encoder_encode_from_buffer(encoder, buffer.data(), buffer.size(), 0);
         Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);
 
@@ -189,7 +189,7 @@ public:
         auto error = charls_jpegls_encoder_set_destination_buffer(encoder, buffer.data(), buffer.size());
         Assert::AreEqual(jpegls_errc::success, error);
 
-        charls_frame_info frame_info{1, 1, 2, 1};
+        constexpr charls_frame_info frame_info{1, 1, 2, 1};
         error = charls_jpegls_encoder_set_frame_info(encoder, &frame_info);
         Assert::AreEqual(jpegls_errc::success, error);
 

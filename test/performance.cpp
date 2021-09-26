@@ -48,8 +48,8 @@ void test_performance(const int loop_count)
     // RGBA image (This is a common PNG sample)
     test_file("test/alphatest.raw", 0, rect_size(380, 287), 8, 4, false, loop_count);
 
-    const rect_size size1024 = rect_size(1024, 1024);
-    const rect_size size512 = rect_size(512, 512);
+    const rect_size size1024{1024, 1024};
+    const rect_size size512{512, 512};
 
     // 16 bit mono
     test_file("test/MR2_UNC", 1728, size1024, 16, 1, true, loop_count);

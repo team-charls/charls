@@ -24,7 +24,7 @@ void test_jpegls_read_header(const char* filename, const int width, const int he
 {
     cout << "LegacyAPI JpegLsReadHeader:" << filename << "\n";
 
-    vector<uint8_t> encoded_buffer = read_file(filename);
+    const vector<uint8_t> encoded_buffer{read_file(filename)};
 
     array<char, ErrorMessageSize> error_message{};
     JlsParameters parameters{};
