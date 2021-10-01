@@ -107,6 +107,21 @@ struct charls_jpegls_encoder final
         writer_.write_spiff_directory_entry(entry_tag, entry_data, entry_data_size_bytes);
     }
 
+    void check_stride(const byte_span source, const size_t stride)
+    {
+        // Simple check to verify user input, and prevent out-of-bound read access.
+        if (interleave_mode_ == charls::interleave_mode::none)
+        {
+            if( stride * static_cast<size_t>(frame_info_.component_count) * static_cast<size_t>(frame_info_.width) > source.size )
+              impl::throw_jpegls_error(jpegls_errc::invalid_argument);
+        }
+        else
+        {
+            if( stride * static_cast<size_t>(frame_info_.width) > source.size )
+              impl::throw_jpegls_error(jpegls_errc::invalid_argument);
+        }
+    }
+
     void encode(byte_span source, size_t stride)
     {
         check_argument(source.data || source.size == 0);
@@ -124,6 +139,8 @@ struct charls_jpegls_encoder final
                 stride *= static_cast<size_t>(frame_info_.component_count);
             }
         }
+        else
+            check_stride(source, stride);
 
         if (state_ == state::spiff_header)
         {
