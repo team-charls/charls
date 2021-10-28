@@ -729,14 +729,10 @@ using ColorTransformation CHARLS_DEPRECATED = color_transformation;
 
 } // namespace charls
 
-namespace std {
-
 template<>
-struct is_error_code_enum<charls::jpegls_errc> final : true_type
+struct std::is_error_code_enum<charls::jpegls_errc> final : std::true_type
 {
 };
-
-} // namespace std
 
 using charls_jpegls_errc = charls::jpegls_errc;
 using charls_interleave_mode = charls::interleave_mode;
