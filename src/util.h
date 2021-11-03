@@ -34,7 +34,7 @@
 #define FORCE_INLINE
 #endif
 #else
-#define FORCE_INLINE
+#define FORCE_INLINE __attribute__((always_inline))
 #endif
 #endif
 
