@@ -12,8 +12,8 @@ namespace charls {
 class encoder_strategy
 {
 public:
-    encoder_strategy(const frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        frame_info_{frame_info}, parameters_{parameters}
+    encoder_strategy(const frame_info& info, const coding_parameters& parameters) noexcept :
+        frame_info_{info}, parameters_{parameters}
     {
     }
 
