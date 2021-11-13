@@ -329,7 +329,8 @@ private:
         run_index_ = std::max(0, run_index_ - 1);
     }
 
-    FORCE_INLINE sample_type do_regular(const int32_t qs, int32_t, const int32_t predicted, decoder_strategy*)
+    FORCE_INLINE sample_type do_regular(const int32_t qs, int32_t /*x*/, const int32_t predicted,
+                                        decoder_strategy* /*template_selector*/)
     {
         const int32_t sign = bit_wise_sign(qs);
         jls_context& context = contexts_[apply_sign(qs, sign)];
@@ -359,7 +360,8 @@ private:
         return traits_.compute_reconstructed_sample(predicted_value, error_value);
     }
 
-    FORCE_INLINE sample_type do_regular(const int32_t qs, const int32_t x, const int32_t predicted, encoder_strategy*)
+    FORCE_INLINE sample_type do_regular(const int32_t qs, const int32_t x, const int32_t predicted,
+                                        encoder_strategy* /*template_selector*/)
     {
         const int32_t sign{bit_wise_sign(qs)};
         jls_context& context{contexts_[apply_sign(qs, sign)]};
@@ -376,7 +378,7 @@ private:
     }
 
     /// <summary>Encodes/Decodes a scan line of samples</summary>
-    void do_line(sample_type*)
+    void do_line(sample_type* /*template_selector*/)
     {
         int32_t index{};
         int32_t rb{previous_line_[index - 1]};
@@ -408,7 +410,7 @@ private:
     }
 
     /// <summary>Encodes/Decodes a scan line of triplets in ILV_SAMPLE mode</summary>
-    void do_line(triplet<sample_type>*)
+    void do_line(triplet<sample_type>* /*template_selector*/)
     {
         int32_t index{};
         while (static_cast<uint32_t>(index) < width_)
@@ -658,7 +660,7 @@ private:
     }
 
     /// <summary>Encodes/Decodes a scan line of quads in ILV_SAMPLE mode</summary>
-    void do_line(quad<sample_type>*)
+    void do_line(quad<sample_type>* /*template_selector*/)
     {
         int32_t index{};
         while (static_cast<uint32_t>(index) < width_)
@@ -703,7 +705,7 @@ private:
         const int32_t k{context.get_golomb_code()};
         const int32_t e_mapped_error_value{
             decode_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_pixel)};
-        const int32_t error_value{context.compute_error_value(e_mapped_error_value + context.run_interruption_type, k)};
+        const int32_t error_value{context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k)};
         context.update_variables(error_value, e_mapped_error_value);
         return error_value;
     }
@@ -780,7 +782,7 @@ private:
         return index;
     }
 
-    int32_t do_run_mode(const int32_t start_index, decoder_strategy*)
+    int32_t do_run_mode(const int32_t start_index, decoder_strategy* /*template_selector*/)
     {
         const pixel_type ra{current_line_[start_index - 1]};
 
@@ -801,10 +803,10 @@ private:
     {
         const int32_t k{context.get_golomb_code()};
         const bool map{context.compute_map(error_value, k)};
-        const int32_t e_mapped_error_value{2 * std::abs(error_value) - context.run_interruption_type -
+        const int32_t e_mapped_error_value{2 * std::abs(error_value) - context.run_interruption_type() -
                                            static_cast<int32_t>(map)};
 
-        ASSERT(error_value == context.compute_error_value(e_mapped_error_value + context.run_interruption_type, k));
+        ASSERT(error_value == context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k));
         encode_mapped_value(k, e_mapped_error_value, traits_.limit - J[run_index_] - 1);
         context.update_variables(error_value, e_mapped_error_value);
     }
@@ -884,7 +886,7 @@ private:
         }
     }
 
-    int32_t do_run_mode(const int32_t index, encoder_strategy*)
+    int32_t do_run_mode(const int32_t index, encoder_strategy* /*strategy*/)
     {
         const int32_t count_type_remain = width_ - index;
         pixel_type* type_cur_x{current_line_ + index};

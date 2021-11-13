@@ -12,8 +12,8 @@ namespace charls {
 class encoder_strategy
 {
 public:
-    explicit encoder_strategy(const frame_info& frame, const coding_parameters& parameters) noexcept :
-        frame_info_{frame}, parameters_{parameters}
+    encoder_strategy(const frame_info& frame_info, const coding_parameters& parameters) noexcept :
+        frame_info_{frame_info}, parameters_{parameters}
     {
     }
 
@@ -37,6 +37,7 @@ public:
 
     static void on_line_end(size_t /*pixel_count*/, void* /*destination*/, size_t /*pixel_stride*/) noexcept
     {
+        // Definition is required for template. Event is not used by encoder.
     }
 
 protected:
