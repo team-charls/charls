@@ -4,6 +4,7 @@
 #pragma once
 
 #include "util.h"
+#include "constants.h"
 
 #include <cassert>
 #include <cstdint>
@@ -86,7 +87,7 @@ struct jls_context final
     /// </summary>
     FORCE_INLINE int32_t get_golomb_coding_parameter() const
     {
-        int32_t k{0};
+        int32_t k{};
         for (; N << k < A && k < max_k_value; ++k)
         {
         }

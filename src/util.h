@@ -184,7 +184,7 @@ constexpr int32_t compute_limit_parameter(const int32_t bits_per_pixel)
 template<typename SampleType>
 struct triplet
 {
-    triplet() noexcept : v1{0}, v2{0}, v3{0}
+    triplet() noexcept : v1{}, v2{}, v3{}
     {
     }
 
@@ -227,7 +227,7 @@ template<typename SampleType>
 struct quad final : triplet<SampleType>
 {
     MSVC_WARNING_SUPPRESS(26495) // false warning that v4 is uninitialized [VS 2017 15.9.4]
-    quad() noexcept : triplet<SampleType>(), v4{0}
+    quad() noexcept : triplet<SampleType>(), v4{}
     {
     }
     MSVC_WARNING_UNSUPPRESS()

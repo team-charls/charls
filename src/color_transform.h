@@ -43,7 +43,7 @@ struct transform_hp1 final
 
     struct inverse final
     {
-        explicit inverse(const transform_hp1&) noexcept
+        explicit inverse(const transform_hp1& /*template_selector*/) noexcept
         {
         }
 
@@ -76,7 +76,7 @@ struct transform_hp2 final
 
     struct inverse final
     {
-        explicit inverse(const transform_hp2&) noexcept
+        explicit inverse(const transform_hp2& /*template_selector*/) noexcept
         {
         }
 
@@ -109,7 +109,7 @@ struct transform_hp3 final
 
     struct inverse final
     {
-        explicit inverse(const transform_hp3&) noexcept
+        explicit inverse(const transform_hp3& /*template_selector*/) noexcept
         {
         }
 
