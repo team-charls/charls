@@ -22,21 +22,26 @@
 #define ASSERT(expression) assert(expression)
 #endif
 
-// Only use __forceinline for the Microsoft C++ compiler in release mode (verified scenario)
-// Use the build-in optimizer for all other C++ compilers.
+// Use forced inline for supported C++ compilers in release builds.
 // Note: usage of FORCE_INLINE may be reduced in the future as the latest generation of C++ compilers
 // can handle optimization by themselves.
 #ifndef FORCE_INLINE
-#ifdef _MSC_VER
 #ifdef NDEBUG
+#ifdef _MSC_VER
 #define FORCE_INLINE __forceinline
+#elif defined(__GNUC__)
+// C++ Compilers that support the GCC extensions (GCC, clang, Intel, etc.)
+#define FORCE_INLINE __attribute__((always_inline))
 #else
+// Unknown C++ compiler, fallback to auto inline.
 #define FORCE_INLINE
 #endif
 #else
-#define FORCE_INLINE __attribute__((always_inline))
+// Do' not force inline in debug builds.
+#define FORCE_INLINE
 #endif
 #endif
+
 
 #ifdef _MSC_VER
 #define MSVC_WARNING_SUPPRESS(x) \
