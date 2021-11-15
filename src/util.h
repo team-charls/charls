@@ -37,7 +37,7 @@
 #define FORCE_INLINE
 #endif
 #else
-// Do' not force inline in debug builds.
+// Do not force inline in debug builds.
 #define FORCE_INLINE
 #endif
 #endif

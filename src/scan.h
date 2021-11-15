@@ -534,7 +534,7 @@ private:
 
     // do_scan: Encodes a scan.
     // In ILV_SAMPLE mode, multiple components are handled in do_line
-    // In ILV_LINE mode, a call do do_line is made for every component
+    // In ILV_LINE mode, a call to do_line is made for every component
     // In ILV_NONE mode, do_scan is called for each component
     void do_scan()
     {
