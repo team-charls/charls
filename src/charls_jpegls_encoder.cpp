@@ -11,6 +11,7 @@
 #include <new>
 
 using namespace charls;
+using impl::throw_jpegls_error;
 
 struct charls_jpegls_encoder final
 {
@@ -114,15 +115,15 @@ struct charls_jpegls_encoder final
 
         if (!is_valid(preset_coding_parameters_, calculate_maximum_sample_value(frame_info_.bits_per_sample), near_lossless_,
                       &validated_pc_parameters_))
-            impl::throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
+            throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
 
-        if (stride == 0)
+        if (stride == auto_calculate_stride)
         {
-            stride = static_cast<size_t>(frame_info_.width) * bit_to_byte_count(frame_info_.bits_per_sample);
-            if (interleave_mode_ != charls::interleave_mode::none)
-            {
-                stride *= static_cast<size_t>(frame_info_.component_count);
-            }
+            stride = calculate_stride();
+        }
+        else
+        {
+            check_stride(stride, source.size);
         }
 
         if (state_ == state::spiff_header)
@@ -140,7 +141,7 @@ struct charls_jpegls_encoder final
         if (color_transformation_ != charls::color_transformation::none)
         {
             if (!(frame_info_.bits_per_sample == 8 || frame_info_.bits_per_sample == 16))
-                impl::throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
+                throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
 
             writer_.write_color_transform_segment(color_transformation_);
         }
@@ -216,6 +217,31 @@ private:
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
         writer_.seek(bytes_written);
+    }
+
+    size_t calculate_stride() const noexcept
+    {
+        const auto stride{static_cast<size_t>(frame_info_.width) * bit_to_byte_count(frame_info_.bits_per_sample)};
+        if (interleave_mode_ == charls::interleave_mode::none)
+            return stride;
+
+        return stride * frame_info_.component_count;
+    }
+
+    void check_stride(const size_t stride, const size_t source_size) const
+    {
+        // Simple check to verify user input, and prevent out-of-bound read access.
+        // Stride parameter defines the number of bytes on a scan line.
+        if (interleave_mode_ == charls::interleave_mode::none)
+        {
+            if (stride * frame_info_.component_count * frame_info_.height > source_size)
+                throw_jpegls_error(jpegls_errc::invalid_argument_stride);
+        }
+        else
+        {
+            if (stride * frame_info_.height > source_size)
+                throw_jpegls_error(jpegls_errc::invalid_argument_stride);
+        }
     }
 
     charls_frame_info frame_info_{};
