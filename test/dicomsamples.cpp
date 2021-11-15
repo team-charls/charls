@@ -26,7 +26,7 @@ bool contains_string(const uint8_t* container, const uint8_t* bytes_to_find, con
     return true;
 }
 
-int find_string(vector<uint8_t>& container, const uint8_t* bytes_to_find, const size_t bytes_length) noexcept
+int find_string(const vector<uint8_t>& container, const uint8_t* bytes_to_find, const size_t bytes_length) noexcept
 {
     for (size_t i{}; i != container.size() - bytes_length; ++i)
     {

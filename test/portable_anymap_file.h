@@ -40,7 +40,7 @@ public:
         pnm_file.exceptions(std::ios::eofbit | std::ios::failbit | std::ios::badbit);
         pnm_file.open(filename, std::ios_base::in | std::ios_base::binary);
 
-        std::vector<int> header_info = read_header(pnm_file);
+        const std::vector<int> header_info{read_header(pnm_file)};
         if (header_info.size() != 4)
             throw std::ios_base::failure("Incorrect PNM header");
 

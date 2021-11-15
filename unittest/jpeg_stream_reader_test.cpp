@@ -375,7 +375,7 @@ public:
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
-        assert_expect_exception(jpegls_errc::unexpected_marker_found, [&reader]() { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::unexpected_marker_found, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_extra_sof_should_throw) // NOLINT
@@ -387,7 +387,7 @@ public:
 
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
 
-        assert_expect_exception(jpegls_errc::duplicate_start_of_frame_marker, [&reader]() { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::duplicate_start_of_frame_marker, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw) // NOLINT
@@ -400,12 +400,12 @@ public:
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader]() { reader.read_start_of_scan(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_start_of_scan(); });
     }
 
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw2) // NOLINT
     {
-        const jpegls_pc_parameters preset_coding_parameters{200, 0, 0, 0, 0};
+        constexpr jpegls_pc_parameters preset_coding_parameters{200, 0, 0, 0, 0};
 
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -418,7 +418,7 @@ public:
         jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader]() { reader.read_start_of_scan(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_start_of_scan(); });
     }
 
     TEST_METHOD(read_header_with_duplicate_component_id_in_start_of_frame_segment_should_throw) // NOLINT
@@ -603,7 +603,7 @@ public:
         }
     }
 
-    TEST_METHOD(read_header_with_define_restart_interval_16bit) // NOLINT
+    TEST_METHOD(read_header_with_define_restart_interval_16_bit) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -617,7 +617,7 @@ public:
         Assert::AreEqual(static_cast<uint32_t>(UINT16_MAX - 5), reader.parameters().restart_interval);
     }
 
-    TEST_METHOD(read_header_with_define_restart_interval_24bit) // NOLINT
+    TEST_METHOD(read_header_with_define_restart_interval_24_bit) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -631,7 +631,7 @@ public:
         Assert::AreEqual(static_cast<uint32_t>(UINT16_MAX + 5), reader.parameters().restart_interval);
     }
 
-    TEST_METHOD(read_header_with_define_restart_interval_32bit) // NOLINT
+    TEST_METHOD(read_header_with_define_restart_interval_32_bit) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();

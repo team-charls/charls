@@ -185,7 +185,7 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// </param>
 CHARLS_DEPRECATED
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
-JpegLsReadHeader(IN_READS_BYTES_(source_length) const void* source, size_t source_length, OUT_ struct JlsParameters* params,
+JpegLsReadHeader(IN_READS_BYTES_(source_length) const void* source, size_t source_length, OUT_ JlsParameters* params,
                  OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 /// <summary>
@@ -206,14 +206,14 @@ CHARLS_DEPRECATED
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
 JpegLsDecode(OUT_WRITES_BYTES_(destination_length) void* destination, size_t destination_length,
              IN_READS_BYTES_(source_length) const void* source, size_t source_length,
-             IN_OPT_ const struct JlsParameters* params, OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
+             IN_OPT_ const JlsParameters* params, OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 /// <remarks>This method will be removed in the next major update.</remarks>
 CHARLS_DEPRECATED
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
 JpegLsDecodeRect(OUT_WRITES_BYTES_(destination_length) void* destination, size_t destination_length,
-                 IN_READS_BYTES_(source_length) const void* source, size_t source_length, struct JlsRect roi,
-                 IN_OPT_ const struct JlsParameters* params, OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
+                 IN_READS_BYTES_(source_length) const void* source, size_t source_length, JlsRect roi,
+                 IN_OPT_ const JlsParameters* params, OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 #ifdef __cplusplus
 

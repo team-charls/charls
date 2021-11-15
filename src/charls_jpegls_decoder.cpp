@@ -335,7 +335,7 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsDecode(OUT_WRITES_BYTES_(destina
                                                        const size_t destination_length,
                                                        IN_READS_BYTES_(source_length) const void* source,
                                                        const size_t source_length,
-                                                       IN_OPT_ const struct JlsParameters* params,
+                                                       IN_OPT_ const JlsParameters* params,
                                                        OUT_OPT_ char* error_message)
 try
 {
