@@ -560,7 +560,7 @@ public:
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_with_stride) // NOLINT
+    TEST_METHOD(encode_with_stride_interleave_none_8_bit) // NOLINT
     {
         const array<uint8_t, 30> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
                                         150, 0,   0,   0, 0, 0, 0, 0, 200, 200, 200};
@@ -576,6 +576,88 @@ public:
 
         const array<uint8_t, 9> expected{100, 100, 100, 150, 150, 150, 200, 200, 200};
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
+    }
+
+    TEST_METHOD(encode_with_stride_interleave_none_16_bit) // NOLINT
+    {
+        const array<uint16_t, 30> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
+                                        150, 0,   0,   0, 0, 0, 0, 0, 200, 200, 200};
+        constexpr frame_info frame_info{3, 1, 16, 3};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source, 10 * sizeof(uint16_t))};
+        destination.resize(bytes_written);
+
+        const array<uint16_t, 9> expected{100, 100, 100, 150, 150, 150, 200, 200, 200};
+        test_by_decoding(destination, frame_info, expected.data(), expected.size() * sizeof(uint16_t),
+                         interleave_mode::none);
+    }
+
+    TEST_METHOD(encode_with_stride_interleave_sample_8_bit) // NOLINT
+    {
+        const array<uint8_t, 10> source{100, 150, 200, 100, 150, 200, 100, 150, 200, 0};
+        constexpr frame_info frame_info{3, 1, 8, 3};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source, 10)};
+        destination.resize(bytes_written);
+
+        const array<uint8_t, 9> expected{100, 150, 200, 100, 150, 200, 100, 150, 200};
+        test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::sample);
+    }
+
+    TEST_METHOD(encode_with_stride_interleave_sample_16_bit) // NOLINT
+    {
+        const array<uint16_t, 10> source{100, 150, 200, 100, 150, 200, 100, 150, 200, 0};
+        constexpr frame_info frame_info{3, 1, 16, 3};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source, 10 * sizeof(uint16_t))};
+        destination.resize(bytes_written);
+
+        const array<uint16_t, 9> expected{100, 150, 200, 100, 150, 200, 100, 150, 200};
+        test_by_decoding(destination, frame_info, expected.data(), expected.size() * sizeof(uint16_t), interleave_mode::sample);
+    }
+
+    TEST_METHOD(encode_with_bad_stride_interleave_none) // NOLINT
+    {
+        const array<uint8_t, 29> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
+                                        150, 0,   0,   0, 0, 0, 0, 0, 200, 200, 200};
+        constexpr frame_info frame_info{3, 1, 8, 3};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        assert_expect_exception(jpegls_errc::invalid_argument_stride,
+                                [&encoder, &source] { ignore = encoder.encode(source, 10); });
+    }
+
+    TEST_METHOD(encode_with_bad_stride_interleave_sample) // NOLINT
+    {
+        const array<uint8_t, 9> source{100, 150, 200, 100, 150, 200, 100, 150, 200};
+        constexpr frame_info frame_info{3, 1, 8, 3};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        assert_expect_exception(jpegls_errc::invalid_argument_stride,
+                                [&encoder, &source] { ignore = encoder.encode(source, 10); });
     }
 
     TEST_METHOD(encode_1_component_4_bit_with_high_bits_set) // NOLINT
@@ -611,7 +693,7 @@ public:
         destination.resize(bytes_written);
 
         const vector<uint16_t> expected(512 * 512, 4095);
-        test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::none);
+        test_by_decoding(destination, frame_info, expected.data(), expected.size() * sizeof(uint16_t), interleave_mode::none);
     }
 
     TEST_METHOD(encode_3_components_6_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
