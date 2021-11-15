@@ -1043,4 +1043,7 @@ typedef struct charls_spiff_header charls_spiff_header;
 typedef struct charls_frame_info charls_frame_info;
 typedef struct charls_jpegls_pc_parameters charls_jpegls_pc_parameters;
 
+typedef struct JlsParameters JlsParameters;
+typedef struct JlsRect JlsRect;
+
 #endif

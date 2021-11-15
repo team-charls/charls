@@ -17,8 +17,8 @@ TEST_CLASS(encoder_strategy_test)
 public:
     TEST_METHOD(append_to_bit_stream_zero_length) // NOLINT
     {
-        const frame_info frame_info{};
-        const coding_parameters parameters{};
+        constexpr frame_info frame_info{};
+        constexpr coding_parameters parameters{};
 
         encoder_strategy_tester strategy(frame_info, parameters);
 
@@ -32,8 +32,8 @@ public:
 
     TEST_METHOD(append_to_bit_stream_ff_pattern) // NOLINT
     {
-        const frame_info frame_info{};
-        const coding_parameters parameters{};
+        constexpr frame_info frame_info{};
+        constexpr coding_parameters parameters{};
 
         encoder_strategy_tester strategy(frame_info, parameters);
 

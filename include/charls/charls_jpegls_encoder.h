@@ -209,7 +209,7 @@ charls_jpegls_encoder_rewind(IN_ charls_jpegls_encoder* encoder) CHARLS_NOEXCEPT
 CHARLS_DEPRECATED
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
 JpegLsEncode(OUT_WRITES_BYTES_(destination_length) void* destination, size_t destination_length, OUT_ size_t* bytes_written,
-             IN_READS_BYTES_(source_length) const void* source, size_t source_length, IN_ const struct JlsParameters* params,
+             IN_READS_BYTES_(source_length) const void* source, size_t source_length, IN_ const JlsParameters* params,
              OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3, 4, 6)));
 
 #ifdef __cplusplus

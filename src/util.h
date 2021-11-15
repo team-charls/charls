@@ -290,13 +290,6 @@ inline void skip_bytes(byte_span& stream_info, const size_t count) noexcept
 
 
 template<typename T>
-std::ostream& operator<<(std::enable_if_t<std::is_enum<T>::value, std::ostream>& stream, const T& e)
-{
-    return stream << static_cast<typename std::underlying_type<T>::type>(e);
-}
-
-
-template<typename T>
 T* check_pointer(T* pointer)
 {
     if (!pointer)

@@ -444,7 +444,8 @@ public:
         const jpegls_decoder decoder{source, true};
         vector<uint8_t> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::restart_marker_not_found, [&decoder, &destination] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::restart_marker_not_found,
+                                [&decoder, &destination] { decoder.decode(destination); });
     }
 
     TEST_METHOD(decode_file_with_incorrect_restart_marker) // NOLINT
@@ -460,7 +461,8 @@ public:
         const jpegls_decoder decoder{source, true};
         vector<uint8_t> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::restart_marker_not_found, [&decoder, &destination] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::restart_marker_not_found,
+                                [&decoder, &destination] { decoder.decode(destination); });
     }
 
     TEST_METHOD(decode_file_with_extra_begin_bytes_for_restart_marker_code) // NOLINT
@@ -481,8 +483,8 @@ public:
     }
 
 private:
-    static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator& begin,
-                                                      const vector<uint8_t>::iterator& end) noexcept
+    static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator begin,
+                                                      const vector<uint8_t>::iterator end) noexcept
     {
         constexpr uint8_t start_of_scan{0xDA};
 
@@ -495,8 +497,8 @@ private:
         return end;
     }
 
-    static vector<uint8_t>::iterator find_first_restart_marker(const vector<uint8_t>::iterator& begin,
-                                                               const vector<uint8_t>::iterator& end) noexcept
+    static vector<uint8_t>::iterator find_first_restart_marker(const vector<uint8_t>::iterator begin,
+                                                               const vector<uint8_t>::iterator end) noexcept
     {
         constexpr uint8_t first_restart_marker{0xD0};
 

@@ -82,7 +82,7 @@ public:
 
     TEST_METHOD(max_value_lossless) // NOLINT
     {
-        const auto expected{compute_defaults_using_reference_implementation(65535, 0)};
+        constexpr auto expected{compute_defaults_using_reference_implementation(65535, 0)};
         const auto parameters{compute_default(65535, 0)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
@@ -94,7 +94,7 @@ public:
 
     TEST_METHOD(min_value_lossless) // NOLINT
     {
-        const auto expected{compute_defaults_using_reference_implementation(3, 0)};
+        constexpr auto expected{compute_defaults_using_reference_implementation(3, 0)};
         const auto parameters{compute_default(3, 0)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
@@ -106,7 +106,7 @@ public:
 
     TEST_METHOD(min_high_value_lossless) // NOLINT
     {
-        const auto expected{compute_defaults_using_reference_implementation(128, 0)};
+        constexpr auto expected{compute_defaults_using_reference_implementation(128, 0)};
         const auto parameters{compute_default(128, 0)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
@@ -118,7 +118,7 @@ public:
 
     TEST_METHOD(max_low_value_lossless) // NOLINT
     {
-        const auto expected{compute_defaults_using_reference_implementation(127, 0)};
+        constexpr auto expected{compute_defaults_using_reference_implementation(127, 0)};
         const auto parameters{compute_default(127, 0)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
@@ -130,7 +130,7 @@ public:
 
     TEST_METHOD(max_value_max_lossy) // NOLINT
     {
-        const auto expected{compute_defaults_using_reference_implementation(65535, 255)};
+        constexpr auto expected{compute_defaults_using_reference_implementation(65535, 255)};
         const auto parameters{compute_default(65535, 255)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
@@ -142,7 +142,7 @@ public:
 
     TEST_METHOD(min_value_max_lossy) // NOLINT
     {
-        const auto expected{compute_defaults_using_reference_implementation(3, 1)};
+        constexpr auto expected{compute_defaults_using_reference_implementation(3, 1)};
         const auto parameters{compute_default(3, 1)};
 
         Assert::AreEqual(expected.MaxVal, parameters.maximum_sample_value);
@@ -156,7 +156,7 @@ public:
     {
         constexpr auto bits_per_sample{16};
         constexpr auto maximum_component_value{(1 << bits_per_sample) - 1};
-        const jpegls_pc_parameters pc_parameters{};
+        constexpr jpegls_pc_parameters pc_parameters{};
 
         Assert::IsTrue(is_valid(pc_parameters, maximum_component_value, 0));
     }
@@ -165,7 +165,7 @@ public:
     {
         constexpr auto bits_per_sample{16};
         constexpr auto maximum_component_value{(1 << bits_per_sample) - 1};
-        const jpegls_pc_parameters pc_parameters{maximum_component_value, 0, 0, 0, 63};
+        constexpr jpegls_pc_parameters pc_parameters{maximum_component_value, 0, 0, 0, 63};
 
         Assert::IsTrue(is_valid(pc_parameters, maximum_component_value, 0));
     }

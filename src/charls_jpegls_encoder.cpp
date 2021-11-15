@@ -424,7 +424,7 @@ catch (...)
 jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsEncode(OUT_WRITES_BYTES_(destination_length) void* destination,
                                                        const size_t destination_length, OUT_ size_t* bytes_written,
                                                        IN_READS_BYTES_(source_length) const void* source,
-                                                       const size_t source_length, IN_ const struct JlsParameters* params,
+                                                       const size_t source_length, IN_ const JlsParameters* params,
                                                        OUT_OPT_ char* error_message)
 try
 {
