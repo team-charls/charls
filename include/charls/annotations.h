@@ -38,7 +38,7 @@
 #endif
 
 
-#if defined(__clang__) || defined(__GNUC__)
+#if defined(__GNUC__)
 
 #define CHARLS_ATTRIBUTE(a) __attribute__(a)
 
