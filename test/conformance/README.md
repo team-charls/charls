@@ -10,14 +10,14 @@ Test images
 
 (See explanation of PPM and PGM formats below)
 
-test8.ppm    - 8-bit color test image (photo+graphics+text+random data).
-test8r.pgm   - "red" component of test8
-test8g.pgm   - "green" component of test8
-test8b.pgm   - "blue" component of test8
-test8gr4.pgm - "green" component of test8, sub-sampled 4X in the vertical
+- test8.ppm    - 8-bit color test image (photo+graphics+text+random data).
+- test8r.pgm   - "red" component of test8
+- test8g.pgm   - "green" component of test8
+- test8b.pgm   - "blue" component of test8
+- test8gr4.pgm - "green" component of test8, sub-sampled 4X in the vertical
                direction
-test8bs2.pgm - "blue" component of test8, sub-sampled 2X in both directions
-test16.pgm   - 16-bit test gray-scale image (actually 12-bit)
+- test8bs2.pgm - "blue" component of test8, sub-sampled 2X in both directions
+- test16.pgm   - 16-bit test gray-scale image (actually 12-bit)
 
 Compressed images
 -----------------
