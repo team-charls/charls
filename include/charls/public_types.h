@@ -59,7 +59,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_INTERLEAVE_MODE = 104,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_NEAR_LOSSLESS = 105,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_JPEGLS_PC_PARAMETERS = 106,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SPIFF_ENTRY_SIZE = 110,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SIZE = 110,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COLOR_TRANSFORMATION = 111,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_STRIDE = 112,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH = 200,
@@ -335,9 +335,9 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     invalid_argument_jpegls_pc_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_JPEGLS_PC_PARAMETERS,
 
     /// <summary>
-    /// The argument for the entry size parameter is outside the range [0, 65528].
+    /// The argument for the size parameter is outside the valid range.
     /// </summary>
-    invalid_argument_spiff_entry_size = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SPIFF_ENTRY_SIZE,
+    invalid_argument_size = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SIZE,
 
     /// <summary>
     /// The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component count.

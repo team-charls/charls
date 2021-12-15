@@ -7,6 +7,7 @@
 
 #ifdef __cplusplus
 #include <memory>
+#include <cstring>
 #else
 #include <stddef.h>
 #endif
@@ -154,6 +155,20 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_spiff_entry(
     IN_ charls_jpegls_encoder* encoder, uint32_t entry_tag, IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data,
     size_t entry_data_size_bytes) CHARLS_NOEXCEPT;
+
+/// <summary>
+/// Writes a comment (COM) segment to the destination.
+/// </summary>
+/// <remarks>
+/// Function should be called before decoding the image.
+/// </remarks>
+/// <param name="encoder">Reference to the encoder instance.</param>
+/// <param name="comment">The 'comment' bytes. Application specific, usually human readable string.</param>
+/// <param name="comment_size_bytes">The size in bytes of the comment [0-65533].</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
+CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_comment(
+    IN_ charls_jpegls_encoder* encoder, IN_READS_BYTES_(comment_size_bytes) const void* comment,
+    size_t comment_size_bytes) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Encodes the passed buffer with the source image data to the destination.
@@ -387,6 +402,27 @@ public:
     {
         check_jpegls_errc(charls_jpegls_encoder_write_spiff_entry(encoder_.get(), static_cast<uint32_t>(entry_tag),
                                                                   entry_data, entry_data_size_bytes));
+        return *this;
+    }
+
+    /// <summary>
+    /// Writes a JPEG comment to the destination.
+    /// </summary>
+    /// <remarks>The null terminator is not written to the output destination.</remarks>
+    /// <param name="comment">The text of the comment as null terminated string. Encoding is application specific.</param>
+    jpegls_encoder& write_comment(IN_Z_ const char* comment)
+    {
+        return write_comment(comment, std::strlen(comment));
+    }
+
+    /// <summary>
+    /// Writes a JPEG comment to the destination.
+    /// </summary>
+    /// <param name="comment">The bytes of the comment: application specific.</param>
+    /// <param name="size">The size of the comment in bytes.</param>
+    jpegls_encoder& write_comment(IN_READS_BYTES_(size) const void* comment, const size_t size)
+    {
+        check_jpegls_errc(charls_jpegls_encoder_write_comment(encoder_.get(), comment, size));
         return *this;
     }
 

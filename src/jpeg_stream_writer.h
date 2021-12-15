@@ -48,6 +48,12 @@ public:
     void write_color_transform_segment(color_transformation transformation);
 
     /// <summary>
+    /// Writes a comment (COM) segment.
+    /// </summary>
+    /// <param name="comment">The bytes of the comment.</param>
+    void write_comment_segment(byte_span comment);
+
+    /// <summary>
     /// Writes a JPEG-LS preset parameters (LSE) segment.
     /// </summary>
     /// <param name="preset_coding_parameters">Parameters to write into the JPEG-LS preset segment.</param>

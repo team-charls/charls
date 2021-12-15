@@ -412,7 +412,7 @@ public:
         encoder.destination(destination);
         encoder.write_standard_spiff_header(spiff_color_space::cmyk);
 
-        assert_expect_exception(jpegls_errc::invalid_argument_spiff_entry_size, [&encoder] {
+        assert_expect_exception(jpegls_errc::invalid_argument_size, [&encoder] {
             const vector<uint8_t> spiff_entry(65528 + 1);
             encoder.write_spiff_entry(spiff_entry_tag::image_title, spiff_entry.data(), spiff_entry.size());
         });

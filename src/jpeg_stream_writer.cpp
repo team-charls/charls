@@ -118,6 +118,13 @@ void jpeg_stream_writer::write_color_transform_segment(const color_transformatio
 }
 
 
+void jpeg_stream_writer::write_comment_segment(const byte_span comment)
+{
+    write_segment_header(jpeg_marker_code::comment, comment.size);
+    write_bytes(comment.data, comment.size);
+}
+
+
 void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const jpegls_pc_parameters& preset_coding_parameters)
 {
     write_segment_header(jpeg_marker_code::jpegls_preset_parameters, 1 + 5 * sizeof(uint16_t));
