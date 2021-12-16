@@ -108,10 +108,10 @@ struct charls_jpegls_encoder final
         writer_.write_spiff_directory_entry(entry_tag, entry_data, entry_data_size_bytes);
     }
 
-    void write_comment(const byte_span comment)
+    void write_comment(const const_byte_span comment)
     {
-        check_argument(comment.data || comment.size == 0);
-        check_argument(comment.size <= 65533, jpegls_errc::invalid_argument_size);
+        check_argument(comment.data() || comment.size() == 0);
+        check_argument(comment.size() <= segment_max_data_size, jpegls_errc::invalid_argument_size);
         check_operation(state_ >= state::destination_set && state_ < state::completed);
 
         transition_to_tables_and_miscellaneous_state();
@@ -178,6 +178,7 @@ struct charls_jpegls_encoder final
         }
 
         writer_.write_end_of_image();
+        state_ = state::completed;
     }
 
     size_t bytes_written() const noexcept
