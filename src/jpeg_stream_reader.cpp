@@ -35,12 +35,14 @@ constexpr bool is_restart_marker_code(const jpeg_marker_code marker_code) noexce
 
 } // namespace
 
-jpeg_stream_reader::jpeg_stream_reader(const byte_span source) noexcept : source_{source}
+
+void jpeg_stream_reader::source(const byte_span source) noexcept
 {
+    ASSERT(state_ == state::before_start_of_image);
+    source_ = source;
 }
 
-
-void jpeg_stream_reader::read(byte_span source, size_t stride)
+void jpeg_stream_reader::read(byte_span destination, size_t stride)
 {
     ASSERT(state_ == state::bit_stream_section);
 
@@ -64,7 +66,7 @@ void jpeg_stream_reader::read(byte_span source, size_t stride)
     const int64_t bytes_per_plane{static_cast<int64_t>(rect_.Width) * rect_.Height *
                                   bit_to_byte_count(frame_info_.bits_per_sample)};
 
-    if (static_cast<int64_t>(source.size) < bytes_per_plane * frame_info_.component_count)
+    if (static_cast<int64_t>(destination.size) < bytes_per_plane * frame_info_.component_count)
         throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
     int component_index{};
@@ -77,9 +79,9 @@ void jpeg_stream_reader::read(byte_span source, size_t stride)
 
         const unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
             frame_info_, parameters_, get_validated_preset_coding_parameters())};
-        unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
+        unique_ptr<process_line> process_line(codec->create_process_line(destination, stride));
         codec->decode_scan(move(process_line), rect_, source_);
-        skip_bytes(source, static_cast<size_t>(bytes_per_plane));
+        skip_bytes(destination, static_cast<size_t>(bytes_per_plane));
         state_ = state::scan_section;
 
         if (parameters_.interleave_mode != interleave_mode::none)
@@ -293,7 +295,7 @@ int jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code, 
         return read_start_of_frame_segment(segment_size);
 
     case jpeg_marker_code::comment:
-        return read_comment();
+        return read_comment(segment_size);
 
     case jpeg_marker_code::jpegls_preset_parameters:
         return read_preset_parameters_segment(segment_size);
@@ -391,8 +393,13 @@ int jpeg_stream_reader::read_start_of_frame_segment(const int32_t segment_size)
 }
 
 
-int jpeg_stream_reader::read_comment() noexcept
+int jpeg_stream_reader::read_comment(const int32_t segment_size) const noexcept
 {
+    if (comment_handler_)
+    {
+        comment_handler_(segment_size > 0 ? source_.data : nullptr, segment_size, comment_handler_user_context_);
+    }
+
     return 0;
 }
 

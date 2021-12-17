@@ -168,8 +168,15 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// Number of bytes to the next line in the buffer, when zero, decoder will compute it.
 /// </param> <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_decode_to_buffer(
-    IN_ const charls_jpegls_decoder* decoder, OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
+    IN_ charls_jpegls_decoder* decoder, OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
     size_t destination_size_bytes, uint32_t stride) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+
+/// <summary>
+/// Will install a function that will be called when a comment (COM) segment is found.
+/// </summary>
+CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_at_comment(
+    IN_ charls_jpegls_decoder* decoder, charls_at_comment_handler handler, void* user_context) CHARLS_NOEXCEPT;
+
 
 // Note: The 3 methods below are considered obsolete and will be removed in the next major update.
 

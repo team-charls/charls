@@ -147,7 +147,7 @@ public:
         auto error = charls_jpegls_decoder_decode_to_buffer(nullptr, buffer.data(), buffer.size(), 0);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        const auto* decoder = charls_jpegls_decoder_create();
+        auto* decoder = charls_jpegls_decoder_create();
         error = charls_jpegls_decoder_decode_to_buffer(decoder, nullptr, buffer.size(), 0);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -168,7 +168,7 @@ public:
 
     TEST_METHOD(decode_to_zero_size_buffer) // NOLINT
     {
-        const auto* decoder = get_initialized_decoder();
+        auto* decoder = get_initialized_decoder();
 
         const auto error = charls_jpegls_decoder_decode_to_buffer(decoder, nullptr, 0, 0);
         Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);

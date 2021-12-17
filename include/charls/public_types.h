@@ -1028,6 +1028,8 @@ struct JlsParameters
     struct JfifParameters jfif;
 };
 
+typedef void(CHARLS_API_CALLING_CONVENTION* charls_at_comment_handler)(const void* data, size_t size, void* user_context);
+
 
 #ifdef __cplusplus
 
@@ -1036,6 +1038,7 @@ namespace charls {
 using spiff_header = charls_spiff_header;
 using frame_info = charls_frame_info;
 using jpegls_pc_parameters = charls_jpegls_pc_parameters;
+using at_comment_handler = charls_at_comment_handler;
 
 static_assert(sizeof(spiff_header) == 40, "size of struct is incorrect, check padding settings");
 static_assert(sizeof(frame_info) == 16, "size of struct is incorrect, check padding settings");
