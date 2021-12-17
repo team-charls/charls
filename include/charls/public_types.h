@@ -16,6 +16,7 @@ namespace charls {
 namespace impl {
 
 #else
+#include <cstddef.h>
 #include <stdint.h>
 #endif
 
@@ -1028,10 +1029,9 @@ struct JlsParameters
     struct JfifParameters jfif;
 };
 
-typedef void(CHARLS_API_CALLING_CONVENTION* charls_at_comment_handler)(const void* data, size_t size, void* user_context);
-
-
 #ifdef __cplusplus
+
+using charls_at_comment_handler = void(CHARLS_API_CALLING_CONVENTION*)(const void* data, size_t size, void* user_context);
 
 namespace charls {
 
@@ -1047,6 +1047,8 @@ static_assert(sizeof(jpegls_pc_parameters) == 20, "size of struct is incorrect, 
 } // namespace charls
 
 #else
+
+typedef void(CHARLS_API_CALLING_CONVENTION* charls_at_comment_handler)(const void* data, size_t size, void* user_context);
 
 typedef struct charls_spiff_header charls_spiff_header;
 typedef struct charls_frame_info charls_frame_info;
