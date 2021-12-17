@@ -16,7 +16,7 @@ namespace charls {
 namespace impl {
 
 #else
-#include <cstddef.h>
+#include <stddef.h>
 #include <stdint.h>
 #endif
 
