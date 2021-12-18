@@ -298,8 +298,8 @@ catch (...)
     return to_jpegls_errc();
 }
 
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_at_comment(charls_jpegls_decoder* decoder, const at_comment_handler handler, void* user_context) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_at_comment(
+    charls_jpegls_decoder* decoder, const at_comment_handler handler, void* user_context) noexcept
 try
 {
     check_pointer(decoder)->at_comment(handler, user_context);
@@ -351,8 +351,7 @@ catch (...)
 jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsDecode(OUT_WRITES_BYTES_(destination_length) void* destination,
                                                        const size_t destination_length,
                                                        IN_READS_BYTES_(source_length) const void* source,
-                                                       const size_t source_length,
-                                                       IN_OPT_ const JlsParameters* params,
+                                                       const size_t source_length, IN_OPT_ const JlsParameters* params,
                                                        OUT_OPT_ char* error_message)
 try
 {

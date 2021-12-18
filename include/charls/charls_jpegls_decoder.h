@@ -6,6 +6,7 @@
 #include "jpegls_error.h"
 
 #ifdef __cplusplus
+#include <functional>
 #include <memory>
 #include <utility>
 #else
@@ -174,7 +175,15 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// <summary>
 /// Will install a function that will be called when a comment (COM) segment is found.
 /// </summary>
-CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_at_comment(
+/// <remarks>
+/// Pass NULL or nullptr to uninstall the callback function.
+/// The callback should return 0 if there are no errors.
+/// It can return a non-zero value to abort decoding with a callback_failed error code.
+/// </remarks>
+/// <param name="decoder">Reference to the decoder instance.</param>
+/// <param name="handler">Function pointer to the callback function.</param>
+/// <param name="user_context">Free to use context data that will be provided to the callback function.</param>
+CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_at_comment(
     IN_ charls_jpegls_decoder* decoder, charls_at_comment_handler handler, void* user_context) CHARLS_NOEXCEPT;
 
 
@@ -212,8 +221,8 @@ JpegLsReadHeader(IN_READS_BYTES_(source_length) const void* source, size_t sourc
 CHARLS_DEPRECATED
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
 JpegLsDecode(OUT_WRITES_BYTES_(destination_length) void* destination, size_t destination_length,
-             IN_READS_BYTES_(source_length) const void* source, size_t source_length,
-             IN_OPT_ const JlsParameters* params, OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
+             IN_READS_BYTES_(source_length) const void* source, size_t source_length, IN_OPT_ const JlsParameters* params,
+             OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 /// <remarks>This method will be removed in the next major update.</remarks>
 CHARLS_DEPRECATED
@@ -295,6 +304,23 @@ public:
     jpegls_decoder& source(IN_READS_BYTES_(source_size_bytes) const void* source_buffer, const size_t source_size_bytes)
     {
         check_jpegls_errc(charls_jpegls_decoder_set_source_buffer(decoder_.get(), source_buffer, source_size_bytes));
+        return *this;
+    }
+
+    /// <summary>
+    /// Will install a function that will be called when a comment (COM) segment is found.
+    /// </summary>
+    /// <remarks>
+    /// Pass a nullptr to uninstall the callback function.
+    /// The callback can throw an exception to abort the decoding process.
+    /// This will be returned as a callback_failed error code.
+    /// </remarks>
+    /// <param name="comment_handler">Function object to the comment handler.</param>
+    jpegls_decoder& at_comment(const std::function<void(const void* data, size_t size)> comment_handler)
+    {
+        comment_handler_ = comment_handler;
+        check_jpegls_errc(
+            charls_jpegls_decoder_at_comment(decoder_.get(), comment_handler_ ? at_comment_callback : nullptr, this));
         return *this;
     }
 
@@ -533,11 +559,26 @@ private:
         charls_jpegls_decoder_destroy(decoder);
     }
 
+    static int32_t CHARLS_API_CALLING_CONVENTION at_comment_callback(const void* data, const size_t size,
+                                                                     void* user_context) noexcept
+    {
+        try
+        {
+            static_cast<jpegls_decoder*>(user_context)->comment_handler_(data, size);
+            return 0;
+        }
+        catch (...)
+        {
+            return 1; // will trigger jpegls_errc::callback_failed.
+        }
+    }
+
     std::unique_ptr<charls_jpegls_decoder, void (*)(const charls_jpegls_decoder*)> decoder_{create_decoder(),
                                                                                             &destroy_decoder};
     bool spiff_header_has_value_{};
     charls::spiff_header spiff_header_{};
     charls::frame_info frame_info_{};
+    std::function<void(const void*, size_t)> comment_handler_{};
 };
 
 } // namespace charls

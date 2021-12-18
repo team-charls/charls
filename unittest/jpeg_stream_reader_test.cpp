@@ -734,16 +734,73 @@ public:
         };
         callback_output actual;
 
-        reader.at_comment([](const void* data, const size_t size, void* user_context) noexcept {
+        reader.at_comment(
+            [](const void* data, const size_t size, void* user_context) noexcept -> int32_t {
                 auto* actual_output = static_cast<callback_output*>(user_context);
                 actual_output->data = data;
                 actual_output->size = size;
+                return 0;
              }, &actual);
 
         reader.read_header();
 
         Assert::AreEqual(static_cast<size_t>(5), actual.size);
         Assert::IsTrue(memcmp("hello", actual.data, actual.size) == 0);
+    }
+
+    TEST_METHOD(read_empty_comment) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_segment(jpeg_marker_code::comment, "", 0);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        struct callback_output
+        {
+            const void* data{};
+            size_t size{};
+        };
+        callback_output actual;
+
+        reader.at_comment(
+            [](const void* data, const size_t size, void* user_context) noexcept -> int32_t {
+                auto* actual_output = static_cast<callback_output*>(user_context);
+                actual_output->data = data;
+                actual_output->size = size;
+                return 0;
+            },
+            &actual);
+
+        reader.read_header();
+
+        Assert::AreEqual(static_cast<size_t>(0), actual.size);
+        Assert::IsNull(actual.data);
+    }
+
+    TEST_METHOD(read_bad_comment) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_segment(jpeg_marker_code::comment, "", 10);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size() - 1});
+
+        bool called{};
+        reader.at_comment(
+            [](const void*, const size_t, void* user_context) noexcept -> int32_t {
+                auto* actual_called = static_cast<bool*>(user_context);
+                *actual_called = true;
+                return 0;
+            },
+            &called);
+
+        assert_expect_exception(jpegls_errc::source_buffer_too_small, [&reader] { reader.read_header(); });
+        Assert::IsFalse(called);
     }
 
 

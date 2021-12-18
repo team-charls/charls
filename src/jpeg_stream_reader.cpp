@@ -393,12 +393,14 @@ int jpeg_stream_reader::read_start_of_frame_segment(const int32_t segment_size)
 }
 
 
-int jpeg_stream_reader::read_comment(const int32_t segment_size) const noexcept
+int jpeg_stream_reader::read_comment(const int32_t segment_size) const
 {
-    if (comment_handler_)
-    {
-        comment_handler_(segment_size > 0 ? source_.data : nullptr, segment_size, comment_handler_user_context_);
-    }
+    if (static_cast<size_t>(segment_size) > source_.size)
+        throw_jpegls_error(jpegls_errc::source_buffer_too_small);
+
+    if (comment_handler_ && static_cast<bool>(comment_handler_(segment_size > 0 ? source_.data : nullptr, segment_size,
+                                                               comment_handler_user_context_)))
+        throw_jpegls_error(jpegls_errc::callback_failed);
 
     return 0;
 }

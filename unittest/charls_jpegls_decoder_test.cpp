@@ -176,6 +176,12 @@ public:
         charls_jpegls_decoder_destroy(decoder);
     }
 
+    TEST_METHOD(at_comment_nullptr) // NOLINT
+    {
+        auto error = charls_jpegls_decoder_at_comment(nullptr, nullptr, nullptr);
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+    }
+
 private:
     static charls_jpegls_decoder* get_initialized_decoder()
     {
