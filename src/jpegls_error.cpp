@@ -61,8 +61,8 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
     case jpegls_errc::invalid_argument_near_lossless:
         return "The near lossless argument is outside the range [0, 255]";
 
-    case jpegls_errc::invalid_argument_spiff_entry_size:
-        return "The argument for the entry size parameter is outside the range [0, 65528]";
+    case jpegls_errc::invalid_argument_size:
+        return "The argument for the entry size parameter is outside the valid range";
 
     case jpegls_errc::invalid_argument_color_transformation:
         return "The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component "
@@ -110,6 +110,9 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
 
     case jpegls_errc::restart_marker_not_found:
         return "Invalid JPEG-LS stream, missing expected restart (RTSm) marker";
+
+    case jpegls_errc::callback_failed:
+        return "Callback function returned a failure";
 
     case jpegls_errc::invalid_parameter_bits_per_sample:
         return "Invalid JPEG-LS stream, The bit per sample (sample precision) parameter is not in the range [2, 16]";

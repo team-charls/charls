@@ -482,6 +482,66 @@ public:
         test_compliance(source, reference_file.image_data(), false);
     }
 
+    TEST_METHOD(read_comment) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_segment(jpeg_marker_code::comment, "hello", 5);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer.data(), writer.buffer.size());
+
+        const void* actual_data{};
+        size_t actual_size{};
+        decoder.at_comment([&actual_data, &actual_size](const void* data, const size_t size) noexcept {
+            actual_data = data;
+            actual_size = size;
+        });
+
+        decoder.read_header();
+
+        Assert::AreEqual(static_cast<size_t>(5), actual_size);
+        Assert::IsTrue(memcmp("hello", actual_data, actual_size) == 0);
+    }
+
+    TEST_METHOD(read_comment_while_already_unregisted) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_segment(jpeg_marker_code::comment, "hello", 5);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer.data(), writer.buffer.size());
+
+        bool callback_called{};
+        decoder.at_comment([&callback_called](const void*, const size_t) noexcept { callback_called = true; })
+            .at_comment(nullptr);
+
+        decoder.read_header();
+
+        Assert::IsFalse(callback_called);
+    }
+
+    TEST_METHOD(read_comment_throw_exception) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_segment(jpeg_marker_code::comment, "hello", 5);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer.data(), writer.buffer.size());
+
+        decoder.at_comment([](const void*, const size_t) { throw "something"; });
+
+        assert_expect_exception(jpegls_errc::callback_failed, [&decoder] { decoder.read_header(); });
+    }
+
 private:
     static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator begin,
                                                       const vector<uint8_t>::iterator end) noexcept

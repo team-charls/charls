@@ -20,7 +20,7 @@ struct charls_jpegls_decoder final
         source_buffer_ = source_buffer;
         size_ = source_size_bytes;
 
-        reader_ = std::make_unique<jpeg_stream_reader>(byte_span{source_buffer, source_size_bytes});
+        reader_.source({source_buffer, source_size_bytes});
         state_ = state::source_set;
     }
 
@@ -29,7 +29,7 @@ struct charls_jpegls_decoder final
         check_operation(state_ == state::source_set);
 
         bool spiff_header_found{};
-        reader_->read_header(spiff_header, &spiff_header_found);
+        reader_.read_header(spiff_header, &spiff_header_found);
         state_ = spiff_header_found ? state::spiff_header_read : state::spiff_header_not_found;
 
         return spiff_header_found;
@@ -41,17 +41,17 @@ struct charls_jpegls_decoder final
 
         if (state_ != state::spiff_header_not_found)
         {
-            reader_->read_header();
+            reader_.read_header();
         }
 
-        reader_->read_start_of_scan();
+        reader_.read_start_of_scan();
         state_ = state::header_read;
     }
 
     charls::frame_info frame_info() const
     {
         check_operation(state_ >= state::header_read);
-        return reader_->frame_info();
+        return reader_.frame_info();
     }
 
     int32_t near_lossless(int32_t /*component*/ = 0) const
@@ -59,7 +59,7 @@ struct charls_jpegls_decoder final
         check_operation(state_ >= state::header_read);
 
         // Note: The JPEG-LS standard allows to define different NEAR parameter for every scan.
-        return reader_->parameters().near_lossless;
+        return reader_.parameters().near_lossless;
     }
 
     charls::interleave_mode interleave_mode() const
@@ -68,19 +68,19 @@ struct charls_jpegls_decoder final
 
         // Note: The JPEG-LS standard allows to define different interleave modes for every scan.
         //       CharLS doesn't support mixed interleave modes, first scan determines the mode.
-        return reader_->parameters().interleave_mode;
+        return reader_.parameters().interleave_mode;
     }
 
     charls::color_transformation color_transformation() const
     {
         check_operation(state_ >= state::header_read);
-        return reader_->parameters().transformation;
+        return reader_.parameters().transformation;
     }
 
     const jpegls_pc_parameters& preset_coding_parameters() const
     {
         check_operation(state_ >= state::header_read);
-        return reader_->preset_coding_parameters();
+        return reader_.preset_coding_parameters();
     }
 
     size_t destination_size(const size_t stride) const
@@ -107,22 +107,27 @@ struct charls_jpegls_decoder final
         return 0;
     }
 
+    void at_comment(const at_comment_handler handler, void* user_context) noexcept
+    {
+        reader_.at_comment(handler, user_context);
+    }
+
     void decode(OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer, const size_t destination_size_bytes,
-                const size_t stride) const
+                const size_t stride)
     {
         check_argument(destination_buffer || destination_size_bytes == 0);
         check_operation(state_ == state::header_read);
-        reader_->read({destination_buffer, destination_size_bytes}, stride);
+        reader_.read({destination_buffer, destination_size_bytes}, stride);
     }
 
-    void output_bgr(const bool value) const noexcept
+    void output_bgr(const bool value) noexcept
     {
-        reader_->output_bgr(value);
+        reader_.output_bgr(value);
     }
 
-    void region(const JlsRect& rect) const noexcept
+    void region(const JlsRect& rect) noexcept
     {
-        reader_->rect(rect);
+        reader_.rect(rect);
     }
 
 private:
@@ -137,7 +142,7 @@ private:
     };
 
     state state_{};
-    std::unique_ptr<jpeg_stream_reader> reader_;
+    jpeg_stream_reader reader_;
     const void* source_buffer_{};
     size_t size_{};
 };
@@ -281,11 +286,23 @@ catch (...)
 
 
 jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_decode_to_buffer(
-    IN_ const charls_jpegls_decoder* decoder, OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
+    IN_ charls_jpegls_decoder* decoder, OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
     const size_t destination_size_bytes, const uint32_t stride) noexcept
 try
 {
     check_pointer(decoder)->decode(destination_buffer, destination_size_bytes, stride);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_at_comment(
+    charls_jpegls_decoder* decoder, const at_comment_handler handler, void* user_context) noexcept
+try
+{
+    check_pointer(decoder)->at_comment(handler, user_context);
     return jpegls_errc::success;
 }
 catch (...)
@@ -334,8 +351,7 @@ catch (...)
 jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsDecode(OUT_WRITES_BYTES_(destination_length) void* destination,
                                                        const size_t destination_length,
                                                        IN_READS_BYTES_(source_length) const void* source,
-                                                       const size_t source_length,
-                                                       IN_OPT_ const JlsParameters* params,
+                                                       const size_t source_length, IN_OPT_ const JlsParameters* params,
                                                        OUT_OPT_ char* error_message)
 try
 {

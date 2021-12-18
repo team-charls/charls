@@ -18,13 +18,15 @@ enum class jpeg_marker_code : uint8_t;
 class jpeg_stream_reader final
 {
 public:
-    explicit jpeg_stream_reader(byte_span source) noexcept;
+    jpeg_stream_reader() = default;
     ~jpeg_stream_reader() = default;
 
     jpeg_stream_reader(const jpeg_stream_reader&) = delete;
     jpeg_stream_reader& operator=(const jpeg_stream_reader&) = delete;
     jpeg_stream_reader(jpeg_stream_reader&&) = default;
     jpeg_stream_reader& operator=(jpeg_stream_reader&&) = default;
+
+    void source(byte_span source) noexcept;
 
     const charls::frame_info& frame_info() const noexcept
     {
@@ -41,7 +43,7 @@ public:
         return preset_coding_parameters_;
     }
 
-    void read(byte_span source, size_t stride);
+    void read(byte_span destination, size_t stride);
     void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
 
     void output_bgr(const bool value) noexcept
@@ -52,6 +54,12 @@ public:
     void rect(const JlsRect& rect) noexcept
     {
         rect_ = rect;
+    }
+
+    void at_comment(const at_comment_handler handler, void* user_context) noexcept
+    {
+        comment_handler_ = handler;
+        comment_handler_user_context_ = user_context;
     }
 
     void read_start_of_scan();
@@ -73,7 +81,7 @@ private:
                             bool* spiff_header_found = nullptr);
     int read_spiff_directory_entry(jpeg_marker_code marker_code, int32_t segment_size);
     int read_start_of_frame_segment(int32_t segment_size);
-    static int read_comment() noexcept;
+    int read_comment(int32_t segment_size) const;
     int read_preset_parameters_segment(int32_t segment_size);
     int read_define_restart_interval(int32_t segment_size);
     int try_read_application_data8_segment(int32_t segment_size, spiff_header* header, bool* spiff_header_found);
@@ -102,6 +110,9 @@ private:
     JlsRect rect_{};
     std::vector<uint8_t> component_ids_;
     state state_{};
+
+    at_comment_handler comment_handler_{};
+    void* comment_handler_user_context_{};
 };
 
 } // namespace charls

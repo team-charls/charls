@@ -102,10 +102,20 @@ struct charls_jpegls_encoder final
     {
         check_argument(entry_data || entry_data_size_bytes == 0);
         check_argument(entry_tag != spiff_end_of_directory_entry_type);
-        check_argument(entry_data_size_bytes <= 65528, jpegls_errc::invalid_argument_spiff_entry_size);
+        check_argument(entry_data_size_bytes <= 65528, jpegls_errc::invalid_argument_size);
         check_operation(state_ == state::spiff_header);
 
         writer_.write_spiff_directory_entry(entry_tag, entry_data, entry_data_size_bytes);
+    }
+
+    void write_comment(const const_byte_span comment)
+    {
+        check_argument(comment.data() || comment.size() == 0);
+        check_argument(comment.size() <= segment_max_data_size, jpegls_errc::invalid_argument_size);
+        check_operation(state_ >= state::destination_set && state_ < state::completed);
+
+        transition_to_tables_and_miscellaneous_state();
+        writer_.write_comment_segment(comment);
     }
 
     void encode(byte_span source, size_t stride)
@@ -126,14 +136,7 @@ struct charls_jpegls_encoder final
             check_stride(stride, source.size);
         }
 
-        if (state_ == state::spiff_header)
-        {
-            writer_.write_spiff_end_of_directory_entry();
-        }
-        else
-        {
-            writer_.write_start_of_image();
-        }
+        transition_to_tables_and_miscellaneous_state();
 
         writer_.write_start_of_frame_segment(frame_info_.width, frame_info_.height, frame_info_.bits_per_sample,
                                              frame_info_.component_count);
@@ -175,6 +178,7 @@ struct charls_jpegls_encoder final
         }
 
         writer_.write_end_of_image();
+        state_ = state::completed;
     }
 
     size_t bytes_written() const noexcept
@@ -197,6 +201,7 @@ private:
         initial,
         destination_set,
         spiff_header,
+        tables_and_miscellaneous,
         completed
     };
 
@@ -242,6 +247,23 @@ private:
             if (stride * frame_info_.height > source_size)
                 throw_jpegls_error(jpegls_errc::invalid_argument_stride);
         }
+    }
+
+    void transition_to_tables_and_miscellaneous_state()
+    {
+        if (state_ == state::tables_and_miscellaneous)
+            return;
+
+        if (state_ == state::spiff_header)
+        {
+            writer_.write_spiff_end_of_directory_entry();
+        }
+        else
+        {
+            writer_.write_start_of_image();
+        }
+
+        state_ = state::tables_and_miscellaneous;
     }
 
     charls_frame_info frame_info_{};
@@ -427,6 +449,19 @@ jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_spiff_entr
 try
 {
     check_pointer(encoder)->write_spiff_entry(entry_tag, entry_data, entry_data_size_bytes);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_comment(
+    charls_jpegls_encoder* encoder, const void* comment, const size_t comment_size_bytes) noexcept
+try
+{
+    check_pointer(encoder)->write_comment({comment, comment_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)

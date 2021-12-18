@@ -16,6 +16,7 @@ namespace charls {
 namespace impl {
 
 #else
+#include <stddef.h>
 #include <stdint.h>
 #endif
 
@@ -52,6 +53,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_MISSING_END_OF_SPIFF_DIRECTORY = 24,
     CHARLS_JPEGLS_ERRC_UNEXPECTED_RESTART_MARKER = 25,
     CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND = 26,
+    CHARLS_JPEGLS_ERRC_CALLBACK_FAILED = 27,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH = 100,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_HEIGHT = 101,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COMPONENT_COUNT = 102,
@@ -59,7 +61,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_INTERLEAVE_MODE = 104,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_NEAR_LOSSLESS = 105,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_JPEGLS_PC_PARAMETERS = 106,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SPIFF_ENTRY_SIZE = 110,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SIZE = 110,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COLOR_TRANSFORMATION = 111,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_STRIDE = 112,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH = 200,
@@ -299,6 +301,11 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     restart_marker_not_found = impl::CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND,
 
     /// <summary>
+    /// This error is returned when a callback function returns a non zero value.
+    /// </summary>
+    callback_failed = impl::CHARLS_JPEGLS_ERRC_CALLBACK_FAILED,
+
+    /// <summary>
     /// The argument for the width parameter is outside the range [1, 65535].
     /// </summary>
     invalid_argument_width = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH,
@@ -335,9 +342,9 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     invalid_argument_jpegls_pc_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_JPEGLS_PC_PARAMETERS,
 
     /// <summary>
-    /// The argument for the entry size parameter is outside the range [0, 65528].
+    /// The argument for the size parameter is outside the valid range.
     /// </summary>
-    invalid_argument_spiff_entry_size = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SPIFF_ENTRY_SIZE,
+    invalid_argument_size = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SIZE,
 
     /// <summary>
     /// The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component count.
@@ -1028,14 +1035,24 @@ struct JlsParameters
     struct JfifParameters jfif;
 };
 
-
 #ifdef __cplusplus
+
+/// <summary>
+/// Function definition for a callback handler that will be called when a comment (COM) segment is found.
+/// </summary>
+/// <remarks>
+/// </remarks>
+/// <param name="data">Reference to the data of the COM segment.</param>
+/// <param name="size">Size in bytes of the data of the COM segment.</param>
+/// <param name="user_context">Free to use context information that can be set during the installation of the handler.</param>
+using charls_at_comment_handler = int32_t(CHARLS_API_CALLING_CONVENTION*)(const void* data, size_t size, void* user_context);
 
 namespace charls {
 
 using spiff_header = charls_spiff_header;
 using frame_info = charls_frame_info;
 using jpegls_pc_parameters = charls_jpegls_pc_parameters;
+using at_comment_handler = charls_at_comment_handler;
 
 static_assert(sizeof(spiff_header) == 40, "size of struct is incorrect, check padding settings");
 static_assert(sizeof(frame_info) == 16, "size of struct is incorrect, check padding settings");
@@ -1044,6 +1061,8 @@ static_assert(sizeof(jpegls_pc_parameters) == 20, "size of struct is incorrect, 
 } // namespace charls
 
 #else
+
+typedef void(CHARLS_API_CALLING_CONVENTION* charls_at_comment_handler)(const void* data, size_t size, void* user_context);
 
 typedef struct charls_spiff_header charls_spiff_header;
 typedef struct charls_frame_info charls_frame_info;

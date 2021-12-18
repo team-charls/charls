@@ -52,6 +52,9 @@
     __pragma(warning(suppress \
                      : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses, cppcoreguidelines-macro-usage)
 
+// Helper macro for SAL annotations.
+#define USE_DECL_ANNOTATIONS _Use_decl_annotations_
+
 // Visual Studio 2015 supports C++14, but not all constexpr scenarios. VS 2017 has full C++14 support.
 #if _MSC_VER >= 1910
 #define CONSTEXPR constexpr
@@ -64,6 +67,7 @@
 #define MSVC_WARNING_UNSUPPRESS()
 #define MSVC_WARNING_SUPPRESS_NEXT_LINE(x)
 #define CONSTEXPR constexpr
+#define USE_DECL_ANNOTATIONS
 #endif
 
 namespace charls {

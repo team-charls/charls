@@ -118,6 +118,13 @@ void jpeg_stream_writer::write_color_transform_segment(const color_transformatio
 }
 
 
+void jpeg_stream_writer::write_comment_segment(const const_byte_span comment)
+{
+    write_segment_header(jpeg_marker_code::comment, comment.size());
+    write_bytes(comment.data(), comment.size());
+}
+
+
 void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const jpegls_pc_parameters& preset_coding_parameters)
 {
     write_segment_header(jpeg_marker_code::jpegls_preset_parameters, 1 + 5 * sizeof(uint16_t));
@@ -157,11 +164,11 @@ void jpeg_stream_writer::write_start_of_scan_segment(const int32_t component_cou
 
 void jpeg_stream_writer::write_segment_header(const jpeg_marker_code marker_code, const size_t data_size)
 {
+    ASSERT(data_size <= segment_max_data_size);
+
+    // Check if there is enough room in the destination to write the complete segment.
+    // Other methods assume that the checking in done here and don't check again.
     constexpr size_t marker_code_size{2};
-    constexpr size_t segment_length_size{sizeof(uint16_t)};
-
-    ASSERT(data_size <= UINT16_MAX - segment_length_size);
-
     const size_t total_segment_size{marker_code_size + segment_length_size + data_size};
     if (byte_offset_ + total_segment_size > destination_.size)
         impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);

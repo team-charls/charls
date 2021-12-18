@@ -26,7 +26,8 @@ public:
     TEST_METHOD(read_header_from_to_small_input_buffer) // NOLINT
     {
         array<uint8_t, 1> buffer{};
-        jpeg_stream_reader reader({buffer.data(), 0});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), 0});
 
         try
         {
@@ -54,7 +55,8 @@ public:
         writer.buffer.push_back(0xFF);
         writer.write_start_of_scan_segment(0, 1, 128, interleave_mode::none);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
 
         reader.read_header(); // if it doesn't throw test is passed.
     }
@@ -69,7 +71,8 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xDA); // SOS: Marks the start of scan.
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -112,7 +115,8 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xF9); // SOF_57: Marks the start of a JPEG-LS extended (ISO/IEC 14495-2) encoded frame.
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -138,7 +142,8 @@ public:
         writer.write_start_of_frame_segment(1, 1, 2, 1);
         writer.write_start_of_scan_segment(1, 0, interleave_mode::none);
 
-        jpeg_stream_reader reader({source.data(), source.size()});
+        jpeg_stream_reader reader;
+        reader.source({source.data(), source.size()});
 
         reader.read_header();
         const auto& actual = reader.preset_coding_parameters();
@@ -161,7 +166,8 @@ public:
         buffer.push_back(0x02);
         buffer.push_back(0x01);
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -187,7 +193,8 @@ public:
         buffer.push_back(0x0A);
         buffer.push_back(0x01);
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -213,7 +220,8 @@ public:
         buffer.push_back(0x0C);
         buffer.push_back(0x01);
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -239,7 +247,8 @@ public:
         buffer.push_back(0x03);
         buffer.push_back(id);
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -279,7 +288,8 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xDA); // SOS: Marks the start of scan.
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -304,7 +314,8 @@ public:
         buffer.push_back(0x00);
         buffer.push_back(0x07);
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -329,7 +340,8 @@ public:
         buffer.push_back(0x00);
         buffer.push_back(0x07);
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -352,7 +364,8 @@ public:
         writer.buffer.push_back(0);
         writer.buffer[5]++;
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
 
         try
         {
@@ -373,7 +386,8 @@ public:
         writer.write_start_of_image();
         writer.write_start_of_scan_segment(0, 1, 128, interleave_mode::none);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
 
         assert_expect_exception(jpegls_errc::unexpected_marker_found, [&reader] { reader.read_header(); });
     }
@@ -385,7 +399,8 @@ public:
         writer.write_start_of_frame_segment(512, 512, 8, 3);
         writer.write_start_of_frame_segment(512, 512, 8, 3);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
 
         assert_expect_exception(jpegls_errc::duplicate_start_of_frame_marker, [&reader] { reader.read_header(); });
     }
@@ -397,7 +412,8 @@ public:
         writer.write_start_of_frame_segment(512, 512, 8, 3);
         writer.write_start_of_scan_segment(0, 1, 128, interleave_mode::none);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
         assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_start_of_scan(); });
@@ -415,7 +431,8 @@ public:
         constexpr int bad_near_lossless = (200 / 2) + 1;
         writer.write_start_of_scan_segment(0, 1, bad_near_lossless, interleave_mode::none);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
         assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_start_of_scan(); });
@@ -428,7 +445,8 @@ public:
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
 
         try
         {
@@ -463,7 +481,8 @@ public:
         buffer.push_back(0x00);
         buffer.push_back(0x03);
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -499,7 +518,8 @@ public:
         buffer.push_back(0x07);
         buffer.push_back(0x01);
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -522,7 +542,8 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xD9); // EOI.
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -545,7 +566,8 @@ public:
         buffer.push_back(0xFF);
         buffer.push_back(0xD8); // SOI.
 
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         try
         {
@@ -571,7 +593,8 @@ public:
     TEST_METHOD(read_spiff_header_high_version_to_new) // NOLINT
     {
         vector<uint8_t> buffer = create_test_spiff_header(3);
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         spiff_header spiff_header{};
         bool spiff_header_found{};
@@ -584,7 +607,8 @@ public:
     TEST_METHOD(read_spiff_header_without_end_of_directory) // NOLINT
     {
         vector<uint8_t> buffer = create_test_spiff_header(2, 0, false);
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         spiff_header spiff_header{};
         bool spiff_header_found{};
@@ -611,7 +635,8 @@ public:
         writer.write_define_restart_interval(UINT16_MAX - 5, 2);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
         Assert::AreEqual(static_cast<uint32_t>(UINT16_MAX - 5), reader.parameters().restart_interval);
@@ -625,7 +650,8 @@ public:
         writer.write_define_restart_interval(UINT16_MAX + 5, 3);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
         Assert::AreEqual(static_cast<uint32_t>(UINT16_MAX + 5), reader.parameters().restart_interval);
@@ -639,7 +665,8 @@ public:
         writer.write_define_restart_interval(UINT32_MAX - 7, 4);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
         Assert::AreEqual(UINT32_MAX - 7, reader.parameters().restart_interval);
@@ -654,7 +681,8 @@ public:
         writer.write_define_restart_interval(0, 3);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
         Assert::AreEqual(0U, reader.parameters().restart_interval);
@@ -670,7 +698,8 @@ public:
         writer.write_segment(jpeg_marker_code::define_restart_interval, buffer.data(), buffer.size());
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
 
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
@@ -681,16 +710,106 @@ public:
         writer.write_start_of_image();
         writer.write_restart_marker(0);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
 
         assert_expect_exception(jpegls_errc::unexpected_restart_marker, [&reader] { reader.read_header(); });
     }
+
+    TEST_METHOD(read_comment) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_segment(jpeg_marker_code::comment, "hello", 5);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        struct callback_output
+        {
+            const void* data{};
+            size_t size{};
+        };
+        callback_output actual;
+
+        reader.at_comment(
+            [](const void* data, const size_t size, void* user_context) noexcept -> int32_t {
+                auto* actual_output = static_cast<callback_output*>(user_context);
+                actual_output->data = data;
+                actual_output->size = size;
+                return 0;
+             }, &actual);
+
+        reader.read_header();
+
+        Assert::AreEqual(static_cast<size_t>(5), actual.size);
+        Assert::IsTrue(memcmp("hello", actual.data, actual.size) == 0);
+    }
+
+    TEST_METHOD(read_empty_comment) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_segment(jpeg_marker_code::comment, "", 0);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        struct callback_output
+        {
+            const void* data{};
+            size_t size{};
+        };
+        callback_output actual;
+
+        reader.at_comment(
+            [](const void* data, const size_t size, void* user_context) noexcept -> int32_t {
+                auto* actual_output = static_cast<callback_output*>(user_context);
+                actual_output->data = data;
+                actual_output->size = size;
+                return 0;
+            },
+            &actual);
+
+        reader.read_header();
+
+        Assert::AreEqual(static_cast<size_t>(0), actual.size);
+        Assert::IsNull(actual.data);
+    }
+
+    TEST_METHOD(read_bad_comment) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_segment(jpeg_marker_code::comment, "", 10);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size() - 1});
+
+        bool called{};
+        reader.at_comment(
+            [](const void*, const size_t, void* user_context) noexcept -> int32_t {
+                auto* actual_called = static_cast<bool*>(user_context);
+                *actual_called = true;
+                return 0;
+            },
+            &called);
+
+        assert_expect_exception(jpegls_errc::source_buffer_too_small, [&reader] { reader.read_header(); });
+        Assert::IsFalse(called);
+    }
+
 
 private:
     static void read_spiff_header(const uint8_t low_version)
     {
         vector<uint8_t> buffer = create_test_spiff_header(2, low_version);
-        jpeg_stream_reader reader({buffer.data(), buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
 
         spiff_header spiff_header{};
         bool spiff_header_found{};
@@ -725,7 +844,8 @@ private:
         writer.write_start_of_frame_segment(1, 1, 2, 1);
         writer.write_start_of_scan_segment(0, 1, 128, interleave_mode::none);
 
-        jpeg_stream_reader reader({writer.buffer.data(), writer.buffer.size()});
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
 
         reader.read_header(); // if it doesn't throw test is passed.
     }

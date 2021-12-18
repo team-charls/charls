@@ -44,5 +44,10 @@ constexpr size_t spiff_header_size_in_bytes{34};
 // The special value to indicate that the stride should be calculated.
 constexpr size_t auto_calculate_stride{};
 
+// The size in bytes of the segment length field.
+constexpr size_t segment_length_size{sizeof(uint16_t)};
+
+// The maximum size of the data bytes that fit in a segment.
+constexpr size_t segment_max_data_size{UINT16_MAX - segment_length_size};
 
 } // namespace charls
