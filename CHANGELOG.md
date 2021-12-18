@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - The encoder API has been extended with a rewind method that can be used to re-use a configered encoder to encode multiple images in a loop.
 - Added support to decode JPEG-LS images that use restart markers [#92](https://github.com/team-charls/charls/issues/92)
+- Added support to write and read comment (COM) segments [#113](https://github.com/team-charls/charls/issues/113)
 
 ### Fixed
 
