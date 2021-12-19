@@ -38,7 +38,7 @@ CHARLS_NO_DISCARD CHARLS_CHECK_RETURN CHARLS_RET_MAY_BE_NULL CHARLS_API_IMPORT_E
 /// </summary>
 /// <param name="decoder">Instance to destroy. If a null pointer is passed as argument, no action occurs.</param>
 CHARLS_API_IMPORT_EXPORT void CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_destroy(IN_OPT_ const charls_jpegls_decoder* decoder) CHARLS_NOEXCEPT;
+charls_jpegls_decoder_destroy(CHARLS_IN_OPT const charls_jpegls_decoder* decoder) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Set the reference to a source buffer that contains the encoded JPEG-LS byte stream data.
@@ -49,7 +49,7 @@ charls_jpegls_decoder_destroy(IN_OPT_ const charls_jpegls_decoder* decoder) CHAR
 /// <param name="source_size_bytes">Size of the source buffer in bytes.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_set_source_buffer(
-    IN_ charls_jpegls_decoder* decoder, IN_READS_BYTES_(source_size_bytes) const void* source_buffer,
+    CHARLS_IN charls_jpegls_decoder* decoder, CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
     size_t source_size_bytes) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
@@ -62,8 +62,8 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// <param name="header_found">Output argument, will hold 1 if a SPIFF header could be found, otherwise 0.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_read_spiff_header(
-    IN_ charls_jpegls_decoder* decoder, OUT_ charls_spiff_header* spiff_header, OUT_ int32_t* header_found) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull));
+    CHARLS_IN charls_jpegls_decoder* decoder, CHARLS_OUT charls_spiff_header* spiff_header,
+    CHARLS_OUT int32_t* header_found) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
 /// Reads the JPEG-LS header from the JPEG byte stream. After this function is called frame info can be retrieved.
@@ -71,7 +71,7 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// <param name="decoder">Reference to the decoder instance.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_read_header(IN_ charls_jpegls_decoder* decoder) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+charls_jpegls_decoder_read_header(CHARLS_IN charls_jpegls_decoder* decoder) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
 /// Returns information about the frame stored in the JPEG-LS byte stream.
@@ -83,7 +83,7 @@ charls_jpegls_decoder_read_header(IN_ charls_jpegls_decoder* decoder) CHARLS_NOE
 /// <param name="frame_info">Output argument, will hold the frame info when the function returns.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_frame_info(
-    IN_ const charls_jpegls_decoder* decoder, OUT_ charls_frame_info* frame_info) CHARLS_NOEXCEPT
+    CHARLS_IN const charls_jpegls_decoder* decoder, CHARLS_OUT charls_frame_info* frame_info) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
@@ -97,7 +97,7 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// <param name="near_lossless">Reference that will hold the value of the NEAR parameter.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_near_lossless(
-    IN_ const charls_jpegls_decoder* decoder, int32_t component, OUT_ int32_t* near_lossless) CHARLS_NOEXCEPT
+    CHARLS_IN const charls_jpegls_decoder* decoder, int32_t component, CHARLS_OUT int32_t* near_lossless) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
@@ -110,7 +110,7 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// <param name="interleave_mode">Reference that will hold the value of the interleave mode.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_interleave_mode(
-    IN_ const charls_jpegls_decoder* decoder, OUT_ charls_interleave_mode* interleave_mode) CHARLS_NOEXCEPT
+    CHARLS_IN const charls_jpegls_decoder* decoder, CHARLS_OUT charls_interleave_mode* interleave_mode) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
@@ -124,8 +124,8 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// <param name="preset_coding_parameters">Reference that will hold the values preset coding parameters.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_preset_coding_parameters(
-    IN_ const charls_jpegls_decoder* decoder, int32_t reserved,
-    OUT_ charls_jpegls_pc_parameters* preset_coding_parameters) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+    CHARLS_IN const charls_jpegls_decoder* decoder, int32_t reserved,
+    CHARLS_OUT charls_jpegls_pc_parameters* preset_coding_parameters) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
 /// Returns the color transformation that was used to encode the scan.
@@ -137,8 +137,8 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// <param name="color_transformation">Reference that will hold the value of the color transformation.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_color_transformation(
-    IN_ const charls_jpegls_decoder* decoder, OUT_ charls_color_transformation* color_transformation) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull));
+    CHARLS_IN const charls_jpegls_decoder* decoder,
+    CHARLS_OUT charls_color_transformation* color_transformation) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
 /// Returns the size required for the destination buffer in bytes to hold the decoded pixel data.
@@ -151,8 +151,8 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// <param name="destination_size_bytes">Output argument, will hold the required size when the function returns.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_destination_size(
-    IN_ const charls_jpegls_decoder* decoder, uint32_t stride, OUT_ size_t* destination_size_bytes) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull));
+    CHARLS_IN const charls_jpegls_decoder* decoder, uint32_t stride,
+    CHARLS_OUT size_t* destination_size_bytes) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
 /// Will decode the JPEG-LS byte stream from the source buffer into the destination buffer.
@@ -169,7 +169,7 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// Number of bytes to the next line in the buffer, when zero, decoder will compute it.
 /// </param> <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_decode_to_buffer(
-    IN_ charls_jpegls_decoder* decoder, OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
+    CHARLS_IN charls_jpegls_decoder* decoder, CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
     size_t destination_size_bytes, uint32_t stride) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
@@ -184,7 +184,7 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// <param name="handler">Function pointer to the callback function.</param>
 /// <param name="user_context">Free to use context data that will be provided to the callback function.</param>
 CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_at_comment(
-    IN_ charls_jpegls_decoder* decoder, charls_at_comment_handler handler, void* user_context) CHARLS_NOEXCEPT;
+    CHARLS_IN charls_jpegls_decoder* decoder, charls_at_comment_handler handler, void* user_context) CHARLS_NOEXCEPT;
 
 
 // Note: The 3 methods below are considered obsolete and will be removed in the next major update.
@@ -201,8 +201,8 @@ CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls
 /// </param>
 CHARLS_DEPRECATED
 CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
-JpegLsReadHeader(IN_READS_BYTES_(source_length) const void* source, size_t source_length, OUT_ JlsParameters* params,
-                 OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
+JpegLsReadHeader(CHARLS_IN_READS_BYTES(source_length) const void* source, size_t source_length,
+                 CHARLS_OUT JlsParameters* params, CHARLS_OUT_OPT char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 /// <summary>
 /// Decodes a JPEG-LS encoded byte array to uncompressed pixel data byte array.
@@ -219,17 +219,17 @@ JpegLsReadHeader(IN_READS_BYTES_(source_length) const void* source, size_t sourc
 /// Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.
 /// </param>
 CHARLS_DEPRECATED
-CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
-JpegLsDecode(OUT_WRITES_BYTES_(destination_length) void* destination, size_t destination_length,
-             IN_READS_BYTES_(source_length) const void* source, size_t source_length, IN_OPT_ const JlsParameters* params,
-             OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
+CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsDecode(
+    CHARLS_OUT_WRITES_BYTES(destination_length) void* destination, size_t destination_length,
+    CHARLS_IN_READS_BYTES(source_length) const void* source, size_t source_length, CHARLS_IN_OPT const JlsParameters* params,
+    CHARLS_OUT_OPT char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 /// <remarks>This method will be removed in the next major update.</remarks>
 CHARLS_DEPRECATED
-CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
-JpegLsDecodeRect(OUT_WRITES_BYTES_(destination_length) void* destination, size_t destination_length,
-                 IN_READS_BYTES_(source_length) const void* source, size_t source_length, JlsRect roi,
-                 IN_OPT_ const JlsParameters* params, OUT_OPT_ char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
+CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION JpegLsDecodeRect(
+    CHARLS_OUT_WRITES_BYTES(destination_length) void* destination, size_t destination_length,
+    CHARLS_IN_READS_BYTES(source_length) const void* source, size_t source_length, JlsRect roi,
+    CHARLS_IN_OPT const JlsParameters* params, CHARLS_OUT_OPT char* error_message) CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 #ifdef __cplusplus
 
@@ -301,7 +301,8 @@ public:
     /// </summary>
     /// <param name="source_buffer">Reference to the start of the source buffer.</param>
     /// <param name="source_size_bytes">Size of the source buffer in bytes.</param>
-    jpegls_decoder& source(IN_READS_BYTES_(source_size_bytes) const void* source_buffer, const size_t source_size_bytes)
+    jpegls_decoder& source(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
+                           const size_t source_size_bytes)
     {
         check_jpegls_errc(charls_jpegls_decoder_set_source_buffer(decoder_.get(), source_buffer, source_size_bytes));
         return *this;
@@ -385,7 +386,7 @@ public:
     /// After this function is called frame info and other info can be retrieved.
     /// </summary>
     /// <param name="ec">The out-parameter for error reporting.</param>
-    jpegls_decoder& read_header(OUT_ std::error_code& ec) noexcept
+    jpegls_decoder& read_header(CHARLS_OUT std::error_code& ec) noexcept
     {
         ec = charls_jpegls_decoder_read_header(decoder_.get());
         if (ec == jpegls_errc::success)
@@ -510,8 +511,8 @@ public:
     /// Length of the array in bytes. If the array is too small the function will return an error.
     /// </param>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
-    void decode(OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer, const size_t destination_size_bytes,
-                const uint32_t stride = 0) const
+    void decode(CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
+                const size_t destination_size_bytes, const uint32_t stride = 0) const
     {
         check_jpegls_errc(
             charls_jpegls_decoder_decode_to_buffer(decoder_.get(), destination_buffer, destination_size_bytes, stride));
@@ -525,7 +526,7 @@ public:
     /// </param>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
     template<typename Container, typename ValueType = typename Container::value_type>
-    void decode(OUT_ Container& destination_container, const uint32_t stride = 0) const
+    void decode(CHARLS_OUT Container& destination_container, const uint32_t stride = 0) const
     {
         decode(destination_container.data(), destination_container.size() * sizeof(ValueType), stride);
     }
@@ -554,7 +555,7 @@ private:
         return decoder;
     }
 
-    static void destroy_decoder(IN_OPT_ const charls_jpegls_decoder* decoder) noexcept
+    static void destroy_decoder(CHARLS_IN_OPT const charls_jpegls_decoder* decoder) noexcept
     {
         charls_jpegls_decoder_destroy(decoder);
     }

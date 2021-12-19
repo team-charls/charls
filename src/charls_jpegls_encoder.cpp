@@ -97,7 +97,7 @@ struct charls_jpegls_encoder final
                             vertical_resolution, horizontal_resolution});
     }
 
-    void write_spiff_entry(const uint32_t entry_tag, IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data,
+    void write_spiff_entry(const uint32_t entry_tag, CHARLS_IN_READS_BYTES(entry_data_size_bytes) const void* entry_data,
                            const size_t entry_data_size_bytes)
     {
         check_argument(entry_data || entry_data_size_bytes == 0);
@@ -278,24 +278,23 @@ private:
 
 extern "C" {
 
-CHARLS_CHECK_RETURN CHARLS_RET_MAY_BE_NULL charls_jpegls_encoder* CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_create() noexcept
+USE_DECL_ANNOTATIONS charls_jpegls_encoder* CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_create() noexcept
 {
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26402 26409)     // don't use new and delete + scoped object and move
     return new (std::nothrow) charls_jpegls_encoder; // NOLINT(cppcoreguidelines-owning-memory)
 }
 
 
-void CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_destroy(IN_OPT_ const charls_jpegls_encoder* encoder) noexcept
+USE_DECL_ANNOTATIONS void CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_destroy(const charls_jpegls_encoder* encoder) noexcept
 {
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26401 26409) // don't use new and delete + non-owner.
     delete encoder;                              // NOLINT(cppcoreguidelines-owning-memory)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_destination_buffer(
-    IN_ charls_jpegls_encoder* encoder, OUT_WRITES_BYTES_(destination_size_bytes) void* destination_buffer,
-    const size_t destination_size_bytes) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_destination_buffer(
+    charls_jpegls_encoder* encoder, void* destination_buffer, const size_t destination_size_bytes) noexcept
 try
 {
     check_pointer(encoder)->destination({destination_buffer, destination_size_bytes});
@@ -307,8 +306,8 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_set_frame_info(IN_ charls_jpegls_encoder* encoder, IN_ const charls_frame_info* frame_info) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_set_frame_info(charls_jpegls_encoder* encoder, const charls_frame_info* frame_info) noexcept
 try
 {
     check_pointer(encoder)->frame_info(*check_pointer(frame_info));
@@ -320,8 +319,8 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_near_lossless(IN_ charls_jpegls_encoder* encoder,
-                                                                                  const int32_t near_lossless) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_set_near_lossless(charls_jpegls_encoder* encoder, const int32_t near_lossless) noexcept
 try
 {
     check_pointer(encoder)->near_lossless(near_lossless);
@@ -333,8 +332,8 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_interleave_mode(
-    IN_ charls_jpegls_encoder* encoder, const charls_interleave_mode interleave_mode) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_interleave_mode(
+    charls_jpegls_encoder* encoder, const charls_interleave_mode interleave_mode) noexcept
 try
 {
     check_pointer(encoder)->interleave_mode(interleave_mode);
@@ -346,8 +345,8 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_preset_coding_parameters(
-    IN_ charls_jpegls_encoder* encoder, IN_ const charls_jpegls_pc_parameters* preset_coding_parameters) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_preset_coding_parameters(
+    charls_jpegls_encoder* encoder, const charls_jpegls_pc_parameters* preset_coding_parameters) noexcept
 try
 {
     check_pointer(encoder)->preset_coding_parameters(*check_pointer(preset_coding_parameters));
@@ -359,8 +358,8 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_color_transformation(
-    IN_ charls_jpegls_encoder* encoder, const charls_color_transformation color_transformation) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_color_transformation(
+    charls_jpegls_encoder* encoder, const charls_color_transformation color_transformation) noexcept
 try
 {
     check_pointer(encoder)->color_transformation(color_transformation);
@@ -372,8 +371,8 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_get_estimated_destination_size(
-    IN_ const charls_jpegls_encoder* encoder, OUT_ size_t* size_in_bytes) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_get_estimated_destination_size(const charls_jpegls_encoder* encoder, size_t* size_in_bytes) noexcept
 try
 {
     *check_pointer(size_in_bytes) = check_pointer(encoder)->estimated_destination_size();
@@ -385,8 +384,8 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_get_bytes_written(IN_ const charls_jpegls_encoder* encoder,
-                                                                                  OUT_ size_t* bytes_written) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_get_bytes_written(const charls_jpegls_encoder* encoder, size_t* bytes_written) noexcept
 try
 {
     *check_pointer(bytes_written) = check_pointer(encoder)->bytes_written();
@@ -398,11 +397,9 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_encode_from_buffer(IN_ charls_jpegls_encoder* encoder,
-                                                                                   IN_READS_BYTES_(source_size_bytes)
-                                                                                       const void* source_buffer,
-                                                                                   const size_t source_size_bytes,
-                                                                                   const uint32_t stride) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_encode_from_buffer(charls_jpegls_encoder* encoder, const void* source_buffer,
+                                         const size_t source_size_bytes, const uint32_t stride) noexcept
 try
 {
     check_pointer(encoder)->encode({source_buffer, source_size_bytes}, stride);
@@ -414,8 +411,8 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_spiff_header(
-    IN_ charls_jpegls_encoder* encoder, IN_ const charls_spiff_header* spiff_header) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_write_spiff_header(charls_jpegls_encoder* encoder, const charls_spiff_header* spiff_header) noexcept
 try
 {
     check_pointer(encoder)->write_spiff_header(*check_pointer(spiff_header));
@@ -427,8 +424,8 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_standard_spiff_header(
-    IN_ charls_jpegls_encoder* encoder, const charls_spiff_color_space color_space,
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_standard_spiff_header(
+    charls_jpegls_encoder* encoder, const charls_spiff_color_space color_space,
     const charls_spiff_resolution_units resolution_units, const uint32_t vertical_resolution,
     const uint32_t horizontal_resolution) noexcept
 try
@@ -443,9 +440,9 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_spiff_entry(
-    IN_ charls_jpegls_encoder* encoder, const uint32_t entry_tag,
-    IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data, const size_t entry_data_size_bytes) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_write_spiff_entry(charls_jpegls_encoder* encoder, const uint32_t entry_tag, const void* entry_data,
+                                        const size_t entry_data_size_bytes) noexcept
 try
 {
     check_pointer(encoder)->write_spiff_entry(entry_tag, entry_data, entry_data_size_bytes);
@@ -470,7 +467,8 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_rewind(IN_ charls_jpegls_encoder* encoder) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_rewind(charls_jpegls_encoder* encoder) noexcept
 try
 {
     check_pointer(encoder)->rewind();
@@ -482,11 +480,11 @@ catch (...)
 }
 
 
-jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsEncode(OUT_WRITES_BYTES_(destination_length) void* destination,
-                                                       const size_t destination_length, OUT_ size_t* bytes_written,
-                                                       IN_READS_BYTES_(source_length) const void* source,
-                                                       const size_t source_length, IN_ const JlsParameters* params,
-                                                       OUT_OPT_ char* error_message)
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsEncode(void* destination,
+                                                                            const size_t destination_length,
+                                                                            size_t* bytes_written, const void* source,
+                                                                            const size_t source_length,
+                                                                            const JlsParameters* params, char* error_message)
 try
 {
     check_argument(check_pointer(params)->jfif.version == 0);

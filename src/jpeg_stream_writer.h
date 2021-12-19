@@ -32,7 +32,7 @@ public:
     /// <param name="header">Header info to write into the SPIFF segment.</param>
     void write_spiff_header_segment(const spiff_header& header);
 
-    void write_spiff_directory_entry(uint32_t entry_tag, IN_READS_BYTES_(entry_data_size_bytes) const void* entry_data,
+    void write_spiff_directory_entry(uint32_t entry_tag, CHARLS_IN_READS_BYTES(entry_data_size_bytes) const void* entry_data,
                                      size_t entry_data_size_bytes);
 
     /// <summary>
@@ -143,7 +143,7 @@ private:
         write_bytes(&big_endian_value, sizeof big_endian_value);
     }
 
-    void write_bytes(IN_READS_BYTES_(size) const void* data, const size_t size) noexcept
+    void write_bytes(CHARLS_IN_READS_BYTES(size) const void* data, const size_t size) noexcept
     {
         ASSERT(byte_offset_ + size <= destination_.size);
         memcpy(destination_.data + byte_offset_, data, size);
