@@ -48,7 +48,7 @@ charls_jpegls_decoder_destroy(CHARLS_IN_OPT const charls_jpegls_decoder* decoder
 /// <param name="source_buffer">Reference to the start of the source buffer.</param>
 /// <param name="source_size_bytes">Size of the source buffer in bytes.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
-CHARLS_ATTRIBUTE((access(read_only, 2, 3)))
+CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_set_source_buffer(CHARLS_IN charls_jpegls_decoder* decoder,
                                         CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
@@ -175,7 +175,7 @@ charls_jpegls_decoder_get_destination_size(CHARLS_IN const charls_jpegls_decoder
 /// <param name="stride">
 /// Number of bytes to the next line in the buffer, when zero, decoder will compute it.
 /// </param> <returns>The result of the operation: success or a failure code.</returns>
-CHARLS_ATTRIBUTE((access(write_only, 2, 3)))
+CHARLS_ATTRIBUTE_ACCESS((access(write_only, 2, 3)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_decode_to_buffer(CHARLS_IN charls_jpegls_decoder* decoder,
                                        CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
@@ -210,7 +210,7 @@ charls_jpegls_decoder_at_comment(CHARLS_IN charls_jpegls_decoder* decoder, charl
 /// <param name="error_message">
 /// Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.
 /// </param>
-CHARLS_ATTRIBUTE((access(read_only, 1, 2)))
+CHARLS_ATTRIBUTE_ACCESS((access(read_only, 1, 2)))
 CHARLS_DEPRECATED CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
 JpegLsReadHeader(CHARLS_IN_READS_BYTES(source_length) const void* source, size_t source_length,
                  CHARLS_OUT JlsParameters* params, CHARLS_OUT_OPT char* error_message) CHARLS_NOEXCEPT
@@ -230,7 +230,7 @@ JpegLsReadHeader(CHARLS_IN_READS_BYTES(source_length) const void* source, size_t
 /// <param name="error_message">
 /// Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.
 /// </param>
-CHARLS_ATTRIBUTE((access(write_only, 1, 2), access(read_only, 3, 4)))
+CHARLS_ATTRIBUTE_ACCESS((access(write_only, 1, 2), access(read_only, 3, 4)))
 CHARLS_DEPRECATED CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
 JpegLsDecode(CHARLS_OUT_WRITES_BYTES(destination_length) void* destination, size_t destination_length,
              CHARLS_IN_READS_BYTES(source_length) const void* source, size_t source_length,
@@ -238,7 +238,7 @@ JpegLsDecode(CHARLS_OUT_WRITES_BYTES(destination_length) void* destination, size
     CHARLS_ATTRIBUTE((nonnull(1, 3)));
 
 /// <remarks>This method will be removed in the next major update.</remarks>
-CHARLS_ATTRIBUTE((access(write_only, 1, 2), access(read_only, 3, 4)))
+CHARLS_ATTRIBUTE_ACCESS((access(write_only, 1, 2), access(read_only, 3, 4)))
 CHARLS_DEPRECATED
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
 JpegLsDecodeRect(CHARLS_OUT_WRITES_BYTES(destination_length) void* destination, size_t destination_length,
@@ -316,7 +316,7 @@ public:
     /// </summary>
     /// <param name="source_buffer">Reference to the start of the source buffer.</param>
     /// <param name="source_size_bytes">Size of the source buffer in bytes.</param>
-    CHARLS_ATTRIBUTE((access(read_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     jpegls_decoder& source(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
                            const size_t source_size_bytes)
     {
@@ -527,7 +527,7 @@ public:
     /// Length of the array in bytes. If the array is too small the function will return an error.
     /// </param>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
-    CHARLS_ATTRIBUTE((access(write_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(write_only, 2, 3)))
     void decode(CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
                 const size_t destination_size_bytes, const uint32_t stride = 0) const
     {

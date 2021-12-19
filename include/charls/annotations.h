@@ -60,3 +60,9 @@
 #else
 #define CHARLS_ATTRIBUTE(a)
 #endif
+
+#if !defined(__clang__) && defined(__GNUC__) && __GNUC__ >= 10
+#define CHARLS_ATTRIBUTE_ACCESS(a) __attribute__(a)
+#else
+#define CHARLS_ATTRIBUTE_ACCESS(a)
+#endif

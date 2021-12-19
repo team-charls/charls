@@ -121,7 +121,7 @@ charls_jpegls_encoder_get_estimated_destination_size(CHARLS_IN const charls_jpeg
 /// <param name="destination_buffer">Reference to the start of the destination buffer.</param>
 /// <param name="destination_size_bytes">Size of the destination buffer in bytes.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
-CHARLS_ATTRIBUTE((access(write_only, 2, 3)))
+CHARLS_ATTRIBUTE_ACCESS((access(write_only, 2, 3)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_set_destination_buffer(CHARLS_IN charls_jpegls_encoder* encoder,
                                              CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
@@ -167,7 +167,7 @@ charls_jpegls_encoder_write_spiff_header(CHARLS_IN charls_jpegls_encoder* encode
 /// <param name="entry_data">The entry data of the directory entry.</param>
 /// <param name="entry_data_size_bytes">The size in bytes of the directory entry [0-65528].</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
-CHARLS_ATTRIBUTE((access(read_only, 3, 4)))
+CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_write_spiff_entry(CHARLS_IN charls_jpegls_encoder* encoder, uint32_t entry_tag,
                                         CHARLS_IN_READS_BYTES(entry_data_size_bytes) const void* entry_data,
@@ -183,7 +183,7 @@ charls_jpegls_encoder_write_spiff_entry(CHARLS_IN charls_jpegls_encoder* encoder
 /// <param name="comment">The 'comment' bytes. Application specific, usually human readable string.</param>
 /// <param name="comment_size_bytes">The size in bytes of the comment [0-65533].</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
-CHARLS_ATTRIBUTE((access(read_only, 2, 3)))
+CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_write_comment(CHARLS_IN charls_jpegls_encoder* encoder,
                                     CHARLS_IN_READS_BYTES(comment_size_bytes) const void* comment,
@@ -200,7 +200,7 @@ charls_jpegls_encoder_write_comment(CHARLS_IN charls_jpegls_encoder* encoder,
 /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
 /// </param>
 /// <returns>The result of the operation: success or a failure code.</returns>
-CHARLS_ATTRIBUTE((access(read_only, 2, 3)))
+CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_encode_from_buffer(CHARLS_IN charls_jpegls_encoder* encoder,
                                          CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
@@ -244,7 +244,7 @@ charls_jpegls_encoder_rewind(CHARLS_IN charls_jpegls_encoder* encoder) CHARLS_NO
 /// <param name="error_message">
 /// Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.
 /// </param>
-CHARLS_ATTRIBUTE((access(write_only, 1, 2), access(read_only, 4, 5)))
+CHARLS_ATTRIBUTE_ACCESS((access(write_only, 1, 2), access(read_only, 4, 5)))
 CHARLS_DEPRECATED
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
 JpegLsEncode(CHARLS_OUT_WRITES_BYTES(destination_length) void* destination, size_t destination_length,
@@ -365,7 +365,7 @@ public:
     /// </summary>
     /// <param name="destination_buffer">Reference to the start of the destination buffer.</param>
     /// <param name="destination_size_bytes">Size of the destination buffer in bytes.</param>
-    CHARLS_ATTRIBUTE((access(write_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(write_only, 2, 3)))
     jpegls_encoder& destination(CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
                                 const size_t destination_size_bytes)
     {
@@ -422,7 +422,7 @@ public:
     /// <param name="entry_data">The entry data of the directory entry.</param>
     /// <param name="entry_data_size_bytes">The size in bytes of the directory entry [0-65528].</param>
     template<typename IntDerivedType>
-    CHARLS_ATTRIBUTE((access(read_only, 3, 4)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
     jpegls_encoder& write_spiff_entry(const IntDerivedType entry_tag,
                                       CHARLS_IN_READS_BYTES(entry_data_size_bytes) const void* entry_data,
                                       const size_t entry_data_size_bytes)
@@ -447,7 +447,7 @@ public:
     /// </summary>
     /// <param name="comment">The bytes of the comment: application specific.</param>
     /// <param name="size">The size of the comment in bytes.</param>
-    CHARLS_ATTRIBUTE((access(read_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     jpegls_encoder& write_comment(CHARLS_IN_READS_BYTES(size) const void* comment, const size_t size)
     {
         check_jpegls_errc(charls_jpegls_encoder_write_comment(encoder_.get(), comment, size));
@@ -464,7 +464,7 @@ public:
     /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
     /// </param>
     /// <returns>The number of bytes written to the destination.</returns>
-    CHARLS_ATTRIBUTE((access(read_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     size_t encode(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const size_t source_size_bytes,
                   const uint32_t stride = 0) const
     {
