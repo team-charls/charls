@@ -312,7 +312,7 @@ catch (...)
 
 USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsReadHeader(const void* source,
                                                                                 const size_t source_length,
-                                                                                JlsParameters* params, char* error_message)
+                                                                                JlsParameters* params, char* error_message) noexcept
 try
 {
     charls_jpegls_decoder decoder;
@@ -350,7 +350,7 @@ catch (...)
 USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsDecode(void* destination,
                                                                             const size_t destination_length,
                                                                             const void* source, const size_t source_length,
-                                                                            const JlsParameters* params, char* error_message)
+                                                                            const JlsParameters* params, char* error_message) noexcept
 try
 {
     charls_jpegls_decoder decoder;
@@ -377,7 +377,7 @@ catch (...)
 
 USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
 JpegLsDecodeRect(void* destination, const size_t destination_length, const void* source, const size_t source_length,
-                 const JlsRect roi, const JlsParameters* params, char* error_message)
+                 const JlsRect roi, const JlsParameters* params, char* error_message) noexcept
 try
 {
     charls_jpegls_decoder decoder;

@@ -484,7 +484,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsEncode(void
                                                                             const size_t destination_length,
                                                                             size_t* bytes_written, const void* source,
                                                                             const size_t source_length,
-                                                                            const JlsParameters* params, char* error_message)
+                                                                            const JlsParameters* params, char* error_message) noexcept
 try
 {
     check_argument(check_pointer(params)->jfif.version == 0);

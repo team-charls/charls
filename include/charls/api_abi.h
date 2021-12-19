@@ -43,13 +43,13 @@
 
 #endif
 
-#if defined(__cplusplus) && __cplusplus >= 201703
+#ifdef __cplusplus
+
+#if __cplusplus >= 201703
 #define CHARLS_NO_DISCARD [[nodiscard]]
 #else
 #define CHARLS_NO_DISCARD
 #endif
-
-#ifdef __cplusplus
 
 #define CHARLS_FINAL final
 #define CHARLS_NOEXCEPT noexcept
@@ -64,6 +64,7 @@
 #endif
 
 #else
+#define CHARLS_NO_DISCARD
 #define CHARLS_FINAL
 #define CHARLS_NOEXCEPT
 #define CHARLS_DEPRECATED
