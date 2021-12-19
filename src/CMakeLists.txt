@@ -98,6 +98,7 @@ endif()
 
 if(CHARLS_INSTALL)
   include(GNUInstallDirs)
+  include(CMakePackageConfigHelpers)
 
   install(TARGETS charls EXPORT charls_targets
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -106,10 +107,14 @@ if(CHARLS_INSTALL)
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/charls
   )
 
+  write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/charlsConfigVersion.cmake COMPATIBILITY SameMajorVersion)
+
   # Configure and copy the pkg-config configuration file.
   # These type of configuration file can make it easier to detect if charls is installed.
   CONFIGURE_FILE("${CMAKE_CURRENT_LIST_DIR}/charls-template.pc" "charls.pc" @ONLY)
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/charls.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
-  install (EXPORT charls_targets FILE charlsConfig.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/charls)
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/charlsConfigVersion.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/charls")
+
+  install(EXPORT charls_targets FILE charlsConfig.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/charls)
 endif()
