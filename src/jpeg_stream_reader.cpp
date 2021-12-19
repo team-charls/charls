@@ -616,7 +616,7 @@ EnumType enum_cast(uint8_t value)
     return static_cast<EnumType>(value);
 }
 
-int jpeg_stream_reader::try_read_spiff_header_segment(OUT_ spiff_header& header, OUT_ bool& spiff_header_found)
+USE_DECL_ANNOTATIONS int jpeg_stream_reader::try_read_spiff_header_segment(spiff_header& header, bool& spiff_header_found)
 {
     const array<uint8_t, 6> spiff_tag{'S', 'P', 'I', 'F', 'F', 0};
     if (!equal(spiff_tag.cbegin(), spiff_tag.cend(), read_bytes(6).cbegin()))

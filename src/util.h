@@ -93,7 +93,7 @@ inline jpegls_errc to_jpegls_errc() noexcept
     }
 }
 
-inline void clear_error_message(OUT_OPT_ char* error_message) noexcept
+inline void clear_error_message(CHARLS_OUT_OPT char* error_message) noexcept
 {
     if (error_message)
     {
@@ -105,7 +105,7 @@ inline void clear_error_message(OUT_OPT_ char* error_message) noexcept
 /// <summary>
 /// Cross platform safe version of strcpy.
 /// </summary>
-inline void string_copy(IN_Z_ const char* source, OUT_WRITES_Z_(size_in_bytes) char* destination,
+inline void string_copy(CHARLS_IN_Z const char* source, CHARLS_OUT_WRITES_Z(size_in_bytes) char* destination,
                         const size_t size_in_bytes) noexcept
 {
     ASSERT(strlen(source) < size_in_bytes && "String will be truncated");
@@ -119,7 +119,7 @@ inline void string_copy(IN_Z_ const char* source, OUT_WRITES_Z_(size_in_bytes) c
 #endif
 }
 
-inline jpegls_errc set_error_message(const jpegls_errc error, OUT_WRITES_Z_(ErrorMessageSize) char* error_message) noexcept
+inline jpegls_errc set_error_message(const jpegls_errc error, CHARLS_OUT_WRITES_Z(ErrorMessageSize) char* error_message) noexcept
 {
     if (error_message)
     {

@@ -14,7 +14,7 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::vector;
 
-MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0':  this does not adhere to the specification for the function.
+MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
 #if defined(__clang__)
 #pragma clang diagnostic push
@@ -38,10 +38,10 @@ public:
     {
         constexpr array<uint8_t, 10> buffer{};
 
-        auto error = charls_jpegls_decoder_set_source_buffer(nullptr, buffer.data(), buffer.size());
+        auto error{charls_jpegls_decoder_set_source_buffer(nullptr, buffer.data(), buffer.size())};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        auto* const decoder = charls_jpegls_decoder_create();
+        auto* const decoder{charls_jpegls_decoder_create()};
         error = charls_jpegls_decoder_set_source_buffer(decoder, nullptr, buffer.size());
         charls_jpegls_decoder_destroy(decoder);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
@@ -51,11 +51,11 @@ public:
     {
         charls_spiff_header spiff_header{};
         int32_t header_found;
-        auto error = charls_jpegls_decoder_read_spiff_header(nullptr, &spiff_header, &header_found);
+        auto error{charls_jpegls_decoder_read_spiff_header(nullptr, &spiff_header, &header_found)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
-        auto* decoder = charls_jpegls_decoder_create();
+        auto* decoder{charls_jpegls_decoder_create()};
         error = charls_jpegls_decoder_set_source_buffer(decoder, source.data(), source.size());
         Assert::AreEqual(jpegls_errc::success, error);
         error = charls_jpegls_decoder_read_spiff_header(decoder, nullptr, &header_found);
@@ -72,17 +72,17 @@ public:
 
     TEST_METHOD(read_header_nullptr) // NOLINT
     {
-        const auto error = charls_jpegls_decoder_read_header(nullptr);
+        const auto error{charls_jpegls_decoder_read_header(nullptr)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
     TEST_METHOD(get_frame_info_nullptr) // NOLINT
     {
         frame_info frame_info;
-        auto error = charls_jpegls_decoder_get_frame_info(nullptr, &frame_info);
+        auto error{charls_jpegls_decoder_get_frame_info(nullptr, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        const auto* decoder = get_initialized_decoder();
+        const auto* decoder{get_initialized_decoder()};
         error = charls_jpegls_decoder_get_frame_info(decoder, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -92,10 +92,10 @@ public:
     TEST_METHOD(get_near_lossless_nullptr) // NOLINT
     {
         int32_t near_lossless;
-        auto error = charls_jpegls_decoder_get_near_lossless(nullptr, 0, &near_lossless);
+        auto error{charls_jpegls_decoder_get_near_lossless(nullptr, 0, &near_lossless)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        const auto* decoder = get_initialized_decoder();
+        const auto* decoder{get_initialized_decoder()};
         error = charls_jpegls_decoder_get_near_lossless(decoder, 0, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -105,10 +105,10 @@ public:
     TEST_METHOD(get_interleave_mode_nullptr) // NOLINT
     {
         interleave_mode interleave_mode;
-        auto error = charls_jpegls_decoder_get_interleave_mode(nullptr, &interleave_mode);
+        auto error{charls_jpegls_decoder_get_interleave_mode(nullptr, &interleave_mode)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        const auto* decoder = get_initialized_decoder();
+        const auto* decoder{get_initialized_decoder()};
         error = charls_jpegls_decoder_get_interleave_mode(decoder, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -118,10 +118,10 @@ public:
     TEST_METHOD(get_preset_coding_parameters_nullptr) // NOLINT
     {
         jpegls_pc_parameters preset_coding_parameters;
-        auto error = charls_jpegls_decoder_get_preset_coding_parameters(nullptr, 0, &preset_coding_parameters);
+        auto error{charls_jpegls_decoder_get_preset_coding_parameters(nullptr, 0, &preset_coding_parameters)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        const auto* decoder = get_initialized_decoder();
+        const auto* decoder{get_initialized_decoder()};
         error = charls_jpegls_decoder_get_preset_coding_parameters(decoder, 0, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -131,10 +131,10 @@ public:
     TEST_METHOD(get_destination_size_nullptr) // NOLINT
     {
         size_t destination_size_bytes;
-        auto error = charls_jpegls_decoder_get_destination_size(nullptr, 0, &destination_size_bytes);
+        auto error{charls_jpegls_decoder_get_destination_size(nullptr, 0, &destination_size_bytes)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        const auto* decoder = get_initialized_decoder();
+        const auto* decoder{get_initialized_decoder()};
         error = charls_jpegls_decoder_get_destination_size(decoder, 0, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -144,10 +144,10 @@ public:
     TEST_METHOD(decode_to_buffer_nullptr) // NOLINT
     {
         array<uint8_t, 5> buffer{};
-        auto error = charls_jpegls_decoder_decode_to_buffer(nullptr, buffer.data(), buffer.size(), 0);
+        auto error{charls_jpegls_decoder_decode_to_buffer(nullptr, buffer.data(), buffer.size(), 0)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        auto* decoder = charls_jpegls_decoder_create();
+        auto* decoder{charls_jpegls_decoder_create()};
         error = charls_jpegls_decoder_decode_to_buffer(decoder, nullptr, buffer.size(), 0);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -156,8 +156,8 @@ public:
 
     TEST_METHOD(read_header_from_zero_size_buffer) // NOLINT
     {
-        auto* decoder = charls_jpegls_decoder_create();
-        auto error = charls_jpegls_decoder_set_source_buffer(decoder, nullptr, 0);
+        auto* decoder{charls_jpegls_decoder_create()};
+        auto error{charls_jpegls_decoder_set_source_buffer(decoder, nullptr, 0)};
         Assert::AreEqual(jpegls_errc::success, error);
 
         error = charls_jpegls_decoder_read_header(decoder);
@@ -168,9 +168,9 @@ public:
 
     TEST_METHOD(decode_to_zero_size_buffer) // NOLINT
     {
-        auto* decoder = get_initialized_decoder();
+        auto* decoder{get_initialized_decoder()};
 
-        const auto error = charls_jpegls_decoder_decode_to_buffer(decoder, nullptr, 0, 0);
+        const auto error{charls_jpegls_decoder_decode_to_buffer(decoder, nullptr, 0, 0)};
         Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);
 
         charls_jpegls_decoder_destroy(decoder);
@@ -178,7 +178,7 @@ public:
 
     TEST_METHOD(at_comment_nullptr) // NOLINT
     {
-        auto error = charls_jpegls_decoder_at_comment(nullptr, nullptr, nullptr);
+        const auto error{charls_jpegls_decoder_at_comment(nullptr, nullptr, nullptr)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
@@ -186,8 +186,8 @@ private:
     static charls_jpegls_decoder* get_initialized_decoder()
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
-        auto* const decoder = charls_jpegls_decoder_create();
-        auto error = charls_jpegls_decoder_set_source_buffer(decoder, source.data(), source.size());
+        auto* const decoder{charls_jpegls_decoder_create()};
+        auto error{charls_jpegls_decoder_set_source_buffer(decoder, source.data(), source.size())};
         Assert::AreEqual(jpegls_errc::success, error);
         error = charls_jpegls_decoder_read_header(decoder);
         Assert::AreEqual(jpegls_errc::success, error);

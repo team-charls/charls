@@ -85,7 +85,7 @@ private:
     int read_preset_parameters_segment(int32_t segment_size);
     int read_define_restart_interval(int32_t segment_size);
     int try_read_application_data8_segment(int32_t segment_size, spiff_header* header, bool* spiff_header_found);
-    int try_read_spiff_header_segment(OUT_ spiff_header& header, OUT_ bool& spiff_header_found);
+    int try_read_spiff_header_segment(CHARLS_OUT spiff_header& header, CHARLS_OUT bool& spiff_header_found);
 
     int try_read_hp_color_transform_segment();
     void add_component(uint8_t component_id);
