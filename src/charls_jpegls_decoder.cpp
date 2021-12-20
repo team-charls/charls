@@ -12,15 +12,12 @@ using namespace charls;
 
 struct charls_jpegls_decoder final
 {
-    void source(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const size_t source_size_bytes)
+    void source(const const_byte_span source)
     {
-        check_argument(source_buffer || source_size_bytes == 0);
+        check_argument(source.data() || source.size()  == 0);
         check_operation(state_ == state::initial);
 
-        source_buffer_ = source_buffer;
-        size_ = source_size_bytes;
-
-        reader_.source({source_buffer, source_size_bytes});
+        reader_.source({source.data(), source.size()});
         state_ = state::source_set;
     }
 
@@ -143,8 +140,6 @@ private:
 
     state state_{};
     jpeg_stream_reader reader_;
-    const void* source_buffer_{};
-    size_t size_{};
 };
 
 
@@ -169,7 +164,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_dec
     charls_jpegls_decoder* decoder, const void* source_buffer, const size_t source_size_bytes) noexcept
 try
 {
-    check_pointer(decoder)->source(source_buffer, source_size_bytes);
+    check_pointer(decoder)->source({source_buffer, source_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)
@@ -317,7 +312,7 @@ try
 {
     charls_jpegls_decoder decoder;
 
-    decoder.source(source, source_length);
+    decoder.source({source, source_length});
     decoder.read_header();
     *check_pointer(params) = JlsParameters{};
     const frame_info info{decoder.frame_info()};
@@ -354,7 +349,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsDecode(void
 try
 {
     charls_jpegls_decoder decoder;
-    decoder.source(source, source_length);
+    decoder.source({source, source_length});
     decoder.read_header();
 
     int32_t stride{};
@@ -364,7 +359,7 @@ try
         stride = params->stride;
     }
 
-    decoder.decode(destination, destination_length, static_cast<uint32_t>(stride));
+    decoder.decode(destination, destination_length, static_cast<size_t>(stride));
 
     clear_error_message(error_message);
     return jpegls_errc::success;
@@ -381,7 +376,7 @@ JpegLsDecodeRect(void* destination, const size_t destination_length, const void*
 try
 {
     charls_jpegls_decoder decoder;
-    decoder.source(source, source_length);
+    decoder.source({source, source_length});
     decoder.read_header();
 
     int32_t stride{};
@@ -392,7 +387,7 @@ try
     }
 
     decoder.region(roi);
-    decoder.decode(destination, destination_length, static_cast<uint32_t>(stride));
+    decoder.decode(destination, destination_length, static_cast<size_t>(stride));
 
     clear_error_message(error_message);
     return jpegls_errc::success;

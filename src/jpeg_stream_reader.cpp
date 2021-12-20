@@ -148,7 +148,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 
         for (int i{}; i != padding_to_read; ++i)
         {
-            read_byte();
+            skip_byte();
         }
 
         if (state_ == state::header_section && spiff_header_found && *spiff_header_found)
@@ -184,7 +184,7 @@ void jpeg_stream_reader::read_next_start_of_scan()
 
         for (int i{}; i != padding_to_read; ++i)
         {
-            read_byte();
+            skip_byte();
         }
     }
 }
@@ -488,7 +488,7 @@ void jpeg_stream_reader::read_start_of_scan()
 
     for (int i{}; i != component_count_in_scan; ++i)
     {
-        read_byte(); // Read Scan component selector
+        skip_byte(); // Skip scan component selector
         const uint8_t mapping_table_selector{read_byte()};
         if (mapping_table_selector != 0)
             throw_jpegls_error(jpegls_errc::parameter_value_not_supported);

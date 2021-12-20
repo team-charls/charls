@@ -10,6 +10,7 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::vector;
+using std::numeric_limits;
 
 namespace {
 
@@ -78,10 +79,10 @@ public:
         map_error_value_algorithm(0);
         map_error_value_algorithm(1);
         map_error_value_algorithm(-1);
-        map_error_value_algorithm(INT16_MAX);
-        map_error_value_algorithm(INT16_MIN);
-        map_error_value_algorithm(INT32_MAX / 2);
-        map_error_value_algorithm(INT32_MIN / 2);
+        map_error_value_algorithm(numeric_limits<int16_t>::max());
+        map_error_value_algorithm(numeric_limits<int16_t>::min());
+        map_error_value_algorithm(numeric_limits<int32_t>::max() / 2);
+        map_error_value_algorithm(numeric_limits<int32_t>::min() / 2);
     }
 
     TEST_METHOD(unmap_error_value_algorithm) // NOLINT
@@ -89,10 +90,10 @@ public:
         unmap_error_value_algorithm(0);
         unmap_error_value_algorithm(1);
         unmap_error_value_algorithm(2);
-        unmap_error_value_algorithm(INT16_MAX);
-        unmap_error_value_algorithm(INT32_MAX - 2);
-        unmap_error_value_algorithm(INT32_MAX - 1);
-        unmap_error_value_algorithm(INT32_MAX);
+        unmap_error_value_algorithm(numeric_limits<int16_t>::max());
+        unmap_error_value_algorithm(numeric_limits<int32_t>::max() - 2);
+        unmap_error_value_algorithm(numeric_limits<int32_t>::max() - 1);
+        unmap_error_value_algorithm(numeric_limits<int32_t>::max());
     }
 
     TEST_METHOD(map_unmap_error_value_algorithm) // NOLINT
@@ -100,10 +101,10 @@ public:
         map_unmap_error_value_algorithm(0);
         map_unmap_error_value_algorithm(1);
         map_unmap_error_value_algorithm(-1);
-        map_unmap_error_value_algorithm(INT16_MAX);
-        map_unmap_error_value_algorithm(INT16_MIN);
-        map_unmap_error_value_algorithm(INT32_MAX / 2);
-        map_unmap_error_value_algorithm(INT32_MIN / 2);
+        map_unmap_error_value_algorithm(numeric_limits<int16_t>::max());
+        map_unmap_error_value_algorithm(numeric_limits<int16_t>::min());
+        map_unmap_error_value_algorithm(numeric_limits<int32_t>::max() / 2);
+        map_unmap_error_value_algorithm(numeric_limits<int32_t>::min() / 2);
     }
 
 private:

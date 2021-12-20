@@ -113,7 +113,7 @@ struct default_traits final
 #ifndef NDEBUG
     bool is_valid() const noexcept
     {
-        if (maximum_sample_value < 1 || maximum_sample_value > UINT16_MAX)
+        if (maximum_sample_value < 1 || maximum_sample_value > std::numeric_limits<uint16_t>::max())
             return false;
 
         if (bits_per_pixel < 1 || bits_per_pixel > 16)

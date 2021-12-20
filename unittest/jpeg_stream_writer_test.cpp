@@ -12,6 +12,7 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
+using std::numeric_limits;
 
 namespace charls { namespace test {
 
@@ -223,7 +224,7 @@ public:
         array<uint8_t, 19> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        writer.write_start_of_frame_segment(100, UINT16_MAX, bits_per_sample, component_count);
+        writer.write_start_of_frame_segment({100, numeric_limits<uint16_t>::max(), bits_per_sample, component_count});
 
         Assert::AreEqual(static_cast<size_t>(19), writer.bytes_written());
 
@@ -259,7 +260,7 @@ public:
         array<uint8_t, 13> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        writer.write_start_of_frame_segment(0, 0, bits_per_sample, component_count);
+        writer.write_start_of_frame_segment({0, 0, bits_per_sample, component_count});
 
         Assert::AreEqual(buffer.size(), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(bits_per_sample), buffer[4]);
@@ -271,13 +272,14 @@ public:
         array<uint8_t, 775> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        writer.write_start_of_frame_segment(UINT16_MAX, UINT16_MAX, 16, UINT8_MAX);
+        writer.write_start_of_frame_segment(
+            {numeric_limits<uint16_t>::max(), numeric_limits<uint16_t>::max(), 16, numeric_limits<uint8_t>::max()});
 
         Assert::AreEqual(buffer.size(), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(16), buffer[4]);
-        Assert::AreEqual(UINT8_MAX, buffer[9]);
+        Assert::AreEqual(numeric_limits<uint8_t>::max(), buffer[9]);
 
-        Assert::AreEqual(UINT8_MAX, buffer[buffer.size() - 3]); // Last component index.
+        Assert::AreEqual(numeric_limits<uint8_t>::max(), buffer[buffer.size() - 3]); // Last component index.
     }
 
     TEST_METHOD(write_color_transform_segment) // NOLINT

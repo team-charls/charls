@@ -137,8 +137,7 @@ struct charls_jpegls_encoder final
 
         transition_to_tables_and_miscellaneous_state();
 
-        writer_.write_start_of_frame_segment(frame_info_.width, frame_info_.height, frame_info_.bits_per_sample,
-                                             frame_info_.component_count);
+        writer_.write_start_of_frame_segment(frame_info_);
 
         if (color_transformation_ != charls::color_transformation::none)
         {
@@ -505,7 +504,7 @@ try
     const auto& pc{params->custom};
     encoder.preset_coding_parameters({pc.MaximumSampleValue, pc.Threshold1, pc.Threshold2, pc.Threshold3, pc.ResetValue});
 
-    encoder.encode({check_pointer(source), source_length}, static_cast<uint32_t>(params->stride));
+    encoder.encode({check_pointer(source), source_length}, static_cast<size_t>(params->stride));
     *check_pointer(bytes_written) = encoder.bytes_written();
 
     clear_error_message(error_message);

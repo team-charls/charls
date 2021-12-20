@@ -31,14 +31,14 @@ public:
     {
     }
 
-    unique_ptr<charls::process_line> create_process_line(byte_span /*rawStreamInfo*/,
+    unique_ptr<charls::process_line> create_process_line(charls::byte_span /*rawStreamInfo*/,
                                                          size_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
 
     void decode_scan(unique_ptr<charls::process_line> /*outputData*/, const JlsRect& /*size*/,
-                     byte_span& /*compressedData*/) noexcept(false) override
+                     charls::byte_span& /*compressedData*/) noexcept(false) override
     {
     }
 

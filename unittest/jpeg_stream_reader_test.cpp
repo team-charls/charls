@@ -17,6 +17,7 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::system_error;
 using std::vector;
+using std::numeric_limits;
 
 namespace charls { namespace test {
 
@@ -139,7 +140,7 @@ public:
 
         constexpr jpegls_pc_parameters presets{1, 2, 3, 4, 5};
         writer.write_jpegls_preset_parameters_segment(presets);
-        writer.write_start_of_frame_segment(1, 1, 2, 1);
+        writer.write_start_of_frame_segment({1, 1, 2, 1});
         writer.write_start_of_scan_segment(1, 0, interleave_mode::none);
 
         jpeg_stream_reader reader;
@@ -642,14 +643,14 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
-        writer.write_define_restart_interval(UINT16_MAX - 5, 2);
+        writer.write_define_restart_interval(numeric_limits<uint16_t>::max() - 5, 2);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
-        Assert::AreEqual(static_cast<uint32_t>(UINT16_MAX - 5), reader.parameters().restart_interval);
+        Assert::AreEqual(static_cast<uint32_t>(numeric_limits<uint16_t>::max() - 5), reader.parameters().restart_interval);
     }
 
     TEST_METHOD(read_header_with_define_restart_interval_24_bit) // NOLINT
@@ -657,14 +658,14 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
-        writer.write_define_restart_interval(UINT16_MAX + 5, 3);
+        writer.write_define_restart_interval(numeric_limits<uint16_t>::max() + 5, 3);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
-        Assert::AreEqual(static_cast<uint32_t>(UINT16_MAX + 5), reader.parameters().restart_interval);
+        Assert::AreEqual(static_cast<uint32_t>(numeric_limits<uint16_t>::max() + 5), reader.parameters().restart_interval);
     }
 
     TEST_METHOD(read_header_with_define_restart_interval_32_bit) // NOLINT
@@ -672,21 +673,21 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
-        writer.write_define_restart_interval(UINT32_MAX - 7, 4);
+        writer.write_define_restart_interval(numeric_limits<uint32_t>::max() - 7, 4);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
 
-        Assert::AreEqual(UINT32_MAX - 7, reader.parameters().restart_interval);
+        Assert::AreEqual(numeric_limits<uint32_t>::max() - 7, reader.parameters().restart_interval);
     }
 
     TEST_METHOD(read_header_with_2_define_restart_intervals) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        writer.write_define_restart_interval(UINT32_MAX, 4);
+        writer.write_define_restart_interval(numeric_limits<uint32_t>::max(), 4);
         writer.write_start_of_frame_segment(512, 512, 8, 3);
         writer.write_define_restart_interval(0, 3);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);

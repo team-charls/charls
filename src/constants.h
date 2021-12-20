@@ -28,7 +28,7 @@ constexpr int max_k_value{16}; // This is an implementation limit (theoretical l
 
 constexpr int compute_maximum_near_lossless(const int maximum_sample_value) noexcept
 {
-    return std::min(255, maximum_sample_value / 2); // As defined by ISO/IEC 14495-1, C.2.3
+    return std::min(maximum_near_lossless, maximum_sample_value / 2); // As defined by ISO/IEC 14495-1, C.2.3
 }
 
 // ISO/IEC 14495-1, section 4.8.1 defines the SPIFF version numbers to be used for the SPIFF header in combination with
@@ -48,6 +48,6 @@ constexpr size_t auto_calculate_stride{};
 constexpr size_t segment_length_size{sizeof(uint16_t)};
 
 // The maximum size of the data bytes that fit in a segment.
-constexpr size_t segment_max_data_size{UINT16_MAX - segment_length_size};
+constexpr size_t segment_max_data_size{std::numeric_limits<uint16_t>::max() - segment_length_size};
 
 } // namespace charls
