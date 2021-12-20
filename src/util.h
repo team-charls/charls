@@ -331,6 +331,13 @@ inline void check_argument(const bool expression, const jpegls_errc error_value 
 }
 
 
+inline void check_interleave_mode(const charls::interleave_mode mode, const jpegls_errc error_value)
+{
+    if (!(mode == interleave_mode::none || mode == interleave_mode::line || mode == interleave_mode::sample))
+        impl::throw_jpegls_error(error_value);
+}
+
+
 CONSTEXPR int32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
 {
     ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);

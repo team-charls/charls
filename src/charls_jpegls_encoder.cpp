@@ -39,9 +39,7 @@ struct charls_jpegls_encoder final
 
     void interleave_mode(const charls::interleave_mode interleave_mode)
     {
-        check_argument(interleave_mode >= charls::interleave_mode::none &&
-                           interleave_mode <= charls::interleave_mode::sample,
-                       jpegls_errc::invalid_argument_interleave_mode);
+        check_interleave_mode(interleave_mode, jpegls_errc::invalid_argument_interleave_mode);
 
         interleave_mode_ = interleave_mode;
     }
@@ -122,6 +120,7 @@ struct charls_jpegls_encoder final
     {
         check_argument(source.data || source.size == 0);
         check_operation(is_frame_info_configured() && state_ != state::initial);
+        check_interleave_mode_against_component_count();
 
         if (!is_valid(preset_coding_parameters_, calculate_maximum_sample_value(frame_info_.bits_per_sample), near_lossless_,
                       &validated_pc_parameters_))
@@ -247,6 +246,12 @@ private:
             if (stride * frame_info_.height > source_size)
                 throw_jpegls_error(jpegls_errc::invalid_argument_stride);
         }
+    }
+
+    void check_interleave_mode_against_component_count() const
+    {
+        if (frame_info_.component_count == 1 && interleave_mode_ != interleave_mode::none)
+            throw_jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
     }
 
     void transition_to_tables_and_miscellaneous_state()

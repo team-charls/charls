@@ -438,6 +438,16 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_start_of_scan(); });
     }
 
+    TEST_METHOD(read_header_line_interleave_in_sos_for_single_component_should_throw) // NOLINT
+    {
+        read_header_incorrect_interleave_in_sos_for_single_component_should_throw(interleave_mode::line);
+    }
+
+    TEST_METHOD(read_header_sample_interleave_in_sos_for_single_component_should_throw) // NOLINT
+    {
+        read_header_incorrect_interleave_in_sos_for_single_component_should_throw(interleave_mode::sample);
+    }
+
     TEST_METHOD(read_header_with_duplicate_component_id_in_start_of_frame_segment_should_throw) // NOLINT
     {
         jpeg_test_stream_writer writer;
@@ -848,6 +858,20 @@ private:
         reader.source({writer.buffer.data(), writer.buffer.size()});
 
         reader.read_header(); // if it doesn't throw test is passed.
+    }
+
+    static void read_header_incorrect_interleave_in_sos_for_single_component_should_throw(const interleave_mode mode)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(512, 512, 8, 1);
+        writer.write_start_of_scan_segment(0, 1, 0, mode);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_interleave_mode, [&reader] { reader.read_start_of_scan(); });
     }
 };
 

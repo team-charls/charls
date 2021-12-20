@@ -90,6 +90,7 @@ private:
     int try_read_hp_color_transform_segment();
     void add_component(uint8_t component_id);
     void check_parameter_coherent() const;
+    void check_interleave_mode(interleave_mode mode) const;
     uint32_t maximum_sample_value() const noexcept;
 
     enum class state

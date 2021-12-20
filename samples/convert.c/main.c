@@ -108,7 +108,7 @@ static void* bmp_read_pixel_data(FILE* fp, const uint32_t offset, const bmp_dib_
 }
 
 
-static void* handle_encoder_failure(const charls_jpegls_errc error, const char* step, charls_jpegls_encoder* encoder,
+static void* handle_encoder_failure(const charls_jpegls_errc error, const char* step, const charls_jpegls_encoder* encoder,
                                     void* buffer)
 {
     printf("Failed to %s: %i, %s\n", step, error, charls_get_error_message(error));

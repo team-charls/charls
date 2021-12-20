@@ -222,7 +222,7 @@ int main(const int argc, char** argv)
         convert_bgr_to_rgb(bmp_image.pixel_data, bmp_image.dib_header.width,
                            static_cast<size_t>(bmp_image.dib_header.height), bmp_image.stride);
 
-        auto encoded_buffer{encode_bmp_image_to_jpegls(bmp_image, options.interleave_mode, options.near_lossless)};
+        const auto encoded_buffer{encode_bmp_image_to_jpegls(bmp_image, options.interleave_mode, options.near_lossless)};
         save_buffer_to_file(encoded_buffer.data(), encoded_buffer.size(), options.output_filename);
 
         return EXIT_SUCCESS;

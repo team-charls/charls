@@ -113,6 +113,19 @@ public:
                                 [&encoder] { encoder.interleave_mode(static_cast<charls::interleave_mode>(3)); });
     }
 
+    TEST_METHOD(interleave_mode_does_not_match_component_count) // NOLINT
+    {
+        constexpr frame_info frame_info{512, 512, 8, 1};
+        vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        assert_expect_exception(jpegls_errc::invalid_argument_interleave_mode, [&frame_info, &source] {
+            jpegls_encoder::encode(source, frame_info, interleave_mode::sample);
+        });
+        assert_expect_exception(jpegls_errc::invalid_argument_interleave_mode, [&frame_info, &source] {
+            jpegls_encoder::encode(source, frame_info, interleave_mode::line);
+        });
+    }
+
     TEST_METHOD(near_lossless) // NOLINT
     {
         jpegls_encoder encoder;
@@ -598,7 +611,8 @@ public:
         encoder.frame_info({3, 1, 16, 1});
         ignore = encoder.encode(source);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&encoder] { ignore = encoder.write_comment("after-encoding"); });
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&encoder] { ignore = encoder.write_comment("after-encoding"); });
     }
 
     TEST_METHOD(write_comment_before_encode) // NOLINT
