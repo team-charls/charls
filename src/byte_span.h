@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <cstdint>
 
+namespace charls {
+
 /// <summary>Simplified span class for C++14 (std::span<std::byte>).</summary>
 struct byte_span final
 {
@@ -29,8 +31,9 @@ struct byte_span final
 class const_byte_span final
 {
 public:
-    const_byte_span(const void* data, const size_t size) noexcept :
-        data_{static_cast<const uint8_t*>(data)}, size_{size}
+    const_byte_span() = default;
+
+    const_byte_span(const void* data, const size_t size) noexcept : data_{static_cast<const uint8_t*>(data)}, size_{size}
     {
     }
 
@@ -48,3 +51,5 @@ private:
     const uint8_t* data_{};
     size_t size_{};
 };
+
+} // namespace charls

@@ -181,7 +181,7 @@ void transform_quad_to_line(const quad<PixelType>* source, const size_t pixel_st
 
 
 template<typename T>
-void transform_rgb_to_bgr(T* buffer, int samples_per_pixel, const size_t pixel_count) noexcept
+void transform_rgb_to_bgr(T* buffer, size_t samples_per_pixel, const size_t pixel_count) noexcept
 {
     for (size_t i{}; i < pixel_count; ++i)
     {

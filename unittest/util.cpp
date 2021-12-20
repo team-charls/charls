@@ -146,7 +146,7 @@ vector<uint8_t> create_test_spiff_header(const uint8_t high_version, const uint8
         writer.write_spiff_end_of_directory_entry();
     }
 
-    writer.write_start_of_frame_segment(100, 100, 8, 1);
+    writer.write_start_of_frame_segment({100, 100, 8, 1});
     writer.write_start_of_scan_segment(1, 0, interleave_mode::none);
 
     return buffer;

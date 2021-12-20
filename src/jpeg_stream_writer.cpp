@@ -13,6 +13,7 @@
 namespace charls {
 
 using std::array;
+using std::numeric_limits;
 
 jpeg_stream_writer::jpeg_stream_writer(const byte_span destination) noexcept : destination_{destination}
 {
@@ -79,27 +80,26 @@ void jpeg_stream_writer::write_spiff_end_of_directory_entry()
 }
 
 
-void jpeg_stream_writer::write_start_of_frame_segment(const uint32_t width, const uint32_t height,
-                                                      const int32_t bits_per_sample, const int32_t component_count)
+void jpeg_stream_writer::write_start_of_frame_segment(const frame_info& frame)
 {
-    ASSERT(width <= UINT16_MAX);
-    ASSERT(height <= UINT16_MAX);
-    ASSERT(bits_per_sample >= minimum_bits_per_sample && bits_per_sample <= maximum_bits_per_sample);
-    ASSERT(component_count > 0 && component_count <= UINT8_MAX);
+    ASSERT(frame.width <= numeric_limits<uint16_t>::max());
+    ASSERT(frame.height <= numeric_limits<uint16_t>::max());
+    ASSERT(frame.bits_per_sample >= minimum_bits_per_sample && frame.bits_per_sample <= maximum_bits_per_sample);
+    ASSERT(frame.component_count > 0 && frame.component_count <= numeric_limits<uint8_t>::max());
 
     // Create a Frame Header as defined in ISO/IEC 14495-1, C.2.2 and T.81, B.2.2
-    const size_t data_size{6 + (static_cast<size_t>(component_count) * 3)};
+    const size_t data_size{6 + (static_cast<size_t>(frame.component_count) * 3)};
     write_segment_header(jpeg_marker_code::start_of_frame_jpegls, data_size);
-    write_uint8(static_cast<uint8_t>(bits_per_sample)); // P = Sample precision
-    write_uint16(static_cast<uint16_t>(height));        // Y = Number of lines
-    write_uint16(static_cast<uint16_t>(width));         // X = Number of samples per line
+    write_uint8(static_cast<uint8_t>(frame.bits_per_sample)); // P = Sample precision
+    write_uint16(static_cast<uint16_t>(frame.height));        // Y = Number of lines
+    write_uint16(static_cast<uint16_t>(frame.width));         // X = Number of samples per line
 
     // Components
-    write_uint8(static_cast<uint8_t>(component_count)); // Nf = Number of image components in frame
+    write_uint8(static_cast<uint8_t>(frame.component_count)); // Nf = Number of image components in frame
 
     // Use by default 1 as the start component identifier to remain compatible with the
     // code sample of ISO/IEC 14495-1, H.4 and the JPEG-LS ISO conformance sample files.
-    for (auto component_id{1}; component_id <= component_count; ++component_id)
+    for (auto component_id{1}; component_id <= frame.component_count; ++component_id)
     {
         // Component Specification parameters
         write_uint8(static_cast<uint8_t>(component_id)); // Ci = Component identifier
@@ -140,8 +140,8 @@ void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const jpegls_pc_
 void jpeg_stream_writer::write_start_of_scan_segment(const int32_t component_count, const int32_t near_lossless,
                                                      const interleave_mode interleave_mode)
 {
-    ASSERT(component_count > 0 && component_count <= UINT8_MAX);
-    ASSERT(near_lossless >= 0 && near_lossless <= UINT8_MAX);
+    ASSERT(component_count > 0 && component_count <= numeric_limits<uint8_t>::max());
+    ASSERT(near_lossless >= 0 && near_lossless <= numeric_limits<uint8_t>::max());
     ASSERT(interleave_mode == interleave_mode::none || interleave_mode == interleave_mode::line ||
            interleave_mode == interleave_mode::sample);
 

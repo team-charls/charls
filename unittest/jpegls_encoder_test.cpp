@@ -16,6 +16,7 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::ignore;
 using std::vector;
+using std::numeric_limits;
 
 constexpr size_t serialized_spiff_header_size = 34;
 
@@ -47,7 +48,8 @@ public:
         jpegls_encoder encoder;
 
         encoder.frame_info({1, 1, 2, 1});                      // minimum.
-        encoder.frame_info({UINT16_MAX, UINT16_MAX, 16, 255}); // maximum.
+        encoder.frame_info(
+            {std::numeric_limits<uint16_t>::max(), numeric_limits<uint16_t>::max(), 16, 255}); // maximum.
     }
 
     TEST_METHOD(frame_info_bad_width) // NOLINT
@@ -56,7 +58,7 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] { encoder.frame_info({0, 1, 2, 1}); });
         assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] {
-            encoder.frame_info({UINT16_MAX + 1, 1, 2, 1});
+            encoder.frame_info({numeric_limits<uint16_t>::max() + 1, 1, 2, 1});
         });
     }
 
@@ -66,7 +68,7 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] { encoder.frame_info({1, 0, 2, 1}); });
         assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] {
-            encoder.frame_info({1, UINT16_MAX + 1, 2, 1});
+            encoder.frame_info({1, numeric_limits<uint16_t>::max() + 1, 2, 1});
         });
     }
 
@@ -155,9 +157,10 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({UINT16_MAX, UINT16_MAX, 8, 1}); // = maximum.
+        encoder.frame_info({numeric_limits<uint16_t>::max(), numeric_limits<uint16_t>::max(), 8, 1}); // = maximum.
         const auto size{encoder.estimated_destination_size()};
-        constexpr auto expected{static_cast<size_t>(UINT16_MAX) * UINT16_MAX * 1 * 1};
+        constexpr auto expected{static_cast<size_t>(numeric_limits<uint16_t>::max()) * numeric_limits<uint16_t>::max() * 1 *
+                                1};
         Assert::IsTrue(size >= expected);
     }
 
@@ -183,18 +186,18 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({UINT16_MAX, 1, 8, 1});
+        encoder.frame_info({numeric_limits<uint16_t>::max(), 1, 8, 1});
         const auto size{encoder.estimated_destination_size()};
-        Assert::IsTrue(size >= UINT16_MAX + 1024);
+        Assert::IsTrue(size >= static_cast<size_t>(numeric_limits<uint16_t>::max()) + 1024U);
     }
 
     TEST_METHOD(estimated_destination_size_very_high) // NOLINT
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, UINT16_MAX, 8, 1});
+        encoder.frame_info({1, numeric_limits<uint16_t>::max(), 8, 1});
         const auto size{encoder.estimated_destination_size()};
-        Assert::IsTrue(size >= UINT16_MAX + 1024);
+        Assert::IsTrue(size >= static_cast<size_t>(numeric_limits<uint16_t>::max()) + 1024U);
     }
 
     TEST_METHOD(estimated_destination_size_too_soon) // NOLINT
@@ -519,10 +522,10 @@ public:
     {
         jpegls_encoder encoder;
 
-        vector<uint8_t> destination(2 + 2 + UINT16_MAX);
+        vector<uint8_t> destination(2 + 2 + static_cast<size_t>(numeric_limits<uint16_t>::max()));
         encoder.destination(destination);
 
-        constexpr size_t max_size_comment_data{static_cast<size_t>(UINT16_MAX) - 2};
+        constexpr size_t max_size_comment_data{static_cast<size_t>(numeric_limits<uint16_t>::max()) - 2};
         const vector<uint8_t> data(max_size_comment_data);
         encoder.write_comment(data.data(), data.size());
 
@@ -577,10 +580,10 @@ public:
     {
         jpegls_encoder encoder;
 
-        vector<uint8_t> destination(2 + 2 + UINT16_MAX + 1);
+        vector<uint8_t> destination(2 + 2 + static_cast<size_t>(numeric_limits<uint16_t>::max()) + 1);
         encoder.destination(destination);
 
-        constexpr size_t max_size_comment_data{static_cast<size_t>(UINT16_MAX) - 2};
+        constexpr size_t max_size_comment_data{static_cast<size_t>(numeric_limits<uint16_t>::max()) - 2};
         const vector<uint8_t> data(max_size_comment_data + 1);
 
         assert_expect_exception(jpegls_errc::invalid_argument_size,

@@ -106,7 +106,7 @@ CONSTEXPR int32_t unmap_error_value(const int32_t mapped_error) noexcept
 /// </summary>
 CONSTEXPR int32_t map_error_value(const int32_t error_value) noexcept
 {
-    ASSERT(error_value <= INT32_MAX / 2);
+    ASSERT(error_value <= std::numeric_limits<int32_t>::max() / 2);
 
     const int32_t mapped_error{(error_value >> (int32_t_bit_count - 2)) ^ (2 * error_value)};
     return mapped_error;

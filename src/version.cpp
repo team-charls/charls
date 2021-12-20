@@ -12,6 +12,8 @@
 // Turn A into a string literal after macro-expanding it.
 #define TO_STRING(A) TO_STRING_NX(A) // NOLINT(cppcoreguidelines-macro-usage)
 
+using namespace charls;
+
 extern "C" {
 
 USE_DECL_ANNOTATIONS const char* CHARLS_API_CALLING_CONVENTION charls_get_version_string()
@@ -24,17 +26,17 @@ USE_DECL_ANNOTATIONS void CHARLS_API_CALLING_CONVENTION charls_get_version_numbe
 {
     if (major)
     {
-        *major = CHARLS_VERSION_MAJOR;
+        *major = version_major;
     }
 
     if (minor)
     {
-        *minor = CHARLS_VERSION_MINOR;
+        *minor = version_minor;
     }
 
     if (patch)
     {
-        *patch = CHARLS_VERSION_PATCH;
+        *patch = version_patch;
     }
 }
 }

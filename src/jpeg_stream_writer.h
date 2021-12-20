@@ -62,11 +62,8 @@ public:
     /// <summary>
     /// Writes a JPEG-LS Start Of Frame (SOF-55) segment.
     /// </summary>
-    /// <param name="width">The width of the frame.</param>
-    /// <param name="height">The height of the frame.</param>
-    /// <param name="bits_per_sample">The bits per sample.</param>
-    /// <param name="component_count">The component count.</param>
-    void write_start_of_frame_segment(uint32_t width, uint32_t height, int32_t bits_per_sample, int32_t component_count);
+    /// <param name="frame">Properties of the frame.</param>
+    void write_start_of_frame_segment(const frame_info& frame);
 
     /// <summary>
     /// Writes a JPEG-LS Start Of Scan (SOS) segment.
@@ -123,7 +120,7 @@ private:
 
     void write_uint16(const int32_t value) noexcept
     {
-        ASSERT(value >= 0 && value <= UINT16_MAX);
+        ASSERT(value >= 0 && value <= std::numeric_limits<uint16_t>::max());
         write_uint16(static_cast<uint16_t>(value));
     }
 

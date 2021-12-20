@@ -24,7 +24,7 @@ inline int32_t clamp(const int32_t i, const int32_t j, const int32_t maximum_sam
 /// <summary>Default coding threshold values as defined by ISO/IEC 14495-1, C.2.4.1.1.1</summary>
 inline jpegls_pc_parameters compute_default(const int32_t maximum_sample_value, const int32_t near_lossless) noexcept
 {
-    ASSERT(maximum_sample_value <= UINT16_MAX);
+    ASSERT(maximum_sample_value <= std::numeric_limits<uint16_t>::max());
     ASSERT(near_lossless >= 0 && near_lossless <= compute_maximum_near_lossless(maximum_sample_value));
 
     if (maximum_sample_value >= 128)
@@ -76,7 +76,7 @@ inline bool is_default(const jpegls_pc_parameters& preset_coding_parameters) noe
 inline bool is_valid(const jpegls_pc_parameters& pc_parameters, const int32_t maximum_component_value,
                      const int32_t near_lossless, jpegls_pc_parameters* validated_parameters = nullptr) noexcept
 {
-    ASSERT(maximum_component_value >= 3 && maximum_component_value <= UINT16_MAX);
+    ASSERT(maximum_component_value >= 3 && maximum_component_value <= std::numeric_limits<uint16_t>::max());
 
     // ISO/IEC 14495-1, C.2.4.1.1, Table C.1 defines the valid JPEG-LS preset coding parameters values.
     if (pc_parameters.maximum_sample_value != 0 &&
