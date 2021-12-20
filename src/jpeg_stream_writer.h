@@ -62,8 +62,8 @@ public:
     /// <summary>
     /// Writes a JPEG-LS Start Of Frame (SOF-55) segment.
     /// </summary>
-    /// <param name="frame_info">Properties of the frame.</param>
-    void write_start_of_frame_segment(const frame_info& frame_info);
+    /// <param name="frame">Properties of the frame.</param>
+    void write_start_of_frame_segment(const frame_info& frame);
 
     /// <summary>
     /// Writes a JPEG-LS Start Of Scan (SOS) segment.
