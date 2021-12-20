@@ -333,9 +333,9 @@ public:
     /// This will be returned as a callback_failed error code.
     /// </remarks>
     /// <param name="comment_handler">Function object to the comment handler.</param>
-    jpegls_decoder& at_comment(const std::function<void(const void* data, size_t size)> comment_handler)
+    jpegls_decoder& at_comment(std::function<void(const void* data, size_t size)> comment_handler)
     {
-        comment_handler_ = comment_handler;
+        comment_handler_ = std::move(comment_handler);
         check_jpegls_errc(
             charls_jpegls_decoder_at_comment(decoder_.get(), comment_handler_ ? at_comment_callback : nullptr, this));
         return *this;

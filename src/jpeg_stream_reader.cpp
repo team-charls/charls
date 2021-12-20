@@ -499,8 +499,7 @@ void jpeg_stream_reader::read_start_of_scan()
         throw_jpegls_error(jpegls_errc::invalid_parameter_near_lossless);
 
     const auto mode{static_cast<interleave_mode>(read_byte())}; // Read ILV parameter
-    if (!(mode == interleave_mode::none || mode == interleave_mode::line || mode == interleave_mode::sample))
-        throw_jpegls_error(jpegls_errc::invalid_parameter_interleave_mode);
+    check_interleave_mode(mode);
     parameters_.interleave_mode = mode;
 
     if ((read_byte() & 0xFU) != 0) // Read Ah (no meaning) and Al (point transform).
@@ -674,6 +673,15 @@ void jpeg_stream_reader::check_parameter_coherent() const
 
         break;
     }
+}
+
+
+void jpeg_stream_reader::check_interleave_mode(const interleave_mode mode) const
+{
+    constexpr auto errc{jpegls_errc::invalid_parameter_interleave_mode};
+    charls::check_interleave_mode(mode, errc);
+    if (frame_info_.component_count == 1 && mode != interleave_mode::none)
+        throw_jpegls_error(errc);
 }
 
 
