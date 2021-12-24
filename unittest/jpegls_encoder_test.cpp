@@ -15,8 +15,8 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::ignore;
-using std::vector;
 using std::numeric_limits;
+using std::vector;
 
 constexpr size_t serialized_spiff_header_size = 34;
 
@@ -47,9 +47,8 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, 1, 2, 1});                      // minimum.
-        encoder.frame_info(
-            {std::numeric_limits<uint16_t>::max(), numeric_limits<uint16_t>::max(), 16, 255}); // maximum.
+        encoder.frame_info({1, 1, 2, 1});                                                                     // minimum.
+        encoder.frame_info({std::numeric_limits<uint16_t>::max(), numeric_limits<uint16_t>::max(), 16, 255}); // maximum.
     }
 
     TEST_METHOD(frame_info_bad_width) // NOLINT
@@ -1086,6 +1085,28 @@ public:
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
+    TEST_METHOD(encode_black_odd) // NOLINT
+    {
+        constexpr frame_info frame_info{512, 512, 8, 1};
+        const vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        const auto destination{jpegls_encoder::encode(source, frame_info)};
+
+        Assert::AreEqual(static_cast<size_t>(99), destination.size());
+        test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
+    }
+
+    TEST_METHOD(encode_black_odd_forced_even) // NOLINT
+    {
+        constexpr frame_info frame_info{512, 512, 8, 1};
+        const vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        const auto destination{
+            jpegls_encoder::encode(source, frame_info, interleave_mode::none, encoding_options::even_destination_size)};
+
+        Assert::AreEqual(static_cast<size_t>(100), destination.size());
+        test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
+    }
 
 private:
     static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info,

@@ -86,7 +86,7 @@ enum charls_encoding_options
     CHARLS_ENCODING_OPTIONS_NONE = 0,
     CHARLS_ENCODING_OPTIONS_EVEN_DESTINATION_SIZE = 1,
     CHARLS_ENCODING_OPTIONS_INCLUDE_VERSION_NUMBER = 2,
-    CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_12_BIT = 4
+    CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_JAI = 4
 };
 
 enum charls_color_transformation
@@ -453,20 +453,41 @@ enum class interleave_mode
 };
 
 /// <summary>
-/// TODO
+/// Defines options that can be enabled during the encoding process.
+/// These options can be combined.
 /// </summary>
 enum class encoding_options
 {
     /// <summary>
-    /// No option defined.
+    /// No special encoding option is defined.
     /// </summary>
     none = impl::CHARLS_ENCODING_OPTIONS_NONE,
 
+    /// <summary>
+    /// Ensures that the generated encoded data has an even size by adding
+    /// an extra 0xFF byte to the End Of Image (EOI) marker.
+    /// DICOM requires that data is always even. This can be done by adding a zero padding byte
+    /// after the encoded data or with this option.
+    /// This option is not default enabled.
+    /// </summary>
     even_destination_size = impl::CHARLS_ENCODING_OPTIONS_EVEN_DESTINATION_SIZE,
 
+    /// <summary>
+    /// Add a comment (COM) segment with the content: "charls [version-number]" to the encoded data.
+    /// Storing the used encoder version can be helpful for long term archival of images.
+    /// This option is not default enabled.
+    /// </summary>
     include_version_number = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_VERSION_NUMBER,
 
-    include_pc_parameters_12_bit = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_12_BIT
+    /// <summary>
+    /// Writes explicitly the default JPEG-LS preset coding parameters when the
+    /// bits per sample is larger then 12 bits.
+    /// The Java Advanced Imaging (JAI) JPEG-LS codec has a defect that causes it to use invalid
+    /// preset coding parameters for these types of images.
+    /// Most users of this codec are aware of this problem and have implemented a work-around.
+    /// This option is not default enabled for the new API, but is enabled for the legacy API.
+    /// </summary>
+    include_pc_parameters_jai = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_JAI
 };
 
 constexpr encoding_options operator|(const encoding_options lhs, const encoding_options rhs) noexcept

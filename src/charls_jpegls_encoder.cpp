@@ -13,11 +13,15 @@
 using namespace charls;
 using impl::throw_jpegls_error;
 
+namespace {
+
 constexpr bool is_option_set(encoding_options options, encoding_options option_to_test)
 {
     using T = std::underlying_type_t<encoding_options>;
     return (static_cast<encoding_options>(static_cast<T>(options) & static_cast<T>(option_to_test))) == option_to_test;
 }
+
+} // namespace
 
 struct charls_jpegls_encoder final
 {
@@ -62,7 +66,7 @@ struct charls_jpegls_encoder final
     {
         constexpr charls::encoding_options all_options = encoding_options::even_destination_size |
                                                          encoding_options::include_version_number |
-                                                         encoding_options::include_pc_parameters_12_bit;
+                                                         encoding_options::include_pc_parameters_jai;
         check_argument(encoding_options >= encoding_options::none && encoding_options <= all_options,
                        jpegls_errc::invalid_argument_near_lossless); // TODO
 
@@ -168,7 +172,7 @@ struct charls_jpegls_encoder final
         {
             writer_.write_jpegls_preset_parameters_segment(preset_coding_parameters_);
         }
-        else if (frame_info_.bits_per_sample > 12)
+        else if (is_option_set(encoding_options::include_pc_parameters_jai) && frame_info_.bits_per_sample > 12)
         {
             // The Java JPEG-LS decoder uses invalid default PC parameters, as a workaround write the used values explicitly.
             writer_.write_jpegls_preset_parameters_segment(validated_pc_parameters_);
@@ -192,7 +196,7 @@ struct charls_jpegls_encoder final
             encode_scan(source, stride, frame_info_.component_count);
         }
 
-        writer_.write_end_of_image(is_option_set(encoding_options_, encoding_options::even_destination_size));
+        writer_.write_end_of_image(is_option_set(encoding_options::even_destination_size));
         state_ = state::completed;
     }
 
@@ -284,7 +288,19 @@ private:
             writer_.write_start_of_image();
         }
 
+        if (is_option_set(encoding_options::include_version_number))
+        {
+            const char* version_number{"charls " TO_STRING(CHARLS_VERSION_MAJOR) "." TO_STRING(
+                CHARLS_VERSION_MINOR) "." TO_STRING(CHARLS_VERSION_PATCH)};
+            writer_.write_comment_segment({version_number, strlen(version_number)});
+        }
+
         state_ = state::tables_and_miscellaneous;
+    }
+
+    bool is_option_set(const charls::encoding_options option_to_test) const noexcept
+    {
+        return ::is_option_set(encoding_options_, option_to_test);
     }
 
     charls_frame_info frame_info_{};
@@ -525,6 +541,7 @@ try
     charls_jpegls_encoder encoder;
     encoder.destination({check_pointer(destination), destination_length});
     encoder.near_lossless(params->allowedLossyError);
+    encoder.encoding_options(encoding_options::include_pc_parameters_jai);
 
     encoder.frame_info({static_cast<uint32_t>(params->width), static_cast<uint32_t>(params->height), params->bitsPerSample,
                         params->components});

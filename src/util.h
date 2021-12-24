@@ -70,6 +70,14 @@
 #define USE_DECL_ANNOTATIONS
 #endif
 
+// Turn A into a string literal without expanding macro definitions
+// (however, if invoked from a macro, macro arguments are expanded).
+#define TO_STRING_NX(A) #A // NOLINT(cppcoreguidelines-macro-usage)
+
+// Turn A into a string literal after macro-expanding it.
+#define TO_STRING(A) TO_STRING_NX(A) // NOLINT(cppcoreguidelines-macro-usage)
+
+
 namespace charls {
 
 inline jpegls_errc to_jpegls_errc() noexcept
