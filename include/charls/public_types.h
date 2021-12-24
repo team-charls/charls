@@ -81,6 +81,14 @@ enum charls_interleave_mode
     CHARLS_INTERLEAVE_MODE_SAMPLE = 2
 };
 
+enum charls_encoding_options
+{
+    CHARLS_ENCODING_OPTIONS_NONE = 0,
+    CHARLS_ENCODING_OPTIONS_EVEN_DESTINATION_SIZE = 1,
+    CHARLS_ENCODING_OPTIONS_INCLUDE_VERSION_NUMBER = 2,
+    CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_12_BIT = 4
+};
+
 enum charls_color_transformation
 {
     CHARLS_COLOR_TRANSFORMATION_NONE = 0,
@@ -297,7 +305,8 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     unexpected_restart_marker = impl::CHARLS_JPEGLS_ERRC_UNEXPECTED_RESTART_MARKER,
 
     /// <summary>
-    /// This error is returned when an expected restart marker is not found. It may indicate data corruption in the JPEG-LS byte stream.
+    /// This error is returned when an expected restart marker is not found. It may indicate data corruption in the JPEG-LS
+    /// byte stream.
     /// </summary>
     restart_marker_not_found = impl::CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND,
 
@@ -442,6 +451,29 @@ enum class interleave_mode
     Line = line,
     Sample = sample
 };
+
+/// <summary>
+/// TODO
+/// </summary>
+enum class encoding_options
+{
+    /// <summary>
+    /// No option defined.
+    /// </summary>
+    none = impl::CHARLS_ENCODING_OPTIONS_NONE,
+
+    even_destination_size = impl::CHARLS_ENCODING_OPTIONS_EVEN_DESTINATION_SIZE,
+
+    include_version_number = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_VERSION_NUMBER,
+
+    include_pc_parameters_12_bit = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_12_BIT
+};
+
+constexpr encoding_options operator|(const encoding_options lhs, const encoding_options rhs) noexcept
+{
+    using T = std::underlying_type_t<encoding_options>;
+    return static_cast<encoding_options>(static_cast<T>(lhs) | static_cast<T>(rhs));
+}
 
 /// <summary>
 /// Defines color space transformations as defined and implemented by the JPEG-LS library of HP Labs.
@@ -755,6 +787,7 @@ struct std::is_error_code_enum<charls::jpegls_errc> final : std::true_type
 
 using charls_jpegls_errc = charls::jpegls_errc;
 using charls_interleave_mode = charls::interleave_mode;
+using charls_encoding_options = charls::encoding_options;
 using charls_color_transformation = charls::color_transformation;
 
 using charls_spiff_profile_id = charls::spiff_profile_id;
@@ -776,6 +809,7 @@ constexpr std::size_t ErrorMessageSize = 256;
 
 typedef enum charls_jpegls_errc charls_jpegls_errc;
 typedef enum charls_interleave_mode charls_interleave_mode;
+typedef enum charls_encoding_options charls_encoding_options;
 typedef enum charls_color_transformation charls_color_transformation;
 
 typedef int32_t charls_spiff_profile_id;
@@ -1050,7 +1084,8 @@ struct JlsParameters
 /// </remarks>
 /// <param name="data">Reference to the data of the COM segment.</param>
 /// <param name="size">Size in bytes of the data of the COM segment.</param>
-/// <param name="user_context">Free to use context information that can be set during the installation of the handler.</param>
+/// <param name="user_context">Free to use context information that can be set during the installation of the
+/// handler.</param>
 using charls_at_comment_handler = int32_t(CHARLS_API_CALLING_CONVENTION*)(const void* data, size_t size, void* user_context);
 
 namespace charls {

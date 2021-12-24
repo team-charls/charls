@@ -26,8 +26,13 @@ void jpeg_stream_writer::write_start_of_image()
 }
 
 
-void jpeg_stream_writer::write_end_of_image()
+void jpeg_stream_writer::write_end_of_image(const bool even_destination_size)
 {
+    if (even_destination_size && bytes_written() % 2 != 0)
+    {
+        write_uint8(jpeg_marker_start_byte);
+    }
+
     write_segment_without_data(jpeg_marker_code::end_of_image);
 }
 

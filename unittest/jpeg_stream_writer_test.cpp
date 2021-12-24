@@ -52,11 +52,64 @@ public:
         array<uint8_t, 2> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        writer.write_end_of_image();
+        writer.write_end_of_image(false);
 
         Assert::AreEqual(static_cast<size_t>(2), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::end_of_image), buffer[1]);
+    }
+
+    TEST_METHOD(write_end_of_image_even_no_extra_byte_needed) // NOLINT
+    {
+        array<uint8_t, 2> buffer{};
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+
+        writer.write_end_of_image(true);
+
+        Assert::AreEqual(static_cast<size_t>(2), writer.bytes_written());
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::end_of_image), buffer[1]);
+    }
+
+    TEST_METHOD(write_end_of_image_even_extra_byte_needed) // NOLINT
+    {
+        array<uint8_t, 5 + 3> buffer{};
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+
+        //writer.
+        constexpr uint8_t comment{99};
+        writer.write_comment_segment({&comment, 1});
+        writer.write_end_of_image(true);
+
+        Assert::AreEqual(static_cast<size_t>(8), writer.bytes_written());
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), buffer[1]);
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[2]);
+        Assert::AreEqual(static_cast<uint8_t>(3), buffer[3]);
+        Assert::AreEqual(static_cast<uint8_t>(99), buffer[4]);
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[5]);
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[6]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::end_of_image), buffer[7]);
+    }
+
+    TEST_METHOD(write_end_of_image_even_extra_byte_needed_not_enabled) // NOLINT
+    {
+        array<uint8_t, 5 + 2> buffer{};
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+
+        // writer.
+        constexpr uint8_t comment{99};
+        writer.write_comment_segment({&comment, 1});
+        writer.write_end_of_image(false);
+
+        Assert::AreEqual(static_cast<size_t>(7), writer.bytes_written());
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), buffer[1]);
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[2]);
+        Assert::AreEqual(static_cast<uint8_t>(3), buffer[3]);
+        Assert::AreEqual(static_cast<uint8_t>(99), buffer[4]);
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[5]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::end_of_image), buffer[6]);
     }
 
     TEST_METHOD(write_end_of_image_in_too_small_buffer) // NOLINT
@@ -64,7 +117,7 @@ public:
         array<uint8_t, 1> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&writer] { writer.write_end_of_image(); });
+        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&writer] { writer.write_end_of_image(false); });
         Assert::AreEqual(static_cast<size_t>(0), writer.bytes_written());
     }
 

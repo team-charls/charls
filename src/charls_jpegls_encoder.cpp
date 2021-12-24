@@ -13,6 +13,12 @@
 using namespace charls;
 using impl::throw_jpegls_error;
 
+constexpr bool is_option_set(encoding_options options, encoding_options option_to_test)
+{
+    using T = std::underlying_type_t<encoding_options>;
+    return (static_cast<encoding_options>(static_cast<T>(options) & static_cast<T>(option_to_test))) == option_to_test;
+}
+
 struct charls_jpegls_encoder final
 {
     void destination(const byte_span destination)
@@ -50,6 +56,17 @@ struct charls_jpegls_encoder final
                        jpegls_errc::invalid_argument_near_lossless);
 
         near_lossless_ = near_lossless;
+    }
+
+    void encoding_options(const charls::encoding_options encoding_options)
+    {
+        constexpr charls::encoding_options all_options = encoding_options::even_destination_size |
+                                                         encoding_options::include_version_number |
+                                                         encoding_options::include_pc_parameters_12_bit;
+        check_argument(encoding_options >= encoding_options::none && encoding_options <= all_options,
+                       jpegls_errc::invalid_argument_near_lossless); // TODO
+
+        encoding_options_ = encoding_options;
     }
 
     void preset_coding_parameters(const jpegls_pc_parameters& preset_coding_parameters) noexcept
@@ -175,7 +192,7 @@ struct charls_jpegls_encoder final
             encode_scan(source, stride, frame_info_.component_count);
         }
 
-        writer_.write_end_of_image();
+        writer_.write_end_of_image(is_option_set(encoding_options_, encoding_options::even_destination_size));
         state_ = state::completed;
     }
 
@@ -274,6 +291,7 @@ private:
     int32_t near_lossless_{};
     charls::interleave_mode interleave_mode_{};
     charls::color_transformation color_transformation_{};
+    charls::encoding_options encoding_options_{};
     state state_{};
     jpeg_stream_writer writer_;
     jpegls_pc_parameters preset_coding_parameters_{};
@@ -328,6 +346,19 @@ charls_jpegls_encoder_set_near_lossless(charls_jpegls_encoder* encoder, const in
 try
 {
     check_pointer(encoder)->near_lossless(near_lossless);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_encoding_options(
+    charls_jpegls_encoder* encoder, const charls_encoding_options encoding_options) noexcept
+try
+{
+    check_pointer(encoder)->encoding_options(encoding_options);
     return jpegls_errc::success;
 }
 catch (...)
@@ -484,11 +515,9 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsEncode(void* destination,
-                                                                            const size_t destination_length,
-                                                                            size_t* bytes_written, const void* source,
-                                                                            const size_t source_length,
-                                                                            const JlsParameters* params, char* error_message) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+JpegLsEncode(void* destination, const size_t destination_length, size_t* bytes_written, const void* source,
+             const size_t source_length, const JlsParameters* params, char* error_message) noexcept
 try
 {
     check_argument(check_pointer(params)->jfif.version == 0);

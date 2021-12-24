@@ -77,7 +77,7 @@ public:
     /// <param name="interleave_mode">The interleave mode of the components.</param>
     void write_start_of_scan_segment(int32_t component_count, int32_t near_lossless, interleave_mode interleave_mode);
 
-    void write_end_of_image();
+    void write_end_of_image(bool even_destination_size);
 
     size_t bytes_written() const noexcept
     {

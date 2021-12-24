@@ -59,6 +59,11 @@ CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLI
 charls_jpegls_encoder_set_near_lossless(CHARLS_IN charls_jpegls_encoder* encoder, int32_t near_lossless) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull));
 
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_set_encoding_options(CHARLS_IN charls_jpegls_encoder* encoder,
+                                           charls_encoding_options encoding_options) CHARLS_NOEXCEPT
+    CHARLS_ATTRIBUTE((nonnull));
+
 /// <summary>
 /// Configures the interleave mode the encoder should use. The default is none.
 /// The encoder expects the input buffer in the same format as the interleave mode.
@@ -268,15 +273,17 @@ public:
     /// Encoded pixel data in 1 simple operation into a JPEG-LS encoded buffer.
     /// </summary>
     /// <param name="source">Source container with the pixel data bytes that need to be encoded.</param>
-    /// <param name="info">Information about the frame that needs to be encoded.</param>
+    /// <param name="frame">Information about the frame that needs to be encoded.</param>
     /// <param name="interleave_mode">Configures the interleave mode the encoder should use.</param>
+    /// <param name="encoding_options">Configures the special options the encoder should use.</param>
     /// <returns>Container with the JPEG-LS encoded bytes.</returns>
     template<typename Container, typename ValueType = typename Container::value_type>
-    static auto encode(const Container& source, const charls::frame_info& info,
-                       const charls::interleave_mode interleave_mode = charls::interleave_mode::none)
+    static auto encode(const Container& source, const charls::frame_info& frame,
+                       const charls::interleave_mode interleave_mode = charls::interleave_mode::none,
+                       const encoding_options encoding_options = charls::encoding_options::none)
     {
         jpegls_encoder encoder;
-        encoder.frame_info(info).interleave_mode(interleave_mode);
+        encoder.frame_info(frame).interleave_mode(interleave_mode).encoding_options(encoding_options);
 
         Container destination(encoder.estimated_destination_size());
         encoder.destination(destination);
@@ -316,6 +323,12 @@ public:
     jpegls_encoder& interleave_mode(const interleave_mode interleave_mode)
     {
         check_jpegls_errc(charls_jpegls_encoder_set_interleave_mode(encoder_.get(), interleave_mode));
+        return *this;
+    }
+
+    jpegls_encoder& encoding_options(const encoding_options encoding_options)
+    {
+        check_jpegls_errc(charls_jpegls_encoder_set_encoding_options(encoder_.get(), encoding_options));
         return *this;
     }
 
