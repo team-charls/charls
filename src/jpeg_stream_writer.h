@@ -8,6 +8,8 @@
 #include "jpeg_marker_code.h"
 #include "util.h"
 
+#include <limits>
+
 namespace charls {
 
 // Purpose: 'Writer' class that can generate JPEG-LS file streams.
