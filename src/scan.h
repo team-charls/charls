@@ -14,6 +14,7 @@
 
 #include <array>
 #include <sstream>
+#include <limits>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
 // Note: the functions in this header could be moved into jpegls.cpp as they are only used in that file.
