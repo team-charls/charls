@@ -466,7 +466,7 @@ private:
         Strategy::process_line_ = std::move(process_line);
 
         Strategy::initialize(destination);
-        do_scan();
+        encode_lines();
 
         return Strategy::get_length();
     }
@@ -533,17 +533,16 @@ private:
         return frame;
     }
 
-    // do_scan: Encodes a scan.
     // In ILV_SAMPLE mode, multiple components are handled in do_line
     // In ILV_LINE mode, a call to do_line is made for every component
     // In ILV_NONE mode, do_scan is called for each component
-    void do_scan()
+    void encode_lines()
     {
         const uint32_t pixel_stride{width_ + 4U};
         const size_t component_count{
             parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
 
-        std::vector<pixel_type> line_buffer(static_cast<size_t>(2) * component_count * pixel_stride);
+        std::vector<pixel_type> line_buffer(component_count * pixel_stride * 2);
         std::vector<int32_t> run_index(component_count);
 
         for (uint32_t line{}; line < frame_info().height; ++line)
@@ -555,7 +554,7 @@ private:
                 std::swap(previous_line_, current_line_);
             }
 
-            Strategy::on_line_begin(width_, current_line_, pixel_stride);
+            Strategy::on_line_begin(current_line_, width_, pixel_stride);
 
             for (size_t component{}; component < component_count; ++component)
             {
@@ -570,13 +569,6 @@ private:
                 previous_line_ += pixel_stride;
                 current_line_ += pixel_stride;
             }
-
-            if (static_cast<uint32_t>(rect_.Y) <= line && line < static_cast<uint32_t>(rect_.Y + rect_.Height))
-            {
-                Strategy::on_line_end(rect_.Width,
-                                      current_line_ + rect_.X - (static_cast<size_t>(component_count) * pixel_stride),
-                                      pixel_stride);
-            }
         }
 
         Strategy::end_scan();
@@ -588,7 +580,7 @@ private:
         const size_t component_count{
             parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
 
-        std::vector<pixel_type> line_buffer(static_cast<size_t>(2) * component_count * pixel_stride);
+        std::vector<pixel_type> line_buffer(component_count * pixel_stride * 2);
         std::vector<int32_t> run_index(component_count);
 
         for (uint32_t line{};;)
@@ -604,8 +596,6 @@ private:
                     std::swap(previous_line_, current_line_);
                 }
 
-                Strategy::on_line_begin(width_, current_line_, pixel_stride);
-
                 for (size_t component{}; component < component_count; ++component)
                 {
                     run_index_ = run_index[component];
@@ -620,10 +610,11 @@ private:
                     current_line_ += pixel_stride;
                 }
 
+                // Only copy the line if it is part of the output rectangle.
                 if (static_cast<uint32_t>(rect_.Y) <= line && line < static_cast<uint32_t>(rect_.Y + rect_.Height))
                 {
-                    Strategy::on_line_end(rect_.Width,
-                                          current_line_ + rect_.X - (static_cast<size_t>(component_count) * pixel_stride),
+                    Strategy::on_line_end(current_line_ + rect_.X - (static_cast<size_t>(component_count) * pixel_stride),
+                                          rect_.Width,
                                           pixel_stride);
                 }
             }
@@ -631,6 +622,7 @@ private:
             if (line == frame_info().height)
                 break;
 
+            // At this point in the byte stream a restart marker should be present: process it.
             read_restart_marker();
             restart_interval_counter_ = (restart_interval_counter_ + 1) % jpeg_restart_marker_range;
 

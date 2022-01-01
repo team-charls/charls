@@ -60,12 +60,7 @@ public:
         read_cache_ = read_cache_ << length;
     }
 
-    static void on_line_begin(const size_t /*pixel_count*/, const void* /*source*/, size_t /*pixel_stride*/) noexcept
-    {
-        // Definition is required for template. Event is not used by decoder.
-    }
-
-    void on_line_end(const size_t pixel_count, const void* source, const size_t pixel_stride) const
+    void on_line_end(const void* source, const size_t pixel_count, const size_t pixel_stride) const
     {
         process_line_->new_line_decoded(source, pixel_count, pixel_stride);
     }

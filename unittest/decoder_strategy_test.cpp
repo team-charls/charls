@@ -37,8 +37,8 @@ public:
         return nullptr;
     }
 
-    void decode_scan(unique_ptr<charls::process_line> /*outputData*/, const JlsRect& /*size*/,
-                     charls::byte_span& /*compressedData*/) noexcept(false) override
+    void decode_scan(unique_ptr<charls::process_line> /*output_data*/, const JlsRect& /*size*/,
+                     charls::byte_span& /*compressed_data*/) noexcept(false) override
     {
     }
 

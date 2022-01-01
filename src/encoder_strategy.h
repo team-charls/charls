@@ -30,14 +30,9 @@ public:
 
     int32_t peek_byte();
 
-    void on_line_begin(const size_t pixel_count, void* destination, const size_t pixel_stride) const
+    void on_line_begin(void* destination, const size_t pixel_count, const size_t pixel_stride) const
     {
         process_line_->new_line_requested(destination, pixel_count, pixel_stride);
-    }
-
-    static void on_line_end(size_t /*pixel_count*/, void* /*destination*/, size_t /*pixel_stride*/) noexcept
-    {
-        // Definition is required for template. Event is not used by encoder.
     }
 
 protected:
