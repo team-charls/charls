@@ -792,11 +792,11 @@ public:
         Assert::IsNull(actual.data);
     }
 
-    TEST_METHOD(read_bad_comment) // NOLINT
+    TEST_METHOD(read_comment_from_too_small_buffer_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        writer.write_segment(jpeg_marker_code::comment, "", 10);
+        writer.write_segment(jpeg_marker_code::comment, "", 0);
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size() - 1});
