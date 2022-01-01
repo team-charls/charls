@@ -43,9 +43,6 @@ public:
         return preset_coding_parameters_;
     }
 
-    void read(byte_span destination, size_t stride);
-    void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
-
     void output_bgr(const bool value) noexcept
     {
         parameters_.output_bgr = value;
@@ -62,10 +59,14 @@ public:
         comment_handler_user_context_ = user_context;
     }
 
+    void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
+    void read(byte_span destination, size_t stride);
+    void read_end_of_image();
+
     void read_start_of_scan();
-    uint8_t read_byte();
 
 private:
+    uint8_t read_byte();
     void skip_byte();
     uint16_t read_uint16();
     uint32_t read_uint24();
@@ -101,7 +102,8 @@ private:
         image_section,
         frame_section,
         scan_section,
-        bit_stream_section
+        bit_stream_section,
+        after_end_of_image
     };
 
     byte_span source_;

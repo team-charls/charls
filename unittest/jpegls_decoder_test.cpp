@@ -259,7 +259,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_without_reading_header) // NOLINT
+    TEST_METHOD(decode_without_reading_header_throws) // NOLINT
     {
         const jpegls_decoder decoder;
 
@@ -267,7 +267,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder, &buffer] { decoder.decode(buffer); });
     }
 
-    TEST_METHOD(decode_reference_to_mapping_table_selector) // NOLINT
+    TEST_METHOD(decode_reference_to_mapping_table_selector_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
 
@@ -348,13 +348,28 @@ public:
         Assert::AreEqual(256U, frame_info.width);
     }
 
-    TEST_METHOD(read_header_twice) // NOLINT
+    TEST_METHOD(read_header_twice_throws) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder{source, true};
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.read_header(); });
+    }
+
+    TEST_METHOD(decode_twice_throws) // NOLINT
+    {
+        constexpr frame_info frame_info{512, 512, 8, 1};
+        const vector<uint8_t> source_to_encode(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        const auto encoded{jpegls_encoder::encode(source_to_encode, frame_info)};
+
+        const jpegls_decoder decoder{encoded, true};
+        vector<uint8_t> destination(decoder.destination_size());
+        decoder.decode(destination);
+
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&decoder, &destination] { decoder.decode(destination); });
     }
 
     TEST_METHOD(simple_decode) // NOLINT
@@ -411,6 +426,44 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_encoded_data,
                                 [&decoder, &destination] { decoder.decode(destination); });
+    }
+
+   TEST_METHOD(decode_with_missing_end_of_image_marker_throws) // NOLINT
+    {
+        constexpr frame_info frame_info{512, 512, 8, 1};
+        const vector<uint8_t> source_to_encode(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        const auto encoded{jpegls_encoder::encode(source_to_encode, frame_info)};
+
+        {
+            // Copy the vector to ensure source buffer has a defined limit (resize() keeps memory)
+            // that can be checked with address sanitizer.
+            const vector<uint8_t> source(encoded.cbegin(), encoded.cend() - 1);
+
+            const jpegls_decoder decoder{source, true};
+            vector<uint8_t> destination(decoder.destination_size());
+            assert_expect_exception(jpegls_errc::source_buffer_too_small,
+                                    [&decoder, &destination] { decoder.decode(destination); });
+        }
+
+        {
+            const vector<uint8_t> source(encoded.cbegin(), encoded.cend() - 2);
+            const jpegls_decoder decoder{source, true};
+            vector<uint8_t> destination(decoder.destination_size());
+
+            assert_expect_exception(jpegls_errc::source_buffer_too_small,
+                                    [&decoder, &destination] { decoder.decode(destination); });
+        }
+
+        {
+            vector<uint8_t> source(encoded);
+            source[source.size() - 1] = 0x33;
+            const jpegls_decoder decoder{source, true};
+            vector<uint8_t> destination(decoder.destination_size());
+
+            assert_expect_exception(jpegls_errc::end_of_image_marker_not_found,
+                                    [&decoder, &destination] { decoder.decode(destination); });
+        }
     }
 
     TEST_METHOD(decode_file_with_golomb_large_then_k_max) // NOLINT
