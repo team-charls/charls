@@ -109,12 +109,14 @@ struct charls_jpegls_decoder final
         reader_.at_comment(handler, user_context);
     }
 
-    void decode(CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
-                const size_t destination_size_bytes, const size_t stride)
+    void decode(const byte_span destination, const size_t stride)
     {
-        check_argument(destination_buffer || destination_size_bytes == 0);
+        check_argument(destination.data || destination.size == 0);
         check_operation(state_ == state::header_read);
-        reader_.read({destination_buffer, destination_size_bytes}, stride);
+
+        reader_.read(destination, stride);
+        reader_.read_end_of_image();
+        state_ = state::completed;
     }
 
     void output_bgr(const bool value) noexcept
@@ -283,7 +285,7 @@ charls_jpegls_decoder_decode_to_buffer(charls_jpegls_decoder* decoder, void* des
                                        const size_t destination_size_bytes, const uint32_t stride) noexcept
 try
 {
-    check_pointer(decoder)->decode(destination_buffer, destination_size_bytes, stride);
+    check_pointer(decoder)->decode({destination_buffer, destination_size_bytes}, stride);
     return jpegls_errc::success;
 }
 catch (...)
@@ -359,7 +361,7 @@ try
         stride = params->stride;
     }
 
-    decoder.decode(destination, destination_length, static_cast<size_t>(stride));
+    decoder.decode({destination, destination_length}, static_cast<size_t>(stride));
 
     clear_error_message(error_message);
     return jpegls_errc::success;
@@ -387,7 +389,7 @@ try
     }
 
     decoder.region(roi);
-    decoder.decode(destination, destination_length, static_cast<size_t>(stride));
+    decoder.decode({destination, destination_length}, static_cast<size_t>(stride));
 
     clear_error_message(error_message);
     return jpegls_errc::success;

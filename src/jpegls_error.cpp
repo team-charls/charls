@@ -114,6 +114,9 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
     case jpegls_errc::callback_failed:
         return "Callback function returned a failure";
 
+    case jpegls_errc::end_of_image_marker_not_found:
+        return "Invalid JPEG-LS stream, missing End Of Image (EOI) marker";
+
     case jpegls_errc::invalid_parameter_bits_per_sample:
         return "Invalid JPEG-LS stream, The bit per sample (sample precision) parameter is not in the range [2, 16]";
 

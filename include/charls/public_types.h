@@ -54,6 +54,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_UNEXPECTED_RESTART_MARKER = 25,
     CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND = 26,
     CHARLS_JPEGLS_ERRC_CALLBACK_FAILED = 27,
+    CHARLS_JPEGLS_ERRC_END_OF_IMAGE_MARKER_NOT_FOUND = 28,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH = 100,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_HEIGHT = 101,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COMPONENT_COUNT = 102,
@@ -304,6 +305,11 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     /// This error is returned when a callback function returns a non zero value.
     /// </summary>
     callback_failed = impl::CHARLS_JPEGLS_ERRC_CALLBACK_FAILED,
+
+    /// <summary>
+    /// This error is returned when the End of Image (EOI) marker could not be found.
+    /// </summary>
+    end_of_image_marker_not_found = impl::CHARLS_JPEGLS_ERRC_END_OF_IMAGE_MARKER_NOT_FOUND,
 
     /// <summary>
     /// The argument for the width parameter is outside the range [1, 65535].

@@ -67,6 +67,9 @@ public:
 
     void end_scan()
     {
+        if (position_ >= end_position_)
+            impl::throw_jpegls_error(jpegls_errc::source_buffer_too_small);
+
         if (*position_ != jpeg_marker_start_byte)
         {
             read_bit();

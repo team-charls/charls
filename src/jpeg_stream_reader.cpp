@@ -42,69 +42,6 @@ void jpeg_stream_reader::source(const byte_span source) noexcept
     source_ = source;
 }
 
-void jpeg_stream_reader::read(byte_span destination, size_t stride)
-{
-    ASSERT(state_ == state::bit_stream_section);
-
-    check_parameter_coherent();
-
-    if (rect_.Width <= 0)
-    {
-        rect_.Width = static_cast<int32_t>(frame_info_.width);
-        rect_.Height = static_cast<int32_t>(frame_info_.height);
-    }
-
-    if (stride == 0)
-    {
-        const uint32_t width{rect_.Width != 0 ? static_cast<uint32_t>(rect_.Width) : frame_info_.width};
-        const uint32_t component_count{
-            parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<uint32_t>(frame_info_.component_count)};
-        stride =
-            static_cast<size_t>(component_count) * width * ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U);
-    }
-
-    const int64_t bytes_per_plane{static_cast<int64_t>(rect_.Width) * rect_.Height *
-                                  bit_to_byte_count(frame_info_.bits_per_sample)};
-
-    if (static_cast<int64_t>(destination.size) < bytes_per_plane * frame_info_.component_count)
-        throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
-
-    int component_index{};
-    while (component_index < frame_info_.component_count)
-    {
-        if (state_ == state::scan_section)
-        {
-            read_next_start_of_scan();
-        }
-
-        const unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
-            frame_info_, parameters_, get_validated_preset_coding_parameters())};
-        unique_ptr<process_line> process_line(codec->create_process_line(destination, stride));
-        codec->decode_scan(move(process_line), rect_, source_);
-        skip_bytes(destination, static_cast<size_t>(bytes_per_plane));
-        state_ = state::scan_section;
-
-        if (parameters_.interleave_mode != interleave_mode::none)
-            return;
-
-        component_index++;
-    }
-}
-
-
-vector<uint8_t> jpeg_stream_reader::read_bytes(const size_t byte_count)
-{
-    vector<uint8_t> result;
-    result.reserve(byte_count);
-
-    for (size_t i{}; i != byte_count; ++i)
-    {
-        result.push_back(read_byte());
-    }
-
-    return result;
-}
-
 
 void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_found)
 {
@@ -157,6 +94,84 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
             return;
         }
     }
+}
+
+
+void jpeg_stream_reader::read(byte_span destination, size_t stride)
+{
+    ASSERT(state_ == state::bit_stream_section);
+
+    check_parameter_coherent();
+
+    if (rect_.Width <= 0)
+    {
+        rect_.Width = static_cast<int32_t>(frame_info_.width);
+        rect_.Height = static_cast<int32_t>(frame_info_.height);
+    }
+
+    if (stride == 0)
+    {
+        const uint32_t width{rect_.Width != 0 ? static_cast<uint32_t>(rect_.Width) : frame_info_.width};
+        const uint32_t component_count{
+            parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<uint32_t>(frame_info_.component_count)};
+        stride =
+            static_cast<size_t>(component_count) * width * ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U);
+    }
+
+    const int64_t bytes_per_plane{static_cast<int64_t>(rect_.Width) * rect_.Height *
+                                  bit_to_byte_count(frame_info_.bits_per_sample)};
+
+    if (static_cast<int64_t>(destination.size) < bytes_per_plane * frame_info_.component_count)
+        throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
+
+    int component_index{};
+    while (component_index < frame_info_.component_count)
+    {
+        if (state_ == state::scan_section)
+        {
+            read_next_start_of_scan();
+        }
+
+        const unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
+            frame_info_, parameters_, get_validated_preset_coding_parameters())};
+        unique_ptr<process_line> process_line(codec->create_process_line(destination, stride));
+        codec->decode_scan(move(process_line), rect_, source_);
+        skip_bytes(destination, static_cast<size_t>(bytes_per_plane));
+        state_ = state::scan_section;
+
+        if (parameters_.interleave_mode != interleave_mode::none)
+            return;
+
+        component_index++;
+    }
+}
+
+
+void jpeg_stream_reader::read_end_of_image()
+{
+    ASSERT(state_ == state::scan_section);
+
+    const jpeg_marker_code marker_code{read_next_marker_code()};
+    if (marker_code != jpeg_marker_code::end_of_image)
+        throw_jpegls_error(jpegls_errc::end_of_image_marker_not_found);
+
+#ifndef NDEBUG
+    state_ = state::after_end_of_image;
+#endif
+}
+
+
+vector<uint8_t> jpeg_stream_reader::read_bytes(const size_t byte_count)
+{
+    vector<uint8_t> result;
+    result.reserve(byte_count);
+
+    for (size_t i{}; i != byte_count; ++i)
+    {
+        result.push_back(read_byte());
+    }
+
+    return result;
 }
 
 
