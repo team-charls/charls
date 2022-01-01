@@ -56,7 +56,7 @@ public:
         decoder3 = std::move(decoder2);
     }
 
-    TEST_METHOD(set_source_twice) // NOLINT
+    TEST_METHOD(set_source_twice_throws) // NOLINT
     {
         jpegls_decoder decoder;
 
@@ -65,21 +65,21 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder, &source] { decoder.source(source); });
     }
 
-    TEST_METHOD(read_spiff_header_without_source) // NOLINT
+    TEST_METHOD(read_spiff_header_without_source_throws) // NOLINT
     {
         jpegls_decoder decoder;
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { decoder.read_spiff_header(); });
     }
 
-    TEST_METHOD(destination_size_without_reading_header) // NOLINT
+    TEST_METHOD(destination_size_without_reading_header_throws) // NOLINT
     {
         const jpegls_decoder decoder;
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.destination_size(); });
     }
 
-    TEST_METHOD(read_header_without_source) // NOLINT
+    TEST_METHOD(read_header_without_source_throws) // NOLINT
     {
         jpegls_decoder decoder;
 
