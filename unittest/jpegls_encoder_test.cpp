@@ -17,6 +17,7 @@ using std::array;
 using std::ignore;
 using std::numeric_limits;
 using std::vector;
+using namespace std::string_literals;
 
 constexpr size_t serialized_spiff_header_size = 34;
 
@@ -57,7 +58,7 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] { encoder.frame_info({0, 1, 2, 1}); });
         assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] {
-            encoder.frame_info({numeric_limits<uint16_t>::max() + 1, 1, 2, 1});
+            encoder.frame_info({numeric_limits<uint16_t>::max() + 1U, 1, 2, 1});
         });
     }
 
@@ -67,7 +68,7 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] { encoder.frame_info({1, 0, 2, 1}); });
         assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] {
-            encoder.frame_info({1, numeric_limits<uint16_t>::max() + 1, 2, 1});
+            encoder.frame_info({1, numeric_limits<uint16_t>::max() + 1U, 2, 1});
         });
     }
 
@@ -452,12 +453,12 @@ public:
     {
         jpegls_encoder encoder;
 
-        vector<uint8_t> destination(9);
+        array<uint8_t, 10> destination;
         encoder.destination(destination);
 
         encoder.write_comment("123");
 
-        Assert::AreEqual(static_cast<size_t>(9), encoder.bytes_written());
+        Assert::AreEqual(static_cast<size_t>(10), encoder.bytes_written());
 
         // Check that SOI marker has been written.
         Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
@@ -467,10 +468,11 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), destination[3]);
         Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(2 + 3), destination[5]);
+        Assert::AreEqual(static_cast<uint8_t>(2 + 4), destination[5]);
         Assert::AreEqual(static_cast<uint8_t>('1'), destination[6]);
         Assert::AreEqual(static_cast<uint8_t>('2'), destination[7]);
         Assert::AreEqual(static_cast<uint8_t>('3'), destination[8]);
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[9]);
     }
 
     TEST_METHOD(write_empty_comment) // NOLINT
@@ -545,11 +547,11 @@ public:
     {
         jpegls_encoder encoder;
 
-        vector<uint8_t> destination(16);
+        array<uint8_t, 14> destination;
         encoder.destination(destination);
 
         encoder.write_comment("123");
-        encoder.write_comment("456");
+        encoder.write_comment("");
 
         Assert::AreEqual(destination.size(), encoder.bytes_written());
 
@@ -561,18 +563,16 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), destination[3]);
         Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(2 + 3), destination[5]);
+        Assert::AreEqual(static_cast<uint8_t>(2 + 4), destination[5]);
         Assert::AreEqual(static_cast<uint8_t>('1'), destination[6]);
         Assert::AreEqual(static_cast<uint8_t>('2'), destination[7]);
         Assert::AreEqual(static_cast<uint8_t>('3'), destination[8]);
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[9]);
 
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[9]);
-        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), destination[10]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[11]);
-        Assert::AreEqual(static_cast<uint8_t>(2 + 3), destination[12]);
-        Assert::AreEqual(static_cast<uint8_t>('4'), destination[13]);
-        Assert::AreEqual(static_cast<uint8_t>('5'), destination[14]);
-        Assert::AreEqual(static_cast<uint8_t>('6'), destination[15]);
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[10]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), destination[11]);
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[12]);
+        Assert::AreEqual(static_cast<uint8_t>(2), destination[13]);
     }
 
     TEST_METHOD(write_too_large_comment) // NOLINT
@@ -1085,7 +1085,7 @@ public:
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_black_odd) // NOLINT
+    TEST_METHOD(encode_image_odd_size) // NOLINT
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1096,7 +1096,7 @@ public:
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_black_odd_forced_even) // NOLINT
+    TEST_METHOD(encode_image_odd_size_forced_even) // NOLINT
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1107,6 +1107,33 @@ public:
         Assert::AreEqual(static_cast<size_t>(100), destination.size());
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
+
+    TEST_METHOD(encode_image_forced_version_comment) // NOLINT
+    {
+        constexpr frame_info frame_info{512, 512, 8, 1};
+        const vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        const auto encoded_source{
+            jpegls_encoder::encode(source, frame_info, interleave_mode::none, encoding_options::include_version_number)};
+
+        jpegls_decoder decoder;
+        decoder.source(encoded_source);
+
+        const char* actual_data{};
+        size_t actual_size{};
+        decoder.at_comment([&actual_data, &actual_size](const void* data, const size_t size) noexcept {
+            actual_data = static_cast<const char*>(data);
+            actual_size = size;
+        });
+
+        decoder.read_header();
+
+        const std::string expected = "charls "s + charls_get_version_string();
+
+        Assert::AreEqual(expected.size() + 1, actual_size);
+        Assert::IsTrue(memcmp(expected.data(), actual_data, actual_size) == 0);
+    }
+
 
 private:
     static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info,

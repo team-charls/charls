@@ -485,7 +485,7 @@ enum class encoding_options
     /// The Java Advanced Imaging (JAI) JPEG-LS codec has a defect that causes it to use invalid
     /// preset coding parameters for these types of images.
     /// Most users of this codec are aware of this problem and have implemented a work-around.
-    /// This option is not default enabled for the new API, but is enabled for the legacy API.
+    /// This option is default enabled. Will not be default enabled in the next major version upgrade.
     /// </summary>
     include_pc_parameters_jai = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_JAI
 };

@@ -446,17 +446,18 @@ public:
     }
 
     /// <summary>
-    /// Writes a JPEG comment to the destination.
+    /// Writes a string as JPEG comment to the JPEG-LS bit stream.
     /// </summary>
-    /// <remarks>The null terminator is not written to the output destination.</remarks>
-    /// <param name="comment">The text of the comment as null terminated string. Encoding is application specific.</param>
+    /// <remarks>The null terminator is also written to the output destination, if the string is not empty.</remarks>
+    /// <param name="comment">The text of the comment as null terminated string. Text encoding is application specific.</param>
     jpegls_encoder& write_comment(CHARLS_IN_Z const char* comment)
     {
-        return write_comment(comment, std::strlen(comment));
+        const size_t size{std::strlen(comment)};
+        return write_comment(comment, size == 0 ? 0 : size + 1);
     }
 
     /// <summary>
-    /// Writes a JPEG comment to the destination.
+    /// Writes a JPEG comment to the JPEG-LS bit stream.
     /// </summary>
     /// <param name="comment">The bytes of the comment: application specific.</param>
     /// <param name="size">The size of the comment in bytes.</param>

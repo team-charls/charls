@@ -21,7 +21,7 @@ TEST_CLASS(jpeg_stream_writer_test)
 public:
     TEST_METHOD(remaining_destination_will_be_zero_after_create_with_default) // NOLINT
     {
-        constexpr jpeg_stream_writer writer;
+        const jpeg_stream_writer writer;
         Assert::AreEqual(static_cast<size_t>(0), writer.remaining_destination().size);
         Assert::IsNull(writer.remaining_destination().data);
     }
