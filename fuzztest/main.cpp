@@ -4,13 +4,10 @@
 #include <charls/charls.h>
 
 #ifdef _MSC_VER
-
 #include <io.h>
-
 #else
 #include <unistd.h>
 
-#define _write write
 #define _read read
 #define _open open
 
@@ -62,8 +59,11 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
             {
                 // Write some small-ish JPEG-LS file to stdout
                 const auto encoded_data{generate_once()};
-                const int result{
-                    static_cast<int>(_write(1, encoded_data.data(), static_cast<unsigned int>(encoded_data.size())))};
+#ifdef _MSC_VER
+                const int result{_write(1, encoded_data.data(), static_cast<unsigned int>(encoded_data.size()))};
+#else
+                const ssize_t result{write(1, encoded_data.data(), static_cast<unsigned int>(encoded_data.size()))};
+#endif
                 return result != -1 && result == static_cast<int>(encoded_data.size()) ? EXIT_SUCCESS : EXIT_FAILURE;
             }
             catch (const std::exception& error)
