@@ -22,12 +22,17 @@
 
   <ItemDefinitionGroup>
     <ClCompile>
-      <!-- To ensure high quality C++ code use Warning level All and treat warnings as errors to ensure warnings are fixed promptly. -->
-      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <!-- To ensure high quality C++ code use Warning level 4 and treat warnings as errors to ensure warnings are fixed promptly. -->
+      <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <UseFullPaths>true</UseFullPaths>
 
       <!-- Explicit set the 'external' warning level to W3 (Supported since Visual Studio 2019 16.10) -->
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
+
+      <!-- For development purposes, All warnings can be used to discover useful compiler warnings.
+           This requires also that some warnings need to be disabled from this all warning list. -->
+      <WarningLevel Condition="'$(CHARLS_ALL_WARNINGS)'!=''">EnableAllWarnings</WarningLevel>
 
       <!--
         Disable level All warnings that are not useful:
@@ -48,7 +53,7 @@
         C5027 = 'type': move assignment operator was implicitly defined as deleted [Just informational]
         C5045 = Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified [Just informational]
       -->
-      <DisableSpecificWarnings>4061;4365;4464;4514;4571;4623;4625;4626;4668;4710;4711;4738;4820;5026;5027;5045</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(CHARLS_ALL_WARNINGS)'!=''">4061;4365;4464;4514;4571;4623;4625;4626;4668;4710;4711;4738;4820;5026;5027;5045</DisableSpecificWarnings>
 
       <!--
         __cplusplus = Use the correct value for the __cplusplus macro

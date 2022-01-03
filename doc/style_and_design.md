@@ -151,11 +151,6 @@ The following features are available in C++20 (usable after 2023), or in dual la
 * \<span>
 * modules
 
-### Supported C# language
-
-CharLS currently targets C# 7.3 on the main branch. This will be done until C# 8.0 becomes available.
-Client code in C# 7.3 calling the CharLS assembly will be supported up to 3 years after the release of C# 8.0.
-
 ### Portable Anymap Format
 
 The de facto standard used by the JPEG standard to deliver test files is the Portable Anymap Format.
@@ -174,3 +169,38 @@ One of the missing features of C++ is a standard Package Manager. The following 
 * Cross-platform unit test library (for example Catch2)
 * Library to read Anymap files (for example Netpbm)
 * Library to parse command line parameters (for example Clara, CLI11)
+
+### Supported C++ Compilers
+
+#### Clang
+
+Recommended warnings:
+
+* -Wall (warning collection switch)
+* -Wextra (warning collection switch)
+* -Wnon-gcc (warning collection switch)
+* -Walloca (not included in Wall or Wextra)
+* -Wcast-qual (not included in Wall or Wextra)
+* -Wformat=2 (not included in Wall or Wextra)
+* -Wformat-security (enabled by -Wformat=2)
+* -Wnull-dereference (enabled by default)
+* -Wstack-protector (enabled by default)
+* -Wvla (not included in Wall or Wextra)
+* -Warray-bounds (enabled by default)
+* -Warray-bounds-pointer-arithmetic (not included in Wall or Wextra)
+* -Wassign-enum (not included in Wall or Wextra)
+* -Wbad-function-cast (not included in Wall or Wextra)
+* -Wconditional-uninitialized (not included in Wall or Wextra)
+* -Wconversion (enabled by Wnon-gcc)
+* -Widiomatic-parentheses (not included in Wall or Wextra)
+* -Wimplicit-fallthrough (not included in Wall or Wextra)
+* -Wloop-analysis (not included in Wall or Wextra)
+* -Wpointer-arith (not included in Wall or Wextra)
+* -Wshift-sign-overflow (not included in Wall or Wextra)
+* -Wshorten-64-to-32 (enabled by Wnon-gcc)
+* -Wswitch-enum (not included in Wall or Wextra)
+* -Wtautological-constant-in-range-compare (not included in Wall or Wextra)
+* -Wunreachable-code-aggressive (not included in Wall or Wextra)
+* -Wthread-safety (not included in Wall or Wextra)
+* -Wthread-safety-beta (not included in Wall or Wextra)
+* -Wcomma (not included in Wall or Wextra)

@@ -44,10 +44,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Configure the supported C++ compilers: gcc, clang and MSVC
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(PEDANTIC_CXX_COMPILE_FLAGS
-    -pedantic-errors
     -Wall
     -Wextra
     -pedantic
+    -pedantic-errors
     -Wold-style-cast
     -Wfloat-equal
     -Wlogical-op
@@ -86,8 +86,30 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(PEDANTIC_CXX_COMPILE_FLAGS
-      -Weverything
+      -Wall
+      -Wextra # (-W is synonym)
+      -Wnon-gcc
       -Wpedantic
+      -Walloca
+      -Wcast-qual
+      -Wformat=2
+      -Wvla
+      -Warray-bounds-pointer-arithmetic
+      -Wassign-enum
+      -Wbad-function-cast
+      -Wconditional-uninitialized
+      -Widiomatic-parentheses
+      -Wimplicit-fallthrough
+      -Wloop-analysis
+      -Wpointer-arith
+      -Wshift-sign-overflow
+      -Wtautological-constant-in-range-compare
+      -Wunreachable-code-aggressive
+      -Wthread-safety
+      -Wthread-safety-beta
+      -Wcomma
+      # -Weverything provides the option to discover usefull Clang warnings.
+      # The list below ignores not useful Weverything warnings.
       -Wno-weak-vtables                       # Ignore, linker will remove the couple of extra vtables.
       -Wno-padded                             # Ignore, padding optimization is not needed.
       -Wno-c++98-compat                       # Ignore, CharLS 2.x targets C++14, ignore C++98 compatibility.
