@@ -1200,6 +1200,13 @@ public:
         Assert::AreEqual(static_cast<size_t>(28), bytes_written);
     }
 
+    TEST_METHOD(set_invalid_encode_options_throws) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        assert_expect_exception(jpegls_errc::invalid_argument_encoding_options,
+                                [&encoder] { encoder.encoding_options(static_cast<encoding_options>(8)); });
+    }
 
 private:
     static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info,

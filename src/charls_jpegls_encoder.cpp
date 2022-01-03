@@ -69,7 +69,7 @@ struct charls_jpegls_encoder final
                                                          encoding_options::include_version_number |
                                                          encoding_options::include_pc_parameters_jai;
         check_argument(encoding_options >= encoding_options::none && encoding_options <= all_options,
-                       jpegls_errc::invalid_argument_near_lossless); // TODO
+                       jpegls_errc::invalid_argument_encoding_options);
 
         encoding_options_ = encoding_options;
     }

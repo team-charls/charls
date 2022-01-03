@@ -72,7 +72,10 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "The argument for the JPEG-LS preset coding parameters is not valid";
 
     case jpegls_errc::invalid_argument_stride:
-        return "The stride argument does not match with the frame info and buffer size.";
+        return "The stride argument does not match with the frame info and buffer size";
+
+    case jpegls_errc::invalid_argument_encoding_options:
+        return "The encoding options argument has an invalid value";
 
     case jpegls_errc::start_of_image_marker_not_found:
         return "Invalid JPEG-LS stream, first JPEG marker is not a Start Of Image (SOI) marker";

@@ -65,6 +65,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SIZE = 110,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COLOR_TRANSFORMATION = 111,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_STRIDE = 112,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_ENCODING_OPTIONS = 113,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH = 200,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_HEIGHT = 201,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT = 202,
@@ -370,6 +371,11 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     /// The stride argument does not match with the frame info and buffer size.
     /// </summary>
     invalid_argument_stride = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_STRIDE,
+
+    /// <summary>
+    /// The encoding options argument has an invalid value.
+    /// </summary>
+    invalid_argument_encoding_options = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_ENCODING_OPTIONS,
 
     /// <summary>
     /// This error is returned when the stream contains a width parameter defined more then once or in an incompatible way.
