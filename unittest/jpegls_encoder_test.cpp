@@ -3,12 +3,14 @@
 
 #include "pch.h"
 
+#include "jpegls_preset_coding_parameters_test.h"
 #include "util.h"
 
 #include "../src/jpeg_marker_code.h"
 #include <charls/charls.h>
 
 #include <array>
+#include <limits>
 #include <tuple>
 #include <vector>
 
@@ -1132,6 +1134,70 @@ public:
 
         Assert::AreEqual(expected.size() + 1, actual_size);
         Assert::IsTrue(memcmp(expected.data(), actual_data, actual_size) == 0);
+    }
+
+    TEST_METHOD(encode_image_include_pc_parameters_jai) // NOLINT
+    {
+        constexpr frame_info frame_info{1, 1, 16, 1};
+        const vector<uint16_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+        // Note: encoding_options::include_pc_parameters_jai is enabled by default (until the next major version)
+
+        const size_t bytes_written{encoder.encode(source)};
+        destination.resize(bytes_written);
+
+        Assert::AreEqual(static_cast<size_t>(43), bytes_written);
+
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[15]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::jpegls_preset_parameters), destination[16]);
+
+        // Segment size.
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[17]);
+        Assert::AreEqual(static_cast<uint8_t>(13), destination[18]);
+
+        // Parameter ID.
+        Assert::AreEqual(static_cast<uint8_t>(0x1), destination[19]);
+
+        // MaximumSampleValue
+        Assert::AreEqual(static_cast<uint8_t>(255), destination[20]);
+        Assert::AreEqual(static_cast<uint8_t>(255), destination[21]);
+
+        constexpr thresholds expected{
+            compute_defaults_using_reference_implementation(std::numeric_limits<uint16_t>::max(), 0)};
+
+        const int32_t threshold1 = destination[22] << 8 | destination[23];
+        Assert::AreEqual(expected.t1, threshold1);
+
+        const int32_t threshold2 = destination[24] << 8 | destination[25];
+        Assert::AreEqual(expected.t2, threshold2);
+
+        const int32_t threshold3 = destination[26] << 8 | destination[27];
+        Assert::AreEqual(expected.t3, threshold3);
+
+        const int32_t reset = destination[28] << 8 | destination[29];
+        Assert::AreEqual(expected.reset, reset);
+    }
+
+    TEST_METHOD(encode_image_with_disabled_include_pc_parameters_jai) // NOLINT
+    {
+        constexpr frame_info frame_info{1, 1, 16, 1};
+        const vector<uint16_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+        encoder.encoding_options(encoding_options::none);
+
+        const size_t bytes_written{encoder.encode(source)};
+
+        Assert::AreEqual(static_cast<size_t>(28), bytes_written);
     }
 
 

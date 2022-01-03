@@ -269,8 +269,7 @@ public:
     /// The maximum output size that may be allocated, default is 94 MiB (enough to decode 8 bit color 8K image).
     /// </param>
     /// <returns>Frame info of the decoded image and the interleave mode.</returns>
-    template<typename SourceContainer, typename DestinationContainer,
-             typename ValueType = typename DestinationContainer::value_type>
+    template<typename SourceContainer, typename DestinationContainer>
     static std::pair<charls::frame_info, charls::interleave_mode>
     decode(const SourceContainer& source, DestinationContainer& destination,
            const size_t maximum_size_in_bytes = 7680 * 4320 * 3)
@@ -281,7 +280,7 @@ public:
         if (destination_size > maximum_size_in_bytes)
             impl::throw_jpegls_error(jpegls_errc::not_enough_memory);
 
-        destination.resize(destination_size / sizeof(ValueType));
+        destination.resize(destination_size / sizeof(typename DestinationContainer::value_type));
         decoder.decode(destination);
 
         return std::make_pair(decoder.frame_info(), decoder.interleave_mode());
@@ -325,33 +324,16 @@ public:
     }
 
     /// <summary>
-    /// Will install a function that will be called when a comment (COM) segment is found.
-    /// </summary>
-    /// <remarks>
-    /// Pass a nullptr to uninstall the callback function.
-    /// The callback can throw an exception to abort the decoding process.
-    /// This will be returned as a callback_failed error code.
-    /// </remarks>
-    /// <param name="comment_handler">Function object to the comment handler.</param>
-    jpegls_decoder& at_comment(std::function<void(const void* data, size_t size)> comment_handler)
-    {
-        comment_handler_ = std::move(comment_handler);
-        check_jpegls_errc(
-            charls_jpegls_decoder_at_comment(decoder_.get(), comment_handler_ ? at_comment_callback : nullptr, this));
-        return *this;
-    }
-
-    /// <summary>
     /// Set the reference to a source container that contains the encoded JPEG-LS byte stream data.
     /// This container needs to remain valid until the stream is fully decoded.
     /// </summary>
     /// <param name="source_container">
     /// A STL like container that provides the functions data() and size() and the type value_type.
     /// </param>
-    template<typename Container, typename ValueType = typename Container::value_type>
+    template<typename Container>
     jpegls_decoder& source(const Container& source_container)
     {
-        return source(source_container.data(), source_container.size() * sizeof(ValueType));
+        return source(source_container.data(), source_container.size() * sizeof(typename Container::value_type));
     }
 
     /// <summary>
@@ -542,10 +524,10 @@ public:
     /// A STL like container that provides the functions data() and size() and the type value_type.
     /// </param>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
-    template<typename Container, typename ValueType = typename Container::value_type>
+    template<typename Container>
     void decode(CHARLS_OUT Container& destination_container, const uint32_t stride = 0) const
     {
-        decode(destination_container.data(), destination_container.size() * sizeof(ValueType), stride);
+        decode(destination_container.data(), destination_container.size() * sizeof(typename Container::value_type), stride);
     }
 
     /// <summary>
@@ -553,13 +535,30 @@ public:
     /// </summary>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
     /// <returns>Container with the decoded data.</returns>
-    template<typename Container, typename ValueType = typename Container::value_type>
-    CHARLS_CHECK_RETURN auto decode(const uint32_t stride = 0) const
+    template<typename Container>
+    CHARLS_CHECK_RETURN Container decode(const uint32_t stride = 0) const
     {
-        Container destination(destination_size() / sizeof(ValueType));
+        Container destination(destination_size() / sizeof(typename Container::value_type));
 
-        decode(destination.data(), destination.size() * sizeof(ValueType), stride);
+        decode(destination.data(), destination.size() * sizeof(typename Container::value_type), stride);
         return destination;
+    }
+
+    /// <summary>
+    /// Will install a function that will be called when a comment (COM) segment is found.
+    /// </summary>
+    /// <remarks>
+    /// Pass a nullptr to uninstall the callback function.
+    /// The callback can throw an exception to abort the decoding process.
+    /// This abort will be returned as a callback_failed error code.
+    /// </remarks>
+    /// <param name="comment_handler">Function object to the comment handler.</param>
+    jpegls_decoder& at_comment(std::function<void(const void* data, size_t size)> comment_handler)
+    {
+        comment_handler_ = std::move(comment_handler);
+        check_jpegls_errc(
+            charls_jpegls_decoder_at_comment(decoder_.get(), comment_handler_ ? at_comment_callback : nullptr, this));
+        return *this;
     }
 
 private:

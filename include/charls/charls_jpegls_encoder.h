@@ -277,10 +277,10 @@ public:
     /// <param name="interleave_mode">Configures the interleave mode the encoder should use.</param>
     /// <param name="encoding_options">Configures the special options the encoder should use.</param>
     /// <returns>Container with the JPEG-LS encoded bytes.</returns>
-    template<typename Container, typename ValueType = typename Container::value_type>
-    static auto encode(const Container& source, const charls::frame_info& frame,
-                       const charls::interleave_mode interleave_mode = charls::interleave_mode::none,
-                       const encoding_options encoding_options = charls::encoding_options::none)
+    template<typename Container>
+    static Container encode(const Container& source, const charls::frame_info& frame,
+                            const charls::interleave_mode interleave_mode = charls::interleave_mode::none,
+                            const encoding_options encoding_options = charls::encoding_options::none)
     {
         jpegls_encoder encoder;
         encoder.frame_info(frame).interleave_mode(interleave_mode).encoding_options(encoding_options);
@@ -394,11 +394,14 @@ public:
     /// <param name="destination_container">
     /// The STL like container, that supports the functions data() and size() and the typedef value_type.
     /// </param>
-    template<typename Container, typename ValueType = typename Container::value_type>
-    jpegls_encoder& destination(CHARLS_OUT Container& destination_container)
+    template<typename Container>
+    jpegls_encoder& destination(Container& destination_container)
     {
-        return destination(destination_container.data(), destination_container.size() * sizeof(ValueType));
+        return destination(destination_container.data(), destination_container.size() * sizeof(typename Container::value_type));
     }
+
+    template<typename Container>
+    jpegls_encoder& destination(const Container& destination_container) = delete;
 
     /// <summary>
     /// Writes a standard SPIFF header to the destination. The additional values are computed from the current encoder
@@ -449,7 +452,10 @@ public:
     /// Writes a string as JPEG comment to the JPEG-LS bit stream.
     /// </summary>
     /// <remarks>The null terminator is also written to the output destination, if the string is not empty.</remarks>
-    /// <param name="comment">The text of the comment as null terminated string. Text encoding is application specific.</param>
+    /// <param name="comment">
+    /// The text of the comment as null terminated string.
+    /// Text encoding is application specific and not defined by the JPEG-LS standard.
+    /// </param>
     jpegls_encoder& write_comment(CHARLS_IN_Z const char* comment)
     {
         const size_t size{std::strlen(comment)};
@@ -496,10 +502,10 @@ public:
     /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
     /// </param>
     /// <returns>The number of bytes written to the destination.</returns>
-    template<typename Container, typename ValueType = typename Container::value_type>
+    template<typename Container>
     size_t encode(const Container& source_container, const uint32_t stride = 0) const
     {
-        return encode(source_container.data(), source_container.size() * sizeof(ValueType), stride);
+        return encode(source_container.data(), source_container.size() * sizeof(typename Container::value_type), stride);
     }
 
     /// <summary>
