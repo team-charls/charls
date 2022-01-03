@@ -338,7 +338,7 @@ int jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code, 
     case jpeg_marker_code::application_data8:
         return try_read_application_data8_segment(segment_size, header, spiff_header_found);
 
-    // Other tags not supported (among which DNL DRI)
+    // Other tags not supported (among which DNL)
     default:
         ASSERT(false);
         return 0;

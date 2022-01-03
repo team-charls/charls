@@ -65,6 +65,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SIZE = 110,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COLOR_TRANSFORMATION = 111,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_STRIDE = 112,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_ENCODING_OPTIONS = 113,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH = 200,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_HEIGHT = 201,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT = 202,
@@ -79,6 +80,14 @@ enum charls_interleave_mode
     CHARLS_INTERLEAVE_MODE_NONE = 0,
     CHARLS_INTERLEAVE_MODE_LINE = 1,
     CHARLS_INTERLEAVE_MODE_SAMPLE = 2
+};
+
+enum charls_encoding_options
+{
+    CHARLS_ENCODING_OPTIONS_NONE = 0,
+    CHARLS_ENCODING_OPTIONS_EVEN_DESTINATION_SIZE = 1,
+    CHARLS_ENCODING_OPTIONS_INCLUDE_VERSION_NUMBER = 2,
+    CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_JAI = 4
 };
 
 enum charls_color_transformation
@@ -297,7 +306,8 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     unexpected_restart_marker = impl::CHARLS_JPEGLS_ERRC_UNEXPECTED_RESTART_MARKER,
 
     /// <summary>
-    /// This error is returned when an expected restart marker is not found. It may indicate data corruption in the JPEG-LS byte stream.
+    /// This error is returned when an expected restart marker is not found. It may indicate data corruption in the JPEG-LS
+    /// byte stream.
     /// </summary>
     restart_marker_not_found = impl::CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND,
 
@@ -361,6 +371,11 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     /// The stride argument does not match with the frame info and buffer size.
     /// </summary>
     invalid_argument_stride = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_STRIDE,
+
+    /// <summary>
+    /// The encoding options argument has an invalid value.
+    /// </summary>
+    invalid_argument_encoding_options = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_ENCODING_OPTIONS,
 
     /// <summary>
     /// This error is returned when the stream contains a width parameter defined more then once or in an incompatible way.
@@ -442,6 +457,50 @@ enum class interleave_mode
     Line = line,
     Sample = sample
 };
+
+/// <summary>
+/// Defines options that can be enabled during the encoding process.
+/// These options can be combined.
+/// </summary>
+enum class encoding_options
+{
+    /// <summary>
+    /// No special encoding option is defined.
+    /// </summary>
+    none = impl::CHARLS_ENCODING_OPTIONS_NONE,
+
+    /// <summary>
+    /// Ensures that the generated encoded data has an even size by adding
+    /// an extra 0xFF byte to the End Of Image (EOI) marker.
+    /// DICOM requires that data is always even. This can be done by adding a zero padding byte
+    /// after the encoded data or with this option.
+    /// This option is not default enabled.
+    /// </summary>
+    even_destination_size = impl::CHARLS_ENCODING_OPTIONS_EVEN_DESTINATION_SIZE,
+
+    /// <summary>
+    /// Add a comment (COM) segment with the content: "charls [version-number]" to the encoded data.
+    /// Storing the used encoder version can be helpful for long term archival of images.
+    /// This option is not default enabled.
+    /// </summary>
+    include_version_number = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_VERSION_NUMBER,
+
+    /// <summary>
+    /// Writes explicitly the default JPEG-LS preset coding parameters when the
+    /// bits per sample is larger then 12 bits.
+    /// The Java Advanced Imaging (JAI) JPEG-LS codec has a defect that causes it to use invalid
+    /// preset coding parameters for these types of images.
+    /// Most users of this codec are aware of this problem and have implemented a work-around.
+    /// This option is default enabled. Will not be default enabled in the next major version upgrade.
+    /// </summary>
+    include_pc_parameters_jai = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_JAI
+};
+
+constexpr encoding_options operator|(const encoding_options lhs, const encoding_options rhs) noexcept
+{
+    using T = std::underlying_type_t<encoding_options>;
+    return static_cast<encoding_options>(static_cast<T>(lhs) | static_cast<T>(rhs));
+}
 
 /// <summary>
 /// Defines color space transformations as defined and implemented by the JPEG-LS library of HP Labs.
@@ -755,6 +814,7 @@ struct std::is_error_code_enum<charls::jpegls_errc> final : std::true_type
 
 using charls_jpegls_errc = charls::jpegls_errc;
 using charls_interleave_mode = charls::interleave_mode;
+using charls_encoding_options = charls::encoding_options;
 using charls_color_transformation = charls::color_transformation;
 
 using charls_spiff_profile_id = charls::spiff_profile_id;
@@ -776,6 +836,7 @@ constexpr std::size_t ErrorMessageSize = 256;
 
 typedef enum charls_jpegls_errc charls_jpegls_errc;
 typedef enum charls_interleave_mode charls_interleave_mode;
+typedef enum charls_encoding_options charls_encoding_options;
 typedef enum charls_color_transformation charls_color_transformation;
 
 typedef int32_t charls_spiff_profile_id;
@@ -1050,7 +1111,8 @@ struct JlsParameters
 /// </remarks>
 /// <param name="data">Reference to the data of the COM segment.</param>
 /// <param name="size">Size in bytes of the data of the COM segment.</param>
-/// <param name="user_context">Free to use context information that can be set during the installation of the handler.</param>
+/// <param name="user_context">Free to use context information that can be set during the installation of the
+/// handler.</param>
 using charls_at_comment_handler = int32_t(CHARLS_API_CALLING_CONVENTION*)(const void* data, size_t size, void* user_context);
 
 namespace charls {

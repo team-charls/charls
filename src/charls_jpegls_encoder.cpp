@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "charls/charls_jpegls_encoder.h"
+#include "charls/version.h"
 #include "encoder_strategy.h"
 #include "jls_codec_factory.h"
 #include "jpeg_stream_writer.h"
@@ -12,6 +13,16 @@
 
 using namespace charls;
 using impl::throw_jpegls_error;
+
+namespace {
+
+constexpr bool has_option(encoding_options options, encoding_options option_to_test)
+{
+    using T = std::underlying_type_t<encoding_options>;
+    return (static_cast<encoding_options>(static_cast<T>(options) & static_cast<T>(option_to_test))) == option_to_test;
+}
+
+} // namespace
 
 struct charls_jpegls_encoder final
 {
@@ -50,6 +61,17 @@ struct charls_jpegls_encoder final
                        jpegls_errc::invalid_argument_near_lossless);
 
         near_lossless_ = near_lossless;
+    }
+
+    void encoding_options(const charls::encoding_options encoding_options)
+    {
+        constexpr charls::encoding_options all_options = encoding_options::even_destination_size |
+                                                         encoding_options::include_version_number |
+                                                         encoding_options::include_pc_parameters_jai;
+        check_argument(encoding_options >= encoding_options::none && encoding_options <= all_options,
+                       jpegls_errc::invalid_argument_encoding_options);
+
+        encoding_options_ = encoding_options;
     }
 
     void preset_coding_parameters(const jpegls_pc_parameters& preset_coding_parameters) noexcept
@@ -151,7 +173,7 @@ struct charls_jpegls_encoder final
         {
             writer_.write_jpegls_preset_parameters_segment(preset_coding_parameters_);
         }
-        else if (frame_info_.bits_per_sample > 12)
+        else if (has_option(encoding_options::include_pc_parameters_jai) && frame_info_.bits_per_sample > 12)
         {
             // The Java JPEG-LS decoder uses invalid default PC parameters, as a workaround write the used values explicitly.
             writer_.write_jpegls_preset_parameters_segment(validated_pc_parameters_);
@@ -175,7 +197,7 @@ struct charls_jpegls_encoder final
             encode_scan(source, stride, frame_info_.component_count);
         }
 
-        writer_.write_end_of_image();
+        writer_.write_end_of_image(has_option(encoding_options::even_destination_size));
         state_ = state::completed;
     }
 
@@ -267,13 +289,26 @@ private:
             writer_.write_start_of_image();
         }
 
+        if (has_option(encoding_options::include_version_number))
+        {
+            const char* version_number{"charls " TO_STRING(CHARLS_VERSION_MAJOR) "." TO_STRING(
+                CHARLS_VERSION_MINOR) "." TO_STRING(CHARLS_VERSION_PATCH)};
+            writer_.write_comment_segment({version_number, strlen(version_number) + 1});
+        }
+
         state_ = state::tables_and_miscellaneous;
+    }
+
+    bool has_option(const charls::encoding_options option_to_test) const noexcept
+    {
+        return ::has_option(encoding_options_, option_to_test);
     }
 
     charls_frame_info frame_info_{};
     int32_t near_lossless_{};
     charls::interleave_mode interleave_mode_{};
     charls::color_transformation color_transformation_{};
+    charls::encoding_options encoding_options_{encoding_options::include_pc_parameters_jai};
     state state_{};
     jpeg_stream_writer writer_;
     jpegls_pc_parameters preset_coding_parameters_{};
@@ -328,6 +363,19 @@ charls_jpegls_encoder_set_near_lossless(charls_jpegls_encoder* encoder, const in
 try
 {
     check_pointer(encoder)->near_lossless(near_lossless);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_encoding_options(
+    charls_jpegls_encoder* encoder, const charls_encoding_options encoding_options) noexcept
+try
+{
+    check_pointer(encoder)->encoding_options(encoding_options);
     return jpegls_errc::success;
 }
 catch (...)
@@ -484,11 +532,9 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsEncode(void* destination,
-                                                                            const size_t destination_length,
-                                                                            size_t* bytes_written, const void* source,
-                                                                            const size_t source_length,
-                                                                            const JlsParameters* params, char* error_message) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+JpegLsEncode(void* destination, const size_t destination_length, size_t* bytes_written, const void* source,
+             const size_t source_length, const JlsParameters* params, char* error_message) noexcept
 try
 {
     check_argument(check_pointer(params)->jfif.version == 0);
