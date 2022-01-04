@@ -115,6 +115,12 @@ void test_large_image_performance_rgb8(const int loop_count)
     }
 }
 
+size_t get_destination_size(const vector<uint8_t>& source)
+{
+    const jpegls_decoder decoder{source, true};
+    return decoder.destination_size();
+}
+
 void decode_performance_tests(const int loop_count)
 {
     cout << "Test decode performance with loop count " << loop_count << "\n";

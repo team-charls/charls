@@ -379,7 +379,7 @@ private:
     }
 
     /// <summary>Encodes/Decodes a scan line of samples</summary>
-    void do_line(sample_type* /*template_selector*/)
+    FORCE_INLINE void do_line(sample_type* /*template_selector*/)
     {
         int32_t index{};
         int32_t rb{previous_line_[index - 1]};

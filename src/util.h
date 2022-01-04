@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdlib>
 #include <cstring>
 #include <type_traits>
 #include <vector>
@@ -127,7 +128,8 @@ inline void string_copy(CHARLS_IN_Z const char* source, CHARLS_OUT_WRITES_Z(size
 #endif
 }
 
-inline jpegls_errc set_error_message(const jpegls_errc error, CHARLS_OUT_WRITES_Z(ErrorMessageSize) char* error_message) noexcept
+inline jpegls_errc set_error_message(const jpegls_errc error,
+                                     CHARLS_OUT_WRITES_Z(ErrorMessageSize) char* error_message) noexcept
 {
     if (error_message)
     {
@@ -264,34 +266,59 @@ struct quad final : triplet<SampleType>
 };
 
 
-template<int Size>
-struct from_big_endian final
+// C++23 comes with std::byteswap. Use our own byte_swap implementation for now.
+template<typename T>
+CHARLS_CHECK_RETURN T byte_swap(T /*value*/) noexcept
 {
-};
-
+    ASSERT(false);
+    return 0;
+}
 
 template<>
-struct from_big_endian<4> final
+inline CHARLS_CHECK_RETURN uint16_t byte_swap<uint16_t>(const uint16_t value) noexcept
 {
-    FORCE_INLINE static unsigned int read(const uint8_t* buffer) noexcept
-    {
-        return (static_cast<uint32_t>(buffer[0]) << 24U) + (static_cast<uint32_t>(buffer[1]) << 16U) +
-               (static_cast<uint32_t>(buffer[2]) << 8U) + (static_cast<uint32_t>(buffer[3]) << 0U);
-    }
-};
-
+#ifdef _MSC_VER
+    return _byteswap_ushort(value);
+#else
+    // Note: GCC and Clang will optimize this pattern to a built-in intrinsic.
+    return static_cast<uint16_t>(value << 8 | value >> 8);
+#endif
+}
 
 template<>
-struct from_big_endian<8> final
+inline CHARLS_CHECK_RETURN uint32_t byte_swap<uint32_t>(const uint32_t value) noexcept
 {
-    FORCE_INLINE static uint64_t read(const uint8_t* buffer) noexcept
-    {
-        return (static_cast<uint64_t>(buffer[0]) << 56U) + (static_cast<uint64_t>(buffer[1]) << 48U) +
-               (static_cast<uint64_t>(buffer[2]) << 40U) + (static_cast<uint64_t>(buffer[3]) << 32U) +
-               (static_cast<uint64_t>(buffer[4]) << 24U) + (static_cast<uint64_t>(buffer[5]) << 16U) +
-               (static_cast<uint64_t>(buffer[6]) << 8U) + (static_cast<uint64_t>(buffer[7]) << 0U);
-    }
-};
+#ifdef _MSC_VER
+    return _byteswap_ulong(value);
+#else
+    // Note: GCC and Clang will optimize this pattern to a built-in intrinsic.
+    return value >> 24 | (value & 0x00FF0000) >> 8 | (value & 0x0000FF00) << 8 | value << 24;
+#endif
+}
+
+template<>
+inline CHARLS_CHECK_RETURN uint64_t byte_swap(const uint64_t value) noexcept
+{
+#ifdef _MSC_VER
+    return _byteswap_uint64(value);
+#else
+    // Note: GCC and Clang will optimize this pattern to a built-in intrinsic.
+    return (value << 56) | ((value << 40) & 0x00FF'0000'0000'0000) | ((value << 24) & 0x0000'FF00'0000'0000) |
+           ((value << 8) & 0x0000'00FF'0000'0000) | ((value >> 8) & 0x0000'0000'FF00'0000) |
+           ((value >> 24) & 0x0000'0000'00FF'0000) | ((value >> 40) & 0x0000'0000'0000'FF00) | (value >> 56);
+#endif
+}
+
+
+template<typename T>
+T read_unaligned(const void* buffer) noexcept
+{
+    // Note: MSVC, GCC and clang will replace this with a direct register read if architecture allows it (x86, x64, ARM64
+    // allows it)
+    T value;
+    memcpy(&value, buffer, sizeof(T));
+    return value;
+}
 
 
 inline void skip_bytes(byte_span& stream_info, const size_t count) noexcept
