@@ -138,12 +138,6 @@ private:
         write_uint16(static_cast<uint16_t>(value));
     }
 
-    void write_uint16(const uint64_t value) noexcept
-    {
-        ASSERT(value <= std::numeric_limits<uint16_t>::max());
-        write_uint16(static_cast<uint16_t>(value));
-    }
-
     void write_uint32(const uint32_t value) noexcept
     {
         write_uint<uint32_t>(value);

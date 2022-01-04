@@ -179,7 +179,7 @@ void jpeg_stream_writer::write_segment_header(const jpeg_marker_code marker_code
         impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
     write_marker(marker_code);
-    write_uint16(segment_length_size + data_size);
+    write_uint16(static_cast<uint16_t>(segment_length_size + data_size));
 }
 
 } // namespace charls
