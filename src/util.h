@@ -389,6 +389,9 @@ constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
 }
 
 
+/// <summary>
+/// Converts an enumeration to its underlying type. Equivalent to C++23 std::to_underlying
+/// </summary>
 template<typename Enum>
 constexpr auto to_underlying_type(Enum e) noexcept
 {

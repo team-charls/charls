@@ -543,8 +543,12 @@ void jpeg_stream_reader::skip_byte()
 
 uint16_t jpeg_stream_reader::read_uint16()
 {
-    const uint32_t value{read_byte() * 256U};
-    return static_cast<uint16_t>(value + read_byte());
+    if (source_.size < 2)
+        throw_jpegls_error(jpegls_errc::source_buffer_too_small);
+
+    const auto value{read_unaligned<uint16_t>(source_.data)};
+    skip_bytes(source_, 2);
+    return byte_swap(value);
 }
 
 
@@ -557,11 +561,12 @@ uint32_t jpeg_stream_reader::read_uint24()
 
 uint32_t jpeg_stream_reader::read_uint32()
 {
-    uint32_t value{read_uint16()};
-    value = value << 16U;
-    value += read_uint16();
+    if (source_.size < 4)
+        throw_jpegls_error(jpegls_errc::source_buffer_too_small);
 
-    return value;
+    const auto value{read_unaligned<uint32_t>(source_.data)};
+    skip_bytes(source_, 4);
+    return byte_swap(value);
 }
 
 
