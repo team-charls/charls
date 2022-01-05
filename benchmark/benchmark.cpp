@@ -1,8 +1,9 @@
+// Copyright (c) Team CharLS.
+// SPDX-License-Identifier: BSD-3-Clause
+
 #include <benchmark/benchmark.h>
 
-
 #include "../src/jpegls_preset_coding_parameters.h"
-
 
 #include <cstdint>
 
@@ -57,7 +58,7 @@ struct scan_decoder
     int32_t t3_{};
     Traits traits_;
 
-    explicit scan_decoder(Traits traits, const int32_t bit_count) noexcept : traits_{std::move(traits)} 
+    explicit scan_decoder(Traits traits, const int32_t bit_count) noexcept : traits_{std::move(traits)}
     {
         const charls::jpegls_pc_parameters preset{charls::compute_default((1 << static_cast<uint32_t>(bit_count)) - 1, 0)};
 
@@ -156,7 +157,6 @@ static void bm_get_predicted_value_default(benchmark::State& state)
         benchmark::DoNotOptimize(get_predicted_value_default(200, 100, 300));
     }
 }
-// Register the function as a benchmark
 BENCHMARK(bm_get_predicted_value_default);
 
 static void bm_get_predicted_value_optimized(benchmark::State& state)
