@@ -41,34 +41,6 @@ constexpr int32_t apply_sign(const int32_t i, const int32_t sign) noexcept
 }
 
 
-// Two alternatives for GetPredictedValue() (second is slightly faster due to reduced branching)
-
-#if 0
-
-inline int32_t get_predicted_value(int32_t Ra, int32_t Rb, int32_t Rc)
-{
-    if (Ra < Rb)
-    {
-        if (Rc < Ra)
-            return Rb;
-
-        if (Rc > Rb)
-            return Ra;
-    }
-    else
-    {
-        if (Rc < Rb)
-            return Ra;
-
-        if (Rc > Ra)
-            return Rb;
-    }
-
-    return Ra + Rb - Rc;
-}
-
-#else
-
 inline int32_t get_predicted_value(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
 {
     // sign trick reduces the number of if statements (branches)
@@ -88,7 +60,6 @@ inline int32_t get_predicted_value(const int32_t ra, const int32_t rb, const int
     return ra + rb - rc;
 }
 
-#endif
 
 /// <summary>
 /// This is the optimized inverse algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
@@ -101,6 +72,7 @@ CONSTEXPR int32_t unmap_error_value(const int32_t mapped_error) noexcept
     return sign ^ (mapped_error >> 1);
 }
 
+
 /// <summary>
 /// This is the algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
 /// It will map signed values to unsigned values. It has been optimized to prevent branching.
@@ -112,6 +84,7 @@ CONSTEXPR int32_t map_error_value(const int32_t error_value) noexcept
     const int32_t mapped_error{(error_value >> (int32_t_bit_count - 2)) ^ (2 * error_value)};
     return mapped_error;
 }
+
 
 constexpr int32_t compute_context_id(const int32_t q1, const int32_t q2, const int32_t q3) noexcept
 {
@@ -379,7 +352,7 @@ private:
     }
 
     /// <summary>Encodes/Decodes a scan line of samples</summary>
-    void do_line(sample_type* /*template_selector*/)
+    FORCE_INLINE void do_line(sample_type* /*template_selector*/)
     {
         int32_t index{};
         int32_t rb{previous_line_[index - 1]};

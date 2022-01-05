@@ -1,0 +1,199 @@
+// Copyright (c) Team CharLS.
+// SPDX-License-Identifier: BSD-3-Clause
+
+#include <benchmark/benchmark.h>
+
+#include "../src/jpegls_preset_coding_parameters.h"
+
+#include <cstdint>
+
+
+
+int8_t quantize_gradient_org(const charls::jpegls_pc_parameters& preset, const int32_t di) noexcept
+{
+    constexpr int32_t near_lossless{};
+
+    if (di <= -preset.threshold3)
+        return -4;
+    if (di <= -preset.threshold2)
+        return -3;
+    if (di <= -preset.threshold1)
+        return -2;
+    if (di < -near_lossless)
+        return -1;
+    if (di <= near_lossless)
+        return 0;
+    if (di < preset.threshold1)
+        return 1;
+    if (di < preset.threshold2)
+        return 2;
+    if (di < preset.threshold3)
+        return 3;
+
+    return 4;
+}
+
+std::vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
+{
+    const charls::jpegls_pc_parameters preset{charls::compute_default((1 << static_cast<uint32_t>(bit_count)) - 1, 0)};
+    const int32_t range{preset.maximum_sample_value + 1};
+
+    std::vector<int8_t> lut(static_cast<size_t>(range) * 2);
+    for (size_t i{}; i != lut.size(); ++i)
+    {
+        lut[i] = quantize_gradient_org(preset, static_cast<int32_t>(i) - range);
+    }
+
+    return lut;
+}
+
+
+const std::vector<int8_t> quantization_lut_lossless_8{create_quantize_lut_lossless(8)};
+
+template<typename Traits>
+struct scan_decoder
+{
+    int32_t t1_{};
+    int32_t t2_{};
+    int32_t t3_{};
+    Traits traits_;
+
+    explicit scan_decoder(Traits traits, const int32_t bit_count) noexcept : traits_{std::move(traits)}
+    {
+        const charls::jpegls_pc_parameters preset{charls::compute_default((1 << static_cast<uint32_t>(bit_count)) - 1, 0)};
+
+        t1_ = preset.threshold1;
+        t2_ = preset.threshold2;
+        t3_ = preset.threshold3;
+    }
+
+    int8_t quantize_gradient_org(const int32_t di) const noexcept
+    {
+        if (di <= -t3_)
+            return -4;
+        if (di <= -t2_)
+            return -3;
+        if (di <= -t1_)
+            return -2;
+        if (di < -traits_.near_lossless)
+            return -1;
+        if (di <= traits_.near_lossless)
+            return 0;
+        if (di < t1_)
+            return 1;
+        if (di < t2_)
+            return 2;
+        if (di < t3_)
+            return 3;
+
+        return 4;
+    }
+};
+
+struct lossless_traits final
+{
+    static constexpr int32_t near_lossless{};
+};
+
+
+
+__declspec(noinline) int32_t get_predicted_value_default(int32_t Ra, int32_t Rb, int32_t Rc) noexcept
+{
+    if (Ra < Rb)
+    {
+        if (Rc < Ra)
+            return Rb;
+
+        if (Rc > Rb)
+            return Ra;
+    }
+    else
+    {
+        if (Rc < Rb)
+            return Ra;
+
+        if (Rc > Ra)
+            return Rb;
+    }
+
+    return Ra + Rb - Rc;
+}
+
+
+constexpr size_t int32_t_bit_count = sizeof(int32_t) * 8;
+
+
+constexpr int32_t bit_wise_sign(const int32_t i) noexcept
+{
+    return i >> (int32_t_bit_count - 1);
+}
+
+
+__declspec(noinline) int32_t get_predicted_value_optimized(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
+{
+    // sign trick reduces the number of if statements (branches)
+    const int32_t sign{bit_wise_sign(rb - ra)};
+
+    // is Ra between Rc and Rb?
+    if ((sign ^ (rc - ra)) < 0)
+    {
+        return rb;
+    }
+    if ((sign ^ (rb - rc)) < 0)
+    {
+        return ra;
+    }
+
+    // default case, valid if Rc element of [Ra,Rb]
+    return ra + rb - rc;
+}
+
+
+static void bm_get_predicted_value_default(benchmark::State& state)
+{
+    for (const auto _ : state)
+    {
+        benchmark::DoNotOptimize(get_predicted_value_default(100, 200, 300));
+        benchmark::DoNotOptimize(get_predicted_value_default(200, 100, 300));
+    }
+}
+BENCHMARK(bm_get_predicted_value_default);
+
+static void bm_get_predicted_value_optimized(benchmark::State& state)
+{
+    for (const auto _ : state)
+    {
+        benchmark::DoNotOptimize(get_predicted_value_optimized(100, 200, 300));
+        benchmark::DoNotOptimize(get_predicted_value_default(200, 100, 300));
+    }
+}
+BENCHMARK(bm_get_predicted_value_optimized);
+
+static void bm_quantize_gradient_calculated(benchmark::State& state)
+{
+    const scan_decoder<lossless_traits> sd({}, 8);
+
+    for (const auto _ : state)
+    {
+        benchmark::DoNotOptimize(sd.quantize_gradient_org(0));
+        benchmark::DoNotOptimize(sd.quantize_gradient_org(127));
+        benchmark::DoNotOptimize(sd.quantize_gradient_org(255));
+    }
+}
+BENCHMARK(bm_quantize_gradient_calculated);
+
+static void bm_quantize_gradient_lut(benchmark::State& state)
+{
+    const scan_decoder<lossless_traits> sd({}, 8);
+
+    for (const auto _ : state)
+    {
+        benchmark::DoNotOptimize(quantization_lut_lossless_8[0]);
+        benchmark::DoNotOptimize(quantization_lut_lossless_8[127]);
+        benchmark::DoNotOptimize(quantization_lut_lossless_8[255]);
+    }
+}
+BENCHMARK(bm_quantize_gradient_lut);
+
+
+BENCHMARK_MAIN();

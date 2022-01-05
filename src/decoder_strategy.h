@@ -17,7 +17,7 @@ namespace charls {
 class decoder_strategy
 {
 public:
-    explicit decoder_strategy(const frame_info& frame, const coding_parameters& parameters) noexcept :
+    decoder_strategy(const frame_info& frame, const coding_parameters& parameters) noexcept :
         frame_info_{frame}, parameters_{parameters}
     {
     }
@@ -35,14 +35,11 @@ public:
 
     void initialize(const byte_span source)
     {
-        valid_bits_ = 0;
-        read_cache_ = 0;
-
         position_ = source.data;
         end_position_ = position_ + source.size;
 
-        next_ff_position_ = find_next_ff();
-        make_valid();
+        find_jpeg_marker_start_byte();
+        fill_read_cache();
     }
 
     void reset()
@@ -50,8 +47,8 @@ public:
         valid_bits_ = 0;
         read_cache_ = 0;
 
-        next_ff_position_ = find_next_ff();
-        make_valid();
+        find_jpeg_marker_start_byte();
+        fill_read_cache();
     }
 
     FORCE_INLINE void skip(const int32_t length) noexcept
@@ -82,84 +79,10 @@ public:
             impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
     }
 
-    FORCE_INLINE bool optimized_read() noexcept
-    {
-        // Easy & fast: if there is no 0xFF byte in sight, we can read without bit stuffing
-        if (position_ < next_ff_position_ - (sizeof(bufType) - 1))
-        {
-            read_cache_ |= from_big_endian<sizeof(bufType)>::read(position_) >> valid_bits_;
-            const int bytes_to_read{(bufType_bit_count - valid_bits_) >> 3};
-            position_ += bytes_to_read;
-            valid_bits_ += bytes_to_read * 8;
-            ASSERT(valid_bits_ >= bufType_bit_count - 8);
-            return true;
-        }
-        return false;
-    }
-
-    void make_valid()
-    {
-        ASSERT(valid_bits_ <= bufType_bit_count - 8);
-
-        if (optimized_read())
-            return;
-
-        do
-        {
-            if (position_ >= end_position_)
-            {
-                if (valid_bits_ <= 0)
-                    impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
-
-                return;
-            }
-
-            const bufType value_new{position_[0]};
-
-            if (value_new == jpeg_marker_start_byte)
-            {
-                // JPEG bit stream rule: no FF may be followed by 0x80 or higher
-                if (position_ == end_position_ - 1 || (position_[1] & 0x80) != 0)
-                {
-                    if (valid_bits_ <= 0)
-                        impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
-
-                    return;
-                }
-            }
-
-            read_cache_ |= value_new << (bufType_bit_count - 8 - valid_bits_);
-            position_ += 1;
-            valid_bits_ += 8;
-
-            if (value_new == jpeg_marker_start_byte)
-            {
-                --valid_bits_;
-            }
-        } while (valid_bits_ < bufType_bit_count - 8);
-
-        next_ff_position_ = find_next_ff();
-    }
-
-    uint8_t* find_next_ff() const noexcept
-    {
-        auto* position_next_ff{position_};
-
-        while (position_next_ff < end_position_)
-        {
-            if (*position_next_ff == jpeg_marker_start_byte)
-                break;
-
-            ++position_next_ff;
-        }
-
-        return position_next_ff;
-    }
-
-    uint8_t* get_cur_byte_pos() const noexcept
+    const uint8_t* get_cur_byte_pos() const noexcept
     {
         int32_t valid_bits{valid_bits_};
-        uint8_t* compressed_bytes{position_};
+        const uint8_t* compressed_bytes{position_};
 
         for (;;)
         {
@@ -177,14 +100,14 @@ public:
     {
         if (valid_bits_ < length)
         {
-            make_valid();
+            fill_read_cache();
             if (valid_bits_ < length)
                 impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
         }
 
         ASSERT(length != 0 && length <= valid_bits_);
         ASSERT(length < 32);
-        const auto result = static_cast<int32_t>(read_cache_ >> (bufType_bit_count - length));
+        const auto result = static_cast<int32_t>(read_cache_ >> (cache_t_bit_count - length));
         skip(length);
         return result;
     }
@@ -193,20 +116,20 @@ public:
     {
         if (valid_bits_ < 8)
         {
-            make_valid();
+            fill_read_cache();
         }
 
-        return static_cast<int32_t>(read_cache_ >> (bufType_bit_count - 8));
+        return static_cast<int32_t>(read_cache_ >> max_readable_cache_bits);
     }
 
     FORCE_INLINE bool read_bit()
     {
         if (valid_bits_ <= 0)
         {
-            make_valid();
+            fill_read_cache();
         }
 
-        const bool set = (read_cache_ & (static_cast<bufType>(1) << (bufType_bit_count - 1))) != 0;
+        const bool set = (read_cache_ & (static_cast<cache_t>(1) << (cache_t_bit_count - 1))) != 0;
         skip(1);
         return set;
     }
@@ -215,13 +138,13 @@ public:
     {
         if (valid_bits_ < 16)
         {
-            make_valid();
+            fill_read_cache();
         }
-        bufType val_test = read_cache_;
+        cache_t val_test = read_cache_;
 
         for (int32_t count{}; count < 16; ++count)
         {
-            if ((val_test & (static_cast<bufType>(1) << (bufType_bit_count - 1))) != 0)
+            if ((val_test & (static_cast<cache_t>(1) << (cache_t_bit_count - 1))) != 0)
                 return count;
 
             val_test <<= 1;
@@ -268,17 +191,97 @@ protected:
     std::unique_ptr<process_line> process_line_;
 
 private:
-    using bufType = size_t;
-    static constexpr auto bufType_bit_count = static_cast<int32_t>(sizeof(bufType) * 8);
+    using cache_t = size_t;
+
+    void fill_read_cache()
+    {
+        ASSERT(valid_bits_ <= max_readable_cache_bits);
+
+        if (fill_read_cache_optimistic())
+            return;
+
+        do
+        {
+            if (position_ >= end_position_)
+            {
+                if (valid_bits_ == 0)
+                {
+                    // Decoding process expects at least some bits to be added to the cache.
+                    impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+                }
+
+                return;
+            }
+
+            const cache_t new_byte_value{*position_};
+
+            if (new_byte_value == jpeg_marker_start_byte)
+            {
+                // JPEG-LS bit stream rule: if FF is followed by a 1 bit then it is a marker
+                if (position_ == end_position_ - 1 || (position_[1] & 0x80) != 0)
+                {
+                    if (valid_bits_ <= 0)
+                    {
+                        // Decoding process expects at least some bits to be added to the cache.
+                        impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+                    }
+
+                    // Marker detected, typical EOI, SOS (next scan) or RSTm.
+                    return;
+                }
+            }
+
+            read_cache_ |= new_byte_value << (max_readable_cache_bits - valid_bits_);
+            valid_bits_ += 8;
+            ++position_;
+
+            if (new_byte_value == jpeg_marker_start_byte)
+            {
+                // The next bit after an 0xFF needs to be ignored, compensate for the next read (see ISO/IEC 14495-1,A.1)
+                --valid_bits_;
+            }
+
+        } while (valid_bits_ < max_readable_cache_bits);
+
+        find_jpeg_marker_start_byte();
+    }
+
+    FORCE_INLINE bool fill_read_cache_optimistic() noexcept
+    {
+        // Easy & fast: if there is no 0xFF byte in sight, we can read without bit stuffing
+        if (position_ < position_ff_ - (sizeof(cache_t) - 1))
+        {
+            read_cache_ |= byte_swap(read_unaligned<cache_t>(position_)) >> valid_bits_;
+            const int bytes_to_read{(cache_t_bit_count - valid_bits_) / 8};
+            position_ += bytes_to_read;
+            valid_bits_ += bytes_to_read * 8;
+            ASSERT(valid_bits_ >= max_readable_cache_bits);
+            return true;
+        }
+        return false;
+    }
+
+    void find_jpeg_marker_start_byte() noexcept
+    {
+        // Use memchr to find next start byte (0xFF). memchr is optimized on some platforms to search faster.
+        position_ff_ = static_cast<const uint8_t*>(memchr(position_, jpeg_marker_start_byte, position_ - end_position_));
+        if (!position_ff_)
+        {
+            position_ff_ = end_position_;
+        }
+    }
+
+    static constexpr auto cache_t_bit_count = static_cast<int32_t>(sizeof(cache_t) * 8);
+    static constexpr int32_t max_readable_cache_bits{cache_t_bit_count - 8};
 
     std::vector<uint8_t> buffer_;
 
     // decoding
-    bufType read_cache_{};
+    cache_t read_cache_{};
     int32_t valid_bits_{};
-    uint8_t* position_{};
-    uint8_t* next_ff_position_{};
-    uint8_t* end_position_{};
+    const uint8_t* position_{};
+    const uint8_t* end_position_{};
+    const uint8_t* position_ff_{};
 };
 
 } // namespace charls

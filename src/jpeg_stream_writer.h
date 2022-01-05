@@ -115,6 +115,12 @@ private:
         destination_.data[byte_offset_++] = value;
     }
 
+    void write_uint8(const int32_t value) noexcept
+    {
+        ASSERT(value >= 0 && value <= std::numeric_limits<uint8_t>::max());
+        write_uint8(static_cast<uint8_t>(value));
+    }
+
     void write_uint16(const uint16_t value) noexcept
     {
         write_uint<uint16_t>(value);
@@ -123,6 +129,12 @@ private:
     void write_uint16(const int32_t value) noexcept
     {
         ASSERT(value >= 0 && value <= std::numeric_limits<uint16_t>::max());
+        write_uint16(static_cast<uint16_t>(value));
+    }
+
+    void write_uint16(const uint32_t value) noexcept
+    {
+        ASSERT(value <= std::numeric_limits<uint16_t>::max());
         write_uint16(static_cast<uint16_t>(value));
     }
 
@@ -138,7 +150,7 @@ private:
 
         // Use write_bytes to write to the unaligned byte array.
         // The compiler will perform the correct optimization when the target platform support unaligned writes.
-        const UnsignedIntType big_endian_value{endian_swap(value)};
+        const UnsignedIntType big_endian_value{byte_swap(value)};
         write_bytes(&big_endian_value, sizeof big_endian_value);
     }
 
@@ -162,16 +174,6 @@ private:
 
         write_uint8(jpeg_marker_start_byte);
         write_uint8(static_cast<uint8_t>(marker_code));
-    }
-
-    static constexpr uint32_t endian_swap(const uint32_t value) noexcept
-    {
-        return value >> 24 | (value & 0x00FF0000) >> 8 | (value & 0x0000FF00) << 8 | value << 24;
-    }
-
-    static constexpr uint16_t endian_swap(const uint16_t value) noexcept
-    {
-        return static_cast<uint16_t>(value >> 8 | value << 8);
     }
 
     byte_span destination_{};
