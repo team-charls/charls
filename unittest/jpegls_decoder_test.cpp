@@ -54,6 +54,9 @@ public:
         constexpr array<uint8_t, 10> buffer{};
         decoder3.source(buffer.data(), buffer.size());
         decoder3 = std::move(decoder2);
+
+        jpegls_decoder decoder4(buffer.data(), buffer.size(), false);
+        Assert::AreEqual(decoder4.frame_info().bits_per_sample, 0);
     }
 
     TEST_METHOD(set_source_twice_throws) // NOLINT

@@ -59,6 +59,12 @@ CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLI
 charls_jpegls_encoder_set_near_lossless(CHARLS_IN charls_jpegls_encoder* encoder, int32_t near_lossless) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull));
 
+/// <summary>
+/// Configures the encoding options the encoder should use. Default is charls_encoding_options::include_pc_parameters_jai
+/// </summary>
+/// <param name="encoder">Reference to the encoder instance.</param>
+/// <param name="encoding_options">Options to use.</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_set_encoding_options(CHARLS_IN charls_jpegls_encoder* encoder,
                                            charls_encoding_options encoding_options) CHARLS_NOEXCEPT
@@ -276,6 +282,8 @@ public:
     /// <param name="frame">Information about the frame that needs to be encoded.</param>
     /// <param name="interleave_mode">Configures the interleave mode the encoder should use.</param>
     /// <param name="encoding_options">Configures the special options the encoder should use.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
+    /// <exception cref="std::bad_alloc">Thrown when memory for the encoder could not be allocated.</exception>
     /// <returns>Container with the JPEG-LS encoded bytes.</returns>
     template<typename Container>
     static Container encode(const Container& source, const charls::frame_info& frame,
@@ -299,6 +307,7 @@ public:
     /// This information will be written to the Start of Frame (SOF) segment during the encode phase.
     /// </summary>
     /// <param name="frame_info">Information about the frame that needs to be encoded.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_encoder& frame_info(const frame_info& frame_info)
     {
         check_jpegls_errc(charls_jpegls_encoder_set_frame_info(encoder_.get(), &frame_info));
@@ -309,6 +318,7 @@ public:
     /// Configures the NEAR parameter the encoder should use. A value of 0 means lossless, this is also the default.
     /// </summary>
     /// <param name="near_lossless">Value of the NEAR parameter.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_encoder& near_lossless(const int32_t near_lossless)
     {
         check_jpegls_errc(charls_jpegls_encoder_set_near_lossless(encoder_.get(), near_lossless));
@@ -320,12 +330,18 @@ public:
     /// The encoder expects the input buffer in the same format as the interleave mode.
     /// </summary>
     /// <param name="interleave_mode">Value of the interleave mode.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_encoder& interleave_mode(const interleave_mode interleave_mode)
     {
         check_jpegls_errc(charls_jpegls_encoder_set_interleave_mode(encoder_.get(), interleave_mode));
         return *this;
     }
 
+    /// <summary>
+    /// Configures the encoding options the encoder should use. Default is charls_encoding_options::include_pc_parameters_jai
+    /// </summary>
+    /// <param name="encoding_options">Options to use. Options can be combined.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_encoder& encoding_options(const encoding_options encoding_options)
     {
         check_jpegls_errc(charls_jpegls_encoder_set_encoding_options(encoder_.get(), encoding_options));
@@ -397,7 +413,8 @@ public:
     template<typename Container>
     jpegls_encoder& destination(Container& destination_container)
     {
-        return destination(destination_container.data(), destination_container.size() * sizeof(typename Container::value_type));
+        return destination(destination_container.data(),
+                           destination_container.size() * sizeof(typename Container::value_type));
     }
 
     template<typename Container>
