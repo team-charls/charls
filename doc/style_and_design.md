@@ -170,6 +170,28 @@ One of the missing features of C++ is a standard Package Manager. The following 
 * Library to read Anymap files (for example Netpbm)
 * Library to parse command line parameters (for example Clara, CLI11)
 
+### Performance
+
+#### Decoding the bitstream
+
+There are 2 main ways to decode the bitstream
+
+* Basic: Read it byte for byte and store the results in a cache variable
+
+* Improved: read when possible a register in 1 step. The problem is that 0xFF can exists in the
+bitstream. If such a 0xFF exists the next bit needs to be ignored. There are a couple of way to do this:
+  * A) Search for the first position with a 0xFF it and remember the position. 0xFFs are rare.
+  * B) Search for the first 0xFF with memchr. memchr can leverage special CPU instructions when possible.
+  * C) Load a register and check if it contains a 0xFF byte.
+
+Measurements conclusion: option B is the fastest on x64. This is the original algorithm. There is not a large difference between the different options.
+Examples of decoding performance on a AMD 5950X x64 CPU:
+
+| Image                       | Basic   | Improved A | Improved B |Improved C |
+| --------------              | ------- | ---------- | ---------- |---------- |
+| 16 bit 512 * 512 (CT image) | 3.09 ms | 3.17 ms    | 3.06 ms    | 3.10 ms   |
+|  8 bit 5412 * 7216          | 517 ms  | 509 ms     | 507 ms     | 512 ms    |
+
 ### Supported C++ Compilers
 
 #### Clang
