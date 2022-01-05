@@ -119,15 +119,20 @@ void decode_performance_tests(const int loop_count)
 {
     cout << "Test decode performance with loop count " << loop_count << "\n";
 
-    const vector<uint8_t> jpegls_compressed{read_file("decodetest.jls")};
+    const vector<uint8_t> encoded_source{read_file("decodetest.jls")};
 
     try
     {
+        // Pre-allocate the destination outside the measurement loop.
+        // std::vector initializes its elements and this step needs to be excluded from the measurement.
+        vector<uint8_t> destination(jpegls_decoder{encoded_source, true}.destination_size());
+
         const auto start{steady_clock::now()};
         for (int i{}; i != loop_count; ++i)
         {
-            vector<uint8_t> uncompressed;
-            jpegls_decoder::decode(jpegls_compressed, uncompressed);
+            const jpegls_decoder decoder{encoded_source, true};
+
+            decoder.decode(destination);
         }
 
         const auto end{steady_clock::now()};

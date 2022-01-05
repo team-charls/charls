@@ -268,6 +268,8 @@ public:
     /// <param name="maximum_size_in_bytes">
     /// The maximum output size that may be allocated, default is 94 MiB (enough to decode 8 bit color 8K image).
     /// </param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
+    /// <exception cref="std::bad_alloc">Thrown when memory for the decoder could not be allocated.</exception>
     /// <returns>Frame info of the decoded image and the interleave mode.</returns>
     template<typename SourceContainer, typename DestinationContainer>
     static std::pair<charls::frame_info, charls::interleave_mode>
@@ -292,16 +294,17 @@ public:
     /// Constructs a jpegls_decoder instance.
     /// The passed container needs to remain valid until the stream is fully decoded.
     /// </summary>
-    /// <param name="source_container">
-    /// A STL like container that provides the functions data() and size() and the type value_type.
-    /// </param>
+    /// <param name="source_buffer">Reference to the start of the source buffer.</param>
+    /// <param name="source_size_bytes">Size of the source buffer in bytes.</param>
     /// <param name="parse_header">
     /// If true the SPIFF and JPEG header will be directly read from the source.
     /// </param>
-    template<typename Container>
-    jpegls_decoder(const Container& source_container, const bool parse_header)
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
+    /// <exception cref="std::bad_alloc">Thrown when memory for the decoder could not be allocated.</exception>
+    jpegls_decoder(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const size_t source_size_bytes,
+                   const bool parse_header = true)
     {
-        source(source_container);
+        source(source_buffer, source_size_bytes);
         if (parse_header)
         {
             read_spiff_header();
@@ -310,11 +313,31 @@ public:
     }
 
     /// <summary>
+    /// Constructs a jpegls_decoder instance.
+    /// The passed container needs to remain valid until the stream is fully decoded.
+    /// </summary>
+    /// <param name="source_container">
+    /// A STL like container that provides the functions data() and size() and the type value_type.
+    /// </param>
+    /// <param name="parse_header">
+    /// If true the SPIFF and JPEG header will be directly read from the source.
+    /// </param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
+    /// <exception cref="std::bad_alloc">Thrown when memory for the decoder could not be allocated.</exception>
+    template<typename Container>
+    jpegls_decoder(const Container& source_container, const bool parse_header) :
+        jpegls_decoder(source_container.data(), source_container.size() * sizeof(typename Container::value_type),
+                       parse_header)
+    {
+    }
+
+    /// <summary>
     /// Set the reference to a source buffer that contains the encoded JPEG-LS byte stream data.
     /// This buffer needs to remain valid until the stream is fully decoded.
     /// </summary>
     /// <param name="source_buffer">Reference to the start of the source buffer.</param>
     /// <param name="source_size_bytes">Size of the source buffer in bytes.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     jpegls_decoder& source(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
                            const size_t source_size_bytes)
@@ -330,6 +353,7 @@ public:
     /// <param name="source_container">
     /// A STL like container that provides the functions data() and size() and the type value_type.
     /// </param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     template<typename Container>
     jpegls_decoder& source(const Container& source_container)
     {
@@ -342,6 +366,7 @@ public:
     /// The header_found parameter will be set to true if the spiff header could be read.
     /// Call read_header to read the normal JPEG header afterwards.
     /// </summary>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>True if a valid SPIFF header could be found.</returns>
     bool read_spiff_header()
     {
@@ -371,6 +396,7 @@ public:
     /// Reads the JPEG-LS header from the beginning of the JPEG-LS byte stream or after the SPIFF header.
     /// After this function is called frame info and other info can be retrieved.
     /// </summary>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_decoder& read_header()
     {
         std::error_code ec;
@@ -447,6 +473,7 @@ public:
     /// Returns the NEAR parameter that was used to encode the scan. A value of 0 means lossless.
     /// </summary>
     /// <param name="component">The component index for which the NEAR parameter should be retrieved.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The value of the NEAR parameter.</returns>
     CHARLS_CHECK_RETURN int32_t near_lossless(const int32_t component = 0) const
     {
@@ -458,6 +485,7 @@ public:
     /// <summary>
     /// Returns the interleave mode that was used to encode the scan.
     /// </summary>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The value of the interleave mode.</returns>
     CHARLS_CHECK_RETURN charls::interleave_mode interleave_mode() const
     {
@@ -469,6 +497,7 @@ public:
     /// <summary>
     /// Returns the preset coding parameters used to encode the first scan.
     /// </summary>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The values of the JPEG-LS preset coding parameters.</returns>
     CHARLS_CHECK_RETURN jpegls_pc_parameters preset_coding_parameters() const
     {
@@ -480,6 +509,7 @@ public:
     /// <summary>
     /// Returns the HP color transformation that was used to encode the scan.
     /// </summary>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The value of the color transformation.</returns>
     CHARLS_CHECK_RETURN charls::color_transformation color_transformation() const
     {
@@ -490,9 +520,10 @@ public:
 
     /// <summary>
     /// Returns the size required for the destination buffer in bytes to hold the decoded pixel data.
-    /// Function can be read_header.
+    /// Function can be called after read_header.
     /// </summary>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The required size in bytes of the destination buffer.</returns>
     CHARLS_CHECK_RETURN size_t destination_size(const uint32_t stride = 0) const
     {
@@ -509,6 +540,7 @@ public:
     /// Length of the array in bytes. If the array is too small the function will return an error.
     /// </param>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     CHARLS_ATTRIBUTE_ACCESS((access(write_only, 2, 3)))
     void decode(CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
                 const size_t destination_size_bytes, const uint32_t stride = 0) const
@@ -524,6 +556,7 @@ public:
     /// A STL like container that provides the functions data() and size() and the type value_type.
     /// </param>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     template<typename Container>
     void decode(CHARLS_OUT Container& destination_container, const uint32_t stride = 0) const
     {
@@ -534,6 +567,7 @@ public:
     /// Will decode the JPEG-LS byte stream set with source and return a container with the decoded data.
     /// </summary>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>Container with the decoded data.</returns>
     template<typename Container>
     CHARLS_CHECK_RETURN Container decode(const uint32_t stride = 0) const
@@ -553,6 +587,7 @@ public:
     /// This abort will be returned as a callback_failed error code.
     /// </remarks>
     /// <param name="comment_handler">Function object to the comment handler.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_decoder& at_comment(std::function<void(const void* data, size_t size)> comment_handler)
     {
         comment_handler_ = std::move(comment_handler);
