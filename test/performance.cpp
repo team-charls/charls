@@ -125,10 +125,13 @@ void decode_performance_tests(const int loop_count)
 {
     cout << "Test decode performance with loop count " << loop_count << "\n";
 
-    const vector<uint8_t> encoded_source{read_file("decodetest.jls")};
-
     try
     {
+        // This test expect the file decodetest.jls to exist.
+        // It can be any valid JPEG-LS file.
+        // Changing the content of this file allows different performance measurements.
+        const vector<uint8_t> encoded_source{read_file("decodetest.jls")};
+
         // Pre-allocate the destination outside the measurement loop.
         // std::vector initializes its elements and this step needs to be excluded from the measurement.
         vector<uint8_t> destination(jpegls_decoder{encoded_source, true}.destination_size());
@@ -149,6 +152,10 @@ void decode_performance_tests(const int loop_count)
     catch (const jpegls_error& e)
     {
         cout << "Decode failure: " << e.what() << "\n";
+    }
+    catch (const std::ios_base::failure& e)
+    {
+        cout << "IO failure (missing decodetest.jls?): " << e.what() << "\n";
     }
 }
 
