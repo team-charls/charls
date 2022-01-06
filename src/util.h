@@ -430,10 +430,17 @@ inline int countl_zero(const uint32_t value) noexcept
 #endif
 
 #ifdef __GNUC__
+
+// A simple overload with uint64_t\uint32_t doesn't work for macOS. size_t is not the same type as uint64_t.
+
+template<int Bits, class T>
+constexpr bool is_uint_v = sizeof(T) == (Bits / 8) && std::is_integral<T>::value && !std::is_signed<T>::value;
+
 /// <summary>
 /// Custom implementation of C++20 std::countl_zero (for uint64_t)
 /// </summary>
-inline int countl_zero(const uint64_t value) noexcept
+template<class T>
+auto countl_zero(T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, int>
 {
     if (value == 0)
         return 64;
@@ -444,13 +451,15 @@ inline int countl_zero(const uint64_t value) noexcept
 /// <summary>
 /// Custom implementation of C++20 std::countl_zero (for uint32_t)
 /// </summary>
-inline int countl_zero(const uint32_t value) noexcept
+template<class T>
+auto countl_zero(T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, int>
 {
     if (value == 0)
         return 32;
 
     return __builtin_clz(value);
 }
+
 #endif
 
 } // namespace charls
