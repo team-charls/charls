@@ -538,6 +538,31 @@ public:
         test_compliance(source, reference_file.image_data(), false);
     }
 
+    TEST_METHOD(decode_file_that_ends_after_restart_marker_throws) // NOLINT
+    {
+        vector<uint8_t> source{read_file("DataFiles/test8_ilv_none_rm_7.jls")};
+
+        // Add additional 0xFF marker begin bytes to force "search for restart marker" path.
+        auto it{find_scan_header(source.begin(), source.end())};
+        it = find_first_restart_marker(it + 1, source.end());
+        //const array<uint8_t, 7> extra_begin_bytes{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+        //source.insert(it, extra_begin_bytes.cbegin(), extra_begin_bytes.cend());
+
+        // Copy the vector to ensure source buffer has a defined limit (resize() keeps memory)
+        // that can be checked with address sanitizer.
+        //it = find_scan_header(source.begin(), source.end());
+        //it = find_first_restart_marker(it + 1, source.end());
+
+        const vector<uint8_t> source2(source.begin(), it);
+
+        const jpegls_decoder decoder{source2, true};
+        portable_anymap_file reference_file{
+            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
+
+        test_compliance(source2, reference_file.image_data(), false);
+    }
+
+
     TEST_METHOD(read_comment) // NOLINT
     {
         jpeg_test_stream_writer writer;

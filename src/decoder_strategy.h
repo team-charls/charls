@@ -279,10 +279,8 @@ private:
         }
     }
 
-    static constexpr auto cache_t_bit_count = static_cast<int32_t>(sizeof(cache_t) * 8);
+    static constexpr auto cache_t_bit_count{static_cast<int32_t>(sizeof(cache_t) * 8)};
     static constexpr int32_t max_readable_cache_bits{cache_t_bit_count - 8};
-
-    std::vector<uint8_t> buffer_;
 
     // decoding
     cache_t read_cache_{};
