@@ -399,7 +399,7 @@ constexpr auto to_underlying_type(Enum e) noexcept
 }
 
 #ifdef _MSC_VER
-#ifdef _M_X64
+#if defined(_M_X64) || defined(_M_ARM64)
 /// <summary>
 /// Custom implementation of C++20 std::countl_zero (for uint64_t)
 /// </summary>
