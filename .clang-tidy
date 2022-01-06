@@ -42,6 +42,12 @@
 # -altera-struct-pack-align => Rationale: Not applicable (Altera is for openCL)
 # -readability-function-cognitive-complexity => Warning is too strict, manual review code review is preferred
 # -concurrency-mt-unsafe => Reports a false warning for strerror in main (not useful for CharLS)
+# -clang-diagnostic-unused-command-line-argument => Reports false warnings as MSVC options are passed
+# -llvm-namespace-comment => complains about namespace issues in system header files
+# -hicpp-named-parameter => complains about issues in system header files
+# -altera-unroll-loops => Does not apply (is for openCL)
+# -altera-id-dependent-backward-branch => Does not apply (is for openCL)
+# -bugprone-easily-swappable-parameters => To many do not fix warnings
 
 ---
 Checks:          '*,
@@ -50,8 +56,10 @@ Checks:          '*,
                   -android-*,
                   -llvmlibc-*,
                   -llvm-header-guard,
+                  -llvm-namespace-comment,
                   -hicpp-no-array-decay,
                   -hicpp-signed-bitwise,
+                  -hicpp-named-parameter,
                   -clang-diagnostic-c++98-compat*,
                   -clang-diagnostic-c++98-c++11-compat,
                   -clang-diagnostic-unused-macros,
@@ -61,6 +69,7 @@ Checks:          '*,
                   -clang-diagnostic-pragma-once-outside-header,
                   -clang-diagnostic-unused-const-variable,
                   -clang-analyzer-core.NonNullParamChecker,
+                  -clang-diagnostic-unused-command-line-argument,
                   -misc-non-private-member-variables-in-classes,
                   -modernize-use-trailing-return-type,
                   -readability-magic-numbers,
@@ -81,7 +90,10 @@ Checks:          '*,
                   -cert-err58-cpp,
                   -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
                   -altera-struct-pack-align,
+                  -altera-unroll-loops,
+                  -altera-id-dependent-backward-branch,
                   -readability-function-cognitive-complexity,
+                  -bugprone-easily-swappable-parameters,
                   -concurrency-mt-unsafe'
 WarningsAsErrors: false
 HeaderFilterRegex: ''

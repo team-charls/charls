@@ -121,7 +121,8 @@
   <PropertyGroup Condition="'$(Configuration)'=='Checked'">
     <RunCodeAnalysis Condition="'$(MSBuildProjectExtension)'=='.vcxproj'" >true</RunCodeAnalysis>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
-    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+    <!-- Latest clang-tidy crashes during Win32 builds. -->
+    <EnableClangTidyCodeAnalysis Condition="'$(Platform)'!='Win32'">true</EnableClangTidyCodeAnalysis>
     <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
 

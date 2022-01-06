@@ -149,6 +149,18 @@ __declspec(noinline) int32_t get_predicted_value_optimized(const int32_t ra, con
 }
 
 
+inline int countl_zero(const uint64_t value) noexcept
+{
+    if (value == 0)
+        return 64;
+
+    unsigned long index;
+    _BitScanReverse64(&index, value);
+
+    return 63 - index;
+}
+
+
 static void bm_get_predicted_value_default(benchmark::State& state)
 {
     for (const auto _ : state)
@@ -194,6 +206,49 @@ static void bm_quantize_gradient_lut(benchmark::State& state)
     }
 }
 BENCHMARK(bm_quantize_gradient_lut);
+
+
+int peek_zero_bits(uint64_t val_test) noexcept
+{
+    for (int32_t count{}; count < 16; ++count)
+    {
+        if ((val_test & (static_cast<uint64_t>(1) << (64 - 1))) != 0)
+            return count;
+
+        val_test <<= 1;
+    }
+    return -1;
+}
+
+static void bm_peek_zero_bits(benchmark::State& state)
+{
+    for (const auto _ : state)
+    {
+        benchmark::DoNotOptimize(peek_zero_bits(0));
+        benchmark::DoNotOptimize(peek_zero_bits(UINT64_MAX));
+    }
+}
+BENCHMARK(bm_peek_zero_bits);
+
+
+
+int peek_zero_bits_intrinsic(const uint64_t value) noexcept
+{
+    const auto count = countl_zero(value);
+    return count < 16 ? count : -1;
+}
+
+
+static void bm_peek_zero_bits_intrinsic(benchmark::State& state)
+{
+    for (const auto _ : state)
+    {
+        benchmark::DoNotOptimize(peek_zero_bits_intrinsic(0));
+        benchmark::DoNotOptimize(peek_zero_bits_intrinsic(UINT64_MAX));
+    }
+}
+BENCHMARK(bm_peek_zero_bits_intrinsic);
+
 
 
 BENCHMARK_MAIN();

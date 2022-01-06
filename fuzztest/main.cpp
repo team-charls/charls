@@ -85,7 +85,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 
     while (__AFL_LOOP(100))
     {
-        std::vector<uint8_t> source(1024 * 1024);
+        std::vector<uint8_t> source(static_cast<size_t>(1024) * 1024);
         const size_t input_length = _read(fd, source.data(), static_cast<unsigned int>(source.size()));
         source.resize(input_length);
 

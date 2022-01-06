@@ -398,4 +398,68 @@ constexpr auto to_underlying_type(Enum e) noexcept
     return static_cast<std::underlying_type_t<Enum>>(e);
 }
 
+#ifdef _MSC_VER
+#if defined(_M_X64) || defined(_M_ARM64)
+/// <summary>
+/// Custom implementation of C++20 std::countl_zero (for uint64_t)
+/// </summary>
+inline int countl_zero(const uint64_t value) noexcept
+{
+    if (value == 0)
+        return 64;
+
+    unsigned long index;
+    _BitScanReverse64(&index, value);
+    return 63 - index;
+}
+#endif
+
+/// <summary>
+/// Custom implementation of C++20 std::countl_zero (for uint32_t)
+/// </summary>
+inline int countl_zero(const uint32_t value) noexcept
+{
+    if (value == 0)
+        return 32;
+
+    unsigned long index;
+    _BitScanReverse(&index, value);
+
+    return 31 - index;
+}
+#endif
+
+#ifdef __GNUC__
+
+// A simple overload with uint64_t\uint32_t doesn't work for macOS. size_t is not the same type as uint64_t.
+
+template<int Bits, class T>
+constexpr bool is_uint_v = sizeof(T) == (Bits / 8) && std::is_integral<T>::value && !std::is_signed<T>::value;
+
+/// <summary>
+/// Custom implementation of C++20 std::countl_zero (for uint64_t)
+/// </summary>
+template<class T>
+auto countl_zero(T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, int>
+{
+    if (value == 0)
+        return 64;
+
+    return __builtin_clzl(value);
+}
+
+/// <summary>
+/// Custom implementation of C++20 std::countl_zero (for uint32_t)
+/// </summary>
+template<class T>
+auto countl_zero(T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, int>
+{
+    if (value == 0)
+        return 32;
+
+    return __builtin_clz(value);
+}
+
+#endif
+
 } // namespace charls
