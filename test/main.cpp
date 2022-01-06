@@ -240,7 +240,7 @@ void test_noise_image_with_custom_reset()
 
 void test_fail_on_too_small_output_buffer()
 {
-    const auto input_buffer{make_some_noise(8 * 8, 8, 21344)};
+    const auto input_buffer{make_some_noise(static_cast<size_t>(8) * 8, 8, 21344)};
 
     // Trigger a "destination buffer too small" when writing the header markers.
     try
@@ -321,7 +321,7 @@ void test_bgr()
 void test_too_small_output_buffer()
 {
     const vector<uint8_t> encoded{read_file("test/lena8b.jls")};
-    vector<uint8_t> destination(512 * 511);
+    vector<uint8_t> destination(static_cast<size_t>(512) * 511);
 
     jpegls_decoder decoder;
     decoder.source(encoded).read_header();

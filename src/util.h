@@ -398,4 +398,59 @@ constexpr auto to_underlying_type(Enum e) noexcept
     return static_cast<std::underlying_type_t<Enum>>(e);
 }
 
+#ifdef _MSC_VER
+#ifdef _M_X64
+/// <summary>
+/// Custom implementation of C++20 std::countl_zero (for uint64_t)
+/// </summary>
+inline int countl_zero(const uint64_t value) noexcept
+{
+    if (value == 0)
+        return 64;
+
+    unsigned long index;
+    _BitScanReverse64(&index, value);
+    return 63 - index;
+}
+#endif
+
+/// <summary>
+/// Custom implementation of C++20 std::countl_zero (for uint32_t)
+/// </summary>
+inline int countl_zero(const uint32_t value) noexcept
+{
+    if (value == 0)
+        return 32;
+
+    unsigned long index;
+    _BitScanReverse(&index, value);
+
+    return 31 - index;
+}
+#endif
+
+#ifdef __GNUC__
+/// <summary>
+/// Custom implementation of C++20 std::countl_zero (for uint64_t)
+/// </summary>
+inline int countl_zero(const uint64_t value) noexcept
+{
+    if (value == 0)
+        return 64;
+
+    return __builtin_clzl(value);
+}
+
+/// <summary>
+/// Custom implementation of C++20 std::countl_zero (for uint32_t)
+/// </summary>
+inline int countl_zero(const uint32_t value) noexcept
+{
+    if (value == 0)
+        return 32;
+
+    return __builtin_clz(value);
+}
+#endif
+
 } // namespace charls

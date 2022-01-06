@@ -53,7 +53,9 @@ public:
 
     FORCE_INLINE void skip(const int32_t length) noexcept
     {
-        valid_bits_ -= length;
+        ASSERT(length);
+
+        valid_bits_ -= length; // Note: valid_bits_ may become negative to indicate that extra bits are needed.
         read_cache_ = read_cache_ << length;
     }
 
@@ -140,6 +142,11 @@ public:
         {
             fill_read_cache();
         }
+
+#if defined(_MSC_VER) || defined(__GNUC__)
+        const auto count = countl_zero(read_cache_);
+        return count < 16 ? count : -1;
+#else
         cache_t val_test = read_cache_;
 
         for (int32_t count{}; count < 16; ++count)
@@ -150,6 +157,7 @@ public:
             val_test <<= 1;
         }
         return -1;
+#endif
     }
 
     FORCE_INLINE int32_t read_high_bits()

@@ -90,6 +90,64 @@ public:
             Assert::AreEqual(data.value, actual);
         }
     }
+
+    TEST_METHOD(peek_byte) // NOLINT
+    {
+        constexpr frame_info frame_info{};
+        constexpr coding_parameters parameters{};
+
+        array<uint8_t, 4> buffer{7, 100, 23, 99};
+
+        decoder_strategy_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
+
+        Assert::AreEqual(7, decoder_strategy.peek_byte());
+    }
+
+    TEST_METHOD(read_bit) // NOLINT
+    {
+        constexpr frame_info frame_info{};
+        constexpr coding_parameters parameters{};
+
+        array<uint8_t, 4> buffer{0xAA, 100, 23, 99};
+
+        decoder_strategy_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
+
+        Assert::IsTrue(decoder_strategy.read_bit());
+        Assert::IsFalse(decoder_strategy.read_bit());
+        Assert::IsTrue(decoder_strategy.read_bit());
+        Assert::IsFalse(decoder_strategy.read_bit());
+        Assert::IsTrue(decoder_strategy.read_bit());
+        Assert::IsFalse(decoder_strategy.read_bit());
+        Assert::IsTrue(decoder_strategy.read_bit());
+        Assert::IsFalse(decoder_strategy.read_bit());
+    }
+
+    TEST_METHOD(peek_0_bits) // NOLINT
+    {
+        constexpr frame_info frame_info{};
+        constexpr coding_parameters parameters{};
+
+        {
+            array<uint8_t, 4> buffer{0xF, 100, 23, 99};
+
+            decoder_strategy_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
+            Assert::AreEqual(4, decoder_strategy.peek_0_bits());
+        }
+
+        {
+            array<uint8_t, 4> buffer{0, 1, 0, 0};
+
+            decoder_strategy_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
+            Assert::AreEqual(15, decoder_strategy.peek_0_bits());
+        }
+
+        {
+            array<uint8_t, 4> buffer{0, 0, 0, 0};
+
+            decoder_strategy_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
+            Assert::AreEqual(-1, decoder_strategy.peek_0_bits());
+        }
+    }
 };
 
 }} // namespace charls::test
