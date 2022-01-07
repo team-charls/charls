@@ -28,8 +28,6 @@ public:
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters, uint32_t restart_interval) = 0;
     virtual size_t encode_scan(std::unique_ptr<process_line> raw_data, byte_span destination) = 0;
 
-    int32_t peek_byte();
-
     void on_line_begin(void* destination, const size_t pixel_count, const size_t pixel_stride) const
     {
         process_line_->new_line_requested(destination, pixel_count, pixel_stride);
@@ -150,8 +148,6 @@ private:
     uint8_t* position_{};
     bool is_ff_written_{};
     size_t bytes_written_{};
-
-    std::vector<uint8_t> buffer_;
 };
 
 } // namespace charls

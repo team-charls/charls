@@ -538,6 +538,24 @@ public:
         test_compliance(source, reference_file.image_data(), false);
     }
 
+    TEST_METHOD(decode_file_that_ends_after_restart_marker_throws) // NOLINT
+    {
+        vector<uint8_t> source{read_file("DataFiles/test8_ilv_none_rm_7.jls")};
+
+        auto it{find_scan_header(source.begin(), source.end())};
+        it = find_first_restart_marker(it + 1, source.end());
+
+        // Copy the vector to ensure source buffer has a defined limit (resize() keeps memory)
+        // that can be checked with address sanitizer.
+        const vector<uint8_t> too_small_source(source.begin(), it);
+
+        const jpegls_decoder decoder{too_small_source, true};
+        vector<uint8_t> destination(decoder.destination_size());
+
+        assert_expect_exception(jpegls_errc::source_buffer_too_small,
+                                [&decoder, &destination] { decoder.decode(destination); });
+    }
+
     TEST_METHOD(read_comment) // NOLINT
     {
         jpeg_test_stream_writer writer;
