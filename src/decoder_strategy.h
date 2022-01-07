@@ -185,9 +185,11 @@ public:
         return (read_value(length - 24) << 24) + read_value(24);
     }
 
-    uint8_t read_byte() noexcept
+    uint8_t read_byte()
     {
-        // TODO: check end_position first.
+        if (position_ == end_position_)
+            impl::throw_jpegls_error(jpegls_errc::source_buffer_too_small);
+
         const uint8_t value = *position_;
         ++position_;
         return value;
@@ -272,7 +274,7 @@ private:
     void find_jpeg_marker_start_byte() noexcept
     {
         // Use memchr to find next start byte (0xFF). memchr is optimized on some platforms to search faster.
-        position_ff_ = static_cast<const uint8_t*>(memchr(position_, jpeg_marker_start_byte, position_ - end_position_));
+        position_ff_ = static_cast<const uint8_t*>(memchr(position_, jpeg_marker_start_byte, end_position_ - position_));
         if (!position_ff_)
         {
             position_ff_ = end_position_;
