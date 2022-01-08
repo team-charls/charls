@@ -3,12 +3,13 @@
 
 #pragma once
 
-#include "byte_span.h"
 #include "charls/public_types.h"
+
+#include "byte_span.h"
 #include "coding_parameters.h"
+#include "util.h"
 
 #include <cstdint>
-#include <vector>
 
 namespace charls {
 
@@ -26,7 +27,7 @@ public:
     jpeg_stream_reader(jpeg_stream_reader&&) = default;
     jpeg_stream_reader& operator=(jpeg_stream_reader&&) = default;
 
-    void source(byte_span source) noexcept;
+    void source(const_byte_span source) noexcept;
 
     const charls::frame_info& frame_info() const noexcept
     {
@@ -60,39 +61,55 @@ public:
     }
 
     void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
-    void read(byte_span destination, size_t stride);
+    void decode(byte_span destination, size_t stride);
     void read_end_of_image();
 
-    void read_start_of_scan();
-
 private:
-    uint8_t read_byte();
-    void skip_byte();
-    uint16_t read_uint16();
-    uint32_t read_uint24();
-    uint32_t read_uint32();
-    int32_t read_segment_size();
-    std::vector<uint8_t> read_bytes(size_t byte_count);
+    void advance_position(const size_t count) noexcept
+    {
+        ASSERT(position_ + count <= end_position_);
+        position_ += count;
+    }
+
+    CHARLS_CHECK_RETURN uint8_t read_byte_checked();
+    CHARLS_CHECK_RETURN uint16_t read_uint16_checked();
+
+    CHARLS_CHECK_RETURN uint8_t read_byte() noexcept;
+    void skip_byte() noexcept;
+
+    CHARLS_CHECK_RETURN uint8_t read_uint8() noexcept
+    {
+        return read_byte();
+    }
+
+    CHARLS_CHECK_RETURN uint16_t read_uint16() noexcept;
+    CHARLS_CHECK_RETURN uint32_t read_uint24() noexcept;
+    CHARLS_CHECK_RETURN uint32_t read_uint32() noexcept;
+    CHARLS_CHECK_RETURN const_byte_span read_bytes(size_t byte_count) noexcept;
+    void read_segment_size();
+    void check_minimal_segment_size(size_t minimum_size) const;
+    void check_segment_size(size_t expected_size) const;
     void read_next_start_of_scan();
-    jpeg_marker_code read_next_marker_code();
+    CHARLS_CHECK_RETURN jpeg_marker_code read_next_marker_code();
     void validate_marker_code(jpeg_marker_code marker_code) const;
-    jpegls_pc_parameters get_validated_preset_coding_parameters() const;
-
-    int read_marker_segment(jpeg_marker_code marker_code, int32_t segment_size, spiff_header* header = nullptr,
-                            bool* spiff_header_found = nullptr);
-    int read_spiff_directory_entry(jpeg_marker_code marker_code, int32_t segment_size);
-    int read_start_of_frame_segment(int32_t segment_size);
-    int read_comment(int32_t segment_size) const;
-    int read_preset_parameters_segment(int32_t segment_size);
-    int read_define_restart_interval(int32_t segment_size);
-    int try_read_application_data8_segment(int32_t segment_size, spiff_header* header, bool* spiff_header_found);
-    int try_read_spiff_header_segment(CHARLS_OUT spiff_header& header, CHARLS_OUT bool& spiff_header_found);
-
-    int try_read_hp_color_transform_segment();
+    CHARLS_CHECK_RETURN jpegls_pc_parameters get_validated_preset_coding_parameters() const;
+    void read_marker_segment(jpeg_marker_code marker_code, spiff_header* header = nullptr,
+                             bool* spiff_header_found = nullptr);
+    void read_spiff_directory_entry(jpeg_marker_code marker_code);
+    void read_start_of_frame_segment();
+    void read_start_of_scan();
+    void read_comment();
+    void read_application_data() noexcept;
+    void read_preset_parameters_segment();
+    void read_define_restart_interval();
+    void try_read_application_data8_segment(spiff_header* header, bool* spiff_header_found);
+    void try_read_spiff_header_segment(CHARLS_OUT spiff_header& header, CHARLS_OUT bool& spiff_header_found);
+    void try_read_hp_color_transform_segment();
     void add_component(uint8_t component_id);
     void check_parameter_coherent() const;
     void check_interleave_mode(interleave_mode mode) const;
-    uint32_t maximum_sample_value() const noexcept;
+    CHARLS_CHECK_RETURN uint32_t maximum_sample_value() const noexcept;
+    void skip_remaining_segment_data() noexcept;
 
     enum class state
     {
@@ -106,14 +123,15 @@ private:
         after_end_of_image
     };
 
-    byte_span source_;
+    const_byte_span::iterator position_{};
+    const_byte_span::iterator end_position_{};
+    const_byte_span segment_data_;
     charls::frame_info frame_info_{};
     coding_parameters parameters_{};
     jpegls_pc_parameters preset_coding_parameters_{};
     JlsRect rect_{};
     std::vector<uint8_t> component_ids_;
     state state_{};
-
     at_comment_handler comment_handler_{};
     void* comment_handler_user_context_{};
 };

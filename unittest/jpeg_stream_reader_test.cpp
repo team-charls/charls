@@ -28,7 +28,7 @@ public:
     {
         array<uint8_t, 1> buffer{};
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), 0});
+        reader.source({buffer.data(), static_cast<size_t>(0)});
 
         assert_expect_exception(jpegls_errc::source_buffer_too_small, [&reader] { reader.read_header(); });
     }
@@ -45,7 +45,7 @@ public:
         writer.write_start_of_frame_segment(1, 1, 2, 1);
 
         writer.write_byte(extra_start_byte);
-        writer.write_start_of_scan_segment(0, 1, 128, interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 1, interleave_mode::none);
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
@@ -236,9 +236,8 @@ public:
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
-        reader.read_header();
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_start_of_scan(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw2) // NOLINT
@@ -255,9 +254,8 @@ public:
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
-        reader.read_header();
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_start_of_scan(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_line_interleave_in_sos_for_single_component_should_throw) // NOLINT
@@ -602,7 +600,7 @@ private:
         writer.write_byte(0x02);
 
         writer.write_start_of_frame_segment(1, 1, 2, 1);
-        writer.write_start_of_scan_segment(0, 1, 128, interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 1, interleave_mode::none);
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
@@ -619,9 +617,8 @@ private:
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
-        reader.read_header();
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_interleave_mode, [&reader] { reader.read_start_of_scan(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_interleave_mode, [&reader] { reader.read_header(); });
     }
 
     static void read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(const uint8_t id)

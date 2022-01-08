@@ -37,9 +37,10 @@ public:
         return nullptr;
     }
 
-    void decode_scan(unique_ptr<charls::process_line> /*output_data*/, const JlsRect& /*size*/,
-                     charls::byte_span& /*compressed_data*/) noexcept(false) override
+    size_t decode_scan(unique_ptr<charls::process_line> /*process_line*/, const JlsRect& /*size*/,
+                       charls::const_byte_span /*encoded_source*/) noexcept(false) override
     {
+        return {};
     }
 
     int32_t read(const int32_t length)

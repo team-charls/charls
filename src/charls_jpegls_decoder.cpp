@@ -14,7 +14,7 @@ struct charls_jpegls_decoder final
 {
     void source(const const_byte_span source)
     {
-        check_argument(source.data() || source.size()  == 0);
+        check_argument(source.data() || source.empty());
         check_operation(state_ == state::initial);
 
         reader_.source({source.data(), source.size()});
@@ -41,7 +41,6 @@ struct charls_jpegls_decoder final
             reader_.read_header();
         }
 
-        reader_.read_start_of_scan();
         state_ = state::header_read;
     }
 
@@ -114,8 +113,9 @@ struct charls_jpegls_decoder final
         check_argument(destination.data || destination.size == 0);
         check_operation(state_ == state::header_read);
 
-        reader_.read(destination, stride);
+        reader_.decode(destination, stride);
         reader_.read_end_of_image();
+
         state_ = state::completed;
     }
 
