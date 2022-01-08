@@ -51,7 +51,7 @@ public:
         jpegls_encoder encoder;
 
         encoder.frame_info({1, 1, 2, 1});                                                                     // minimum.
-        encoder.frame_info({std::numeric_limits<uint16_t>::max(), numeric_limits<uint16_t>::max(), 16, 255}); // maximum.
+        encoder.frame_info({std::numeric_limits<uint32_t>::max(), numeric_limits<uint32_t>::max(), 16, 255}); // maximum.
     }
 
     TEST_METHOD(frame_info_bad_width) // NOLINT
@@ -59,9 +59,6 @@ public:
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] { encoder.frame_info({0, 1, 2, 1}); });
-        assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] {
-            encoder.frame_info({numeric_limits<uint16_t>::max() + 1U, 1, 2, 1});
-        });
     }
 
     TEST_METHOD(frame_info_bad_height) // NOLINT
@@ -69,9 +66,6 @@ public:
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] { encoder.frame_info({1, 0, 2, 1}); });
-        assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] {
-            encoder.frame_info({1, numeric_limits<uint16_t>::max() + 1U, 2, 1});
-        });
     }
 
     TEST_METHOD(frame_info_bad_bits_per_sample) // NOLINT
@@ -172,7 +166,7 @@ public:
 
         encoder.frame_info({100, 100, 16, 1}); // minimum.
         const auto size{encoder.estimated_destination_size()};
-        Assert::IsTrue(size >= 100 * 100 * 2);
+        Assert::IsTrue(size >= static_cast<size_t>(100) * 100 * 2);
     }
 
     TEST_METHOD(estimated_destination_size_color_8_bit) // NOLINT
@@ -181,7 +175,7 @@ public:
 
         encoder.frame_info({2000, 2000, 8, 3});
         const auto size{encoder.estimated_destination_size()};
-        Assert::IsTrue(size >= 2000 * 2000 * 3);
+        Assert::IsTrue(size >= static_cast<size_t>(2000) * 2000 * 3);
     }
 
     TEST_METHOD(estimated_destination_size_very_wide) // NOLINT
@@ -1208,6 +1202,35 @@ public:
                                 [&encoder] { encoder.encoding_options(static_cast<encoding_options>(8)); });
     }
 
+    TEST_METHOD(large_image_contains_lse_for_oversize_image_dimension) // NOLINT
+    {
+        constexpr frame_info frame_info{numeric_limits<uint16_t>::max() + 1, 1, 16, 1};
+        const vector<uint16_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source)};
+        Assert::AreEqual(static_cast<size_t>(61), bytes_written);
+
+        destination.resize(bytes_written);
+        const auto it{find_first_lse_segment(destination.cbegin(), destination.cend())};
+        Assert::IsTrue(it != destination.cend());
+    }
+
+    TEST_METHOD(encode_oversized_image) // NOLINT
+    {
+        constexpr frame_info frame_info{numeric_limits<uint16_t>::max() + 1, 1, 8, 1};
+        const vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        const auto encoded_source{jpegls_encoder::encode(source, frame_info)};
+
+        test_by_decoding(encoded_source, frame_info, source.data(), source.size(), interleave_mode::none);
+    }
+
 private:
     static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info,
                                  const void* expected_destination, const size_t expected_destination_size,
@@ -1261,6 +1284,20 @@ private:
         destination.resize(bytes_written);
 
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
+    }
+
+    static vector<uint8_t>::const_iterator find_first_lse_segment(const vector<uint8_t>::const_iterator begin,
+                                                                  const vector<uint8_t>::const_iterator end) noexcept
+    {
+        constexpr uint8_t lse_marker{0xF8};
+
+        for (auto it{begin}; it != end; ++it)
+        {
+            if (*it == 0xFF && it + 1 != end && *(it + 1) == lse_marker)
+                return it;
+        }
+
+        return end;
     }
 };
 

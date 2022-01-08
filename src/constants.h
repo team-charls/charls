@@ -18,8 +18,6 @@ constexpr int default_threshold3{21}; // BASIC_T3
 
 constexpr int default_reset_value{64}; // Default RESET value as defined in ISO/IEC 14495-1, table C.2
 
-constexpr int maximum_width{65535};
-constexpr int maximum_height{65535};
 constexpr int maximum_component_count{255};
 constexpr int minimum_bits_per_sample{2};
 constexpr int maximum_bits_per_sample{16};

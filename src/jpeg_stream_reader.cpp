@@ -84,6 +84,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 
         if (state_ == state::bit_stream_section)
         {
+            check_frame_info();
             return;
         }
     }
@@ -350,13 +351,8 @@ void jpeg_stream_reader::read_start_of_frame_segment()
                  frame_info_.bits_per_sample > maximum_bits_per_sample))
         throw_jpegls_error(jpegls_errc::invalid_parameter_bits_per_sample);
 
-    frame_info_.height = read_uint16();
-    if (UNLIKELY(frame_info_.height < 1))
-        throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
-
-    frame_info_.width = read_uint16();
-    if (UNLIKELY(frame_info_.width < 1))
-        throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+    frame_info_height(read_uint16());
+    frame_info_width(read_uint16());
 
     frame_info_.component_count = read_byte();
     if (UNLIKELY(frame_info_.component_count < 1))
@@ -403,19 +399,15 @@ void jpeg_stream_reader::read_preset_parameters_segment()
     switch (type)
     {
     case jpegls_preset_parameters_type::preset_coding_parameters:
-        check_segment_size(1 + (5 * sizeof(uint16_t)));
+        read_preset_coding_parameters();
+        return;
 
-        // Note: validation will be done, just before decoding as more info is needed for validation.
-        preset_coding_parameters_.maximum_sample_value = read_uint16();
-        preset_coding_parameters_.threshold1 = read_uint16();
-        preset_coding_parameters_.threshold2 = read_uint16();
-        preset_coding_parameters_.threshold3 = read_uint16();
-        preset_coding_parameters_.reset_value = read_uint16();
+    case jpegls_preset_parameters_type::oversize_image_dimension:
+        oversize_image_dimension();
         return;
 
     case jpegls_preset_parameters_type::mapping_table_specification:
     case jpegls_preset_parameters_type::mapping_table_continuation:
-    case jpegls_preset_parameters_type::extended_width_and_height:
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
     case jpegls_preset_parameters_type::coding_method_specification:
@@ -430,6 +422,56 @@ void jpeg_stream_reader::read_preset_parameters_segment()
     }
 
     throw_jpegls_error(jpegls_errc::invalid_jpegls_preset_parameter_type);
+}
+
+
+void jpeg_stream_reader::read_preset_coding_parameters()
+{
+    check_segment_size(1 + (5 * sizeof(uint16_t)));
+
+    // Note: validation will be done, just before decoding as more info is needed for validation.
+    preset_coding_parameters_.maximum_sample_value = read_uint16();
+    preset_coding_parameters_.threshold1 = read_uint16();
+    preset_coding_parameters_.threshold2 = read_uint16();
+    preset_coding_parameters_.threshold3 = read_uint16();
+    preset_coding_parameters_.reset_value = read_uint16();
+}
+
+
+void jpeg_stream_reader::oversize_image_dimension()
+{
+    // Note: The JPEG-LS standard supports a 2,3 or 4 bytes for the size.
+    check_minimal_segment_size(2);
+    const uint8_t dimension_size{read_uint8()};
+
+    uint32_t height;
+    uint32_t width;
+    switch (dimension_size)
+    {
+    case 2:
+        check_segment_size(sizeof(uint16_t) * 2 + 2);
+        height = read_uint16();
+        width = read_uint16();
+        break;
+
+    case 3:
+        check_segment_size((sizeof(uint16_t) + 1) * 2 + 2);
+        height = read_uint24();
+        width = read_uint24();
+        break;
+
+    case 4:
+        check_segment_size(sizeof(uint32_t) * 2 + 2);
+        height = read_uint32();
+        width = read_uint32();
+        break;
+
+    default:
+        throw_jpegls_error(jpegls_errc::invalid_marker_segment_size); // TODO: custom error code?
+    }
+
+    frame_info_height(height);
+    frame_info_width(width);
 }
 
 
@@ -721,5 +763,38 @@ void jpeg_stream_reader::skip_remaining_segment_data() noexcept
     advance_position(bytes_still_to_read);
 }
 
+
+void jpeg_stream_reader::check_frame_info() const
+{
+    if (UNLIKELY(frame_info_.height < 1))
+        throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+
+    if (UNLIKELY(frame_info_.width < 1))
+        throw_jpegls_error(jpegls_errc::invalid_parameter_width);
+}
+
+
+void jpeg_stream_reader::frame_info_height(const uint32_t height)
+{
+    if (height == 0)
+        return;
+
+    if (UNLIKELY(frame_info_.height != 0))
+        throw_jpegls_error(jpegls_errc::invalid_parameter_height);
+
+    frame_info_.height = height;
+}
+
+
+void jpeg_stream_reader::frame_info_width(const uint32_t width)
+{
+    if (width == 0)
+        return;
+
+    if (UNLIKELY(frame_info_.width != 0))
+        throw_jpegls_error(jpegls_errc::invalid_parameter_width);
+
+    frame_info_.width = width;
+}
 
 } // namespace charls

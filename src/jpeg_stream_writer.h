@@ -62,10 +62,17 @@ public:
     void write_jpegls_preset_parameters_segment(const jpegls_pc_parameters& preset_coding_parameters);
 
     /// <summary>
+    /// Writes a JPEG-LS preset parameters (LSE) segment for oversize image dimension.
+    /// </summary>
+    /// <param name="width">Height of the image.</param>
+    /// <param name="height">Width of the image.</param>
+    void write_jpegls_preset_parameters_segment(uint32_t height, uint32_t width);
+
+    /// <summary>
     /// Writes a JPEG-LS Start Of Frame (SOF-55) segment.
     /// </summary>
     /// <param name="frame">Properties of the frame.</param>
-    void write_start_of_frame_segment(const frame_info& frame);
+    bool write_start_of_frame_segment(const frame_info& frame);
 
     /// <summary>
     /// Writes a JPEG-LS Start Of Scan (SOS) segment.
@@ -118,6 +125,12 @@ private:
     void write_uint8(const int32_t value) noexcept
     {
         ASSERT(value >= 0 && value <= std::numeric_limits<uint8_t>::max());
+        write_uint8(static_cast<uint8_t>(value));
+    }
+
+    void write_uint8(const size_t value) noexcept
+    {
+        ASSERT(value <= std::numeric_limits<uint8_t>::max());
         write_uint8(static_cast<uint8_t>(value));
     }
 

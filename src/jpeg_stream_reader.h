@@ -101,6 +101,8 @@ private:
     void read_comment();
     void read_application_data() noexcept;
     void read_preset_parameters_segment();
+    void read_preset_coding_parameters();
+    void oversize_image_dimension();
     void read_define_restart_interval();
     void try_read_application_data8_segment(spiff_header* header, bool* spiff_header_found);
     void try_read_spiff_header_segment(CHARLS_OUT spiff_header& header, CHARLS_OUT bool& spiff_header_found);
@@ -110,6 +112,9 @@ private:
     void check_interleave_mode(interleave_mode mode) const;
     CHARLS_CHECK_RETURN uint32_t maximum_sample_value() const noexcept;
     void skip_remaining_segment_data() noexcept;
+    void check_frame_info() const;
+    void frame_info_height(uint32_t height);
+    void frame_info_width(uint32_t width);
 
     enum class state
     {
