@@ -9,6 +9,9 @@ C26429: Symbol 'xxx' is never tested for nullness, it can be marked as not_null 
 C26446: Prefer to use gsl::at() instead of unchecked subscript operator.
  -> Rationale: CharLS require good performance, gsl:at() cannot be used. debug STL already checks.
 
+C26459: You called an STL function '' with a raw pointer parameter. Consider wrapping your range in a gsl::span and pass as a span iterator (stl.1)
+Rationale: gsl:span() cannot be used. Update to std:span when available (C++20).
+
 C26472: Don't use static_cast for arithmetic conversions
  -> Rationale: can only be solved with gsl::narrow_cast
 

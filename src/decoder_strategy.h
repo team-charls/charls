@@ -31,12 +31,12 @@ public:
 
     virtual std::unique_ptr<process_line> create_process_line(byte_span destination, size_t stride) = 0;
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters, uint32_t restart_interval) = 0;
-    virtual void decode_scan(std::unique_ptr<process_line> output_data, const JlsRect& size, byte_span& compressed_data) = 0;
+    virtual size_t decode_scan(std::unique_ptr<process_line> output_data, const JlsRect& size, const_byte_span encoded_source) = 0;
 
-    void initialize(const byte_span source)
+    void initialize(const const_byte_span source)
     {
-        position_ = source.data;
-        end_position_ = position_ + source.size;
+        position_ = source.data();
+        end_position_ = source.end();
 
         find_jpeg_marker_start_byte();
         fill_read_cache();

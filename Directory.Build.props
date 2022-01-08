@@ -108,14 +108,10 @@
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' OR '$(Configuration)'=='Checked'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
   </ItemDefinitionGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Checked'">
@@ -149,6 +145,9 @@
       <!-- Mark executable image compatible with the Control-flow Enforcement Technology (CET) Shadow Stack. -->
       <CETCompat>true</CETCompat>
     </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
 
 </Project>

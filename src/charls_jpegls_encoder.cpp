@@ -130,7 +130,7 @@ struct charls_jpegls_encoder final
 
     void write_comment(const const_byte_span comment)
     {
-        check_argument(comment.data() || comment.size() == 0);
+        check_argument(comment.data() || comment.empty());
         check_argument(comment.size() <= segment_max_data_size, jpegls_errc::invalid_argument_size);
         check_operation(state_ >= state::destination_set && state_ < state::completed);
 

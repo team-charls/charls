@@ -445,14 +445,14 @@ private:
     }
 
     // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override, clang-diagnostic-suggest-override)
-    void decode_scan(std::unique_ptr<process_line> process_line, const JlsRect& rect, byte_span& compressed_data)
+    size_t decode_scan(std::unique_ptr<process_line> process_line, const JlsRect& rect, const_byte_span encoded_source)
     {
         Strategy::process_line_ = std::move(process_line);
 
-        const uint8_t* compressed_bytes{compressed_data.data};
+        const auto* scan_begin{encoded_source.begin()};
         rect_ = rect;
 
-        Strategy::initialize(compressed_data);
+        Strategy::initialize(encoded_source);
 
         // Process images without a restart interval, as 1 large restart interval.
         if (restart_interval_ == 0)
@@ -462,7 +462,7 @@ private:
 
         decode_lines();
 
-        skip_bytes(compressed_data, static_cast<size_t>(Strategy::get_cur_byte_pos() - compressed_bytes));
+        return Strategy::get_cur_byte_pos() - scan_begin;
     }
 
     // clang-format on
