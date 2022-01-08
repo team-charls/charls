@@ -66,18 +66,18 @@ public:
 
     void end_scan()
     {
-        if (position_ >= end_position_)
+        if (UNLIKELY(position_ >= end_position_))
             impl::throw_jpegls_error(jpegls_errc::source_buffer_too_small);
 
         if (*position_ != jpeg_marker_start_byte)
         {
             read_bit();
 
-            if (*position_ != jpeg_marker_start_byte)
+            if (UNLIKELY(*position_ != jpeg_marker_start_byte))
                 impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
         }
 
-        if (read_cache_ != 0)
+        if (UNLIKELY(read_cache_ != 0))
             impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
     }
 
@@ -103,7 +103,7 @@ public:
         if (valid_bits_ < length)
         {
             fill_read_cache();
-            if (valid_bits_ < length)
+            if (UNLIKELY(valid_bits_ < length))
                 impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
         }
 
@@ -187,7 +187,7 @@ public:
 
     uint8_t read_byte()
     {
-        if (position_ == end_position_)
+        if (UNLIKELY(position_ == end_position_))
             impl::throw_jpegls_error(jpegls_errc::source_buffer_too_small);
 
         const uint8_t value = *position_;
@@ -214,7 +214,7 @@ private:
         {
             if (position_ >= end_position_)
             {
-                if (valid_bits_ == 0)
+                if (UNLIKELY(valid_bits_ == 0))
                 {
                     // Decoding process expects at least some bits to be added to the cache.
                     impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
@@ -230,7 +230,7 @@ private:
                 // JPEG-LS bit stream rule: if FF is followed by a 1 bit then it is a marker
                 if (position_ == end_position_ - 1 || (position_[1] & 0x80) != 0)
                 {
-                    if (valid_bits_ <= 0)
+                    if (UNLIKELY(valid_bits_ <= 0))
                     {
                         // Decoding process expects at least some bits to be added to the cache.
                         impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
