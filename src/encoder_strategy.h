@@ -92,7 +92,7 @@ protected:
 
     void flush()
     {
-        if (compressed_length_ < 4)
+        if (UNLIKELY(compressed_length_ < 4))
             impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
         for (int i{}; i < 4; ++i)

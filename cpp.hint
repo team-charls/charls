@@ -38,3 +38,4 @@
 #define CHARLS_RET_MAY_BE_NULL
 #define USE_DECL_ANNOTATIONS
 #define ASSERT(x)
+#define UNLIKELY(x)

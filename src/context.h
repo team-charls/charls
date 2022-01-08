@@ -44,7 +44,7 @@ struct jls_context final
         int n{N};
 
         constexpr int limit{65536 * 256};
-        if (a >= limit || std::abs(b) >= limit)
+        if (UNLIKELY(a >= limit || std::abs(b) >= limit))
             impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
         if (n == reset_threshold)
@@ -92,7 +92,7 @@ struct jls_context final
         {
         }
 
-        if (k == max_k_value)
+        if (UNLIKELY(k == max_k_value))
             impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
         return k;

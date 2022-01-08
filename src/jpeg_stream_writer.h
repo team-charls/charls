@@ -169,7 +169,7 @@ private:
 
     void write_segment_without_data(const jpeg_marker_code marker_code)
     {
-        if (byte_offset_ + 2 > destination_.size)
+        if (UNLIKELY(byte_offset_ + 2 > destination_.size))
             impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
         write_uint8(jpeg_marker_start_byte);

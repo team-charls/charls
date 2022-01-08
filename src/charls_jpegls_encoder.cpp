@@ -144,8 +144,9 @@ struct charls_jpegls_encoder final
         check_operation(is_frame_info_configured() && state_ != state::initial);
         check_interleave_mode_against_component_count();
 
-        if (!is_valid(preset_coding_parameters_, calculate_maximum_sample_value(frame_info_.bits_per_sample), near_lossless_,
-                      &validated_pc_parameters_))
+        if (UNLIKELY(!is_valid(preset_coding_parameters_, calculate_maximum_sample_value(frame_info_.bits_per_sample),
+                               near_lossless_,
+                      &validated_pc_parameters_)))
             throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
 
         if (stride == auto_calculate_stride)
@@ -163,7 +164,7 @@ struct charls_jpegls_encoder final
 
         if (color_transformation_ != charls::color_transformation::none)
         {
-            if (!(frame_info_.bits_per_sample == 8 || frame_info_.bits_per_sample == 16))
+            if (UNLIKELY(!(frame_info_.bits_per_sample == 8 || frame_info_.bits_per_sample == 16)))
                 throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
 
             writer_.write_color_transform_segment(color_transformation_);
@@ -259,19 +260,19 @@ private:
         // Stride parameter defines the number of bytes on a scan line.
         if (interleave_mode_ == charls::interleave_mode::none)
         {
-            if (stride * frame_info_.component_count * frame_info_.height > source_size)
+            if (UNLIKELY(stride * frame_info_.component_count * frame_info_.height > source_size))
                 throw_jpegls_error(jpegls_errc::invalid_argument_stride);
         }
         else
         {
-            if (stride * frame_info_.height > source_size)
+            if (UNLIKELY(stride * frame_info_.height > source_size))
                 throw_jpegls_error(jpegls_errc::invalid_argument_stride);
         }
     }
 
     void check_interleave_mode_against_component_count() const
     {
-        if (frame_info_.component_count == 1 && interleave_mode_ != interleave_mode::none)
+        if (UNLIKELY(frame_info_.component_count == 1 && interleave_mode_ != interleave_mode::none))
             throw_jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
     }
 

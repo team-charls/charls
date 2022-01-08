@@ -71,6 +71,14 @@
 #define USE_DECL_ANNOTATIONS
 #endif
 
+// C++20 has support for [[likely]] and [[unlikely]]. Use for now the GCC\Clang extension.
+// MSVC has in C++14\C++17 mode no alternative for it.
+#ifdef __GNUC__
+#define UNLIKELY(x) __builtin_expect(!!(x), 0)
+#else
+#define UNLIKELY(x) (x)
+#endif
+
 // Turn A into a string literal without expanding macro definitions
 // (however, if invoked from a macro, macro arguments are expanded).
 #define TO_STRING_NX(A) #A // NOLINT(cppcoreguidelines-macro-usage)
@@ -331,10 +339,8 @@ inline void skip_bytes(byte_span& stream_info, const size_t count) noexcept
 template<typename T>
 T* check_pointer(T* pointer)
 {
-    if (!pointer)
-    {
+    if (UNLIKELY(!pointer))
         impl::throw_jpegls_error(jpegls_errc::invalid_argument);
-    }
 
     return pointer;
 }
@@ -346,10 +352,8 @@ T* check_pointer(T* pointer)
 /// <exception cref="charls::jpegls_error">Throws jpegls_errc::invalid_operation if 'expression' is false.</exception>
 inline void check_operation(const bool expression)
 {
-    if (!expression)
-    {
+    if (UNLIKELY(!expression))
         impl::throw_jpegls_error(jpegls_errc::invalid_operation);
-    }
 }
 
 
@@ -359,16 +363,14 @@ inline void check_operation(const bool expression)
 /// <exception cref="charls::jpegls_error">Throws jpegls_errc if 'expression' is false.</exception>
 inline void check_argument(const bool expression, const jpegls_errc error_value = jpegls_errc::invalid_argument)
 {
-    if (!expression)
-    {
+    if (UNLIKELY(!expression))
         impl::throw_jpegls_error(error_value);
-    }
 }
 
 
 inline void check_interleave_mode(const charls::interleave_mode mode, const jpegls_errc error_value)
 {
-    if (!(mode == interleave_mode::none || mode == interleave_mode::line || mode == interleave_mode::sample))
+    if (UNLIKELY(!(mode == interleave_mode::none || mode == interleave_mode::line || mode == interleave_mode::sample)))
         impl::throw_jpegls_error(error_value);
 }
 

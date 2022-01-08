@@ -322,7 +322,7 @@ private:
         else
         {
             error_value = unmap_error_value(decode_value(k, traits_.limit, traits_.quantized_bits_per_pixel));
-            if (std::abs(error_value) > 65535)
+            if (UNLIKELY(std::abs(error_value) > 65535))
                 impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
         }
         if (k == 0)
@@ -612,7 +612,7 @@ private:
     void read_restart_marker()
     {
         auto byte{Strategy::read_byte()};
-        if (byte != jpeg_marker_start_byte)
+        if (UNLIKELY(byte != jpeg_marker_start_byte))
             impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
 
         // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see T.81, B.1.1.2)
@@ -621,7 +621,7 @@ private:
             byte = Strategy::read_byte();
         } while (byte == jpeg_marker_start_byte);
 
-        if (byte != jpeg_restart_marker_base + restart_interval_counter_)
+        if (UNLIKELY(byte != jpeg_restart_marker_base + restart_interval_counter_))
             impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
     }
 
@@ -737,7 +737,7 @@ private:
             index += (J[run_index_] > 0) ? Strategy::read_value(J[run_index_]) : 0;
         }
 
-        if (index > pixel_count)
+        if (UNLIKELY(index > pixel_count))
             impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
         for (int32_t i{}; i < index; ++i)
