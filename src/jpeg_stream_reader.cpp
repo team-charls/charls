@@ -262,7 +262,7 @@ USE_DECL_ANNOTATIONS jpegls_pc_parameters jpeg_stream_reader::get_validated_pres
 
     if (UNLIKELY(!is_valid(preset_coding_parameters_, calculate_maximum_sample_value(frame_info_.bits_per_sample),
                            parameters_.near_lossless, &preset_coding_parameters)))
-        throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_pc_parameters);
+        throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_preset_parameters);
 
     return preset_coding_parameters;
 }
@@ -467,7 +467,7 @@ void jpeg_stream_reader::oversize_image_dimension()
         break;
 
     default:
-        throw_jpegls_error(jpegls_errc::invalid_marker_segment_size); // TODO: custom error code?
+        throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_preset_parameters);
     }
 
     frame_info_height(height);
