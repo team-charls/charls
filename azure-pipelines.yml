@@ -4,11 +4,12 @@
 variables:
   solution: '*.sln'
 
+
 jobs:
 - job: 'cppWindows'
   pool:
-    vmImage: windows-latest
-  displayName: 'Solution MSVC 2019'
+    vmImage: windows-2022
+  displayName: 'Solution MSVC 2022'
 
   strategy:
     matrix:
@@ -26,7 +27,6 @@ jobs:
         buildConfiguration: 'Release'
 
   steps:
-
   - task: NuGetCommand@2
     inputs:
       command: 'restore'
@@ -45,10 +45,10 @@ jobs:
       configuration: '$(buildConfiguration)'
 
 
-- job: 'cppVS2019'
+- job: 'cppVS2022'
   pool:
-    vmImage: windows-latest
-  displayName: 'CMake - MSVC 2019'
+    vmImage: windows-2022
+  displayName: 'CMake - MSVC 2022'
 
   strategy:
     matrix:
@@ -93,7 +93,7 @@ jobs:
 
   - task: BatchScript@1
     inputs:
-      filename: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat"
+      filename: "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat"
       arguments: $(Architecture)
       modifyEnvironment: true
     displayName: Setup Environment Variables
@@ -119,10 +119,10 @@ jobs:
       cmakeArgs: --build $(Build.BinariesDirectory)/build
 
 
-- job: 'cppVS2017'
+- job: 'cppVS2019'
   pool:
-    vmImage: vs2017-win2016
-  displayName: 'CMake - MSVC 2017'
+    vmImage: windows-2019
+  displayName: 'CMake - MSVC 2019'
 
   strategy:
     matrix:
@@ -148,7 +148,7 @@ jobs:
 
   - task: BatchScript@1
     inputs:
-      filename: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat"
+      filename: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat"
       arguments: $(Architecture)
       modifyEnvironment: true
     displayName: Setup Environment Variables
