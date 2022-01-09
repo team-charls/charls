@@ -37,8 +37,8 @@ struct charls_jpegls_encoder final
 
     void frame_info(const charls_frame_info& frame_info)
     {
-        check_argument(frame_info.width > 0 && frame_info.width <= maximum_width, jpegls_errc::invalid_argument_width);
-        check_argument(frame_info.height > 0 && frame_info.height <= maximum_height, jpegls_errc::invalid_argument_height);
+        check_argument(frame_info.width > 0, jpegls_errc::invalid_argument_width);
+        check_argument(frame_info.height > 0, jpegls_errc::invalid_argument_height);
         check_argument(frame_info.bits_per_sample >= minimum_bits_per_sample &&
                            frame_info.bits_per_sample <= maximum_bits_per_sample,
                        jpegls_errc::invalid_argument_bits_per_sample);
@@ -160,7 +160,11 @@ struct charls_jpegls_encoder final
 
         transition_to_tables_and_miscellaneous_state();
 
-        writer_.write_start_of_frame_segment(frame_info_);
+        const bool oversized_image{writer_.write_start_of_frame_segment(frame_info_)};
+        if (oversized_image)
+        {
+            writer_.write_jpegls_preset_parameters_segment(frame_info_.height, frame_info_.width);
+        }
 
         if (color_transformation_ != charls::color_transformation::none)
         {

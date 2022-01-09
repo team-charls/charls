@@ -10,6 +10,29 @@
 
 using namespace charls;
 
+namespace {
+
+#if INTPTR_MAX == INT64_MAX
+// 64-bit
+constexpr size_t checked_mul(const size_t a, const size_t b) noexcept
+{
+    return a * b;
+}
+#elif INTPTR_MAX == INT32_MAX
+// 32-bit
+size_t checked_mul(const size_t a, const size_t b)
+{
+    const size_t result{a * b};
+    if (result < a || result < b)
+        impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported); // overflow.
+    return result;
+}
+#else
+#error Unknown pointer size or missing size macros!
+#endif
+
+} // namespace
+
 struct charls_jpegls_decoder final
 {
     void source(const const_byte_span source)
@@ -85,18 +108,18 @@ struct charls_jpegls_decoder final
 
         if (stride == 0)
         {
-            return static_cast<size_t>(info.component_count) * info.height * info.width *
-                   bit_to_byte_count(info.bits_per_sample);
+            return checked_mul(checked_mul(checked_mul(info.component_count, info.height), info.width),
+                                    bit_to_byte_count(info.bits_per_sample));
         }
 
         switch (interleave_mode())
         {
         case charls::interleave_mode::none:
-            return stride * info.component_count * info.height;
+            return checked_mul(checked_mul(stride, info.component_count), info.height);
 
         case charls::interleave_mode::line:
         case charls::interleave_mode::sample:
-            return stride * info.height;
+            return checked_mul(stride, info.height);
         }
 
         ASSERT(false);
@@ -309,7 +332,8 @@ catch (...)
 
 USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsReadHeader(const void* source,
                                                                                 const size_t source_length,
-                                                                                JlsParameters* params, char* error_message) noexcept
+                                                                                JlsParameters* params,
+                                                                                char* error_message) noexcept
 try
 {
     charls_jpegls_decoder decoder;
@@ -347,7 +371,8 @@ catch (...)
 USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION JpegLsDecode(void* destination,
                                                                             const size_t destination_length,
                                                                             const void* source, const size_t source_length,
-                                                                            const JlsParameters* params, char* error_message) noexcept
+                                                                            const JlsParameters* params,
+                                                                            char* error_message) noexcept
 try
 {
     charls_jpegls_decoder decoder;

@@ -40,7 +40,7 @@ The following JPEG-LS options are not supported by the CharLS implementation. Mo
 * No support for multi component frames with mixed component counts in a single scan.
   While technical possible all known JPEG-LS codecs put multi-component (color) images in a single scan
   or in multiple scans, but not use a mix of these in one file.
-* No support for oversize image dimension. Maximum supported image dimensions are [1, 65535] by [1, 65535].
+* No support to encode\decode images with the height defined after the first scan (DNL marker).
 * No support for JPEG-LS mapping tables.
 * No support for point transform.
   Point transform is a lossly encoding mechanism and not used in lossless scenarios.

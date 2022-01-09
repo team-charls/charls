@@ -85,10 +85,10 @@ void jpeg_stream_writer::write_spiff_end_of_directory_entry()
 }
 
 
-void jpeg_stream_writer::write_start_of_frame_segment(const frame_info& frame)
+bool jpeg_stream_writer::write_start_of_frame_segment(const frame_info& frame)
 {
-    ASSERT(frame.width <= numeric_limits<uint16_t>::max());
-    ASSERT(frame.height <= numeric_limits<uint16_t>::max());
+    ASSERT(frame.width > 0);
+    ASSERT(frame.height > 0);
     ASSERT(frame.bits_per_sample >= minimum_bits_per_sample && frame.bits_per_sample <= maximum_bits_per_sample);
     ASSERT(frame.component_count > 0 && frame.component_count <= numeric_limits<uint8_t>::max());
 
@@ -96,8 +96,11 @@ void jpeg_stream_writer::write_start_of_frame_segment(const frame_info& frame)
     const size_t data_size{6 + (static_cast<size_t>(frame.component_count) * 3)};
     write_segment_header(jpeg_marker_code::start_of_frame_jpegls, data_size);
     write_uint8(frame.bits_per_sample); // P = Sample precision
-    write_uint16(frame.height);         // Y = Number of lines
-    write_uint16(frame.width);          // X = Number of samples per line
+
+    const bool oversized_image{frame.width > numeric_limits<uint16_t>::max() ||
+                               frame.height > numeric_limits<uint16_t>::max()};
+    write_uint16(oversized_image ? 0 : frame.height); // Y = Number of lines
+    write_uint16(oversized_image ? 0 : frame.width);  // X = Number of samples per line
 
     // Components
     write_uint8(frame.component_count); // Nf = Number of image components in frame
@@ -111,6 +114,8 @@ void jpeg_stream_writer::write_start_of_frame_segment(const frame_info& frame)
         write_uint8(0x11);         // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
         write_uint8(0); // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
     }
+
+    return oversized_image;
 }
 
 
@@ -139,6 +144,17 @@ void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const jpegls_pc_
     write_uint16(preset_coding_parameters.threshold2);
     write_uint16(preset_coding_parameters.threshold3);
     write_uint16(preset_coding_parameters.reset_value);
+}
+
+
+void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const uint32_t height, const uint32_t width)
+{
+    // Format is defined in ISO/IEC 14495-1, C.2.4.1.4
+    write_segment_header(jpeg_marker_code::jpegls_preset_parameters, sizeof(uint32_t) * 2 + 1 + 1);
+    write_uint8(to_underlying_type(jpegls_preset_parameters_type::oversize_image_dimension));
+    write_uint8(sizeof(uint32_t)); // Wxy: number of bytes used to represent Ye and Xe [2..4]. Always 4 for simplicity.
+    write_uint32(height);          // Ye: number of lines in the image.
+    write_uint32(width);           // Xe: number of columns in the image.
 }
 
 

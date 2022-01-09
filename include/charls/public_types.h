@@ -72,7 +72,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE = 203,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE = 204,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 205,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PC_PARAMETERS = 206
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS = 206
 };
 
 enum charls_interleave_mode
@@ -410,9 +410,9 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     invalid_parameter_near_lossless = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS,
 
     /// <summary>
-    /// This error is returned when the stream contains an invalid JPEG-LS preset coding parameters segment.
+    /// This error is returned when the stream contains an invalid JPEG-LS preset parameters segment.
     /// </summary>
-    invalid_parameter_jpegls_pc_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PC_PARAMETERS,
+    invalid_parameter_jpegls_preset_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS,
 
     // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17
     // extension.

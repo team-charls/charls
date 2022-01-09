@@ -76,7 +76,7 @@ public:
         array<uint8_t, 5 + 3> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        //writer.
+        // writer.
         constexpr uint8_t comment{99};
         writer.write_comment_segment({&comment, 1});
         writer.write_end_of_image(true);
@@ -277,8 +277,10 @@ public:
         array<uint8_t, 19> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        writer.write_start_of_frame_segment({100, numeric_limits<uint16_t>::max(), bits_per_sample, component_count});
+        const bool oversized_image{
+            writer.write_start_of_frame_segment({100, numeric_limits<uint16_t>::max(), bits_per_sample, component_count})};
 
+        Assert::IsFalse(oversized_image);
         Assert::AreEqual(static_cast<size_t>(19), writer.bytes_written());
 
         Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
@@ -305,6 +307,45 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[18]);
     }
 
+    TEST_METHOD(write_start_of_frame_segment_large_image) // NOLINT
+    {
+        constexpr int32_t bits_per_sample{8};
+        constexpr int32_t component_count{3};
+
+        array<uint8_t, 19> buffer{};
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+
+        const bool oversized_image{writer.write_start_of_frame_segment(
+            {100, numeric_limits<uint16_t>::max() + 1, bits_per_sample, component_count})};
+
+        Assert::IsTrue(oversized_image);
+        Assert::AreEqual(static_cast<size_t>(19), writer.bytes_written());
+
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), buffer[0]);
+        Assert::AreEqual(static_cast<uint8_t>(0xF7), buffer[1]); // JPEG_SOF_55
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[2]);    // 6 + (3 * 3) + 2 (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(17), buffer[3]);   // 6 + (3 * 3) + 2 (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(bits_per_sample), buffer[4]);
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[5]); // height (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[6]); // height (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[7]); // width (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[8]); // width (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(component_count), buffer[9]);
+
+        Assert::AreEqual(static_cast<uint8_t>(1), buffer[10]);
+        Assert::AreEqual(static_cast<uint8_t>(0x11), buffer[11]);
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[12]);
+
+        Assert::AreEqual(static_cast<uint8_t>(2), buffer[13]);
+        Assert::AreEqual(static_cast<uint8_t>(0x11), buffer[14]);
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[15]);
+
+        Assert::AreEqual(static_cast<uint8_t>(3), buffer[16]);
+        Assert::AreEqual(static_cast<uint8_t>(0x11), buffer[17]);
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[18]);
+    }
+
+
     TEST_METHOD(write_start_of_frame_marker_segment_with_low_boundary_values) // NOLINT
     {
         constexpr int32_t bits_per_sample{2};
@@ -313,7 +354,7 @@ public:
         array<uint8_t, 13> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        writer.write_start_of_frame_segment({0, 0, bits_per_sample, component_count});
+        writer.write_start_of_frame_segment({1, 1, bits_per_sample, component_count});
 
         Assert::AreEqual(buffer.size(), writer.bytes_written());
         Assert::AreEqual(static_cast<uint8_t>(bits_per_sample), buffer[4]);
@@ -386,6 +427,33 @@ public:
         // ResetValue
         Assert::AreEqual(static_cast<uint8_t>(0), buffer[13]);
         Assert::AreEqual(static_cast<uint8_t>(7), buffer[14]);
+    }
+
+    TEST_METHOD(write_jpegls_preset_parameters_segment_for_oversized_image_dimensions) // NOLINT
+    {
+        array<uint8_t, 14> buffer{};
+        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+
+        writer.write_jpegls_preset_parameters_segment(100, numeric_limits<uint32_t>::max());
+        Assert::AreEqual(buffer.size(), writer.bytes_written());
+
+        // Parameter ID.
+        Assert::AreEqual(static_cast<uint8_t>(0x4), buffer[4]);
+
+        // Wxy
+        Assert::AreEqual(static_cast<uint8_t>(4), buffer[5]);
+
+        // Height (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[6]);
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[7]);
+        Assert::AreEqual(static_cast<uint8_t>(0), buffer[8]);
+        Assert::AreEqual(static_cast<uint8_t>(100), buffer[9]);
+
+        // Width (in big endian)
+        Assert::AreEqual(static_cast<uint8_t>(255), buffer[10]);
+        Assert::AreEqual(static_cast<uint8_t>(255), buffer[11]);
+        Assert::AreEqual(static_cast<uint8_t>(255), buffer[12]);
+        Assert::AreEqual(static_cast<uint8_t>(255), buffer[13]);
     }
 
     TEST_METHOD(write_start_of_scan_marker) // NOLINT
