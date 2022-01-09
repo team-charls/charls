@@ -23,12 +23,10 @@ constexpr size_t checked_mul(const size_t a, const size_t b) noexcept
 size_t checked_mul(const size_t a, const size_t b)
 {
     const size_t result{a * b};
-    if (result < a || result < b)
-        impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported); // overflow.
+    if (UNLIKELY(result < a || result < b)) // check for unsigned integer overflow.
+        impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
     return result;
 }
-#else
-#error Unknown pointer size or missing size macros!
 #endif
 
 } // namespace

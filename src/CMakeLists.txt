@@ -4,6 +4,19 @@
 # Define the library "charls" target
 add_library(charls "")
 
+# Enable IPO (Interprocedural optimization) for shared lib in release mode with GCC for better performance.
+# Note: MSVC and Clang will create with IPO larger binaries that are not significant faster.
+if(BUILD_SHARED_LIBS AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT ipo_supported)
+  if(ipo_supported)
+      message("-- IPO is supported and used")
+      set_property(TARGET charls PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+  else()
+      message("-- IPO is not supported")
+  endif()
+endif()
+
 target_include_directories(charls PUBLIC
   $<BUILD_INTERFACE:${charls_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
