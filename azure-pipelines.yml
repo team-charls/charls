@@ -5,6 +5,7 @@ variables:
   solution: '*.sln'
 
 
+jobs:
 - job: 'cppVS2022'
   pool:
     vmImage: windows-2022
@@ -59,7 +60,6 @@ variables:
       cmakeArgs: --build $(Build.BinariesDirectory)/build
 
 
-jobs:
 - job: 'cppWindows'
   pool:
     vmImage: windows-2022
@@ -81,7 +81,6 @@ jobs:
         buildConfiguration: 'Release'
 
   steps:
-
   - task: NuGetCommand@2
     inputs:
       command: 'restore'
