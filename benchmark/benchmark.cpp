@@ -6,7 +6,9 @@
 #include "../src/jpegls_preset_coding_parameters.h"
 
 #include <cstdint>
+#include <memory>
 
+#pragma warning(disable : 26409) // Avoid calling new explicitly (triggered by BENCHMARK macro)
 
 
 int8_t quantize_gradient_org(const charls::jpegls_pc_parameters& preset, const int32_t di) noexcept
@@ -149,6 +151,7 @@ __declspec(noinline) int32_t get_predicted_value_optimized(const int32_t ra, con
 }
 
 
+#if defined(_M_X64) || defined(_M_ARM64)
 inline int countl_zero(const uint64_t value) noexcept
 {
     if (value == 0)
@@ -159,6 +162,7 @@ inline int countl_zero(const uint64_t value) noexcept
 
     return 63 - index;
 }
+#endif
 
 
 static void bm_get_predicted_value_default(benchmark::State& state)
@@ -196,8 +200,6 @@ BENCHMARK(bm_quantize_gradient_calculated);
 
 static void bm_quantize_gradient_lut(benchmark::State& state)
 {
-    const scan_decoder<lossless_traits> sd({}, 8);
-
     for (const auto _ : state)
     {
         benchmark::DoNotOptimize(quantization_lut_lossless_8[0]);
@@ -231,7 +233,7 @@ static void bm_peek_zero_bits(benchmark::State& state)
 BENCHMARK(bm_peek_zero_bits);
 
 
-
+#if defined(_M_X64) || defined(_M_ARM64)
 int peek_zero_bits_intrinsic(const uint64_t value) noexcept
 {
     const auto count = countl_zero(value);
@@ -248,6 +250,79 @@ static void bm_peek_zero_bits_intrinsic(benchmark::State& state)
     }
 }
 BENCHMARK(bm_peek_zero_bits_intrinsic);
+#endif
+
+
+std::vector<uint8_t> allocate_buffer(const size_t size)
+{
+    std::vector<uint8_t> buffer;
+    buffer.resize(size);
+    return buffer;
+}
+
+static void bm_resize_vector(benchmark::State& state)
+{
+    for (const auto _ : state)
+    {
+        benchmark::DoNotOptimize(allocate_buffer(512 * 512 * 16));
+        benchmark::DoNotOptimize(allocate_buffer(1024 * 1024 * 8 * 3));
+    }
+}
+BENCHMARK(bm_resize_vector);
+
+
+class overwrite_buffer
+{
+public:
+    void reset(const size_t new_size)
+    {
+        if (new_size <= size_)
+        {
+            size_ = new_size;
+            return;
+        }
+
+        data_.reset(); // First release, then re-alloc new memory.
+        data_.reset(new uint8_t[new_size]);
+        size_ = new_size;
+    }
+
+    uint8_t* data() const noexcept
+    {
+        return data_.get();
+    }
+
+    size_t size() const noexcept
+    {
+        return size_;
+    }
+
+private:
+    std::unique_ptr<uint8_t[]> data_{};
+    size_t size_{};
+};
+
+
+
+overwrite_buffer allocate_overwrite_buffer(const size_t size)
+{
+    overwrite_buffer buffer;
+    buffer.reset(size);
+    return buffer;
+}
+
+
+
+static void bm_resize_overwrite_buffer(benchmark::State& state)
+{
+    for (const auto _ : state)
+    {
+        benchmark::DoNotOptimize(allocate_buffer(512 * 512 * 16));
+        benchmark::DoNotOptimize(allocate_buffer(1024 * 1024 * 8 * 3));
+    }
+}
+BENCHMARK(bm_resize_overwrite_buffer);
+
 
 
 

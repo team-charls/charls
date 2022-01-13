@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29006.145
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32104.313
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSTest", "test\CharLSTest.vcxproj", "{7185AD7F-57BA-42C7-A715-239CEA8ADC31}"
 EndProject
@@ -30,6 +30,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "convert-cpp", "samples\convert.cpp\convert-cpp.vcxproj", "{E09F024E-A125-48AA-8E9D-7D1302BEAC97}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FuzzTest", "fuzztest\FuzzTest.vcxproj", "{5637C116-ABF5-4274-A71F-34433713A538}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "benchmark", "benchmark\benchmark.vcxproj", "{F961EC29-4ACE-4D5E-B7ED-55681A678A90}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +115,18 @@ Global
 		{5637C116-ABF5-4274-A71F-34433713A538}.Release|x64.Build.0 = Release|x64
 		{5637C116-ABF5-4274-A71F-34433713A538}.Release|x86.ActiveCfg = Release|Win32
 		{5637C116-ABF5-4274-A71F-34433713A538}.Release|x86.Build.0 = Release|Win32
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Checked|x64.ActiveCfg = Checked|x64
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Checked|x64.Build.0 = Checked|x64
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Checked|x86.ActiveCfg = Checked|Win32
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Checked|x86.Build.0 = Checked|Win32
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Debug|x64.ActiveCfg = Debug|x64
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Debug|x64.Build.0 = Debug|x64
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Debug|x86.ActiveCfg = Debug|Win32
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Debug|x86.Build.0 = Debug|Win32
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Release|x64.ActiveCfg = Release|x64
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Release|x64.Build.0 = Release|x64
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Release|x86.ActiveCfg = Release|Win32
+		{F961EC29-4ACE-4D5E-B7ED-55681A678A90}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
