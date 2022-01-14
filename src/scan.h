@@ -477,7 +477,7 @@ private:
         t1_ = t1;
         t2_ = t2;
         t3_ = t3;
-        reset_threshold_ = reset_threshold;
+        reset_threshold_ = static_cast<uint8_t>(reset_threshold);
 
         initialize_quantization_lut();
         reset_parameters();
@@ -491,8 +491,8 @@ private:
             context = context_initial_value;
         }
 
-        context_runmode_[0] = context_run_mode(0, std::max(2, (traits_.range + 32) / 64), reset_threshold_);
-        context_runmode_[1] = context_run_mode(1, std::max(2, (traits_.range + 32) / 64), reset_threshold_);
+        context_runmode_[0] = context_run_mode(0, std::max(2, (traits_.range + 32) / 64));
+        context_runmode_[1] = context_run_mode(1, std::max(2, (traits_.range + 32) / 64));
         run_index_ = 0;
     }
 
@@ -672,7 +672,7 @@ private:
         const int32_t e_mapped_error_value{
             decode_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_pixel)};
         const int32_t error_value{context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k)};
-        context.update_variables(error_value, e_mapped_error_value);
+        context.update_variables(error_value, e_mapped_error_value, reset_threshold_);
         return error_value;
     }
 
@@ -774,7 +774,7 @@ private:
 
         ASSERT(error_value == context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k));
         encode_mapped_value(k, e_mapped_error_value, traits_.limit - J[run_index_] - 1);
-        context.update_variables(error_value, e_mapped_error_value);
+        context.update_variables(error_value, e_mapped_error_value, reset_threshold_);
     }
 
     sample_type encode_run_interruption_pixel(const int32_t x, const int32_t ra, const int32_t rb)
@@ -887,7 +887,7 @@ private:
     int32_t t1_{};
     int32_t t2_{};
     int32_t t3_{};
-    int32_t reset_threshold_{};
+    uint8_t reset_threshold_{};
     uint32_t restart_interval_{};
     uint32_t restart_interval_counter_{};
 

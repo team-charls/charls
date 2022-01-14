@@ -17,10 +17,9 @@ class context_run_mode final
 public:
     context_run_mode() = default;
 
-    context_run_mode(const int32_t arg_run_interruption_type, const int32_t a, const int32_t reset_threshold) noexcept :
-        run_interruption_type_{arg_run_interruption_type},
+    context_run_mode(const int32_t run_interruption_type, const int32_t a) noexcept :
+        run_interruption_type_{run_interruption_type},
         a_{a},
-        reset_threshold_{static_cast<uint8_t>(reset_threshold)},
         n_{1}
     {
     }
@@ -43,20 +42,25 @@ public:
         return k;
     }
 
-    void update_variables(const int32_t error_value, const int32_t e_mapped_error_value) noexcept
+    /// <summary>Code segment A.23 – Update of variables for run interruption sample.</summary>
+    void update_variables(const int32_t error_value, const int32_t e_mapped_error_value,
+                          const uint8_t reset_threshold) noexcept
     {
         if (error_value < 0)
         {
-            nn_ = nn_ + 1U;
+            ++nn_;
         }
-        a_ = a_ + ((e_mapped_error_value + 1 - run_interruption_type_) >> 1);
-        if (n_ == reset_threshold_)
+
+        a_ += (e_mapped_error_value + 1 - run_interruption_type_) >> 1;
+
+        if (n_ == reset_threshold)
         {
-            a_ = a_ >> 1;
-            n_ = n_ >> 1;
-            nn_ = nn_ >> 1;
+            a_ >>= 1;
+            n_ >>= 1;
+            nn_ >>= 1;
         }
-        n_ = n_ + 1;
+
+        ++n_;
     }
 
     FORCE_INLINE int32_t compute_error_value(const int32_t temp, const int32_t k) const noexcept
@@ -74,6 +78,7 @@ public:
         return error_value_abs;
     }
 
+    /// <summary>Code segment A.21 – Computation of map for Errval mapping.</summary>
     bool compute_map(const int32_t error_value, const int32_t k) const noexcept
     {
         if (k == 0 && error_value > 0 && 2 * nn_ < n_)
@@ -96,7 +101,6 @@ public:
 private:
     int32_t run_interruption_type_{};
     int32_t a_{};
-    uint8_t reset_threshold_{};
     uint8_t n_{};
     uint8_t nn_{};
 };

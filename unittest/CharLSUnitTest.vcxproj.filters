@@ -101,6 +101,9 @@
     <ClCompile Include="scan_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="context_run_mode_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="lena8b.pgm">
