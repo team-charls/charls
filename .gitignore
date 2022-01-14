@@ -12,6 +12,7 @@ build*/
 [Rr]elease/
 [Cc]hecked/
 TestResults/
+vcpkg_installed/
 *.opensdf
 *.sdf
 
