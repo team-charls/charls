@@ -183,7 +183,7 @@
     <ClInclude Include="coding_parameters.h" />
     <ClInclude Include="color_transform.h" />
     <ClInclude Include="constants.h" />
-    <ClInclude Include="context.h" />
+    <ClInclude Include="context_regular_mode.h" />
     <ClInclude Include="context_run_mode.h" />
     <ClInclude Include="decoder_strategy.h" />
     <ClInclude Include="default_traits.h" />

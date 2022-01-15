@@ -5,8 +5,7 @@
 
 #include "coding_parameters.h"
 #include "color_transform.h"
-#include "constants.h"
-#include "context.h"
+#include "context_regular_mode.h"
 #include "context_run_mode.h"
 #include "jpeg_marker_code.h"
 #include "lookup_table.h"
@@ -306,10 +305,10 @@ private:
     FORCE_INLINE sample_type do_regular(const int32_t qs, int32_t /*x*/, const int32_t predicted,
                                         decoder_strategy* /*template_selector*/)
     {
-        const int32_t sign = bit_wise_sign(qs);
-        jls_context& context = contexts_[apply_sign(qs, sign)];
-        const int32_t k = context.get_golomb_coding_parameter();
-        const int32_t predicted_value = traits_.correct_prediction(predicted + apply_sign(context.C, sign));
+        const int32_t sign{bit_wise_sign(qs)};
+        context_regular_mode& context{contexts_[apply_sign(qs, sign)]};
+        const int32_t k{context.get_golomb_coding_parameter()};
+        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
 
         int32_t error_value;
         const golomb_code& code = decoding_tables[k].get(Strategy::peek_byte());
@@ -329,7 +328,7 @@ private:
         {
             error_value = error_value ^ context.get_error_correction(traits_.near_lossless);
         }
-        context.update_variables(error_value, traits_.near_lossless, traits_.reset_threshold);
+        context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
         error_value = apply_sign(error_value, sign);
         return traits_.compute_reconstructed_sample(predicted_value, error_value);
     }
@@ -338,14 +337,14 @@ private:
                                         encoder_strategy* /*template_selector*/)
     {
         const int32_t sign{bit_wise_sign(qs)};
-        jls_context& context{contexts_[apply_sign(qs, sign)]};
+        context_regular_mode& context{contexts_[apply_sign(qs, sign)]};
         const int32_t k{context.get_golomb_coding_parameter()};
-        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.C, sign))};
+        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
         const int32_t error_value{traits_.compute_error_value(apply_sign(x - predicted_value, sign))};
 
         encode_mapped_value(k, map_error_value(context.get_error_correction(k | traits_.near_lossless) ^ error_value),
                             traits_.limit);
-        context.update_variables(error_value, traits_.near_lossless, traits_.reset_threshold);
+        context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
         ASSERT(traits_.is_near(traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)), x));
         return static_cast<sample_type>(
             traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)));
@@ -485,14 +484,14 @@ private:
 
     void reset_parameters() noexcept
     {
-        const jls_context context_initial_value(std::max(2, (traits_.range + 32) / 64));
+        const context_regular_mode context_initial_value(traits_.range);
         for (auto& context : contexts_)
         {
             context = context_initial_value;
         }
 
-        context_runmode_[0] = context_run_mode(0, std::max(2, (traits_.range + 32) / 64));
-        context_runmode_[1] = context_run_mode(1, std::max(2, (traits_.range + 32) / 64));
+        context_run_mode_[0] = context_run_mode(0, traits_.range);
+        context_run_mode_[1] = context_run_mode(1, traits_.range);
         run_index_ = 0;
     }
 
@@ -678,9 +677,9 @@ private:
 
     triplet<sample_type> decode_run_interruption_pixel(triplet<sample_type> ra, triplet<sample_type> rb)
     {
-        const int32_t error_value1{decode_run_interruption_error(context_runmode_[0])};
-        const int32_t error_value2{decode_run_interruption_error(context_runmode_[0])};
-        const int32_t error_value3{decode_run_interruption_error(context_runmode_[0])};
+        const int32_t error_value1{decode_run_interruption_error(context_run_mode_[0])};
+        const int32_t error_value2{decode_run_interruption_error(context_run_mode_[0])};
+        const int32_t error_value3{decode_run_interruption_error(context_run_mode_[0])};
 
         return triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
                                     traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
@@ -689,10 +688,10 @@ private:
 
     quad<sample_type> decode_run_interruption_pixel(quad<sample_type> ra, quad<sample_type> rb)
     {
-        const int32_t error_value1{decode_run_interruption_error(context_runmode_[0])};
-        const int32_t error_value2{decode_run_interruption_error(context_runmode_[0])};
-        const int32_t error_value3{decode_run_interruption_error(context_runmode_[0])};
-        const int32_t error_value4{decode_run_interruption_error(context_runmode_[0])};
+        const int32_t error_value1{decode_run_interruption_error(context_run_mode_[0])};
+        const int32_t error_value2{decode_run_interruption_error(context_run_mode_[0])};
+        const int32_t error_value3{decode_run_interruption_error(context_run_mode_[0])};
+        const int32_t error_value4{decode_run_interruption_error(context_run_mode_[0])};
 
         return quad<sample_type>(
             triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
@@ -705,11 +704,11 @@ private:
     {
         if (std::abs(ra - rb) <= traits_.near_lossless)
         {
-            const int32_t error_value{decode_run_interruption_error(context_runmode_[1])};
+            const int32_t error_value{decode_run_interruption_error(context_run_mode_[1])};
             return static_cast<sample_type>(traits_.compute_reconstructed_sample(ra, error_value));
         }
 
-        const int32_t error_value{decode_run_interruption_error(context_runmode_[0])};
+        const int32_t error_value{decode_run_interruption_error(context_run_mode_[0])};
         return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
     }
 
@@ -782,12 +781,12 @@ private:
         if (std::abs(ra - rb) <= traits_.near_lossless)
         {
             const int32_t error_value{traits_.compute_error_value(x - ra)};
-            encode_run_interruption_error(context_runmode_[1], error_value);
+            encode_run_interruption_error(context_run_mode_[1], error_value);
             return static_cast<sample_type>(traits_.compute_reconstructed_sample(ra, error_value));
         }
 
         const int32_t error_value{traits_.compute_error_value((x - rb) * sign(rb - ra))};
-        encode_run_interruption_error(context_runmode_[0], error_value);
+        encode_run_interruption_error(context_run_mode_[0], error_value);
         return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
     }
 
@@ -795,13 +794,13 @@ private:
                                                        const triplet<sample_type> rb)
     {
         const int32_t error_value1{traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1))};
-        encode_run_interruption_error(context_runmode_[0], error_value1);
+        encode_run_interruption_error(context_run_mode_[0], error_value1);
 
         const int32_t error_value2{traits_.compute_error_value(sign(rb.v2 - ra.v2) * (x.v2 - rb.v2))};
-        encode_run_interruption_error(context_runmode_[0], error_value2);
+        encode_run_interruption_error(context_run_mode_[0], error_value2);
 
         const int32_t error_value3{traits_.compute_error_value(sign(rb.v3 - ra.v3) * (x.v3 - rb.v3))};
-        encode_run_interruption_error(context_runmode_[0], error_value3);
+        encode_run_interruption_error(context_run_mode_[0], error_value3);
 
         return triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
                                     traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
@@ -812,16 +811,16 @@ private:
                                                     const quad<sample_type> rb)
     {
         const int32_t error_value1{traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1))};
-        encode_run_interruption_error(context_runmode_[0], error_value1);
+        encode_run_interruption_error(context_run_mode_[0], error_value1);
 
         const int32_t error_value2{traits_.compute_error_value(sign(rb.v2 - ra.v2) * (x.v2 - rb.v2))};
-        encode_run_interruption_error(context_runmode_[0], error_value2);
+        encode_run_interruption_error(context_run_mode_[0], error_value2);
 
         const int32_t error_value3{traits_.compute_error_value(sign(rb.v3 - ra.v3) * (x.v3 - rb.v3))};
-        encode_run_interruption_error(context_runmode_[0], error_value3);
+        encode_run_interruption_error(context_run_mode_[0], error_value3);
 
         const int32_t error_value4{traits_.compute_error_value(sign(rb.v4 - ra.v4) * (x.v4 - rb.v4))};
-        encode_run_interruption_error(context_runmode_[0], error_value4);
+        encode_run_interruption_error(context_run_mode_[0], error_value4);
 
         return quad<sample_type>(
             triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
@@ -892,8 +891,8 @@ private:
     uint32_t restart_interval_counter_{};
 
     // compression context
-    std::array<jls_context, 365> contexts_;
-    std::array<context_run_mode, 2> context_runmode_;
+    std::array<context_regular_mode, 365> contexts_;
+    std::array<context_run_mode, 2> context_run_mode_;
     int32_t run_index_{};
     pixel_type* previous_line_{};
     pixel_type* current_line_{};

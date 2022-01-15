@@ -77,7 +77,7 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/coding_parameters.h"
     "${CMAKE_CURRENT_LIST_DIR}/color_transform.h"
     "${CMAKE_CURRENT_LIST_DIR}/constants.h"
-    "${CMAKE_CURRENT_LIST_DIR}/context.h"
+    "${CMAKE_CURRENT_LIST_DIR}/context_regular_mode.h"
     "${CMAKE_CURRENT_LIST_DIR}/context_run_mode.h"
     "${CMAKE_CURRENT_LIST_DIR}/decoder_strategy.h"
     "${CMAKE_CURRENT_LIST_DIR}/default_traits.h"

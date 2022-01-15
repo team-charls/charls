@@ -24,7 +24,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="context.h">
+    <ClInclude Include="context_regular_mode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scan.h">

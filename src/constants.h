@@ -30,6 +30,12 @@ constexpr int compute_maximum_near_lossless(const int maximum_sample_value) noex
     return std::min(maximum_near_lossless, maximum_sample_value / 2); // As defined by ISO/IEC 14495-1, C.2.3
 }
 
+// Computes the initial value for A. See ISO/IEC 14495-1, A.8, step 1.d and A.2.1
+constexpr int32_t initialization_value_for_a(const int32_t range) noexcept
+{
+    return std::max(2, (range + 32) / 64);
+}
+
 // ISO/IEC 14495-1, section 4.8.1 defines the SPIFF version numbers to be used for the SPIFF header in combination with
 // JPEG-LS.
 constexpr uint8_t spiff_major_revision_number{2};

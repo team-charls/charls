@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "constants.h"
 #include "util.h"
 
 #include <cassert>
@@ -10,17 +11,18 @@
 
 namespace charls {
 
-// Implements statistical modeling for the run mode context.
-// Computes model dependent parameters like the Golomb code lengths
+/// <summary>
+/// JPEG-LS uses arrays of variables: A[0..366], B[0..364], C[0..364] and N[0..366]
+/// to maintain the statistic information for the context modeling.
+/// Index 365 and 366 are used for run mode interruption contexts.
+/// </summary>
 class context_run_mode final
 {
 public:
     context_run_mode() = default;
 
-    context_run_mode(const int32_t run_interruption_type, const int32_t a) noexcept :
-        run_interruption_type_{run_interruption_type},
-        a_{a},
-        n_{1}
+    context_run_mode(const int32_t run_interruption_type, const int32_t range) noexcept :
+        run_interruption_type_{run_interruption_type}, a_{initialization_value_for_a(range)}
     {
     }
 
@@ -99,9 +101,10 @@ public:
     }
 
 private:
+    // Initialize with the default values as defined in ISO 14495-1, A.8, step 1.d and 1.f.
     int32_t run_interruption_type_{};
     int32_t a_{};
-    uint8_t n_{};
+    uint8_t n_{1};
     uint8_t nn_{};
 };
 
