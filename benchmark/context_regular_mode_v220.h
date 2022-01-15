@@ -3,25 +3,23 @@
 
 #pragma once
 
-#include "util.h"
-#include "constants.h"
-
+#include "../src/context_regular_mode.h"
 #include <cassert>
 #include <cstdint>
 
 namespace charls {
 
 // Purpose: a JPEG-LS context with it's current statistics.
-struct jls_context final
+struct jls_context_v220 final
 {
     int32_t A{};
     int32_t B{};
     int16_t C{};
     int16_t N{1};
 
-    jls_context() = default;
+    jls_context_v220() = default;
 
-    explicit jls_context(const int32_t a) noexcept : A{a}
+    explicit jls_context_v220(const int32_t a) noexcept : A{a}
     {
     }
 
@@ -33,6 +31,7 @@ struct jls_context final
         return bit_wise_sign(2 * B + N - 1);
     }
 
+    /// <summary>Code segment A.12 – Variables update.</summary>
     FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless,
                                        const int32_t reset_threshold)
     {
@@ -49,13 +48,13 @@ struct jls_context final
 
         if (n == reset_threshold)
         {
-            a = a >> 1;
-            b = b >> 1;
-            n = n >> 1;
+            a >>= 1;
+            b >>= 1;
+            n >>= 1;
         }
 
         A = a;
-        n = n + 1;
+        ++n;
         N = static_cast<int16_t>(n);
 
         if (b + n <= 0)

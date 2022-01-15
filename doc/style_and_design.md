@@ -192,6 +192,14 @@ Examples of decoding performance on a AMD 5950X x64 CPU:
 | 16 bit 512 * 512 (CT image) | 3.09 ms | 3.17 ms    | 3.06 ms    | 3.10 ms   |
 |  8 bit 5412 * 7216          | 517 ms  | 509 ms     | 507 ms     | 512 ms    |
 
+#### Using special "checked" functions for decoding
+
+The input data for decoding is untrusted. Additional checks are included to detect invalid bitstream data.
+Most of these routines are also shared with the encoding process.
+Measurements show that there is no impact by creating special functions that don't these checks.
+In normal cases the checks never fail and the unlikely branch is never taken. This makes is very easy for
+the CPU branch predictor to always the correct outcome based on the branch history.
+
 ### Supported C++ Compilers
 
 #### Clang
