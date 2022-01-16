@@ -83,7 +83,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   endif()
 
   set(WARNINGS_AS_ERRORS_FLAG_COMPILER -Werror)
-  set(WARNINGS_AS_ERRORS_FLAG_LINKER --fatal-warnings)
+  set(WARNINGS_AS_ERRORS_FLAG_LINKER LINKER:--fatal-warnings)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -130,7 +130,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
 
   set(WARNINGS_AS_ERRORS_FLAG_COMPILER -Werror)
-  set(WARNINGS_AS_ERRORS_FLAG_LINKER --fatal-warnings)
+  set(WARNINGS_AS_ERRORS_FLAG_LINKER LINKER:--fatal-warnings)
 endif()
 
 if(MSVC)
@@ -191,7 +191,7 @@ endif()
 
 if(CHARLS_TREAT_WARNING_AS_ERROR)
   add_compile_options(${WARNINGS_AS_ERRORS_FLAG_COMPILER})
-  add_link_options(${WARNINGS_AS_ERRORS_FLAG_COMPILER})
+  add_link_options(${WARNINGS_AS_ERRORS_FLAG_LINKER})
 endif()
 
 include(src/CMakeLists.txt)
