@@ -3,16 +3,17 @@
 
 #pragma once
 
-#include "byte_span.h"
 #include "charls/annotations.h"
 #include "charls/jpegls_error.h"
+
+#include "byte_span.h"
+#include "constants.h"
 
 #include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <type_traits>
-#include <vector>
 
 
 // Use an uppercase alias for assert to make it clear that ASSERT is a pre-processor macro.
@@ -145,25 +146,6 @@ inline jpegls_errc set_error_message(const jpegls_errc error,
     }
 
     return error;
-}
-
-
-constexpr size_t int32_t_bit_count = sizeof(int32_t) * 8;
-
-
-inline void push_back(std::vector<uint8_t>& values, const uint16_t value)
-{
-    values.push_back(static_cast<uint8_t>(value >> 8));
-    values.push_back(static_cast<uint8_t>(value));
-}
-
-
-inline void push_back(std::vector<uint8_t>& values, const uint32_t value)
-{
-    values.push_back(static_cast<uint8_t>(value >> 24));
-    values.push_back(static_cast<uint8_t>(value >> 16));
-    values.push_back(static_cast<uint8_t>(value >> 8));
-    values.push_back(static_cast<uint8_t>(value));
 }
 
 
