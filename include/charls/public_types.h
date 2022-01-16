@@ -388,7 +388,7 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     invalid_parameter_height = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_HEIGHT,
 
     /// <summary>
-    /// This error is returned when the stream contains a component count parameter outside the range [1,255]
+    /// This error is returned when the stream contains a component count parameter outside the range [1,255] for SOF or [1,4] for SOS.
     /// </summary>
     invalid_parameter_component_count = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT,
 

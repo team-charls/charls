@@ -55,4 +55,7 @@ constexpr size_t segment_length_size{sizeof(uint16_t)};
 // The maximum size of the data bytes that fit in a segment.
 constexpr size_t segment_max_data_size{std::numeric_limits<uint16_t>::max() - segment_length_size};
 
+// Number of bits in an int32_t data type.
+constexpr size_t int32_t_bit_count{sizeof(int32_t) * 8};
+
 } // namespace charls

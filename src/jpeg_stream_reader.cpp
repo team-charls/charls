@@ -346,7 +346,7 @@ void jpeg_stream_reader::read_start_of_frame_segment()
     // with some modifications.
     check_minimal_segment_size(6);
 
-    frame_info_.bits_per_sample = read_byte();
+    frame_info_.bits_per_sample = read_uint8();
     if (UNLIKELY(frame_info_.bits_per_sample < minimum_bits_per_sample ||
                  frame_info_.bits_per_sample > maximum_bits_per_sample))
         throw_jpegls_error(jpegls_errc::invalid_parameter_bits_per_sample);
@@ -354,8 +354,8 @@ void jpeg_stream_reader::read_start_of_frame_segment()
     frame_info_height(read_uint16());
     frame_info_width(read_uint16());
 
-    frame_info_.component_count = read_byte();
-    if (UNLIKELY(frame_info_.component_count < 1))
+    frame_info_.component_count = read_uint8();
+    if (UNLIKELY(frame_info_.component_count == 0))
         throw_jpegls_error(jpegls_errc::invalid_parameter_component_count);
 
     check_segment_size((static_cast<size_t>(frame_info_.component_count) * 3) + 6);
@@ -502,7 +502,13 @@ void jpeg_stream_reader::read_define_restart_interval()
 void jpeg_stream_reader::read_start_of_scan()
 {
     check_minimal_segment_size(1);
-    const size_t component_count_in_scan{read_byte()};
+    const size_t component_count_in_scan{read_uint8()};
+
+    // ISO 10918-1, B2.3. defines the limits for the number of image components parameter in a SOS.
+    if (UNLIKELY(component_count_in_scan < 1U || component_count_in_scan > 4U ||
+                 component_count_in_scan > static_cast<size_t>(frame_info_.component_count)))
+        throw_jpegls_error(jpegls_errc::invalid_parameter_component_count);
+
     if (UNLIKELY(component_count_in_scan != 1 &&
                  component_count_in_scan != static_cast<size_t>(frame_info_.component_count)))
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
@@ -512,12 +518,12 @@ void jpeg_stream_reader::read_start_of_scan()
     for (size_t i{}; i != component_count_in_scan; ++i)
     {
         skip_byte(); // Skip scan component selector
-        const uint8_t mapping_table_selector{read_byte()};
+        const uint8_t mapping_table_selector{read_uint8()};
         if (UNLIKELY(mapping_table_selector != 0))
             throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
     }
 
-    parameters_.near_lossless = read_byte(); // Read NEAR parameter
+    parameters_.near_lossless = read_uint8(); // Read NEAR parameter
     if (UNLIKELY(parameters_.near_lossless > compute_maximum_near_lossless(static_cast<int>(maximum_sample_value()))))
         throw_jpegls_error(jpegls_errc::invalid_parameter_near_lossless);
 
@@ -696,15 +702,14 @@ USE_DECL_ANNOTATIONS void jpeg_stream_reader::try_read_spiff_header_segment(spif
         spiff_header_found = false;
         return; // Treat unknown versions as if the SPIFF header doesn't exists.
     }
-
     skip_byte(); // low version
 
     header.profile_id = static_cast<spiff_profile_id>(read_byte());
-    header.component_count = read_byte();
+    header.component_count = read_uint8();
     header.height = read_uint32();
     header.width = read_uint32();
     header.color_space = static_cast<spiff_color_space>(read_byte());
-    header.bits_per_sample = read_byte();
+    header.bits_per_sample = read_uint8();
     header.compression_type = static_cast<spiff_compression_type>(read_byte());
     header.resolution_units = static_cast<spiff_resolution_units>(read_byte());
     header.vertical_resolution = read_uint32();

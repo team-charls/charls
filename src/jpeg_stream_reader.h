@@ -10,6 +10,7 @@
 #include "util.h"
 
 #include <cstdint>
+#include <vector>
 
 namespace charls {
 

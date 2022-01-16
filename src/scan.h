@@ -903,42 +903,5 @@ private:
 };
 
 
-// Functions to build tables used to decode short Golomb codes.
-
-inline std::pair<int32_t, int32_t> create_encoded_value(const int32_t k, const int32_t mapped_error) noexcept
-{
-    const int32_t high_bits{mapped_error >> k};
-    return std::make_pair(high_bits + k + 1, (1 << k) | (mapped_error & ((1 << k) - 1)));
-}
-
-inline golomb_code_table initialize_table(const int32_t k) noexcept
-{
-    golomb_code_table table;
-    for (int16_t error_value{};; ++error_value)
-    {
-        // Q is not used when k != 0
-        const int32_t mapped_error_value{map_error_value(error_value)};
-        const std::pair<int32_t, int32_t> pair_code{create_encoded_value(k, mapped_error_value)};
-        if (static_cast<size_t>(pair_code.first) > golomb_code_table::byte_bit_count)
-            break;
-
-        const golomb_code code(error_value, static_cast<int16_t>(pair_code.first));
-        table.add_entry(static_cast<uint8_t>(pair_code.second), code);
-    }
-
-    for (int16_t error_value{-1};; --error_value)
-    {
-        // Q is not used when k != 0
-        const int32_t mapped_error_value{map_error_value(error_value)};
-        const std::pair<int32_t, int32_t> pair_code{create_encoded_value(k, mapped_error_value)};
-        if (static_cast<size_t>(pair_code.first) > golomb_code_table::byte_bit_count)
-            break;
-
-        const auto code{golomb_code(error_value, static_cast<int16_t>(pair_code.first))};
-        table.add_entry(static_cast<uint8_t>(pair_code.second), code);
-    }
-
-    return table;
-}
 
 } // namespace charls

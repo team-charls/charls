@@ -5,6 +5,8 @@
 
 #include "context_regular_mode_v220.h"
 
+#pragma warning(disable : 26409) // Avoid calling new explicitly (triggered by BENCHMARK macro)
+
 using namespace charls;
 
 context_regular_mode g_context;
