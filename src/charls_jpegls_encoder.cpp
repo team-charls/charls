@@ -77,7 +77,7 @@ struct charls_jpegls_encoder final
     void preset_coding_parameters(const jpegls_pc_parameters& preset_coding_parameters) noexcept
     {
         // Note: validation will be done just before decoding, as more info is needed for the validation.
-        preset_coding_parameters_ = preset_coding_parameters;
+        user_preset_coding_parameters_ = preset_coding_parameters;
     }
 
     void color_transformation(const charls::color_transformation color_transformation)
@@ -144,9 +144,9 @@ struct charls_jpegls_encoder final
         check_operation(is_frame_info_configured() && state_ != state::initial);
         check_interleave_mode_against_component_count();
 
-        if (UNLIKELY(!is_valid(preset_coding_parameters_, calculate_maximum_sample_value(frame_info_.bits_per_sample),
-                               near_lossless_,
-                      &validated_pc_parameters_)))
+        const int32_t maximum_sample_value{calculate_maximum_sample_value(frame_info_.bits_per_sample)};
+        if (UNLIKELY(
+                !is_valid(user_preset_coding_parameters_, maximum_sample_value, near_lossless_, &preset_coding_parameters_)))
             throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
 
         if (stride == auto_calculate_stride)
@@ -174,14 +174,12 @@ struct charls_jpegls_encoder final
             writer_.write_color_transform_segment(color_transformation_);
         }
 
-        if (!is_default(preset_coding_parameters_))
+        if (!is_default(user_preset_coding_parameters_, compute_default(maximum_sample_value, near_lossless_)) ||
+            (has_option(encoding_options::include_pc_parameters_jai) && frame_info_.bits_per_sample > 12))
         {
+            // Write the actual used values to the stream. The user parameters may use 0 (=default) values.
+            // This reduces the risk for decoding by other implementations.
             writer_.write_jpegls_preset_parameters_segment(preset_coding_parameters_);
-        }
-        else if (has_option(encoding_options::include_pc_parameters_jai) && frame_info_.bits_per_sample > 12)
-        {
-            // The Java JPEG-LS decoder uses invalid default PC parameters, as a workaround write the used values explicitly.
-            writer_.write_jpegls_preset_parameters_segment(validated_pc_parameters_);
         }
 
         if (interleave_mode_ == charls::interleave_mode::none)
@@ -241,7 +239,7 @@ private:
                                             component_count};
 
         const auto codec{jls_codec_factory<encoder_strategy>().create_codec(
-            frame_info, {near_lossless_, 0, interleave_mode_, color_transformation_, false}, validated_pc_parameters_)};
+            frame_info, {near_lossless_, 0, interleave_mode_, color_transformation_, false}, preset_coding_parameters_)};
         std::unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
         const size_t bytes_written{codec->encode_scan(move(process_line), writer_.remaining_destination())};
 
@@ -316,8 +314,8 @@ private:
     charls::encoding_options encoding_options_{encoding_options::include_pc_parameters_jai};
     state state_{};
     jpeg_stream_writer writer_;
+    jpegls_pc_parameters user_preset_coding_parameters_{};
     jpegls_pc_parameters preset_coding_parameters_{};
-    jpegls_pc_parameters validated_pc_parameters_{};
 };
 
 extern "C" {

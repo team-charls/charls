@@ -48,7 +48,7 @@ int8_t quantize_gradient_org(const jpegls_pc_parameters& preset, const int32_t d
 
 vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
 {
-    const jpegls_pc_parameters preset{compute_default((1 << static_cast<uint32_t>(bit_count)) - 1, 0)};
+    const jpegls_pc_parameters preset{compute_default(calculate_maximum_sample_value(bit_count), 0)};
     const int32_t range{preset.maximum_sample_value + 1};
 
     vector<int8_t> lut(static_cast<size_t>(range) * 2);

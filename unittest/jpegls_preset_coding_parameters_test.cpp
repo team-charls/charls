@@ -118,6 +118,34 @@ public:
 
         Assert::IsTrue(is_valid(pc_parameters, maximum_component_value, 0));
     }
+
+    TEST_METHOD(is_default_nothing_set) // NOLINT
+    {
+        const auto default_parameters{compute_default(255, 0)};
+
+        constexpr jpegls_pc_parameters pc_parameters{};
+
+        Assert::IsTrue(is_default(pc_parameters, default_parameters));
+    }
+
+    TEST_METHOD(is_default_same_as_default) // NOLINT
+    {
+        const auto default_parameters{compute_default(255, 0)};
+
+        const jpegls_pc_parameters pc_parameters{compute_default(255, 0)};
+
+        Assert::IsTrue(is_default(pc_parameters, default_parameters));
+    }
+
+    TEST_METHOD(is_default_same_as_default_except_reset) // NOLINT
+    {
+        const auto default_parameters{compute_default(255, 0)};
+
+        jpegls_pc_parameters pc_parameters{compute_default(255, 0)};
+        ++pc_parameters.reset_value;
+
+        Assert::IsFalse(is_default(pc_parameters, default_parameters));
+    }
 };
 
 }} // namespace charls::test

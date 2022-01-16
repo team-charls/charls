@@ -13,7 +13,7 @@
 namespace charls {
 
 /// <summary>Clamping function as defined by ISO/IEC 14495-1, Figure C.3</summary>
-inline int32_t clamp(const int32_t i, const int32_t j, const int32_t maximum_sample_value) noexcept
+constexpr int32_t clamp(const int32_t i, const int32_t j, const int32_t maximum_sample_value) noexcept
 {
     if (i > maximum_sample_value || i < j)
         return j;
@@ -52,21 +52,26 @@ inline jpegls_pc_parameters compute_default(const int32_t maximum_sample_value, 
 }
 
 
-inline bool is_default(const jpegls_pc_parameters& preset_coding_parameters) noexcept
+inline bool is_default(const jpegls_pc_parameters& preset_coding_parameters, const jpegls_pc_parameters& defaults) noexcept
 {
-    if (preset_coding_parameters.maximum_sample_value != 0)
+    if (preset_coding_parameters.maximum_sample_value == 0 && preset_coding_parameters.threshold1 == 0 &&
+        preset_coding_parameters.threshold2 == 0 && preset_coding_parameters.threshold3 == 0 &&
+        preset_coding_parameters.reset_value == 0)
+        return true;
+
+    if (preset_coding_parameters.maximum_sample_value != defaults.maximum_sample_value)
         return false;
 
-    if (preset_coding_parameters.threshold1 != 0)
+    if (preset_coding_parameters.threshold1 != defaults.threshold1)
         return false;
 
-    if (preset_coding_parameters.threshold2 != 0)
+    if (preset_coding_parameters.threshold2 != defaults.threshold2)
         return false;
 
-    if (preset_coding_parameters.threshold3 != 0)
+    if (preset_coding_parameters.threshold3 != defaults.threshold3)
         return false;
 
-    if (preset_coding_parameters.reset_value != 0)
+    if (preset_coding_parameters.reset_value != defaults.reset_value)
         return false;
 
     return true;

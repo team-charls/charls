@@ -1231,6 +1231,82 @@ public:
         test_by_decoding(encoded_source, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
+    TEST_METHOD(image_contains_no_preset_coding_parameters_by_default) // NOLINT
+    {
+        constexpr frame_info frame_info{512, 512, 8, 1};
+        const vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source)};
+        Assert::AreEqual(static_cast<size_t>(99), bytes_written);
+
+        destination.resize(bytes_written);
+        const auto it{find_first_lse_segment(destination.cbegin(), destination.cend())};
+        Assert::IsTrue(it == destination.cend());
+    }
+
+    TEST_METHOD(image_contains_no_preset_coding_parameters_if_configured_pc_is_default) // NOLINT
+    {
+        constexpr frame_info frame_info{512, 512, 8, 1};
+        const vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info).preset_coding_parameters({255, 3, 7, 21, 64});
+
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source)};
+        Assert::AreEqual(static_cast<size_t>(99), bytes_written);
+
+        destination.resize(bytes_written);
+        const auto it{find_first_lse_segment(destination.cbegin(), destination.cend())};
+        Assert::IsTrue(it == destination.cend());
+    }
+
+    TEST_METHOD(image_contains_preset_coding_parameters_if_configured_pc_is_non_default) // NOLINT
+    {
+        constexpr frame_info frame_info{512, 512, 8, 1};
+        const vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info).preset_coding_parameters({255, 3, 7, 21, 65});
+
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source)};
+        Assert::AreEqual(static_cast<size_t>(114), bytes_written);
+
+        destination.resize(bytes_written);
+        const auto it{find_first_lse_segment(destination.cbegin(), destination.cend())};
+        Assert::IsFalse(it == destination.cend());
+    }
+
+    TEST_METHOD(image_contains_preset_coding_parameters_if_configured_pc_has_diff_max_value) // NOLINT
+    {
+        constexpr frame_info frame_info{512, 512, 8, 1};
+        const vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info).preset_coding_parameters({100, 0, 0, 0, 0});
+
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source)};
+        Assert::AreEqual(static_cast<size_t>(114), bytes_written);
+
+        destination.resize(bytes_written);
+        const auto it{find_first_lse_segment(destination.cbegin(), destination.cend())};
+        Assert::IsFalse(it == destination.cend());
+    }
+
 private:
     static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info,
                                  const void* expected_destination, const size_t expected_destination_size,
