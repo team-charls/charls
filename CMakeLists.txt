@@ -130,7 +130,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
 
   set(WARNINGS_AS_ERRORS_FLAG_COMPILER -Werror)
-  set(WARNINGS_AS_ERRORS_FLAG_LINKER LINKER:--fatal-warnings)
+  if (CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+    set(WARNINGS_AS_ERRORS_FLAG_LINKER LINKER:-fatal-warnings)
+  else()
+    set(WARNINGS_AS_ERRORS_FLAG_LINKER LINKER:--fatal-warnings)
+  endif()
 endif()
 
 if(MSVC)
