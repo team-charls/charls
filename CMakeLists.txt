@@ -31,10 +31,10 @@ option(CHARLS_INSTALL "Generate the install target." ${MASTER_PROJECT})
 # Provide BUILD_SHARED_LIBS as an option for GUI tools
 option(BUILD_SHARED_LIBS "Will control if charls lib is build as shared lib/DLL or static library")
 
-# The options used by the CI builds to ensure the source remains warning free.
-# Not enabled by default to make CharLS package and end-user friendly.
+# These options are used by the CI pipeline to ensure new warnings are detected quickly.
+# Not enabled by default to ensure the CharLS package is end-user friendly.
 option(CHARLS_PEDANTIC_WARNINGS "Enable extra warnings and static analysis." OFF)
-option(CHARLS_TREAT_WARNING_AS_ERROR "Treat warning as error." OFF)
+option(CHARLS_TREAT_WARNING_AS_ERROR "Treat a warning as an error." OFF)
 
 # CharLS requires C++14 or newer.
 set(CMAKE_CXX_STANDARD 14)
@@ -82,7 +82,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
       )
   endif()
 
-  set(WERROR_FLAG -Werror)
+  set(WARNINGS_AS_ERRORS_FLAG_COMPILER -Werror)
+  set(WARNINGS_AS_ERRORS_FLAG_LINKER LINKER:--fatal-warnings)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -128,12 +129,16 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     )
   endif()
 
-  set(WERROR_FLAG -Werror)
+  set(WARNINGS_AS_ERRORS_FLAG_COMPILER -Werror)
+  if (NOT CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+    set(WARNINGS_AS_ERRORS_FLAG_LINKER LINKER:--fatal-warnings)
+  endif()
 endif()
 
 if(MSVC)
   set(PEDANTIC_CXX_COMPILE_FLAGS /W4)
-  set(WERROR_FLAG /WX)
+  set(WARNINGS_AS_ERRORS_FLAG_COMPILER /WX)
+  set(WARNINGS_AS_ERRORS_FLAG_LINKER /WX)
 
   # Exception settings are not set for ARM(64) when building for Ninja
   string(TOLOWER ${CMAKE_CXX_COMPILER} CXX_COMPILER_LOWER)
@@ -187,7 +192,8 @@ if(CHARLS_PEDANTIC_WARNINGS)
 endif()
 
 if(CHARLS_TREAT_WARNING_AS_ERROR)
-  add_compile_options(${WERROR_FLAG})
+  add_compile_options(${WARNINGS_AS_ERRORS_FLAG_COMPILER})
+  add_link_options(${WARNINGS_AS_ERRORS_FLAG_LINKER})
 endif()
 
 include(src/CMakeLists.txt)
