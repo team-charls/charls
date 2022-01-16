@@ -265,7 +265,7 @@ CHARLS_CHECK_RETURN T byte_swap(T /*value*/) noexcept
 }
 
 template<>
-CHARLS_CHECK_RETURN inline uint16_t byte_swap<uint16_t>(const uint16_t value) noexcept
+CHARLS_CHECK_RETURN inline uint16_t byte_swap(const uint16_t value) noexcept
 {
 #ifdef _MSC_VER
     return _byteswap_ushort(value);
@@ -276,7 +276,7 @@ CHARLS_CHECK_RETURN inline uint16_t byte_swap<uint16_t>(const uint16_t value) no
 }
 
 template<>
-CHARLS_CHECK_RETURN inline uint32_t byte_swap<uint32_t>(const uint32_t value) noexcept
+CHARLS_CHECK_RETURN inline uint32_t byte_swap(const uint32_t value) noexcept
 {
 #ifdef _MSC_VER
     return _byteswap_ulong(value);
