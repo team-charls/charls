@@ -621,7 +621,7 @@ public:
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        constexpr uint32_t height{numeric_limits<uint16_t>::max() + 1};
+        constexpr uint32_t height{numeric_limits<uint16_t>::max() + 1U};
         constexpr uint32_t width{99};
         writer.write_oversize_image_dimension(3, height, width);
         writer.write_start_of_frame_segment(0, 0, 8, 3);

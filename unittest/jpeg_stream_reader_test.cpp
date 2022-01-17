@@ -28,7 +28,7 @@ public:
     {
         array<uint8_t, 1> buffer{};
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), static_cast<size_t>(0)});
+        reader.source({buffer.data(), 0});
 
         assert_expect_exception(jpegls_errc::source_buffer_too_small, [&reader] { reader.read_header(); });
     }
