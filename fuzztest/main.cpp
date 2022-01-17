@@ -39,10 +39,20 @@
 
 namespace {
 
-auto generate_once()
+std::vector<uint8_t> generate_once()
 {
     const std::vector<uint8_t> source(3);
-    return charls::jpegls_encoder::encode(source, {1, 1, 8, 3});
+
+    charls::jpegls_encoder encoder;
+    encoder.frame_info({1, 1, 8, 3});
+
+    std::vector<uint8_t> destination(encoder.estimated_destination_size());
+    encoder.destination(destination);
+
+    const size_t bytes_written{encoder.encode(source)};
+    destination.resize(bytes_written);
+
+    return destination;
 }
 
 } // namespace

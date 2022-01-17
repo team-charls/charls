@@ -15,10 +15,7 @@ namespace charls {
 /// <summary>Clamping function as defined by ISO/IEC 14495-1, Figure C.3</summary>
 constexpr int32_t clamp(const int32_t i, const int32_t j, const int32_t maximum_sample_value) noexcept
 {
-    if (i > maximum_sample_value || i < j)
-        return j;
-
-    return i;
+    return i > maximum_sample_value || i < j ? j : i;
 }
 
 /// <summary>Default coding threshold values as defined by ISO/IEC 14495-1, C.2.4.1.1.1</summary>

@@ -155,7 +155,7 @@ if(MSVC)
   add_compile_options("/utf-8")
 
   # Zc:__cplusplus: Will configure the MSVC compiler to use the correct value for the __cplusplus macro
-  # (introduced with Visual Studio 2017 version 15.7)
+  # This option is introduced with Visual Studio 2017 version 15.7
   if(MSVC_VERSION GREATER_EQUAL 1914)
     add_compile_options("/Zc:__cplusplus")
   endif()
@@ -164,7 +164,10 @@ if(MSVC)
   add_compile_options("/Zc:throwingNew")
 
   # /permissive-: Will configure the MSVC compiler to accept only standards conformance C++
-  add_compile_options("/permissive-")
+  # This option is introduced with Visual Studio 2017.
+  if(MSVC_VERSION GREATER_EQUAL 1910)
+    add_compile_options("/permissive-")
+  endif()
 
   # /ZH:SHA_256: Wiill use SHA 256 for checksums between source code and debug symbols (more secure)
   add_compile_options("/ZH:SHA_256")
