@@ -316,7 +316,7 @@ public:
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         const bool oversized_image{writer.write_start_of_frame_segment(
-            {100, numeric_limits<uint16_t>::max() + 1, bits_per_sample, component_count})};
+            {100, numeric_limits<uint16_t>::max() + 1U, bits_per_sample, component_count})};
 
         Assert::IsTrue(oversized_image);
         Assert::AreEqual(static_cast<size_t>(19), writer.bytes_written());

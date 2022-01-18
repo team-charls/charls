@@ -51,9 +51,10 @@ public:
     {
     }
 
-    explicit  constexpr const_byte_span(const uint8_t* first, const uint8_t* last) noexcept :
-        const_byte_span(first, last - first)
-    {}
+    template<typename It>
+    constexpr const_byte_span(It first, It last) noexcept : const_byte_span(first, last - first)
+    {
+    }
 
     CHARLS_CHECK_RETURN constexpr size_t size() const noexcept
     {
