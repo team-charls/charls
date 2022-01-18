@@ -261,7 +261,7 @@ private:
         // Easy & fast: if there is no 0xFF byte in sight, we can read without bit stuffing
         if (position_ < position_ff_ - (sizeof(cache_t) - 1))
         {
-            read_cache_ |= byte_swap(read_unaligned<cache_t>(position_)) >> valid_bits_;
+            read_cache_ |= read_big_endian_unaligned<cache_t>(position_) >> valid_bits_;
             const int bytes_to_read{(cache_t_bit_count - valid_bits_) / 8};
             position_ += bytes_to_read;
             valid_bits_ += bytes_to_read * 8;

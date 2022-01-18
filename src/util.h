@@ -310,6 +310,41 @@ T read_unaligned(const void* buffer) noexcept
     return value;
 }
 
+#ifdef __EMSCRIPTEN__
+
+template<typename T>
+T read_big_endian_unaligned(const void* /*buffer*/) noexcept
+{
+}
+
+template<>
+inline uint16_t read_big_endian_unaligned<uint16_t>(const void* buffer) noexcept
+{
+    const uint8_t* p{static_cast<const uint8_t*>(buffer)};
+    const uint32_t value{*p * 256U};
+    ++p;
+    return static_cast<uint16_t>(value + *p);
+}
+
+template<>
+inline uint32_t read_big_endian_unaligned<uint32_t>(const void* buffer) noexcept
+{
+    const uint8_t* p{static_cast<const uint8_t*>(buffer)};
+
+    return (static_cast<uint32_t>(p[0]) << 24U) + (static_cast<uint32_t>(p[1]) << 16U) +
+           (static_cast<uint32_t>(p[2]) << 8U) + (static_cast<uint32_t>(p[3]) << 0U);
+}
+
+#else
+
+template<typename T>
+T read_big_endian_unaligned(const void* buffer) noexcept
+{
+    return byte_swap(read_unaligned<T>(buffer));
+}
+
+#endif
+
 
 inline void skip_bytes(byte_span& stream_info, const size_t count) noexcept
 {
