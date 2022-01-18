@@ -98,13 +98,13 @@ private:
                              bool* spiff_header_found = nullptr);
     void read_spiff_directory_entry(jpeg_marker_code marker_code);
     void read_start_of_frame_segment();
-    void read_start_of_scan();
-    void read_comment();
-    void read_application_data() noexcept;
+    void read_start_of_scan_segment();
+    void read_comment_segment();
+    void read_application_data_segment() noexcept;
     void read_preset_parameters_segment();
     void read_preset_coding_parameters();
     void oversize_image_dimension();
-    void read_define_restart_interval();
+    void read_define_restart_interval_segment();
     void try_read_application_data8_segment(spiff_header* header, bool* spiff_header_found);
     void try_read_spiff_header_segment(CHARLS_OUT spiff_header& header, CHARLS_OUT bool& spiff_header_found);
     void try_read_hp_color_transform_segment();
