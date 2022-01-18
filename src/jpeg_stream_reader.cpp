@@ -59,7 +59,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 
     for (;;)
     {
-        const jpeg_marker_code marker_code = read_next_marker_code();
+        const jpeg_marker_code marker_code{read_next_marker_code()};
         validate_marker_code(marker_code);
         read_segment_size();
 
@@ -129,7 +129,7 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
         const unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
             frame_info_, parameters_, get_validated_preset_coding_parameters())};
         unique_ptr<process_line> process_line(codec->create_process_line(destination, stride));
-        const size_t bytes_read = codec->decode_scan(move(process_line), rect_, const_byte_span{position_, end_position_});
+        const size_t bytes_read{codec->decode_scan(move(process_line), rect_, const_byte_span{position_, end_position_})};
         advance_position(bytes_read);
         charls::skip_bytes(destination, static_cast<size_t>(bytes_per_plane));
         state_ = state::scan_section;
@@ -137,7 +137,7 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
         if (parameters_.interleave_mode != interleave_mode::none)
             return;
 
-        component_index++;
+        ++component_index;
     }
 }
 
@@ -278,7 +278,7 @@ void jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code,
         break;
 
     case jpeg_marker_code::start_of_scan:
-        read_start_of_scan();
+        read_start_of_scan_segment();
         break;
 
     case jpeg_marker_code::jpegls_preset_parameters:
@@ -286,7 +286,7 @@ void jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code,
         break;
 
     case jpeg_marker_code::define_restart_interval:
-        read_define_restart_interval();
+        read_define_restart_interval_segment();
         break;
 
     case jpeg_marker_code::application_data8:
@@ -294,7 +294,7 @@ void jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code,
         break;
 
     case jpeg_marker_code::comment:
-        read_comment();
+        read_comment_segment();
         break;
 
     case jpeg_marker_code::application_data0:
@@ -312,7 +312,7 @@ void jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code,
     case jpeg_marker_code::application_data13:
     case jpeg_marker_code::application_data14:
     case jpeg_marker_code::application_data15:
-        read_application_data();
+        read_application_data_segment();
         break;
 
     // Other tags not supported (among which DNL)
@@ -375,7 +375,7 @@ void jpeg_stream_reader::read_start_of_frame_segment()
 }
 
 
-void jpeg_stream_reader::read_comment()
+void jpeg_stream_reader::read_comment_segment()
 {
     if (comment_handler_ &&
         UNLIKELY(static_cast<bool>(comment_handler_(segment_data_.empty() ? nullptr : position_, segment_data_.size(),
@@ -386,7 +386,7 @@ void jpeg_stream_reader::read_comment()
 }
 
 
-void jpeg_stream_reader::read_application_data() noexcept
+void jpeg_stream_reader::read_application_data_segment() noexcept
 {
     skip_remaining_segment_data();
 }
@@ -475,7 +475,7 @@ void jpeg_stream_reader::oversize_image_dimension()
 }
 
 
-void jpeg_stream_reader::read_define_restart_interval()
+void jpeg_stream_reader::read_define_restart_interval_segment()
 {
     // Note: The JPEG-LS standard supports a 2,3 or 4 byte restart interval (see ISO/IEC 14495-1, C.2.5)
     //       The original JPEG standard only supports 2 bytes (16 bit big endian).
@@ -499,7 +499,7 @@ void jpeg_stream_reader::read_define_restart_interval()
 }
 
 
-void jpeg_stream_reader::read_start_of_scan()
+void jpeg_stream_reader::read_start_of_scan_segment()
 {
     check_minimal_segment_size(1);
     const size_t component_count_in_scan{read_uint8()};
