@@ -576,7 +576,7 @@ USE_DECL_ANNOTATIONS uint16_t jpeg_stream_reader::read_uint16() noexcept
 {
     ASSERT(position_ + sizeof(uint16_t) <= end_position_);
 
-    const auto value{byte_swap(read_unaligned<uint16_t>(position_))};
+    const auto value{read_big_endian_unaligned<uint16_t>(position_)};
     advance_position(2);
     return value;
 }
@@ -593,7 +593,7 @@ USE_DECL_ANNOTATIONS uint32_t jpeg_stream_reader::read_uint32() noexcept
 {
     ASSERT(position_ + sizeof(uint32_t) <= end_position_);
 
-    const auto value{byte_swap(read_unaligned<uint32_t>(position_))};
+    const auto value{read_big_endian_unaligned<uint32_t>(position_)};
     advance_position(4);
     return value;
 }

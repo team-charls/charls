@@ -68,13 +68,13 @@ unique_ptr<Strategy> make_codec(const Traits& traits, const frame_info& frame_in
 
 // Functions to build tables used to decode short Golomb codes.
 
-inline std::pair<int32_t, int32_t> create_encoded_value(const int32_t k, const int32_t mapped_error) noexcept
+std::pair<int32_t, int32_t> create_encoded_value(const int32_t k, const int32_t mapped_error) noexcept
 {
     const int32_t high_bits{mapped_error >> k};
     return std::make_pair(high_bits + k + 1, (1 << k) | (mapped_error & ((1 << k) - 1)));
 }
 
-inline golomb_code_table initialize_table(const int32_t k) noexcept
+golomb_code_table initialize_table(const int32_t k) noexcept
 {
     golomb_code_table table;
     for (int16_t error_value{};; ++error_value)

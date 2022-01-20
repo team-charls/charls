@@ -303,12 +303,51 @@ CHARLS_CHECK_RETURN inline uint64_t byte_swap(const uint64_t value) noexcept
 template<typename T>
 T read_unaligned(const void* buffer) noexcept
 {
-    // Note: MSVC, GCC and clang will replace this with a direct register read if architecture allows it (x86, x64, ARM64
-    // allows it)
+    // Note: MSVC, GCC and clang will replace this with a direct register read if the CPU architecture allows it
+    // On x86, x64 and ARM64 this will just be 1 register load.
     T value;
     memcpy(&value, buffer, sizeof(T));
     return value;
 }
+
+#ifdef __EMSCRIPTEN__
+
+// Note: WebAssembly (emcc 3.1.1) will fail with the default read_unaligned.
+
+template<typename T>
+T read_big_endian_unaligned(const void* /*buffer*/) noexcept;
+
+template<>
+inline uint16_t read_big_endian_unaligned<uint16_t>(const void* buffer) noexcept
+{
+    const uint8_t* p{static_cast<const uint8_t*>(buffer)};
+    return (static_cast<uint32_t>(p[0]) << 8U) + static_cast<uint32_t>(p[1]);
+}
+
+template<>
+inline uint32_t read_big_endian_unaligned<uint32_t>(const void* buffer) noexcept
+{
+    const uint8_t* p{static_cast<const uint8_t*>(buffer)};
+    return (static_cast<uint32_t>(p[0]) << 24U) + (static_cast<uint32_t>(p[1]) << 16U) +
+           (static_cast<uint32_t>(p[2]) << 8U) + static_cast<uint32_t>(p[3]);
+}
+
+template<>
+inline size_t read_big_endian_unaligned<size_t>(const void* buffer) noexcept
+{
+    static_assert(sizeof(size_t) == sizeof(uint32_t), "wasm32 only");
+    return read_big_endian_unaligned<uint32_t>(buffer);
+}
+
+#else
+
+template<typename T>
+T read_big_endian_unaligned(const void* buffer) noexcept
+{
+    return byte_swap(read_unaligned<T>(buffer));
+}
+
+#endif
 
 
 inline void skip_bytes(byte_span& stream_info, const size_t count) noexcept
