@@ -38,8 +38,8 @@ struct default_traits final
         maximum_sample_value{arg_maximum_sample_value},
         near_lossless{arg_near_lossless},
         range{compute_range_parameter(maximum_sample_value, near_lossless)},
-        quantized_bits_per_pixel{log_2(range)},
-        bits_per_pixel{log_2(maximum_sample_value)},
+        quantized_bits_per_pixel{log2_ceil(range)},
+        bits_per_pixel{log2_ceil(maximum_sample_value)},
         limit{compute_limit_parameter(bits_per_pixel)},
         reset_threshold{reset}
     {

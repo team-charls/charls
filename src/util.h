@@ -149,8 +149,14 @@ inline jpegls_errc set_error_message(const jpegls_errc error,
 }
 
 
-CONSTEXPR int32_t log_2(const int32_t n) noexcept
+/// <Remarks>
+/// Bits per sample can be computed if range is passed as argument.
+/// </Remarks>
+CONSTEXPR int32_t log2_ceil(const int32_t n) noexcept
 {
+    ASSERT(n >= 0);
+    ASSERT(static_cast<uint32_t>(n) <= std::numeric_limits<uint32_t>::max() >> 2); // otherwise 1 << x becomes negative.
+
     int32_t x{};
     while (n > (1 << x))
     {

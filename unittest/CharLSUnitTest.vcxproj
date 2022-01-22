@@ -99,6 +99,7 @@
     <ClCompile Include="jpeg_stream_writer_test.cpp" />
     <ClCompile Include="scan_test.cpp" />
     <ClCompile Include="util.cpp" />
+    <ClCompile Include="util_test.cpp" />
     <ClCompile Include="version_test.cpp" />
   </ItemGroup>
   <ItemGroup>
