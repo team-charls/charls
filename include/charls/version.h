@@ -35,6 +35,7 @@ CHARLS_API_IMPORT_EXPORT void CHARLS_API_CALLING_CONVENTION charls_get_version_n
                                                                                       CHARLS_OUT_OPT int32_t* patch);
 
 #ifdef __cplusplus
+}
 
 namespace charls {
 
@@ -43,5 +44,5 @@ constexpr int32_t version_minor{CHARLS_VERSION_MINOR};
 constexpr int32_t version_patch{CHARLS_VERSION_PATCH};
 
 } // namespace charls
-}
+
 #endif
