@@ -67,6 +67,20 @@ ofstream open_output_stream(const char* filename)
 }
 
 
+uint32_t log2_floor(uint32_t n) noexcept
+{
+    ASSERT(n != 0 && "log2 is not defined for 0");
+    return 31 - countl_zero(n);
+}
+
+
+uint32_t max_value_to_bits_per_sample(uint32_t max_value) noexcept
+{
+    ASSERT(max_value > 0);
+    return log2_floor(max_value) + 1;
+}
+
+
 template<typename Container>
 void read(istream& input, Container& destination_container)
 {
@@ -495,7 +509,8 @@ try
         vector<uint8_t> pixels(decoded_destination.size());
         if (frame_info.bits_per_sample > 8)
         {
-            convert_planar_to_pixel<uint16_t>(frame_info.width, frame_info.height, decoded_destination.data(), pixels.data());
+            convert_planar_to_pixel<uint16_t>(frame_info.width, frame_info.height, decoded_destination.data(),
+                                              pixels.data());
         }
         else
         {
@@ -576,7 +591,8 @@ try
         return false;
 
     const frame_info frame_info{static_cast<uint32_t>(read_values[1]), static_cast<uint32_t>(read_values[2]),
-                                log_2(read_values[3] + 1), read_values[0] == 6 ? 3 : 1};
+                                static_cast<int32_t>(max_value_to_bits_per_sample(read_values[3])),
+                                read_values[0] == 6 ? 3 : 1};
 
     const auto bytes_per_sample = static_cast<int32_t>(::bit_to_byte_count(frame_info.bits_per_sample));
     vector<uint8_t> input_buffer(static_cast<size_t>(frame_info.width) * frame_info.height * bytes_per_sample *

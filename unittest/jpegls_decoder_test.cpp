@@ -287,7 +287,7 @@ public:
 
     TEST_METHOD(read_spiff_header) // NOLINT
     {
-        const vector<uint8_t> source = create_test_spiff_header();
+        const vector<uint8_t> source{create_test_spiff_header()};
         const jpegls_decoder decoder{source, true};
 
         Assert::IsTrue(decoder.spiff_header_has_value());
