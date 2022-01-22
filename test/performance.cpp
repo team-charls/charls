@@ -43,8 +43,6 @@ void test_file16_bit_as12(const char* filename, const int offset, const rect_siz
 
 void test_performance(const int loop_count)
 {
-    ////TestFile("test/bad.raw", 0, rect_size(512, 512),  8, 1);
-
     // RGBA image (This is a common PNG sample)
     test_file("test/alphatest.raw", 0, rect_size(380, 287), 8, 4, false, loop_count);
 
@@ -68,7 +66,6 @@ void test_performance(const int loop_count)
     // 16 bit RGB
     test_file("test/DSC_5455.raw", 142949, rect_size(300, 200), 16, 3, true, loop_count);
 }
-
 
 } // namespace
 
@@ -113,12 +110,6 @@ void test_large_image_performance_rgb8(const int loop_count)
     {
         cout << "Test failed " << error.what() << "\n";
     }
-}
-
-size_t get_destination_size(const vector<uint8_t>& source)
-{
-    const jpegls_decoder decoder{source, true};
-    return decoder.destination_size();
 }
 
 void decode_performance_tests(const int loop_count)

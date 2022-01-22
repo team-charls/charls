@@ -592,7 +592,7 @@ public:
     {
         comment_handler_ = std::move(comment_handler);
         check_jpegls_errc(
-            charls_jpegls_decoder_at_comment(decoder_.get(), comment_handler_ ? at_comment_callback : nullptr, this));
+            charls_jpegls_decoder_at_comment(decoder_.get(), comment_handler_ ? &at_comment_callback : nullptr, this));
         return *this;
     }
 
