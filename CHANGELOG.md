@@ -4,21 +4,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Next-Release]
+## [2.3.0] - 2022-1-23
 
 ### Added
 
-- The encoder API has been extended with a rewind method that can be used to re-use a configered encoder to encode multiple images in a loop.
-- Added support to decode JPEG-LS images that use restart markers [#92](https://github.com/team-charls/charls/issues/92)
-- Added support to write and read comment (COM) segments [#113](https://github.com/team-charls/charls/issues/113)
+- The encoder API has been extended with a rewind method that can be used to re-use a configured encoder to encode multiple images in a loop.
+- Added support to decode JPEG-LS images that use restart markers [#92](https://github.com/team-charls/charls/issues/92).
+- Added support to write and read comment (COM) segments [#113](https://github.com/team-charls/charls/issues/113).
+- Added support to encode/decode oversized images (width or height larger then 65535).
+- Extended the validation of the encoded byte stream during decoding.
+- Added support to encode JPEG-LS images with:
+  - The option to ensure the output stream has an even size.
+  - The option to write the CharLS version number as a comment (COM segment) to the output stream.
+  - The option to write the coding parameters to the output stream if the bits per pixel is larger then 12 (enabled by default).
+- Usage of compiler specific attributes as replacement for ``[[nodiscard]]`` (C++17 feature).
 
 ### Fixed
 
 - Fixed [#84](https://github.com/team-charls/charls/issues/84), Default preset coding parameters not computed for unset values.
+- Fixed [#102](https://github.com/team-charls/charls/issues/102), CMake find_package(charls 2.2.0 REQUIRED) not working.
 
 ### Changed
 
 - CMakeSettings.json has been replaced with CMakePresets.json.
+- Non default coding parameters are explicitly stored in the output stream during encoding.
+- GCC shared library release builds are now using LTO (Link Time Optimization).
+- Some functions use compiler intrinsics for slightly better performance.
 
 ## [2.2.0] - 2021-1-10
 
