@@ -1,10 +1,10 @@
 # Change Log
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.3.0] - 2022-1-23
+## [2.3.0] - 2022-1-24
 
 ### Added
 
@@ -12,12 +12,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Added support to decode JPEG-LS images that use restart markers [#92](https://github.com/team-charls/charls/issues/92).
 - Added support to write and read comment (COM) segments [#113](https://github.com/team-charls/charls/issues/113).
 - Added support to encode/decode oversized images (width or height larger then 65535).
-- Extended the validation of the encoded byte stream during decoding.
+- Extended the validation of the encoded JPEG-LS byte stream during decoding.
 - Added support to encode JPEG-LS images with:
   - The option to ensure the output stream has an even size.
   - The option to write the CharLS version number as a comment (COM segment) to the output stream.
-  - The option to write the coding parameters to the output stream if the bits per pixel is larger then 12 (enabled by default).
-- Usage of compiler specific attributes as replacement for ``[[nodiscard]]`` (C++17 feature).
+  - The option to write the coding parameters to the output stream if the bits per pixel are larger then 12 (enabled by default).
+- Usage of compiler specific attributes on the public API as replacement for ``[[nodiscard]]`` (which is a C++17 feature).
 
 ### Fixed
 
