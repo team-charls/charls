@@ -491,4 +491,21 @@ auto countl_zero(T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, int>
 
 #endif
 
+
+#if INTPTR_MAX == INT64_MAX
+constexpr size_t checked_mul(const size_t a, const size_t b) noexcept
+{
+    return a * b;
+}
+#elif INTPTR_MAX == INT32_MAX
+inline size_t checked_mul(const size_t a, const size_t b)
+{
+    const size_t result{a * b};
+    if (UNLIKELY(result < a || result < b)) // check for unsigned integer overflow.
+        impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+    return result;
+}
+#endif
+
+
 } // namespace charls

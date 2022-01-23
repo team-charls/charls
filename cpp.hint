@@ -10,10 +10,10 @@
 
 #define CHARLS_API_IMPORT_EXPORT
 #define CHARLS_API_CALLING_CONVENTION
-#define CHARLS_NO_DISCARD [[nodiscard]]
-#define CHARLS_DEPRECATED [[deprecated]]
+#define CHARLS_NO_DISCARD
+#define CHARLS_DEPRECATED
 #define CHARLS_FINAL final
-#define CHARLS_NOEXCEPT noexcept
+#define CHARLS_NOEXCEPT
 #define CHARLS_NO_INLINE
 #define FORCE_INLINE
 #define MSVC_WARNING_SUPPRESS(x)
