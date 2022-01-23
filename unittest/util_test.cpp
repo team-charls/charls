@@ -13,25 +13,25 @@ namespace charls { namespace test {
 
 namespace {
 
-uint32_t log2_floor(uint32_t n) noexcept
+uint32_t log2_floor(const uint32_t n) noexcept
 {
     ASSERT(n != 0 && "log2 is not defined for 0");
     return 31 - countl_zero(n);
 }
 
-uint32_t max_value_to_bits_per_sample(uint32_t max_value) noexcept
+uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept
 {
     ASSERT(max_value > 0);
     return log2_floor(max_value) + 1;
 }
 
-void call_and_compare_log2_ceil(int32_t arg)
+void call_and_compare_log2_ceil(const int32_t arg)
 {
     const int32_t expected{static_cast<int32_t>(ceil(std::log2(arg)))};
     Assert::AreEqual(expected, log2_ceil(arg));
 }
 
-void call_and_compare_log2_floor(uint32_t arg)
+void call_and_compare_log2_floor(const uint32_t arg)
 {
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26467) // cast from double to uint32 is safe. values always positive.
     const uint32_t expected{static_cast<uint32_t>(floor(std::log2(arg)))};

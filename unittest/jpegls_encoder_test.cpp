@@ -204,6 +204,23 @@ public:
                                 [&encoder] { ignore = encoder.estimated_destination_size(); });
     }
 
+    TEST_METHOD(estimated_destination_size_thath_causes_overflow_throws) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        encoder.frame_info({numeric_limits<uint32_t>::max(), numeric_limits<uint32_t>::max(), 8, 1});
+
+        #if INTPTR_MAX == INT64_MAX
+        const auto size{encoder.estimated_destination_size()};
+        Assert::IsTrue(size != 0); // actual value already checked in other test functions.
+        #elif INTPTR_MAX == INT32_MAX
+        assert_expect_exception(jpegls_errc::parameter_value_not_supported,
+                                [&encoder] { ignore = encoder.estimated_destination_size(); });
+        #else
+        #error Unknown pointer size or missing size macros!
+        #endif
+    }
+
     TEST_METHOD(destination) // NOLINT
     {
         jpegls_encoder encoder;
