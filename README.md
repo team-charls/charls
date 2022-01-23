@@ -21,8 +21,8 @@ JPEG-LS is a low-complexity image compression standard that matches JPEG 2000 co
 ## About JPEG-LS
 
 JPEG-LS (ISO/IEC 14495-1:1999 / ITU-T.87) is an image compression standard derived from the Hewlett Packard LOCO algorithm. JPEG-LS has low complexity (meaning fast compression) and high compression ratios, similar to the JPEG 2000 lossless ratios. JPEG-LS is more similar to the old Lossless JPEG than to JPEG 2000, but interestingly the two different techniques result in vastly different performance characteristics.
-Wikipedia on lossless JPEG and JPEG-LS: <http://en.wikipedia.org/wiki/Lossless_JPEG>
-Tip: the ITU makes their version of the JPEG-LS standard (ITU-T.87) freely available for download, the text is identical with the ISO version.
+Wikipedia on lossless JPEG and JPEG-LS: <http://en.wikipedia.org/wiki/Lossless_JPEG>  
+Tip: ITU makes their version of the JPEG-LS standard (ITU-T.87) freely available for download. The text is identical with the ISO version.
 
 ## About this software
 
