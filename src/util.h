@@ -18,6 +18,7 @@
 
 // Use an uppercase alias for assert to make it clear that ASSERT is a pre-processor macro.
 #ifdef _MSC_VER
+// C26493 = Don't use C-style casts
 #define ASSERT(expression) \
     __pragma(warning(push)) __pragma(warning(disable : 26493)) assert(expression) __pragma(warning(pop))
 #else
@@ -263,15 +264,13 @@ struct quad final : triplet<SampleType>
 
 
 // C++23 comes with std::byteswap. Use our own byte_swap implementation for now.
-template<typename T>
-CHARLS_CHECK_RETURN T byte_swap(T /*value*/) noexcept
-{
-    ASSERT(false);
-    return 0;
-}
 
-template<>
-CHARLS_CHECK_RETURN inline uint16_t byte_swap(const uint16_t value) noexcept
+// A simple overload with uint64_t\uint32_t doesn't work for macOS. size_t is not the same type as uint64_t.
+template<int Bits, typename T>
+constexpr bool is_uint_v = sizeof(T) == (Bits / 8) && std::is_integral<T>::value && !std::is_signed<T>::value;
+
+template<typename T>
+CHARLS_CHECK_RETURN auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<16, T>, uint16_t>
 {
 #ifdef _MSC_VER
     return _byteswap_ushort(value);
@@ -281,8 +280,8 @@ CHARLS_CHECK_RETURN inline uint16_t byte_swap(const uint16_t value) noexcept
 #endif
 }
 
-template<>
-CHARLS_CHECK_RETURN inline uint32_t byte_swap(const uint32_t value) noexcept
+template<typename T>
+CHARLS_CHECK_RETURN auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, uint32_t>
 {
 #ifdef _MSC_VER
     return _byteswap_ulong(value);
@@ -292,8 +291,8 @@ CHARLS_CHECK_RETURN inline uint32_t byte_swap(const uint32_t value) noexcept
 #endif
 }
 
-template<>
-CHARLS_CHECK_RETURN inline uint64_t byte_swap(const uint64_t value) noexcept
+template<typename T>
+CHARLS_CHECK_RETURN auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, uint64_t>
 {
 #ifdef _MSC_VER
     return _byteswap_uint64(value);
@@ -405,7 +404,7 @@ inline void check_interleave_mode(const charls::interleave_mode mode, const jpeg
 CONSTEXPR int32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
 {
     ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);
-    return (1U << bits_per_sample) - 1;
+    return static_cast<int32_t>((1U << bits_per_sample) - 1);
 }
 
 
@@ -439,7 +438,7 @@ inline int countl_zero(const uint64_t value) noexcept
 
     unsigned long index;
     _BitScanReverse64(&index, value);
-    return 63 - index;
+    return static_cast<int>(63U - index);
 }
 #endif
 
@@ -454,7 +453,7 @@ inline int countl_zero(const uint32_t value) noexcept
     unsigned long index;
     _BitScanReverse(&index, value);
 
-    return 31 - index;
+    return static_cast<int>(31U - index);
 }
 #endif
 
@@ -462,14 +461,11 @@ inline int countl_zero(const uint32_t value) noexcept
 
 // A simple overload with uint64_t\uint32_t doesn't work for macOS. size_t is not the same type as uint64_t.
 
-template<int Bits, class T>
-constexpr bool is_uint_v = sizeof(T) == (Bits / 8) && std::is_integral<T>::value && !std::is_signed<T>::value;
-
 /// <summary>
 /// Custom implementation of C++20 std::countl_zero (for uint64_t)
 /// </summary>
-template<class T>
-auto countl_zero(T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, int>
+template<typename T>
+auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, int>
 {
     if (value == 0)
         return 64;
@@ -480,8 +476,8 @@ auto countl_zero(T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, int>
 /// <summary>
 /// Custom implementation of C++20 std::countl_zero (for uint32_t)
 /// </summary>
-template<class T>
-auto countl_zero(T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, int>
+template<typename T>
+auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, int>
 {
     if (value == 0)
         return 32;
