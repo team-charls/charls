@@ -17,7 +17,7 @@ TEST_CLASS(golomb_table_test)
 public:
     TEST_METHOD(golomb_table_create) // NOLINT
     {
-        constexpr golomb_code_table golomb_table;
+        const golomb_code_table golomb_table;
 
         for (uint32_t i{}; i != 256U; i++)
         {
