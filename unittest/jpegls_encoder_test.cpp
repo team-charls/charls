@@ -1324,6 +1324,32 @@ public:
         Assert::IsFalse(it == destination.cend());
     }
 
+    TEST_METHOD(encode_to_buffer_with_uint16_size_works) // NOLINT
+    {
+        // These are compile time checks to detect issues with overloads that have similar conversions.
+        constexpr frame_info frame_info{100, 100, 8, 1};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+
+        void* data1 = destination.data();
+        const uint16_t size1 = static_cast<uint16_t>(destination.size());
+        encoder.destination(data1, size1);
+
+        vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+        void* data2 = source.data();
+        const uint16_t size2 = static_cast<uint16_t>(source.size());
+
+        // Set 1 value to prevent complains about const.
+        uint8_t* p = static_cast<uint8_t*>(data2);
+        *p = 7;
+
+        // size2 is not a perfect match and needs a conversion.
+        ignore = encoder.encode(data2, size2);
+    }
+
 private:
     static void test_by_decoding(const vector<uint8_t>& encoded_source, const frame_info& source_frame_info,
                                  const void* expected_destination, const size_t expected_destination_size,
