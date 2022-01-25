@@ -735,6 +735,28 @@ public:
         #endif
     }
 
+    TEST_METHOD(decode_to_buffer_with_uint16_size_works) // NOLINT
+    {
+        // These are compile time checks to detect issues with overloads that have similar conversions.
+        constexpr frame_info frame_info{100, 100, 8, 1};
+        const vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        const vector<uint8_t> encoded_source{
+            jpegls_encoder::encode(source, frame_info, interleave_mode::none, encoding_options::even_destination_size)};
+
+        jpegls_decoder decoder;
+        decoder.source(encoded_source);
+        decoder.read_header();
+
+        vector<uint8_t> destination(decoder.destination_size());
+
+        void* data{destination.data()};
+        const uint16_t size{static_cast<uint16_t>(destination.size())};
+
+        // size is not a perfect match and needs a conversion.
+        decoder.decode(data, size);
+    }
+
 private:
     static vector<uint8_t>::iterator find_scan_header(const vector<uint8_t>::iterator begin,
                                                       const vector<uint8_t>::iterator end) noexcept
