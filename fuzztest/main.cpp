@@ -3,6 +3,8 @@
 
 #include <charls/charls.h>
 
+#include "../src/conditional_static_cast.h"
+
 #ifdef _MSC_VER
 #include <io.h>
 #else
@@ -18,6 +20,9 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+
+using namespace charls;
+using std::vector;
 
 #if defined(__clang__)
 #pragma clang diagnostic push
@@ -39,14 +44,14 @@
 
 namespace {
 
-std::vector<uint8_t> generate_once()
+vector<uint8_t> generate_once()
 {
-    const std::vector<uint8_t> source(3);
+    const vector<uint8_t> source(3);
 
-    charls::jpegls_encoder encoder;
+    jpegls_encoder encoder;
     encoder.frame_info({1, 1, 8, 3});
 
-    std::vector<uint8_t> destination(encoder.estimated_destination_size());
+    vector<uint8_t> destination(encoder.estimated_destination_size());
     encoder.destination(destination);
 
     const size_t bytes_written{encoder.encode(source)};
@@ -70,9 +75,10 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
                 // Write some small-ish JPEG-LS file to stdout
                 const auto encoded_data{generate_once()};
 #ifdef _MSC_VER
-                const int result{_write(1, encoded_data.data(), static_cast<unsigned int>(encoded_data.size()))};
+                const int result{_write(1, encoded_data.data(), conditional_static_cast<unsigned int>(encoded_data.size()))};
 #else
-                const ssize_t result{write(1, encoded_data.data(), static_cast<unsigned int>(encoded_data.size()))};
+                const ssize_t result{
+                    write(1, encoded_data.data(), conditional_static_cast<unsigned int>(encoded_data.size()))};
 #endif
                 return result != -1 && result == static_cast<int>(encoded_data.size()) ? EXIT_SUCCESS : EXIT_FAILURE;
             }
@@ -95,16 +101,16 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 
     while (__AFL_LOOP(100))
     {
-        std::vector<uint8_t> source(static_cast<size_t>(1024) * 1024);
-        const size_t input_length = _read(fd, source.data(), static_cast<unsigned int>(source.size()));
+        vector<uint8_t> source(static_cast<size_t>(1024) * 1024);
+        const size_t input_length = _read(fd, source.data(), charls::conditional_static_cast<unsigned int>(source.size()));
         source.resize(input_length);
 
         try
         {
-            std::vector<uint8_t> destination;
-            charls::jpegls_decoder::decode(source, destination);
+            vector<uint8_t> destination;
+            jpegls_decoder::decode(source, destination);
         }
-        catch (const charls::jpegls_error&)
+        catch (const jpegls_error&)
         {
         }
     }
