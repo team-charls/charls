@@ -65,6 +65,7 @@ foreach(header HEADERS)
 endforeach()
 
 set_target_properties(charls PROPERTIES CXX_VISIBILITY_PRESET hidden)
+set_target_properties(charls PROPERTIES VISIBILITY_INLINES_HIDDEN 1)
 set_property(TARGET charls PROPERTY PUBLIC_HEADER ${HEADERS})
 
 target_sources(charls
