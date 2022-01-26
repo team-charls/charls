@@ -36,9 +36,7 @@ option(BUILD_SHARED_LIBS "Will control if charls lib is build as shared lib/DLL 
 option(CHARLS_PEDANTIC_WARNINGS "Enable extra warnings and static analysis." OFF)
 option(CHARLS_TREAT_WARNING_AS_ERROR "Treat a warning as an error." OFF)
 
-# CharLS requires C++14 or newer.
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# CharLS is written in portable c++:
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Configure the supported C++ compilers: gcc, clang and MSVC
