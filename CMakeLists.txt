@@ -71,6 +71,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     -Wvector-operation-performance
     -Wsized-deallocation
     -Wattributes
+    -Wuseless-cast
   )
   if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0)
       set(PEDANTIC_CXX_COMPILE_FLAGS ${PEDANTIC_CXX_COMPILE_FLAGS}
