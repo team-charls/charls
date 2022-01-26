@@ -48,6 +48,8 @@ set_target_properties(charls PROPERTIES
                       SOVERSION ${PROJECT_VERSION_MAJOR})
 
 target_compile_definitions(charls PRIVATE CHARLS_LIBRARY_BUILD)
+# CharLS requires C++14 or newer.
+target_compile_features(charls PUBLIC cxx_std_14)
 
 set(HEADERS
     "include/charls/api_abi.h"
