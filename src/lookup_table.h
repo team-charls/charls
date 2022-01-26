@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "conditional_static_cast.h"
 #include "util.h"
 
 #include <array>
@@ -45,7 +46,7 @@ public:
         const uint32_t length{c.length()};
         ASSERT(static_cast<size_t>(length) <= byte_bit_count);
 
-        for (size_t i{}; i < static_cast<size_t>(1U) << (byte_bit_count - length); ++i)
+        for (size_t i{}; i < conditional_static_cast<size_t>(1U) << (byte_bit_count - length); ++i)
         {
             ASSERT(types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i].length() == 0);
             types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i] = c;

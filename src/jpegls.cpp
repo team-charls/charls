@@ -1,6 +1,7 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "conditional_static_cast.h"
 #include "default_traits.h"
 #include "encoder_strategy.h"
 #include "jls_codec_factory.h"
@@ -85,7 +86,7 @@ golomb_code_table initialize_table(const int32_t k) noexcept
         if (static_cast<size_t>(pair_code.first) > golomb_code_table::byte_bit_count)
             break;
 
-        const golomb_code code(error_value, static_cast<int16_t>(pair_code.first));
+        const golomb_code code(error_value, conditional_static_cast<int16_t>(pair_code.first));
         table.add_entry(static_cast<uint8_t>(pair_code.second), code);
     }
 
@@ -148,17 +149,15 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_codec(const frame_info&
     {
         if (frame.bits_per_sample <= 8)
         {
-            default_traits<uint8_t, uint8_t> traits(
-                calculate_maximum_sample_value(frame.bits_per_sample), parameters.near_lossless,
-                preset_coding_parameters.reset_value);
+            default_traits<uint8_t, uint8_t> traits(calculate_maximum_sample_value(frame.bits_per_sample),
+                                                    parameters.near_lossless, preset_coding_parameters.reset_value);
             traits.maximum_sample_value = preset_coding_parameters.maximum_sample_value;
             codec = make_unique<jls_codec<default_traits<uint8_t, uint8_t>, Strategy>>(traits, frame, parameters);
         }
         else
         {
-            default_traits<uint16_t, uint16_t> traits(
-                calculate_maximum_sample_value(frame.bits_per_sample), parameters.near_lossless,
-                preset_coding_parameters.reset_value);
+            default_traits<uint16_t, uint16_t> traits(calculate_maximum_sample_value(frame.bits_per_sample),
+                                                      parameters.near_lossless, preset_coding_parameters.reset_value);
             traits.maximum_sample_value = preset_coding_parameters.maximum_sample_value;
             codec = make_unique<jls_codec<default_traits<uint16_t, uint16_t>, Strategy>>(traits, frame, parameters);
         }
@@ -170,7 +169,7 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_codec(const frame_info&
 
 template<typename Strategy>
 unique_ptr<Strategy> jls_codec_factory<Strategy>::try_create_optimized_codec(const frame_info& frame,
-                                                                         const coding_parameters& parameters)
+                                                                             const coding_parameters& parameters)
 {
     if (parameters.interleave_mode == interleave_mode::sample && frame.component_count != 3 && frame.component_count != 4)
         return nullptr;

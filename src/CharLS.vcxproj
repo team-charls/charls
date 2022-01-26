@@ -182,6 +182,7 @@
     <ClInclude Include="..\include\charls\version.h" />
     <ClInclude Include="coding_parameters.h" />
     <ClInclude Include="color_transform.h" />
+    <ClInclude Include="conditional_static_cast.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="context_regular_mode.h" />
     <ClInclude Include="context_run_mode.h" />

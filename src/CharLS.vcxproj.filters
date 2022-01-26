@@ -108,6 +108,9 @@
     <ClInclude Include="..\include\charls\charls_jpegls_encoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="conditional_static_cast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />
