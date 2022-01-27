@@ -70,6 +70,13 @@ set_target_properties(charls PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(charls PROPERTIES VISIBILITY_INLINES_HIDDEN 1)
 set_property(TARGET charls PROPERTY PUBLIC_HEADER ${HEADERS})
 
+set_target_properties(charls PROPERTIES
+  LINK_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/charls.version)
+if(UNIX)
+  set_property(TARGET charls APPEND_STRING PROPERTY
+    LINK_FLAGS " -Wl,--version-script=${CMAKE_CURRENT_LIST_DIR}/charls.version")
+endif()
+
 target_sources(charls
   PUBLIC
     ${CHARLS_PUBLIC_HEADERS}
