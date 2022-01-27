@@ -272,8 +272,10 @@ void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t
         }
         else
         {
-            const auto* source16 = reinterpret_cast<const uint16_t*>(uncompressed_source.data());
-            const auto* destination16 = reinterpret_cast<const uint16_t*>(destination.data());
+            const void* data{uncompressed_source.data()};
+            const auto* source16{static_cast<const uint16_t*>(data)};
+            data = destination.data();
+            const auto* destination16{static_cast<const uint16_t*>(data)};
 
             for (size_t i{}; i != uncompressed_source.size() / 2; ++i)
             {

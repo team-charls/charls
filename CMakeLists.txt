@@ -80,6 +80,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         -Wduplicated-cond
       )
   endif()
+  if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
+      set(PEDANTIC_CXX_COMPILE_FLAGS ${PEDANTIC_CXX_COMPILE_FLAGS}
+        -Wcast-align=strict
+      )
+  endif()
 
   set(WARNINGS_AS_ERRORS_FLAG_COMPILER -Werror)
   set(WARNINGS_AS_ERRORS_FLAG_LINKER LINKER:--fatal-warnings)
@@ -91,7 +96,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
       -Wextra # (-W is synonym)
       -Wnon-gcc
       -Wpedantic
-      -Walloca
       -Wcast-qual
       -Wformat=2
       -Wvla
@@ -125,6 +129,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0.2)
     set(PEDANTIC_CXX_COMPILE_FLAGS ${PEDANTIC_CXX_COMPILE_FLAGS}
       -Wno-undefined-func-template            # Ignore, linker will complain if final template code is not available.
+    )
+  if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 10.0)
+    set(PEDANTIC_CXX_COMPILE_FLAGS ${PEDANTIC_CXX_COMPILE_FLAGS}
+      -Walloca
     )
   endif()
 

@@ -31,7 +31,9 @@ void test_file16_bit_as12(const char* filename, const int offset, const rect_siz
     vector<uint8_t> uncompressed_data{read_file(filename, offset)};
     fix_endian(&uncompressed_data, little_endian_file);
 
-    auto* const p{reinterpret_cast<uint16_t*>(uncompressed_data.data())};
+    // Dynamic allocated memory is properly aligned: safe to use void*
+    void* const data{uncompressed_data.data()};
+    auto* const p{static_cast<uint16_t*>(data)};
     for (size_t i{}; i != uncompressed_data.size() / 2; ++i)
     {
         p[i] = p[i] >> 4;
