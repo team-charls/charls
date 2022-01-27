@@ -4,9 +4,17 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.3.2] -
+## [2.3.2] - 2021-1-28
+
+### Fixed
+
+- Fixed [#161](https://github.com/team-charls/charls/issues/160), warning: cast from ‘unsigned char*’ to ‘uint16_t*’ increases required alignment of target type
+- Fixed [#161](https://github.com/team-charls/charls/issues/161), warning: useless cast to type ‘size_t’ {aka ‘unsigned int’} [-Wuseless-cast]
 
 ### Changed
+
+- Updates to the CMakeLists.txt for Unix builds to hide more symbols from the shared library.
+- C++14 is now the mimimum required C++ version and not the required anymore. This allows consumers more flexibility. Typically CMake will select newest version that the C++ compiler can support.
 
 ## [2.3.1] - 2021-1-25
 
