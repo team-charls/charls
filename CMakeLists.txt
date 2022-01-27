@@ -130,6 +130,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(PEDANTIC_CXX_COMPILE_FLAGS ${PEDANTIC_CXX_COMPILE_FLAGS}
       -Wno-undefined-func-template            # Ignore, linker will complain if final template code is not available.
     )
+  endif()
   if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 10.0)
     set(PEDANTIC_CXX_COMPILE_FLAGS ${PEDANTIC_CXX_COMPILE_FLAGS}
       -Walloca
