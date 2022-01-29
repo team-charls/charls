@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 
 - Updates to the CMakeLists.txt for Unix builds (except macOS) to hide more symbols from the shared library.
-- C++14 is now the mimimum version instead of explicity required. This allows consuming applications more flexibility.
+- C++14 is now the minimum version instead of explicitly required. This allows consuming applications more flexibility.
 Typically CMake will select the latest C++ standard version that used C++ compiler supports.
 
 ## [2.3.1] - 2021-1-25
