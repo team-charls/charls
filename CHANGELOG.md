@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 
-- Fixed [#161](https://github.com/team-charls/charls/issues/160), warning: cast from ‘unsigned char*’ to ‘uint16_t*’ increases required alignment of target type
+- Fixed [#160](https://github.com/team-charls/charls/issues/160), warning: cast from ‘unsigned char*’ to ‘uint16_t*’ increases required alignment of target type
 - Fixed [#161](https://github.com/team-charls/charls/issues/161), warning: useless cast to type ‘size_t’ {aka ‘unsigned int’} [-Wuseless-cast]
 
 ### Changed
