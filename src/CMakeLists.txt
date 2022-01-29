@@ -72,7 +72,7 @@ set_property(TARGET charls PROPERTY PUBLIC_HEADER ${HEADERS})
 
 set_target_properties(charls PROPERTIES
   LINK_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/charls.version)
-if(UNIX)
+if(UNIX AND NOT APPLE)
   set_property(TARGET charls APPEND_STRING PROPERTY
     LINK_FLAGS " -Wl,--version-script=${CMAKE_CURRENT_LIST_DIR}/charls.version")
 endif()
