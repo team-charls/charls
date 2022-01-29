@@ -247,9 +247,11 @@ jobs:
     matrix:
       Xcode Debug:
         buildType: Debug
+        Shared: 'OFF'
 
       Xcode Release:
         buildType: Release
+        Shared: 'ON'
 
   steps:
   - script: mkdir $(Build.BinariesDirectory)/build
@@ -261,6 +263,7 @@ jobs:
       workingDirectory: $(Build.BinariesDirectory)/build
       cmakeArgs:
         -DCMAKE_BUILD_TYPE=$(buildType
+        -DBUILD_SHARED_LIBS=$(Shared)
         -DCHARLS_PEDANTIC_WARNINGS=On
         -DCHARLS_TREAT_WARNING_AS_ERROR=On
         $(Build.SourcesDirectory)
