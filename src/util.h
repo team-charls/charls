@@ -81,6 +81,17 @@
 #define UNLIKELY(x) (x)
 #endif
 
+// C++20 provides std::endian, use for now compiler macros.
+#ifdef _MSC_VER
+#define LITTLE_ENDIAN_ARCHITECTURE // MSVC++ compiler support only little endian platforms.
+#elif __GNUC__
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define LITTLE_ENDIAN_ARCHITECTURE
+#endif
+#else
+#error "Unknown compiler"
+#endif
+
 // Turn A into a string literal without expanding macro definitions
 // (however, if invoked from a macro, macro arguments are expanded).
 #define TO_STRING_NX(A) #A // NOLINT(cppcoreguidelines-macro-usage)
@@ -349,7 +360,11 @@ inline size_t read_big_endian_unaligned<size_t>(const void* buffer) noexcept
 template<typename T>
 T read_big_endian_unaligned(const void* buffer) noexcept
 {
+#ifdef LITTLE_ENDIAN_ARCHITECTURE
     return byte_swap(read_unaligned<T>(buffer));
+#else
+    return read_unaligned<T>(buffer);
+#endif
 }
 
 #endif
