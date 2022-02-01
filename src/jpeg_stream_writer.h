@@ -163,7 +163,11 @@ private:
 
         // Use write_bytes to write to the unaligned byte array.
         // The compiler will perform the correct optimization when the target platform support unaligned writes.
+#ifdef LITTLE_ENDIAN_ARCHITECTURE
         const UnsignedIntType big_endian_value{byte_swap(value)};
+#else
+        const UnsignedIntType big_endian_value{value};
+#endif
         write_bytes(&big_endian_value, sizeof big_endian_value);
     }
 
