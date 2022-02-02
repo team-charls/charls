@@ -62,6 +62,17 @@
 #define CONSTEXPR constexpr
 #endif
 
+// C++20 provides std::endian, use for now compiler macros.
+#ifdef _MSC_VER
+#define LITTLE_ENDIAN_ARCHITECTURE // MSVC++ compiler support only little endian platforms.
+#elif __GNUC__
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define LITTLE_ENDIAN_ARCHITECTURE
+#endif
+#else
+#error "Unknown compiler"
+#endif
+
 namespace charls {
 
 inline jpegls_errc to_jpegls_errc() noexcept
