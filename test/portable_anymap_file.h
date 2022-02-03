@@ -51,7 +51,7 @@ public:
 
         const int bytes_per_sample = (bits_per_sample_ + 7) / 8;
         input_buffer_.resize(static_cast<size_t>(width_) * height_ * bytes_per_sample * component_count_);
-        pnm_file.read(reinterpret_cast<char*>(input_buffer_.data()), input_buffer_.size());
+        pnm_file.read(reinterpret_cast<char*>(input_buffer_.data()), static_cast<std::streamsize>(input_buffer_.size()));
 
         convert_to_little_endian_if_needed();
     }

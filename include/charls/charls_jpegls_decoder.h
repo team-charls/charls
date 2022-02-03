@@ -275,7 +275,7 @@ public:
              typename T2 = typename DestinationContainer::value_type>
     static std::pair<charls::frame_info, charls::interleave_mode>
     decode(const SourceContainer& source, DestinationContainer& destination,
-           const size_t maximum_size_in_bytes = 7680 * 4320 * 3)
+           const size_t maximum_size_in_bytes = static_cast<size_t>(7680) * 4320 * 3)
     {
         jpegls_decoder decoder{source, true};
 

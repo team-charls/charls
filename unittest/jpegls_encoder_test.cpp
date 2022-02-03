@@ -876,7 +876,7 @@ public:
 
     TEST_METHOD(encode_1_component_4_bit_with_high_bits_set) // NOLINT
     {
-        const vector<uint8_t> source(512 * 512, 0xFF);
+        const vector<uint8_t> source(static_cast<size_t>(512) * 512, 0xFF);
         constexpr frame_info frame_info{512, 512, 4, 1};
 
         jpegls_encoder encoder;
@@ -888,13 +888,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint8_t> expected(512 * 512, 15);
+        const vector<uint8_t> expected(static_cast<size_t>(512) * 512, 15);
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
     }
 
     TEST_METHOD(encode_1_component_12_bit_with_high_bits_set) // NOLINT
     {
-        const vector<uint8_t> source(512 * 512 * 2, 0xFF);
+        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 2, 0xFF);
         constexpr frame_info frame_info{512, 512, 12, 1};
 
         jpegls_encoder encoder;
@@ -906,14 +906,14 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(512 * 512, 4095);
+        const vector<uint16_t> expected(static_cast<size_t>(512) * 512, 4095);
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * sizeof(uint16_t),
                          interleave_mode::none);
     }
 
     TEST_METHOD(encode_3_components_6_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
-        const vector<uint8_t> source(512 * 512 * 3, 0xFF);
+        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 3, 0xFF);
         constexpr frame_info frame_info{512, 512, 6, 3};
 
         jpegls_encoder encoder;
@@ -925,13 +925,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint8_t> expected(512 * 512 * 3, 63);
+        const vector<uint8_t> expected(static_cast<size_t>(512) * 512 * 3, 63);
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::sample);
     }
 
     TEST_METHOD(encode_3_components_6_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
-        const vector<uint8_t> source(512 * 512 * 3, 0xFF);
+        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 3, 0xFF);
         constexpr frame_info frame_info{512, 512, 6, 3};
 
         jpegls_encoder encoder;
@@ -943,13 +943,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint8_t> expected(512 * 512 * 3, 63);
+        const vector<uint8_t> expected(static_cast<size_t>(512) * 512 * 3, 63);
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::line);
     }
 
     TEST_METHOD(encode_3_components_10_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
-        const vector<uint8_t> source(512 * 512 * 2 * 3, 0xFF);
+        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 2 * 3, 0xFF);
         constexpr frame_info frame_info{512, 512, 10, 3};
 
         jpegls_encoder encoder;
@@ -961,13 +961,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(512 * 512 * 3, 1023);
+        const vector<uint16_t> expected(static_cast<size_t>(512) * 512 * 3, 1023);
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::sample);
     }
 
     TEST_METHOD(encode_3_components_10_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
-        const vector<uint8_t> source(512 * 512 * 2 * 3, 0xFF);
+        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 2 * 3, 0xFF);
         constexpr frame_info frame_info{512, 512, 10, 3};
 
         jpegls_encoder encoder;
@@ -979,13 +979,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(512 * 512 * 3, 1023);
+        const vector<uint16_t> expected(static_cast<size_t>(512) * 512 * 3, 1023);
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::line);
     }
 
     TEST_METHOD(encode_4_components_6_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
-        const vector<uint8_t> source(512 * 512 * 4, 0xFF);
+        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 4, 0xFF);
         constexpr frame_info frame_info{512, 512, 6, 4};
 
         jpegls_encoder encoder;
@@ -997,13 +997,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint8_t> expected(512 * 512 * 4, 63);
+        const vector<uint8_t> expected(static_cast<size_t>(512) * 512 * 4, 63);
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::sample);
     }
 
     TEST_METHOD(encode_4_components_6_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
-        const vector<uint8_t> source(512 * 512 * 4, 0xFF);
+        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 4, 0xFF);
         constexpr frame_info frame_info{512, 512, 6, 4};
 
         jpegls_encoder encoder;
@@ -1015,13 +1015,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint8_t> expected(512 * 512 * 4, 63);
+        const vector<uint8_t> expected(static_cast<size_t>(512) * 512 * 4, 63);
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::line);
     }
 
     TEST_METHOD(encode_4_components_10_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
-        const vector<uint8_t> source(512 * 512 * 2 * 4, 0xFF);
+        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 2 * 4, 0xFF);
         constexpr frame_info frame_info{512, 512, 10, 4};
 
         jpegls_encoder encoder;
@@ -1033,13 +1033,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(512 * 512 * 4, 1023);
+        const vector<uint16_t> expected(static_cast<size_t>(512) * 512 * 4, 1023);
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::sample);
     }
 
     TEST_METHOD(encode_4_components_10_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
-        const vector<uint8_t> source(512 * 512 * 2 * 4, 0xFF);
+        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 2 * 4, 0xFF);
         constexpr frame_info frame_info{512, 512, 10, 4};
 
         jpegls_encoder encoder;
@@ -1051,7 +1051,7 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(512 * 512 * 4, 1023);
+        const vector<uint16_t> expected(static_cast<size_t>(512) * 512 * 4, 1023);
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::line);
     }
 
@@ -1335,15 +1335,15 @@ public:
         vector<uint8_t> destination(encoder.estimated_destination_size());
 
         void* data1 = destination.data();
-        const uint16_t size1 = static_cast<uint16_t>(destination.size());
+        const auto size1 = static_cast<uint16_t>(destination.size());
         encoder.destination(data1, size1);
 
         vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
         void* data2 = source.data();
-        const uint16_t size2 = static_cast<uint16_t>(source.size());
+        const auto size2 = static_cast<uint16_t>(source.size());
 
         // Set 1 value to prevent complains about const.
-        uint8_t* p = static_cast<uint8_t*>(data2);
+        auto* p = static_cast<uint8_t*>(data2);
         *p = 7;
 
         // size2 is not a perfect match and needs a conversion.

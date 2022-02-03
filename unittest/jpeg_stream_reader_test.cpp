@@ -16,7 +16,6 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::numeric_limits;
-using std::system_error;
 using std::vector;
 
 namespace charls { namespace test {
