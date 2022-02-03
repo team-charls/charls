@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Next-Release]
+## [2.2.1] - 2022-2-3
+
+### Fixed
+
+- Backport of fix for [#167](https://github.com/team-charls/charls/issues/167), Decoding\Encoding fails on IBM s390x CPU (Big Endian architecture).
 
 ## [2.2.0] - 2021-1-10
 
