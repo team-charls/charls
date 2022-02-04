@@ -52,7 +52,7 @@ vector<uint8_t> read_file(const char* filename)
     input.seekg(0, ios::beg);
 
     vector<uint8_t> buffer(byte_count_file);
-    input.read(reinterpret_cast<char*>(buffer.data()), buffer.size());
+    input.read(reinterpret_cast<char*>(buffer.data()), static_cast<std::streamsize>(buffer.size()));
 
     return buffer;
 }

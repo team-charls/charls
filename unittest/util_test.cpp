@@ -6,7 +6,6 @@
 #include "../src/util.h"
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using std::array;
 using std::numeric_limits;
 
 namespace charls { namespace test {

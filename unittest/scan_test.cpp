@@ -9,7 +9,6 @@
 
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using std::vector;
 using std::numeric_limits;
 
 namespace {

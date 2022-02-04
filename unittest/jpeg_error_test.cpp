@@ -45,7 +45,7 @@ public:
         const std::error_category& category{jpegls_category()};
 
         const std::string message{category.message(0)};
-        Assert::IsTrue(message.size() > 0);
+        Assert::IsFalse(message.empty());
     }
 };
 

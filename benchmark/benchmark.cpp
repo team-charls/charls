@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #pragma warning(disable : 26409) // Avoid calling new explicitly (triggered by BENCHMARK macro)
 
@@ -160,7 +161,7 @@ inline int countl_zero(const uint64_t value) noexcept
     unsigned long index;
     _BitScanReverse64(&index, value);
 
-    return 63 - index;
+    return 63 - static_cast<int>(index);
 }
 #endif
 
