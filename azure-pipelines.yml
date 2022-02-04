@@ -238,7 +238,7 @@ jobs:
       cmakeArgs: --build .
 
   - script: ctest
-    displayname: "Testing CharLS"
+    displayName: "Testing CharLS"
     inputs:
       workingDirectory: $(Build.BinariesDirectory)/build
 
