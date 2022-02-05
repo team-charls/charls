@@ -4,6 +4,16 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.3] - 2021-2-5
+
+### Fixed
+
+- Fixed [#167](https://github.com/team-charls/charls/issues/167), Decoding\Encoding fails on IBM s390x CPU (Big Endian architecture)
+
+### Changed
+
+- CTest is now used in the CI build pipeline to test the output of the Linux and macOS builds.
+
 ## [2.3.2] - 2021-1-29
 
 ### Fixed
@@ -49,6 +59,12 @@ Typically CMake will select the latest C++ standard version that used C++ compil
 - Non default coding parameters are explicitly stored in the output stream during encoding.
 - GCC shared library release builds are now using LTO (Link Time Optimization).
 - Some functions use compiler intrinsics for slightly better performance.
+
+## [2.2.1] - 2022-2-3
+
+### Fixed
+
+- Backport of fix for [#167](https://github.com/team-charls/charls/issues/167), Decoding\Encoding fails on IBM s390x CPU (Big Endian architecture).
 
 ## [2.2.0] - 2021-1-10
 
