@@ -74,6 +74,12 @@ uint32_t log2_floor(uint32_t n) noexcept
 }
 
 
+constexpr int result_to_exit_code(const bool result) noexcept
+{
+    return result ? EXIT_SUCCESS : EXIT_FAILURE;
+}
+
+
 uint32_t max_value_to_bits_per_sample(uint32_t max_value) noexcept
 {
     ASSERT(max_value > 0);
@@ -735,7 +741,7 @@ void test_encode_from_stream()
 }
 
 
-void unit_test()
+bool unit_test()
 {
     try
     {
@@ -776,11 +782,19 @@ void unit_test()
 
         cout << "Test Legacy API\n";
         test_legacy_api();
+
+        return true;
     }
     catch (const unit_test_exception&)
     {
         cout << "==> Unit test failed <==\n";
     }
+    catch (const std::runtime_error& error)
+    {
+        cout << "==> Unit test failed due to external problem: " << error.what() << "\n";
+    }
+
+    return false;
 }
 
 } // namespace
@@ -800,8 +814,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         string str{argv[i]};
         if (str == "-unittest")
         {
-            unit_test();
-            continue;
+            return result_to_exit_code(unit_test());
         }
 
         if (str == "-decoderaw")
@@ -811,7 +824,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
                 cout << "Syntax: -decoderaw input-file output-file\n";
                 return EXIT_FAILURE;
             }
-            return decode_raw(argv[2], argv[3]) ? EXIT_SUCCESS : EXIT_FAILURE;
+            return result_to_exit_code(decode_raw(argv[2], argv[3]));
         }
 
         if (str == "-decodetopnm")
@@ -822,7 +835,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
                 return EXIT_FAILURE;
             }
 
-            return decode_to_pnm(argv[2], argv[3]) ? EXIT_SUCCESS : EXIT_FAILURE;
+            return result_to_exit_code(decode_to_pnm(argv[2], argv[3]));
         }
 
         if (str == "-encodepnm")
@@ -833,7 +846,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
                 return EXIT_FAILURE;
             }
 
-            return encode_pnm(argv[2], argv[3]) ? EXIT_SUCCESS : EXIT_FAILURE;
+            return result_to_exit_code(encode_pnm(argv[2], argv[3]));
         }
 
         if (str == "-comparepnm")
@@ -846,7 +859,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
             ifstream pnm_file1(argv[2], mode_input);
             ifstream pnm_file2(argv[3], mode_input);
 
-            return compare_pnm(pnm_file1, pnm_file2) ? EXIT_SUCCESS : EXIT_FAILURE;
+            return result_to_exit_code(compare_pnm(pnm_file1, pnm_file2));
         }
 
         if (str == "-bitstreamdamage")
@@ -938,7 +951,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         }
 
         cout << "Option not understood: " << argv[i] << "\n";
-        break;
+        return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;

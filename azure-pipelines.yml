@@ -172,6 +172,10 @@ jobs:
       workingDirectory: $(Build.BinariesDirectory)/build
       cmakeArgs: --build $(Build.BinariesDirectory)/build
 
+  - script: ctest
+    displayName: "Testing CharLS"
+    workingDirectory: $(Build.BinariesDirectory)/build
+
 
 - job: 'cppLinux'
   pool:
@@ -237,6 +241,10 @@ jobs:
       workingDirectory: $(Build.BinariesDirectory)/build
       cmakeArgs: --build .
 
+  - script: ctest
+    displayName: "Testing CharLS"
+    workingDirectory: $(Build.BinariesDirectory)/build
+
 
 - job: 'cppmacOS'
   pool:
@@ -273,3 +281,7 @@ jobs:
     inputs:
       workingDirectory: $(Build.BinariesDirectory)/build
       cmakeArgs: --build .
+
+  - script: ctest
+    displayName: "Testing CharLS"
+    workingDirectory: $(Build.BinariesDirectory)/build

@@ -54,19 +54,18 @@ void write(std::ostream& output, const Container& source, const size_t size)
 
 class unit_test_exception final : public std::exception
 {
-public:
-    explicit unit_test_exception() = default;
 };
 
-class assert final
+
+namespace assert {
+
+inline void is_true(const bool condition)
 {
-public:
-    static void is_true(const bool condition)
-    {
-        if (!condition)
-            throw unit_test_exception();
-    }
-};
+    if (!condition)
+        throw unit_test_exception();
+}
+
+}
 
 #ifdef _MSC_VER
 #define MSVC_WARNING_SUPPRESS(x) \
