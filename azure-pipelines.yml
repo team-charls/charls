@@ -118,6 +118,10 @@ jobs:
       workingDirectory: $(Build.BinariesDirectory)/build
       cmakeArgs: --build $(Build.BinariesDirectory)/build
 
+  - script: ctest
+    displayName: "Testing CharLS"
+    workingDirectory: $(Build.BinariesDirectory)/build
+
 
 - job: 'cppVS2019'
   pool:
