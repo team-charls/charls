@@ -54,7 +54,7 @@ void test_jpegls_read_header()
     test_jpegls_read_header("test/conformance/t8nde3.jls", 128, 128, 8, 128, 1, 0);
     test_jpegls_read_header("test/conformance/t16e0.jls", 256, 256, 12, 512, 1, 0);
     test_jpegls_read_header("test/conformance/t16e3.jls", 256, 256, 12, 512, 1, 0);
-    test_jpegls_read_header("test/lena8b.jls", 512, 512, 8, 512, 1, 0);
+    test_jpegls_read_header("test/tulips-gray-8bit-512-512-hp-encoder.jls", 512, 512, 8, 512, 1, 0);
 }
 
 } // namespace

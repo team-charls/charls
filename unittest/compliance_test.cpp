@@ -83,10 +83,10 @@ public:
         decompress_file("DataFiles/t16e3.jls", "DataFiles/TEST16.pgm", false);
     }
 
-    TEST_METHOD(lena_monochrome_8_bit_lossless_ubc) // NOLINT
+    TEST_METHOD(tulips_monochrome_8_bit_lossless_hp) // NOLINT
     {
-        // Additional, Lena compressed with other codec (UBC?)
-        decompress_file("DataFiles/lena8b.jls", "DataFiles/lena8b.pgm");
+        // Additional, Tulips encoded with HP 1.0BETA encoder.
+        decompress_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls", "DataFiles/tulips-gray-8bit-512-512.pgm");
     }
 
     TEST_METHOD(decompress_color_8_bit_interleave_none_lossless_restart_7) // NOLINT

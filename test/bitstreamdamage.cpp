@@ -40,7 +40,7 @@ void test_damaged_bit_stream1()
 
 void test_damaged_bit_stream2()
 {
-    vector<uint8_t> encoded_buffer = read_file("test/lena8b.jls");
+    vector<uint8_t> encoded_buffer = read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls");
 
     encoded_buffer.resize(900);
     encoded_buffer.resize(40000, 3);
@@ -63,7 +63,7 @@ void test_damaged_bit_stream2()
 
 void test_damaged_bit_stream3()
 {
-    vector<uint8_t> encoded_buffer = read_file("test/lena8b.jls");
+    vector<uint8_t> encoded_buffer = read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls");
 
     encoded_buffer[300] = 0xFF;
     encoded_buffer[301] = 0xFF;

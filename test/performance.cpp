@@ -25,48 +25,19 @@ using std::chrono::steady_clock;
 
 namespace {
 
-void test_file16_bit_as12(const char* filename, const int offset, const rect_size size2, const int component_count,
-                          const bool little_endian_file)
-{
-    vector<uint8_t> uncompressed_data{read_file(filename, offset)};
-    fix_endian(&uncompressed_data, little_endian_file);
-
-    // Dynamic allocated memory is properly aligned: safe to use void*
-    void* const data{uncompressed_data.data()};
-    auto* const p{static_cast<uint16_t*>(data)};
-    for (size_t i{}; i != uncompressed_data.size() / 2; ++i)
-    {
-        p[i] = p[i] >> 4;
-    }
-
-    test_round_trip(filename, uncompressed_data, size2, 12, component_count);
-}
-
-
 void test_performance(const int loop_count)
 {
     // RGBA image (This is a common PNG sample)
-    test_file("test/alphatest.raw", 0, rect_size(380, 287), 8, 4, false, loop_count);
-
-    const rect_size size1024{1024, 1024};
-    const rect_size size512{512, 512};
+    test_file("test/alphatest.raw", 0, {380, 287}, 8, 4, false, loop_count);
 
     // 16 bit mono
-    test_file("test/MR2_UNC", 1728, size1024, 16, 1, true, loop_count);
+    test_file("test/MR2_UNC", 1728, {1024, 1024}, 16, 1, true, loop_count);
 
     // 8 bit mono
-    test_file("test/0015.raw", 0, size1024, 8, 1, false, loop_count);
-    test_file("test/lena8b.raw", 0, size512, 8, 1, false, loop_count);
+    test_file("test/0015.raw", 0, {1024, 1024}, 8, 1, false, loop_count);
 
     // 8 bit color
-    test_file("test/desktop.ppm", 40, rect_size(1280, 1024), 8, 3, false, loop_count);
-
-    // 12 bit RGB
-    test_file("test/SIEMENS-MR-RGB-16Bits.dcm", -1, rect_size(192, 256), 12, 3, true, loop_count);
-    test_file16_bit_as12("test/DSC_5455.raw", 142949, rect_size(300, 200), 3, true);
-
-    // 16 bit RGB
-    test_file("test/DSC_5455.raw", 142949, rect_size(300, 200), 16, 3, true, loop_count);
+    test_file("test/desktop.ppm", 40, {1280, 1024}, 8, 3, false, loop_count);
 }
 
 } // namespace

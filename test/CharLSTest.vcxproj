@@ -156,11 +156,15 @@
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="lena8b.jls">
+    <CopyFileToFolders Include="tulips-gray-8bit-512-512-hp-encoder.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)test</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="alphatest.raw">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)test</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="desktop.ppm">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)test</DestinationFolders>
     </CopyFileToFolders>
@@ -209,10 +213,6 @@
       <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="MR2_UNC">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="lena8b.raw">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)test</DestinationFolders>
     </CopyFileToFolders>
