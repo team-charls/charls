@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.4] - 2021-2-12
+
+### Changed
+
+- Replaced legacy test images
+
 ## [2.3.3] - 2021-2-5
 
 ### Fixed
