@@ -81,10 +81,7 @@
     <CopyFileToFolders Include="jlsimage\banny_normal.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="lena8b.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="lena8b.raw">
+    <CopyFileToFolders Include="tulips-gray-8bit-512-512-hp-encoder.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="MR2_UNC">
@@ -127,6 +124,9 @@
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="conformance\test16.pgm">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="desktop.ppm">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
   </ItemGroup>

@@ -126,7 +126,7 @@ public:
     TEST_METHOD(JpegLsDecode_nullptr) // NOLINT
     {
         constexpr JlsParameters params{};
-        vector<uint8_t> encoded_source = read_file("DataFiles/lena8b.jls");
+        vector<uint8_t> encoded_source = read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls");
         auto error = JpegLsDecode(nullptr, 100, encoded_source.data(), encoded_source.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -154,7 +154,7 @@ public:
     TEST_METHOD(JpegLsDecodeRect_lena) // NOLINT
     {
         JlsParameters params{};
-        const vector<uint8_t> encoded_source = read_file("DataFiles/lena8b.jls");
+        const vector<uint8_t> encoded_source = read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls");
         auto error = JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr);
         Assert::AreEqual(jpegls_errc::success, error);
 
@@ -180,7 +180,7 @@ public:
     {
         constexpr JlsParameters params{};
         constexpr JlsRect roi{};
-        vector<uint8_t> encoded_source = read_file("DataFiles/lena8b.jls");
+        vector<uint8_t> encoded_source = read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls");
         auto error = JpegLsDecodeRect(nullptr, 100, encoded_source.data(), encoded_source.size(), roi, &params, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 

@@ -109,10 +109,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="lena8b.pgm">
+    <CopyFileToFolders Include="tulips-gray-8bit-512-512.pgm">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/lena8b.jls">
+    <CopyFileToFolders Include="../test/tulips-gray-8bit-512-512-hp-encoder.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="../test/conformance/t8c0e0.jls">

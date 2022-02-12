@@ -340,7 +340,7 @@ void test_bgr()
 
 void test_too_small_output_buffer()
 {
-    const vector<uint8_t> encoded{read_file("test/lena8b.jls")};
+    const vector<uint8_t> encoded{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
     vector<uint8_t> destination(static_cast<size_t>(512) * 511);
 
     jpegls_decoder decoder;
@@ -433,7 +433,7 @@ void test_decode_bit_stream_with_unknown_jpeg_marker()
 
 void test_decode_rect()
 {
-    const vector<uint8_t> encoded_source{read_file("test/lena8b.jls")};
+    const vector<uint8_t> encoded_source{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
 
     const jpegls_decoder decoder{encoded_source, true};
     vector<uint8_t> decoded_buffer(decoder.destination_size());
@@ -732,10 +732,7 @@ catch (const system_error& error)
 
 void test_encode_from_stream()
 {
-    ////test_encode_from_stream("test/user_supplied/output.jls");
-
     test_encode_from_stream("test/0015.raw", 0, 1024, 1024, 8, 1, interleave_mode::none, 0x3D3ee);
-    ////test_encode_from_stream("test/MR2_UNC", 1728, 1024, 1024, 16, 1,0, 0x926e1);
     test_encode_from_stream("test/conformance/test8.ppm", 15, 256, 256, 8, 3, interleave_mode::sample, 99734);
     test_encode_from_stream("test/conformance/test8.ppm", 15, 256, 256, 8, 3, interleave_mode::line, 100615);
 }
@@ -745,8 +742,6 @@ bool unit_test()
 {
     try
     {
-        //// TestBadImage();
-
         cout << "Test Conformance\n";
         test_encode_from_stream();
         test_conformance();

@@ -149,7 +149,7 @@
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/lena8b.jls">
+    <CopyFileToFolders Include="../test/tulips-gray-8bit-512-512-hp-encoder.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>
@@ -169,7 +169,7 @@
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="lena8b.pgm">
+    <CopyFileToFolders Include="tulips-gray-8bit-512-512.pgm">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>

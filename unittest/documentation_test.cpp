@@ -134,31 +134,31 @@ TEST_CLASS(documentation_test)
 public:
     TEST_METHOD(call_decode_simple_8_bit_monochrome) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
+        const vector<uint8_t> source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
         const vector<uint8_t> charls_decoded{decode_simple_8_bit_monochrome(source)};
 
-        test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
+        test_decoded_data(charls_decoded, "DataFiles/tulips-gray-8bit-512-512.pgm");
     }
 
     TEST_METHOD(call_decode_advanced) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
+        const vector<uint8_t> source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
         const vector<uint8_t> charls_decoded{decode_advanced(source)};
 
-        test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
+        test_decoded_data(charls_decoded, "DataFiles/tulips-gray-8bit-512-512.pgm");
     }
 
     TEST_METHOD(call_decode_simple_8_bit_monochrome_legacy) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/lena8b.jls")};
+        const vector<uint8_t> source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
         const vector<uint8_t> charls_decoded{decode_simple_8_bit_monochrome_legacy(source)};
 
-        test_decoded_data(charls_decoded, "DataFiles/lena8b.pgm");
+        test_decoded_data(charls_decoded, "DataFiles/tulips-gray-8bit-512-512.pgm");
     }
 
     TEST_METHOD(call_encode_simple_8_bit_monochrome) // NOLINT
     {
-        portable_anymap_file reference_file("DataFiles/lena8b.pgm");
+        portable_anymap_file reference_file("DataFiles/tulips-gray-8bit-512-512.pgm");
         const vector<uint8_t> charls_encoded{encode_simple_8_bit_monochrome(reference_file.image_data(),
                                                                             static_cast<uint32_t>(reference_file.width()),
                                                                             static_cast<uint32_t>(reference_file.height()))};
@@ -168,7 +168,7 @@ public:
 
     TEST_METHOD(call_encode_advanced_8_bit_monochrome) // NOLINT
     {
-        portable_anymap_file reference_file("DataFiles/lena8b.pgm");
+        portable_anymap_file reference_file("DataFiles/tulips-gray-8bit-512-512.pgm");
         const vector<uint8_t> charls_encoded{
             encode_advanced_8_bit_monochrome(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()),
                                              static_cast<uint32_t>(reference_file.height()))};
@@ -178,7 +178,7 @@ public:
 
     TEST_METHOD(call_encode_simple_8_bit_monochrome_legacy) // NOLINT
     {
-        portable_anymap_file reference_file("DataFiles/lena8b.pgm");
+        portable_anymap_file reference_file("DataFiles/tulips-gray-8bit-512-512.pgm");
         const vector<uint8_t> charls_encoded{
             encode_simple_8_bit_monochrome_legacy(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()),
                                                   static_cast<uint32_t>(reference_file.height()))};

@@ -232,7 +232,4 @@ void test_conformance()
 
     // Test 12
     decompress_file("test/conformance/t16e3.jls", "test/conformance/test16.pgm", 16);
-
-    // additional, Lena compressed with other codec (UBC?), vfy with CharLS
-    decompress_file("test/lena8b.jls", "test/lena8b.raw", 0);
 }
