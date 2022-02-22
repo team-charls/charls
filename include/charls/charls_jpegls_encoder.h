@@ -85,8 +85,8 @@ charls_jpegls_encoder_set_interleave_mode(CHARLS_IN charls_jpegls_encoder* encod
 /// <summary>
 /// Configures the preset coding parameters the encoder should use.
 /// If not set the encoder will use the default preset coding parameters as defined by the JPEG-LS standard.
-/// Only when the coding parameters are different then the default parameters, they will be written to the
-/// JPEG-LS stream during the encode phase.
+/// Only when the coding parameters are different than the default parameters or when `include_pc_parameters_jai` is set,
+/// they will be written to the JPEG-LS stream during the encode phase.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="preset_coding_parameters">Reference to the preset coding parameters.</param>
