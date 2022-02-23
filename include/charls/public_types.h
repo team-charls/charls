@@ -502,6 +502,12 @@ constexpr encoding_options operator|(const encoding_options lhs, const encoding_
     return static_cast<encoding_options>(static_cast<T>(lhs) | static_cast<T>(rhs));
 }
 
+constexpr encoding_options& operator|=(encoding_options& lhs, const encoding_options rhs) noexcept
+{
+    lhs = lhs | rhs;
+    return lhs;
+}
+
 /// <summary>
 /// Defines color space transformations as defined and implemented by the JPEG-LS library of HP Labs.
 /// These color space transformation decrease the correlation between the 3 color components, resulting in better encoding
