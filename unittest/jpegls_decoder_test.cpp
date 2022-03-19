@@ -20,9 +20,9 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::error_code;
 using std::ignore;
+using std::numeric_limits;
 using std::tie;
 using std::vector;
-using std::numeric_limits;
 using namespace charls_test;
 
 namespace {
@@ -372,8 +372,7 @@ public:
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_operation,
-                                [&decoder, &destination] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder, &destination] { decoder.decode(destination); });
     }
 
     TEST_METHOD(simple_decode) // NOLINT
@@ -432,7 +431,7 @@ public:
                                 [&decoder, &destination] { decoder.decode(destination); });
     }
 
-   TEST_METHOD(decode_with_missing_end_of_image_marker_throws) // NOLINT
+    TEST_METHOD(decode_with_missing_end_of_image_marker_throws) // NOLINT
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<uint8_t> source_to_encode(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -617,6 +616,71 @@ public:
         assert_expect_exception(jpegls_errc::callback_failed, [&decoder] { decoder.read_header(); });
     }
 
+    TEST_METHOD(read_application_data) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_segment(jpeg_marker_code::application_data0, "hello", 5);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer.data(), writer.buffer.size());
+
+        int32_t actual_application_data_id{1};
+        const void* actual_data{};
+        size_t actual_size{};
+        decoder.at_application_data([&actual_application_data_id, &actual_data, &actual_size](
+                                        int32_t application_data_id, const void* data, const size_t size) noexcept {
+            actual_application_data_id = application_data_id;
+            actual_data = data;
+            actual_size = size;
+        });
+
+        decoder.read_header();
+
+        Assert::AreEqual(0, actual_application_data_id);
+        Assert::AreEqual(static_cast<size_t>(5), actual_size);
+        Assert::IsTrue(memcmp("hello", actual_data, actual_size) == 0);
+    }
+
+    TEST_METHOD(read_application_data_while_already_unregisted) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_segment(jpeg_marker_code::application_data0, "hello", 5);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer.data(), writer.buffer.size());
+
+        bool callback_called{};
+        decoder
+            .at_application_data([&callback_called](int32_t, const void*, const size_t) noexcept { callback_called = true; })
+            .at_application_data(nullptr);
+
+        decoder.read_header();
+
+        Assert::IsFalse(callback_called);
+    }
+
+    TEST_METHOD(at_application_data_that_throws_return_callback_error) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_segment(jpeg_marker_code::application_data0, "hello", 5);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer.data(), writer.buffer.size());
+
+        decoder.at_application_data([](int32_t, const void*, const size_t) { throw std::runtime_error("something failed"); });
+
+        assert_expect_exception(jpegls_errc::callback_failed, [&decoder] { decoder.read_header(); });
+    }
+
     TEST_METHOD(oversize_image_dimension_before_start_of_frame) // NOLINT
     {
         jpeg_test_stream_writer writer;
@@ -666,7 +730,8 @@ public:
         jpegls_decoder decoder;
         decoder.source(writer.buffer.data(), writer.buffer.size());
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_jpegls_preset_parameters, [&decoder] { decoder.read_header(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_jpegls_preset_parameters,
+                                [&decoder] { decoder.read_header(); });
     }
 
     TEST_METHOD(oversize_image_dimension_change_width_after_start_of_frame_throws) // NOLINT
@@ -682,8 +747,7 @@ public:
         jpegls_decoder decoder;
         decoder.source(writer.buffer.data(), writer.buffer.size());
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_width,
-                                [&decoder] { decoder.read_header(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_width, [&decoder] { decoder.read_header(); });
     }
 
     TEST_METHOD(start_of_frame_changes_height_throws) // NOLINT
@@ -724,15 +788,15 @@ public:
         decoder.source(writer.buffer.data(), writer.buffer.size());
         decoder.read_header();
 
-        #if INTPTR_MAX == INT64_MAX
+#if INTPTR_MAX == INT64_MAX
         Assert::AreEqual(component_count * numeric_limits<uint32_t>::max() * numeric_limits<uint32_t>::max(),
                          decoder.destination_size());
-        #elif INTPTR_MAX == INT32_MAX
+#elif INTPTR_MAX == INT32_MAX
         assert_expect_exception(jpegls_errc::parameter_value_not_supported,
                                 [&decoder] { ignore = decoder.destination_size(); });
-        #else
-        #error Unknown pointer size or missing size macros!
-        #endif
+#else
+#error Unknown pointer size or missing size macros!
+#endif
     }
 
     TEST_METHOD(decode_to_buffer_with_uint16_size_works) // NOLINT
