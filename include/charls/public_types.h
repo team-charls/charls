@@ -87,7 +87,8 @@ enum charls_encoding_options
     CHARLS_ENCODING_OPTIONS_NONE = 0,
     CHARLS_ENCODING_OPTIONS_EVEN_DESTINATION_SIZE = 1,
     CHARLS_ENCODING_OPTIONS_INCLUDE_VERSION_NUMBER = 2,
-    CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_JAI = 4
+    CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_JAI = 4,
+    CHARLS_ENCODING_OPTIONS_INCLUDE_COLOR_TRANSFORM_SEGMENT = 8
 };
 
 enum charls_color_transformation
@@ -494,7 +495,13 @@ enum class encoding_options
     /// Most users of this codec are aware of this problem and have implemented a work-around.
     /// This option is default enabled. Will not be default enabled in the next major version upgrade.
     /// </summary>
-    include_pc_parameters_jai = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_JAI
+    include_pc_parameters_jai = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_JAI,
+
+    /// <summary>
+    /// Writes explicitly an APP8 marker (`mrfx`) even in case where no color
+    /// transformation is specified.
+    /// </summary>
+    include_color_transform_segment = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_COLOR_TRANSFORM_SEGMENT
 };
 
 constexpr encoding_options operator|(const encoding_options lhs, const encoding_options rhs) noexcept

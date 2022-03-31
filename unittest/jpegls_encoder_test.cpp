@@ -1398,7 +1398,7 @@ public:
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_encoding_options,
-                                [&encoder] { encoder.encoding_options(static_cast<encoding_options>(8)); });
+                                [&encoder] { encoder.encoding_options(static_cast<encoding_options>(16)); });
     }
 
     TEST_METHOD(large_image_contains_lse_for_oversize_image_dimension) // NOLINT

@@ -67,7 +67,8 @@ struct charls_jpegls_encoder final
     {
         constexpr charls::encoding_options all_options = encoding_options::even_destination_size |
                                                          encoding_options::include_version_number |
-                                                         encoding_options::include_pc_parameters_jai;
+                                                         encoding_options::include_pc_parameters_jai |
+                                                         encoding_options::include_color_transform_segment;
         check_argument(encoding_options >= encoding_options::none && encoding_options <= all_options,
                        jpegls_errc::invalid_argument_encoding_options);
 
@@ -178,7 +179,7 @@ struct charls_jpegls_encoder final
             writer_.write_jpegls_preset_parameters_segment(frame_info_.height, frame_info_.width);
         }
 
-        if (color_transformation_ != charls::color_transformation::none)
+        if (color_transformation_ != charls::color_transformation::none || has_option(encoding_options::include_color_transform_segment))
         {
             if (UNLIKELY(!(frame_info_.bits_per_sample == 8 || frame_info_.bits_per_sample == 16)))
                 throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
