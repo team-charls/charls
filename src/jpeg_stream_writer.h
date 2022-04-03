@@ -56,6 +56,13 @@ public:
     void write_comment_segment(const_byte_span comment);
 
     /// <summary>
+    /// Writes an application data (APPn) segment.
+    /// </summary>
+    /// <param name="application_data_id">The ID of the application data segment.</param>
+    /// <param name="application_data">The bytes of the application data.</param>
+    void write_application_data_segment(int32_t application_data_id, const_byte_span application_data);
+
+    /// <summary>
     /// Writes a JPEG-LS preset parameters (LSE) segment.
     /// </summary>
     /// <param name="preset_coding_parameters">Parameters to write into the JPEG-LS preset segment.</param>
@@ -169,6 +176,11 @@ private:
         const UnsignedIntType big_endian_value{value};
 #endif
         write_bytes(&big_endian_value, sizeof big_endian_value);
+    }
+
+    void write_bytes(const const_byte_span data) noexcept
+    {
+        write_bytes(data.data(), data.size());
     }
 
     void write_bytes(CHARLS_IN_READS_BYTES(size) const void* data, const size_t size) noexcept

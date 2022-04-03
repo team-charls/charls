@@ -622,7 +622,7 @@ public:
     /// The callback can throw an exception to abort the decoding process.
     /// This abort will be returned as a callback_failed error code.
     /// </remarks>
-    /// <param name="comment_handler">Function object to the comment handler.</param>
+    /// <param name="application_data_handler">Function object to the application data handler.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_decoder& at_application_data(
         std::function<void(int32_t application_data_id, const void* data, size_t size)> application_data_handler)
@@ -662,7 +662,7 @@ private:
         }
     }
 
-    static int32_t CHARLS_API_CALLING_CONVENTION at_application_data_callback(int32_t application_data_id, const void* data,
+    static int32_t CHARLS_API_CALLING_CONVENTION at_application_data_callback(const int32_t application_data_id, const void* data,
                                                                               const size_t size, void* user_context) noexcept
     {
         try

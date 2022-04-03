@@ -120,7 +120,7 @@ private:
     void check_frame_info() const;
     void frame_info_height(uint32_t height);
     void frame_info_width(uint32_t width);
-    void call_application_data_callback(const jpeg_marker_code marker_code);
+    void call_application_data_callback(jpeg_marker_code marker_code) const;
 
     enum class state
     {

@@ -22,6 +22,8 @@ constexpr int maximum_component_count{255};
 constexpr int minimum_bits_per_sample{2};
 constexpr int maximum_bits_per_sample{16};
 constexpr int maximum_near_lossless{255};
+constexpr int32_t minimum_application_data_id{0};
+constexpr int32_t maximum_application_data_id{15};
 
 constexpr int max_k_value{16}; // This is an implementation limit (theoretical limit is 32)
 

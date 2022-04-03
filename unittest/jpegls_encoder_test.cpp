@@ -646,6 +646,188 @@ public:
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
+    TEST_METHOD(write_application_data) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        array<uint8_t, 10> destination;
+        encoder.destination(destination);
+
+        const array<uint8_t, 4> application_data{1, 2, 3, 4};
+        encoder.write_application_data(1, application_data.data(), application_data.size());
+
+        Assert::AreEqual(static_cast<size_t>(10), encoder.bytes_written());
+
+        // Check that SOI marker has been written.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
+
+        // Verify that a APPn segment has been written.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data1), destination[3]);
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
+        Assert::AreEqual(static_cast<uint8_t>(2 + 4), destination[5]);
+        Assert::AreEqual(static_cast<uint8_t>(1), destination[6]);
+        Assert::AreEqual(static_cast<uint8_t>(2), destination[7]);
+        Assert::AreEqual(static_cast<uint8_t>(3), destination[8]);
+        Assert::AreEqual(static_cast<uint8_t>(4), destination[9]);
+    }
+
+    TEST_METHOD(write_empty_application_data) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        vector<uint8_t> destination(6);
+        encoder.destination(destination);
+
+        encoder.write_application_data(2, nullptr, 0);
+
+        Assert::AreEqual(static_cast<size_t>(6), encoder.bytes_written());
+
+        // Check that SOI marker has been written.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
+
+        // Verify that a APPn segment has been written.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data2), destination[3]);
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
+        Assert::AreEqual(static_cast<uint8_t>(2), destination[5]);
+    }
+
+    TEST_METHOD(write_max_application_data) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        vector<uint8_t> destination(2 + 2 + static_cast<size_t>(numeric_limits<uint16_t>::max()));
+        encoder.destination(destination);
+
+        constexpr size_t max_size_application_data{static_cast<size_t>(numeric_limits<uint16_t>::max()) - 2};
+        const vector<uint8_t> data(max_size_application_data);
+        encoder.write_application_data(15, data.data(), data.size());
+
+        Assert::AreEqual(destination.size(), encoder.bytes_written());
+
+        // Check that SOI marker has been written.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
+
+        // Verify that a APPn segment has been written.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data15), destination[3]);
+        Assert::AreEqual(static_cast<uint8_t>(255), destination[4]);
+        Assert::AreEqual(static_cast<uint8_t>(255), destination[5]);
+    }
+
+    TEST_METHOD(write_two_application_data) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        array<uint8_t, 14> destination;
+        encoder.destination(destination);
+
+        const array<uint8_t, 4> application_data{1, 2, 3, 4};
+        encoder.write_application_data(0, application_data.data(), application_data.size());
+        encoder.write_application_data(8, nullptr, 0);
+
+        Assert::AreEqual(destination.size(), encoder.bytes_written());
+
+        // Check that SOI marker has been written.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
+
+        // Verify that the COM segments have been written.
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data0), destination[3]);
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
+        Assert::AreEqual(static_cast<uint8_t>(2 + 4), destination[5]);
+        Assert::AreEqual(static_cast<uint8_t>(1), destination[6]);
+        Assert::AreEqual(static_cast<uint8_t>(2), destination[7]);
+        Assert::AreEqual(static_cast<uint8_t>(3), destination[8]);
+        Assert::AreEqual(static_cast<uint8_t>(4), destination[9]);
+
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[10]);
+        Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data8), destination[11]);
+        Assert::AreEqual(static_cast<uint8_t>(0), destination[12]);
+        Assert::AreEqual(static_cast<uint8_t>(2), destination[13]);
+    }
+
+    TEST_METHOD(write_too_large_application_data_throws) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        vector<uint8_t> destination(2 + 2 + static_cast<size_t>(numeric_limits<uint16_t>::max()) + 1);
+        encoder.destination(destination);
+
+        constexpr size_t max_size_application_data{static_cast<size_t>(numeric_limits<uint16_t>::max()) - 2};
+        const vector<uint8_t> data(max_size_application_data + 1);
+
+        assert_expect_exception(jpegls_errc::invalid_argument_size,
+                                [&encoder, &data] { ignore = encoder.write_application_data(0, data.data(), data.size()); });
+    }
+
+    TEST_METHOD(write_application_data_null_pointer_with_size_throws) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        vector<uint8_t> destination(100);
+        encoder.destination(destination);
+
+        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] {
+            MSVC_WARNING_SUPPRESS_NEXT_LINE(6387)
+            ignore = encoder.write_application_data(0, nullptr, 1);
+        });
+    }
+
+    TEST_METHOD(write_application_data_after_encode_throws) // NOLINT
+    {
+        const vector<uint8_t> source{0, 1, 2, 3, 4, 5};
+
+        jpegls_encoder encoder;
+
+        vector<uint8_t> destination(100);
+        encoder.destination(destination);
+        encoder.frame_info({3, 1, 16, 1});
+        ignore = encoder.encode(source);
+
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&encoder] { ignore = encoder.write_application_data(0, nullptr, 0); });
+    }
+
+    TEST_METHOD(write_application_data_with_bad_id_throws) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        vector<uint8_t> destination(100);
+        encoder.destination(destination);
+
+        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] {
+            MSVC_WARNING_SUPPRESS_NEXT_LINE(6387)
+            ignore = encoder.write_application_data(-1, nullptr, 0);
+        });
+
+        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] {
+            MSVC_WARNING_SUPPRESS_NEXT_LINE(6387)
+            ignore = encoder.write_application_data(16, nullptr, 0);
+        });
+    }
+
+    TEST_METHOD(write_application_data_before_encode) // NOLINT
+    {
+        const vector<uint8_t> source{0, 1, 2, 3, 4, 5};
+        constexpr frame_info frame_info{3, 1, 16, 1};
+
+        jpegls_encoder encoder;
+        vector<uint8_t> encoded(100);
+        encoder.destination(encoded);
+        encoder.frame_info(frame_info);
+
+        encoder.write_application_data(11, nullptr, 0);
+
+        encoded.resize(encoder.encode(source));
+        test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
+    }
+
     TEST_METHOD(set_preset_coding_parameters) // NOLINT
     {
         jpegls_encoder encoder;

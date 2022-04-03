@@ -188,7 +188,7 @@ charls_jpegls_encoder_write_spiff_entry(CHARLS_IN charls_jpegls_encoder* encoder
 /// Writes a comment (COM) segment to the destination.
 /// </summary>
 /// <remarks>
-/// Function should be called before decoding the image.
+/// Function should be called before encoding the image data.
 /// </remarks>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="comment">The 'comment' bytes. Application specific, usually human readable string.</param>
@@ -199,6 +199,24 @@ CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLI
 charls_jpegls_encoder_write_comment(CHARLS_IN charls_jpegls_encoder* encoder,
                                     CHARLS_IN_READS_BYTES(comment_size_bytes) const void* comment,
                                     size_t comment_size_bytes) CHARLS_NOEXCEPT;
+
+/// <summary>
+/// Writes an application data (APPn) segment to the destination.
+/// </summary>
+/// <remarks>
+/// Function should be called before encoding the image data.
+/// </remarks>
+/// <param name="encoder">Reference to the encoder instance.</param>
+/// <param name="application_data_id">The ID of the application data segment in the range [0..15].</param>
+/// <param name="application_data">The 'application data' bytes. Application specific.</param>
+/// <param name="application_data_size_bytes">The size in bytes of the comment [0-65533].</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
+CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_write_application_data(CHARLS_IN charls_jpegls_encoder* encoder,
+                                             int32_t application_data_id,
+                                             CHARLS_IN_READS_BYTES(application_data_size_bytes) const void* application_data,
+                                             size_t application_data_size_bytes) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Encodes the passed buffer with the source image data to the destination.
@@ -488,6 +506,21 @@ public:
     jpegls_encoder& write_comment(CHARLS_IN_READS_BYTES(size) const void* comment, const size_t size)
     {
         check_jpegls_errc(charls_jpegls_encoder_write_comment(encoder_.get(), comment, size));
+        return *this;
+    }
+
+    /// <summary>
+    /// Writes a JPEG application data segment to the JPEG-LS bit stream.
+    /// </summary>
+    /// <param name="application_data_id">The ID of the application data segment.</param>
+    /// <param name="application_data">The bytes of the application data: application specific.</param>
+    /// <param name="size">The size of the comment in bytes.</param>
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
+    jpegls_encoder& write_application_data(const int32_t application_data_id,
+                                           CHARLS_IN_READS_BYTES(size) const void* application_data, const size_t size)
+    {
+        check_jpegls_errc(
+            charls_jpegls_encoder_write_application_data(encoder_.get(), application_data_id, application_data, size));
         return *this;
     }
 

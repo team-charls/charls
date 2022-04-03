@@ -131,7 +131,18 @@ void jpeg_stream_writer::write_color_transform_segment(const color_transformatio
 void jpeg_stream_writer::write_comment_segment(const const_byte_span comment)
 {
     write_segment_header(jpeg_marker_code::comment, comment.size());
-    write_bytes(comment.data(), comment.size());
+    write_bytes(comment);
+}
+
+
+void jpeg_stream_writer::write_application_data_segment(const int32_t application_data_id, const const_byte_span application_data)
+{
+    ASSERT(application_data_id >= minimum_application_data_id && application_data_id <= maximum_application_data_id);
+
+    write_segment_header(
+        static_cast<jpeg_marker_code>(static_cast<int32_t>(jpeg_marker_code::application_data0) + application_data_id),
+        application_data.size());
+    write_bytes(application_data);
 }
 
 

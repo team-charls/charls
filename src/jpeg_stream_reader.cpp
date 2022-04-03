@@ -811,7 +811,7 @@ void jpeg_stream_reader::frame_info_width(const uint32_t width)
 }
 
 
-void jpeg_stream_reader::call_application_data_callback(const jpeg_marker_code marker_code)
+void jpeg_stream_reader::call_application_data_callback(const jpeg_marker_code marker_code) const
 {
     if (at_application_data_callback_.handler &&
         UNLIKELY(static_cast<bool>(at_application_data_callback_.handler(
