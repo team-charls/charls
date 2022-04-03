@@ -182,6 +182,12 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
+    TEST_METHOD(at_application_data_nullptr) // NOLINT
+    {
+        const auto error{charls_jpegls_decoder_at_application_data(nullptr, nullptr, nullptr)};
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+    }
+
 private:
     static charls_jpegls_decoder* get_initialized_decoder()
     {

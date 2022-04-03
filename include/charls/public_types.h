@@ -388,7 +388,8 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     invalid_parameter_height = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_HEIGHT,
 
     /// <summary>
-    /// This error is returned when the stream contains a component count parameter outside the range [1,255] for SOF or [1,4] for SOS.
+    /// This error is returned when the stream contains a component count parameter outside the range [1,255] for SOF or
+    /// [1,4] for SOS.
     /// </summary>
     invalid_parameter_component_count = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT,
 
@@ -1121,12 +1122,27 @@ struct JlsParameters
 /// handler.</param>
 using charls_at_comment_handler = int32_t(CHARLS_API_CALLING_CONVENTION*)(const void* data, size_t size, void* user_context);
 
+/// <summary>
+/// Function definition for a callback handler that will be called when an application data (APPn) segment is found.
+/// </summary>
+/// <remarks>
+/// </remarks>
+/// <param name="application_data_id">Id of the APPn segment [0 .. 15].</param>
+/// <param name="data">Reference to the data of the APPn segment.</param>
+/// <param name="size">Size in bytes of the data of the APPn segment.</param>
+/// <param name="user_context">Free to use context information that can be set during the installation of the
+/// handler.</param>
+using charls_at_application_data_handler = int32_t(CHARLS_API_CALLING_CONVENTION*)(int32_t application_data_id,
+                                                                                   const void* data, size_t size,
+                                                                                   void* user_context);
+
 namespace charls {
 
 using spiff_header = charls_spiff_header;
 using frame_info = charls_frame_info;
 using jpegls_pc_parameters = charls_jpegls_pc_parameters;
 using at_comment_handler = charls_at_comment_handler;
+using at_application_data_handler = charls_at_application_data_handler;
 
 static_assert(sizeof(spiff_header) == 40, "size of struct is incorrect, check padding settings");
 static_assert(sizeof(frame_info) == 16, "size of struct is incorrect, check padding settings");
@@ -1136,7 +1152,10 @@ static_assert(sizeof(jpegls_pc_parameters) == 20, "size of struct is incorrect, 
 
 #else
 
-typedef void(CHARLS_API_CALLING_CONVENTION* charls_at_comment_handler)(const void* data, size_t size, void* user_context);
+typedef int32_t(CHARLS_API_CALLING_CONVENTION* charls_at_comment_handler)(const void* data, size_t size, void* user_context);
+typedef int32_t(CHARLS_API_CALLING_CONVENTION* charls_at_application_data_handler)(int32_t application_data_id,
+                                                                                   const void* data, size_t size,
+                                                                                   void* user_context);
 
 typedef struct charls_spiff_header charls_spiff_header;
 typedef struct charls_frame_info charls_frame_info;

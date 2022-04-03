@@ -86,7 +86,7 @@ struct charls_jpegls_decoder final
         if (stride == 0)
         {
             return checked_mul(checked_mul(checked_mul(info.component_count, info.height), info.width),
-                                    bit_to_byte_count(info.bits_per_sample));
+                               bit_to_byte_count(info.bits_per_sample));
         }
 
         switch (interleave_mode())
@@ -103,9 +103,14 @@ struct charls_jpegls_decoder final
         return 0;
     }
 
-    void at_comment(const at_comment_handler handler, void* user_context) noexcept
+    void at_comment(const callback_function<at_comment_handler> at_comment_callback) noexcept
     {
-        reader_.at_comment(handler, user_context);
+        reader_.at_comment(at_comment_callback);
+    }
+
+    void at_application_data(const callback_function<at_application_data_handler> at_application_data_callback) noexcept
+    {
+        reader_.at_application_data(at_application_data_callback);
     }
 
     void decode(const byte_span destination, const size_t stride)
@@ -298,7 +303,20 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_dec
     charls_jpegls_decoder* decoder, const at_comment_handler handler, void* user_context) noexcept
 try
 {
-    check_pointer(decoder)->at_comment(handler, user_context);
+    check_pointer(decoder)->at_comment({handler, user_context});
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_at_application_data(
+    charls_jpegls_decoder* decoder, const charls_at_application_data_handler handler, void* user_context) noexcept
+try
+{
+    check_pointer(decoder)->at_application_data({handler, user_context});
     return jpegls_errc::success;
 }
 catch (...)

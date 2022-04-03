@@ -274,6 +274,14 @@ struct quad final : triplet<SampleType>
 };
 
 
+template<typename Callback>
+struct callback_function final
+{
+    Callback handler;
+    void* user_context;
+};
+
+
 // C++23 comes with std::byteswap. Use our own byte_swap implementation for now.
 
 // A simple overload with uint64_t\uint32_t doesn't work for macOS. size_t is not the same type as uint64_t.

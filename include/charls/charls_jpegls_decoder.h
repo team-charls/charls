@@ -198,6 +198,23 @@ charls_jpegls_decoder_at_comment(CHARLS_IN charls_jpegls_decoder* decoder, charl
                                  void* user_context) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull(1)));
 
 
+/// <summary>
+/// Will install a function that will be called when an application data (APPn) segment is found.
+/// </summary>
+/// <remarks>
+/// Pass NULL or nullptr to uninstall the callback function.
+/// The callback should return 0 if there are no errors.
+/// It can return a non-zero value to abort decoding with a callback_failed error code.
+/// </remarks>
+/// <param name="decoder">Reference to the decoder instance.</param>
+/// <param name="handler">Function pointer to the callback function.</param>
+/// <param name="user_context">Free to use context data that will be provided to the callback function.</param>
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_decoder_at_application_data(CHARLS_IN charls_jpegls_decoder* decoder,
+                                          charls_at_application_data_handler handler, void* user_context) CHARLS_NOEXCEPT
+    CHARLS_ATTRIBUTE((nonnull(1)));
+
+
 // Note: The 3 methods below are considered obsolete and will be removed in the next major update.
 
 /// <summary>
@@ -597,6 +614,25 @@ public:
         return *this;
     }
 
+    /// <summary>
+    /// Will install a function that will be called when an application data (APPn) segment is found.
+    /// </summary>
+    /// <remarks>
+    /// Pass a nullptr to uninstall the callback function.
+    /// The callback can throw an exception to abort the decoding process.
+    /// This abort will be returned as a callback_failed error code.
+    /// </remarks>
+    /// <param name="application_data_handler">Function object to the application data handler.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
+    jpegls_decoder& at_application_data(
+        std::function<void(int32_t application_data_id, const void* data, size_t size)> application_data_handler)
+    {
+        application_data_handler_ = std::move(application_data_handler);
+        check_jpegls_errc(charls_jpegls_decoder_at_application_data(
+            decoder_.get(), application_data_handler_ ? &at_application_data_callback : nullptr, this));
+        return *this;
+    }
+
 private:
     CHARLS_CHECK_RETURN static charls_jpegls_decoder* create_decoder()
     {
@@ -626,12 +662,27 @@ private:
         }
     }
 
+    static int32_t CHARLS_API_CALLING_CONVENTION at_application_data_callback(const int32_t application_data_id, const void* data,
+                                                                              const size_t size, void* user_context) noexcept
+    {
+        try
+        {
+            static_cast<jpegls_decoder*>(user_context)->application_data_handler_(application_data_id, data, size);
+            return 0;
+        }
+        catch (...)
+        {
+            return 1; // will trigger jpegls_errc::callback_failed.
+        }
+    }
+
     std::unique_ptr<charls_jpegls_decoder, void (*)(const charls_jpegls_decoder*)> decoder_{create_decoder(),
                                                                                             &destroy_decoder};
     bool spiff_header_has_value_{};
     charls::spiff_header spiff_header_{};
     charls::frame_info frame_info_{};
     std::function<void(const void*, size_t)> comment_handler_{};
+    std::function<void(int32_t, const void*, size_t)> application_data_handler_{};
 };
 
 } // namespace charls

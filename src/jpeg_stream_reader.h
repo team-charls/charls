@@ -55,10 +55,14 @@ public:
         rect_ = rect;
     }
 
-    void at_comment(const at_comment_handler handler, void* user_context) noexcept
+    void at_comment(const callback_function<at_comment_handler> at_comment_callback) noexcept
     {
-        comment_handler_ = handler;
-        comment_handler_user_context_ = user_context;
+        at_comment_callback_ = at_comment_callback;
+    }
+
+    void at_application_data(const callback_function<at_application_data_handler> at_application_data_callback) noexcept
+    {
+        at_application_data_callback_ = at_application_data_callback;
     }
 
     void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
@@ -100,7 +104,7 @@ private:
     void read_start_of_frame_segment();
     void read_start_of_scan_segment();
     void read_comment_segment();
-    void read_application_data_segment() noexcept;
+    void read_application_data_segment(jpeg_marker_code marker_code);
     void read_preset_parameters_segment();
     void read_preset_coding_parameters();
     void oversize_image_dimension();
@@ -116,6 +120,7 @@ private:
     void check_frame_info() const;
     void frame_info_height(uint32_t height);
     void frame_info_width(uint32_t width);
+    void call_application_data_callback(jpeg_marker_code marker_code) const;
 
     enum class state
     {
@@ -138,8 +143,8 @@ private:
     JlsRect rect_{};
     std::vector<uint8_t> component_ids_;
     state state_{};
-    at_comment_handler comment_handler_{};
-    void* comment_handler_user_context_{};
+    callback_function<at_comment_handler> at_comment_callback_{};
+    callback_function<at_application_data_handler> at_application_data_callback_{};
 };
 
 } // namespace charls

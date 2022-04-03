@@ -92,8 +92,8 @@ struct charls_jpegls_encoder final
     size_t estimated_destination_size() const
     {
         check_operation(is_frame_info_configured());
-        return checked_mul(checked_mul(checked_mul(frame_info_.width, frame_info_.height), frame_info_.component_count), 
-                   bit_to_byte_count(frame_info_.bits_per_sample)) +
+        return checked_mul(checked_mul(checked_mul(frame_info_.width, frame_info_.height), frame_info_.component_count),
+                           bit_to_byte_count(frame_info_.bits_per_sample)) +
                1024 + spiff_header_size_in_bytes;
     }
 
@@ -136,6 +136,18 @@ struct charls_jpegls_encoder final
 
         transition_to_tables_and_miscellaneous_state();
         writer_.write_comment_segment(comment);
+    }
+
+    void write_application_data(const int32_t application_data_id, const const_byte_span application_data)
+    {
+        check_argument(application_data_id >= minimum_application_data_id &&
+                       application_data_id <= maximum_application_data_id);
+        check_argument(application_data.data() || application_data.empty());
+        check_argument(application_data.size() <= segment_max_data_size, jpegls_errc::invalid_argument_size);
+        check_operation(state_ >= state::destination_set && state_ < state::completed);
+
+        transition_to_tables_and_miscellaneous_state();
+        writer_.write_application_data_segment(application_data_id, application_data);
     }
 
     void encode(byte_span source, size_t stride)
@@ -514,6 +526,20 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_enc
 try
 {
     check_pointer(encoder)->write_comment({comment, comment_size_bytes});
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_write_application_data(charls_jpegls_encoder* encoder, const int32_t application_data_id,
+                                             const void* application_data, const size_t application_data_size_bytes) noexcept
+try
+{
+    check_pointer(encoder)->write_application_data(application_data_id, {application_data, application_data_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)

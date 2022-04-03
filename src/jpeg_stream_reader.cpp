@@ -32,6 +32,11 @@ constexpr bool is_restart_marker_code(const jpeg_marker_code marker_code) noexce
            static_cast<uint8_t>(marker_code) < jpeg_restart_marker_base + jpeg_restart_marker_range;
 }
 
+constexpr int32_t to_application_data_id(const jpeg_marker_code marker_code) noexcept
+{
+    return static_cast<int32_t>(marker_code) - static_cast<int32_t>(jpeg_marker_code::application_data0);
+}
+
 } // namespace
 
 
@@ -312,7 +317,7 @@ void jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code,
     case jpeg_marker_code::application_data13:
     case jpeg_marker_code::application_data14:
     case jpeg_marker_code::application_data15:
-        read_application_data_segment();
+        read_application_data_segment(marker_code);
         break;
 
     // Other tags not supported (among which DNL)
@@ -377,17 +382,18 @@ void jpeg_stream_reader::read_start_of_frame_segment()
 
 void jpeg_stream_reader::read_comment_segment()
 {
-    if (comment_handler_ &&
-        UNLIKELY(static_cast<bool>(comment_handler_(segment_data_.empty() ? nullptr : position_, segment_data_.size(),
-                                                    comment_handler_user_context_))))
+    if (at_comment_callback_.handler &&
+        UNLIKELY(static_cast<bool>(at_comment_callback_.handler(segment_data_.empty() ? nullptr : position_,
+                                                                segment_data_.size(), at_comment_callback_.user_context))))
         throw_jpegls_error(jpegls_errc::callback_failed);
 
     skip_remaining_segment_data();
 }
 
 
-void jpeg_stream_reader::read_application_data_segment() noexcept
+void jpeg_stream_reader::read_application_data_segment(const jpeg_marker_code marker_code)
 {
+    call_application_data_callback(marker_code);
     skip_remaining_segment_data();
 }
 
@@ -636,6 +642,8 @@ void jpeg_stream_reader::check_segment_size(const size_t expected_size) const
 
 void jpeg_stream_reader::try_read_application_data8_segment(spiff_header* header, bool* spiff_header_found)
 {
+    call_application_data_callback(jpeg_marker_code::application_data8);
+
     if (spiff_header_found)
     {
         ASSERT(header);
@@ -800,6 +808,16 @@ void jpeg_stream_reader::frame_info_width(const uint32_t width)
         throw_jpegls_error(jpegls_errc::invalid_parameter_width);
 
     frame_info_.width = width;
+}
+
+
+void jpeg_stream_reader::call_application_data_callback(const jpeg_marker_code marker_code) const
+{
+    if (at_application_data_callback_.handler &&
+        UNLIKELY(static_cast<bool>(at_application_data_callback_.handler(
+            to_application_data_id(marker_code), segment_data_.empty() ? nullptr : position_, segment_data_.size(),
+            at_application_data_callback_.user_context))))
+        throw_jpegls_error(jpegls_errc::callback_failed);
 }
 
 } // namespace charls

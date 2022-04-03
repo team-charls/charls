@@ -165,6 +165,13 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
+    TEST_METHOD(write_application_data_nullptr) // NOLINT
+    {
+        constexpr array<uint8_t, 10> buffer{};
+        const auto error{charls_jpegls_encoder_write_application_data(nullptr, 0, buffer.data(), buffer.size())};
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+    }
+
     TEST_METHOD(rewind_nullptr) // NOLINT
     {
         const auto error{charls_jpegls_encoder_rewind(nullptr)};
