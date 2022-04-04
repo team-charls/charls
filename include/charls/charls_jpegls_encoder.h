@@ -515,7 +515,7 @@ public:
     /// <param name="application_data_id">The ID of the application data segment.</param>
     /// <param name="application_data">The bytes of the application data: application specific.</param>
     /// <param name="size">The size of the comment in bytes.</param>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
     jpegls_encoder& write_application_data(const int32_t application_data_id,
                                            CHARLS_IN_READS_BYTES(size) const void* application_data, const size_t size)
     {
