@@ -196,10 +196,10 @@ jobs:
         CXX: g++-9
         Shared: 'OFF'
 
-      GCC-9 Release Shared:
+      GCC-10 Release Shared:
         buildType: Release
-        CC: gcc-9
-        CXX: g++-9
+        CC: gcc-10
+        CXX: g++-10
         Shared: 'ON'
 
       Clang-10 Debug:
