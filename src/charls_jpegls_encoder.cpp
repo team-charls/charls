@@ -172,18 +172,18 @@ struct charls_jpegls_encoder final
 
         transition_to_tables_and_miscellaneous_state();
 
-        const bool oversized_image{writer_.write_start_of_frame_segment(frame_info_)};
-        if (oversized_image)
-        {
-            writer_.write_jpegls_preset_parameters_segment(frame_info_.height, frame_info_.width);
-        }
-
         if (color_transformation_ != charls::color_transformation::none)
         {
             if (UNLIKELY(!(frame_info_.bits_per_sample == 8 || frame_info_.bits_per_sample == 16)))
                 throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
 
             writer_.write_color_transform_segment(color_transformation_);
+        }
+
+        const bool oversized_image{writer_.write_start_of_frame_segment(frame_info_)};
+        if (oversized_image)
+        {
+            writer_.write_jpegls_preset_parameters_segment(frame_info_.height, frame_info_.width);
         }
 
         if (!is_default(user_preset_coding_parameters_, compute_default(maximum_sample_value, near_lossless_)) ||
