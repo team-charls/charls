@@ -55,6 +55,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND = 26,
     CHARLS_JPEGLS_ERRC_CALLBACK_FAILED = 27,
     CHARLS_JPEGLS_ERRC_END_OF_IMAGE_MARKER_NOT_FOUND = 28,
+    CHARLS_JPEGLS_ERRC_INVALID_SPIFF_HEADER = 29,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH = 100,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_HEIGHT = 101,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COMPONENT_COUNT = 102,
@@ -322,6 +323,11 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     end_of_image_marker_not_found = impl::CHARLS_JPEGLS_ERRC_END_OF_IMAGE_MARKER_NOT_FOUND,
 
     /// <summary>
+    /// This error is returned when the SPIFF header is invalid.
+    /// </summary>
+    invalid_spiff_header = impl::CHARLS_JPEGLS_ERRC_INVALID_SPIFF_HEADER,
+
+    /// <summary>
     /// The argument for the width parameter is outside the range [1, 65535].
     /// </summary>
     invalid_argument_width = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH,
@@ -562,6 +568,7 @@ enum class spiff_profile_id : int32_t
 {
     /// <summary>
     /// No profile identified.
+    /// This is the only valid option for JPEG-LS encoded images.
     /// </summary>
     none = impl::CHARLS_SPIFF_PROFILE_ID_NONE,
 
@@ -593,6 +600,7 @@ enum class spiff_color_space : int32_t
 {
     /// <summary>
     /// Bi-level image. Each image sample is one bit: 0 = white and 1 = black.
+    /// This option is not valid for JPEG-LS encoded images.
     /// </summary>
     bi_level_black = impl::CHARLS_SPIFF_COLOR_SPACE_BI_LEVEL_BLACK,
 
@@ -654,6 +662,7 @@ enum class spiff_color_space : int32_t
 
     /// <summary>
     /// Bi-level image. Each image sample is one bit: 1 = white and 0 = black.
+    /// This option is not valid for JPEG-LS encoded images.
     /// </summary>
     bi_level_white = impl::CHARLS_SPIFF_COLOR_SPACE_BI_LEVEL_WHITE
 };
@@ -694,7 +703,8 @@ enum class spiff_compression_type : int32_t
     jpeg = impl::CHARLS_SPIFF_COMPRESSION_TYPE_JPEG,
 
     /// <summary>
-    /// ISO/IEC 14495-1 or ISO/IEC 14495-2, commonly known as JPEG-LS. (extension defined in ISO/IEC 14495-1)
+    /// ISO/IEC 14495-1 or ISO/IEC 14495-2, commonly known as JPEG-LS. (extension defined in ISO/IEC 14495-1).
+    /// This is the only valid option for JPEG-LS encoded images.
     /// </summary>
     jpeg_ls = impl::CHARLS_SPIFF_COMPRESSION_TYPE_JPEG_LS
 };

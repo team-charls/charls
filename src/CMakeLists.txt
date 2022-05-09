@@ -59,6 +59,7 @@ set(HEADERS
     "include/charls/charls_jpegls_encoder.h"
     "include/charls/jpegls_error.h"
     "include/charls/public_types.h"
+    "include/charls/validate_spiff_header.h"
     "include/charls/version.h"
 )
 foreach(header HEADERS)
@@ -106,6 +107,7 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/process_line.h"
     "${CMAKE_CURRENT_LIST_DIR}/scan.h"
     "${CMAKE_CURRENT_LIST_DIR}/util.h"
+    "${CMAKE_CURRENT_LIST_DIR}/validate_spiff_header.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/version.cpp"
 )
 

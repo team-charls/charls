@@ -352,6 +352,28 @@ public:
         Assert::AreEqual(256U, frame_info.width);
     }
 
+    TEST_METHOD(read_invalid_spiff_header_with_read_header) // NOLINT
+    {
+        const vector<uint8_t> source{create_test_spiff_header(2, 0, true, 1)};
+        jpegls_decoder decoder{source, false};
+
+        decoder.read_spiff_header();
+        std::error_code ec;
+        decoder.read_header(ec);
+
+        Assert::AreEqual(static_cast<int>(jpegls_errc::invalid_spiff_header), ec.value());
+    }
+
+    TEST_METHOD(read_invalid_spiff_header_throws) // NOLINT
+    {
+        const vector<uint8_t> source{create_test_spiff_header(2, 0, true, 1)};
+
+        assert_expect_exception(jpegls_errc::invalid_spiff_header, [&source] {
+            // ReSharper disable once CppLocalVariableWithNonTrivialDtorIsNeverUsed
+            jpegls_decoder decoder{source, true};
+        });
+    }
+
     TEST_METHOD(read_header_twice_throws) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};

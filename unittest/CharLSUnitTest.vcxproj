@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Checked|Win32">
@@ -64,7 +64,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)intermediate\CharLS\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories Condition="'$(Platform)'=='Win32'">$(SolutionDir)intermediate\CharLS\x86\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>jpegls.obj;jpegls_error.obj;jpeg_stream_writer.obj;jpeg_stream_reader.obj;charls_jpegls_decoder.obj;charls_jpegls_encoder.obj;version.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jpegls.obj;jpegls_error.obj;jpeg_stream_writer.obj;jpeg_stream_reader.obj;charls_jpegls_decoder.obj;charls_jpegls_encoder.obj;version.obj;validate_spiff_header.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -100,6 +100,7 @@
     <ClCompile Include="scan_test.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="util_test.cpp" />
+    <ClCompile Include="validate_spiff_header_test.cpp" />
     <ClCompile Include="version_test.cpp" />
   </ItemGroup>
   <ItemGroup>

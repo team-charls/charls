@@ -5,10 +5,9 @@
 
 #ifdef _MSC_VER
 
+// Use the Microsoft Source Code Annotation Language when compiling with the MSVC compiler.
 #include <sal.h>
 
-// Note: these macro's are not prefixed with CHARLS_, as these macro's are used for function parameters.
-//       and long macro's would make the code harder to read.
 #define CHARLS_IN _In_
 #define CHARLS_IN_OPT _In_opt_
 #define CHARLS_IN_Z _In_z_
@@ -30,6 +29,7 @@
 
 #else
 
+// For other compilers use empty macros.
 #define CHARLS_IN
 #define CHARLS_IN_OPT
 #define CHARLS_IN_Z
