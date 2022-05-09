@@ -49,7 +49,7 @@ charls_test::portable_anymap_file read_anymap_reference_file(const char* filenam
                                                              const frame_info& frame_info);
 charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode);
 std::vector<uint8_t> create_test_spiff_header(uint8_t high_version = 2, uint8_t low_version = 0,
-                                              bool end_of_directory = true);
+                                              bool end_of_directory = true, uint8_t component_count = 3);
 std::vector<uint8_t> create_noise_image_16_bit(size_t pixel_count, int bit_count, uint32_t seed);
 void test_round_trip_legacy(const std::vector<uint8_t>& source, const JlsParameters& params);
 bool verify_encoded_bytes(const std::vector<uint8_t>& uncompressed_source, const std::vector<uint8_t>& encoded_source);

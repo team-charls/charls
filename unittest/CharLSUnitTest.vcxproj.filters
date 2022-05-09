@@ -107,6 +107,9 @@
     <ClCompile Include="util_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="validate_spiff_header_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="tulips-gray-8bit-512-512.pgm">

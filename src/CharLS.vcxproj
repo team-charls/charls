@@ -163,6 +163,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="validate_spiff_header.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include="charls_jpegls_decoder.cpp" />
     <ClCompile Include="jpegls.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="..\include\charls\charls_jpegls_encoder.h" />
     <ClInclude Include="..\include\charls\jpegls_error.h" />
     <ClInclude Include="..\include\charls\public_types.h" />
+    <ClInclude Include="..\include\charls\validate_spiff_header.h" />
     <ClInclude Include="..\include\charls\version.h" />
     <ClInclude Include="coding_parameters.h" />
     <ClInclude Include="color_transform.h" />

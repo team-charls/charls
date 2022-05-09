@@ -4,6 +4,7 @@
 #pragma once
 
 #include "jpegls_error.h"
+#include "validate_spiff_header.h"
 
 #ifdef __cplusplus
 #include <functional>
@@ -426,6 +427,7 @@ public:
     /// <summary>
     /// Reads the JPEG-LS header from the beginning of the JPEG-LS byte stream or after the SPIFF header.
     /// After this function is called frame info and other info can be retrieved.
+    /// If a SPIFF header is present it will be validated against the information in the frame info.
     /// </summary>
     /// <param name="ec">The out-parameter for error reporting.</param>
     jpegls_decoder& read_header(CHARLS_OUT std::error_code& ec) noexcept
@@ -434,6 +436,10 @@ public:
         if (ec == jpegls_errc::success)
         {
             ec = charls_jpegls_decoder_get_frame_info(decoder_.get(), &frame_info_);
+            if (ec == jpegls_errc::success && spiff_header_has_value_)
+            {
+                ec = charls_validate_spiff_header(&spiff_header_, &frame_info_);
+            }
         }
         return *this;
     }
@@ -662,8 +668,9 @@ private:
         }
     }
 
-    static int32_t CHARLS_API_CALLING_CONVENTION at_application_data_callback(const int32_t application_data_id, const void* data,
-                                                                              const size_t size, void* user_context) noexcept
+    static int32_t CHARLS_API_CALLING_CONVENTION at_application_data_callback(const int32_t application_data_id,
+                                                                              const void* data, const size_t size,
+                                                                              void* user_context) noexcept
     {
         try
         {
