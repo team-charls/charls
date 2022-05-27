@@ -91,6 +91,21 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
+    TEST_METHOD(all_jpegls_bits_per_sample_are_valid) // NOLINT
+    {
+        spiff_header spiff_header{create_valid_spiff_header()};
+        frame_info frame_info{create_valid_frame_info()};
+
+        for (int bits_per_sample{2}; bits_per_sample <= 16; ++bits_per_sample)
+        {
+            spiff_header.bits_per_sample = bits_per_sample;
+            frame_info.bits_per_sample = bits_per_sample;
+
+            const auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+            Assert::AreEqual(jpegls_errc::success, result);
+        }
+    }
+
     TEST_METHOD(invalid_bits_per_sample) // NOLINT
     {
         spiff_header spiff_header{create_valid_spiff_header()};
