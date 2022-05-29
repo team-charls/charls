@@ -185,6 +185,19 @@ charls_jpegls_encoder_write_spiff_entry(CHARLS_IN charls_jpegls_encoder* encoder
                                         size_t entry_data_size_bytes) CHARLS_NOEXCEPT;
 
 /// <summary>
+/// Writes a SPIFF end of directory entry to the destination.
+/// The encoder will normally does this automatically. It is made available
+/// for the scenario to create SPIFF headers in front of existing JPEG-LS streams.
+/// </summary>
+/// <remarks>
+/// The end of directory also includes a SOI marker. This marker should be skipped from the JPEG-LS stream.
+/// </remarks>
+/// <param name="encoder">Reference to the encoder instance.</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_write_spiff_end_of_directory_entry(CHARLS_IN charls_jpegls_encoder* encoder) CHARLS_NOEXCEPT;
+
+/// <summary>
 /// Writes a comment (COM) segment to the destination.
 /// </summary>
 /// <remarks>
@@ -480,6 +493,20 @@ public:
     {
         check_jpegls_errc(charls_jpegls_encoder_write_spiff_entry(encoder_.get(), static_cast<uint32_t>(entry_tag),
                                                                   entry_data, entry_data_size_bytes));
+        return *this;
+    }
+
+    /// <summary>
+    /// Writes a SPIFF end of directory entry to the destination.
+    /// The encoder will normally does this automatically. It is made available
+    /// for the scenario to create SPIFF headers in front of existing JPEG-LS streams.
+    /// </summary>
+    /// <remarks>
+    /// The end of directory also includes a SOI marker. This marker should be skipped from the JPEG-LS stream.
+    /// </remarks>
+    jpegls_encoder& write_spiff_end_of_directory_entry()
+    {
+        check_jpegls_errc(charls_jpegls_encoder_write_spiff_end_of_directory_entry(encoder_.get()));
         return *this;
     }
 

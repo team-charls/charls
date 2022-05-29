@@ -158,6 +158,12 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
+    TEST_METHOD(write_spiff_end_of_directory_entry_before_header_throws) // NOLINT
+    {
+        const auto error = charls_jpegls_encoder_write_spiff_end_of_directory_entry(nullptr);
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+    }
+
     TEST_METHOD(write_comment_nullptr) // NOLINT
     {
         constexpr array<uint8_t, 10> buffer{};

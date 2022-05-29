@@ -128,6 +128,12 @@ struct charls_jpegls_encoder final
         writer_.write_spiff_directory_entry(entry_tag, entry_data, entry_data_size_bytes);
     }
 
+    void write_spiff_end_of_directory_entry()
+    {
+        check_operation(state_ == state::spiff_header);
+        transition_to_tables_and_miscellaneous_state();
+    }
+
     void write_comment(const const_byte_span comment)
     {
         check_argument(comment.data() || comment.empty());
@@ -513,6 +519,19 @@ charls_jpegls_encoder_write_spiff_entry(charls_jpegls_encoder* encoder, const ui
 try
 {
     check_pointer(encoder)->write_spiff_entry(entry_tag, entry_data, entry_data_size_bytes);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_write_spiff_end_of_directory_entry(charls_jpegls_encoder* encoder) noexcept
+try
+{
+    check_pointer(encoder)->write_spiff_end_of_directory_entry();
     return jpegls_errc::success;
 }
 catch (...)
