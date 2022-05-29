@@ -462,6 +462,50 @@ public:
         });
     }
 
+    TEST_METHOD(write_spiff_end_of_directory_entry) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        encoder.frame_info({1, 1, 2, 1});
+
+        vector<uint8_t> destination(300);
+        encoder.destination(destination);
+
+        encoder.write_standard_spiff_header(spiff_color_space::none);
+        encoder.write_spiff_end_of_directory_entry();
+
+        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[44]);
+        Assert::AreEqual(static_cast<uint8_t>(0xD8), destination[45]); // 0xD8 = SOI: Marks the start of an image.
+    }
+
+    TEST_METHOD(write_spiff_end_of_directory_entry_before_header_throws) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        vector<uint8_t> destination(300);
+        encoder.destination(destination);
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&encoder] {
+            encoder.write_spiff_end_of_directory_entry();
+        });
+    }
+
+    TEST_METHOD(write_spiff_end_of_directory_entry_twice_throws) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        encoder.frame_info({1, 1, 2, 1});
+
+        vector<uint8_t> destination(300);
+        encoder.destination(destination);
+
+        encoder.write_standard_spiff_header(spiff_color_space::none);
+        encoder.write_spiff_end_of_directory_entry();
+
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&encoder] { encoder.write_spiff_end_of_directory_entry(); });
+    }
+
     TEST_METHOD(write_comment) // NOLINT
     {
         jpegls_encoder encoder;
