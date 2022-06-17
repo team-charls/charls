@@ -465,11 +465,14 @@ enum class interleave_mode
     Sample = sample
 };
 
+
+namespace encoding_options_private {
+
 /// <summary>
 /// Defines options that can be enabled during the encoding process.
 /// These options can be combined.
 /// </summary>
-enum class encoding_options
+enum class encoding_options : unsigned
 {
     /// <summary>
     /// No special encoding option is defined.
@@ -514,6 +517,11 @@ constexpr encoding_options& operator|=(encoding_options& lhs, const encoding_opt
     lhs = lhs | rhs;
     return lhs;
 }
+
+} // namespace encoding_options_private
+
+using encoding_options = encoding_options_private::encoding_options;
+
 
 /// <summary>
 /// Defines color space transformations as defined and implemented by the JPEG-LS library of HP Labs.
@@ -560,6 +568,7 @@ enum class color_transformation
     HP3 = hp3
 };
 
+
 /// <summary>
 /// Defines the Application profile identifier options that can be used in a SPIFF header v2, as defined in ISO/IEC 10918-3,
 /// F.1.2
@@ -592,6 +601,7 @@ enum class spiff_profile_id : int32_t
     /// </summary>
     continuous_tone_facsimile = impl::CHARLS_SPIFF_PROFILE_ID_CONTINUOUS_TONE_FACSIMILE
 };
+
 
 /// <summary>
 /// Defines the color space options that can be used in a SPIFF header v2, as defined in ISO/IEC 10918-3, F.2.1.1
@@ -667,6 +677,7 @@ enum class spiff_color_space : int32_t
     bi_level_white = impl::CHARLS_SPIFF_COLOR_SPACE_BI_LEVEL_WHITE
 };
 
+
 /// <summary>
 /// Defines the compression options that can be used in a SPIFF header v2, as defined in ISO/IEC 10918-3, F.2.1
 /// </summary>
@@ -709,6 +720,7 @@ enum class spiff_compression_type : int32_t
     jpeg_ls = impl::CHARLS_SPIFF_COMPRESSION_TYPE_JPEG_LS
 };
 
+
 /// <summary>
 /// Defines the resolution units for the VRES and HRES parameters, as defined in ISO/IEC 10918-3, F.2.1
 /// </summary>
@@ -733,6 +745,7 @@ enum class spiff_resolution_units : int32_t
     /// </summary>
     dots_per_centimeter = impl::CHARLS_SPIFF_RESOLUTION_UNITS_DOTS_PER_CENTIMETER
 };
+
 
 /// <summary>
 /// Official defined SPIFF tags defined in Table F.5 (ISO/IEC 10918-3)
@@ -928,6 +941,7 @@ struct charls_frame_info CHARLS_FINAL
     int32_t component_count;
 };
 
+
 /// <summary>
 /// Defines the JPEG-LS preset coding parameters as defined in ISO/IEC 14495-1, C.2.4.1.1.
 /// JPEG-LS defines a default set of parameters, but custom parameters can be used.
@@ -961,6 +975,7 @@ struct charls_jpegls_pc_parameters CHARLS_FINAL
     /// </summary>
     int32_t reset_value;
 };
+
 
 /// <summary>
 /// Defines the JPEG-LS preset coding parameters as defined in ISO/IEC 14495-1, C.2.4.1.1.

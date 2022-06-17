@@ -312,17 +312,17 @@ public:
     /// <param name="source">Source container with the pixel data bytes that need to be encoded.</param>
     /// <param name="frame">Information about the frame that needs to be encoded.</param>
     /// <param name="interleave_mode">Configures the interleave mode the encoder should use.</param>
-    /// <param name="encoding_options">Configures the special options the encoder should use.</param>
+    /// <param name="options">Configures the special options the encoder should use.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <exception cref="std::bad_alloc">Thrown when memory for the encoder could not be allocated.</exception>
     /// <returns>Container with the JPEG-LS encoded bytes.</returns>
     template<typename Container, typename T = typename Container::value_type>
     static Container encode(const Container& source, const charls::frame_info& frame,
                             const charls::interleave_mode interleave_mode = charls::interleave_mode::none,
-                            const encoding_options encoding_options = charls::encoding_options::none)
+                            const encoding_options options = charls::encoding_options::none)
     {
         jpegls_encoder encoder;
-        encoder.frame_info(frame).interleave_mode(interleave_mode).encoding_options(encoding_options);
+        encoder.frame_info(frame).interleave_mode(interleave_mode).encoding_options(options);
 
         Container destination(encoder.estimated_destination_size());
         encoder.destination(destination);

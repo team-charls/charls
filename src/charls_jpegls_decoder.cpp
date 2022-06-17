@@ -300,7 +300,7 @@ catch (...)
 
 
 USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_at_comment(
-    charls_jpegls_decoder* decoder, const at_comment_handler handler, void* user_context) noexcept
+    charls_jpegls_decoder* decoder, const charls_at_comment_handler handler, void* user_context) noexcept
 try
 {
     check_pointer(decoder)->at_comment({handler, user_context});
