@@ -114,6 +114,13 @@
     </Link>
   </ItemDefinitionGroup>
 
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Checked'">
+    <ClCompile>
+       <!-- Clang-tidy generates false clang-diagnostic-unused-command-line-argument warnings, use not all options.-->
+      <AdditionalOptions>/Zc:__cplusplus /utf-8 /ZH:SHA_256</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
   <PropertyGroup Condition="'$(Configuration)'=='Checked'">
     <RunCodeAnalysis Condition="'$(MSBuildProjectExtension)'=='.vcxproj'" >true</RunCodeAnalysis>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>

@@ -28,7 +28,6 @@ using std::error_code;
 using std::getline;
 using std::ifstream;
 using std::ios;
-using std::ios_base;
 using std::istream;
 using std::iter_swap;
 using std::mt19937;
@@ -185,7 +184,9 @@ vector<uint8_t> make_some_noise(const size_t length, const size_t bit_count, con
 {
     const auto max_value{(1U << bit_count) - 1U};
     mt19937 generator(seed);
-    MSVC_CONST uniform_int_distribution<uint32_t> distribution(0, max_value);
+
+    MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
+    uniform_int_distribution<uint32_t> distribution(0, max_value);
 
     vector<uint8_t> buffer(length);
     for (auto& pixel_value : buffer)
@@ -201,12 +202,14 @@ vector<uint8_t> make_some_noise16_bit(const size_t length, const int bit_count, 
 {
     const auto max_value{static_cast<uint16_t>((1U << bit_count) - 1U)};
     mt19937 generator(seed);
-    MSVC_CONST uniform_int_distribution<uint16_t> distribution(0, max_value);
+
+    MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
+    uniform_int_distribution<uint16_t> distribution{0, max_value};
 
     vector<uint8_t> buffer(length * 2);
     for (size_t i{}; i != length; i = i + 2)
     {
-        const uint16_t value = distribution(generator);
+        const uint16_t value{distribution(generator)};
 
         buffer[i] = static_cast<uint8_t>(value);
         buffer[i] = static_cast<uint8_t>(value >> 8);
