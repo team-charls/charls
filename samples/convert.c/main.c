@@ -305,7 +305,7 @@ static bool save_jpegls_file(const char* filename, const void* buffer, const siz
     if (stream)
     {
         result = fwrite(buffer, buffer_size, 1, stream);
-        fclose(stream);
+        result = result && fclose(stream) == 0;
     }
 
     return result;
@@ -394,27 +394,27 @@ int main(const int argc, char* argv[])
     if (!bmp_read_header(input_stream, &header) || !bmp_read_dib_header(input_stream, &dib_header))
     {
         printf("Failed to read the BMP info from the file: %s\n", argv[1]);
-        fclose(input_stream);
+        (void) fclose(input_stream);
         return EXIT_FAILURE;
     }
 
     if (dib_header.compress_type != 0 || dib_header.depth != 24)
     {
         printf("Can only convert uncompressed 24 bits BMP files");
-        fclose(input_stream);
+        (void) fclose(input_stream);
         return EXIT_FAILURE;
     }
 
     if (dib_header.width == 0 || dib_header.height == 0)
     {
         printf("Can only process an image that is 1 x 1 or bigger");
-        fclose(input_stream);
+        (void) fclose(input_stream);
         return EXIT_FAILURE;
     }
 
     size_t stride;
     void* pixel_data = bmp_read_pixel_data(input_stream, header.offset, &dib_header, &stride);
-    fclose(input_stream);
+    (void ) fclose(input_stream);
 
     if (!pixel_data)
     {

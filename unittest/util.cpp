@@ -158,7 +158,8 @@ vector<uint8_t> create_noise_image_16_bit(const size_t pixel_count, const int bi
     const auto max_value = static_cast<uint16_t>((1U << bit_count) - 1U);
     mt19937 generator(seed);
 
-    MSVC_CONST uniform_int_distribution<uint16_t> distribution(0, max_value);
+    MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
+    uniform_int_distribution<uint16_t> distribution(0, max_value);
 
     vector<uint8_t> buffer(pixel_count * 2);
     for (size_t i{}; i != pixel_count; i = i + 2)
