@@ -47,8 +47,10 @@
 
 #if __cplusplus >= 201703
 #define CHARLS_NO_DISCARD [[nodiscard]]
+#define CHARLS_CONSTEXPR_INLINE inline
 #else
 #define CHARLS_NO_DISCARD
+#define CHARLS_CONSTEXPR_INLINE
 #endif
 
 #define CHARLS_FINAL final
