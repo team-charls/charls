@@ -860,7 +860,10 @@ using CharlsColorTransformationType = charls::color_transformation;
 
 // Defines the size of the char buffer that should be passed to the legacy CharLS API to get the error message text.
 // Note: this define will be removed in the next major release as it is not defined in the charls namespace.
-constexpr std::size_t ErrorMessageSize = 256;
+#if __cplusplus >= 201703L
+inline
+#endif
+constexpr std::size_t ErrorMessageSize{256};
 
 #else
 
@@ -1011,6 +1014,10 @@ struct JpegLSPresetCodingParameters
     int32_t ResetValue;
 };
 
+#ifndef __cplusplus
+typedef struct JpegLSPresetCodingParameters JpegLSPresetCodingParameters;
+#endif
+
 
 struct JlsRect
 {
@@ -1071,6 +1078,10 @@ struct JfifParameters
     void* thumbnail;
 };
 
+#ifndef __cplusplus
+typedef struct JfifParameters JfifParameters;
+#endif
+
 
 struct JlsParameters
 {
@@ -1130,8 +1141,8 @@ struct JlsParameters
     /// </summary>
     char outputBgr;
 
-    struct JpegLSPresetCodingParameters custom;
-    struct JfifParameters jfif;
+    JpegLSPresetCodingParameters custom;
+    JfifParameters jfif;
 };
 
 #ifdef __cplusplus
