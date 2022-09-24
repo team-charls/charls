@@ -166,7 +166,7 @@ public:
 
         encoder.frame_info({100, 100, 16, 1}); // minimum.
         const auto size{encoder.estimated_destination_size()};
-        Assert::IsTrue(size >= static_cast<size_t>(100) * 100 * 2);
+        Assert::IsTrue(size >= size_t{100} * 100 * 2);
     }
 
     TEST_METHOD(estimated_destination_size_color_8_bit) // NOLINT
@@ -175,7 +175,7 @@ public:
 
         encoder.frame_info({2000, 2000, 8, 3});
         const auto size{encoder.estimated_destination_size()};
-        Assert::IsTrue(size >= static_cast<size_t>(2000) * 2000 * 3);
+        Assert::IsTrue(size >= size_t{2000} * 2000 * 3);
     }
 
     TEST_METHOD(estimated_destination_size_very_wide) // NOLINT
@@ -210,15 +210,15 @@ public:
 
         encoder.frame_info({numeric_limits<uint32_t>::max(), numeric_limits<uint32_t>::max(), 8, 1});
 
-        #if INTPTR_MAX == INT64_MAX
+#if INTPTR_MAX == INT64_MAX
         const auto size{encoder.estimated_destination_size()};
         Assert::IsTrue(size != 0); // actual value already checked in other test functions.
-        #elif INTPTR_MAX == INT32_MAX
+#elif INTPTR_MAX == INT32_MAX
         assert_expect_exception(jpegls_errc::parameter_value_not_supported,
                                 [&encoder] { ignore = encoder.estimated_destination_size(); });
-        #else
-        #error Unknown pointer size or missing size macros!
-        #endif
+#else
+#error Unknown pointer size or missing size macros!
+#endif
     }
 
     TEST_METHOD(destination) // NOLINT
@@ -254,20 +254,20 @@ public:
         Assert::AreEqual(serialized_spiff_header_size + 2, encoder.bytes_written());
 
         // Check that SOI marker has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that a APP8 with SPIFF has been written (details already verified by jpeg_stream_writer_test).
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data8), destination[3]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(32), destination[5]);
-        Assert::AreEqual(static_cast<uint8_t>('S'), destination[6]);
-        Assert::AreEqual(static_cast<uint8_t>('P'), destination[7]);
-        Assert::AreEqual(static_cast<uint8_t>('I'), destination[8]);
-        Assert::AreEqual(static_cast<uint8_t>('F'), destination[9]);
-        Assert::AreEqual(static_cast<uint8_t>('F'), destination[10]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[11]);
+        Assert::AreEqual(uint8_t{}, destination[4]);
+        Assert::AreEqual(uint8_t{32}, destination[5]);
+        Assert::AreEqual(uint8_t{'S'}, destination[6]);
+        Assert::AreEqual(uint8_t{'P'}, destination[7]);
+        Assert::AreEqual(uint8_t{'I'}, destination[8]);
+        Assert::AreEqual(uint8_t{'F'}, destination[9]);
+        Assert::AreEqual(uint8_t{'F'}, destination[10]);
+        Assert::AreEqual(uint8_t{}, destination[11]);
     }
 
     TEST_METHOD(write_standard_spiff_header_without_destination) // NOLINT
@@ -322,20 +322,20 @@ public:
         Assert::AreEqual(serialized_spiff_header_size + 2, encoder.bytes_written());
 
         // Check that SOI marker has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that a APP8 with SPIFF has been written (details already verified by jpeg_stream_writer_test).
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data8), destination[3]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(32), destination[5]);
-        Assert::AreEqual(static_cast<uint8_t>('S'), destination[6]);
-        Assert::AreEqual(static_cast<uint8_t>('P'), destination[7]);
-        Assert::AreEqual(static_cast<uint8_t>('I'), destination[8]);
-        Assert::AreEqual(static_cast<uint8_t>('F'), destination[9]);
-        Assert::AreEqual(static_cast<uint8_t>('F'), destination[10]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[11]);
+        Assert::AreEqual(uint8_t{}, destination[4]);
+        Assert::AreEqual(uint8_t{32}, destination[5]);
+        Assert::AreEqual(uint8_t{'S'}, destination[6]);
+        Assert::AreEqual(uint8_t{'P'}, destination[7]);
+        Assert::AreEqual(uint8_t{'I'}, destination[8]);
+        Assert::AreEqual(uint8_t{'F'}, destination[9]);
+        Assert::AreEqual(uint8_t{'F'}, destination[10]);
+        Assert::AreEqual(uint8_t{}, destination[11]);
     }
 
     TEST_METHOD(write_spiff_header_invalid_height) // NOLINT
@@ -352,7 +352,7 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_argument_height,
                                 [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
-        Assert::AreEqual(static_cast<size_t>(0), encoder.bytes_written());
+        Assert::AreEqual(size_t{}, encoder.bytes_written());
     }
 
     TEST_METHOD(write_spiff_header_invalid_width) // NOLINT
@@ -369,7 +369,7 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_argument_width,
                                 [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
-        Assert::AreEqual(static_cast<size_t>(0), encoder.bytes_written());
+        Assert::AreEqual(size_t{}, encoder.bytes_written());
     }
 
     TEST_METHOD(write_spiff_entry) // NOLINT
@@ -384,7 +384,7 @@ public:
 
         encoder.write_spiff_entry(spiff_entry_tag::image_title, "test", 4);
 
-        Assert::AreEqual(static_cast<size_t>(48), encoder.bytes_written());
+        Assert::AreEqual(size_t{48}, encoder.bytes_written());
     }
 
     TEST_METHOD(write_spiff_entry_twice) // NOLINT
@@ -400,7 +400,7 @@ public:
         encoder.write_spiff_entry(spiff_entry_tag::image_title, "test", 4);
         encoder.write_spiff_entry(spiff_entry_tag::image_title, "test", 4);
 
-        Assert::AreEqual(static_cast<size_t>(60), encoder.bytes_written());
+        Assert::AreEqual(size_t{60}, encoder.bytes_written());
     }
 
     TEST_METHOD(write_empty_spiff_entry) // NOLINT
@@ -415,7 +415,7 @@ public:
 
         encoder.write_spiff_entry(spiff_entry_tag::image_title, nullptr, 0);
 
-        Assert::AreEqual(static_cast<size_t>(44), encoder.bytes_written());
+        Assert::AreEqual(size_t{44}, encoder.bytes_written());
     }
 
     TEST_METHOD(write_spiff_entry_with_invalid_tag) // NOLINT
@@ -474,8 +474,8 @@ public:
         encoder.write_standard_spiff_header(spiff_color_space::none);
         encoder.write_spiff_end_of_directory_entry();
 
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[44]);
-        Assert::AreEqual(static_cast<uint8_t>(0xD8), destination[45]); // 0xD8 = SOI: Marks the start of an image.
+        Assert::AreEqual(uint8_t{0xFF}, destination[44]);
+        Assert::AreEqual(uint8_t{0xD8}, destination[45]); // 0xD8 = SOI: Marks the start of an image.
     }
 
     TEST_METHOD(write_spiff_end_of_directory_entry_before_header_throws) // NOLINT
@@ -485,9 +485,8 @@ public:
         vector<uint8_t> destination(300);
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&encoder] {
-            encoder.write_spiff_end_of_directory_entry();
-        });
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&encoder] { encoder.write_spiff_end_of_directory_entry(); });
     }
 
     TEST_METHOD(write_spiff_end_of_directory_entry_twice_throws) // NOLINT
@@ -515,21 +514,21 @@ public:
 
         encoder.write_comment("123");
 
-        Assert::AreEqual(static_cast<size_t>(10), encoder.bytes_written());
+        Assert::AreEqual(size_t{10}, encoder.bytes_written());
 
         // Check that SOI marker has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that a COM segment has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), destination[3]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(2 + 4), destination[5]);
-        Assert::AreEqual(static_cast<uint8_t>('1'), destination[6]);
-        Assert::AreEqual(static_cast<uint8_t>('2'), destination[7]);
-        Assert::AreEqual(static_cast<uint8_t>('3'), destination[8]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[9]);
+        Assert::AreEqual(uint8_t{}, destination[4]);
+        Assert::AreEqual(uint8_t{2 + 4}, destination[5]);
+        Assert::AreEqual(uint8_t{'1'}, destination[6]);
+        Assert::AreEqual(uint8_t{'2'}, destination[7]);
+        Assert::AreEqual(uint8_t{'3'}, destination[8]);
+        Assert::AreEqual(uint8_t{}, destination[9]);
     }
 
     TEST_METHOD(write_empty_comment) // NOLINT
@@ -541,17 +540,17 @@ public:
 
         encoder.write_comment("");
 
-        Assert::AreEqual(static_cast<size_t>(6), encoder.bytes_written());
+        Assert::AreEqual(size_t{6}, encoder.bytes_written());
 
         // Check that SOI marker has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that a COM segment has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), destination[3]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(2), destination[5]);
+        Assert::AreEqual(uint8_t{}, destination[4]);
+        Assert::AreEqual(uint8_t{2}, destination[5]);
     }
 
     TEST_METHOD(write_empty_comment_buffer) // NOLINT
@@ -563,17 +562,17 @@ public:
 
         encoder.write_comment(nullptr, 0);
 
-        Assert::AreEqual(static_cast<size_t>(6), encoder.bytes_written());
+        Assert::AreEqual(size_t{6}, encoder.bytes_written());
 
         // Check that SOI marker has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that a COM segment has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), destination[3]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(2), destination[5]);
+        Assert::AreEqual(uint8_t{}, destination[4]);
+        Assert::AreEqual(uint8_t{2}, destination[5]);
     }
 
     TEST_METHOD(write_max_comment) // NOLINT
@@ -590,14 +589,14 @@ public:
         Assert::AreEqual(destination.size(), encoder.bytes_written());
 
         // Check that SOI marker has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that a COM segment has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), destination[3]);
-        Assert::AreEqual(static_cast<uint8_t>(255), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(255), destination[5]);
+        Assert::AreEqual(uint8_t{255}, destination[4]);
+        Assert::AreEqual(uint8_t{255}, destination[5]);
     }
 
     TEST_METHOD(write_two_comment) // NOLINT
@@ -613,23 +612,23 @@ public:
         Assert::AreEqual(destination.size(), encoder.bytes_written());
 
         // Check that SOI marker has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that the COM segments have been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), destination[3]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(2 + 4), destination[5]);
-        Assert::AreEqual(static_cast<uint8_t>('1'), destination[6]);
-        Assert::AreEqual(static_cast<uint8_t>('2'), destination[7]);
-        Assert::AreEqual(static_cast<uint8_t>('3'), destination[8]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[9]);
+        Assert::AreEqual(uint8_t{}, destination[4]);
+        Assert::AreEqual(uint8_t{2 + 4}, destination[5]);
+        Assert::AreEqual(uint8_t{'1'}, destination[6]);
+        Assert::AreEqual(uint8_t{'2'}, destination[7]);
+        Assert::AreEqual(uint8_t{'3'}, destination[8]);
+        Assert::AreEqual(uint8_t{}, destination[9]);
 
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[10]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[10]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::comment), destination[11]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[12]);
-        Assert::AreEqual(static_cast<uint8_t>(2), destination[13]);
+        Assert::AreEqual(uint8_t{}, destination[12]);
+        Assert::AreEqual(uint8_t{2}, destination[13]);
     }
 
     TEST_METHOD(write_too_large_comment) // NOLINT
@@ -654,7 +653,7 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] {
-            MSVC_WARNING_SUPPRESS_NEXT_LINE(6387)
+            MSVC_WARNING_SUPPRESS_NEXT_LINE(6387) // argument> may be null.
             ignore = encoder.write_comment(nullptr, 1);
         });
     }
@@ -700,21 +699,21 @@ public:
         const array<uint8_t, 4> application_data{1, 2, 3, 4};
         encoder.write_application_data(1, application_data.data(), application_data.size());
 
-        Assert::AreEqual(static_cast<size_t>(10), encoder.bytes_written());
+        Assert::AreEqual(size_t{10}, encoder.bytes_written());
 
         // Check that SOI marker has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that a APPn segment has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data1), destination[3]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(2 + 4), destination[5]);
-        Assert::AreEqual(static_cast<uint8_t>(1), destination[6]);
-        Assert::AreEqual(static_cast<uint8_t>(2), destination[7]);
-        Assert::AreEqual(static_cast<uint8_t>(3), destination[8]);
-        Assert::AreEqual(static_cast<uint8_t>(4), destination[9]);
+        Assert::AreEqual(uint8_t{}, destination[4]);
+        Assert::AreEqual(uint8_t{2 + 4}, destination[5]);
+        Assert::AreEqual(uint8_t{1}, destination[6]);
+        Assert::AreEqual(uint8_t{2}, destination[7]);
+        Assert::AreEqual(uint8_t{3}, destination[8]);
+        Assert::AreEqual(uint8_t{4}, destination[9]);
     }
 
     TEST_METHOD(write_empty_application_data) // NOLINT
@@ -726,17 +725,17 @@ public:
 
         encoder.write_application_data(2, nullptr, 0);
 
-        Assert::AreEqual(static_cast<size_t>(6), encoder.bytes_written());
+        Assert::AreEqual(size_t{6}, encoder.bytes_written());
 
         // Check that SOI marker has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that a APPn segment has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data2), destination[3]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(2), destination[5]);
+        Assert::AreEqual(uint8_t{}, destination[4]);
+        Assert::AreEqual(uint8_t{2}, destination[5]);
     }
 
     TEST_METHOD(write_max_application_data) // NOLINT
@@ -753,14 +752,14 @@ public:
         Assert::AreEqual(destination.size(), encoder.bytes_written());
 
         // Check that SOI marker has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that a APPn segment has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data15), destination[3]);
-        Assert::AreEqual(static_cast<uint8_t>(255), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(255), destination[5]);
+        Assert::AreEqual(uint8_t{255}, destination[4]);
+        Assert::AreEqual(uint8_t{255}, destination[5]);
     }
 
     TEST_METHOD(write_two_application_data) // NOLINT
@@ -777,23 +776,23 @@ public:
         Assert::AreEqual(destination.size(), encoder.bytes_written());
 
         // Check that SOI marker has been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[0]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), destination[1]);
 
         // Verify that the COM segments have been written.
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[2]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data0), destination[3]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[4]);
-        Assert::AreEqual(static_cast<uint8_t>(2 + 4), destination[5]);
-        Assert::AreEqual(static_cast<uint8_t>(1), destination[6]);
-        Assert::AreEqual(static_cast<uint8_t>(2), destination[7]);
-        Assert::AreEqual(static_cast<uint8_t>(3), destination[8]);
-        Assert::AreEqual(static_cast<uint8_t>(4), destination[9]);
+        Assert::AreEqual(uint8_t{}, destination[4]);
+        Assert::AreEqual(uint8_t{2 + 4}, destination[5]);
+        Assert::AreEqual(uint8_t{1}, destination[6]);
+        Assert::AreEqual(uint8_t{2}, destination[7]);
+        Assert::AreEqual(uint8_t{3}, destination[8]);
+        Assert::AreEqual(uint8_t{4}, destination[9]);
 
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[10]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[10]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::application_data8), destination[11]);
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[12]);
-        Assert::AreEqual(static_cast<uint8_t>(2), destination[13]);
+        Assert::AreEqual(uint8_t{}, destination[12]);
+        Assert::AreEqual(uint8_t{2}, destination[13]);
     }
 
     TEST_METHOD(write_too_large_application_data_throws) // NOLINT
@@ -1102,7 +1101,7 @@ public:
 
     TEST_METHOD(encode_1_component_4_bit_with_high_bits_set) // NOLINT
     {
-        const vector<uint8_t> source(static_cast<size_t>(512) * 512, 0xFF);
+        const vector<uint8_t> source(size_t{512} * 512, 0xFF);
         constexpr frame_info frame_info{512, 512, 4, 1};
 
         jpegls_encoder encoder;
@@ -1114,13 +1113,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint8_t> expected(static_cast<size_t>(512) * 512, 15);
+        const vector<uint8_t> expected(size_t{512} * 512, 15);
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
     }
 
     TEST_METHOD(encode_1_component_12_bit_with_high_bits_set) // NOLINT
     {
-        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 2, 0xFF);
+        const vector<uint8_t> source(size_t{512} * 512 * 2, 0xFF);
         constexpr frame_info frame_info{512, 512, 12, 1};
 
         jpegls_encoder encoder;
@@ -1132,14 +1131,14 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(static_cast<size_t>(512) * 512, 4095);
+        const vector<uint16_t> expected(size_t{512} * 512, 4095);
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * sizeof(uint16_t),
                          interleave_mode::none);
     }
 
     TEST_METHOD(encode_3_components_6_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
-        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 3, 0xFF);
+        const vector<uint8_t> source(size_t{512} * 512 * 3, 0xFF);
         constexpr frame_info frame_info{512, 512, 6, 3};
 
         jpegls_encoder encoder;
@@ -1151,13 +1150,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint8_t> expected(static_cast<size_t>(512) * 512 * 3, 63);
+        const vector<uint8_t> expected(size_t{512} * 512 * 3, 63);
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::sample);
     }
 
     TEST_METHOD(encode_3_components_6_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
-        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 3, 0xFF);
+        const vector<uint8_t> source(size_t{512} * 512 * 3, 0xFF);
         constexpr frame_info frame_info{512, 512, 6, 3};
 
         jpegls_encoder encoder;
@@ -1169,13 +1168,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint8_t> expected(static_cast<size_t>(512) * 512 * 3, 63);
+        const vector<uint8_t> expected(size_t{512} * 512 * 3, 63);
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::line);
     }
 
     TEST_METHOD(encode_3_components_10_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
-        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 2 * 3, 0xFF);
+        const vector<uint8_t> source(size_t{512} * 512 * 2 * 3, 0xFF);
         constexpr frame_info frame_info{512, 512, 10, 3};
 
         jpegls_encoder encoder;
@@ -1187,13 +1186,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(static_cast<size_t>(512) * 512 * 3, 1023);
+        const vector<uint16_t> expected(size_t{512} * 512 * 3, 1023);
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::sample);
     }
 
     TEST_METHOD(encode_3_components_10_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
-        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 2 * 3, 0xFF);
+        const vector<uint8_t> source(size_t{512} * 512 * 2 * 3, 0xFF);
         constexpr frame_info frame_info{512, 512, 10, 3};
 
         jpegls_encoder encoder;
@@ -1205,13 +1204,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(static_cast<size_t>(512) * 512 * 3, 1023);
+        const vector<uint16_t> expected(size_t{512} * 512 * 3, 1023);
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::line);
     }
 
     TEST_METHOD(encode_4_components_6_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
-        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 4, 0xFF);
+        const vector<uint8_t> source(size_t{512} * 512 * 4, 0xFF);
         constexpr frame_info frame_info{512, 512, 6, 4};
 
         jpegls_encoder encoder;
@@ -1223,13 +1222,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint8_t> expected(static_cast<size_t>(512) * 512 * 4, 63);
+        const vector<uint8_t> expected(size_t{512} * 512 * 4, 63);
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::sample);
     }
 
     TEST_METHOD(encode_4_components_6_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
-        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 4, 0xFF);
+        const vector<uint8_t> source(size_t{512} * 512 * 4, 0xFF);
         constexpr frame_info frame_info{512, 512, 6, 4};
 
         jpegls_encoder encoder;
@@ -1241,13 +1240,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint8_t> expected(static_cast<size_t>(512) * 512 * 4, 63);
+        const vector<uint8_t> expected(size_t{512} * 512 * 4, 63);
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::line);
     }
 
     TEST_METHOD(encode_4_components_10_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
-        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 2 * 4, 0xFF);
+        const vector<uint8_t> source(size_t{512} * 512 * 2 * 4, 0xFF);
         constexpr frame_info frame_info{512, 512, 10, 4};
 
         jpegls_encoder encoder;
@@ -1259,13 +1258,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(static_cast<size_t>(512) * 512 * 4, 1023);
+        const vector<uint16_t> expected(size_t{512} * 512 * 4, 1023);
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::sample);
     }
 
     TEST_METHOD(encode_4_components_10_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
-        const vector<uint8_t> source(static_cast<size_t>(512) * 512 * 2 * 4, 0xFF);
+        const vector<uint8_t> source(size_t{512} * 512 * 2 * 4, 0xFF);
         constexpr frame_info frame_info{512, 512, 10, 4};
 
         jpegls_encoder encoder;
@@ -1277,7 +1276,7 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(static_cast<size_t>(512) * 512 * 4, 1023);
+        const vector<uint16_t> expected(size_t{512} * 512 * 4, 1023);
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::line);
     }
 
@@ -1331,7 +1330,7 @@ public:
 
         const auto destination{jpegls_encoder::encode(source, frame_info)};
 
-        Assert::AreEqual(static_cast<size_t>(99), destination.size());
+        Assert::AreEqual(size_t{99}, destination.size());
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
@@ -1343,7 +1342,7 @@ public:
         const auto destination{
             jpegls_encoder::encode(source, frame_info, interleave_mode::none, encoding_options::even_destination_size)};
 
-        Assert::AreEqual(static_cast<size_t>(100), destination.size());
+        Assert::AreEqual(size_t{100}, destination.size());
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
@@ -1388,35 +1387,35 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        Assert::AreEqual(static_cast<size_t>(43), bytes_written);
+        Assert::AreEqual(size_t{43}, bytes_written);
 
-        Assert::AreEqual(static_cast<uint8_t>(0xFF), destination[15]);
+        Assert::AreEqual(uint8_t{0xFF}, destination[15]);
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::jpegls_preset_parameters), destination[16]);
 
         // Segment size.
-        Assert::AreEqual(static_cast<uint8_t>(0), destination[17]);
-        Assert::AreEqual(static_cast<uint8_t>(13), destination[18]);
+        Assert::AreEqual(uint8_t{}, destination[17]);
+        Assert::AreEqual(uint8_t{13}, destination[18]);
 
         // Parameter ID.
-        Assert::AreEqual(static_cast<uint8_t>(0x1), destination[19]);
+        Assert::AreEqual(uint8_t{0x1}, destination[19]);
 
         // MaximumSampleValue
-        Assert::AreEqual(static_cast<uint8_t>(255), destination[20]);
-        Assert::AreEqual(static_cast<uint8_t>(255), destination[21]);
+        Assert::AreEqual(uint8_t{255}, destination[20]);
+        Assert::AreEqual(uint8_t{255}, destination[21]);
 
         constexpr thresholds expected{
             compute_defaults_using_reference_implementation(std::numeric_limits<uint16_t>::max(), 0)};
 
-        const int32_t threshold1 = destination[22] << 8 | destination[23];
+        const int32_t threshold1{destination[22] << 8 | destination[23]};
         Assert::AreEqual(expected.t1, threshold1);
 
-        const int32_t threshold2 = destination[24] << 8 | destination[25];
+        const int32_t threshold2{destination[24] << 8 | destination[25]};
         Assert::AreEqual(expected.t2, threshold2);
 
-        const int32_t threshold3 = destination[26] << 8 | destination[27];
+        const int32_t threshold3{destination[26] << 8 | destination[27]};
         Assert::AreEqual(expected.t3, threshold3);
 
-        const int32_t reset = destination[28] << 8 | destination[29];
+        const int32_t reset{destination[28] << 8 | destination[29]};
         Assert::AreEqual(expected.reset, reset);
     }
 
@@ -1434,7 +1433,7 @@ public:
 
         const size_t bytes_written{encoder.encode(source)};
 
-        Assert::AreEqual(static_cast<size_t>(28), bytes_written);
+        Assert::AreEqual(size_t{28}, bytes_written);
     }
 
     TEST_METHOD(set_invalid_encode_options_throws) // NOLINT
@@ -1457,7 +1456,7 @@ public:
         encoder.destination(destination);
 
         const size_t bytes_written{encoder.encode(source)};
-        Assert::AreEqual(static_cast<size_t>(61), bytes_written);
+        Assert::AreEqual(size_t{61}, bytes_written);
 
         destination.resize(bytes_written);
         const auto it{find_first_lse_segment(destination.cbegin(), destination.cend())};
@@ -1486,7 +1485,7 @@ public:
         encoder.destination(destination);
 
         const size_t bytes_written{encoder.encode(source)};
-        Assert::AreEqual(static_cast<size_t>(99), bytes_written);
+        Assert::AreEqual(size_t{99}, bytes_written);
 
         destination.resize(bytes_written);
         const auto it{find_first_lse_segment(destination.cbegin(), destination.cend())};
@@ -1505,7 +1504,7 @@ public:
         encoder.destination(destination);
 
         const size_t bytes_written{encoder.encode(source)};
-        Assert::AreEqual(static_cast<size_t>(99), bytes_written);
+        Assert::AreEqual(size_t{99}, bytes_written);
 
         destination.resize(bytes_written);
         const auto it{find_first_lse_segment(destination.cbegin(), destination.cend())};
@@ -1524,7 +1523,7 @@ public:
         encoder.destination(destination);
 
         const size_t bytes_written{encoder.encode(source)};
-        Assert::AreEqual(static_cast<size_t>(114), bytes_written);
+        Assert::AreEqual(size_t{114}, bytes_written);
 
         destination.resize(bytes_written);
         const auto it{find_first_lse_segment(destination.cbegin(), destination.cend())};
@@ -1543,7 +1542,7 @@ public:
         encoder.destination(destination);
 
         const size_t bytes_written{encoder.encode(source)};
-        Assert::AreEqual(static_cast<size_t>(114), bytes_written);
+        Assert::AreEqual(size_t{114}, bytes_written);
 
         destination.resize(bytes_written);
         const auto it{find_first_lse_segment(destination.cbegin(), destination.cend())};

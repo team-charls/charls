@@ -215,7 +215,7 @@ int peek_zero_bits(uint64_t val_test) noexcept
 {
     for (int32_t count{}; count < 16; ++count)
     {
-        if ((val_test & (static_cast<uint64_t>(1) << (64 - 1))) != 0)
+        if ((val_test & (uint64_t{1} << (64 - 1))) != 0)
             return count;
 
         val_test <<= 1;

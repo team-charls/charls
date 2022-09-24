@@ -154,7 +154,7 @@ public:
 
         const jpegls_decoder decoder{source, true};
 
-        constexpr size_t expected_destination_size{static_cast<size_t>(256) * 256 * 3};
+        constexpr size_t expected_destination_size{size_t{256} * 256 * 3};
         Assert::AreEqual(expected_destination_size, decoder.destination_size());
     }
 
@@ -598,7 +598,7 @@ public:
 
         decoder.read_header();
 
-        Assert::AreEqual(static_cast<size_t>(5), actual_size);
+        Assert::AreEqual(size_t{5}, actual_size);
         Assert::IsTrue(memcmp("hello", actual_data, actual_size) == 0);
     }
 
@@ -662,7 +662,7 @@ public:
         decoder.read_header();
 
         Assert::AreEqual(0, actual_application_data_id);
-        Assert::AreEqual(static_cast<size_t>(5), actual_size);
+        Assert::AreEqual(size_t{5}, actual_size);
         Assert::IsTrue(memcmp("hello", actual_data, actual_size) == 0);
     }
 
@@ -876,15 +876,15 @@ private:
     {
         vector<uint8_t> segment;
 
-        segment.push_back(static_cast<uint8_t>(0xFF));
+        segment.push_back(uint8_t{0xFF});
         segment.push_back(static_cast<uint8_t>(jpeg_marker_code::jpegls_preset_parameters));
         push_back(segment, static_cast<uint16_t>(11 + sizeof(uint16_t)));
         segment.push_back(static_cast<uint8_t>(jpegls_preset_parameters_type::preset_coding_parameters));
-        push_back(segment, static_cast<uint16_t>(0));
-        push_back(segment, static_cast<uint16_t>(0));
-        push_back(segment, static_cast<uint16_t>(0));
-        push_back(segment, static_cast<uint16_t>(0));
-        push_back(segment, static_cast<uint16_t>(0));
+        push_back(segment, uint16_t{0});
+        push_back(segment, uint16_t{0});
+        push_back(segment, uint16_t{0});
+        push_back(segment, uint16_t{0});
+        push_back(segment, uint16_t{0});
 
         return segment;
     }
