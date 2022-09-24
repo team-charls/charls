@@ -41,6 +41,18 @@ MSVC_WARNING_UNSUPPRESS()
 } // namespace
 
 
+ofstream open_output_stream(const char* filename)
+{
+    static constexpr ios::openmode mode_output{ios::out | ios::binary};
+
+    ofstream stream;
+    stream.exceptions(ios::eofbit | ios::failbit | ios::badbit);
+    stream.open(filename, mode_output);
+
+    return stream;
+}
+
+
 void fix_endian(vector<uint8_t>* buffer, const bool little_endian_data) noexcept
 {
     if (little_endian_data == is_machine_little_endian())
@@ -85,6 +97,7 @@ void write_file(const char* filename, const void* data, const size_t size)
     output.exceptions(ios::eofbit | ios::failbit | ios::badbit);
     output.open(filename, ios::out | ios::binary);
     output.write(static_cast<const char*>(data), static_cast<std::streamsize>(size));
+    output.close(); // close explict to get feedback on failures.
 }
 
 void test_round_trip(const char* name, const vector<uint8_t>& decoded_buffer, const rect_size size,

@@ -36,31 +36,20 @@ using std::ostream;
 using std::streamoff;
 using std::string;
 using std::stringstream;
-using std::system_error;
+using std::runtime_error;
 using std::uniform_int_distribution;
 using std::vector;
 using namespace charls;
 
 namespace {
 
-constexpr ios::openmode mode_input = ios::in | ios::binary;
-constexpr ios::openmode mode_output = ios::out | ios::binary;
+constexpr ios::openmode mode_input{ios::in | ios::binary};
 
 ifstream open_input_stream(const char* filename)
 {
     ifstream stream;
     stream.exceptions(ios::eofbit | ios::failbit | ios::badbit);
     stream.open(filename, mode_input);
-
-    return stream;
-}
-
-
-ofstream open_output_stream(const char* filename)
-{
-    ofstream stream;
-    stream.exceptions(ios::eofbit | ios::failbit | ios::badbit);
-    stream.open(filename, mode_output);
 
     return stream;
 }
@@ -344,7 +333,7 @@ void test_bgr()
 void test_too_small_output_buffer()
 {
     const vector<uint8_t> encoded{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
-    vector<uint8_t> destination(static_cast<size_t>(512) * 511);
+    vector<uint8_t> destination(size_t{512} * 511);
 
     jpegls_decoder decoder;
     decoder.source(encoded).read_header();
@@ -541,15 +530,16 @@ try
         }
     }
 
-    const int magic_number = frame_info.component_count == 3 ? 6 : 5;
+    const int magic_number{frame_info.component_count == 3 ? 6 : 5};
 
     ofstream output{open_output_stream(filename_output)};
     output << 'P' << magic_number << "\n" << frame_info.width << ' ' << frame_info.height << "\n" << max_value << "\n";
     write(output, decoded_destination, decoded_destination.size());
+    output.close();
 
     return true;
 }
-catch (const system_error& error)
+catch (const runtime_error& error)
 {
     cout << "Failed to decode " << filename_input << " to " << filename_output << ", reason: " << error.what() << '\n';
     return false;
@@ -629,9 +619,11 @@ try
 
     ofstream jls_file_stream(open_output_stream(filename_output));
     write(jls_file_stream, destination, bytes_encoded);
+    jls_file_stream.close();
+
     return true;
 }
-catch (const system_error& error)
+catch (const runtime_error& error)
 {
     cout << "Failed to encode " << filename_input << " to " << filename_output << ", reason: " << error.what() << '\n';
     return false;
@@ -726,7 +718,7 @@ try
     write_file(filename_output, decoded_destination.data(), decoded_destination.size());
     return true;
 }
-catch (const system_error& error)
+catch (const runtime_error& error)
 {
     cout << "Failed to decode " << filename_encoded << " to " << filename_output << ", reason: " << error.what() << '\n';
     return false;

@@ -539,7 +539,7 @@ public:
 
         reader.read_header();
 
-        Assert::AreEqual(static_cast<size_t>(5), actual.size);
+        Assert::AreEqual(size_t{5}, actual.size);
         Assert::IsTrue(memcmp("hello", actual.data, actual.size) == 0);
     }
 
@@ -571,7 +571,7 @@ public:
 
         reader.read_header();
 
-        Assert::AreEqual(static_cast<size_t>(0), actual.size);
+        Assert::AreEqual(size_t{}, actual.size);
         Assert::IsNull(actual.data);
     }
 
@@ -628,7 +628,7 @@ public:
         reader.read_header();
 
         Assert::AreEqual(8, actual.id);
-        Assert::AreEqual(static_cast<size_t>(5), actual.size);
+        Assert::AreEqual(size_t{5}, actual.size);
         Assert::IsTrue(memcmp("hello", actual.data, actual.size) == 0);
     }
 
@@ -664,7 +664,7 @@ public:
         reader.read_header();
 
         Assert::AreEqual(15, actual.id);
-        Assert::AreEqual(static_cast<size_t>(0), actual.size);
+        Assert::AreEqual(size_t{}, actual.size);
         Assert::IsNull(actual.data);
     }
 

@@ -20,6 +20,7 @@ struct rect_size final
 };
 
 
+std::ofstream open_output_stream(const char* filename);
 void fix_endian(std::vector<uint8_t>* buffer, bool little_endian_data) noexcept;
 std::vector<uint8_t> read_file(const char* filename, long offset = 0, size_t bytes = 0);
 void write_file(const char* filename, const void* data, size_t size);
