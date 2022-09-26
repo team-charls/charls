@@ -53,8 +53,11 @@ std::vector<uint8_t> create_test_spiff_header(uint8_t high_version = 2, uint8_t 
 std::vector<uint8_t> create_noise_image_16_bit(size_t pixel_count, int bit_count, uint32_t seed);
 void test_round_trip_legacy(const std::vector<uint8_t>& source, const JlsParameters& params);
 bool verify_encoded_bytes(const std::vector<uint8_t>& uncompressed_source, const std::vector<uint8_t>& encoded_source);
+void verify_decoded_bytes(interleave_mode interleave_mode, const frame_info& frame_info,
+                          const std::vector<uint8_t>& uncompressed_data, size_t destination_stride,
+                          const char* reference_filename);
 void test_compliance(const std::vector<uint8_t>& encoded_source, const std::vector<uint8_t>& uncompressed_source,
-                     bool check_encode);
+                 bool check_encode);
 
 
 /// <summary>

@@ -151,7 +151,7 @@ public:
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
 
-    TEST_METHOD(JpegLsDecodeRect_lena) // NOLINT
+    TEST_METHOD(JpegLsDecodeRect_tulips) // NOLINT
     {
         JlsParameters params{};
         const vector<uint8_t> encoded_source = read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls");
@@ -164,16 +164,26 @@ public:
                              encoded_source.size(), &params, nullptr);
         Assert::IsFalse(static_cast<bool>(error));
 
-        constexpr JlsRect rect{128, 128, 256, 1};
-        vector<uint8_t> decoded_rect(static_cast<size_t>(rect.Width) * rect.Height);
-        decoded_rect.push_back(0x1f);
+        constexpr size_t width{256};
+        constexpr JlsRect rect{128, 128, width, 1};
+        vector<uint8_t> decoded_rect(width * rect.Height);
+
+        // Update the stride to match the width of the rectangle.
+        params.stride = width;
+
+        // Add a marker byte to detect the case of a buffer overrun.
+        constexpr uint8_t buffer_overrun_detection_marker{0x1f};
+        decoded_rect.push_back(buffer_overrun_detection_marker);
+
         error = JpegLsDecodeRect(decoded_rect.data(), decoded_rect.size(), encoded_source.data(), encoded_source.size(),
                                  rect, &params, nullptr);
         Assert::IsFalse(static_cast<bool>(error));
 
         Assert::IsTrue(memcmp(&decoded_destination[rect.X + static_cast<size_t>(rect.Y) * 512], decoded_rect.data(),
-                              static_cast<size_t>(rect.Width) * rect.Height) == 0);
-        Assert::IsTrue(decoded_rect[static_cast<size_t>(rect.Width) * rect.Height] == 0x1f);
+                              width * rect.Height) == 0);
+
+        // Check that the marker is not overwritten.
+        Assert::IsTrue(decoded_rect[width * rect.Height] == buffer_overrun_detection_marker);
     }
 
     TEST_METHOD(JpegLsDecodeRect_nullptr) // NOLINT

@@ -4,17 +4,23 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.0] -
+
+### Fixed
+
+- Fixed [#167](https://github.com/team-charls/charls/issues/196), Multi component image with interleave mode none is not correctly decoded when a custom stride argument is used.
+
 ## [2.3.4] - 2021-2-12
 
 ### Changed
 
-- Replaced legacy test images
+- Replaced legacy test images.
 
 ## [2.3.3] - 2021-2-5
 
 ### Fixed
 
-- Fixed [#167](https://github.com/team-charls/charls/issues/167), Decoding\Encoding fails on IBM s390x CPU (Big Endian architecture)
+- Fixed [#167](https://github.com/team-charls/charls/issues/167), Decoding\Encoding fails on IBM s390x CPU (Big Endian architecture).
 
 ### Changed
 
@@ -24,8 +30,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 
-- Fixed [#160](https://github.com/team-charls/charls/issues/160), warning: cast from ‘unsigned char*’ to ‘uint16_t*’ increases required alignment of target type
-- Fixed [#161](https://github.com/team-charls/charls/issues/161), warning: useless cast to type ‘size_t’ {aka ‘unsigned int’} [-Wuseless-cast]
+- Fixed [#160](https://github.com/team-charls/charls/issues/160), warning: cast from ‘unsigned char*’ to ‘uint16_t*’ increases required alignment of target type.
+- Fixed [#161](https://github.com/team-charls/charls/issues/161), warning: useless cast to type ‘size_t’ {aka ‘unsigned int’} [-Wuseless-cast].
 
 ### Changed
 

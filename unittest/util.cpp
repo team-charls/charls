@@ -232,6 +232,36 @@ bool verify_encoded_bytes(const vector<uint8_t>& uncompressed_source, const vect
     return true;
 }
 
+void verify_decoded_bytes(const interleave_mode interleave_mode, const frame_info& frame_info,
+                          const vector<uint8_t>& uncompressed_data, const size_t destination_stride,
+                          const char* reference_filename)
+{
+    const auto anymap_reference{read_anymap_reference_file(reference_filename, interleave_mode, frame_info)};
+    const auto& reference_samples = anymap_reference.image_data();
+
+    const int plane_count{interleave_mode == interleave_mode::none ? frame_info.component_count : 1};
+    const int components_in_plane_count{interleave_mode == interleave_mode::none ? 1 : frame_info.component_count};
+
+    const size_t source_stride = static_cast<size_t>(frame_info.width) * components_in_plane_count;
+    const uint8_t* sample = uncompressed_data.data();
+    size_t reference_sample{};
+    for (int plane{}; plane < plane_count; ++plane)
+    {
+        for (uint32_t line{}; line < frame_info.height; ++line)
+        {
+            for (size_t i{}; i < source_stride; ++i)
+            {
+                if (sample[i] != reference_samples[reference_sample]) // AreEqual is very slow, pre-test to speed up 50X
+                {
+                    Assert::AreEqual(sample[i], reference_samples[reference_sample]);
+                }
+                ++reference_sample;
+            }
+
+            sample += destination_stride;
+        }
+    }
+}
 
 void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t>& uncompressed_source,
                      const bool check_encode)
