@@ -96,7 +96,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 }
 
 
-void jpeg_stream_reader::decode(byte_span destination, size_t stride)
+void jpeg_stream_reader::decode(byte_span destination, const size_t stride)
 {
     ASSERT(state_ == state::bit_stream_section);
 
@@ -108,23 +108,28 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
         rect_.Height = static_cast<int32_t>(frame_info_.height);
     }
 
-    if (stride == 0)
+    // Compute the stride for the uncompressed destination buffer.
+    const uint32_t width{rect_.Width != 0 ? static_cast<uint32_t>(rect_.Width) : frame_info_.width};
+    const size_t components_in_plane_count{
+        parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<size_t>(frame_info_.component_count)};
+    size_t destination_stride{components_in_plane_count * width * bit_to_byte_count(frame_info_.bits_per_sample)};
+
+    // Use the external provided stride argument if set.
+    if (stride != 0)
     {
-        const uint32_t width{rect_.Width != 0 ? static_cast<uint32_t>(rect_.Width) : frame_info_.width};
-        const uint32_t component_count{
-            parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<uint32_t>(frame_info_.component_count)};
-        stride =
-            static_cast<size_t>(component_count) * width * ((static_cast<size_t>(frame_info_.bits_per_sample) + 7U) / 8U);
+        if (UNLIKELY(stride < destination_stride))
+            throw_jpegls_error(jpegls_errc::invalid_argument_stride);
+
+        destination_stride = stride;
     }
 
-    const int64_t bytes_per_plane{static_cast<int64_t>(rect_.Width) * rect_.Height *
-                                  bit_to_byte_count(frame_info_.bits_per_sample)};
-
-    if (UNLIKELY(static_cast<int64_t>(destination.size) < bytes_per_plane * frame_info_.component_count))
+    // Compute the layout of the destination buffer.
+    const size_t bytes_per_plane{destination_stride * rect_.Height};
+    const size_t plane_count{parameters_.interleave_mode == interleave_mode::none ? frame_info_.component_count : 1U};
+    if (UNLIKELY(destination.size < bytes_per_plane * plane_count))
         throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-    int component_index{};
-    while (component_index < frame_info_.component_count)
+    for (size_t i{}; i < plane_count; ++i)
     {
         if (state_ == state::scan_section)
         {
@@ -133,16 +138,11 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
 
         const unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
             frame_info_, parameters_, get_validated_preset_coding_parameters())};
-        unique_ptr<process_line> process_line(codec->create_process_line(destination, stride));
+        unique_ptr<process_line> process_line(codec->create_process_line(destination, destination_stride));
         const size_t bytes_read{codec->decode_scan(move(process_line), rect_, const_byte_span{position_, end_position_})};
         advance_position(bytes_read);
-        charls::skip_bytes(destination, static_cast<size_t>(bytes_per_plane));
+        charls::skip_bytes(destination, bytes_per_plane);
         state_ = state::scan_section;
-
-        if (parameters_.interleave_mode != interleave_mode::none)
-            return;
-
-        ++component_index;
     }
 }
 
