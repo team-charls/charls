@@ -38,7 +38,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::start_of_image), buffer[1]);
     }
 
-    TEST_METHOD(write_start_of_image_in_too_small_buffer) // NOLINT
+    TEST_METHOD(write_start_of_image_in_too_small_buffer_throws) // NOLINT
     {
         array<uint8_t, 1> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
@@ -112,7 +112,7 @@ public:
         Assert::AreEqual(static_cast<uint8_t>(jpeg_marker_code::end_of_image), buffer[6]);
     }
 
-    TEST_METHOD(write_end_of_image_in_too_small_buffer) // NOLINT
+    TEST_METHOD(write_end_of_image_in_too_small_buffer_throws) // NOLINT
     {
         array<uint8_t, 1> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
@@ -192,7 +192,7 @@ public:
         Assert::AreEqual(uint8_t{}, buffer[33]);
     }
 
-    TEST_METHOD(write_spiff_segment_in_too_small_buffer) // NOLINT
+    TEST_METHOD(write_spiff_segment_in_too_small_buffer_throws) // NOLINT
     {
         array<uint8_t, 33> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});

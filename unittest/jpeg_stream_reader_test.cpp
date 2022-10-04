@@ -23,7 +23,7 @@ namespace charls { namespace test {
 TEST_CLASS(jpeg_stream_reader_test)
 {
 public:
-    TEST_METHOD(read_header_from_to_small_input_buffer) // NOLINT
+    TEST_METHOD(read_header_from_to_small_input_buffer_throws) // NOLINT
     {
         array<uint8_t, 1> buffer{};
         jpeg_stream_reader reader;
@@ -52,7 +52,7 @@ public:
         reader.read_header(); // if it doesn't throw test is passed.
     }
 
-    TEST_METHOD(read_header_from_buffer_not_starting_with_ff_should_throw) // NOLINT
+    TEST_METHOD(read_header_from_buffer_not_starting_with_ff_throws) // NOLINT
     {
         array<uint8_t, 6> buffer{0x0F, 0xFF, 0xD8, 0xFF, 0xFF, 0xDA}; // 0xDA = SOS: Marks the start of scan.
 
@@ -70,7 +70,7 @@ public:
         }
     }
 
-    TEST_METHOD(read_header_with_jpegls_extended_frame_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_jpegls_extended_frame_throws) // NOLINT
     {
         array<uint8_t, 6> buffer{
             0xFF, 0xD8, 0xFF, 0xF9}; // 0xF9 = SOF_57: Marks the start of a JPEG-LS extended (ISO/IEC 14495-2) encoded frame.
@@ -105,7 +105,7 @@ public:
         Assert::AreEqual(presets.threshold3, actual.threshold3);
     }
 
-    TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_throws) // NOLINT
     {
         array<uint8_t, 7> buffer{0xFF, 0xD8, 0xFF,
                                  0xF8, // LSE: Marks the start of a JPEG-LS preset parameters segment.
@@ -117,7 +117,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_with_coding_parameters_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_with_coding_parameters_throws) // NOLINT
     {
         array<uint8_t, 7> buffer{0xFF, 0xD8, 0xFF,
                                  0xF8, // LSE: Marks the start of a JPEG-LS preset parameters segment.
@@ -129,7 +129,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_large_jpegls_preset_parameter_segment_with_coding_parameters_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_too_large_jpegls_preset_parameter_segment_with_coding_parameters_throws) // NOLINT
     {
         array<uint8_t, 7> buffer{0xFF, 0xD8, 0xFF,
                                  0xF8, // LSE: Marks the start of a JPEG-LS preset parameters segment.
@@ -141,17 +141,17 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_jpegls_preset_parameter_with_extended_id_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_jpegls_preset_parameter_with_extended_id_throws) // NOLINT
     {
         constexpr array<uint8_t, 8> ids{0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xC, 0xD};
 
         for (const auto id : ids)
         {
-            read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(id);
+            read_header_with_jpeg_ls_preset_parameter_with_extended_id_throws(id);
         }
     }
 
-    TEST_METHOD(read_header_with_too_small_segment_size_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_too_small_segment_size_throws) // NOLINT
     {
         array<uint8_t, 8> buffer{0xFF, 0xD8, 0xFF,
                                  0xF7,                    // SOF_55: Marks the start of JPEG-LS extended scan.
@@ -163,7 +163,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_small_start_of_frame_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_frame_throws) // NOLINT
     {
         array<uint8_t, 6> buffer{0xFF, 0xD8, 0xFF,
                                  0xF7, // SOF_55: Marks the start of JPEG-LS extended scan.
@@ -175,7 +175,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_small_start_of_frame_in_component_info_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_frame_in_component_info_throws) // NOLINT
     {
         array<uint8_t, 6> buffer{0xFF, 0xD8, 0xFF,
                                  0xF7, // SOF_55: Marks the start of JPEG-LS extended scan.
@@ -187,7 +187,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_large_start_of_frame_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_too_large_start_of_frame_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -201,7 +201,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_sos_before_sof_should_throw) // NOLINT
+    TEST_METHOD(read_header_sos_before_sof_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -213,7 +213,7 @@ public:
         assert_expect_exception(jpegls_errc::unexpected_marker_found, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_extra_sof_should_throw) // NOLINT
+    TEST_METHOD(read_header_extra_sof_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -226,7 +226,7 @@ public:
         assert_expect_exception(jpegls_errc::duplicate_start_of_frame_marker, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw) // NOLINT
+    TEST_METHOD(read_header_too_large_near_lossless_in_sos_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -239,7 +239,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_too_large_near_lossless_in_sos_should_throw2) // NOLINT
+    TEST_METHOD(read_header_too_large_near_lossless_in_sos_throws2) // NOLINT
     {
         constexpr jpegls_pc_parameters preset_coding_parameters{200, 0, 0, 0, 0};
 
@@ -257,17 +257,17 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_line_interleave_in_sos_for_single_component_should_throw) // NOLINT
+    TEST_METHOD(read_header_line_interleave_in_sos_for_single_component_throws) // NOLINT
     {
-        read_header_incorrect_interleave_in_sos_for_single_component_should_throw(interleave_mode::line);
+        read_header_incorrect_interleave_in_sos_for_single_component_throws(interleave_mode::line);
     }
 
-    TEST_METHOD(read_header_sample_interleave_in_sos_for_single_component_should_throw) // NOLINT
+    TEST_METHOD(read_header_sample_interleave_in_sos_for_single_component_throws) // NOLINT
     {
-        read_header_incorrect_interleave_in_sos_for_single_component_should_throw(interleave_mode::sample);
+        read_header_incorrect_interleave_in_sos_for_single_component_throws(interleave_mode::sample);
     }
 
-    TEST_METHOD(read_header_with_duplicate_component_id_in_start_of_frame_segment_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_duplicate_component_id_in_start_of_frame_segment_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.componentIdOverride = 7;
@@ -280,7 +280,7 @@ public:
         assert_expect_exception(jpegls_errc::duplicate_component_id_in_sof_segment, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_to_many_components_in_start_of_frame_segment_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_to_many_components_in_start_of_frame_segment_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -293,7 +293,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_no_components_in_start_of_frame_segment_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_no_components_in_start_of_frame_segment_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -306,7 +306,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_more_then_max_components_in_start_of_frame_segment_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_more_then_max_components_in_start_of_frame_segment_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -319,7 +319,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_small_start_of_scan_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_scan_throws) // NOLINT
     {
         array<uint8_t, 16> buffer{0xFF, 0xD8, 0xFF,
                                   0xF7, // SOF_55: Marks the start of JPEG-LS extended scan.
@@ -341,7 +341,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_small_start_of_scan_component_count_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_scan_component_count_throws) // NOLINT
     {
         array<uint8_t, 17> buffer{0xFF, 0xD8, 0xFF,
                                   0xF7, // SOF_55: Marks the start of JPEG-LS extended scan.
@@ -363,7 +363,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_directly_end_of_image_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_directly_end_of_image_throws) // NOLINT
     {
         array<uint8_t, 4> buffer{0xFF, 0xD8, 0xFF, 0xD9}; // 0xD9 = EOI
 
@@ -373,7 +373,7 @@ public:
         assert_expect_exception(jpegls_errc::unexpected_end_of_image_marker, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_duplicate_start_of_image_should_throw) // NOLINT
+    TEST_METHOD(read_header_with_duplicate_start_of_image_throws) // NOLINT
     {
         array<uint8_t, 4> buffer{0xFF, 0xD8, 0xFF, 0xD8}; // 0xD8 = SOI.
 
@@ -735,7 +735,7 @@ private:
         reader.read_header(); // if it doesn't throw test is passed.
     }
 
-    static void read_header_incorrect_interleave_in_sos_for_single_component_should_throw(const interleave_mode mode)
+    static void read_header_incorrect_interleave_in_sos_for_single_component_throws(const interleave_mode mode)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -748,7 +748,7 @@ private:
         assert_expect_exception(jpegls_errc::invalid_parameter_interleave_mode, [&reader] { reader.read_header(); });
     }
 
-    static void read_header_with_jpeg_ls_preset_parameter_with_extended_id_should_throw(const uint8_t id)
+    static void read_header_with_jpeg_ls_preset_parameter_with_extended_id_throws(const uint8_t id)
     {
         array<uint8_t, 7> buffer{0xFF, 0xD8, 0xFF,
                                  0xF8, // LSE: Marks the start of a JPEG-LS preset parameters segment.

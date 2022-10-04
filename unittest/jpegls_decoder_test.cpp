@@ -122,7 +122,7 @@ public:
         Assert::AreEqual(256U, info.width);
     }
 
-    TEST_METHOD(interleave_mode_without_read_header) // NOLINT
+    TEST_METHOD(interleave_mode_without_read_header_throws) // NOLINT
     {
         const vector<uint8_t> source(2000);
         const jpegls_decoder decoder{source, false};
@@ -130,7 +130,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.interleave_mode(); });
     }
 
-    TEST_METHOD(near_lossless_without_read_header) // NOLINT
+    TEST_METHOD(near_lossless_without_read_header_throws) // NOLINT
     {
         const vector<uint8_t> source(2000);
         const jpegls_decoder decoder{source, false};
@@ -138,7 +138,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.near_lossless(); });
     }
 
-    TEST_METHOD(preset_coding_parameters_without_read_header) // NOLINT
+    TEST_METHOD(preset_coding_parameters_without_read_header_throws) // NOLINT
     {
         jpegls_decoder decoder;
 
@@ -533,7 +533,7 @@ public:
         Assert::AreEqual(expected_size, decoded_destination.size() * sizeof(uint16_t));
     }
 
-    TEST_METHOD(decode_file_with_ff_in_entropy_data) // NOLINT
+    TEST_METHOD(decode_file_with_ff_in_entropy_data_throws) // NOLINT
     {
         const vector<uint8_t> source{read_file("ff_in_entropy_data.jls")};
 
@@ -589,7 +589,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_file_with_golomb_large_then_k_max) // NOLINT
+    TEST_METHOD(decode_file_with_golomb_large_then_k_max_throws) // NOLINT
     {
         const vector<uint8_t> source{read_file("fuzzy_input_golomb_16.jls")};
 
@@ -607,7 +607,7 @@ public:
                                 [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(decode_file_with_missing_restart_marker) // NOLINT
+    TEST_METHOD(decode_file_with_missing_restart_marker_throws) // NOLINT
     {
         vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -624,7 +624,7 @@ public:
                                 [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(decode_file_with_incorrect_restart_marker) // NOLINT
+    TEST_METHOD(decode_file_with_incorrect_restart_marker_throws) // NOLINT
     {
         vector<uint8_t> source{read_file("DataFiles/test8_ilv_none_rm_7.jls")};
 
@@ -720,7 +720,7 @@ public:
         Assert::IsFalse(callback_called);
     }
 
-    TEST_METHOD(at_comment_that_throws_return_callback_error) // NOLINT
+    TEST_METHOD(at_comment_that_throws_returns_callback_error) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -785,7 +785,7 @@ public:
         Assert::IsFalse(callback_called);
     }
 
-    TEST_METHOD(at_application_data_that_throws_return_callback_error) // NOLINT
+    TEST_METHOD(at_application_data_that_throws_returns_callback_error) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
