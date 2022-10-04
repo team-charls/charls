@@ -54,21 +54,21 @@ public:
         encoder.frame_info({std::numeric_limits<uint32_t>::max(), numeric_limits<uint32_t>::max(), 16, 255}); // maximum.
     }
 
-    TEST_METHOD(frame_info_bad_width) // NOLINT
+    TEST_METHOD(frame_info_bad_width_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] { encoder.frame_info({0, 1, 2, 1}); });
     }
 
-    TEST_METHOD(frame_info_bad_height) // NOLINT
+    TEST_METHOD(frame_info_bad_height_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] { encoder.frame_info({1, 0, 2, 1}); });
     }
 
-    TEST_METHOD(frame_info_bad_bits_per_sample) // NOLINT
+    TEST_METHOD(frame_info_bad_bits_per_sample_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -80,7 +80,7 @@ public:
         });
     }
 
-    TEST_METHOD(frame_info_bad_component_count) // NOLINT
+    TEST_METHOD(frame_info_bad_component_count_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -101,7 +101,7 @@ public:
         encoder.interleave_mode(interleave_mode::sample);
     }
 
-    TEST_METHOD(interleave_mode_bad) // NOLINT
+    TEST_METHOD(interleave_mode_bad_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -111,7 +111,7 @@ public:
                                 [&encoder] { encoder.interleave_mode(static_cast<charls::interleave_mode>(3)); });
     }
 
-    TEST_METHOD(interleave_mode_does_not_match_component_count) // NOLINT
+    TEST_METHOD(interleave_mode_does_not_match_component_count_throws) // NOLINT
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -132,7 +132,7 @@ public:
         encoder.near_lossless(255); // set highest value.
     }
 
-    TEST_METHOD(near_lossless_bad) // NOLINT
+    TEST_METHOD(near_lossless_bad_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -196,7 +196,7 @@ public:
         Assert::IsTrue(size >= static_cast<size_t>(numeric_limits<uint16_t>::max()) + 1024U);
     }
 
-    TEST_METHOD(estimated_destination_size_too_soon) // NOLINT
+    TEST_METHOD(estimated_destination_size_too_soon_throws) // NOLINT
     {
         const jpegls_encoder encoder;
 
@@ -229,7 +229,7 @@ public:
         encoder.destination(destination);
     }
 
-    TEST_METHOD(destination_can_only_be_set_once) // NOLINT
+    TEST_METHOD(destination_can_only_be_set_once_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -270,7 +270,7 @@ public:
         Assert::AreEqual(uint8_t{}, destination[11]);
     }
 
-    TEST_METHOD(write_standard_spiff_header_without_destination) // NOLINT
+    TEST_METHOD(write_standard_spiff_header_without_destination_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -280,7 +280,7 @@ public:
                                 [&encoder] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
 
-    TEST_METHOD(write_standard_spiff_header_without_frame_info) // NOLINT
+    TEST_METHOD(write_standard_spiff_header_without_frame_info_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -291,7 +291,7 @@ public:
                                 [&encoder] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
 
-    TEST_METHOD(write_standard_spiff_header_twice) // NOLINT
+    TEST_METHOD(write_standard_spiff_header_twice_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -338,7 +338,7 @@ public:
         Assert::AreEqual(uint8_t{}, destination[11]);
     }
 
-    TEST_METHOD(write_spiff_header_invalid_height) // NOLINT
+    TEST_METHOD(write_spiff_header_invalid_height_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -355,7 +355,7 @@ public:
         Assert::AreEqual(size_t{}, encoder.bytes_written());
     }
 
-    TEST_METHOD(write_spiff_header_invalid_width) // NOLINT
+    TEST_METHOD(write_spiff_header_invalid_width_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -418,7 +418,7 @@ public:
         Assert::AreEqual(size_t{44}, encoder.bytes_written());
     }
 
-    TEST_METHOD(write_spiff_entry_with_invalid_tag) // NOLINT
+    TEST_METHOD(write_spiff_entry_with_invalid_tag_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -431,7 +431,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] { encoder.write_spiff_entry(1, "test", 4); });
     }
 
-    TEST_METHOD(write_spiff_entry_with_invalid_size) // NOLINT
+    TEST_METHOD(write_spiff_entry_with_invalid_size_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -447,7 +447,7 @@ public:
         });
     }
 
-    TEST_METHOD(write_spiff_entry_without_spiff_header) // NOLINT
+    TEST_METHOD(write_spiff_entry_without_spiff_header_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -631,7 +631,7 @@ public:
         Assert::AreEqual(uint8_t{2}, destination[13]);
     }
 
-    TEST_METHOD(write_too_large_comment) // NOLINT
+    TEST_METHOD(write_too_large_comment_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -645,7 +645,7 @@ public:
                                 [&encoder, &data] { ignore = encoder.write_comment(data.data(), data.size()); });
     }
 
-    TEST_METHOD(write_comment_null_pointer_with_size) // NOLINT
+    TEST_METHOD(write_comment_null_pointer_with_size_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -658,7 +658,7 @@ public:
         });
     }
 
-    TEST_METHOD(write_comment_after_encode) // NOLINT
+    TEST_METHOD(write_comment_after_encode_throws) // NOLINT
     {
         const vector<uint8_t> source{0, 1, 2, 3, 4, 5};
 
@@ -882,7 +882,7 @@ public:
         Assert::IsTrue(true);
     }
 
-    TEST_METHOD(set_preset_coding_parameters_bad_values) // NOLINT
+    TEST_METHOD(set_preset_coding_parameters_bad_values_throws) // NOLINT
     {
         const array<uint8_t, 5> source{0, 1, 1, 1, 0};
         constexpr frame_info frame_info{5, 1, 8, 1};
@@ -909,7 +909,7 @@ public:
         encode_with_custom_preset_coding_parameters({0, 0, 0, 0, 63});
     }
 
-    TEST_METHOD(set_color_transformation_bad_value) // NOLINT
+    TEST_METHOD(set_color_transformation_bad_value_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -917,7 +917,7 @@ public:
                                 [&encoder] { encoder.color_transformation(static_cast<color_transformation>(100)); });
     }
 
-    TEST_METHOD(encode_without_destination) // NOLINT
+    TEST_METHOD(encode_without_destination_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -926,7 +926,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&encoder, &source] { ignore = encoder.encode(source); });
     }
 
-    TEST_METHOD(encode_without_frame_info) // NOLINT
+    TEST_METHOD(encode_without_frame_info_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -1070,7 +1070,7 @@ public:
                          interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_with_bad_stride_interleave_none) // NOLINT
+    TEST_METHOD(encode_with_bad_stride_interleave_none_throws) // NOLINT
     {
         const array<uint8_t, 29> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
                                         150, 0,   0,   0, 0, 0, 0, 0, 200, 200, 200};
@@ -1085,7 +1085,7 @@ public:
                                 [&encoder, &source] { ignore = encoder.encode(source, 10); });
     }
 
-    TEST_METHOD(encode_with_bad_stride_interleave_sample) // NOLINT
+    TEST_METHOD(encode_with_bad_stride_interleave_sample_throws) // NOLINT
     {
         const array<uint8_t, 9> source{100, 150, 200, 100, 150, 200, 100, 150, 200};
         constexpr frame_info frame_info{3, 1, 8, 3};

@@ -100,7 +100,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_non_8_or_16_bit_is_not_supported) // NOLINT
+    TEST_METHOD(decode_non_8_or_16_bit_that_is_not_supported_throws) // NOLINT
     {
         const vector<uint8_t> jpegls_data{read_file("land10-10bit-rgb-hp3-invalid.jls")};
 
@@ -112,7 +112,7 @@ public:
                                 [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(encode_non_8_or_16_bit_is_not_supported) // NOLINT
+    TEST_METHOD(encode_non_8_or_16_bit_that_is_not_supported_throws) // NOLINT
     {
         constexpr frame_info frame_info{2, 1, 10, 3};
         jpegls_encoder encoder;

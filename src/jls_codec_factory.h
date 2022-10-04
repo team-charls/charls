@@ -24,9 +24,7 @@ private:
     std::unique_ptr<Strategy> try_create_optimized_codec(const frame_info& frame, const coding_parameters& parameters);
 };
 
-#ifndef _MSC_VER // IntelliSense fails to parse next lines and __INTELLISENSE__ cannot exclude it. Not needed for MSVC build.
 extern template class jls_codec_factory<decoder_strategy>;
 extern template class jls_codec_factory<encoder_strategy>;
-#endif
 
 } // namespace charls
