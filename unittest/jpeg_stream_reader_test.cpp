@@ -143,7 +143,7 @@ public:
 
     TEST_METHOD(read_header_with_jpegls_preset_parameter_with_extended_id_throws) // NOLINT
     {
-        constexpr array<uint8_t, 8> ids{0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xC, 0xD};
+        constexpr array<uint8_t, 8> ids{{0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xC, 0xD}};
 
         for (const auto id : ids)
         {

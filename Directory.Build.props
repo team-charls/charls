@@ -27,8 +27,8 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <UseFullPaths>true</UseFullPaths>
 
-      <!-- Explicit set the 'external' warning level to W3 (Supported since Visual Studio 2019 16.10) -->
-      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <!-- Explicit disable warnings from external files (Supported since Visual Studio 2019 16.10) -->
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
 
       <!-- For development purposes, All warnings can be used to discover useful compiler warnings.
            This requires also that some warnings need to be disabled from this all warning list. -->
@@ -44,7 +44,6 @@
         C4623 = derived class`' : default constructor was implicitly defined as deleted because a base class default constructor is inaccessible or deleted [Just informational]
         C4625 = derived class' : copy constructor was implicitly defined as deleted because a base class copy constructor is inaccessible or deleted [Just informational]
         C4626 = derived class' : assignment operator was implicitly defined as deleted because a base class assignment operator is inaccessible or deleted [Just informational]
-        C4668 = symbol' is not defined as a preprocessor macro, replacing with '0' for 'directives' [problem in std C runtime headers when compiling as C]
         C4710 = function '' function not inlined [Just informational]
         C4711 = function '' selected for automatic inline expansion [Just informational]
         C4738 = storing 32-bit float result in memory, possible loss of performance [Just informational]
@@ -52,8 +51,9 @@
         C5026 = 'type': move constructor was implicitly defined as deleted [Just informational]
         C5027 = 'type': move assignment operator was implicitly defined as deleted [Just informational]
         C5045 = Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified [Just informational]
+        C5258 = explicit capture of '' is not required for this use [VS 2019 requires capture of constexpr]
       -->
-      <DisableSpecificWarnings Condition="'$(CHARLS_ALL_WARNINGS)'!=''">4061;4365;4464;4514;4571;4623;4625;4626;4668;4710;4711;4738;4820;5026;5027;5045</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(CHARLS_ALL_WARNINGS)'!=''">4061;4365;4464;4514;4571;4623;4625;4626;4710;4711;4738;4820;5026;5027;5045;5258</DisableSpecificWarnings>
 
       <!--
         __cplusplus = Use the correct value for the __cplusplus macro

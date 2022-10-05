@@ -468,7 +468,7 @@ public:
     /// Function can be called after read_spiff_header and spiff_header_has_value.
     /// </summary>
     /// <returns>The SPIFF header.</returns>
-    CHARLS_CHECK_RETURN charls::spiff_header spiff_header() const&& noexcept
+    charls::spiff_header spiff_header() const&& noexcept  // Note: CHARLS_CHECK_RETURN causes false C6031 warnings [Visual Studio 2019 v16.11.19]
     {
         return spiff_header_;
     }
@@ -488,7 +488,7 @@ public:
     /// Function can be called after read_header.
     /// </summary>
     /// <returns>The frame info that describes the image stored in the JPEG-LS byte stream.</returns>
-    CHARLS_CHECK_RETURN charls::frame_info frame_info() const&& noexcept
+    charls::frame_info frame_info() const&& noexcept // Note: CHARLS_CHECK_RETURN causes false C6031 warnings [Visual Studio 2019 v16.11.19]
     {
         return frame_info_;
     }

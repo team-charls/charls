@@ -82,7 +82,7 @@ Before any major breaking change in the API and/or ABI a branch will be created 
 
 ## Related Projects
 
-* [CharLS.Native .NET](https://github.com/team-charls/charls-native-dotnet) - a .NET 5.0 and .NET 6.0 adapter assembly for CharLS
+* [CharLS.Native .NET](https://github.com/team-charls/charls-native-dotnet) - a .NET 6.0 adapter assembly for CharLS
 * [JPEG-LS WIC codec](https://github.com/team-charls/jpegls-wic-codec) - Windows Imaging Component (WIC) codec for JPEG-LS .jls files
 * [charls-js](https://github.com/chafey/charls-js) - WebAssembly build of CharLS, [Demo](https://chafey.github.io/charls-js/test/browser/index.html)
 * [JPEG-LS plugin for Python Pillow](https://github.com/planetmarshall/pillow-jpls) - JPEG-LS plugin for Python Pillow, [Pip](https://pypi.org/project/pillow-jpls/1.0.0/)

@@ -31,8 +31,8 @@ extern const std::vector<int8_t> quantization_lut_lossless_16;
 
 // Used to determine how large runs should be encoded at a time. Defined by the JPEG-LS standard, A.2.1., Initialization
 // step 3.
-constexpr std::array<int, 32> J{0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2,  2,  3,  3,  3,  3,
-                                4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+constexpr std::array<int, 32> J{
+    {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15}};
 
 constexpr int32_t apply_sign(const int32_t i, const int32_t sign) noexcept
 {
