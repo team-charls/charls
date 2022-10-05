@@ -43,7 +43,7 @@ void jpeg_stream_writer::write_spiff_header_segment(const spiff_header& header)
     ASSERT(header.height > 0);
     ASSERT(header.width > 0);
 
-    static constexpr array<uint8_t, 6> spiff_magic_id{'S', 'P', 'I', 'F', 'F', '\0'};
+    static constexpr array<uint8_t, 6> spiff_magic_id{{'S', 'P', 'I', 'F', 'F', '\0'}};
 
     // Create a JPEG APP8 segment in Still Picture Interchange File Format (SPIFF), v2.0
     write_segment_header(jpeg_marker_code::application_data8, 30);
@@ -78,7 +78,7 @@ void jpeg_stream_writer::write_spiff_end_of_directory_entry()
     // but only 6 data bytes. This approach allows to wrap existing bit streams\encoders with a SPIFF header.
     // In this implementation the SOI marker is added as data bytes to simplify the design.
     static constexpr array<uint8_t, 6> spiff_end_of_directory{
-        0, 0, 0, spiff_end_of_directory_entry_type, 0xFF, to_underlying_type(charls::jpeg_marker_code::start_of_image)};
+        {0, 0, 0, spiff_end_of_directory_entry_type, 0xFF, to_underlying_type(charls::jpeg_marker_code::start_of_image)}};
 
     write_segment_header(jpeg_marker_code::application_data8, spiff_end_of_directory.size());
     write_bytes(spiff_end_of_directory.data(), spiff_end_of_directory.size());

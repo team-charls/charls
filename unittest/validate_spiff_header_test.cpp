@@ -212,3 +212,5 @@ public:
 };
 
 }} // namespace charls::test
+
+MSVC_WARNING_UNSUPPRESS()

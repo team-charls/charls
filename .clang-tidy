@@ -21,6 +21,7 @@
 # -clang-diagnostic-pragma-once-outside-header => Rationale: Generates false warnings for usage in header files
 # -clang-diagnostic-unused-const-variable => Rationale: false warnings for constexpr in .h files
 # -clang-diagnostic-unused-command-line-argument => Rationale: false warning about option passed to MSVC
+# -clang-diagnostic-declaration-after-statement => Rationale: Target is C14 and higher
 # -clang-analyzer-core.NonNullParamChecker => Rationale: cannot be effective disabled, already checked by other checkers.
 # -misc-non-private-member-variables-in-classes => Rationale: design can be ok, manual review is better
 # -modernize-use-trailing-return-type => Rationale: A style recommendation, this style is selected for CharLS
@@ -70,6 +71,7 @@ Checks:          '*,
                   -clang-diagnostic-pragma-once-outside-header,
                   -clang-diagnostic-unused-const-variable,
                   -clang-diagnostic-unused-command-line-argument,
+                  -clang-diagnostic-declaration-after-statement,
                   -clang-analyzer-core.NonNullParamChecker,
                   -misc-non-private-member-variables-in-classes,
                   -modernize-use-trailing-return-type,
