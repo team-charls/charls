@@ -84,19 +84,24 @@ struct charls_jpegls_decoder final
         const charls::frame_info info{frame_info()};
 
         if (stride == 0)
-        {
             return checked_mul(checked_mul(checked_mul(info.component_count, info.height), info.width),
                                bit_to_byte_count(info.bits_per_sample));
-        }
 
         switch (interleave_mode())
         {
-        case charls::interleave_mode::none:
+        case charls::interleave_mode::none: {
+            const size_t minimal_stride{static_cast<size_t>(info.width) * bit_to_byte_count(info.bits_per_sample)};
+            check_argument(stride >= minimal_stride, jpegls_errc::invalid_argument_stride);
             return checked_mul(checked_mul(stride, info.component_count), info.height);
+        }
 
         case charls::interleave_mode::line:
-        case charls::interleave_mode::sample:
+        case charls::interleave_mode::sample: {
+            const size_t minimal_stride{static_cast<size_t>(info.width) * info.component_count *
+                                        bit_to_byte_count(info.bits_per_sample)};
+            check_argument(stride >= minimal_stride, jpegls_errc::invalid_argument_stride);
             return checked_mul(stride, info.height);
+        }
         }
 
         ASSERT(false);

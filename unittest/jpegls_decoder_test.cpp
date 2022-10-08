@@ -161,7 +161,6 @@ public:
     TEST_METHOD(destination_size_stride_interleave_none) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
-
         const jpegls_decoder decoder{source, true};
 
         constexpr size_t stride{512};
@@ -172,7 +171,6 @@ public:
     TEST_METHOD(destination_size_stride_interleave_line) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c1e0.jls")};
-
         const jpegls_decoder decoder{source, true};
 
         constexpr size_t stride{1024};
@@ -183,18 +181,36 @@ public:
     TEST_METHOD(destination_size_stride_interleave_sample) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c2e0.jls")};
-
         const jpegls_decoder decoder{source, true};
 
-        constexpr size_t stride = 1024;
+        constexpr size_t stride{1024};
         constexpr size_t expected_destination_size{stride * 256};
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
+    }
+
+    TEST_METHOD(destination_size_for_interleave_none_with_bad_stride_throws) // NOLINT
+    {
+        const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
+        const jpegls_decoder decoder{source, true};
+
+        constexpr uint32_t correct_stride{256};
+        assert_expect_exception(jpegls_errc::invalid_argument_stride,
+                                [&decoder, &correct_stride] { std::ignore = decoder.destination_size(correct_stride - 1); });
+    }
+
+    TEST_METHOD(destination_size_for_sample_interleave_with_bad_stride_throws) // NOLINT
+    {
+        const vector<uint8_t> source{read_file("DataFiles/t8c2e0.jls")};
+        const jpegls_decoder decoder{source, true};
+
+        constexpr uint32_t correct_stride{3 * 256};
+        assert_expect_exception(jpegls_errc::invalid_argument_stride,
+                                [&decoder, &correct_stride] { std::ignore = decoder.destination_size(correct_stride - 1); });
     }
 
     TEST_METHOD(decode_reference_file_from_buffer) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
-
         const jpegls_decoder decoder{source, true};
 
         vector<uint8_t> destination(decoder.destination_size());
@@ -767,7 +783,7 @@ public:
         const void* actual_data{};
         size_t actual_size{};
         decoder.at_application_data([&actual_application_data_id, &actual_data, &actual_size](
-            const int32_t application_data_id, const void* data, const size_t size) noexcept {
+                                        const int32_t application_data_id, const void* data, const size_t size) noexcept {
             actual_application_data_id = application_data_id;
             actual_data = data;
             actual_size = size;
