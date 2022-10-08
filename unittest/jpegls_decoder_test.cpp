@@ -230,6 +230,22 @@ public:
         }
     }
 
+    TEST_METHOD(start_of_scan_with_mixed_interleave_mode_throws) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 1, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+        writer.write_byte(0x80);
+        writer.write_start_of_scan_segment(1, 2, 0, interleave_mode::sample);
+
+        const jpegls_decoder decoder(writer.buffer, true);
+        std::vector<uint8_t> destination(decoder.destination_size());
+
+        assert_expect_exception(jpegls_errc::parameter_value_not_supported,
+                                [&decoder, &destination] { decoder.decode(destination); });
+    }
+
     TEST_METHOD(decode_with_destination_as_return) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
@@ -751,7 +767,7 @@ public:
         const void* actual_data{};
         size_t actual_size{};
         decoder.at_application_data([&actual_application_data_id, &actual_data, &actual_size](
-                                        int32_t application_data_id, const void* data, const size_t size) noexcept {
+            const int32_t application_data_id, const void* data, const size_t size) noexcept {
             actual_application_data_id = application_data_id;
             actual_data = data;
             actual_size = size;

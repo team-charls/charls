@@ -616,7 +616,7 @@ public:
         callback_output actual;
 
         reader.at_application_data(
-            {[](int32_t id, const void* data, const size_t size, void* user_context) noexcept -> int32_t {
+            {[](const int32_t id, const void* data, const size_t size, void* user_context) noexcept -> int32_t {
                  auto* actual_output = static_cast<callback_output*>(user_context);
                  actual_output->id = id;
                  actual_output->data = data;
@@ -652,7 +652,7 @@ public:
         callback_output actual;
 
         reader.at_application_data(
-            {[](int32_t id, const void* data, const size_t size, void* user_context) noexcept -> int32_t {
+            {[](const int32_t id, const void* data, const size_t size, void* user_context) noexcept -> int32_t {
                  auto* actual_output = static_cast<callback_output*>(user_context);
                  actual_output->id = id;
                  actual_output->data = data;
