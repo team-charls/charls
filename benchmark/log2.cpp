@@ -9,12 +9,12 @@
 #include <limits>
 
 
-uint32_t log2_floor(uint32_t n) noexcept
+uint32_t log2_floor(const uint32_t n) noexcept
 {
     return 31 - charls::countl_zero(n);
 }
 
-uint32_t max_value_to_bits_per_sample(uint32_t max_value) noexcept
+uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept
 {
     ASSERT(max_value > 0);
     return log2_floor(max_value) + 1;

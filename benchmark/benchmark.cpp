@@ -100,26 +100,26 @@ struct lossless_traits final
 
 
 
-__declspec(noinline) int32_t get_predicted_value_default(int32_t Ra, int32_t Rb, int32_t Rc) noexcept
+__declspec(noinline) int32_t get_predicted_value_default(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
 {
-    if (Ra < Rb)
+    if (ra < rb)
     {
-        if (Rc < Ra)
-            return Rb;
+        if (rc < ra)
+            return rb;
 
-        if (Rc > Rb)
-            return Ra;
+        if (rc > rb)
+            return ra;
     }
     else
     {
-        if (Rc < Rb)
-            return Ra;
+        if (rc < rb)
+            return ra;
 
-        if (Rc > Ra)
-            return Rb;
+        if (rc > ra)
+            return rb;
     }
 
-    return Ra + Rb - Rc;
+    return ra + rb - rc;
 }
 
 
@@ -265,8 +265,8 @@ static void bm_resize_vector(benchmark::State& state)
 {
     for (const auto _ : state)
     {
-        benchmark::DoNotOptimize(allocate_buffer(512 * 512 * 16));
-        benchmark::DoNotOptimize(allocate_buffer(1024 * 1024 * 8 * 3));
+        benchmark::DoNotOptimize(allocate_buffer(size_t{512} * 512 * 16));
+        benchmark::DoNotOptimize(allocate_buffer(size_t{1024} * 1024 * 8 * 3));
     }
 }
 BENCHMARK(bm_resize_vector);
@@ -318,8 +318,8 @@ static void bm_resize_overwrite_buffer(benchmark::State& state)
 {
     for (const auto _ : state)
     {
-        benchmark::DoNotOptimize(allocate_buffer(512 * 512 * 16));
-        benchmark::DoNotOptimize(allocate_buffer(1024 * 1024 * 8 * 3));
+        benchmark::DoNotOptimize(allocate_buffer(size_t{512} * 512 * 16));
+        benchmark::DoNotOptimize(allocate_buffer(size_t{1024} * 1024 * 8 * 3));
     }
 }
 BENCHMARK(bm_resize_overwrite_buffer);

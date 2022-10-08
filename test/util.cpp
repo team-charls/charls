@@ -97,7 +97,7 @@ void write_file(const char* filename, const void* data, const size_t size)
     output.exceptions(ios::eofbit | ios::failbit | ios::badbit);
     output.open(filename, ios::out | ios::binary);
     output.write(static_cast<const char*>(data), static_cast<std::streamsize>(size));
-    output.close(); // close explict to get feedback on failures.
+    output.close(); // close explicitly to get feedback on failures.
 }
 
 void test_round_trip(const char* name, const vector<uint8_t>& decoded_buffer, const rect_size size,

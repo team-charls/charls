@@ -55,7 +55,7 @@ ifstream open_input_stream(const char* filename)
 }
 
 
-uint32_t log2_floor(uint32_t n) noexcept
+uint32_t log2_floor(const uint32_t n) noexcept
 {
     ASSERT(n != 0 && "log2 is not defined for 0");
     return 31 - countl_zero(n);
@@ -68,7 +68,7 @@ constexpr int result_to_exit_code(const bool result) noexcept
 }
 
 
-uint32_t max_value_to_bits_per_sample(uint32_t max_value) noexcept
+uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept
 {
     ASSERT(max_value > 0);
     return log2_floor(max_value) + 1;

@@ -122,7 +122,7 @@ void save_buffer_to_file(const void* buffer, const size_t buffer_size, const cha
     output.exceptions(std::ios::failbit | std::ios::badbit);
 
     output.write(static_cast<const char*>(buffer), static_cast<std::streamsize>(buffer_size));
-    output.close(); // close explict to get feedback on failures.
+    output.close(); // close explicitly to get feedback on failures.
 }
 
 void log_failure(const char* message) noexcept

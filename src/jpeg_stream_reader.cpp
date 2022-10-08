@@ -139,7 +139,7 @@ void jpeg_stream_reader::decode(byte_span destination, const size_t stride)
         const unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
             frame_info_, parameters_, get_validated_preset_coding_parameters())};
         unique_ptr<process_line> process_line(codec->create_process_line(destination, destination_stride));
-        const size_t bytes_read{codec->decode_scan(move(process_line), rect_, const_byte_span{position_, end_position_})};
+        const size_t bytes_read{codec->decode_scan(std::move(process_line), rect_, const_byte_span{position_, end_position_})};
         advance_position(bytes_read);
         charls::skip_bytes(destination, bytes_per_plane);
         state_ = state::scan_section;

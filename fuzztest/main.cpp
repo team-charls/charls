@@ -30,11 +30,14 @@ using std::vector;
 #endif
 
 #ifndef __AFL_INIT
+// ReSharper disable once CppInconsistentNaming
 #define __AFL_INIT() // NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
 #endif
 
 #ifndef __AFL_LOOP
+// ReSharper disable once CppInconsistentNaming
 #define __AFL_LOOP(a) true // NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
+#define AFL_LOOP_FOREVER
 #endif
 
 #if defined(__clang__)
@@ -92,7 +95,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         fd = _open(argv[1], O_RDONLY);
         if (fd < 0)
         {
-            std::cerr << "Failed to open: " << argv[1] << strerror(errno) << '\n';
+            std::cerr << "Failed to open: " << argv[1] << strerror(errno) << '\n';  // NOLINT(concurrency-mt-unsafe)
             return EXIT_FAILURE;
         }
     }
@@ -115,5 +118,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         }
     }
 
+#ifndef AFL_LOOP_FOREVER
     return EXIT_SUCCESS;
+#endif
 }
