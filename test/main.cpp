@@ -495,7 +495,7 @@ try
     interleave_mode interleave_mode;
     std::tie(frame_info, interleave_mode) = jpegls_decoder::decode(encoded_source, decoded_destination);
 
-    if (!(frame_info.component_count == 1 || frame_info.component_count == 3))
+    if (frame_info.component_count != 1 && frame_info.component_count != 3)
     {
         cout << "Only JPEG-LS images with component count 1 or 3 are supported to decode to pnm\n";
         return false;
@@ -801,7 +801,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 
     for (int i{1}; i != argc; ++i)
     {
-        string str{argv[i]};
+        const string str{argv[i]};
         if (str == "-unittest")
         {
             return result_to_exit_code(unit_test());
