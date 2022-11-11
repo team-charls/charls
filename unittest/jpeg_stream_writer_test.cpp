@@ -126,16 +126,16 @@ public:
         array<uint8_t, 34> buffer{};
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
-        spiff_header header{spiff_profile_id::none,
-                            3,
-                            800,
-                            600,
-                            spiff_color_space::rgb,
-                            8,
-                            spiff_compression_type::jpeg_ls,
-                            spiff_resolution_units::dots_per_inch,
-                            96,
-                            1024};
+        constexpr spiff_header header{spiff_profile_id::none,
+                                      3,
+                                      800,
+                                      600,
+                                      spiff_color_space::rgb,
+                                      8,
+                                      spiff_compression_type::jpeg_ls,
+                                      spiff_resolution_units::dots_per_inch,
+                                      96,
+                                      1024};
 
         writer.write_spiff_header_segment(header);
 
@@ -284,14 +284,14 @@ public:
         Assert::AreEqual(size_t{19}, writer.bytes_written());
 
         Assert::AreEqual(uint8_t{0xFF}, buffer[0]);
-        Assert::AreEqual(uint8_t{0xF7}, buffer[1]);         // JPEG_SOF_55
-        Assert::AreEqual(uint8_t{}, buffer[2]);             // 6 + (3 * 3) + 2 (in big endian)
-        Assert::AreEqual(uint8_t{17}, buffer[3]);           // 6 + (3 * 3) + 2 (in big endian)
+        Assert::AreEqual(uint8_t{0xF7}, buffer[1]); // JPEG_SOF_55
+        Assert::AreEqual(uint8_t{}, buffer[2]);     // 6 + (3 * 3) + 2 (in big endian)
+        Assert::AreEqual(uint8_t{17}, buffer[3]);   // 6 + (3 * 3) + 2 (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(bits_per_sample), buffer[4]);
-        Assert::AreEqual(uint8_t{255}, buffer[5]);          // height (in big endian)
-        Assert::AreEqual(uint8_t{255}, buffer[6]);          // height (in big endian)
-        Assert::AreEqual(uint8_t{}, buffer[7]);             // width (in big endian)
-        Assert::AreEqual(uint8_t{100}, buffer[8]);          // width (in big endian)
+        Assert::AreEqual(uint8_t{255}, buffer[5]); // height (in big endian)
+        Assert::AreEqual(uint8_t{255}, buffer[6]); // height (in big endian)
+        Assert::AreEqual(uint8_t{}, buffer[7]);    // width (in big endian)
+        Assert::AreEqual(uint8_t{100}, buffer[8]); // width (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(component_count), buffer[9]);
 
         Assert::AreEqual(uint8_t{1}, buffer[10]);
@@ -322,14 +322,14 @@ public:
         Assert::AreEqual(size_t{19}, writer.bytes_written());
 
         Assert::AreEqual(uint8_t{0xFF}, buffer[0]);
-        Assert::AreEqual(uint8_t{0xF7}, buffer[1]);         // JPEG_SOF_55
-        Assert::AreEqual(uint8_t{}, buffer[2]);             // 6 + (3 * 3) + 2 (in big endian)
-        Assert::AreEqual(uint8_t{17}, buffer[3]);      // 6 + (3 * 3) + 2 (in big endian)
+        Assert::AreEqual(uint8_t{0xF7}, buffer[1]); // JPEG_SOF_55
+        Assert::AreEqual(uint8_t{}, buffer[2]);     // 6 + (3 * 3) + 2 (in big endian)
+        Assert::AreEqual(uint8_t{17}, buffer[3]);   // 6 + (3 * 3) + 2 (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(bits_per_sample), buffer[4]);
-        Assert::AreEqual(uint8_t{}, buffer[5]);         // height (in big endian)
-        Assert::AreEqual(uint8_t{}, buffer[6]);         // height (in big endian)
-        Assert::AreEqual(uint8_t{}, buffer[7]);   // width (in big endian)
-        Assert::AreEqual(uint8_t{}, buffer[8]);   // width (in big endian)
+        Assert::AreEqual(uint8_t{}, buffer[5]); // height (in big endian)
+        Assert::AreEqual(uint8_t{}, buffer[6]); // height (in big endian)
+        Assert::AreEqual(uint8_t{}, buffer[7]); // width (in big endian)
+        Assert::AreEqual(uint8_t{}, buffer[8]); // width (in big endian)
         Assert::AreEqual(static_cast<uint8_t>(component_count), buffer[9]);
 
         Assert::AreEqual(uint8_t{1}, buffer[10]);
