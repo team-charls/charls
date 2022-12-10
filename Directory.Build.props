@@ -111,7 +111,7 @@
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <RandomizedBaseAddress Condition="'$(Platform)'!='ARM64'">false</RandomizedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
 
@@ -125,8 +125,8 @@
   <PropertyGroup Condition="'$(Configuration)'=='Checked'">
     <RunCodeAnalysis Condition="'$(MSBuildProjectExtension)'=='.vcxproj'" >true</RunCodeAnalysis>
     <EnableCppCoreCheck>true</EnableCppCoreCheck>
-    <!-- Latest clang-tidy crashes during Win32 builds. -->
-    <EnableClangTidyCodeAnalysis Condition="'$(Platform)'!='Win32'">true</EnableClangTidyCodeAnalysis>
+    <!-- Latest clang-tidy crashes during Win32 builds and clang-tidy doesn't run on ARM64 platform. -->
+    <EnableClangTidyCodeAnalysis Condition="'$(Platform)'!='Win32' AND '$(Platform)'!='ARM64'">true</EnableClangTidyCodeAnalysis>
     <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
 
@@ -151,7 +151,7 @@
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
 
       <!-- Mark executable image compatible with the Control-flow Enforcement Technology (CET) Shadow Stack. -->
-      <CETCompat>true</CETCompat>
+      <CETCompat Condition="'$(Platform)'!='ARM64'">true</CETCompat>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
