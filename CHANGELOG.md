@@ -6,17 +6,28 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [2.4.0] -
 
+### Added
+
+- Support for ARM64 in the MSBuild projects.
+- Support to read and write application data markers. [#180](https://github.com/team-charls/charls/issues/180)
+- Added method charls_validate_spiff_header to validate SPIFF headers.
+
 ### Fixed
 
 - Fixed [#167](https://github.com/team-charls/charls/issues/196), Multi component image with interleave mode none is not correctly decoded when a custom stride argument is used.
 
-## [2.3.4] - 2021-2-12
+### Changed
+
+- Improved compatilibity with C++20.
+- Switch order of APP8 and SOF55 markers.
+
+## [2.3.4] - 2022-2-12
 
 ### Changed
 
 - Replaced legacy test images.
 
-## [2.3.3] - 2021-2-5
+## [2.3.3] - 2022-2-5
 
 ### Fixed
 
@@ -26,7 +37,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - CTest is now used in the CI build pipeline to test the output of the Linux and macOS builds.
 
-## [2.3.2] - 2021-1-29
+## [2.3.2] - 2022-1-29
 
 ### Fixed
 
@@ -39,7 +50,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - C++14 is now the minimum version instead of explicitly required. This allows consuming applications more flexibility.
 Typically CMake will select the latest C++ standard version that used C++ compiler supports.
 
-## [2.3.1] - 2021-1-25
+## [2.3.1] - 2022-1-25
 
 ### Fixed
 
