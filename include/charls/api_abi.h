@@ -43,6 +43,19 @@
 
 #endif
 
+
+#ifdef _MSC_VER
+// Visual Studio 2015 supports C++14, but not all constexpr scenarios. VS 2017 has full C++14 support.
+#if _MSC_VER >= 1910
+#define CHARLS_CONSTEXPR constexpr
+#else
+#define CHARLS_CONSTEXPR inline
+#endif
+#else
+#define CHARLS_CONSTEXPR constexpr
+#endif
+
+
 #ifdef __cplusplus
 
 #if __cplusplus >= 201703

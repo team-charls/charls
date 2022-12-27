@@ -64,7 +64,7 @@ inline int32_t get_predicted_value(const int32_t ra, const int32_t rb, const int
 /// This is the optimized inverse algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
 /// It will map unsigned values back to signed values.
 /// </summary>
-CONSTEXPR int32_t unmap_error_value(const int32_t mapped_error) noexcept
+CHARLS_CONSTEXPR int32_t unmap_error_value(const int32_t mapped_error) noexcept
 {
     const int32_t sign{static_cast<int32_t>(static_cast<uint32_t>(mapped_error) << (int32_t_bit_count - 1)) >>
                        (int32_t_bit_count - 1)};
@@ -76,7 +76,7 @@ CONSTEXPR int32_t unmap_error_value(const int32_t mapped_error) noexcept
 /// This is the algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
 /// It will map signed values to unsigned values. It has been optimized to prevent branching.
 /// </summary>
-CONSTEXPR int32_t map_error_value(const int32_t error_value) noexcept
+CHARLS_CONSTEXPR int32_t map_error_value(const int32_t error_value) noexcept
 {
     ASSERT(error_value <= std::numeric_limits<int32_t>::max() / 2);
 
@@ -203,8 +203,8 @@ private:
 
     // C4127 = conditional expression is constant (caused by some template methods that are not fully specialized) [VS2017]
     // C6326 = Potential comparison of a constant with another constant. (false warning, triggered by template construction
-    // in Checked build) C26814 = The const variable 'RANGE' can be computed at compile-time. [incorrect warning, VS 16.3.0
-    // P3]
+    // in Checked build)
+    // C26814 = The const variable 'RANGE' can be computed at compile-time. [incorrect warning, VS 16.3.0 P3]
     MSVC_WARNING_SUPPRESS(4127 6326 26814)
 
     void initialize_quantization_lut()

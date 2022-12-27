@@ -39,4 +39,4 @@
 #define USE_DECL_ANNOTATIONS
 #define ASSERT(x)
 #define UNLIKELY(x)
-#define CONSTEXPR
+#define CHARLS_CONSTEXPR constexpr

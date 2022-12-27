@@ -512,7 +512,7 @@ constexpr encoding_options operator|(const encoding_options lhs, const encoding_
     return static_cast<encoding_options>(static_cast<T>(lhs) | static_cast<T>(rhs));
 }
 
-constexpr encoding_options& operator|=(encoding_options& lhs, const encoding_options rhs) noexcept
+CHARLS_CONSTEXPR encoding_options& operator|=(encoding_options& lhs, const encoding_options rhs) noexcept
 {
     lhs = lhs | rhs;
     return lhs;

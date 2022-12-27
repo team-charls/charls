@@ -58,18 +58,10 @@
 // Helper macro for SAL annotations.
 #define USE_DECL_ANNOTATIONS _Use_decl_annotations_
 
-// Visual Studio 2015 supports C++14, but not all constexpr scenarios. VS 2017 has full C++14 support.
-#if _MSC_VER >= 1910
-#define CONSTEXPR constexpr
-#else
-#define CONSTEXPR inline
-#endif
-
 #else
 #define MSVC_WARNING_SUPPRESS(x)
 #define MSVC_WARNING_UNSUPPRESS()
 #define MSVC_WARNING_SUPPRESS_NEXT_LINE(x)
-#define CONSTEXPR constexpr
 #define USE_DECL_ANNOTATIONS
 #endif
 
@@ -164,7 +156,7 @@ inline jpegls_errc set_error_message(const jpegls_errc error,
 /// <Remarks>
 /// Bits per sample can be computed if range is passed as argument.
 /// </Remarks>
-CONSTEXPR int32_t log2_ceil(const int32_t n) noexcept
+CHARLS_CONSTEXPR int32_t log2_ceil(const int32_t n) noexcept
 {
     ASSERT(n >= 0);
     ASSERT(static_cast<uint32_t>(n) <= std::numeric_limits<uint32_t>::max() >> 2); // otherwise 1 << x becomes negative.
@@ -424,7 +416,7 @@ inline void check_interleave_mode(const charls::interleave_mode mode, const jpeg
 }
 
 
-CONSTEXPR int32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
+CHARLS_CONSTEXPR int32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
 {
     ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);
     return static_cast<int32_t>((1U << bits_per_sample) - 1);
