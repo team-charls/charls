@@ -58,8 +58,8 @@ public:
         if (n_ == reset_threshold)
         {
             a_ >>= 1;
-            n_ >>= 1;
-            nn_ >>= 1;
+            n_ = static_cast<uint8_t>(n_ >> 1);
+            nn_ = static_cast<uint8_t>(nn_ >> 1);
         }
 
         ++n_;

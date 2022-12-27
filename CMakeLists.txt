@@ -72,6 +72,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     -Wsized-deallocation
     -Wattributes
     -Wuseless-cast
+    -Wconversion
   )
   if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0)
       set(PEDANTIC_CXX_COMPILE_FLAGS ${PEDANTIC_CXX_COMPILE_FLAGS}
@@ -113,6 +114,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
       -Wthread-safety
       -Wthread-safety-beta
       -Wcomma
+      -Wconversion
       # -Weverything provides the option to discover usefull Clang warnings.
       # The list below ignores not useful Weverything warnings.
       -Wno-weak-vtables                       # Ignore, linker will remove the couple of extra vtables.

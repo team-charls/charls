@@ -49,7 +49,7 @@ struct transform_hp1 final
 
         FORCE_INLINE triplet<T> operator()(const int v1, const int v2, const int v3) const noexcept
         {
-            return triplet<T>(v1 + v2 - range_ / 2, v2, v3 + v2 - range_ / 2);
+            return triplet<T>(static_cast<T>(v1 + v2 - range_ / 2), v2, static_cast<T>(v3 + v2 - range_ / 2));
         }
     };
 
@@ -84,7 +84,7 @@ struct transform_hp2 final
         {
             triplet<T> rgb;
             rgb.R = static_cast<T>(v1 + v2 - range_ / 2);                     // new R
-            rgb.G = static_cast<T>(v2);                                      // new G
+            rgb.G = static_cast<T>(v2);                                       // new G
             rgb.B = static_cast<T>(v3 + ((rgb.R + rgb.G) >> 1) - range_ / 2); // new B
             return rgb;
         }
@@ -92,7 +92,7 @@ struct transform_hp2 final
 
     FORCE_INLINE triplet<T> operator()(const int red, const int green, const int blue) const noexcept
     {
-        return triplet<T>(red - green + range_ / 2, green, blue - ((red + green) >> 1) - range_ / 2);
+        return triplet<T>(static_cast<T>(red - green + range_ / 2), green, static_cast<T>(blue - ((red + green) >> 1) - range_ / 2));
     }
 
 private:
@@ -115,10 +115,10 @@ struct transform_hp3 final
 
         FORCE_INLINE triplet<T> operator()(const int v1, const int v2, const int v3) const noexcept
         {
-            const int g = v1 - ((v3 + v2) >> 2) + range_ / 4;
+            const int g = static_cast<int>(v1 - ((v3 + v2) >> 2) + range_ / 4);
             triplet<T> rgb;
             rgb.R = static_cast<T>(v3 + g - range_ / 2); // new R
-            rgb.G = static_cast<T>(g);                  // new G
+            rgb.G = static_cast<T>(g);                   // new G
             rgb.B = static_cast<T>(v2 + g - range_ / 2); // new B
             return rgb;
         }
@@ -129,7 +129,7 @@ struct transform_hp3 final
         triplet<T> hp3;
         hp3.v2 = static_cast<T>(blue - green + range_ / 2);
         hp3.v3 = static_cast<T>(red - green + range_ / 2);
-        hp3.v1 = static_cast<T>(green + ((hp3.v2 + hp3.v3) >> 2)) - range_ / 4;
+        hp3.v1 = static_cast<T>(green + ((hp3.v2 + hp3.v3) >> 2) - range_ / 4);
         return hp3;
     }
 

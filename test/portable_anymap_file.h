@@ -3,10 +3,10 @@
 
 #pragma once
 
+#include <cstdint>
 #include <fstream>
 #include <ios>
 #include <sstream>
-#include <cstdint>
 #include <string>
 #include <vector>
 
