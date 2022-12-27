@@ -21,6 +21,8 @@ using std::uniform_int_distribution;
 using std::vector;
 using namespace charls_test;
 
+namespace charls { namespace test {
+
 namespace {
 
 void triplet_to_planar(vector<uint8_t>& buffer, const uint32_t width, const uint32_t height)
@@ -39,7 +41,6 @@ void triplet_to_planar(vector<uint8_t>& buffer, const uint32_t width, const uint
 
 } // namespace
 
-namespace charls { namespace test {
 
 vector<uint8_t> read_file(const char* filename)
 {

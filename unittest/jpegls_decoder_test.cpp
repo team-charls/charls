@@ -25,16 +25,17 @@ using std::tie;
 using std::vector;
 using namespace charls_test;
 
+namespace charls { namespace test {
+
 namespace {
 
-charls::jpegls_decoder create_decoder(const vector<uint8_t>& source)
+jpegls_decoder create_decoder(const vector<uint8_t>& source)
 {
     return {source, true};
 }
 
 } // namespace
 
-namespace charls { namespace test {
 
 TEST_CLASS(jpegls_decoder_test)
 {
@@ -168,6 +169,16 @@ public:
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
 
+    TEST_METHOD(destination_size_stride_interleave_none_16_bit) // NOLINT
+    {
+        const vector<uint8_t> source{read_file("DataFiles/t16e0.jls")};
+        const jpegls_decoder decoder{source, true};
+
+        constexpr size_t stride{513};
+        constexpr size_t expected_destination_size{stride * 256};
+        Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
+    }
+
     TEST_METHOD(destination_size_stride_interleave_line) // NOLINT
     {
         const vector<uint8_t> source{read_file("DataFiles/t8c1e0.jls")};
@@ -194,6 +205,16 @@ public:
         const jpegls_decoder decoder{source, true};
 
         constexpr uint32_t correct_stride{256};
+        assert_expect_exception(jpegls_errc::invalid_argument_stride,
+                                [&decoder, &correct_stride] { std::ignore = decoder.destination_size(correct_stride - 1); });
+    }
+
+    TEST_METHOD(destination_size_for_interleave_none_16_bit_with_bad_stride_throws) // NOLINT
+    {
+        const vector<uint8_t> source{read_file("DataFiles/t16e0.jls")};
+        const jpegls_decoder decoder{source, true};
+
+        constexpr uint32_t correct_stride{256 * 2};
         assert_expect_exception(jpegls_errc::invalid_argument_stride,
                                 [&decoder, &correct_stride] { std::ignore = decoder.destination_size(correct_stride - 1); });
     }

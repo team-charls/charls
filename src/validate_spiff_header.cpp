@@ -7,7 +7,7 @@
 
 using namespace charls;
 
-namespace {
+namespace charls { namespace {
 
 bool is_valid_color_space(const spiff_color_space color_space, const int32_t component_count) noexcept
 {
@@ -85,7 +85,7 @@ bool is_valid_spiff_header(const spiff_header& header, const charls::frame_info&
     return true;
 }
 
-} // namespace
+}} // namespace charls
 
 
 extern "C" {

@@ -14,7 +14,7 @@
 using namespace charls;
 using impl::throw_jpegls_error;
 
-namespace {
+namespace charls { namespace {
 
 constexpr bool has_option(encoding_options options, encoding_options option_to_test)
 {
@@ -22,7 +22,7 @@ constexpr bool has_option(encoding_options options, encoding_options option_to_t
     return (static_cast<encoding_options>(static_cast<T>(options) & static_cast<T>(option_to_test))) == option_to_test;
 }
 
-} // namespace
+}}
 
 struct charls_jpegls_encoder final
 {

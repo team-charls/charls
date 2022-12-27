@@ -13,6 +13,8 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::unique_ptr;
 
+namespace charls { namespace test {
+
 namespace {
 
 class decoder_strategy_tester final : public charls::decoder_strategy
@@ -51,8 +53,6 @@ public:
 
 } // namespace
 
-
-namespace charls { namespace test {
 
 TEST_CLASS(decoder_strategy_test)
 {
