@@ -16,6 +16,12 @@
 // ReSharper disable CppDeprecatedEntity
 DISABLE_DEPRECATED_WARNING
 
+using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
+using std::vector;
+using namespace charls_test;
+
+namespace charls { namespace test {
+
 namespace {
 
 // The following functions are used as sample code in the documentation
@@ -123,11 +129,6 @@ std::vector<uint8_t> encode_simple_8_bit_monochrome_legacy(const std::vector<uin
 
 } // namespace
 
-using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
-using std::vector;
-using namespace charls_test;
-
-namespace charls { namespace test {
 
 TEST_CLASS(documentation_test)
 {

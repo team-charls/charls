@@ -11,6 +11,8 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::numeric_limits;
 
+namespace charls { namespace test {
+
 namespace {
 
 /// <summary>
@@ -68,7 +70,6 @@ int32_t unmap_error_value_alternative1(const int32_t mapped_error_value) noexcep
 
 }
 
-namespace charls { namespace test {
 
 TEST_CLASS(scan_test)
 {
