@@ -142,6 +142,7 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
+
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
@@ -155,10 +156,13 @@
 
       <!-- Mark executable image compatible with the Control-flow Enforcement Technology (CET) Shadow Stack. -->
       <CETCompat Condition="'$(Platform)'!='ARM64'">true</CETCompat>
+
+      <!-- On the ARM64 plaftorm enable Pointer Authentication for return addresses. -->
+      <GuardSignedReturns Condition="'$(Platform)'=='ARM64'">true</GuardSignedReturns>
     </Link>
+
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
-
 </Project>
