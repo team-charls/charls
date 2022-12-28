@@ -150,6 +150,9 @@
       <!-- Store only the filename of the PDB file into the .exe/.dll for deterministic builds. -->
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
 
+      <!-- The MSVC C++ compiler has experimental support to create deterministic builds. Make it a build option. -->
+      <AdditionalOptions Condition="'$(CHARLS_DETERMINISTIC_BUILD)'=='true'">/experimental:deterministic %(AdditionalOptions)</AdditionalOptions>
+
       <!-- Mark executable image compatible with the Control-flow Enforcement Technology (CET) Shadow Stack. -->
       <CETCompat Condition="'$(Platform)'!='ARM64'">true</CETCompat>
     </Link>
