@@ -32,7 +32,7 @@ MSVC_WARNING_SUPPRESS(26497) // cannot be marked constexpr, check must be execut
 bool is_machine_little_endian() noexcept
 {
     constexpr int a = 0xFF000001; // NOLINT(bugprone-narrowing-conversions, cppcoreguidelines-narrowing-conversions)
-    const auto* chars = reinterpret_cast<const char*>(&a);
+    const auto* chars{reinterpret_cast<const char*>(&a)};
     return chars[0] == 0x01;
 }
 
@@ -72,7 +72,7 @@ vector<uint8_t> read_file(const char* filename, long offset, size_t bytes)
     input.open(filename, ios::in | ios::binary);
 
     input.seekg(0, ios::end);
-    const auto byte_count_file = static_cast<int>(input.tellg());
+    const auto byte_count_file{static_cast<int>(input.tellg())};
     input.seekg(offset, ios::beg);
 
     if (offset < 0)
@@ -155,7 +155,7 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
         }
     }
 
-    const auto total_encode_duration = steady_clock::now() - start;
+    const auto total_encode_duration{steady_clock::now() - start};
 
     start = steady_clock::now();
     for (int i{}; i != loop_count; ++i)
@@ -177,10 +177,10 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
     const double bits_per_sample{1.0 * static_cast<double>(encoded_actual_size) * 8. /
                                  (static_cast<double>(params.components) * params.height * params.width)};
     cout << "RoundTrip test for: " << name << "\n\r";
-    const double encode_time = duration<double, milli>(total_encode_duration).count() / loop_count;
-    const double decode_time = duration<double, milli>(total_decode_duration).count() / loop_count;
-    const double symbol_rate =
-        (static_cast<double>(params.components) * params.height * params.width) / (1000.0 * decode_time);
+    const double encode_time{duration<double, milli>(total_encode_duration).count() / loop_count};
+    const double decode_time{duration<double, milli>(total_decode_duration).count() / loop_count};
+    const double symbol_rate{
+        (static_cast<double>(params.components) * params.height * params.width) / (1000.0 * decode_time)};
 
     cout << "Size:" << setw(10) << params.width << "x" << params.height << setw(7) << setprecision(2)
          << ", Encode time:" << encode_time << " ms, Decode time:" << decode_time

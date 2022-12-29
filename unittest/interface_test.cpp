@@ -34,7 +34,7 @@ public:
         const vector<uint8_t> encoded_source{read_file("DataFiles/t8c0e3.jls")};
 
         JlsParameters params{};
-        const jpegls_errc result = JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr);
+        const jpegls_errc result{JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr)};
 
         Assert::AreEqual(jpegls_errc::success, result);
         Assert::AreEqual(params.height, 256);
@@ -48,7 +48,7 @@ public:
     {
         JlsParameters params{};
         const vector<uint8_t> encoded_source{read_file("DataFiles/t8c0e3.jls")};
-        auto error = JpegLsReadHeader(nullptr, encoded_source.size(), &params, nullptr);
+        auto error{JpegLsReadHeader(nullptr, encoded_source.size(), &params, nullptr)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
         error = JpegLsReadHeader(encoded_source.data(), encoded_source.size(), nullptr, nullptr);
@@ -60,7 +60,7 @@ public:
         array<char, ErrorMessageSize> error_message{};
         JlsParameters params{};
         constexpr array<uint8_t, 1> source{};
-        const auto error = JpegLsReadHeader(source.data(), 0, &params, error_message.data());
+        const auto error{JpegLsReadHeader(source.data(), 0, &params, error_message.data())};
         Assert::AreEqual(jpegls_errc::source_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
@@ -71,7 +71,7 @@ public:
         const vector<uint8_t> encoded_source{read_file("DataFiles/t8nde0.jls")};
 
         JlsParameters params{};
-        const jpegls_errc result = JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr);
+        const jpegls_errc result{JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr)};
 
         Assert::AreEqual(jpegls_errc::success, result);
         Assert::AreEqual(255, params.custom.MaximumSampleValue);
@@ -91,7 +91,7 @@ public:
 
         size_t bytes_written{};
         vector<uint8_t> buffer(10000);
-        auto error = JpegLsEncode(nullptr, buffer.size(), &bytes_written, buffer.data(), buffer.size(), &params, nullptr);
+        auto error{JpegLsEncode(nullptr, buffer.size(), &bytes_written, buffer.data(), buffer.size(), &params, nullptr)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
         error = JpegLsEncode(buffer.data(), buffer.size(), nullptr, buffer.data(), buffer.size(), &params, nullptr);
@@ -117,8 +117,8 @@ public:
         size_t bytes_written{};
         array<uint8_t, 1> destination{};
         const vector<uint8_t> source(100);
-        const auto error =
-            JpegLsEncode(destination.data(), 0, &bytes_written, source.data(), source.size(), &params, error_message.data());
+        const auto error{
+            JpegLsEncode(destination.data(), 0, &bytes_written, source.data(), source.size(), &params, error_message.data())};
         Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
@@ -126,8 +126,8 @@ public:
     TEST_METHOD(JpegLsDecode_nullptr) // NOLINT
     {
         constexpr JlsParameters params{};
-        vector<uint8_t> encoded_source = read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls");
-        auto error = JpegLsDecode(nullptr, 100, encoded_source.data(), encoded_source.size(), &params, nullptr);
+        vector<uint8_t> encoded_source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
+        auto error{JpegLsDecode(nullptr, 100, encoded_source.data(), encoded_source.size(), &params, nullptr)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
         error = JpegLsDecode(encoded_source.data(), 100, nullptr, encoded_source.size(), &params, nullptr);
@@ -145,8 +145,8 @@ public:
 
         constexpr array<uint8_t, 1> source{};
         vector<uint8_t> destination(100);
-        const auto error =
-            JpegLsDecode(destination.data(), destination.size(), source.data(), 0, &params, error_message.data());
+        const auto error{
+            JpegLsDecode(destination.data(), destination.size(), source.data(), 0, &params, error_message.data())};
         Assert::AreEqual(jpegls_errc::source_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }
@@ -154,8 +154,8 @@ public:
     TEST_METHOD(JpegLsDecodeRect_tulips) // NOLINT
     {
         JlsParameters params{};
-        const vector<uint8_t> encoded_source = read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls");
-        auto error = JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr);
+        const vector<uint8_t> encoded_source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
+        auto error{JpegLsReadHeader(encoded_source.data(), encoded_source.size(), &params, nullptr)};
         Assert::AreEqual(jpegls_errc::success, error);
 
         vector<uint8_t> decoded_destination(static_cast<size_t>(params.width) * params.height * params.components);
@@ -190,8 +190,8 @@ public:
     {
         constexpr JlsParameters params{};
         constexpr JlsRect roi{};
-        vector<uint8_t> encoded_source = read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls");
-        auto error = JpegLsDecodeRect(nullptr, 100, encoded_source.data(), encoded_source.size(), roi, &params, nullptr);
+        vector<uint8_t> encoded_source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
+        auto error{JpegLsDecodeRect(nullptr, 100, encoded_source.data(), encoded_source.size(), roi, &params, nullptr)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
         error = JpegLsDecodeRect(encoded_source.data(), 100, nullptr, encoded_source.size(), roi, &params, nullptr);
@@ -211,8 +211,7 @@ public:
         constexpr array<uint8_t, 1> source{};
         vector<uint8_t> destination(100);
 
-        const auto error =
-            JpegLsDecodeRect(destination.data(), destination.size(), source.data(), 0, roi, &params, error_message.data());
+        const auto error{JpegLsDecodeRect(destination.data(), destination.size(), source.data(), 0, roi, &params, error_message.data())};
         Assert::AreEqual(jpegls_errc::source_buffer_too_small, error);
         Assert::IsTrue(strlen(error_message.data()) > 0);
     }

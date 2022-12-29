@@ -52,7 +52,7 @@ public:
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
 
-        auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::success, result);
 
         spiff_header.color_space = spiff_color_space::none;
@@ -66,7 +66,7 @@ public:
         constexpr frame_info frame_info{create_valid_frame_info()};
         spiff_header.compression_type = spiff_compression_type::uncompressed;
 
-        const auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        const auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
@@ -77,7 +77,7 @@ public:
         spiff_header.compression_type = spiff_compression_type::jpeg_ls;
         spiff_header.profile_id = spiff_profile_id::continuous_tone_base;
 
-        const auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        const auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
@@ -87,7 +87,7 @@ public:
         constexpr frame_info frame_info{create_valid_frame_info()};
         spiff_header.component_count = 7;
 
-        const auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        const auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
@@ -101,7 +101,7 @@ public:
             spiff_header.bits_per_sample = bits_per_sample;
             frame_info.bits_per_sample = bits_per_sample;
 
-            const auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+            const auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
             Assert::AreEqual(jpegls_errc::success, result);
         }
     }
@@ -112,7 +112,7 @@ public:
         constexpr frame_info frame_info{create_valid_frame_info()};
         spiff_header.bits_per_sample = 12;
 
-        const auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        const auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
@@ -122,7 +122,7 @@ public:
         constexpr frame_info frame_info{create_valid_frame_info()};
         spiff_header.height = 333;
 
-        const auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        const auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
@@ -132,7 +132,7 @@ public:
         constexpr frame_info frame_info{create_valid_frame_info()};
         spiff_header.width = 27;
 
-        const auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        const auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
@@ -142,7 +142,7 @@ public:
         constexpr frame_info frame_info{create_valid_frame_info()};
         spiff_header.color_space = static_cast<spiff_color_space>(27);
 
-        auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::IsTrue(result == jpegls_errc::invalid_spiff_header);
 
         spiff_header.color_space = spiff_color_space::bi_level_black;
@@ -156,7 +156,7 @@ public:
         constexpr frame_info frame_info{create_valid_frame_info()};
         spiff_header.color_space = spiff_color_space::grayscale;
 
-        auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
 
         spiff_header.color_space = spiff_color_space::cmyk;
@@ -170,7 +170,7 @@ public:
         constexpr frame_info frame_info{create_valid_frame_info()};
         spiff_header.resolution_units = static_cast<spiff_resolution_units>(99);
 
-        const auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        const auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
@@ -180,7 +180,7 @@ public:
         constexpr frame_info frame_info{create_valid_frame_info()};
         spiff_header.vertical_resolution = 0;
 
-        const auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        const auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
@@ -190,7 +190,7 @@ public:
         constexpr frame_info frame_info{create_valid_frame_info()};
         spiff_header.horizontal_resolution = 0;
 
-        const auto result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        const auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 

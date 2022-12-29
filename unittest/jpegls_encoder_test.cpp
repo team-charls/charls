@@ -21,7 +21,7 @@ using std::numeric_limits;
 using std::vector;
 using namespace std::string_literals;
 
-constexpr size_t serialized_spiff_header_size = 34;
+constexpr size_t serialized_spiff_header_size{34};
 
 namespace charls { namespace test {
 
@@ -1366,7 +1366,7 @@ public:
 
         decoder.read_header();
 
-        const std::string expected = "charls "s + charls_get_version_string();
+        const std::string expected{"charls "s + charls_get_version_string()};
 
         Assert::AreEqual(expected.size() + 1, actual_size);
         Assert::IsTrue(memcmp(expected.data(), actual_data, actual_size) == 0);
@@ -1559,16 +1559,16 @@ public:
 
         vector<uint8_t> destination(encoder.estimated_destination_size());
 
-        void* data1 = destination.data();
-        const auto size1 = static_cast<uint16_t>(destination.size());
+        void* data1{destination.data()};
+        const auto size1{static_cast<uint16_t>(destination.size())};
         encoder.destination(data1, size1);
 
         vector<uint8_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
-        void* data2 = source.data();
-        const auto size2 = static_cast<uint16_t>(source.size());
+        void* data2{source.data()};
+        const auto size2{static_cast<uint16_t>(source.size())};
 
         // Set 1 value to prevent complains about const.
-        auto* p = static_cast<uint8_t*>(data2);
+        auto* p{static_cast<uint8_t*>(data2)};
         *p = 7;
 
         // size2 is not a perfect match and needs a conversion.
@@ -1585,7 +1585,7 @@ private:
         decoder.source(encoded_source);
         decoder.read_header();
 
-        const auto& frame_info = decoder.frame_info();
+        const auto& frame_info{decoder.frame_info()};
         Assert::AreEqual(source_frame_info.width, frame_info.width);
         Assert::AreEqual(source_frame_info.height, frame_info.height);
         Assert::AreEqual(source_frame_info.bits_per_sample, frame_info.bits_per_sample);

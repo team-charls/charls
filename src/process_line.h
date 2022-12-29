@@ -255,8 +255,8 @@ void transform_triplet_to_line(const triplet<PixelType>* source, const size_t pi
 
     for (size_t i{}; i < pixel_count; ++i)
     {
-        const triplet<PixelType> color = type_buffer_in[i];
-        const triplet<PixelType> color_transformed = transform(color.v1, color.v2, color.v3);
+        const triplet<PixelType> color{type_buffer_in[i]};
+        const triplet<PixelType> color_transformed{transform(color.v1, color.v2, color.v3)};
 
         destination[i] = color_transformed.v1;
         destination[i + pixel_stride] = color_transformed.v2;
@@ -274,8 +274,8 @@ void transform_triplet_to_line(const triplet<PixelType>* source, const size_t pi
 
     for (size_t i{}; i < pixel_count; ++i)
     {
-        const triplet<PixelType> color = type_buffer_in[i];
-        const triplet<PixelType> color_transformed = transform(color.v1 & mask, color.v2 & mask, color.v3 & mask);
+        const triplet<PixelType> color{type_buffer_in[i]};
+        const triplet<PixelType> color_transformed{transform(color.v1 & mask, color.v2 & mask, color.v3 & mask)};
 
         destination[i] = color_transformed.v1;
         destination[i + pixel_stride] = color_transformed.v2;

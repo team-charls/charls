@@ -50,7 +50,7 @@ public:
         height_ = header_info[2];
         bits_per_sample_ = log_2(header_info[3] + 1);
 
-        const int bytes_per_sample = (bits_per_sample_ + 7) / 8;
+        const int bytes_per_sample{(bits_per_sample_ + 7) / 8};
         input_buffer_.resize(static_cast<size_t>(width_) * height_ * bytes_per_sample * component_count_);
         pnm_file.read(reinterpret_cast<char*>(input_buffer_.data()), static_cast<std::streamsize>(input_buffer_.size()));
 

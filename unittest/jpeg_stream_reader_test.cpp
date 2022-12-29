@@ -96,7 +96,7 @@ public:
         reader.source({source.data(), source.size()});
 
         reader.read_header();
-        const auto& actual = reader.preset_coding_parameters();
+        const auto& actual{reader.preset_coding_parameters()};
 
         Assert::AreEqual(presets.maximum_sample_value, actual.maximum_sample_value);
         Assert::AreEqual(presets.reset_value, actual.reset_value);
@@ -248,7 +248,7 @@ public:
         writer.write_jpegls_preset_parameters_segment(preset_coding_parameters);
         writer.write_start_of_frame_segment(512, 512, 8, 3);
 
-        constexpr int bad_near_lossless = (200 / 2) + 1;
+        constexpr int bad_near_lossless{(200 / 2) + 1};
         writer.write_start_of_scan_segment(0, 1, bad_near_lossless, interleave_mode::none);
 
         jpeg_stream_reader reader;
@@ -530,7 +530,7 @@ public:
         callback_output actual;
 
         reader.at_comment({[](const void* data, const size_t size, void* user_context) noexcept -> int32_t {
-                               auto* actual_output = static_cast<callback_output*>(user_context);
+                               auto* actual_output{static_cast<callback_output*>(user_context)};
                                actual_output->data = data;
                                actual_output->size = size;
                                return 0;
@@ -562,7 +562,7 @@ public:
         callback_output actual;
 
         reader.at_comment({[](const void* data, const size_t size, void* user_context) noexcept -> int32_t {
-                               auto* actual_output = static_cast<callback_output*>(user_context);
+                               auto* actual_output{static_cast<callback_output*>(user_context)};
                                actual_output->data = data;
                                actual_output->size = size;
                                return 0;
@@ -586,7 +586,7 @@ public:
 
         bool called{};
         reader.at_comment({[](const void*, const size_t, void* user_context) noexcept -> int32_t {
-                               auto* actual_called = static_cast<bool*>(user_context);
+                               auto* actual_called{static_cast<bool*>(user_context)};
                                *actual_called = true;
                                return 0;
                            },
@@ -617,7 +617,7 @@ public:
 
         reader.at_application_data(
             {[](const int32_t id, const void* data, const size_t size, void* user_context) noexcept -> int32_t {
-                 auto* actual_output = static_cast<callback_output*>(user_context);
+                 auto* actual_output{static_cast<callback_output*>(user_context)};
                  actual_output->id = id;
                  actual_output->data = data;
                  actual_output->size = size;
@@ -653,7 +653,7 @@ public:
 
         reader.at_application_data(
             {[](const int32_t id, const void* data, const size_t size, void* user_context) noexcept -> int32_t {
-                 auto* actual_output = static_cast<callback_output*>(user_context);
+                 auto* actual_output{static_cast<callback_output*>(user_context)};
                  actual_output->id = id;
                  actual_output->data = data;
                  actual_output->size = size;
@@ -679,7 +679,7 @@ public:
 
         bool called{};
         reader.at_application_data({[](int32_t, const void*, const size_t, void* user_context) noexcept -> int32_t {
-                                        auto* actual_called = static_cast<bool*>(user_context);
+                                        auto* actual_called{static_cast<bool*>(user_context)};
                                         *actual_called = true;
                                         return 0;
                                     },
@@ -692,7 +692,7 @@ public:
 private:
     static void read_spiff_header(const uint8_t low_version)
     {
-        vector<uint8_t> buffer = create_test_spiff_header(2, low_version);
+        vector<uint8_t> buffer{create_test_spiff_header(2, low_version)};
         jpeg_stream_reader reader;
         reader.source({buffer.data(), buffer.size()});
 

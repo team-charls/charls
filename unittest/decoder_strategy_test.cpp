@@ -83,11 +83,11 @@ public:
         encoder.end_scan_forward();
         // Note: Correct encoding is tested in encoder_strategy_test::append_to_bit_stream_ff_pattern.
 
-        const auto length = encoder.get_length_forward();
+        const auto length{encoder.get_length_forward()};
         decoder_strategy_tester decoder(frame_info, parameters, enc_buf.data(), length);
         for (const auto& data : in_data)
         {
-            const auto actual = decoder.read(data.bits);
+            const auto actual{decoder.read(data.bits)};
             Assert::AreEqual(data.value, actual);
         }
     }

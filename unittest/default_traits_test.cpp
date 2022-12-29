@@ -31,8 +31,8 @@ public:
 
         for (int i{-25}; i != 26; ++i)
         {
-            const auto error_value = traits.modulo_range(i);
-            constexpr int range = 24 + 1;
+            const auto error_value{traits.modulo_range(i)};
+            constexpr int range{24 + 1};
             Assert::IsTrue(-range / 2 <= error_value && error_value <= ((range + 1) / 2) - 1);
         }
     }

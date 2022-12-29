@@ -49,7 +49,7 @@ vector<uint8_t> read_file(const char* filename)
     input.open(filename, ios::in | ios::binary);
 
     input.seekg(0, ios::end);
-    const auto byte_count_file = static_cast<size_t>(input.tellg());
+    const auto byte_count_file{static_cast<size_t>(input.tellg())};
     input.seekg(0, ios::beg);
 
     vector<uint8_t> buffer(byte_count_file);
@@ -156,7 +156,7 @@ vector<uint8_t> create_test_spiff_header(const uint8_t high_version, const uint8
 
 vector<uint8_t> create_noise_image_16_bit(const size_t pixel_count, const int bit_count, const uint32_t seed)
 {
-    const auto max_value = static_cast<uint16_t>((1U << bit_count) - 1U);
+    const auto max_value{static_cast<uint16_t>((1U << bit_count) - 1U)};
     mt19937 generator(seed);
 
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
@@ -238,13 +238,13 @@ void verify_decoded_bytes(const interleave_mode interleave_mode, const frame_inf
                           const char* reference_filename)
 {
     const auto anymap_reference{read_anymap_reference_file(reference_filename, interleave_mode, frame_info)};
-    const auto& reference_samples = anymap_reference.image_data();
+    const auto& reference_samples{anymap_reference.image_data()};
 
     const int plane_count{interleave_mode == interleave_mode::none ? frame_info.component_count : 1};
     const int components_in_plane_count{interleave_mode == interleave_mode::none ? 1 : frame_info.component_count};
 
-    const size_t source_stride = static_cast<size_t>(frame_info.width) * components_in_plane_count;
-    const uint8_t* sample = uncompressed_data.data();
+    const size_t source_stride{static_cast<size_t>(frame_info.width) * components_in_plane_count};
+    const uint8_t* sample{uncompressed_data.data()};
     size_t reference_sample{};
     for (int plane{}; plane < plane_count; ++plane)
     {

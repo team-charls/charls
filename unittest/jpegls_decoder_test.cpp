@@ -240,7 +240,7 @@ public:
         portable_anymap_file reference_file{
             read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
 
-        const auto& reference_image_data = reference_file.image_data();
+        const auto& reference_image_data{reference_file.image_data()};
         for (size_t i{}; i != destination.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination[i]);
@@ -260,7 +260,7 @@ public:
         portable_anymap_file reference_file{
             read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
 
-        const auto& reference_image_data = reference_file.image_data();
+        const auto& reference_image_data{reference_file.image_data()};
         for (size_t i{}; i != destination.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination[i]);
@@ -667,7 +667,7 @@ public:
         // Insert a DRI marker segment to trigger that restart markers are used.
         jpeg_test_stream_writer stream_writer;
         stream_writer.write_define_restart_interval(10, 3);
-        const auto it = source.begin() + 2;
+        const auto it{source.begin() + 2};
         source.insert(it, stream_writer.buffer.cbegin(), stream_writer.buffer.cend());
 
         const jpegls_decoder decoder{source, true};
