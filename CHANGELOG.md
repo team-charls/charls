@@ -1,10 +1,10 @@
-# Change Log
+# Changelog
 
 All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.4.0] -2022-12-29
+## [2.4.0] - 2022-12-29
 
 ### Added
 
