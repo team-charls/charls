@@ -21,13 +21,13 @@ JPEG-LS is a low-complexity image compression standard that matches JPEG 2000 co
 ## About JPEG-LS
 
 JPEG-LS (ISO/IEC 14495-1:1999 / ITU-T.87) is an image compression standard derived from the Hewlett Packard LOCO algorithm. JPEG-LS has low complexity (meaning fast compression) and high compression ratios, similar to the JPEG 2000 lossless ratios. JPEG-LS is more similar to the old Lossless JPEG than to JPEG 2000, but interestingly the two different techniques result in vastly different performance characteristics.
-Wikipedia on lossless JPEG and JPEG-LS: <http://en.wikipedia.org/wiki/Lossless_JPEG>  
+Wikipedia on lossless JPEG and JPEG-LS: <https://en.wikipedia.org/wiki/Lossless_JPEG>  
 Tip: ITU makes their version of the JPEG-LS standard (ITU-T.87) freely available for download. The text is identical with the ISO version.
 
 ## About this software
 
 This project's goal is to provide a full implementation of the ISO/IEC 14495-1:1999, "Lossless and near-lossless compression of continuous-tone still images: Baseline" standard. This library is written from scratch in portable C++. The master branch uses modern C++14. The 1.x branch is maintained in C++03. All mainstream JPEG-LS features are implemented by this library.
-According to preliminary test results published on <http://imagecompression.info/gralic,> CharLS is about *twice as fast* as the original HP code, and beats both JPEG-XR and JPEG 2000 by a factor 3.
+According to preliminary test results published on <https://imagecompression.info/gralic,> CharLS is about *twice as fast* as the original HP code, and beats both JPEG-XR and JPEG 2000 by a factor 3.
 
 ### Limitations
 
@@ -67,7 +67,7 @@ With [vcpkg](https://github.com/Microsoft/vcpkg) on Linux or macOS
 ~/$ ./vcpkg install charls
 ```
 
-For other platforms, more install options, how to build from source, and more, take a look at the [Documentation](https://github.com/team-charls/charls/wiki).
+For other platforms, more install options, how to build from source, and more, take a look at the [documentation](https://github.com/team-charls/charls/wiki).
 
 Once you have the library, the sample folder provides some code samples to get you started.
 
@@ -82,15 +82,15 @@ Before any major breaking change in the API and/or ABI a branch will be created 
 
 ## Related Projects
 
-* [CharLS.Native .NET](https://github.com/team-charls/charls-native-dotnet) - a .NET adapter assembly for CharLS
+* [CharLS.Native .NET](https://github.com/team-charls/charls-native-dotnet) - a .NET adapter assembly for CharLS: [NuGet package](https://www.nuget.org/packages/CharLS.Native/)
 * [JPEG-LS WIC codec](https://github.com/team-charls/jpegls-wic-codec) - Windows Imaging Component (WIC) codec for JPEG-LS .jls files
-* [charls-js](https://github.com/chafey/charls-js) - WebAssembly build of CharLS, [Demo](https://chafey.github.io/charls-js/test/browser/index.html)
-* [JPEG-LS plugin for Python Pillow](https://github.com/planetmarshall/pillow-jpls) - JPEG-LS plugin for Python Pillow, [Pip](https://pypi.org/project/pillow-jpls/1.0.0/)
+* [charls-js](https://github.com/chafey/charls-js) - WebAssembly build of CharLS: [Demo](https://chafey.github.io/charls-js/test/browser/index.html)
+* [JPEG-LS plugin for Python Pillow](https://github.com/planetmarshall/pillow-jpls) - JPEG-LS plugin for Python Pillow: [Pip package](https://pypi.org/project/pillow-jpls/)
 
 ## Users & Acknowledgements
 
-CharLS is being used by [GDCM DICOM toolkit](http://sourceforge.net/projects/gdcm/), thanks for [Mathieu Malaterre](http://sourceforge.net/users/malat) for getting CharLS started on Linux. Kato Kanryu wrote an initial version of the color transforms and the DIB output format code, for an [irfanview](http://www.irfanview.com) plugin using CharLS.
+CharLS is being used by [GDCM DICOM toolkit](https://sourceforge.net/projects/gdcm/), thanks for [Mathieu Malaterre](https://sourceforge.net/users/malat) for getting CharLS started on Linux. Kato Kanryu wrote an initial version of the color transforms and the DIB output format code, for an [irfanview](https://www.irfanview.com) plugin using CharLS.
 
 ## Legal
 
-The code in this project is available through a BSD style license, allowing use of the code in commercial closed source applications if you wish. **All** the code in this project is written from scratch, and not based on other JPEG-LS implementations. Be aware that Hewlett Packard claims to own patents that apply to JPEG-LS implementations, but they license it for free for conformant JPEG-LS implementations. Some of these patents may already have expired in your country. Read more at <http://www.hpl.hp.com/loco/> before you use this if you use this code for commercial purposes.
+The code in this project is available through a BSD style license, allowing use of the code in commercial closed source applications if you wish. **All** the code in this project is written from scratch, and not based on other JPEG-LS implementations. Be aware that Hewlett Packard claims to own patents that apply to JPEG-LS implementations, but they license it for free for conformant JPEG-LS implementations. Some of these patents may already have expired in your country. Read more at <https://hpl.hp.com/loco/> before you use this if you use this code for commercial purposes.
