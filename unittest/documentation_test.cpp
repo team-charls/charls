@@ -61,14 +61,14 @@ std::vector<uint8_t> decode_simple_8_bit_monochrome_legacy(const std::vector<uin
 {
     std::array<char, ErrorMessageSize> error_message{};
     JlsParameters parameters{};
-    auto error = JpegLsReadHeader(source.data(), source.size(), &parameters, error_message.data());
+    auto error{JpegLsReadHeader(source.data(), source.size(), &parameters, error_message.data())};
     if (error != CharlsApiResultType::OK)
         throw std::runtime_error(error_message.data());
 
     if (parameters.components != 1 || parameters.bitsPerSample != 8)
         throw std::runtime_error("Not a 8 bit monochrome image");
 
-    const size_t destination_size = static_cast<size_t>(parameters.width) * static_cast<uint32_t>(parameters.height);
+    const auto destination_size{static_cast<size_t>(parameters.width) * static_cast<uint32_t>(parameters.height)};
     std::vector<uint8_t> destination(destination_size);
 
     error = JpegLsDecode(destination.data(), destination.size(), source.data(), source.size(), &parameters,
@@ -82,8 +82,8 @@ std::vector<uint8_t> decode_simple_8_bit_monochrome_legacy(const std::vector<uin
 std::vector<uint8_t> encode_simple_8_bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width,
                                                     const uint32_t height)
 {
-    constexpr auto bits_per_sample = 8;
-    constexpr auto component_count = 1;
+    constexpr auto bits_per_sample{8};
+    constexpr auto component_count{1};
     return charls::jpegls_encoder::encode(source, {width, height, bits_per_sample, component_count});
 }
 
@@ -114,12 +114,12 @@ std::vector<uint8_t> encode_simple_8_bit_monochrome_legacy(const std::vector<uin
     parameters.bitsPerSample = 8;
     parameters.components = 1;
 
-    const size_t estimated_destination_size = static_cast<size_t>(width) * height * 1 * 1 + 1024;
+    const size_t estimated_destination_size{static_cast<size_t>(width) * height * 1 * 1 + 1024};
     std::vector<uint8_t> destination(estimated_destination_size);
 
     size_t bytes_written;
-    const auto error = JpegLsEncode(destination.data(), destination.size(), &bytes_written, source.data(), source.size(),
-                                    &parameters, error_message.data());
+    const auto error{JpegLsEncode(destination.data(), destination.size(), &bytes_written, source.data(), source.size(),
+                                    &parameters, error_message.data())};
     if (error != CharlsApiResultType::OK)
         throw std::runtime_error(error_message.data());
 

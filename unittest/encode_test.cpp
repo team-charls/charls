@@ -56,7 +56,7 @@ public:
 private:
     static void encode(const char* filename, const interleave_mode interleave_mode = interleave_mode::none)
     {
-        const portable_anymap_file reference_file = read_anymap_reference_file(filename, interleave_mode);
+        const portable_anymap_file reference_file{read_anymap_reference_file(filename, interleave_mode)};
 
         encode(reference_file, interleave_mode);
         encode_legacy_api(reference_file, interleave_mode);
@@ -73,7 +73,7 @@ private:
         vector<uint8_t> charls_encoded(encoder.estimated_destination_size());
         encoder.destination(charls_encoded);
 
-        const size_t bytes_written = encoder.encode(reference_file.image_data());
+        const size_t bytes_written{encoder.encode(reference_file.image_data())};
         charls_encoded.resize(bytes_written);
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode);
@@ -96,9 +96,9 @@ private:
         DISABLE_DEPRECATED_WARNING
 
         size_t bytes_written;
-        const auto error =
+        const auto error{
             JpegLsEncode(charls_encoded.data(), charls_encoded.size(), &bytes_written, reference_file.image_data().data(),
-                         reference_file.image_data().size(), &info, nullptr);
+                         reference_file.image_data().size(), &info, nullptr)};
 
         // ReSharper restore CppDeprecatedEntity
         RESTORE_DEPRECATED_WARNING
@@ -115,7 +115,7 @@ private:
         decoder.source(encoded_source);
         decoder.read_header();
 
-        const auto& frame_info = decoder.frame_info();
+        const auto& frame_info{decoder.frame_info()};
         Assert::AreEqual(static_cast<uint32_t>(reference_file.width()), frame_info.width);
         Assert::AreEqual(static_cast<uint32_t>(reference_file.height()), frame_info.height);
         Assert::AreEqual(reference_file.bits_per_sample(), frame_info.bits_per_sample);
@@ -125,7 +125,7 @@ private:
         vector<uint8_t> destination(decoder.destination_size());
         decoder.decode(destination);
 
-        const vector<uint8_t>& uncompressed_source = reference_file.image_data();
+        const vector<uint8_t>& uncompressed_source{reference_file.image_data()};
 
         Assert::AreEqual(destination.size(), uncompressed_source.size());
 

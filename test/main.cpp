@@ -95,7 +95,7 @@ size_t get_stream_length(istream& stream, const size_t end_offset = 0)
 template<typename SizeType>
 void convert_planar_to_pixel(const size_t width, const size_t height, const void* source, void* destination) noexcept
 {
-    const size_t stride_in_pixels = width * 3;
+    const size_t stride_in_pixels{width * 3};
     const auto* plane0{static_cast<const SizeType*>(source)};
     const auto* plane1{static_cast<const SizeType*>(source) + (width * height)};
     const auto* plane2{static_cast<const SizeType*>(source) + (width * height * 2)};
@@ -121,7 +121,7 @@ void convert_planar_to_pixel(const size_t width, const size_t height, const void
 
 void test_traits16_bit()
 {
-    const auto traits1 = default_traits<uint16_t, uint16_t>(4095, 0);
+    const auto traits1{default_traits<uint16_t, uint16_t>(4095, 0)};
     using lossless_traits = lossless_traits<uint16_t, 12>;
 
     assert::is_true(traits1.limit == lossless_traits::limit);
@@ -217,7 +217,7 @@ void test_noise_image()
         stringstream label;
         label << "noise, bit depth: " << bit_depth;
 
-        const vector<uint8_t> noise_bytes = make_some_noise(size2.cx * size2.cy, bit_depth, 21344);
+        const vector<uint8_t> noise_bytes{make_some_noise(size2.cx * size2.cy, bit_depth, 21344)};
         test_round_trip(label.str().c_str(), noise_bytes, size2, static_cast<int>(bit_depth), 1);
     }
 
@@ -226,7 +226,7 @@ void test_noise_image()
         stringstream label;
         label << "noise, bit depth: " << bit_depth;
 
-        const vector<uint8_t> noise_bytes = make_some_noise16_bit(size2.cx * size2.cy, bit_depth, 21344);
+        const vector<uint8_t> noise_bytes{make_some_noise16_bit(size2.cx * size2.cy, bit_depth, 21344)};
         test_round_trip(label.str().c_str(), noise_bytes, size2, bit_depth, 1);
     }
 }
@@ -236,7 +236,7 @@ void test_noise_image_with_custom_reset()
 {
     const rect_size size{512, 512};
     constexpr int bit_depth{16};
-    const vector<uint8_t> noise_bytes = make_some_noise16_bit(size.cx * size.cy, bit_depth, 21344);
+    const vector<uint8_t> noise_bytes{make_some_noise16_bit(size.cx * size.cy, bit_depth, 21344)};
 
     JlsParameters params{};
     params.components = 1;
@@ -435,8 +435,8 @@ void test_decode_rect()
 
     constexpr JlsParameters params{};
 
-    error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_source.data(),
-                                    encoded_source.size(), &params, nullptr);
+    error_code error{JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_source.data(),
+                                    encoded_source.size(), &params, nullptr)};
     assert::is_true(!error);
 
     constexpr JlsRect rect{128, 128, 256, 1};
@@ -519,12 +519,12 @@ try
     }
 
     // PNM format requires most significant byte first (big endian).
-    const int max_value = (1 << frame_info.bits_per_sample) - 1;
-    const int bytes_per_sample = max_value > 255 ? 2 : 1;
+    const int max_value{(1 << frame_info.bits_per_sample) - 1};
+    const int bytes_per_sample{max_value > 255 ? 2 : 1};
 
     if (bytes_per_sample == 2)
     {
-        for (auto i = decoded_destination.begin(); i != decoded_destination.end(); i += 2)
+        for (auto i{decoded_destination.begin()}; i != decoded_destination.end(); i += 2)
         {
             iter_swap(i, i + 1);
         }
@@ -550,7 +550,7 @@ vector<int> read_pnm_header(istream& pnm_file)
 {
     vector<int> read_values;
 
-    const auto first = static_cast<char>(pnm_file.get());
+    const auto first{static_cast<char>(pnm_file.get())};
 
     // All portable anymap format (PNM) start with the character P.
     if (first != 'P')
@@ -564,7 +564,7 @@ vector<int> read_pnm_header(istream& pnm_file)
 
         while (read_values.size() < 4)
         {
-            int value = -1;
+            int value{-1};
             line >> value;
             if (value <= 0)
                 break;
@@ -593,7 +593,7 @@ try
                                 static_cast<int32_t>(max_value_to_bits_per_sample(read_values[3])),
                                 read_values[0] == 6 ? 3 : 1};
 
-    const auto bytes_per_sample = static_cast<int32_t>(::bit_to_byte_count(frame_info.bits_per_sample));
+    const auto bytes_per_sample{static_cast<int32_t>(::bit_to_byte_count(frame_info.bits_per_sample))};
     vector<uint8_t> input_buffer(static_cast<size_t>(frame_info.width) * frame_info.height * bytes_per_sample *
                                  frame_info.component_count);
     read(pnm_file, input_buffer);
@@ -639,7 +639,7 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
         return false;
     }
 
-    const vector<int> header2 = read_pnm_header(pnm_file2);
+    const vector<int> header2{read_pnm_header(pnm_file2)};
     if (header2.size() != 4)
     {
         cout << "Cannot read header from input file 2\n";
@@ -652,14 +652,14 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
         return false;
     }
 
-    const size_t width = header1[1];
+    const auto width{static_cast<size_t>(header1[1])};
     if (width != static_cast<size_t>(header2[1]))
     {
         cout << "Width " << width << " is not equal with width " << header2[1] << "\n";
         return false;
     }
 
-    const size_t height = header1[2];
+    const auto height{static_cast<size_t>(header1[2])};
     if (height != static_cast<size_t>(header2[2]))
     {
         cout << "Height " << height << " is not equal with height " << header2[2] << "\n";
@@ -864,7 +864,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 
             // Extract the optional loop count from the command line. Longer running tests make the measurements more
             // reliable.
-            auto index = str.find(':');
+            auto index{str.find(':')};
             if (index != string::npos)
             {
                 loop_count = stoi(str.substr(++index));
@@ -892,7 +892,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 
             // Extract the optional loop count from the command line. Longer running tests make the measurements more
             // reliable.
-            auto index = str.find(':');
+            auto index{str.find(':')};
             if (index != string::npos)
             {
                 loop_count = stoi(str.substr(++index));
@@ -913,7 +913,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 
             // Extract the optional loop count from the command line. Longer running tests make the measurements more
             // reliable.
-            auto index = str.find(':');
+            auto index{str.find(':')};
             if (index != string::npos)
             {
                 loop_count = stoi(str.substr(++index));

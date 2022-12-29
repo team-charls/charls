@@ -28,7 +28,7 @@ void test_jpegls_read_header(const char* filename, const int width, const int he
 
     array<char, ErrorMessageSize> error_message{};
     JlsParameters parameters{};
-    const auto error = JpegLsReadHeader(encoded_buffer.data(), encoded_buffer.size(), &parameters, error_message.data());
+    const auto error{JpegLsReadHeader(encoded_buffer.data(), encoded_buffer.size(), &parameters, error_message.data())};
     assert::is_true(error == jpegls_errc::success);
 
     assert::is_true(parameters.width == width || parameters.height == height ||

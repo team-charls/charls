@@ -160,7 +160,7 @@ public:
 
     TEST_METHOD(write_spiff_end_of_directory_entry_before_header_throws) // NOLINT
     {
-        const auto error = charls_jpegls_encoder_write_spiff_end_of_directory_entry(nullptr);
+        const auto error{charls_jpegls_encoder_write_spiff_end_of_directory_entry(nullptr)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 

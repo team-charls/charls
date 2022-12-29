@@ -204,7 +204,7 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::try_create_optimized_codec(con
 
 #endif
 
-    const auto maxval = calculate_maximum_sample_value(frame.bits_per_sample);
+    const auto maxval{calculate_maximum_sample_value(frame.bits_per_sample)};
 
     if (frame.bits_per_sample <= 8)
     {

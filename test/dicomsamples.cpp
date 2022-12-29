@@ -56,7 +56,7 @@ void test_dicom_sample_image(const char* name)
     }
 
     JlsParameters params{};
-    error_code error = JpegLsReadHeader(data.data(), data.size(), &params, nullptr);
+    error_code error{JpegLsReadHeader(data.data(), data.size(), &params, nullptr)};
     assert::is_true(!error);
 
     vector<uint8_t> data_unc;

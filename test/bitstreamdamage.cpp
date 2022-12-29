@@ -21,7 +21,7 @@ namespace {
 
 void test_damaged_bit_stream1()
 {
-    const vector<uint8_t> encoded_buffer = read_file("test/incorrect_images/InfiniteLoopFFMPEG.jls");
+    const vector<uint8_t> encoded_buffer{read_file("test/incorrect_images/InfiniteLoopFFMPEG.jls")};
     vector<uint8_t> destination(size_t{256} * 256 * 2);
 
     error_code error;
@@ -40,7 +40,7 @@ void test_damaged_bit_stream1()
 
 void test_damaged_bit_stream2()
 {
-    vector<uint8_t> encoded_buffer = read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls");
+    vector<uint8_t> encoded_buffer{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
 
     encoded_buffer.resize(900);
     encoded_buffer.resize(40000, 3);
@@ -63,7 +63,7 @@ void test_damaged_bit_stream2()
 
 void test_damaged_bit_stream3()
 {
-    vector<uint8_t> encoded_buffer = read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls");
+    vector<uint8_t> encoded_buffer{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
 
     encoded_buffer[300] = 0xFF;
     encoded_buffer[301] = 0xFF;
@@ -86,7 +86,7 @@ void test_damaged_bit_stream3()
 
 void test_file_with_random_header_damage(const char* filename)
 {
-    const vector<uint8_t> encoded_buffer_original = read_file(filename);
+    const vector<uint8_t> encoded_buffer_original{read_file(filename)};
 
     mt19937 generator(102347325);
 

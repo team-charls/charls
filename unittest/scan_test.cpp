@@ -32,7 +32,7 @@ int32_t map_error_value_original(const int32_t error_value) noexcept
 /// </remarks>
 int32_t map_error_value_alternative1(const int32_t error_value) noexcept
 {
-    const int32_t mapped_value = error_value * 2;
+    const int32_t mapped_value{error_value * 2};
 
     if (error_value >= 0)
         return mapped_value;
@@ -60,7 +60,7 @@ int32_t unmap_error_value_original(const int32_t mapped_error_value) noexcept
 /// </remarks>
 int32_t unmap_error_value_alternative1(const int32_t mapped_error_value) noexcept
 {
-    const int32_t error_value = mapped_error_value / 2;
+    const int32_t error_value{mapped_error_value / 2};
 
     if (mapped_error_value % 2 == 0)
         return error_value;
@@ -110,9 +110,9 @@ public:
 private:
     static void map_error_value_algorithm(const int32_t error_value)
     {
-        const int32_t actual = map_error_value(error_value);
-        const int32_t expected1 = map_error_value_original(error_value);
-        const int32_t expected2 = map_error_value_alternative1(error_value);
+        const int32_t actual{map_error_value(error_value)};
+        const int32_t expected1{map_error_value_original(error_value)};
+        const int32_t expected2{map_error_value_alternative1(error_value)};
 
         Assert::IsTrue(actual >= 0);
         Assert::AreEqual(expected1, actual);
@@ -121,9 +121,9 @@ private:
 
     static void unmap_error_value_algorithm(const int32_t mapped_error_value)
     {
-        const int32_t actual = unmap_error_value(mapped_error_value);
-        const int32_t expected1 = unmap_error_value_original(mapped_error_value);
-        const int32_t expected2 = unmap_error_value_alternative1(mapped_error_value);
+        const int32_t actual{unmap_error_value(mapped_error_value)};
+        const int32_t expected1{unmap_error_value_original(mapped_error_value)};
+        const int32_t expected2{unmap_error_value_alternative1(mapped_error_value)};
 
         Assert::AreEqual(expected1, actual);
         Assert::AreEqual(expected2, actual);
@@ -131,8 +131,8 @@ private:
 
     static void map_unmap_error_value_algorithm(const int32_t error_value)
     {
-        const int32_t mapped_error_value = map_error_value(error_value);
-        const int32_t actual = unmap_error_value(mapped_error_value);
+        const int32_t mapped_error_value{map_error_value(error_value)};
+        const int32_t actual{unmap_error_value(mapped_error_value)};
 
         Assert::AreEqual(error_value, actual);
     }

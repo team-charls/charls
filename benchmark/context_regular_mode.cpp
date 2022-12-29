@@ -14,7 +14,7 @@ jls_context_v220 g_context_v220;
 
 volatile int32_t error_value;
 volatile int32_t near_lossless;
-volatile int32_t reset_threshold = 64;
+volatile int32_t reset_threshold{64};
 
 static void bm_regular_mode_update_variables_220(benchmark::State& state)
 {

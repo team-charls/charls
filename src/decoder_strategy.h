@@ -109,7 +109,7 @@ public:
 
         ASSERT(length != 0 && length <= valid_bits_);
         ASSERT(length < 32);
-        const auto result = static_cast<int32_t>(read_cache_ >> (cache_t_bit_count - length));
+        const auto result{static_cast<int32_t>(read_cache_ >> (cache_t_bit_count - length))};
         skip(length);
         return result;
     }
@@ -131,7 +131,7 @@ public:
             fill_read_cache();
         }
 
-        const bool set = (read_cache_ & (static_cast<cache_t>(1) << (cache_t_bit_count - 1))) != 0;
+        const bool set{(read_cache_ & (static_cast<cache_t>(1) << (cache_t_bit_count - 1))) != 0};
         skip(1);
         return set;
     }
@@ -144,7 +144,7 @@ public:
         }
 
 #if defined(_MSC_VER) || defined(__GNUC__)
-        const auto count = countl_zero(read_cache_);
+        const auto count{countl_zero(read_cache_)};
         return count < 16 ? count : -1;
 #else
         cache_t val_test = read_cache_;

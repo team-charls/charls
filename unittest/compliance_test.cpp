@@ -141,7 +141,7 @@ private:
         DISABLE_DEPRECATED_WARNING
 
         JlsParameters info{};
-        error_code error = JpegLsReadHeader(compressed_bytes, compressed_length, &info, nullptr);
+        error_code error{JpegLsReadHeader(compressed_bytes, compressed_length, &info, nullptr)};
         Assert::IsFalse(static_cast<bool>(error));
 
         if (check_encode)

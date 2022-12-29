@@ -106,7 +106,7 @@ void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_le
 void decompress_file(const char* name_encoded, const char* name_raw, const int offset, const bool check_encode = true)
 {
     cout << "Conformance test:" << name_encoded << "\n\r";
-    const vector<uint8_t> encoded_buffer = read_file(name_encoded);
+    const vector<uint8_t> encoded_buffer{read_file(name_encoded)};
 
     jpegls_decoder decoder;
     try
@@ -119,9 +119,9 @@ void decompress_file(const char* name_encoded, const char* name_raw, const int o
         return;
     }
 
-    vector<uint8_t> raw_buffer = read_file(name_raw, offset);
+    vector<uint8_t> raw_buffer{read_file(name_raw, offset)};
 
-    const auto& frame_info = decoder.frame_info();
+    const auto& frame_info{decoder.frame_info()};
     if (frame_info.bits_per_sample > 8)
     {
         fix_endian(&raw_buffer, false);
@@ -171,7 +171,7 @@ void decompress_file(const char* name_encoded, const char* name_raw, const int o
 ////};
 
 
-const array<uint8_t, 16> buffer = {0, 0, 90, 74, 68, 50, 43, 205, 64, 145, 145, 145, 100, 145, 145, 145};
+const array<uint8_t, 16> buffer{0, 0, 90, 74, 68, 50, 43, 205, 64, 145, 145, 145, 100, 145, 145, 145};
 ////const uint8_t bufferEncoded[] =   {   0xFF, 0xD8, 0xFF, 0xF7, 0x00, 0x0B, 0x08, 0x00, 0x04, 0x00, 0x04, 0x01, 0x01, 0x11,
 ///0x00, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, /0xC0, 0x00, 0x00, 0x6C, 0x80, 0x20, 0x8E, /0x01, 0xC0,
 ///0x00, 0x00, 0x57, 0x40, 0x00, 0x00, 0x6E, 0xE6, 0x00, 0x00, 0x01, 0xBC, 0x18, 0x00, /0x00, 0x05, 0xD8, 0x00, 0x00, 0x91,
