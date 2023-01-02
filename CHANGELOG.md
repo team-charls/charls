@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.1] - 2023-1-2
+
+### Fixed
+
+- Fixed [#221](https://github.com/team-charls/charls/issues/221), jpegls_errc::destination_buffer_too_small incorrectly thrown for 8 bit 2*2 image with stride = 4 during decoding.
+
 ## [2.4.0] - 2022-12-29
 
 ### Added
