@@ -83,7 +83,7 @@ struct charls_jpegls_decoder final
     {
         const charls::frame_info info{frame_info()};
 
-        if (stride == 0)
+        if (stride == auto_calculate_stride)
         {
             return checked_mul(checked_mul(checked_mul(info.component_count, info.height), info.width),
                 bit_to_byte_count(info.bits_per_sample));

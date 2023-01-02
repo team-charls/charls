@@ -114,15 +114,14 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
         parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<size_t>(frame_info_.component_count)};
     const size_t minimum_stride{components_in_plane_count * width * bit_to_byte_count(frame_info_.bits_per_sample)};
 
-    // Use the external provided stride argument if set.
-    if (stride != 0)
+    if (stride == auto_calculate_stride)
     {
-        if (UNLIKELY(stride < minimum_stride))
-            throw_jpegls_error(jpegls_errc::invalid_argument_stride);
+        stride = minimum_stride;
     }
     else
     {
-        stride = minimum_stride;
+        if (UNLIKELY(stride < minimum_stride))
+            throw_jpegls_error(jpegls_errc::invalid_argument_stride);
     }
 
     // Compute the layout of the destination buffer.

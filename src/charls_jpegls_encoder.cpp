@@ -203,13 +203,17 @@ struct charls_jpegls_encoder final
         if (interleave_mode_ == charls::interleave_mode::none)
         {
             const size_t byte_count_component{stride * frame_info_.height};
+            const int32_t last_component{frame_info_.component_count - 1};
             for (int32_t component{}; component != frame_info_.component_count; ++component)
             {
                 writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
                 encode_scan(source, stride, 1);
 
                 // Synchronize the source stream (encode_scan works on a local copy)
-                skip_bytes(source, byte_count_component);
+                if (component != last_component)
+                {
+                    skip_bytes(source, byte_count_component);
+                }
             }
         }
         else
@@ -276,16 +280,22 @@ private:
 
     void check_stride(const size_t stride, const size_t source_size) const
     {
+        const size_t minimum_stride{calculate_stride()};
+        if (UNLIKELY(stride < minimum_stride))
+            throw_jpegls_error(jpegls_errc::invalid_argument_stride);
+
         // Simple check to verify user input, and prevent out-of-bound read access.
         // Stride parameter defines the number of bytes on a scan line.
         if (interleave_mode_ == charls::interleave_mode::none)
         {
-            if (UNLIKELY(stride * frame_info_.component_count * frame_info_.height > source_size))
+            const size_t minimum_source_size{stride * frame_info_.component_count * frame_info_.height - (stride - minimum_stride)};
+            if (UNLIKELY(source_size < minimum_source_size))
                 throw_jpegls_error(jpegls_errc::invalid_argument_stride);
         }
         else
         {
-            if (UNLIKELY(stride * frame_info_.height > source_size))
+            const size_t minimum_source_size{stride * frame_info_.height - (stride - minimum_stride)};
+            if (UNLIKELY(source_size < minimum_source_size))
                 throw_jpegls_error(jpegls_errc::invalid_argument_stride);
         }
     }

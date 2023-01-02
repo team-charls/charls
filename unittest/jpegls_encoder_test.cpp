@@ -1016,6 +1016,23 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
     }
 
+    TEST_METHOD(encode_with_stride_interleave_none_8_bit_small_image) // NOLINT
+    {
+        const array<uint8_t, 6> source{100, 99, 0, 0, 101, 98};
+        constexpr frame_info frame_info{2, 2, 8, 1};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source, 4)};
+        destination.resize(bytes_written);
+
+        const array<uint8_t, 4> expected{100, 99, 101, 98};
+        test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
+    }
+
     TEST_METHOD(encode_with_stride_interleave_none_16_bit) // NOLINT
     {
         const array<uint16_t, 30> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
@@ -1072,9 +1089,9 @@ public:
 
     TEST_METHOD(encode_with_bad_stride_interleave_none_throws) // NOLINT
     {
-        const array<uint8_t, 29> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
-                                        150, 0,   0,   0, 0, 0, 0, 0, 200, 200, 200};
-        constexpr frame_info frame_info{3, 1, 8, 3};
+        const array<uint8_t, 21> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
+                                        150, 0,   0,   0, 0, 0, 0, 0, 200};
+        constexpr frame_info frame_info{2, 2, 8, 3};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
@@ -1082,13 +1099,13 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_argument_stride,
-                                [&encoder, &source] { ignore = encoder.encode(source, 10); });
+                                [&encoder, &source] { ignore = encoder.encode(source, 4); });
     }
 
     TEST_METHOD(encode_with_bad_stride_interleave_sample_throws) // NOLINT
     {
-        const array<uint8_t, 9> source{100, 150, 200, 100, 150, 200, 100, 150, 200};
-        constexpr frame_info frame_info{3, 1, 8, 3};
+        const array<uint8_t, 12> source{100, 150, 200, 100, 150, 200, 100, 150, 200};
+        constexpr frame_info frame_info{2, 2, 8, 3};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
@@ -1096,7 +1113,36 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_argument_stride,
-                                [&encoder, &source] { ignore = encoder.encode(source, 10); });
+                                [&encoder, &source] { ignore = encoder.encode(source, 7); });
+    }
+
+    TEST_METHOD(encode_with_too_small_stride_interleave_none_throws) // NOLINT
+    {
+        const array<uint8_t, 21> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
+                                        150, 0,   0,   0, 0, 0, 0, 0, 200};
+        constexpr frame_info frame_info{2, 1, 8, 3};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        assert_expect_exception(jpegls_errc::invalid_argument_stride,
+            [&encoder, &source] { ignore = encoder.encode(source, 1); });
+    }
+
+    TEST_METHOD(encode_with_too_small_stride_interleave_sample_throws) // NOLINT
+    {
+        const array<uint8_t, 12> source{100, 150, 200, 100, 150, 200, 100, 150, 200};
+        constexpr frame_info frame_info{2, 1, 8, 3};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
+        vector<uint8_t> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        assert_expect_exception(jpegls_errc::invalid_argument_stride,
+            [&encoder, &source] { ignore = encoder.encode(source, 5); });
     }
 
     TEST_METHOD(encode_1_component_4_bit_with_high_bits_set) // NOLINT
