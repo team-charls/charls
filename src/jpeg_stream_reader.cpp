@@ -96,7 +96,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 }
 
 
-void jpeg_stream_reader::decode(byte_span destination, const size_t stride)
+void jpeg_stream_reader::decode(byte_span destination, size_t stride)
 {
     ASSERT(state_ == state::bit_stream_section);
 
@@ -112,21 +112,23 @@ void jpeg_stream_reader::decode(byte_span destination, const size_t stride)
     const uint32_t width{rect_.Width != 0 ? static_cast<uint32_t>(rect_.Width) : frame_info_.width};
     const size_t components_in_plane_count{
         parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<size_t>(frame_info_.component_count)};
-    size_t destination_stride{components_in_plane_count * width * bit_to_byte_count(frame_info_.bits_per_sample)};
+    const size_t minimum_stride{components_in_plane_count * width * bit_to_byte_count(frame_info_.bits_per_sample)};
 
-    // Use the external provided stride argument if set.
-    if (stride != 0)
+    if (stride == auto_calculate_stride)
     {
-        if (UNLIKELY(stride < destination_stride))
+        stride = minimum_stride;
+    }
+    else
+    {
+        if (UNLIKELY(stride < minimum_stride))
             throw_jpegls_error(jpegls_errc::invalid_argument_stride);
-
-        destination_stride = stride;
     }
 
     // Compute the layout of the destination buffer.
-    const size_t bytes_per_plane{destination_stride * rect_.Height};
+    const size_t bytes_per_plane{stride * rect_.Height};
     const size_t plane_count{parameters_.interleave_mode == interleave_mode::none ? frame_info_.component_count : 1U};
-    if (UNLIKELY(destination.size < bytes_per_plane * plane_count))
+    const size_t minimum_destination_size = bytes_per_plane * plane_count - (stride - minimum_stride);
+    if (UNLIKELY(destination.size < minimum_destination_size))
         throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
     for (size_t i{}; i < plane_count; ++i)
@@ -134,14 +136,14 @@ void jpeg_stream_reader::decode(byte_span destination, const size_t stride)
         if (state_ == state::scan_section)
         {
             read_next_start_of_scan();
+            skip_bytes(destination, bytes_per_plane);
         }
 
         const unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
             frame_info_, parameters_, get_validated_preset_coding_parameters())};
-        unique_ptr<process_line> process_line(codec->create_process_line(destination, destination_stride));
+        unique_ptr<process_line> process_line(codec->create_process_line(destination, stride));
         const size_t bytes_read{codec->decode_scan(std::move(process_line), rect_, const_byte_span{position_, end_position_})};
         advance_position(bytes_read);
-        charls::skip_bytes(destination, bytes_per_plane);
         state_ = state::scan_section;
     }
 }

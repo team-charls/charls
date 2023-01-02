@@ -372,6 +372,8 @@ T read_big_endian_unaligned(const void* buffer) noexcept
 
 inline void skip_bytes(byte_span& stream_info, const size_t count) noexcept
 {
+    ASSERT(count <= stream_info.size);
+
     stream_info.data += count;
     stream_info.size -= count;
 }

@@ -165,7 +165,8 @@ public:
         const jpegls_decoder decoder{source, true};
 
         constexpr size_t stride{512};
-        constexpr size_t expected_destination_size{stride * 256 * 3};
+        constexpr size_t minimum_stride{256};
+        constexpr size_t expected_destination_size{stride * 256 * 3 - (stride - minimum_stride)};
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
 
@@ -175,7 +176,8 @@ public:
         const jpegls_decoder decoder{source, true};
 
         constexpr size_t stride{513};
-        constexpr size_t expected_destination_size{stride * 256};
+        constexpr size_t minimum_stride{512};
+        constexpr size_t expected_destination_size{stride * 256 - (stride - minimum_stride)};
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
 
@@ -185,7 +187,8 @@ public:
         const jpegls_decoder decoder{source, true};
 
         constexpr size_t stride{1024};
-        constexpr size_t expected_destination_size{stride * 256};
+        constexpr size_t minimum_stride{size_t{3} * 256};
+        constexpr size_t expected_destination_size{stride * 256 - (stride - minimum_stride)};
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
 
@@ -195,7 +198,8 @@ public:
         const jpegls_decoder decoder{source, true};
 
         constexpr size_t stride{1024};
-        constexpr size_t expected_destination_size{stride * 256};
+        constexpr size_t minimum_stride{size_t{3} * 256};
+        constexpr size_t expected_destination_size{stride * 256 - (stride - minimum_stride)};
         Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
     }
 
@@ -227,6 +231,19 @@ public:
         constexpr uint32_t correct_stride{3 * 256};
         assert_expect_exception(jpegls_errc::invalid_argument_stride,
                                 [&decoder, &correct_stride] { std::ignore = decoder.destination_size(correct_stride - 1); });
+    }
+
+    TEST_METHOD(destination_size_for_small_image_with_custom_stride) // NOLINT
+    {
+        const vector<uint8_t> source{read_file("8bit-monochrome-2x2.jls")};
+        const jpegls_decoder decoder{source, true};
+
+        constexpr uint32_t stride{4};
+        const size_t destination_size{decoder.destination_size(stride)};
+        Assert::AreEqual(size_t{6}, destination_size);
+
+        vector<uint8_t> destination(destination_size);
+        decoder.decode(destination, stride);
     }
 
     TEST_METHOD(decode_reference_file_from_buffer) // NOLINT
