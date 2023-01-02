@@ -229,6 +229,11 @@
       <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="8bit-monochrome-2x2.jls">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
