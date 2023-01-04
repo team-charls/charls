@@ -2,7 +2,7 @@ name: SonarCloud Analysis
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -11,17 +11,22 @@ jobs:
     runs-on: windows-latest
     env:
       BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
+
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
       - name: Set up msbuild
         uses: microsoft/setup-msbuild@v1.1
+
       - name: Install sonar-scanner and build-wrapper
         uses: SonarSource/sonarcloud-github-c-cpp@v1
+
       - name: Run build-wrapper
         run: |
           build-wrapper-win-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} msbuild CharLS.sln /t:charls:rebuild /p:Configuration="Release" /p:Platform="x64" /nodeReuse:false
+
       - name: Run sonar-scanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
