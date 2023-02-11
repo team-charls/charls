@@ -115,7 +115,7 @@ struct transform_hp3 final
 
         FORCE_INLINE triplet<T> operator()(const int v1, const int v2, const int v3) const noexcept
         {
-            const int g = static_cast<int>(v1 - ((v3 + v2) >> 2) + range_ / 4);
+            const auto g{static_cast<int>(v1 - ((v3 + v2) >> 2) + range_ / 4)};
             triplet<T> rgb;
             rgb.R = static_cast<T>(v3 + g - range_ / 2); // new R
             rgb.G = static_cast<T>(g);                   // new G

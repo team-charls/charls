@@ -98,6 +98,7 @@ public:
         int32_t k{};
         for (; n_ << k < a_ && k < max_k_value; ++k)
         {
+            // Purpose of this loop is to calculate 'k', by design no content.
         }
 
         if (UNLIKELY(k == max_k_value))

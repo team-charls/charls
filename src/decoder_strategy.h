@@ -225,20 +225,18 @@ private:
 
             const cache_t new_byte_value{*position_};
 
-            if (new_byte_value == jpeg_marker_start_byte)
+            // JPEG-LS bit stream rule: if FF is followed by a 1 bit then it is a marker
+            if (new_byte_value == jpeg_marker_start_byte &&
+                (position_ == end_position_ - 1 || (position_[1] & 0x80) != 0))
             {
-                // JPEG-LS bit stream rule: if FF is followed by a 1 bit then it is a marker
-                if (position_ == end_position_ - 1 || (position_[1] & 0x80) != 0)
+                if (UNLIKELY(valid_bits_ <= 0))
                 {
-                    if (UNLIKELY(valid_bits_ <= 0))
-                    {
-                        // Decoding process expects at least some bits to be added to the cache.
-                        impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
-                    }
-
-                    // Marker detected, typical EOI, SOS (next scan) or RSTm.
-                    return;
+                    // Decoding process expects at least some bits to be added to the cache.
+                    impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
                 }
+
+                // End of buffer or marker detected. Typical found markers are EOI, SOS (next scan) or RSTm.
+                return;
             }
 
             read_cache_ |= new_byte_value << (max_readable_cache_bits - valid_bits_);
