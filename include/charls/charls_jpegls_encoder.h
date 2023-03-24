@@ -412,7 +412,7 @@ public:
     /// Size for dynamic extras like SPIFF entries and other tables are not included in this size.
     /// </remarks>
     /// <returns>The estimated size in bytes needed to hold the encoded image.</returns>
-    CHARLS_CHECK_RETURN size_t estimated_destination_size() const
+    [[nodiscard]] size_t estimated_destination_size() const
     {
         size_t size_in_bytes;
         check_jpegls_errc(charls_jpegls_encoder_get_estimated_destination_size(encoder_.get(), &size_in_bytes));
@@ -589,7 +589,7 @@ public:
     /// Returns the size in bytes, that are written to the destination.
     /// </summary>
     /// <returns>The bytes written.</returns>
-    CHARLS_CHECK_RETURN size_t bytes_written() const
+    [[nodiscard]] size_t bytes_written() const
     {
         size_t bytes_written;
         check_jpegls_errc(charls_jpegls_encoder_get_bytes_written(encoder_.get(), &bytes_written));
@@ -605,7 +605,7 @@ public:
     }
 
 private:
-    CHARLS_CHECK_RETURN static charls_jpegls_encoder* create_encoder()
+    [[nodiscard]] static charls_jpegls_encoder* create_encoder()
     {
         charls_jpegls_encoder* encoder{charls_jpegls_encoder_create()};
         if (!encoder)

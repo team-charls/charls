@@ -24,12 +24,12 @@ struct byte_span final
     {
     }
 
-    CHARLS_CHECK_RETURN constexpr uint8_t* begin() const noexcept
+    [[nodiscard]] constexpr uint8_t* begin() const noexcept
     {
         return data;
     }
 
-    CHARLS_CHECK_RETURN constexpr uint8_t* end() const noexcept
+    [[nodiscard]] constexpr uint8_t* end() const noexcept
     {
         return data + size;
     }
@@ -56,27 +56,27 @@ public:
     {
     }
 
-    CHARLS_CHECK_RETURN constexpr size_t size() const noexcept
+    [[nodiscard]] constexpr size_t size() const noexcept
     {
         return size_;
     }
 
-    CHARLS_CHECK_RETURN constexpr const uint8_t* data() const noexcept
+    [[nodiscard]] constexpr const uint8_t* data() const noexcept
     {
         return data_;
     }
 
-    CHARLS_CHECK_RETURN constexpr iterator begin() const noexcept
+    [[nodiscard]] constexpr iterator begin() const noexcept
     {
         return data_;
     }
 
-    CHARLS_CHECK_RETURN constexpr iterator end() const noexcept
+    [[nodiscard]] constexpr iterator end() const noexcept
     {
         return data_ + size_;
     }
 
-    CHARLS_CHECK_RETURN constexpr bool empty() const noexcept
+    [[nodiscard]] constexpr bool empty() const noexcept
     {
         return size_ == 0;
     }
