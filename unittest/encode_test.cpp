@@ -59,7 +59,6 @@ private:
         const portable_anymap_file reference_file{read_anymap_reference_file(filename, interleave_mode)};
 
         encode(reference_file, interleave_mode);
-        encode_legacy_api(reference_file, interleave_mode);
     }
 
     static void encode(const portable_anymap_file& reference_file, const interleave_mode interleave_mode)
@@ -75,35 +74,6 @@ private:
 
         const size_t bytes_written{encoder.encode(reference_file.image_data())};
         charls_encoded.resize(bytes_written);
-
-        test_by_decoding(charls_encoded, reference_file, interleave_mode);
-    }
-
-    static void encode_legacy_api(const portable_anymap_file& reference_file, const interleave_mode interleave_mode)
-    {
-        JlsParameters info{};
-        info.width = reference_file.width();
-        info.height = reference_file.height();
-        info.bitsPerSample = reference_file.bits_per_sample();
-        info.components = reference_file.component_count();
-        info.interleaveMode = interleave_mode;
-
-        vector<uint8_t> charls_encoded(estimated_destination_size(reference_file.width(), reference_file.height(),
-                                                                  reference_file.component_count(),
-                                                                  reference_file.bits_per_sample()));
-
-        // ReSharper disable CppDeprecatedEntity
-        DISABLE_DEPRECATED_WARNING
-
-        size_t bytes_written;
-        const auto error{
-            JpegLsEncode(charls_encoded.data(), charls_encoded.size(), &bytes_written, reference_file.image_data().data(),
-                         reference_file.image_data().size(), &info, nullptr)};
-
-        // ReSharper restore CppDeprecatedEntity
-        RESTORE_DEPRECATED_WARNING
-
-        Assert::AreEqual(jpegls_errc::success, error);
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode);
     }

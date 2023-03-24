@@ -215,55 +215,6 @@ charls_jpegls_decoder_at_application_data(CHARLS_IN charls_jpegls_decoder* decod
                                           charls_at_application_data_handler handler, void* user_context) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull(1)));
 
-
-// Note: The 3 methods below are considered obsolete and will be removed in the next major update.
-
-/// <summary>
-/// Retrieves the JPEG-LS header. This info can be used to pre-allocate the uncompressed output buffer.
-/// </summary>
-/// <remarks>This method will be removed in the next major update.</remarks>
-/// <param name="source">Byte array that holds the JPEG-LS encoded data of which the header should be extracted.</param>
-/// <param name="source_length">Length of the array in bytes.</param>
-/// <param name="params">Parameter object that describes how the pixel data is encoded.</param>
-/// <param name="error_message">
-/// Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.
-/// </param>
-CHARLS_ATTRIBUTE_ACCESS((access(read_only, 1, 2)))
-CHARLS_DEPRECATED CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
-JpegLsReadHeader(CHARLS_IN_READS_BYTES(source_length) const void* source, size_t source_length,
-                 CHARLS_OUT JlsParameters* params, CHARLS_OUT_OPT char* error_message) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull(1, 3)));
-
-/// <summary>
-/// Decodes a JPEG-LS encoded byte array to uncompressed pixel data byte array.
-/// </summary>
-/// <remarks>This method will be removed in the next major update.</remarks>
-/// <param name="destination">Byte array that holds the uncompressed pixel data bytes when the function returns.</param>
-/// <param name="destination_length">
-/// Length of the array in bytes. If the array is too small the function will return an error.
-/// </param>
-/// <param name="source">Byte array that holds the JPEG-LS encoded data that should be decoded.</param>
-/// <param name="source_length">Length of the array in bytes.</param>
-/// <param name="params">Parameter object that describes the pixel data and how to decode it.</param>
-/// <param name="error_message">
-/// Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.
-/// </param>
-CHARLS_ATTRIBUTE_ACCESS((access(write_only, 1, 2), access(read_only, 3, 4)))
-CHARLS_DEPRECATED CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
-JpegLsDecode(CHARLS_OUT_WRITES_BYTES(destination_length) void* destination, size_t destination_length,
-             CHARLS_IN_READS_BYTES(source_length) const void* source, size_t source_length,
-             CHARLS_IN_OPT const JlsParameters* params, CHARLS_OUT_OPT char* error_message) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull(1, 3)));
-
-/// <remarks>This method will be removed in the next major update.</remarks>
-CHARLS_ATTRIBUTE_ACCESS((access(write_only, 1, 2), access(read_only, 3, 4)))
-CHARLS_DEPRECATED
-CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
-JpegLsDecodeRect(CHARLS_OUT_WRITES_BYTES(destination_length) void* destination, size_t destination_length,
-                 CHARLS_IN_READS_BYTES(source_length) const void* source, size_t source_length, JlsRect roi,
-                 CHARLS_IN_OPT const JlsParameters* params, CHARLS_OUT_OPT char* error_message) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull(1, 3)));
-
 #ifdef __cplusplus
 
 } // extern "C"

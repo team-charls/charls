@@ -9,15 +9,11 @@ target_sources(charlstest
     bitstreamdamage.h
     compliance.cpp
     compliance.h
-    dicomsamples.cpp
-    dicomsamples.h
     main.cpp
     performance.cpp
     performance.h
     util.cpp
     util.h
-    legacy.cpp
-    legacy.h
 )
 
 if(WIN32 AND MSVC_VERSION GREATER_EQUAL 1920)

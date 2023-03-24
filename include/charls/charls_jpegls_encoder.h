@@ -267,33 +267,6 @@ charls_jpegls_encoder_get_bytes_written(CHARLS_IN const charls_jpegls_encoder* e
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_rewind(CHARLS_IN charls_jpegls_encoder* encoder) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
-// Note: The method below is considered obsolete and will be removed in the next major update.
-
-/// <summary>
-/// Encodes a byte array with pixel data to a JPEG-LS encoded (compressed) byte array.
-/// </summary>
-/// <remarks>This method is considered obsolete and will be removed in the next major update.</remarks>
-/// <param name="destination">Byte array that holds the encoded bytes when the function returns.</param>
-/// <param name="destination_length">
-/// Length of the array in bytes. If the array is too small the function will return an error.
-/// </param>
-/// <param name="bytes_written">
-/// This parameter will hold the number of bytes written to the destination byte array. Cannot be NULL.
-/// </param>
-/// <param name="source">Byte array that holds the pixels that should be encoded.</param>
-/// <param name="source_length">Length of the array in bytes.</param>
-/// <param name="params">Parameter object that describes the pixel data and how to encode it.</param>
-/// <param name="error_message">
-/// Character array of at least 256 characters or NULL. Hold the error message when a failure occurs, empty otherwise.
-/// </param>
-CHARLS_ATTRIBUTE_ACCESS((access(write_only, 1, 2), access(read_only, 4, 5)))
-CHARLS_DEPRECATED
-CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT CharlsApiResultType CHARLS_API_CALLING_CONVENTION
-JpegLsEncode(CHARLS_OUT_WRITES_BYTES(destination_length) void* destination, size_t destination_length,
-             CHARLS_OUT size_t* bytes_written, CHARLS_IN_READS_BYTES(source_length) const void* source, size_t source_length,
-             CHARLS_IN const JlsParameters* params, CHARLS_OUT_OPT char* error_message) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull(1, 3, 4, 6)));
-
 #ifdef __cplusplus
 
 } // extern "C"

@@ -589,33 +589,4 @@ catch (...)
     return to_jpegls_errc();
 }
 
-
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
-JpegLsEncode(void* destination, const size_t destination_length, size_t* bytes_written, const void* source,
-             const size_t source_length, const JlsParameters* params, char* error_message) noexcept
-try
-{
-    check_argument(check_pointer(params)->jfif.version == 0);
-
-    charls_jpegls_encoder encoder;
-    encoder.destination({check_pointer(destination), destination_length});
-    encoder.near_lossless(params->allowedLossyError);
-
-    encoder.frame_info({static_cast<uint32_t>(params->width), static_cast<uint32_t>(params->height), params->bitsPerSample,
-                        params->components});
-    encoder.interleave_mode(params->interleaveMode);
-    encoder.color_transformation(params->colorTransformation);
-    const auto& pc{params->custom};
-    encoder.preset_coding_parameters({pc.MaximumSampleValue, pc.Threshold1, pc.Threshold2, pc.Threshold3, pc.ResetValue});
-
-    encoder.encode({check_pointer(source), source_length}, static_cast<size_t>(params->stride));
-    *check_pointer(bytes_written) = encoder.bytes_written();
-
-    clear_error_message(error_message);
-    return jpegls_errc::success;
-}
-catch (...)
-{
-    return set_error_message(to_jpegls_errc(), error_message);
-}
-}
+} // extern "C"

@@ -20,9 +20,6 @@
     <ClCompile Include="compliance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dicomsamples.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,9 +27,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="legacy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -49,13 +43,7 @@
     <ClInclude Include="performance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dicomsamples.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="portable_anymap_file.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="legacy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
