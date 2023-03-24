@@ -84,31 +84,31 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">
-    <TargetName>charls-2-x86</TargetName>
+    <TargetName>charls-3-x86</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>charls-2-x86</TargetName>
+    <TargetName>charls-3-x86</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>charls-2-x86</TargetName>
+    <TargetName>charls-3-x86</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">
-    <TargetName>charls-2-x64</TargetName>
+    <TargetName>charls-3-x64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Checked|ARM64'">
-    <TargetName>charls-2-arm64</TargetName>
+    <TargetName>charls-3-arm64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>charls-2-x64</TargetName>
+    <TargetName>charls-3-x64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <TargetName>charls-2-arm64</TargetName>
+    <TargetName>charls-3-arm64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TargetName>charls-2-x64</TargetName>
+    <TargetName>charls-3-x64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <TargetName>charls-2-arm64</TargetName>
+    <TargetName>charls-3-arm64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>

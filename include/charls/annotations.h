@@ -23,7 +23,7 @@
 #if defined(__cplusplus) && __cplusplus >= 201703
 #define CHARLS_CHECK_RETURN [[nodiscard]]
 #else
-// Use MSVC specific solution for C and C++14.
+// Use MSVC specific solution for C
 #define CHARLS_CHECK_RETURN _Check_return_
 #endif
 

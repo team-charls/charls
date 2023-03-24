@@ -29,12 +29,12 @@ endif()
 if(WIN32 AND BUILD_SHARED_LIBS)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES "ARM64")
-      set_target_properties(charls PROPERTIES OUTPUT_NAME "charls-2-arm64")
+      set_target_properties(charls PROPERTIES OUTPUT_NAME "charls-3-arm64")
     else()
-      set_target_properties(charls PROPERTIES OUTPUT_NAME "charls-2-x64")
+      set_target_properties(charls PROPERTIES OUTPUT_NAME "charls-3-x64")
     endif()
   else()
-    set_target_properties(charls PROPERTIES OUTPUT_NAME "charls-2-x86")
+    set_target_properties(charls PROPERTIES OUTPUT_NAME "charls-3-x86")
   endif()
 endif()
 
@@ -53,8 +53,9 @@ set_target_properties(charls PROPERTIES
                       SOVERSION ${PROJECT_VERSION_MAJOR})
 
 target_compile_definitions(charls PRIVATE CHARLS_LIBRARY_BUILD)
-# CharLS requires C++14 or newer.
-target_compile_features(charls PUBLIC cxx_std_14)
+
+# CharLS requires C++17 or newer.
+target_compile_features(charls PUBLIC cxx_std_17)
 
 set(HEADERS
     "include/charls/api_abi.h"

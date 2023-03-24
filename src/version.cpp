@@ -10,7 +10,7 @@ using namespace charls;
 
 extern "C" {
 
-USE_DECL_ANNOTATIONS const char* CHARLS_API_CALLING_CONVENTION charls_get_version_string()
+const char* CHARLS_API_CALLING_CONVENTION charls_get_version_string()
 {
     return TO_STRING(CHARLS_VERSION_MAJOR) "." TO_STRING(CHARLS_VERSION_MINOR) "." TO_STRING(CHARLS_VERSION_PATCH);
 }
