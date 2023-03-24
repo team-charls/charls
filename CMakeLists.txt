@@ -1,7 +1,7 @@
 # Copyright (c) Team CharLS.
 # SPDX-License-Identifier: BSD-3-Clause
 
-cmake_minimum_required(VERSION 3.13...3.25)
+cmake_minimum_required(VERSION 3.13...3.26)
 
 # Extract the version info from version.h
 file(READ "include/charls/version.h" version)
@@ -119,8 +119,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
       # The list below ignores not useful Weverything warnings.
       -Wno-weak-vtables                       # Ignore, linker will remove the couple of extra vtables.
       -Wno-padded                             # Ignore, padding optimization is not needed.
-      -Wno-c++98-compat                       # Ignore, CharLS 2.x targets C++14, ignore C++98 compatibility.
-      -Wno-c++98-compat-pedantic              # Ignore, CharLS 2.x targets C++14, ignore C++98 compatibility.
+      -Wno-c++98-compat                       # Ignore, CharLS targets C++17, ignore C++98 compatibility.
+      -Wno-c++98-compat-pedantic              # Ignore, CharLS targets C++17, ignore C++98 compatibility.
       -Wno-global-constructors                # Ignore, by design CharLS uses types created at startup.
       -Wno-switch-enum                        # Ignore, cases are handled by default.
       -Wno-sign-conversion                    # Ignore, would just introduce ugly static_asserts.

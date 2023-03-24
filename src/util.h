@@ -66,7 +66,7 @@
 #endif
 
 // C++20 has support for [[likely]] and [[unlikely]]. Use for now the GCC\Clang extension.
-// MSVC has in C++14\C++17 mode no alternative for it.
+// MSVC has in C++17 mode no alternative for it.
 #ifdef __GNUC__
 #define UNLIKELY(x) __builtin_expect(!!(x), 0)
 #else

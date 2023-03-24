@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.0] -
+
+### Changed
+
+- Updated the source code to C++17. This is a breaking change, high version is updated to 3.
+
 ## [2.4.1] - 2023-1-2
 
 ### Fixed

@@ -14,14 +14,14 @@ extern "C" {
 #endif
 
 
-#define CHARLS_VERSION_MAJOR 2
-#define CHARLS_VERSION_MINOR 4
-#define CHARLS_VERSION_PATCH 1
+#define CHARLS_VERSION_MAJOR 3
+#define CHARLS_VERSION_MINOR 0
+#define CHARLS_VERSION_PATCH 0
 
 /// <summary>
 /// Returns the version of CharLS in the semver format "major.minor.patch" or "major.minor.patch-pre_release"
 /// </summary>
-CHARLS_CHECK_RETURN CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT const char*
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT const char*
     CHARLS_API_CALLING_CONVENTION charls_get_version_string(CHARLS_C_VOID);
 
 /// <summary>

@@ -10,7 +10,7 @@
 
 namespace charls {
 
-/// <summary>Simplified span class for C++14 (std::span<std::byte>).</summary>
+/// <summary>Simplified span class for C++20 (std::span<std::byte>).</summary>
 struct byte_span final
 {
     byte_span() = default;
@@ -39,7 +39,7 @@ struct byte_span final
 };
 
 
-/// <summary>Simplified span class for C++14 (std::span<const std::byte>).</summary>
+/// <summary>Simplified span class for C++20 (std::span<const std::byte>).</summary>
 class const_byte_span final
 {
 public:

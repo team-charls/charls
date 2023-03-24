@@ -12,8 +12,8 @@
 # -llvm-header-guard => Rationale: #pragma once is used
 # -hicpp-no-array-decay => Rationale: alias for cppcoreguidelines-pro-bounds-constant-array-index
 # -hicpp-signed-bitwise => Rationale: Bad test, types are checked, not values.
-# -clang-diagnostic-c++98-compat* => Rationale: CharLS targets C++14
-# -clang-diagnostic-c++98-c++11-compat => Rationale: CharLS targets C++14
+# -clang-diagnostic-c++98-compat* => Rationale: CharLS targets C++17
+# -clang-diagnostic-c++98-c++11-compat => Rationale: CharLS targets C++17
 # -clang-diagnostic-unused-macros => Rationale: Macros defined in header are reported as problem
 # -clang-diagnostic-sign-conversion => Rationale: warning will be enabled in additional steps
 # -clang-diagnostic-switch-enum => Rationale: options are handled by default case
@@ -35,7 +35,7 @@
 # -cppcoreguidelines-macro-usage => Rationale: Many false warnings
 # -cppcoreguidelines-pro-bounds-array-to-pointer-decay => Span is not available
 # -cppcoreguidelines-pro-type-const-cast => Rationale: const cast is needed for legacy functions
-# -cppcoreguidelines-pro-type-union-access => Rationale: std::variant not an option as target is C++14
+# -cppcoreguidelines-pro-type-union-access => Rationale: usage of union is more efficient is used scenarios
 # -cppcoreguidelines-non-private-member-variables-in-classes => Warning is too strict, manual review code review is preferred
 # -cppcoreguidelines-pro-bounds-constant-array-index => gsl:at is not used by design
 # -cppcoreguidelines-init-variables => reports false warnings for out parameters (other checkers are better to detect these problems)

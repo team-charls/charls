@@ -1,11 +1,11 @@
 
-<img src="https://raw.githubusercontent.com/team-charls/charls/master/doc/jpeg_ls_logo.png" alt="JPEG-LS Logo" width="100"/>
+<img src="https://raw.githubusercontent.com/team-charls/charls/main/doc/jpeg_ls_logo.png" alt="JPEG-LS Logo" width="100"/>
 
 # CharLS
 
-[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/team-charls/charls/master/LICENSE.md)
-[![Build status](https://ci.appveyor.com/api/projects/status/yq0naf3v2m8nfa8r/branch/master?svg=true)](https://ci.appveyor.com/project/vbaderks/charls/branch/master)
-[![Build Status](https://dev.azure.com/team-charls/charls/_apis/build/status/team-charls.charls?branchName=master)](https://dev.azure.com/team-charls/charls/_build/latest?definitionId=2&branchName=master)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/team-charls/charls/main/LICENSE.md)
+[![Build status](https://ci.appveyor.com/api/projects/status/yq0naf3v2m8nfa8r/branch/main?svg=true)](https://ci.appveyor.com/project/vbaderks/charls/branch/main)
+[![Build Status](https://dev.azure.com/team-charls/charls/_apis/build/status/team-charls.charls?branchName=main)](https://dev.azure.com/team-charls/charls/_build/latest?definitionId=2&branchName=main)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=team-charls_charls&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=team-charls_charls)
 [![Vcpkg package](https://repology.org/badge/version-for-repo/vcpkg/charls.svg)](https://repology.org/metapackage/charls)
 
@@ -14,7 +14,7 @@ JPEG-LS is a low-complexity image compression standard that matches JPEG 2000 co
 
 ## Features
 
-* C++14 library implementation with a binary C interface for maximum interoperability.
+* C++17 library implementation with a binary C interface for maximum interoperability.
 * Supports Windows, Linux and macOS on x86, x64, arm, arm64, mips, s390x and ppc64le.
 * Adapters for .NET, JavaScript (WebAssembly) and Python applications available.
 * Excellent compression and decompression performance.
@@ -27,7 +27,7 @@ Tip: ITU makes their version of the JPEG-LS standard (ITU-T.87) freely available
 
 ## About this software
 
-This project's goal is to provide a full implementation of the ISO/IEC 14495-1:1999, "Lossless and near-lossless compression of continuous-tone still images: Baseline" standard. This library is written from scratch in portable C++. The master branch uses modern C++14. The 1.x branch is maintained in C++03. All mainstream JPEG-LS features are implemented by this library.
+This project's goal is to provide a full implementation of the ISO/IEC 14495-1:1999, "Lossless and near-lossless compression of continuous-tone still images: Baseline" standard. This library is written from scratch in portable C++. The main branch uses C++17. The 2.x branch is maintained in C++14. All mainstream JPEG-LS features are implemented by this library.
 According to preliminary test results published on <https://imagecompression.info/gralic,> CharLS is about *twice as fast* as the original HP code, and beats both JPEG-XR and JPEG 2000 by a factor 3.
 
 ### Limitations
@@ -79,7 +79,7 @@ Support for older compiler versions will be phased out, 5 years from the moment 
 
 ### Long Term Support (LTS) Branches
 
-Before any major breaking change in the API and/or ABI a branch will be created from master to freeze that snapshot as LTS branch.
+Before any major breaking change in the API and/or ABI a branch will be created from main to freeze that snapshot as LTS branch.
 
 ## Related Projects
 

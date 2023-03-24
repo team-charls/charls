@@ -130,7 +130,7 @@ sense to define a good naming convention. Not all JPEG-LS names are good C++ var
 
 ### Supported C++ language
 
-CharLS currently targets C++14 on the main branch. This will be done until December 2022 (5 years after the release of C++17)
+CharLS currently targets C++17 on the main branch. This will be done until December 2025 (5 years after the release of C++20)
 
 #### Features currently not available (C++17)
 
