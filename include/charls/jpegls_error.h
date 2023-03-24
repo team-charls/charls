@@ -17,12 +17,12 @@ CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION charls_get_er
 
 namespace charls {
 
-CHARLS_CHECK_RETURN inline const std::error_category& jpegls_category() noexcept
+[[nodiscard]] inline const std::error_category& jpegls_category() noexcept
 {
     return *(charls_get_jpegls_category());
 }
 
-CHARLS_CHECK_RETURN inline std::error_code make_error_code(jpegls_errc error_value) noexcept
+[[nodiscard]] inline std::error_code make_error_code(jpegls_errc error_value) noexcept
 {
     return {static_cast<int>(error_value), jpegls_category()};
 }

@@ -448,7 +448,7 @@ public:
     /// Returns true if a valid SPIFF header was found.
     /// </summary>
     /// <returns>True of false, depending if a SPIFF header was found.</returns>
-    CHARLS_CHECK_RETURN bool spiff_header_has_value() const noexcept
+    [[nodiscard]] bool spiff_header_has_value() const noexcept
     {
         return spiff_header_has_value_;
     }
@@ -458,7 +458,7 @@ public:
     /// Function can be called after read_spiff_header and spiff_header_has_value.
     /// </summary>
     /// <returns>The SPIFF header.</returns>
-    CHARLS_CHECK_RETURN const charls::spiff_header& spiff_header() const& noexcept
+    [[nodiscard]] const charls::spiff_header& spiff_header() const& noexcept
     {
         return spiff_header_;
     }
@@ -468,7 +468,7 @@ public:
     /// Function can be called after read_spiff_header and spiff_header_has_value.
     /// </summary>
     /// <returns>The SPIFF header.</returns>
-    charls::spiff_header spiff_header() const&& noexcept  // Note: CHARLS_CHECK_RETURN causes false C6031 warnings [Visual Studio 2019 v16.11.19]
+    [[nodiscard]] charls::spiff_header spiff_header() const&& noexcept
     {
         return spiff_header_;
     }
@@ -478,7 +478,7 @@ public:
     /// Function can be called after read_header.
     /// </summary>
     /// <returns>The frame info that describes the image stored in the JPEG-LS byte stream.</returns>
-    CHARLS_CHECK_RETURN const charls::frame_info& frame_info() const& noexcept
+    [[nodiscard]] const charls::frame_info& frame_info() const& noexcept
     {
         return frame_info_;
     }
@@ -488,7 +488,7 @@ public:
     /// Function can be called after read_header.
     /// </summary>
     /// <returns>The frame info that describes the image stored in the JPEG-LS byte stream.</returns>
-    charls::frame_info frame_info() const&& noexcept // Note: CHARLS_CHECK_RETURN causes false C6031 warnings [Visual Studio 2019 v16.11.19]
+    [[nodiscard]] charls::frame_info frame_info() const&& noexcept
     {
         return frame_info_;
     }
@@ -499,7 +499,7 @@ public:
     /// <param name="component">The component index for which the NEAR parameter should be retrieved.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The value of the NEAR parameter.</returns>
-    CHARLS_CHECK_RETURN int32_t near_lossless(const int32_t component = 0) const
+    [[nodiscard]] int32_t near_lossless(const int32_t component = 0) const
     {
         int32_t near_lossless;
         check_jpegls_errc(charls_jpegls_decoder_get_near_lossless(decoder_.get(), component, &near_lossless));
@@ -511,7 +511,7 @@ public:
     /// </summary>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The value of the interleave mode.</returns>
-    CHARLS_CHECK_RETURN charls::interleave_mode interleave_mode() const
+    [[nodiscard]] charls::interleave_mode interleave_mode() const
     {
         charls::interleave_mode interleave_mode;
         check_jpegls_errc(charls_jpegls_decoder_get_interleave_mode(decoder_.get(), &interleave_mode));
@@ -523,7 +523,7 @@ public:
     /// </summary>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The values of the JPEG-LS preset coding parameters.</returns>
-    CHARLS_CHECK_RETURN jpegls_pc_parameters preset_coding_parameters() const
+    [[nodiscard]] jpegls_pc_parameters preset_coding_parameters() const
     {
         jpegls_pc_parameters preset_coding_parameters;
         check_jpegls_errc(charls_jpegls_decoder_get_preset_coding_parameters(decoder_.get(), 0, &preset_coding_parameters));
@@ -535,7 +535,7 @@ public:
     /// </summary>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The value of the color transformation.</returns>
-    CHARLS_CHECK_RETURN charls::color_transformation color_transformation() const
+    [[nodiscard]] charls::color_transformation color_transformation() const
     {
         charls::color_transformation color_transformation;
         check_jpegls_errc(charls_jpegls_decoder_get_color_transformation(decoder_.get(), &color_transformation));
@@ -549,7 +549,7 @@ public:
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The required size in bytes of the destination buffer.</returns>
-    CHARLS_CHECK_RETURN size_t destination_size(const uint32_t stride = 0) const
+    [[nodiscard]] size_t destination_size(const uint32_t stride = 0) const
     {
         size_t size_in_bytes;
         check_jpegls_errc(charls_jpegls_decoder_get_destination_size(decoder_.get(), stride, &size_in_bytes));
@@ -594,7 +594,7 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>Container with the decoded data.</returns>
     template<typename Container, typename T = typename Container::value_type>
-    CHARLS_CHECK_RETURN Container decode(const uint32_t stride = 0) const
+    [[nodiscard]] Container decode(const uint32_t stride = 0) const
     {
         Container destination(destination_size() / sizeof(typename Container::value_type));
 
@@ -640,7 +640,7 @@ public:
     }
 
 private:
-    CHARLS_CHECK_RETURN static charls_jpegls_decoder* create_decoder()
+    [[nodiscard]] static charls_jpegls_decoder* create_decoder()
     {
         charls_jpegls_decoder* decoder{charls_jpegls_decoder_create()};
         if (!decoder)

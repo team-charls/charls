@@ -281,7 +281,7 @@ template<int Bits, typename T>
 constexpr bool is_uint_v = sizeof(T) == (Bits / 8) && std::is_integral<T>::value && !std::is_signed<T>::value;
 
 template<typename T>
-CHARLS_CHECK_RETURN auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<16, T>, uint16_t>
+[[nodiscard]] auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<16, T>, uint16_t>
 {
 #ifdef _MSC_VER
     return _byteswap_ushort(value);
@@ -292,7 +292,7 @@ CHARLS_CHECK_RETURN auto byte_swap(const T value) noexcept -> std::enable_if_t<i
 }
 
 template<typename T>
-CHARLS_CHECK_RETURN auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, uint32_t>
+[[nodiscard]] auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, uint32_t>
 {
 #ifdef _MSC_VER
     return _byteswap_ulong(value);
@@ -303,7 +303,7 @@ CHARLS_CHECK_RETURN auto byte_swap(const T value) noexcept -> std::enable_if_t<i
 }
 
 template<typename T>
-CHARLS_CHECK_RETURN auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, uint64_t>
+[[nodiscard]] auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, uint64_t>
 {
 #ifdef _MSC_VER
     return _byteswap_uint64(value);

@@ -76,28 +76,28 @@ private:
         position_ += count;
     }
 
-    CHARLS_CHECK_RETURN uint8_t read_byte_checked();
-    CHARLS_CHECK_RETURN uint16_t read_uint16_checked();
+    [[nodiscard]] uint8_t read_byte_checked();
+    [[nodiscard]] uint16_t read_uint16_checked();
 
-    CHARLS_CHECK_RETURN uint8_t read_byte() noexcept;
+    [[nodiscard]] uint8_t read_byte() noexcept;
     void skip_byte() noexcept;
 
-    CHARLS_CHECK_RETURN uint8_t read_uint8() noexcept
+    [[nodiscard]] uint8_t read_uint8() noexcept
     {
         return read_byte();
     }
 
-    CHARLS_CHECK_RETURN uint16_t read_uint16() noexcept;
-    CHARLS_CHECK_RETURN uint32_t read_uint24() noexcept;
-    CHARLS_CHECK_RETURN uint32_t read_uint32() noexcept;
-    CHARLS_CHECK_RETURN const_byte_span read_bytes(size_t byte_count) noexcept;
+    [[nodiscard]] uint16_t read_uint16() noexcept;
+    [[nodiscard]] uint32_t read_uint24() noexcept;
+    [[nodiscard]] uint32_t read_uint32() noexcept;
+    [[nodiscard]] const_byte_span read_bytes(size_t byte_count) noexcept;
     void read_segment_size();
     void check_minimal_segment_size(size_t minimum_size) const;
     void check_segment_size(size_t expected_size) const;
     void read_next_start_of_scan();
-    CHARLS_CHECK_RETURN jpeg_marker_code read_next_marker_code();
+    [[nodiscard]] jpeg_marker_code read_next_marker_code();
     void validate_marker_code(jpeg_marker_code marker_code) const;
-    CHARLS_CHECK_RETURN jpegls_pc_parameters get_validated_preset_coding_parameters() const;
+    [[nodiscard]] jpegls_pc_parameters get_validated_preset_coding_parameters() const;
     void read_marker_segment(jpeg_marker_code marker_code, spiff_header* header = nullptr,
                              bool* spiff_header_found = nullptr);
     void read_spiff_directory_entry(jpeg_marker_code marker_code);
@@ -115,7 +115,7 @@ private:
     void add_component(uint8_t component_id);
     void check_parameter_coherent() const;
     void check_interleave_mode(interleave_mode mode) const;
-    CHARLS_CHECK_RETURN uint32_t maximum_sample_value() const noexcept;
+    [[nodiscard]] uint32_t maximum_sample_value() const noexcept;
     void skip_remaining_segment_data() noexcept;
     void check_frame_info() const;
     void frame_info_height(uint32_t height);

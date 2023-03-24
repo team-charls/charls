@@ -14,7 +14,6 @@
 #include <algorithm>
 #include <array>
 #include <memory>
-#include <tuple>
 
 namespace charls {
 
@@ -179,7 +178,7 @@ void jpeg_stream_reader::read_next_start_of_scan()
 }
 
 
-USE_DECL_ANNOTATIONS jpeg_marker_code jpeg_stream_reader::read_next_marker_code()
+jpeg_marker_code jpeg_stream_reader::read_next_marker_code()
 {
     auto byte{read_byte_checked()};
     if (UNLIKELY(byte != jpeg_marker_start_byte))
@@ -263,7 +262,7 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
 }
 
 
-USE_DECL_ANNOTATIONS jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters() const
+jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters() const
 {
     jpegls_pc_parameters preset_coding_parameters;
 
@@ -546,7 +545,7 @@ void jpeg_stream_reader::read_start_of_scan_segment()
 }
 
 
-USE_DECL_ANNOTATIONS uint8_t jpeg_stream_reader::read_byte_checked()
+uint8_t jpeg_stream_reader::read_byte_checked()
 {
     if (UNLIKELY(position_ == end_position_))
         throw_jpegls_error(jpegls_errc::source_buffer_too_small);
@@ -555,7 +554,7 @@ USE_DECL_ANNOTATIONS uint8_t jpeg_stream_reader::read_byte_checked()
 }
 
 
-USE_DECL_ANNOTATIONS uint16_t jpeg_stream_reader::read_uint16_checked()
+uint16_t jpeg_stream_reader::read_uint16_checked()
 {
     if (UNLIKELY(position_ + sizeof(uint16_t) > end_position_))
         throw_jpegls_error(jpegls_errc::source_buffer_too_small);
@@ -564,7 +563,7 @@ USE_DECL_ANNOTATIONS uint16_t jpeg_stream_reader::read_uint16_checked()
 }
 
 
-USE_DECL_ANNOTATIONS uint8_t jpeg_stream_reader::read_byte() noexcept
+uint8_t jpeg_stream_reader::read_byte() noexcept
 {
     ASSERT(position_ != end_position_);
 
@@ -580,7 +579,7 @@ void jpeg_stream_reader::skip_byte() noexcept
 }
 
 
-USE_DECL_ANNOTATIONS uint16_t jpeg_stream_reader::read_uint16() noexcept
+uint16_t jpeg_stream_reader::read_uint16() noexcept
 {
     ASSERT(position_ + sizeof(uint16_t) <= end_position_);
 
@@ -590,14 +589,14 @@ USE_DECL_ANNOTATIONS uint16_t jpeg_stream_reader::read_uint16() noexcept
 }
 
 
-USE_DECL_ANNOTATIONS uint32_t jpeg_stream_reader::read_uint24() noexcept
+uint32_t jpeg_stream_reader::read_uint24() noexcept
 {
     const uint32_t value{static_cast<uint32_t>(read_uint8()) << 16U};
     return value + read_uint16();
 }
 
 
-USE_DECL_ANNOTATIONS uint32_t jpeg_stream_reader::read_uint32() noexcept
+uint32_t jpeg_stream_reader::read_uint32() noexcept
 {
     ASSERT(position_ + sizeof(uint32_t) <= end_position_);
 
@@ -607,7 +606,7 @@ USE_DECL_ANNOTATIONS uint32_t jpeg_stream_reader::read_uint32() noexcept
 }
 
 
-USE_DECL_ANNOTATIONS const_byte_span jpeg_stream_reader::read_bytes(const size_t byte_count) noexcept
+const_byte_span jpeg_stream_reader::read_bytes(const size_t byte_count) noexcept
 {
     ASSERT(position_ + byte_count <= end_position_);
 
@@ -763,7 +762,7 @@ void jpeg_stream_reader::check_interleave_mode(const interleave_mode mode) const
 }
 
 
-USE_DECL_ANNOTATIONS uint32_t jpeg_stream_reader::maximum_sample_value() const noexcept
+uint32_t jpeg_stream_reader::maximum_sample_value() const noexcept
 {
     if (preset_coding_parameters_.maximum_sample_value != 0)
         return static_cast<uint32_t>(preset_coding_parameters_.maximum_sample_value);

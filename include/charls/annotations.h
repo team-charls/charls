@@ -19,11 +19,10 @@
 #define CHARLS_RETURN_TYPE_SUCCESS(expr) _Return_type_success_(expr)
 #define CHARLS_RET_MAY_BE_NULL _Ret_maybenull_
 
-// When possible use [[nodiscard]] as this can by handled by all C++17 compilers.
-#if defined(__cplusplus) && __cplusplus >= 201703
+#if defined(__cplusplus)
 #define CHARLS_CHECK_RETURN [[nodiscard]]
 #else
-// Use MSVC specific solution for C
+// Use MSVC specific solution for C ([[nodiscard]] required C23)
 #define CHARLS_CHECK_RETURN _Check_return_
 #endif
 
@@ -41,10 +40,10 @@
 #define CHARLS_RETURN_TYPE_SUCCESS(expr)
 #define CHARLS_RET_MAY_BE_NULL
 
-// When possible use [[nodiscard]] as this can by handled by all C++17 compilers.
-#if defined(__cplusplus) && __cplusplus >= 201703
+#if defined(__cplusplus)
     #define CHARLS_CHECK_RETURN [[nodiscard]]
 #else
+    //  Use GCC/clang specific solution for C ([[nodiscard]] required C23)
     #if defined(__GNUC__)
         #define CHARLS_CHECK_RETURN __attribute__((warn_unused_result))
     #else
