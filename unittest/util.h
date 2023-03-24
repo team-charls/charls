@@ -12,35 +12,6 @@
 #include <vector>
 
 
-// clang-format off
-#ifdef __clang__
-#define DISABLE_DEPRECATED_WARNING \
-    _Pragma("clang diagnostic push") \
-    _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")
-#elif defined(__GNUC__) || defined(__GNUG__)
-#define DISABLE_DEPRECATED_WARNING \
-    _Pragma("GCC diagnostic push") \
-    _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-#elif defined(_MSC_VER)
-#define DISABLE_DEPRECATED_WARNING \
-    __pragma(warning(push)) \
-    __pragma(warning(disable : 4996)) // was declared deprecated
-#else
-#define DISABLE_DEPRECATED_WARNING
-#endif
-// clang-format on
-
-#ifdef __clang__
-#define RESTORE_DEPRECATED_WARNING _Pragma("clang diagnostic pop")
-#elif defined(__GNUC__) || defined(__GNUG__)
-#define RESTORE_DEPRECATED_WARNING _Pragma("GCC diagnostic pop")
-#elif defined(_MSC_VER)
-#define RESTORE_DEPRECATED_WARNING __pragma(warning(pop))
-#else
-#define RESTORE_DEPRECATED_WARNING
-#endif
-
-
 namespace charls { namespace test {
 
 std::vector<uint8_t> read_file(const char* filename);
@@ -51,7 +22,6 @@ charls_test::portable_anymap_file read_anymap_reference_file(const char* filenam
 std::vector<uint8_t> create_test_spiff_header(uint8_t high_version = 2, uint8_t low_version = 0,
                                               bool end_of_directory = true, uint8_t component_count = 3);
 std::vector<uint8_t> create_noise_image_16_bit(size_t pixel_count, int bit_count, uint32_t seed);
-void test_round_trip_legacy(const std::vector<uint8_t>& source, const JlsParameters& params);
 bool verify_encoded_bytes(const std::vector<uint8_t>& uncompressed_source, const std::vector<uint8_t>& encoded_source);
 void verify_decoded_bytes(interleave_mode interleave_mode, const frame_info& frame_info,
                           const std::vector<uint8_t>& uncompressed_data, size_t destination_stride,

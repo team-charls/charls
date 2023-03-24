@@ -173,38 +173,6 @@ vector<uint8_t> create_noise_image_16_bit(const size_t pixel_count, const int bi
     return buffer;
 }
 
-void test_round_trip_legacy(const vector<uint8_t>& source, const JlsParameters& params)
-{
-    // ReSharper disable CppDeprecatedEntity
-    DISABLE_DEPRECATED_WARNING
-
-    vector<uint8_t> encoded_buffer(params.height * params.width * params.components * params.bitsPerSample / 4);
-    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width *
-                                   bit_to_byte_count(params.bitsPerSample) * params.components);
-
-    size_t compressed_length{};
-    auto error{JpegLsEncode(encoded_buffer.data(), encoded_buffer.size(), &compressed_length, source.data(), source.size(),
-                            &params, nullptr)};
-    Assert::AreEqual(jpegls_errc::success, error);
-
-    error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_buffer.data(), compressed_length, nullptr,
-                         nullptr);
-    Assert::AreEqual(jpegls_errc::success, error);
-
-    const uint8_t* byte_out{decoded_buffer.data()};
-    for (size_t i{}; i != decoded_buffer.size(); ++i)
-    {
-        if (source[i] != byte_out[i])
-        {
-            Assert::IsTrue(false);
-            break;
-        }
-    }
-
-    // ReSharper restore CppDeprecatedEntity
-    RESTORE_DEPRECATED_WARNING
-}
-
 bool verify_encoded_bytes(const vector<uint8_t>& uncompressed_source, const vector<uint8_t>& encoded_source)
 {
     const jpegls_decoder decoder{encoded_source, true};

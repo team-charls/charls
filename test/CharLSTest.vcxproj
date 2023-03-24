@@ -176,8 +176,6 @@
   <ItemGroup>
     <ClCompile Include="bitstreamdamage.cpp" />
     <ClCompile Include="compliance.cpp" />
-    <ClCompile Include="dicomsamples.cpp" />
-    <ClCompile Include="legacy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="performance.cpp" />
     <ClCompile Include="util.cpp" />
@@ -185,8 +183,6 @@
   <ItemGroup>
     <ClInclude Include="bitstreamdamage.h" />
     <ClInclude Include="compliance.h" />
-    <ClInclude Include="dicomsamples.h" />
-    <ClInclude Include="legacy.h" />
     <ClInclude Include="portable_anymap_file.h" />
     <ClInclude Include="performance.h" />
     <ClInclude Include="util.h" />

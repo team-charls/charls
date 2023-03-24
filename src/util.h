@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "charls/annotations.h"
 #include "charls/jpegls_error.h"
 
 #include "byte_span.h"
@@ -98,7 +97,7 @@ inline jpegls_errc to_jpegls_errc() noexcept
 {
     try
     {
-        // re-trow the exception.
+        // re-throw the exception.
         throw;
     }
     catch (const jpegls_error& error)
@@ -113,43 +112,6 @@ inline jpegls_errc to_jpegls_errc() noexcept
     {
         return jpegls_errc::unexpected_failure;
     }
-}
-
-inline void clear_error_message(CHARLS_OUT_OPT char* error_message) noexcept
-{
-    if (error_message)
-    {
-        error_message[0] = 0;
-    }
-}
-
-
-/// <summary>
-/// Cross platform safe version of strcpy.
-/// </summary>
-inline void string_copy(CHARLS_IN_Z const char* source, CHARLS_OUT_WRITES_Z(size_in_bytes) char* destination,
-                        const size_t size_in_bytes) noexcept
-{
-    ASSERT(strlen(source) < size_in_bytes && "String will be truncated");
-
-#if defined(__STDC_SECURE_LIB__) && defined(__STDC_WANT_SECURE_LIB__) && __STDC_WANT_SECURE_LIB__ == 1
-    constexpr size_t truncate{static_cast<size_t>(-1)};
-    strncpy_s(destination, size_in_bytes, source, truncate);
-#else
-    strncpy(destination, source, size_in_bytes);
-    destination[size_in_bytes - 1] = 0;
-#endif
-}
-
-inline jpegls_errc set_error_message(const jpegls_errc error,
-                                     CHARLS_OUT_WRITES_Z(ErrorMessageSize) char* error_message) noexcept
-{
-    if (error_message)
-    {
-        string_copy(charls_get_error_message(error), error_message, ErrorMessageSize);
-    }
-
-    return error;
 }
 
 

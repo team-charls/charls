@@ -9,8 +9,6 @@
 
 #include "bitstreamdamage.h"
 #include "compliance.h"
-#include "dicomsamples.h"
-#include "legacy.h"
 #include "performance.h"
 
 #include <algorithm>
@@ -232,24 +230,6 @@ void test_noise_image()
 }
 
 
-void test_noise_image_with_custom_reset()
-{
-    const rect_size size{512, 512};
-    constexpr int bit_depth{16};
-    const vector<uint8_t> noise_bytes{make_some_noise16_bit(size.cx * size.cy, bit_depth, 21344)};
-
-    JlsParameters params{};
-    params.components = 1;
-    params.bitsPerSample = bit_depth;
-    params.height = static_cast<int>(size.cy);
-    params.width = static_cast<int>(size.cx);
-    params.custom.MaximumSampleValue = (1 << bit_depth) - 1;
-    params.custom.ResetValue = 63;
-
-    test_round_trip("TestNoiseImageWithCustomReset", noise_bytes, params);
-}
-
-
 void test_fail_on_too_small_output_buffer()
 {
     const auto input_buffer{make_some_noise(static_cast<size_t>(8) * 8, 8, 21344)};
@@ -294,39 +274,6 @@ void test_bgra()
 
     transform_rgb_to_bgr(input.data(), 4, 4);
     assert::is_true(expected == input);
-}
-
-
-void test_bgr()
-{
-    const vector<uint8_t> encoded_source{read_file("test/conformance/t8c2e3.jls")};
-
-    jpegls_decoder decoder;
-    decoder.source(encoded_source);
-    decoder.read_header();
-
-    vector<uint8_t> decoded_buffer(decoder.destination_size());
-
-    // ReSharper disable CppDeprecatedEntity
-    DISABLE_DEPRECATED_WARNING
-
-    JlsParameters params{};
-    params.outputBgr = static_cast<char>(true);
-
-    const error_code error = JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_source.data(),
-                                          encoded_source.size(), &params, nullptr);
-
-    // ReSharper restore CppDeprecatedEntity
-    RESTORE_DEPRECATED_WARNING
-
-    assert::is_true(!error);
-
-    assert::is_true(decoded_buffer[0] == 0x69);
-    assert::is_true(decoded_buffer[1] == 0x77);
-    assert::is_true(decoded_buffer[2] == 0xa1);
-    assert::is_true(decoded_buffer[static_cast<size_t>(decoder.frame_info().width) * 6 + 3] == 0x2d);
-    assert::is_true(decoded_buffer[static_cast<size_t>(decoder.frame_info().width) * 6 + 4] == 0x43);
-    assert::is_true(decoded_buffer[static_cast<size_t>(decoder.frame_info().width) * 6 + 5] == 0x4d);
 }
 
 
@@ -420,40 +367,6 @@ void test_decode_bit_stream_with_unknown_jpeg_marker()
     }
 
     assert::is_true(error == jpegls_errc::unknown_jpeg_marker_found);
-}
-
-
-void test_decode_rect()
-{
-    const vector<uint8_t> encoded_source{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
-
-    const jpegls_decoder decoder{encoded_source, true};
-    vector<uint8_t> decoded_buffer(decoder.destination_size());
-
-    // ReSharper disable CppDeprecatedEntity
-    DISABLE_DEPRECATED_WARNING
-
-    constexpr JlsParameters params{};
-
-    error_code error{JpegLsDecode(decoded_buffer.data(), decoded_buffer.size(), encoded_source.data(),
-                                    encoded_source.size(), &params, nullptr)};
-    assert::is_true(!error);
-
-    constexpr JlsRect rect{128, 128, 256, 1};
-    vector<uint8_t> decoded_data(static_cast<size_t>(rect.Width) * rect.Height);
-    decoded_data.push_back(0x1f);
-
-    error = JpegLsDecodeRect(decoded_data.data(), decoded_data.size(), encoded_source.data(), encoded_source.size(), rect,
-                             nullptr, nullptr);
-
-    // ReSharper restore CppDeprecatedEntity
-    RESTORE_DEPRECATED_WARNING
-
-    assert::is_true(!error);
-
-    assert::is_true(memcmp(&decoded_buffer[rect.X + static_cast<size_t>(rect.Y) * 512], decoded_data.data(),
-                           static_cast<size_t>(rect.Width) * rect.Height) == 0);
-    assert::is_true(decoded_data[static_cast<size_t>(rect.Width) * rect.Height] == 0x1f);
 }
 
 
@@ -741,14 +654,11 @@ bool unit_test()
         test_encode_from_stream();
         test_conformance();
 
-        test_decode_rect();
-
         cout << "Test Traits\n";
         test_traits16_bit();
         test_traits8_bit();
 
         cout << "Windows bitmap BGR/BGRA output\n";
-        test_bgr();
         test_bgra();
 
         cout << "Test Small buffer\n";
@@ -763,7 +673,6 @@ bool unit_test()
         test_sample_annex_h3();
 
         test_noise_image();
-        test_noise_image_with_custom_reset();
 
         cout << "Test robustness\n";
         test_decode_bit_stream_with_no_marker_start();
@@ -771,7 +680,6 @@ bool unit_test()
         test_decode_bit_stream_with_unknown_jpeg_marker();
 
         cout << "Test Legacy API\n";
-        test_legacy_api();
 
         return true;
     }
@@ -795,7 +703,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
     if (argc == 1)
     {
         cout << "CharLS test runner.\nOptions: -unittest, -bitstreamdamage, -performance[:loop-count], "
-                "-decodeperformance[:loop-count], -decoderaw -encodepnm -decodetopnm -comparepnm -legacy\n";
+                "-decodeperformance[:loop-count], -decoderaw -encodepnm -decodetopnm -comparepnm\n";
         return EXIT_FAILURE;
     }
 
@@ -925,18 +833,6 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
             }
 
             encode_performance_tests(loop_count);
-            continue;
-        }
-
-        if (str == "-dicom")
-        {
-            test_dicom_wg4_images();
-            continue;
-        }
-
-        if (str == "-legacy")
-        {
-            test_legacy_api();
             continue;
         }
 

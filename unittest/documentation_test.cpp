@@ -7,14 +7,10 @@
 
 #include <charls/charls.h>
 
-#include <array>
 #include <tuple>
 #include <vector>
 
 #include "../test/portable_anymap_file.h"
-
-// ReSharper disable CppDeprecatedEntity
-DISABLE_DEPRECATED_WARNING
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::vector;
@@ -57,28 +53,6 @@ std::vector<uint8_t> decode_advanced(const std::vector<uint8_t>& source)
     return decoder.decode<std::vector<uint8_t>>();
 }
 
-std::vector<uint8_t> decode_simple_8_bit_monochrome_legacy(const std::vector<uint8_t>& source)
-{
-    std::array<char, ErrorMessageSize> error_message{};
-    JlsParameters parameters{};
-    auto error{JpegLsReadHeader(source.data(), source.size(), &parameters, error_message.data())};
-    if (error != CharlsApiResultType::OK)
-        throw std::runtime_error(error_message.data());
-
-    if (parameters.components != 1 || parameters.bitsPerSample != 8)
-        throw std::runtime_error("Not a 8 bit monochrome image");
-
-    const auto destination_size{static_cast<size_t>(parameters.width) * static_cast<uint32_t>(parameters.height)};
-    std::vector<uint8_t> destination(destination_size);
-
-    error = JpegLsDecode(destination.data(), destination.size(), source.data(), source.size(), &parameters,
-                         error_message.data());
-    if (error != CharlsApiResultType::OK)
-        throw std::runtime_error(error_message.data());
-
-    return destination;
-}
-
 std::vector<uint8_t> encode_simple_8_bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width,
                                                     const uint32_t height)
 {
@@ -104,29 +78,6 @@ std::vector<uint8_t> encode_advanced_8_bit_monochrome(const std::vector<uint8_t>
     return destination;
 }
 
-std::vector<uint8_t> encode_simple_8_bit_monochrome_legacy(const std::vector<uint8_t>& source, const uint32_t width,
-                                                           const uint32_t height)
-{
-    std::array<char, ErrorMessageSize> error_message{};
-    JlsParameters parameters{};
-    parameters.width = static_cast<int32_t>(width);
-    parameters.height = static_cast<int32_t>(height);
-    parameters.bitsPerSample = 8;
-    parameters.components = 1;
-
-    const size_t estimated_destination_size{static_cast<size_t>(width) * height * 1 * 1 + 1024};
-    std::vector<uint8_t> destination(estimated_destination_size);
-
-    size_t bytes_written;
-    const auto error{JpegLsEncode(destination.data(), destination.size(), &bytes_written, source.data(), source.size(),
-                                    &parameters, error_message.data())};
-    if (error != CharlsApiResultType::OK)
-        throw std::runtime_error(error_message.data());
-
-    destination.resize(bytes_written);
-    return destination;
-}
-
 } // namespace
 
 
@@ -149,14 +100,6 @@ public:
         test_decoded_data(charls_decoded, "DataFiles/tulips-gray-8bit-512-512.pgm");
     }
 
-    TEST_METHOD(call_decode_simple_8_bit_monochrome_legacy) // NOLINT
-    {
-        const vector<uint8_t> source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
-        const vector<uint8_t> charls_decoded{decode_simple_8_bit_monochrome_legacy(source)};
-
-        test_decoded_data(charls_decoded, "DataFiles/tulips-gray-8bit-512-512.pgm");
-    }
-
     TEST_METHOD(call_encode_simple_8_bit_monochrome) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/tulips-gray-8bit-512-512.pgm");
@@ -173,16 +116,6 @@ public:
         const vector<uint8_t> charls_encoded{
             encode_advanced_8_bit_monochrome(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()),
                                              static_cast<uint32_t>(reference_file.height()))};
-
-        test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
-    }
-
-    TEST_METHOD(call_encode_simple_8_bit_monochrome_legacy) // NOLINT
-    {
-        portable_anymap_file reference_file("DataFiles/tulips-gray-8bit-512-512.pgm");
-        const vector<uint8_t> charls_encoded{
-            encode_simple_8_bit_monochrome_legacy(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()),
-                                                  static_cast<uint32_t>(reference_file.height()))};
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
@@ -236,6 +169,3 @@ private:
 };
 
 }} // namespace charls::test
-
-// ReSharper restore CppDeprecatedEntity
-RESTORE_DEPRECATED_WARNING

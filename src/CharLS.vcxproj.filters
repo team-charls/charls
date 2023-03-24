@@ -122,7 +122,6 @@
     <ResourceCompile Include="charls.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="charls.def" />
     <None Include="..\doc\style_and_design.md">
       <Filter>Design</Filter>
     </None>

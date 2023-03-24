@@ -420,21 +420,6 @@ enum class CHARLS_NO_DISCARD jpegls_errc
     /// This error is returned when the stream contains an invalid JPEG-LS preset parameters segment.
     /// </summary>
     invalid_parameter_jpegls_preset_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS,
-
-    // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17
-    // extension.
-    OK = success,
-    InvalidJlsParameters = invalid_argument,
-    ParameterValueNotSupported = parameter_value_not_supported,
-    UncompressedBufferTooSmall = destination_buffer_too_small,
-    CompressedBufferTooSmall = source_buffer_too_small,
-    InvalidCompressedData = invalid_encoded_data,
-    TooMuchCompressedData = too_much_encoded_data,
-    UnsupportedColorTransform = color_transform_not_supported,
-    UnsupportedEncoding = encoding_not_supported,
-    UnknownJpegMarker = unknown_jpeg_marker_found,
-    MissingJpegMarkerStart = jpeg_marker_start_byte_not_found,
-    UnexpectedFailure = unexpected_failure
 };
 
 
@@ -457,12 +442,6 @@ enum class interleave_mode
     /// The data is encoded and stored by sample. For RGB color images this is the format like RGBRGBRGB.
     /// </summary>
     sample = impl::CHARLS_INTERLEAVE_MODE_SAMPLE,
-
-    // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17
-    // extension.
-    None = none,
-    Line = line,
-    Sample = sample
 };
 
 
@@ -559,13 +538,6 @@ enum class color_transformation
     /// G = G + (R + B) / 4
     /// </summary>
     hp3 = impl::CHARLS_COLOR_TRANSFORMATION_HP3,
-
-    // Legacy enumerator names, will be removed in next major release. Not tagged with [[deprecated]] as that is a C++17
-    // extension.
-    None = none,
-    HP1 = hp1,
-    HP2 = hp2,
-    HP3 = hp3
 };
 
 
@@ -830,11 +802,6 @@ enum class spiff_entry_tag : uint32_t
     set_reference = impl::CHARLS_SPIFF_ENTRY_TAG_SET_REFERENCE
 };
 
-// Legacy type names, will be removed in next major release.
-using ApiResult CHARLS_DEPRECATED = jpegls_errc;
-using InterleaveMode CHARLS_DEPRECATED = interleave_mode;
-using ColorTransformation CHARLS_DEPRECATED = color_transformation;
-
 } // namespace charls
 
 template<>
@@ -853,15 +820,6 @@ using charls_spiff_compression_type = charls::spiff_compression_type;
 using charls_spiff_resolution_units = charls::spiff_resolution_units;
 using charls_spiff_entry_tag = charls::spiff_entry_tag;
 
-// Legacy type names, will be removed in next major release.
-using CharlsApiResultType = charls::jpegls_errc;
-using CharlsInterleaveModeType = charls::interleave_mode;
-using CharlsColorTransformationType = charls::color_transformation;
-
-// Defines the size of the char buffer that should be passed to the legacy CharLS API to get the error message text.
-// Note: this define will be removed in the next major release as it is not defined in the charls namespace.
-CHARLS_CONSTEXPR_INLINE constexpr std::size_t ErrorMessageSize{256};
-
 #else
 
 typedef enum charls_jpegls_errc charls_jpegls_errc;
@@ -873,14 +831,6 @@ typedef int32_t charls_spiff_profile_id;
 typedef int32_t charls_spiff_color_space;
 typedef int32_t charls_spiff_compression_type;
 typedef int32_t charls_spiff_resolution_units;
-
-// Legacy enum names, will be removed in next major release.
-typedef enum charls_jpegls_errc CharlsApiResultType;
-typedef enum charls_interleave_mode CharlsInterleaveModeType;
-typedef enum charls_color_transformation CharlsColorTransformationType;
-
-// Defines the size of the char buffer that should be passed to the legacy CharLS API to get the error message text.
-#define CHARLS_ERROR_MESSAGE_SIZE 256
 
 #endif
 
@@ -977,45 +927,6 @@ struct charls_jpegls_pc_parameters CHARLS_FINAL
 };
 
 
-/// <summary>
-/// Defines the JPEG-LS preset coding parameters as defined in ISO/IEC 14495-1, C.2.4.1.1.
-/// JPEG-LS defines a default set of parameters, but custom parameters can be used.
-/// When used these parameters are written into the encoded bit stream as they are needed for the decoding process.
-/// </summary>
-struct JpegLSPresetCodingParameters
-{
-    /// <summary>
-    /// Maximum possible value for any image sample in a scan.
-    /// This must be greater than or equal to the actual maximum value for the components in a scan.
-    /// </summary>
-    int32_t MaximumSampleValue;
-
-    /// <summary>
-    /// First quantization threshold value for the local gradients.
-    /// </summary>
-    int32_t Threshold1;
-
-    /// <summary>
-    /// Second quantization threshold value for the local gradients.
-    /// </summary>
-    int32_t Threshold2;
-
-    /// <summary>
-    /// Third quantization threshold value for the local gradients.
-    /// </summary>
-    int32_t Threshold3;
-
-    /// <summary>
-    /// Value at which the counters A, B, and N are halved.
-    /// </summary>
-    int32_t ResetValue;
-};
-
-#ifndef __cplusplus
-typedef struct JpegLSPresetCodingParameters JpegLSPresetCodingParameters;
-#endif
-
-
 struct JlsRect
 {
     int32_t X;
@@ -1024,123 +935,6 @@ struct JlsRect
     int32_t Height;
 };
 
-
-/// <summary>
-/// Defines the parameters for the JPEG File Interchange Format.
-/// The format is defined in the JPEG File Interchange Format v1.02 document by Eric Hamilton.
-/// </summary>
-/// <remarks>
-/// The JPEG File Interchange Format is the de facto standard JPEG interchange format.
-/// </remarks>
-struct JfifParameters
-{
-    /// <summary>
-    /// Version of the JPEG File Interchange Format.
-    /// Should always be set to zero to not write a JFIF header (JFIF headers are replaced with SPIFF headers).
-    /// </summary>
-    int32_t version;
-
-    /// <summary>
-    /// Defines the units for the X and Y densities.
-    /// 0: no units, X and Y specify the pixel aspect ratio.
-    /// 1: X and Y are dots per inch.
-    /// 2: X and Y are dots per cm.
-    /// </summary>
-    int32_t units;
-
-    /// <summary>
-    /// Horizontal pixel density
-    /// </summary>
-    int32_t Xdensity;
-
-    /// <summary>
-    /// Vertical pixel density
-    /// </summary>
-    int32_t Ydensity;
-
-    /// <summary>
-    /// Thumbnail horizontal pixel count.
-    /// </summary>
-    int32_t Xthumbnail;
-
-    /// <summary>
-    /// Thumbnail vertical pixel count.
-    /// </summary>
-    int32_t Ythumbnail;
-
-    /// <summary>
-    /// Reference to a buffer with thumbnail pixels of size Xthumbnail * Ythumbnail * 3(RGB).
-    /// This parameter is only used when creating JPEG-LS encoded images.
-    /// </summary>
-    void* thumbnail;
-};
-
-#ifndef __cplusplus
-typedef struct JfifParameters JfifParameters;
-#endif
-
-
-struct JlsParameters
-{
-    /// <summary>
-    /// Width of the image in pixels.
-    /// This parameter is called "Number of samples per line" in the JPEG-LS standard.
-    /// </summary>
-    int32_t width;
-
-    /// <summary>
-    /// Height of the image in pixels.
-    /// This parameter is called "Number of lines" in the JPEG-LS standard.
-    /// </summary>
-    int32_t height;
-
-    /// <summary>
-    /// The number of valid bits per sample to encode.
-    /// Valid range 2 - 16. When greater than 8, pixels are assumed to stored as two bytes per sample, otherwise one byte per
-    /// sample is assumed. This parameter is called "Sample precision" in the JPEG-LS standard, often also called "Bit
-    /// Depth".
-    /// </summary>
-    int32_t bitsPerSample;
-
-    /// <summary>
-    /// The stride is the number of bytes from one row of pixels in memory to the next row of pixels in memory.
-    /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
-    /// </summary>
-    int32_t stride;
-
-    /// <summary>
-    /// The number of components.
-    /// Typical 1 for monochrome images and 3 for color images or 4 if an alpha channel is present.
-    /// Up to 255 components are supported by the JPEG-LS standard.
-    /// </summary>
-    int32_t components;
-
-    /// <summary>
-    /// Defines the allowed lossy error. Value 0 defines lossless.
-    /// </summary>
-    int32_t allowedLossyError;
-
-    /// <summary>
-    /// Determines the order of the color components in the compressed stream.
-    /// </summary>
-    CharlsInterleaveModeType interleaveMode;
-
-    /// <summary>
-    /// Color transformation used in the compressed stream. The color transformations are all lossless and
-    /// are an HP proprietary extension of the standard. Do not use the color transformations unless
-    /// you know the decoder is capable of decoding it. Color transform typically improve compression ratios only
-    /// for synthetic images (non - photo-realistic computer generated images).
-    /// </summary>
-    CharlsColorTransformationType colorTransformation;
-
-    /// <summary>
-    /// If set to true RGB images will be decoded to BGR. BGR is the standard ordering in MS Windows bitmaps.
-    /// </summary>
-    char outputBgr;
-
-    JpegLSPresetCodingParameters custom;
-    JfifParameters jfif;
-};
 
 #ifdef __cplusplus
 
@@ -1194,7 +988,6 @@ typedef struct charls_spiff_header charls_spiff_header;
 typedef struct charls_frame_info charls_frame_info;
 typedef struct charls_jpegls_pc_parameters charls_jpegls_pc_parameters;
 
-typedef struct JlsParameters JlsParameters;
 typedef struct JlsRect JlsRect;
 
 #endif

@@ -100,35 +100,25 @@ void write_file(const char* filename, const void* data, const size_t size)
     output.close(); // close explicitly to get feedback on failures.
 }
 
-void test_round_trip(const char* name, const vector<uint8_t>& decoded_buffer, const rect_size size,
+void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, const rect_size size,
                      const int bits_per_sample, const int component_count, const int loop_count)
 {
-    JlsParameters params{};
-    params.components = component_count;
-    params.bitsPerSample = bits_per_sample;
-    params.height = static_cast<int>(size.cy);
-    params.width = static_cast<int>(size.cx);
+    const auto height = static_cast<int>(size.cy);
+    const auto width = static_cast<int>(size.cx);
 
-    test_round_trip(name, decoded_buffer, params, loop_count);
-}
+    vector<uint8_t> encoded_buffer(height * width * component_count * bits_per_sample / 4);
 
+    vector<uint8_t> decoded_buffer(static_cast<size_t>(height) * width * bit_to_byte_count(bits_per_sample) *
+                                   component_count);
 
-void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, const JlsParameters& params,
-                     const int loop_count)
-{
-    vector<uint8_t> encoded_buffer(params.height * params.width * params.components * params.bitsPerSample / 4);
+    interleave_mode interleave_mode{};
+    color_transformation color_transformation{};
 
-    vector<uint8_t> decoded_buffer(static_cast<size_t>(params.height) * params.width *
-                                   bit_to_byte_count(params.bitsPerSample) * params.components);
-
-    interleave_mode interleave_mode{params.interleaveMode};
-    color_transformation color_transformation{params.colorTransformation};
-
-    if (params.components == 4)
+    if (component_count == 4)
     {
         interleave_mode = charls::interleave_mode::line;
     }
-    else if (params.components == 3)
+    else if (component_count == 3)
     {
         interleave_mode = charls::interleave_mode::line;
         color_transformation = charls::color_transformation::hp1;
@@ -142,8 +132,8 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
         {
             jpegls_encoder encoder;
             encoder.destination(encoded_buffer)
-                .frame_info({static_cast<uint32_t>(params.width), static_cast<uint32_t>(params.height), params.bitsPerSample,
-                             params.components})
+                .frame_info({static_cast<uint32_t>(width), static_cast<uint32_t>(height), bits_per_sample,
+                             component_count})
                 .interleave_mode(interleave_mode)
                 .color_transformation(color_transformation);
 
@@ -174,17 +164,16 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
 
     const auto total_decode_duration{steady_clock::now() - start};
 
-    const double bits_per_sample{1.0 * static_cast<double>(encoded_actual_size) * 8. /
-                                 (static_cast<double>(params.components) * params.height * params.width)};
+    const double bits_per_sample_f{1.0 * static_cast<double>(encoded_actual_size) * 8. /
+                                   (static_cast<double>(component_count) * height * width)};
     cout << "RoundTrip test for: " << name << "\n\r";
     const double encode_time{duration<double, milli>(total_encode_duration).count() / loop_count};
     const double decode_time{duration<double, milli>(total_decode_duration).count() / loop_count};
-    const double symbol_rate{
-        (static_cast<double>(params.components) * params.height * params.width) / (1000.0 * decode_time)};
+    const double symbol_rate{(static_cast<double>(component_count) * height * width) / (1000.0 * decode_time)};
 
-    cout << "Size:" << setw(10) << params.width << "x" << params.height << setw(7) << setprecision(2)
+    cout << "Size:" << setw(10) << width << "x" << height << setw(7) << setprecision(2)
          << ", Encode time:" << encode_time << " ms, Decode time:" << decode_time
-         << " ms, Bits per sample:" << bits_per_sample << ", Decode rate:" << symbol_rate << " M/s\n";
+         << " ms, Bits per sample:" << bits_per_sample_f << ", Decode rate:" << symbol_rate << " M/s\n";
 
     const uint8_t* byte_out{decoded_buffer.data()};
     for (size_t i{}; i != decoded_buffer.size(); ++i)
