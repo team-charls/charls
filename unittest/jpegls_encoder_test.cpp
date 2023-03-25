@@ -23,7 +23,7 @@ using namespace std::string_literals;
 
 constexpr size_t serialized_spiff_header_size{34};
 
-namespace charls { namespace test {
+namespace charls::test {
 
 TEST_CLASS(jpegls_encoder_test)
 {
@@ -1128,7 +1128,7 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_argument_stride,
-            [&encoder, &source] { ignore = encoder.encode(source, 1); });
+                                [&encoder, &source] { ignore = encoder.encode(source, 1); });
     }
 
     TEST_METHOD(encode_with_too_small_stride_interleave_sample_throws) // NOLINT
@@ -1142,7 +1142,7 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_argument_stride,
-            [&encoder, &source] { ignore = encoder.encode(source, 5); });
+                                [&encoder, &source] { ignore = encoder.encode(source, 5); });
     }
 
     TEST_METHOD(encode_1_component_4_bit_with_high_bits_set) // NOLINT
@@ -1691,4 +1691,4 @@ private:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test

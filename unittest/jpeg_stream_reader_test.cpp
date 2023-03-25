@@ -18,7 +18,7 @@ using std::array;
 using std::numeric_limits;
 using std::vector;
 
-namespace charls { namespace test {
+namespace charls::test {
 
 TEST_CLASS(jpeg_stream_reader_test)
 {
@@ -616,14 +616,14 @@ public:
         callback_output actual;
 
         reader.at_application_data(
-            {[](const int32_t id, const void* data, const size_t size, void* user_context) noexcept -> int32_t {
-                 auto* actual_output{static_cast<callback_output*>(user_context)};
-                 actual_output->id = id;
-                 actual_output->data = data;
-                 actual_output->size = size;
-                 return 0;
-             },
-             &actual});
+        {[](const int32_t id, const void* data, const size_t size, void* user_context) noexcept -> int32_t {
+             auto* actual_output{static_cast<callback_output*>(user_context)};
+             actual_output->id = id;
+             actual_output->data = data;
+             actual_output->size = size;
+             return 0;
+         },
+         &actual});
 
         reader.read_header();
 
@@ -652,14 +652,14 @@ public:
         callback_output actual;
 
         reader.at_application_data(
-            {[](const int32_t id, const void* data, const size_t size, void* user_context) noexcept -> int32_t {
-                 auto* actual_output{static_cast<callback_output*>(user_context)};
-                 actual_output->id = id;
-                 actual_output->data = data;
-                 actual_output->size = size;
-                 return 0;
-             },
-             &actual});
+        {[](const int32_t id, const void* data, const size_t size, void* user_context) noexcept -> int32_t {
+             auto* actual_output{static_cast<callback_output*>(user_context)};
+             actual_output->id = id;
+             actual_output->data = data;
+             actual_output->size = size;
+             return 0;
+         },
+         &actual});
 
         reader.read_header();
 
@@ -762,4 +762,4 @@ private:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test

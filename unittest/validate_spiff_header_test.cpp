@@ -17,7 +17,7 @@ MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere t
 #pragma clang diagnostic ignored "-Wnonnull"
 #endif
 
-namespace charls { namespace test {
+namespace charls::test {
 
 namespace {
 
@@ -211,6 +211,6 @@ public:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test
 
 MSVC_WARNING_UNSUPPRESS()

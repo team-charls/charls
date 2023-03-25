@@ -21,7 +21,7 @@ using std::uniform_int_distribution;
 using std::vector;
 using namespace charls_test;
 
-namespace charls { namespace test {
+namespace charls::test {
 
 namespace {
 
@@ -179,9 +179,9 @@ bool verify_encoded_bytes(const vector<uint8_t>& uncompressed_source, const vect
 
     jpegls_encoder encoder;
     encoder.frame_info(decoder.frame_info())
-        .interleave_mode(decoder.interleave_mode())
-        .near_lossless(decoder.near_lossless())
-        .preset_coding_parameters(decoder.preset_coding_parameters());
+           .interleave_mode(decoder.interleave_mode())
+           .near_lossless(decoder.near_lossless())
+           .preset_coding_parameters(decoder.preset_coding_parameters());
 
     vector<uint8_t> our_encoded_bytes(encoded_source.size() + 16);
     encoder.destination(our_encoded_bytes);
@@ -289,5 +289,4 @@ void test_compliance(const vector<uint8_t>& encoded_source, const vector<uint8_t
     }
 }
 
-
-}} // namespace charls::test
+} // namespace charls::test

@@ -8,7 +8,7 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::numeric_limits;
 
-namespace charls { namespace test {
+namespace charls::test {
 
 namespace {
 
@@ -37,7 +37,8 @@ void call_and_compare_log2_floor(const uint32_t arg)
     Assert::AreEqual(expected, log2_floor(arg));
 }
 
-}
+} // namespace
+
 
 TEST_CLASS(util_test)
 {
@@ -79,4 +80,4 @@ public:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test

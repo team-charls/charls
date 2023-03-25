@@ -19,7 +19,7 @@ MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere t
 #pragma clang diagnostic ignored "-Wnonnull"
 #endif
 
-namespace charls { namespace test {
+namespace charls::test {
 
 TEST_CLASS(charls_jpegls_encoder_test)
 {
@@ -220,7 +220,7 @@ public:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test
 
 #if defined(__clang__)
 #pragma clang diagnostic pop

@@ -5,7 +5,7 @@
 
 #include "../src/encoder_strategy.h"
 
-namespace charls { namespace test {
+namespace charls::test {
 
 class encoder_strategy_tester final : encoder_strategy
 {
@@ -44,7 +44,7 @@ public:
         flush();
     }
 
-    size_t get_length_forward() const noexcept
+    [[nodiscard]] size_t get_length_forward() const noexcept
     {
         return get_length();
     }
@@ -55,4 +55,4 @@ public:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test

@@ -16,7 +16,7 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::vector;
 using namespace charls_test;
 
-namespace charls { namespace test {
+namespace charls::test {
 
 namespace {
 
@@ -27,8 +27,8 @@ std::vector<uint8_t> decode_simple_8_bit_monochrome(const std::vector<uint8_t>& 
 {
     std::vector<uint8_t> destination;
 
-    charls::frame_info frame_info;
-    std::tie(frame_info, std::ignore) = charls::jpegls_decoder::decode(source, destination);
+    frame_info frame_info;
+    std::tie(frame_info, std::ignore) = jpegls_decoder::decode(source, destination);
 
     if (frame_info.component_count != 1 || frame_info.bits_per_sample != 8)
         throw std::runtime_error("Not a 8 bit monochrome image");
@@ -38,10 +38,10 @@ std::vector<uint8_t> decode_simple_8_bit_monochrome(const std::vector<uint8_t>& 
 
 std::vector<uint8_t> decode_advanced(const std::vector<uint8_t>& source)
 {
-    const charls::jpegls_decoder decoder{source, true};
+    const jpegls_decoder decoder{source, true};
 
     // Standalone JPEG-LS files may have a SPIFF header (color space info, etc.)
-    if (decoder.spiff_header_has_value() && decoder.spiff_header().color_space != charls::spiff_color_space::grayscale)
+    if (decoder.spiff_header_has_value() && decoder.spiff_header().color_space != spiff_color_space::grayscale)
         throw std::runtime_error("Not a grayscale image");
 
     // After read_header() other properties can also be retrieved.
@@ -58,19 +58,19 @@ std::vector<uint8_t> encode_simple_8_bit_monochrome(const std::vector<uint8_t>& 
 {
     constexpr auto bits_per_sample{8};
     constexpr auto component_count{1};
-    return charls::jpegls_encoder::encode(source, {width, height, bits_per_sample, component_count});
+    return jpegls_encoder::encode(source, {width, height, bits_per_sample, component_count});
 }
 
 std::vector<uint8_t> encode_advanced_8_bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width,
                                                       const uint32_t height)
 {
-    charls::jpegls_encoder encoder;
+    jpegls_encoder encoder;
     encoder.frame_info({width, height, 8, 1});
 
     std::vector<uint8_t> destination(encoder.estimated_destination_size());
     encoder.destination(destination);
 
-    encoder.write_standard_spiff_header(charls::spiff_color_space::grayscale);
+    encoder.write_standard_spiff_header(spiff_color_space::grayscale);
 
     const size_t bytes_written{encoder.encode(source)};
     destination.resize(bytes_written);
@@ -168,4 +168,4 @@ private:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test
