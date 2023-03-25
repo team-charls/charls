@@ -172,7 +172,7 @@ namespace charls {
 /// Defines the result values that are returned by the CharLS API functions.
 /// </summary>
 CHARLS_RETURN_TYPE_SUCCESS(return == 0)
-enum class CHARLS_NO_DISCARD jpegls_errc
+enum class [[nodiscard]] jpegls_errc
 {
     /// <summary>
     /// The operation completed without errors.
@@ -491,7 +491,7 @@ constexpr encoding_options operator|(const encoding_options lhs, const encoding_
     return static_cast<encoding_options>(static_cast<T>(lhs) | static_cast<T>(rhs));
 }
 
-CHARLS_CONSTEXPR encoding_options& operator|=(encoding_options& lhs, const encoding_options rhs) noexcept
+constexpr encoding_options& operator|=(encoding_options& lhs, const encoding_options rhs) noexcept
 {
     lhs = lhs | rhs;
     return lhs;

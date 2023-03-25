@@ -64,7 +64,7 @@ inline int32_t get_predicted_value(const int32_t ra, const int32_t rb, const int
 /// This is the optimized inverse algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
 /// It will map unsigned values back to signed values.
 /// </summary>
-CHARLS_CONSTEXPR int32_t unmap_error_value(const int32_t mapped_error) noexcept
+constexpr int32_t unmap_error_value(const int32_t mapped_error) noexcept
 {
     const int32_t sign{static_cast<int32_t>(static_cast<uint32_t>(mapped_error) << (int32_t_bit_count - 1)) >>
                        (int32_t_bit_count - 1)};
@@ -76,7 +76,7 @@ CHARLS_CONSTEXPR int32_t unmap_error_value(const int32_t mapped_error) noexcept
 /// This is the algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
 /// It will map signed values to unsigned values. It has been optimized to prevent branching.
 /// </summary>
-CHARLS_CONSTEXPR int32_t map_error_value(const int32_t error_value) noexcept
+constexpr int32_t map_error_value(const int32_t error_value) noexcept
 {
     ASSERT(error_value <= std::numeric_limits<int32_t>::max() / 2);
 
