@@ -14,7 +14,7 @@ namespace charls {
 template<typename T>
 struct transform_none_impl
 {
-    static_assert(std::is_integral<T>::value, "Integral required.");
+    static_assert(std::is_integral_v<T>, "Integral required.");
 
     using size_type = T;
 
@@ -28,7 +28,7 @@ struct transform_none_impl
 template<typename T>
 struct transform_none final : transform_none_impl<T>
 {
-    static_assert(std::is_integral<T>::value, "Integral required.");
+    static_assert(std::is_integral_v<T>, "Integral required.");
 
     using inverse = transform_none_impl<T>;
 };
@@ -37,7 +37,7 @@ struct transform_none final : transform_none_impl<T>
 template<typename T>
 struct transform_hp1 final
 {
-    static_assert(std::is_integral<T>::value, "Integral required.");
+    static_assert(std::is_integral_v<T>, "Integral required.");
 
     using size_type = T;
 
@@ -70,7 +70,7 @@ private:
 template<typename T>
 struct transform_hp2 final
 {
-    static_assert(std::is_integral<T>::value, "Integral required.");
+    static_assert(std::is_integral_v<T>, "Integral required.");
 
     using size_type = T;
 
@@ -103,7 +103,7 @@ private:
 template<typename T>
 struct transform_hp3 final
 {
-    static_assert(std::is_integral<T>::value, "Integral required.");
+    static_assert(std::is_integral_v<T>, "Integral required.");
 
     using size_type = T;
 

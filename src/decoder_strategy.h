@@ -81,7 +81,7 @@ public:
             impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
     }
 
-    const uint8_t* get_cur_byte_pos() const noexcept
+    [[nodiscard]] const uint8_t* get_cur_byte_pos() const noexcept
     {
         int32_t valid_bits{valid_bits_};
         const uint8_t* compressed_bytes{position_};
@@ -162,8 +162,7 @@ public:
 
     FORCE_INLINE int32_t read_high_bits()
     {
-        const int32_t count{peek_0_bits()};
-        if (count >= 0)
+        if (const int32_t count{peek_0_bits()}; count >= 0)
         {
             skip(count + 1);
             return count;

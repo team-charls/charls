@@ -20,12 +20,12 @@ struct golomb_code final
     {
     }
 
-    int32_t value() const noexcept
+    [[nodiscard]] int32_t value() const noexcept
     {
         return value_;
     }
 
-    uint32_t length() const noexcept
+    [[nodiscard]] uint32_t length() const noexcept
     {
         return length_;
     }
@@ -53,7 +53,7 @@ public:
         }
     }
 
-    FORCE_INLINE const golomb_code& get(const uint32_t value) const noexcept
+    [[nodiscard]] FORCE_INLINE const golomb_code& get(const uint32_t value) const noexcept
     {
         return types_[value];
     }

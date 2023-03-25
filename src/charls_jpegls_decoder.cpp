@@ -44,13 +44,13 @@ struct charls_jpegls_decoder final
         state_ = state::header_read;
     }
 
-    charls::frame_info frame_info() const
+    [[nodiscard]] charls::frame_info frame_info() const
     {
         check_operation(state_ >= state::header_read);
         return reader_.frame_info();
     }
 
-    int32_t near_lossless(int32_t /*component*/ = 0) const
+    [[nodiscard]] int32_t near_lossless(int32_t /*component*/ = 0) const
     {
         check_operation(state_ >= state::header_read);
 
@@ -58,7 +58,7 @@ struct charls_jpegls_decoder final
         return reader_.parameters().near_lossless;
     }
 
-    charls::interleave_mode interleave_mode() const
+    [[nodiscard]] charls::interleave_mode interleave_mode() const
     {
         check_operation(state_ >= state::header_read);
 
@@ -67,42 +67,42 @@ struct charls_jpegls_decoder final
         return reader_.parameters().interleave_mode;
     }
 
-    charls::color_transformation color_transformation() const
+    [[nodiscard]] charls::color_transformation color_transformation() const
     {
         check_operation(state_ >= state::header_read);
         return reader_.parameters().transformation;
     }
 
-    const jpegls_pc_parameters& preset_coding_parameters() const
+    [[nodiscard]] const jpegls_pc_parameters& preset_coding_parameters() const
     {
         check_operation(state_ >= state::header_read);
         return reader_.preset_coding_parameters();
     }
 
-    size_t destination_size(const size_t stride) const
+    [[nodiscard]] size_t destination_size(const size_t stride) const
     {
-        const charls::frame_info info{frame_info()};
+        const auto [width, height, bits_per_sample, component_count]{frame_info()};
 
         if (stride == auto_calculate_stride)
         {
-            return checked_mul(checked_mul(checked_mul(info.component_count, info.height), info.width),
-                               bit_to_byte_count(info.bits_per_sample));
+            return checked_mul(checked_mul(checked_mul(component_count, height), width),
+                               bit_to_byte_count(bits_per_sample));
         }
 
         switch (interleave_mode())
         {
         case charls::interleave_mode::none: {
-            const size_t minimum_stride{static_cast<size_t>(info.width) * bit_to_byte_count(info.bits_per_sample)};
+            const size_t minimum_stride{static_cast<size_t>(width) * bit_to_byte_count(bits_per_sample)};
             check_argument(stride >= minimum_stride, jpegls_errc::invalid_argument_stride);
-            return checked_mul(checked_mul(stride, info.component_count), info.height) - (stride - minimum_stride);
+            return checked_mul(checked_mul(stride, component_count), height) - (stride - minimum_stride);
         }
 
         case charls::interleave_mode::line:
         case charls::interleave_mode::sample: {
-            const size_t minimum_stride{static_cast<size_t>(info.width) * info.component_count *
-                                        bit_to_byte_count(info.bits_per_sample)};
+            const size_t minimum_stride{static_cast<size_t>(width) * component_count *
+                                        bit_to_byte_count(bits_per_sample)};
             check_argument(stride >= minimum_stride, jpegls_errc::invalid_argument_stride);
-            return checked_mul(stride, info.height) - (stride - minimum_stride);
+            return checked_mul(stride, height) - (stride - minimum_stride);
         }
         }
 

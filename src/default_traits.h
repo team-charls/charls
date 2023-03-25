@@ -52,35 +52,35 @@ struct default_traits final
     default_traits& operator=(const default_traits&) = delete;
     default_traits& operator=(default_traits&&) = delete;
 
-    FORCE_INLINE int32_t compute_error_value(const int32_t e) const noexcept
+    [[nodiscard]] FORCE_INLINE int32_t compute_error_value(const int32_t e) const noexcept
     {
         return modulo_range(quantize(e));
     }
 
-    FORCE_INLINE SampleType compute_reconstructed_sample(const int32_t predicted_value,
-                                                         const int32_t error_value) const noexcept
+    [[nodiscard]] FORCE_INLINE SampleType compute_reconstructed_sample(const int32_t predicted_value,
+                                                                       const int32_t error_value) const noexcept
     {
         return fix_reconstructed_value(predicted_value + dequantize(error_value));
     }
 
-    FORCE_INLINE bool is_near(const int32_t lhs, const int32_t rhs) const noexcept
+    [[nodiscard]] FORCE_INLINE bool is_near(const int32_t lhs, const int32_t rhs) const noexcept
     {
         return std::abs(lhs - rhs) <= near_lossless;
     }
 
-    bool is_near(const triplet<SampleType> lhs, const triplet<SampleType> rhs) const noexcept
+    [[nodiscard]] bool is_near(const triplet<SampleType> lhs, const triplet<SampleType> rhs) const noexcept
     {
         return std::abs(lhs.v1 - rhs.v1) <= near_lossless && std::abs(lhs.v2 - rhs.v2) <= near_lossless &&
                std::abs(lhs.v3 - rhs.v3) <= near_lossless;
     }
 
-    bool is_near(const quad<SampleType> lhs, const quad<SampleType> rhs) const noexcept
+    [[nodiscard]] bool is_near(const quad<SampleType> lhs, const quad<SampleType> rhs) const noexcept
     {
         return std::abs(lhs.v1 - rhs.v1) <= near_lossless && std::abs(lhs.v2 - rhs.v2) <= near_lossless &&
                std::abs(lhs.v3 - rhs.v3) <= near_lossless && std::abs(lhs.v4 - rhs.v4) <= near_lossless;
     }
 
-    FORCE_INLINE int32_t correct_prediction(const int32_t predicted) const noexcept
+    [[nodiscard]] FORCE_INLINE int32_t correct_prediction(const int32_t predicted) const noexcept
     {
         if ((predicted & maximum_sample_value) == predicted)
             return predicted;
@@ -92,7 +92,7 @@ struct default_traits final
     /// Returns the value of errorValue modulo RANGE. ITU.T.87, A.4.5 (code segment A.9)
     /// This ensures the error is reduced to the range (-⌊RANGE/2⌋ .. ⌈RANGE/2⌉-1)
     /// </summary>
-    FORCE_INLINE int32_t modulo_range(int32_t error_value) const noexcept
+    [[nodiscard]] FORCE_INLINE int32_t modulo_range(int32_t error_value) const noexcept
     {
         ASSERT(std::abs(error_value) <= range);
 
@@ -111,7 +111,7 @@ struct default_traits final
     }
 
 #ifndef NDEBUG
-    bool is_valid() const noexcept
+    [[nodiscard]] bool is_valid() const noexcept
     {
         if (maximum_sample_value < 1 || maximum_sample_value > std::numeric_limits<uint16_t>::max())
             return false;
@@ -124,7 +124,7 @@ struct default_traits final
 #endif
 
 private:
-    int32_t quantize(const int32_t error_value) const noexcept
+    [[nodiscard]] int32_t quantize(const int32_t error_value) const noexcept
     {
         if (error_value > 0)
             return (error_value + near_lossless) / (2 * near_lossless + 1);
@@ -132,12 +132,12 @@ private:
         return -(near_lossless - error_value) / (2 * near_lossless + 1);
     }
 
-    FORCE_INLINE int32_t dequantize(const int32_t error_value) const noexcept
+    [[nodiscard]] FORCE_INLINE int32_t dequantize(const int32_t error_value) const noexcept
     {
         return error_value * (2 * near_lossless + 1);
     }
 
-    FORCE_INLINE SampleType fix_reconstructed_value(int32_t value) const noexcept
+    [[nodiscard]] FORCE_INLINE SampleType fix_reconstructed_value(int32_t value) const noexcept
     {
         if (value < -near_lossless)
         {

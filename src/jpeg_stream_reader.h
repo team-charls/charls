@@ -30,17 +30,17 @@ public:
 
     void source(const_byte_span source) noexcept;
 
-    const charls::frame_info& frame_info() const noexcept
+    [[nodiscard]] const charls::frame_info& frame_info() const noexcept
     {
         return frame_info_;
     }
 
-    const coding_parameters& parameters() const noexcept
+    [[nodiscard]] const coding_parameters& parameters() const noexcept
     {
         return parameters_;
     }
 
-    const jpegls_pc_parameters& preset_coding_parameters() const noexcept
+    [[nodiscard]] const jpegls_pc_parameters& preset_coding_parameters() const noexcept
     {
         return preset_coding_parameters_;
     }

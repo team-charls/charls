@@ -12,8 +12,8 @@
 #include "process_line.h"
 
 #include <array>
-#include <sstream>
 #include <limits>
+#include <sstream>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
 // Note: the functions in this header could be moved into jpegls.cpp as they are only used in that file.
@@ -163,17 +163,17 @@ private:
         return parameters().interleave_mode != interleave_mode::none;
     }
 
-    const coding_parameters& parameters() const noexcept
+    [[nodiscard]] const coding_parameters& parameters() const noexcept
     {
         return Strategy::parameters_;
     }
 
-    const charls::frame_info& frame_info() const noexcept
+    [[nodiscard]] const charls::frame_info& frame_info() const noexcept
     {
         return Strategy::frame_info_;
     }
 
-    int8_t quantize_gradient_org(const int32_t di) const noexcept
+    [[nodiscard]] int8_t quantize_gradient_org(const int32_t di) const noexcept
     {
         if (di <= -t3_)
             return -4;
@@ -195,7 +195,7 @@ private:
         return 4;
     }
 
-    FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
+    [[nodiscard]] FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
     {
         ASSERT(quantize_gradient_org(di) == *(quantization_ + di));
         return *(quantization_ + di);
@@ -212,8 +212,8 @@ private:
         // for lossless mode with default parameters, we have precomputed the look up table for bit counts 8, 10, 12 and 16.
         if (traits_.near_lossless == 0 && traits_.maximum_sample_value == (1 << traits_.bits_per_pixel) - 1)
         {
-            const jpegls_pc_parameters presets{compute_default(traits_.maximum_sample_value, traits_.near_lossless)};
-            if (presets.threshold1 == t1_ && presets.threshold2 == t2_ && presets.threshold3 == t3_)
+            if (const jpegls_pc_parameters presets{compute_default(traits_.maximum_sample_value, traits_.near_lossless)};
+                presets.threshold1 == t1_ && presets.threshold2 == t2_ && presets.threshold3 == t3_)
             {
                 if (traits_.bits_per_pixel == 8)
                 {
@@ -311,8 +311,7 @@ private:
         const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
 
         int32_t error_value;
-        const golomb_code& code = decoding_tables[k].get(Strategy::peek_byte());
-        if (code.length() != 0)
+        if (const golomb_code& code = decoding_tables[k].get(Strategy::peek_byte()); code.length() != 0)
         {
             Strategy::skip(code.length());
             error_value = code.value();
@@ -364,10 +363,9 @@ private:
             rb = rd;
             rd = previous_line_[index + 1];
 
-            const int32_t qs{
-                compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
-
-            if (qs != 0)
+            if (const int32_t qs{
+                    compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
+                qs != 0)
             {
                 current_line_[index] =
                     do_regular(qs, current_line_[index], get_predicted_value(ra, rb, rc), static_cast<Strategy*>(nullptr));
@@ -397,10 +395,10 @@ private:
                                                  quantize_gradient(rc.v1 - ra.v1))};
             const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
                                                  quantize_gradient(rc.v2 - ra.v2))};
-            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
-                                                 quantize_gradient(rc.v3 - ra.v3))};
 
-            if (qs1 == 0 && qs2 == 0 && qs3 == 0)
+            if (const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
+                                                     quantize_gradient(rc.v3 - ra.v3))};
+                qs1 == 0 && qs2 == 0 && qs3 == 0)
             {
                 index += do_run_mode(index, static_cast<Strategy*>(nullptr));
             }
@@ -582,8 +580,7 @@ private:
                 }
 
                 Strategy::on_line_end(current_line_ - (static_cast<size_t>(component_count) * pixel_stride),
-                                      frame_info().width,
-                                      pixel_stride);
+                                      frame_info().width, pixel_stride);
             }
 
             if (line == frame_info().height)
@@ -636,10 +633,10 @@ private:
                                                  quantize_gradient(rc.v2 - ra.v2))};
             const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
                                                  quantize_gradient(rc.v3 - ra.v3))};
-            const int32_t qs4{compute_context_id(quantize_gradient(rd.v4 - rb.v4), quantize_gradient(rb.v4 - rc.v4),
-                                                 quantize_gradient(rc.v4 - ra.v4))};
 
-            if (qs1 == 0 && qs2 == 0 && qs3 == 0 && qs4 == 0)
+            if (const int32_t qs4{compute_context_id(quantize_gradient(rd.v4 - rb.v4), quantize_gradient(rb.v4 - rc.v4),
+                                                     quantize_gradient(rc.v4 - ra.v4))};
+                qs1 == 0 && qs2 == 0 && qs3 == 0 && qs4 == 0)
             {
                 index += do_run_mode(index, static_cast<Strategy*>(nullptr));
             }
@@ -895,7 +892,5 @@ private:
     const int8_t* quantization_{};
     std::vector<int8_t> quantization_lut_;
 };
-
-
 
 } // namespace charls
