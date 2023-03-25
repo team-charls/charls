@@ -92,13 +92,13 @@ inline bool is_valid(const jpegls_pc_parameters& pc_parameters, const int32_t ma
         return false;
 
     const jpegls_pc_parameters default_parameters{compute_default(maximum_sample_value, near_lossless)};
-    const int32_t threshold1{pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : default_parameters.threshold1};
-    if (pc_parameters.threshold2 != 0 &&
+    if (const int32_t threshold1{pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : default_parameters.threshold1};
+        pc_parameters.threshold2 != 0 &&
         (pc_parameters.threshold2 < threshold1 || pc_parameters.threshold2 > maximum_sample_value))
         return false;
 
-    const int32_t threshold2{pc_parameters.threshold2 != 0 ? pc_parameters.threshold2 : default_parameters.threshold2};
-    if (pc_parameters.threshold3 != 0 &&
+    if (const int32_t threshold2{pc_parameters.threshold2 != 0 ? pc_parameters.threshold2 : default_parameters.threshold2};
+        pc_parameters.threshold3 != 0 &&
         (pc_parameters.threshold3 < threshold2 || pc_parameters.threshold3 > maximum_sample_value))
         return false;
 

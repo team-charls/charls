@@ -277,7 +277,7 @@ template<typename TransformType>
 class process_transformed final : public process_line
 {
 public:
-    process_transformed(byte_span source_pixels, const size_t stride, const frame_info& info,
+    process_transformed(const byte_span source_pixels, const size_t stride, const frame_info& info,
                         const coding_parameters& parameters, TransformType transform) :
         frame_info_{info},
         parameters_{parameters},

@@ -26,12 +26,12 @@ public:
     }
 
     /// <summary>counter with prediction correction value</summary>
-    int32_t c() const noexcept
+    [[nodiscard]] int32_t c() const noexcept
     {
         return c_;
     }
 
-    FORCE_INLINE int32_t get_error_correction(const int32_t k) const noexcept
+    [[nodiscard]] FORCE_INLINE int32_t get_error_correction(const int32_t k) const noexcept
     {
         if (k != 0)
             return 0;
@@ -40,15 +40,15 @@ public:
     }
 
     /// <summary>Code segment A.12 – Variables update. ISO 14495-1, page 22</summary>
-    FORCE_INLINE void update_variables_and_bias(const int32_t error_value, const int32_t near_lossless, const int32_t reset_threshold)
+    FORCE_INLINE void update_variables_and_bias(const int32_t error_value, const int32_t near_lossless,
+                                                const int32_t reset_threshold)
     {
         ASSERT(n_ != 0);
 
         a_ += std::abs(error_value);
         b_ += error_value * (2 * near_lossless + 1);
 
-        constexpr int limit{65536 * 256};
-        if (UNLIKELY(a_ >= limit || std::abs(b_) >= limit))
+        if (constexpr int limit{65536 * 256}; UNLIKELY(a_ >= limit || std::abs(b_) >= limit))
             impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
         if (n_ == reset_threshold)
@@ -93,7 +93,7 @@ public:
     /// <summary>
     /// Computes the Golomb coding parameter using the algorithm as defined in ISO 14495-1, code segment A.10
     /// </summary>
-    FORCE_INLINE int32_t get_golomb_coding_parameter() const
+    [[nodiscard]] FORCE_INLINE int32_t get_golomb_coding_parameter() const
     {
         int32_t k{};
         for (; n_ << k < a_ && k < max_k_value; ++k)

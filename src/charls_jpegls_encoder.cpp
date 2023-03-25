@@ -22,7 +22,7 @@ constexpr bool has_option(encoding_options options, encoding_options option_to_t
     return (static_cast<encoding_options>(static_cast<T>(options) & static_cast<T>(option_to_test))) == option_to_test;
 }
 
-}}
+}} // namespace charls
 
 struct charls_jpegls_encoder final
 {
@@ -89,7 +89,7 @@ struct charls_jpegls_encoder final
         color_transformation_ = color_transformation;
     }
 
-    size_t estimated_destination_size() const
+    [[nodiscard]] size_t estimated_destination_size() const
     {
         check_operation(is_frame_info_configured());
         return checked_mul(checked_mul(checked_mul(frame_info_.width, frame_info_.height), frame_info_.component_count),
@@ -186,9 +186,9 @@ struct charls_jpegls_encoder final
             writer_.write_color_transform_segment(color_transformation_);
         }
 
-        const bool oversized_image{writer_.write_start_of_frame_segment(frame_info_)};
-        if (oversized_image)
+        if (writer_.write_start_of_frame_segment(frame_info_))
         {
+            // Image dimensions are oversized and need to be written to a JPEG-LS preset parameters (LSE) segment.
             writer_.write_jpegls_preset_parameters_segment(frame_info_.height, frame_info_.width);
         }
 
@@ -226,7 +226,7 @@ struct charls_jpegls_encoder final
         state_ = state::completed;
     }
 
-    size_t bytes_written() const noexcept
+    [[nodiscard]] size_t bytes_written() const noexcept
     {
         return writer_.bytes_written();
     }
@@ -250,7 +250,7 @@ private:
         completed
     };
 
-    bool is_frame_info_configured() const noexcept
+    [[nodiscard]] bool is_frame_info_configured() const noexcept
     {
         return frame_info_.width != 0;
     }
@@ -262,14 +262,14 @@ private:
 
         const auto codec{jls_codec_factory<encoder_strategy>().create_codec(
             frame_info, {near_lossless_, 0, interleave_mode_, color_transformation_}, preset_coding_parameters_)};
-        std::unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
-        const size_t bytes_written{codec->encode_scan(std::move(process_line), writer_.remaining_destination())};
+        const size_t bytes_written{
+            codec->encode_scan(codec->create_process_line(source, stride), writer_.remaining_destination())};
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
         writer_.seek(bytes_written);
     }
 
-    size_t calculate_stride() const noexcept
+    [[nodiscard]] size_t calculate_stride() const noexcept
     {
         const auto stride{static_cast<size_t>(frame_info_.width) * bit_to_byte_count(frame_info_.bits_per_sample)};
         if (interleave_mode_ == charls::interleave_mode::none)
@@ -288,14 +288,15 @@ private:
         // Stride parameter defines the number of bytes on a scan line.
         if (interleave_mode_ == charls::interleave_mode::none)
         {
-            const size_t minimum_source_size{stride * frame_info_.component_count * frame_info_.height - (stride - minimum_stride)};
-            if (UNLIKELY(source_size < minimum_source_size))
+            if (const size_t minimum_source_size{stride * frame_info_.component_count * frame_info_.height -
+                                                 (stride - minimum_stride)};
+                UNLIKELY(source_size < minimum_source_size))
                 throw_jpegls_error(jpegls_errc::invalid_argument_stride);
         }
         else
         {
-            const size_t minimum_source_size{stride * frame_info_.height - (stride - minimum_stride)};
-            if (UNLIKELY(source_size < minimum_source_size))
+            if (const size_t minimum_source_size{stride * frame_info_.height - (stride - minimum_stride)};
+                UNLIKELY(source_size < minimum_source_size))
                 throw_jpegls_error(jpegls_errc::invalid_argument_stride);
         }
     }
@@ -330,7 +331,7 @@ private:
         state_ = state::tables_and_miscellaneous;
     }
 
-    bool has_option(const charls::encoding_options option_to_test) const noexcept
+    [[nodiscard]] bool has_option(const charls::encoding_options option_to_test) const noexcept
     {
         return ::has_option(encoding_options_, option_to_test);
     }

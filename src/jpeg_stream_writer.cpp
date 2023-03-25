@@ -135,7 +135,8 @@ void jpeg_stream_writer::write_comment_segment(const const_byte_span comment)
 }
 
 
-void jpeg_stream_writer::write_application_data_segment(const int32_t application_data_id, const const_byte_span application_data)
+void jpeg_stream_writer::write_application_data_segment(const int32_t application_data_id,
+                                                        const const_byte_span application_data)
 {
     ASSERT(application_data_id >= minimum_application_data_id && application_data_id <= maximum_application_data_id);
 
@@ -201,8 +202,8 @@ void jpeg_stream_writer::write_segment_header(const jpeg_marker_code marker_code
     // Check if there is enough room in the destination to write the complete segment.
     // Other methods assume that the checking in done here and don't check again.
     constexpr size_t marker_code_size{2};
-    const size_t total_segment_size{marker_code_size + segment_length_size + data_size};
-    if (UNLIKELY(byte_offset_ + total_segment_size > destination_.size))
+    if (const size_t total_segment_size{marker_code_size + segment_length_size + data_size};
+        UNLIKELY(byte_offset_ + total_segment_size > destination_.size))
         impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
     write_marker(marker_code);

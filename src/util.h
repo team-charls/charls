@@ -240,7 +240,7 @@ struct callback_function final
 
 // A simple overload with uint64_t\uint32_t doesn't work for macOS. size_t is not the same type as uint64_t.
 template<int Bits, typename T>
-constexpr bool is_uint_v = sizeof(T) == (Bits / 8) && std::is_integral<T>::value && !std::is_signed<T>::value;
+constexpr bool is_uint_v = sizeof(T) == Bits / 8 && std::is_integral_v<T> && !std::is_signed_v<T>;
 
 template<typename T>
 [[nodiscard]] auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<16, T>, uint16_t>

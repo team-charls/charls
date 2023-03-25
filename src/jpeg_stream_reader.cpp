@@ -21,7 +21,6 @@ using impl::throw_jpegls_error;
 using std::array;
 using std::equal;
 using std::find;
-using std::unique_ptr;
 
 namespace {
 
@@ -120,8 +119,8 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
     // Compute the layout of the destination buffer.
     const size_t bytes_per_plane{stride * frame_info_.height};
     const size_t plane_count{parameters_.interleave_mode == interleave_mode::none ? frame_info_.component_count : 1U};
-    const size_t minimum_destination_size = bytes_per_plane * plane_count - (stride - minimum_stride);
-    if (UNLIKELY(destination.size < minimum_destination_size))
+    if (const size_t minimum_destination_size = bytes_per_plane * plane_count - (stride - minimum_stride);
+        UNLIKELY(destination.size < minimum_destination_size))
         throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
     for (size_t i{}; i < plane_count; ++i)
@@ -132,10 +131,10 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
             skip_bytes(destination, bytes_per_plane);
         }
 
-        const unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
-            frame_info_, parameters_, get_validated_preset_coding_parameters())};
-        unique_ptr<process_line> process_line(codec->create_process_line(destination, stride));
-        const size_t bytes_read{codec->decode_scan(std::move(process_line), const_byte_span{position_, end_position_})};
+        const auto codec{jls_codec_factory<decoder_strategy>().create_codec(frame_info_, parameters_,
+                                                                            get_validated_preset_coding_parameters())};
+        const size_t bytes_read{
+            codec->decode_scan(codec->create_process_line(destination, stride), const_byte_span{position_, end_position_})};
         advance_position(bytes_read);
         state_ = state::scan_section;
     }
@@ -146,8 +145,7 @@ void jpeg_stream_reader::read_end_of_image()
 {
     ASSERT(state_ == state::scan_section);
 
-    const jpeg_marker_code marker_code{read_next_marker_code()};
-    if (UNLIKELY(marker_code != jpeg_marker_code::end_of_image))
+    if (const jpeg_marker_code marker_code{read_next_marker_code()}; UNLIKELY(marker_code != jpeg_marker_code::end_of_image))
         throw_jpegls_error(jpegls_errc::end_of_image_marker_not_found);
 
 #ifndef NDEBUG
@@ -328,8 +326,7 @@ void jpeg_stream_reader::read_spiff_directory_entry(const jpeg_marker_code marke
         throw_jpegls_error(jpegls_errc::missing_end_of_spiff_directory);
 
     check_minimal_segment_size(4);
-    const uint32_t spiff_directory_type{read_uint32()};
-    if (spiff_directory_type == spiff_end_of_directory_entry_type)
+    if (const uint32_t spiff_directory_type{read_uint32()}; spiff_directory_type == spiff_end_of_directory_entry_type)
     {
         check_segment_size(6); // 4 + 2 for dummy SOI.
         state_ = state::image_section;
@@ -363,9 +360,9 @@ void jpeg_stream_reader::read_start_of_frame_segment()
     {
         // Component specification parameters
         add_component(read_byte()); // Ci = Component identifier
-        const uint8_t horizontal_vertical_sampling_factor{
-            read_byte()}; // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
-        if (UNLIKELY(horizontal_vertical_sampling_factor != 0x11))
+        if (const uint8_t horizontal_vertical_sampling_factor{
+                read_byte()}; // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
+            UNLIKELY(horizontal_vertical_sampling_factor != 0x11))
             throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
         skip_byte(); // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
@@ -396,8 +393,7 @@ void jpeg_stream_reader::read_application_data_segment(const jpeg_marker_code ma
 void jpeg_stream_reader::read_preset_parameters_segment()
 {
     check_minimal_segment_size(1);
-    const auto type{static_cast<jpegls_preset_parameters_type>(read_byte())};
-    switch (type)
+    switch (static_cast<jpegls_preset_parameters_type>(read_byte()))
     {
     case jpegls_preset_parameters_type::preset_coding_parameters:
         read_preset_coding_parameters();
@@ -519,8 +515,7 @@ void jpeg_stream_reader::read_start_of_scan_segment()
     for (size_t i{}; i != component_count_in_scan; ++i)
     {
         skip_byte(); // Skip scan component selector
-        const uint8_t mapping_table_selector{read_uint8()};
-        if (UNLIKELY(mapping_table_selector != 0))
+        if (const uint8_t mapping_table_selector{read_uint8()}; UNLIKELY(mapping_table_selector != 0))
             throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
     }
 
@@ -662,12 +657,11 @@ void jpeg_stream_reader::try_read_hp_color_transform_segment()
 {
     ASSERT(segment_data_.size() == 5);
 
-    const array<uint8_t, 4> mrfx_tag{'m', 'r', 'f', 'x'}; // mrfx = xfrm (in big endian) = colorXFoRM
-    if (!equal(mrfx_tag.cbegin(), mrfx_tag.cend(), read_bytes(4).begin()))
+    if (const array<uint8_t, 4> mrfx_tag{'m', 'r', 'f', 'x'}; // mrfx = xfrm (in big endian) = colorXFoRM
+        !equal(mrfx_tag.cbegin(), mrfx_tag.cend(), read_bytes(4).begin()))
         return;
 
-    const auto transformation{read_byte()};
-    switch (transformation)
+    switch (const auto transformation{read_byte()})
     {
     case static_cast<uint8_t>(color_transformation::none):
     case static_cast<uint8_t>(color_transformation::hp1):
@@ -690,16 +684,15 @@ USE_DECL_ANNOTATIONS void jpeg_stream_reader::try_read_spiff_header_segment(spif
 {
     ASSERT(segment_data_.size() >= 30);
 
-    const array<uint8_t, 6> spiff_tag{'S', 'P', 'I', 'F', 'F', 0};
-    if (!equal(spiff_tag.cbegin(), spiff_tag.cend(), read_bytes(6).begin()))
+    if (const array<uint8_t, 6> spiff_tag{'S', 'P', 'I', 'F', 'F', 0};
+        !equal(spiff_tag.cbegin(), spiff_tag.cend(), read_bytes(6).begin()))
     {
         header = {};
         spiff_header_found = false;
         return;
     }
 
-    const auto high_version{read_byte()};
-    if (high_version > spiff_major_revision_number)
+    if (const auto high_version{read_byte()}; high_version > spiff_major_revision_number)
     {
         header = {};
         spiff_header_found = false;

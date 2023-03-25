@@ -12,12 +12,12 @@ using std::error_category;
 class jpegls_category final : public error_category
 {
 public:
-    const char* name() const noexcept override
+    [[nodiscard]] const char* name() const noexcept override
     {
         return "charls::jpegls";
     }
 
-    std::string message(int error_value) const override
+    [[nodiscard]] std::string message(int error_value) const override
     {
         return charls_get_error_message(static_cast<jpegls_errc>(error_value));
     }

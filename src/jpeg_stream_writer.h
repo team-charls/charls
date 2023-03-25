@@ -79,6 +79,7 @@ public:
     /// Writes a JPEG-LS Start Of Frame (SOF-55) segment.
     /// </summary>
     /// <param name="frame">Properties of the frame.</param>
+    /// <returns>true if the image dimensions are oversized and need to be written to a JPEG-LS preset parameters (LSE) segment.</returns>
     bool write_start_of_frame_segment(const frame_info& frame);
 
     /// <summary>
@@ -93,12 +94,12 @@ public:
 
     void write_end_of_image(bool even_destination_size);
 
-    size_t bytes_written() const noexcept
+    [[nodiscard]] size_t bytes_written() const noexcept
     {
         return byte_offset_;
     }
 
-    byte_span remaining_destination() const noexcept
+    [[nodiscard]] byte_span remaining_destination() const noexcept
     {
         return {destination_.data + byte_offset_, destination_.size - byte_offset_};
     }
