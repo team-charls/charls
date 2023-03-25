@@ -444,12 +444,11 @@ private:
     }
 
     // NOLINTNEXTLINE(cppcoreguidelines-explicit-virtual-functions, hicpp-use-override, modernize-use-override, clang-diagnostic-suggest-override)
-    size_t decode_scan(std::unique_ptr<process_line> process_line, const JlsRect& rect, const_byte_span encoded_source)
+    size_t decode_scan(std::unique_ptr<process_line> process_line, const_byte_span encoded_source)
     {
         Strategy::process_line_ = std::move(process_line);
 
         const auto* scan_begin{encoded_source.begin()};
-        rect_ = rect;
 
         Strategy::initialize(encoded_source);
 
@@ -582,13 +581,9 @@ private:
                     current_line_ += pixel_stride;
                 }
 
-                // Only copy the line if it is part of the output rectangle.
-                if (static_cast<uint32_t>(rect_.Y) <= line && line < static_cast<uint32_t>(rect_.Y + rect_.Height))
-                {
-                    Strategy::on_line_end(current_line_ + rect_.X - (static_cast<size_t>(component_count) * pixel_stride),
-                                          rect_.Width,
-                                          pixel_stride);
-                }
+                Strategy::on_line_end(current_line_ - (static_cast<size_t>(component_count) * pixel_stride),
+                                      frame_info().width,
+                                      pixel_stride);
             }
 
             if (line == frame_info().height)
@@ -881,7 +876,6 @@ private:
 
     // codec parameters
     Traits traits_;
-    JlsRect rect_{};
     uint32_t width_;
     int32_t t1_{};
     int32_t t2_{};

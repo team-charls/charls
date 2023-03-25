@@ -101,17 +101,11 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
 
     check_parameter_coherent();
 
-    if (rect_.Width <= 0)
-    {
-        rect_.Width = static_cast<int32_t>(frame_info_.width);
-        rect_.Height = static_cast<int32_t>(frame_info_.height);
-    }
-
     // Compute the stride for the uncompressed destination buffer.
-    const uint32_t width{rect_.Width != 0 ? static_cast<uint32_t>(rect_.Width) : frame_info_.width};
     const size_t components_in_plane_count{
         parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<size_t>(frame_info_.component_count)};
-    const size_t minimum_stride{components_in_plane_count * width * bit_to_byte_count(frame_info_.bits_per_sample)};
+    const size_t minimum_stride{components_in_plane_count * frame_info_.width *
+                                bit_to_byte_count(frame_info_.bits_per_sample)};
 
     if (stride == auto_calculate_stride)
     {
@@ -124,7 +118,7 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
     }
 
     // Compute the layout of the destination buffer.
-    const size_t bytes_per_plane{stride * rect_.Height};
+    const size_t bytes_per_plane{stride * frame_info_.height};
     const size_t plane_count{parameters_.interleave_mode == interleave_mode::none ? frame_info_.component_count : 1U};
     const size_t minimum_destination_size = bytes_per_plane * plane_count - (stride - minimum_stride);
     if (UNLIKELY(destination.size < minimum_destination_size))
@@ -141,7 +135,7 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
         const unique_ptr<decoder_strategy> codec{jls_codec_factory<decoder_strategy>().create_codec(
             frame_info_, parameters_, get_validated_preset_coding_parameters())};
         unique_ptr<process_line> process_line(codec->create_process_line(destination, stride));
-        const size_t bytes_read{codec->decode_scan(std::move(process_line), rect_, const_byte_span{position_, end_position_})};
+        const size_t bytes_read{codec->decode_scan(std::move(process_line), const_byte_span{position_, end_position_})};
         advance_position(bytes_read);
         state_ = state::scan_section;
     }

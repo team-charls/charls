@@ -927,15 +927,6 @@ struct charls_jpegls_pc_parameters CHARLS_FINAL
 };
 
 
-struct JlsRect
-{
-    int32_t X;
-    int32_t Y;
-    int32_t Width;
-    int32_t Height;
-};
-
-
 #ifdef __cplusplus
 
 /// <summary>
@@ -987,7 +978,5 @@ typedef int32_t(CHARLS_API_CALLING_CONVENTION* charls_at_application_data_handle
 typedef struct charls_spiff_header charls_spiff_header;
 typedef struct charls_frame_info charls_frame_info;
 typedef struct charls_jpegls_pc_parameters charls_jpegls_pc_parameters;
-
-typedef struct JlsRect JlsRect;
 
 #endif

@@ -136,11 +136,6 @@ struct charls_jpegls_decoder final
         reader_.output_bgr(value);
     }
 
-    void region(const JlsRect& rect) noexcept
-    {
-        reader_.rect(rect);
-    }
-
 private:
     enum class state
     {

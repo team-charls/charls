@@ -39,7 +39,7 @@ public:
         return nullptr;
     }
 
-    size_t decode_scan(unique_ptr<charls::process_line> /*process_line*/, const JlsRect& /*size*/,
+    size_t decode_scan(unique_ptr<charls::process_line> /*process_line*/,
                        charls::const_byte_span /*encoded_source*/) noexcept(false) override
     {
         return {};

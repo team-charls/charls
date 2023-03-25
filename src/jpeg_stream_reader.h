@@ -50,11 +50,6 @@ public:
         parameters_.output_bgr = value;
     }
 
-    void rect(const JlsRect& rect) noexcept
-    {
-        rect_ = rect;
-    }
-
     void at_comment(const callback_function<at_comment_handler> at_comment_callback) noexcept
     {
         at_comment_callback_ = at_comment_callback;
@@ -140,7 +135,6 @@ private:
     charls::frame_info frame_info_{};
     coding_parameters parameters_{};
     jpegls_pc_parameters preset_coding_parameters_{};
-    JlsRect rect_{};
     std::vector<uint8_t> component_ids_;
     state state_{};
     callback_function<at_comment_handler> at_comment_callback_{};
