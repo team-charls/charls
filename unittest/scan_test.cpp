@@ -11,7 +11,7 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::numeric_limits;
 
-namespace charls { namespace test {
+namespace charls::test {
 
 namespace {
 
@@ -138,4 +138,4 @@ private:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test

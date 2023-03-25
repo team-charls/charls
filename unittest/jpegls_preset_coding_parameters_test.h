@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-namespace charls { namespace test {
+namespace charls::test {
 
 struct thresholds final
 {
@@ -60,4 +60,4 @@ constexpr thresholds compute_defaults_using_reference_implementation(const int32
     return result;
 }
 
-}} // namespace charls::test
+} // namespace charls::test

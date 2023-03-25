@@ -12,7 +12,7 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::ostringstream;
 
-namespace charls { namespace test {
+namespace charls::test {
 
 TEST_CLASS(version_test)
 {
@@ -54,4 +54,4 @@ public:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test

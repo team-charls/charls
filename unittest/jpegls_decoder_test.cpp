@@ -25,7 +25,7 @@ using std::tie;
 using std::vector;
 using namespace charls_test;
 
-namespace charls { namespace test {
+namespace charls::test {
 
 namespace {
 
@@ -783,7 +783,7 @@ public:
 
         bool callback_called{};
         decoder.at_comment([&callback_called](const void*, const size_t) noexcept { callback_called = true; })
-            .at_comment(nullptr);
+               .at_comment(nullptr);
 
         decoder.read_header();
 
@@ -821,11 +821,11 @@ public:
         const void* actual_data{};
         size_t actual_size{};
         decoder.at_application_data([&actual_application_data_id, &actual_data, &actual_size](
-                                        const int32_t application_data_id, const void* data, const size_t size) noexcept {
-            actual_application_data_id = application_data_id;
-            actual_data = data;
-            actual_size = size;
-        });
+            const int32_t application_data_id, const void* data, const size_t size) noexcept {
+                actual_application_data_id = application_data_id;
+                actual_data = data;
+                actual_size = size;
+            });
 
         decoder.read_header();
 
@@ -1099,4 +1099,4 @@ private:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test

@@ -13,7 +13,7 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 
 
-namespace charls { namespace test {
+namespace charls::test {
 
 TEST_CLASS(jpegls_preset_coding_parameters_test)
 {
@@ -148,4 +148,4 @@ public:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test

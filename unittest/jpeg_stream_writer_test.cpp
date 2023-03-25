@@ -14,7 +14,7 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::numeric_limits;
 
-namespace charls { namespace test {
+namespace charls::test {
 
 TEST_CLASS(jpeg_stream_writer_test)
 {
@@ -486,4 +486,4 @@ public:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test

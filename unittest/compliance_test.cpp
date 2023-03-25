@@ -9,12 +9,10 @@
 
 #include "../test/portable_anymap_file.h"
 
-using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using namespace charls_test;
-using std::error_code;
 using std::vector;
 
-namespace charls { namespace test {
+namespace charls::test {
 
 TEST_CLASS(compliance_test)
 {
@@ -132,4 +130,4 @@ private:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test

@@ -12,7 +12,7 @@
 #include <vector>
 
 
-namespace charls { namespace test {
+namespace charls::test {
 
 std::vector<uint8_t> read_file(const char* filename);
 
@@ -27,7 +27,7 @@ void verify_decoded_bytes(interleave_mode interleave_mode, const frame_info& fra
                           const std::vector<uint8_t>& uncompressed_data, size_t destination_stride,
                           const char* reference_filename);
 void test_compliance(const std::vector<uint8_t>& encoded_source, const std::vector<uint8_t>& uncompressed_source,
-                 bool check_encode);
+                     bool check_encode);
 
 
 /// <summary>
@@ -60,23 +60,19 @@ void assert_expect_exception(const jpegls_errc error_value, Functor functor)
     Microsoft::VisualStudio::CppUnitTestFramework::Assert::Fail();
 }
 
+} // namespace charls::test
 
-}} // namespace charls::test
-
-// ReSharper disable CppInconsistentNaming
-namespace Microsoft { namespace VisualStudio { namespace CppUnitTestFramework {
-// ReSharper restore CppInconsistentNaming
 
 template<>
-inline std::wstring ToString<charls::jpegls_errc>(const charls::jpegls_errc& q)
+inline std::wstring
+Microsoft::VisualStudio::CppUnitTestFramework::ToString<charls::jpegls_errc>(const charls::jpegls_errc& q)
 {
     RETURN_WIDE_STRING(static_cast<int>(q));
 }
 
 template<>
-inline std::wstring ToString<charls::interleave_mode>(const charls::interleave_mode& q)
+inline std::wstring
+Microsoft::VisualStudio::CppUnitTestFramework::ToString<charls::interleave_mode>(const charls::interleave_mode& q)
 {
     RETURN_WIDE_STRING(static_cast<int>(q));
 }
-
-}}} // namespace Microsoft::VisualStudio::CppUnitTestFramework

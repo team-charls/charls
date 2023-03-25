@@ -13,7 +13,7 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using namespace charls_test;
 using std::vector;
 
-namespace charls { namespace test {
+namespace charls::test {
 
 TEST_CLASS(encode_test)
 {
@@ -118,4 +118,4 @@ private:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test

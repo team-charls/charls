@@ -12,8 +12,7 @@
 #include <cstdint>
 #include <system_error>
 
-namespace charls {
-namespace impl {
+namespace charls::impl {
 
 #else
 #include <stddef.h>
@@ -163,8 +162,7 @@ enum charls_spiff_entry_tag
 };
 
 #ifdef __cplusplus
-} // namespace impl
-} // namespace charls
+} // namespace charls::impl
 
 namespace charls {
 

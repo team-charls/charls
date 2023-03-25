@@ -13,34 +13,33 @@ using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::unique_ptr;
 
-namespace charls { namespace test {
+namespace charls::test {
 
 namespace {
 
-class decoder_strategy_tester final : public charls::decoder_strategy
+class decoder_strategy_tester final : public decoder_strategy
 {
 public:
-    decoder_strategy_tester(const charls::frame_info& frame_info, const charls::coding_parameters& parameters,
+    decoder_strategy_tester(const frame_info& frame_info, const coding_parameters& parameters,
                             uint8_t* const destination, const size_t count) :
-        // NOLINT
         decoder_strategy(frame_info, parameters)
     {
         initialize({destination, count});
     }
 
-    void set_presets(const charls::jpegls_pc_parameters& /*preset_coding_parameters*/,
+    void set_presets(const jpegls_pc_parameters& /*preset_coding_parameters*/,
                      uint32_t /*restart_interval*/) noexcept(false) override
     {
     }
 
-    unique_ptr<charls::process_line> create_process_line(charls::byte_span /*rawStreamInfo*/,
-                                                         size_t /*stride*/) noexcept(false) override
+    unique_ptr<process_line> create_process_line(byte_span /*rawStreamInfo*/,
+                                                 size_t /*stride*/) noexcept(false) override
     {
         return nullptr;
     }
 
-    size_t decode_scan(unique_ptr<charls::process_line> /*process_line*/,
-                       charls::const_byte_span /*encoded_source*/) noexcept(false) override
+    size_t decode_scan(unique_ptr<process_line> /*process_line*/,
+                       const_byte_span /*encoded_source*/) noexcept(false) override
     {
         return {};
     }
@@ -151,4 +150,4 @@ public:
     }
 };
 
-}} // namespace charls::test
+} // namespace charls::test
