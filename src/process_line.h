@@ -176,17 +176,6 @@ void transform_quad_to_line(const quad<PixelType>* source, const size_t pixel_st
 }
 
 
-template<typename T>
-void transform_rgb_to_bgr(T* buffer, size_t samples_per_pixel, const size_t pixel_count) noexcept
-{
-    for (size_t i{}; i < pixel_count; ++i)
-    {
-        std::swap(buffer[0], buffer[2]);
-        buffer += samples_per_pixel;
-    }
-}
-
-
 template<typename Transform, typename PixelType>
 void transform_line(triplet<PixelType>* destination, const triplet<PixelType>* source, const size_t pixel_count,
                     Transform& transform) noexcept
@@ -312,13 +301,6 @@ public:
     void encode_transform(const void* source, void* destination, const size_t pixel_count,
                           const size_t destination_stride) noexcept
     {
-        if (parameters_.output_bgr)
-        {
-            memcpy(temp_line_.data(), source, sizeof(triplet<size_type>) * pixel_count);
-            transform_rgb_to_bgr(temp_line_.data(), frame_info_.component_count, pixel_count);
-            source = temp_line_.data();
-        }
-
         if (frame_info_.component_count == 3)
         {
             if (parameters_.interleave_mode == interleave_mode::sample)
@@ -374,11 +356,6 @@ public:
                 transform_line_to_quad(static_cast<const size_type*>(source), byte_stride,
                                        static_cast<quad<size_type>*>(destination), pixel_count, inverse_transform_);
             }
-        }
-
-        if (parameters_.output_bgr)
-        {
-            transform_rgb_to_bgr(static_cast<size_type*>(destination), frame_info_.component_count, pixel_count);
         }
     }
 
