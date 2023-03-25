@@ -13,7 +13,6 @@ struct coding_parameters final
     uint32_t restart_interval;
     charls::interleave_mode interleave_mode;
     color_transformation transformation;
-    bool output_bgr;
 };
 
 } // namespace charls

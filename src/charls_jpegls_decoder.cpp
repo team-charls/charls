@@ -131,11 +131,6 @@ struct charls_jpegls_decoder final
         state_ = state::completed;
     }
 
-    void output_bgr(const bool value) noexcept
-    {
-        reader_.output_bgr(value);
-    }
-
 private:
     enum class state
     {

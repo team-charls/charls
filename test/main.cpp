@@ -266,17 +266,6 @@ void test_fail_on_too_small_output_buffer()
 }
 
 
-void test_bgra()
-{
-    array<uint8_t, 20> input{'R', 'G', 'B', 'A', 'R', 'G', 'B', 'A', 'R', 'G', 'B', 'A', 'R', 'G', 'B', 'A', 1, 2, 3, 4};
-    const array<uint8_t, 20> expected{'B', 'G', 'R', 'A', 'B', 'G', 'R', 'A', 'B', 'G',
-                                      'R', 'A', 'B', 'G', 'R', 'A', 1,   2,   3,   4};
-
-    transform_rgb_to_bgr(input.data(), 4, 4);
-    assert::is_true(expected == input);
-}
-
-
 void test_too_small_output_buffer()
 {
     const vector<uint8_t> encoded{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
@@ -657,9 +646,6 @@ bool unit_test()
         cout << "Test Traits\n";
         test_traits16_bit();
         test_traits8_bit();
-
-        cout << "Windows bitmap BGR/BGRA output\n";
-        test_bgra();
 
         cout << "Test Small buffer\n";
         test_too_small_output_buffer();

@@ -45,11 +45,6 @@ public:
         return preset_coding_parameters_;
     }
 
-    void output_bgr(const bool value) noexcept
-    {
-        parameters_.output_bgr = value;
-    }
-
     void at_comment(const callback_function<at_comment_handler> at_comment_callback) noexcept
     {
         at_comment_callback_ = at_comment_callback;

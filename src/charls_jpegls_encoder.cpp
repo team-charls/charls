@@ -261,7 +261,7 @@ private:
                                             component_count};
 
         const auto codec{jls_codec_factory<encoder_strategy>().create_codec(
-            frame_info, {near_lossless_, 0, interleave_mode_, color_transformation_, false}, preset_coding_parameters_)};
+            frame_info, {near_lossless_, 0, interleave_mode_, color_transformation_}, preset_coding_parameters_)};
         std::unique_ptr<process_line> process_line(codec->create_process_line(source, stride));
         const size_t bytes_written{codec->encode_scan(std::move(process_line), writer_.remaining_destination())};
 
