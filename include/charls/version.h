@@ -39,9 +39,9 @@ CHARLS_API_IMPORT_EXPORT void CHARLS_API_CALLING_CONVENTION charls_get_version_n
 
 namespace charls {
 
-CHARLS_CONSTEXPR_INLINE constexpr int32_t version_major{CHARLS_VERSION_MAJOR};
-CHARLS_CONSTEXPR_INLINE constexpr int32_t version_minor{CHARLS_VERSION_MINOR};
-CHARLS_CONSTEXPR_INLINE constexpr int32_t version_patch{CHARLS_VERSION_PATCH};
+inline constexpr int32_t version_major{CHARLS_VERSION_MAJOR};
+inline constexpr int32_t version_minor{CHARLS_VERSION_MINOR};
+inline constexpr int32_t version_patch{CHARLS_VERSION_PATCH};
 
 } // namespace charls
 

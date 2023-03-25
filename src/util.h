@@ -118,7 +118,7 @@ inline jpegls_errc to_jpegls_errc() noexcept
 /// <Remarks>
 /// Bits per sample can be computed if range is passed as argument.
 /// </Remarks>
-CHARLS_CONSTEXPR int32_t log2_ceil(const int32_t n) noexcept
+constexpr int32_t log2_ceil(const int32_t n) noexcept
 {
     ASSERT(n >= 0);
     ASSERT(static_cast<uint32_t>(n) <= std::numeric_limits<uint32_t>::max() >> 2); // otherwise 1 << x becomes negative.
@@ -380,7 +380,7 @@ inline void check_interleave_mode(const charls::interleave_mode mode, const jpeg
 }
 
 
-CHARLS_CONSTEXPR int32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
+constexpr int32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
 {
     ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);
     return static_cast<int32_t>((1U << bits_per_sample) - 1);
