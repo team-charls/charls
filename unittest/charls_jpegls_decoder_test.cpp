@@ -12,7 +12,7 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
-using std::vector;
+using std::byte;
 
 MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
@@ -36,7 +36,7 @@ public:
 
     TEST_METHOD(set_source_buffer_nullptr) // NOLINT
     {
-        constexpr array<uint8_t, 10> buffer{};
+        constexpr array<byte, 10> buffer{};
 
         auto error{charls_jpegls_decoder_set_source_buffer(nullptr, buffer.data(), buffer.size())};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
@@ -54,7 +54,7 @@ public:
         auto error{charls_jpegls_decoder_read_spiff_header(nullptr, &spiff_header, &header_found)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
-        const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
+        const auto source{read_file("DataFiles/t8c0e0.jls")};
         auto* decoder{charls_jpegls_decoder_create()};
         error = charls_jpegls_decoder_set_source_buffer(decoder, source.data(), source.size());
         Assert::AreEqual(jpegls_errc::success, error);
@@ -143,7 +143,7 @@ public:
 
     TEST_METHOD(decode_to_buffer_nullptr) // NOLINT
     {
-        array<uint8_t, 5> buffer{};
+        array<byte, 5> buffer{};
         auto error{charls_jpegls_decoder_decode_to_buffer(nullptr, buffer.data(), buffer.size(), 0)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -191,7 +191,7 @@ public:
 private:
     static charls_jpegls_decoder* get_initialized_decoder()
     {
-        const vector<uint8_t> source{read_file("DataFiles/t8c0e0.jls")};
+        const auto source{read_file("DataFiles/t8c0e0.jls")};
         auto* const decoder{charls_jpegls_decoder_create()};
         auto error{charls_jpegls_decoder_set_source_buffer(decoder, source.data(), source.size())};
         Assert::AreEqual(jpegls_errc::success, error);

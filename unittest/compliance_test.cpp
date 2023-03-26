@@ -10,7 +10,6 @@
 #include "../test/portable_anymap_file.h"
 
 using namespace charls_test;
-using std::vector;
 
 namespace charls::test {
 
@@ -120,7 +119,7 @@ public:
 private:
     static void decompress_file(const char* encoded_filename, const char* raw_filename, const bool check_encode = true)
     {
-        const vector<uint8_t> encoded_source{read_file(encoded_filename)};
+        const auto encoded_source{read_file(encoded_filename)};
         const jpegls_decoder decoder{encoded_source, true};
 
         portable_anymap_file reference_file{

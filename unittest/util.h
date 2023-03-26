@@ -14,19 +14,19 @@
 
 namespace charls::test {
 
-std::vector<uint8_t> read_file(const char* filename);
+std::vector<std::byte> read_file(const char* filename);
 
 charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode,
                                                              const frame_info& frame_info);
 charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode);
-std::vector<uint8_t> create_test_spiff_header(uint8_t high_version = 2, uint8_t low_version = 0,
-                                              bool end_of_directory = true, uint8_t component_count = 3);
-std::vector<uint8_t> create_noise_image_16_bit(size_t pixel_count, int bit_count, uint32_t seed);
-bool verify_encoded_bytes(const std::vector<uint8_t>& uncompressed_source, const std::vector<uint8_t>& encoded_source);
+std::vector<std::byte> create_test_spiff_header(uint8_t high_version = 2, uint8_t low_version = 0,
+                                                bool end_of_directory = true, uint8_t component_count = 3);
+std::vector<std::byte> create_noise_image_16_bit(size_t pixel_count, int bit_count, uint32_t seed);
+bool verify_encoded_bytes(const std::vector<std::byte>& uncompressed_source, const std::vector<std::byte>& encoded_source);
 void verify_decoded_bytes(interleave_mode interleave_mode, const frame_info& frame_info,
-                          const std::vector<uint8_t>& uncompressed_data, size_t destination_stride,
+                          const std::vector<std::byte>& uncompressed_data, size_t destination_stride,
                           const char* reference_filename);
-void test_compliance(const std::vector<uint8_t>& encoded_source, const std::vector<uint8_t>& uncompressed_source,
+void test_compliance(const std::vector<std::byte>& encoded_source, const std::vector<std::byte>& uncompressed_source,
                      bool check_encode);
 
 
@@ -73,6 +73,12 @@ Microsoft::VisualStudio::CppUnitTestFramework::ToString<charls::jpegls_errc>(con
 template<>
 inline std::wstring
 Microsoft::VisualStudio::CppUnitTestFramework::ToString<charls::interleave_mode>(const charls::interleave_mode& q)
+{
+    RETURN_WIDE_STRING(static_cast<int>(q));
+}
+
+template<>
+inline std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<std::byte>(const std::byte& q)
 {
     RETURN_WIDE_STRING(static_cast<int>(q));
 }

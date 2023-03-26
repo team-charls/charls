@@ -21,8 +21,8 @@ namespace {
 
 void test_damaged_bit_stream1()
 {
-    const vector<uint8_t> encoded_buffer{read_file("test/incorrect_images/InfiniteLoopFFMPEG.jls")};
-    vector<uint8_t> destination(size_t{256} * 256 * 2);
+    const auto encoded_buffer{read_file("test/incorrect_images/InfiniteLoopFFMPEG.jls")};
+    vector<std::byte> destination(size_t{256} * 256 * 2);
 
     error_code error;
     try
@@ -40,10 +40,10 @@ void test_damaged_bit_stream1()
 
 void test_damaged_bit_stream2()
 {
-    vector<uint8_t> encoded_buffer{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
+    auto encoded_buffer{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
 
     encoded_buffer.resize(900);
-    encoded_buffer.resize(40000, 3);
+    encoded_buffer.resize(40000, std::byte{3});
 
     vector<uint8_t> destination(size_t{512} * 512);
 
@@ -63,10 +63,10 @@ void test_damaged_bit_stream2()
 
 void test_damaged_bit_stream3()
 {
-    vector<uint8_t> encoded_buffer{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
+    auto encoded_buffer{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
 
-    encoded_buffer[300] = 0xFF;
-    encoded_buffer[301] = 0xFF;
+    encoded_buffer[300] = std::byte{0xFF};
+    encoded_buffer[301] = std::byte{0xFF};
 
     vector<uint8_t> destination(size_t{512} * 512);
 
@@ -86,26 +86,26 @@ void test_damaged_bit_stream3()
 
 void test_file_with_random_header_damage(const char* filename)
 {
-    const vector<uint8_t> encoded_buffer_original{read_file(filename)};
+    const auto encoded_buffer_original{read_file(filename)};
 
     mt19937 generator(102347325);
 
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
     uniform_int_distribution<uint32_t> distribution(0, 255);
 
-    vector<uint8_t> destination(size_t{512} * 512);
+    vector<std::byte> destination(size_t{512} * 512);
 
     for (size_t i{}; i != 40; ++i)
     {
-        vector<uint8_t> encoded_buffer(encoded_buffer_original);
-        vector<int> errors(10, 0);
+        auto encoded_buffer(encoded_buffer_original);
+        vector errors(10, 0);
 
         for (int j{}; j != 20; ++j)
         {
-            encoded_buffer[i] = static_cast<uint8_t>(distribution(generator));
-            encoded_buffer[i + 1] = static_cast<uint8_t>(distribution(generator));
-            encoded_buffer[i + 2] = static_cast<uint8_t>(distribution(generator));
-            encoded_buffer[i + 3] = static_cast<uint8_t>(distribution(generator));
+            encoded_buffer[i] = static_cast<std::byte>(distribution(generator));
+            encoded_buffer[i + 1] = static_cast<std::byte>(distribution(generator));
+            encoded_buffer[i + 2] = static_cast<std::byte>(distribution(generator));
+            encoded_buffer[i + 3] = static_cast<std::byte>(distribution(generator));
 
             error_code error;
             try

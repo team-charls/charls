@@ -18,9 +18,9 @@ using namespace charls;
 
 namespace {
 
-void triplet2_planar(vector<uint8_t>& buffer, const rect_size size)
+void triplet2_planar(vector<std::byte>& buffer, const rect_size size)
 {
-    vector<uint8_t> work_buffer(buffer.size());
+    vector<std::byte> work_buffer(buffer.size());
 
     const size_t byte_count{size.cx * size.cy};
     for (size_t i{}; i != byte_count; ++i)
@@ -68,7 +68,7 @@ bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompress
 }
 
 
-void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_length, const uint8_t* uncompressed_data,
+void test_compliance(const std::byte* compressed_bytes, const size_t compressed_length, const std::byte* uncompressed_data,
                      const size_t uncompressed_length, const bool check_encode)
 {
     try
@@ -82,7 +82,7 @@ void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_le
                 verify_encoded_bytes(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
         }
 
-        const auto destination{decoder.decode<vector<uint8_t>>()};
+        const auto destination{decoder.decode<vector<std::byte>>()};
 
         if (decoder.near_lossless() == 0)
         {
@@ -106,7 +106,7 @@ void test_compliance(const uint8_t* compressed_bytes, const size_t compressed_le
 void decompress_file(const char* name_encoded, const char* name_raw, const int offset, const bool check_encode = true)
 {
     cout << "Conformance test:" << name_encoded << "\n\r";
-    const vector<uint8_t> encoded_buffer{read_file(name_encoded)};
+    const auto encoded_buffer{read_file(name_encoded)};
 
     jpegls_decoder decoder;
     try
@@ -119,7 +119,7 @@ void decompress_file(const char* name_encoded, const char* name_raw, const int o
         return;
     }
 
-    vector<uint8_t> raw_buffer{read_file(name_raw, offset)};
+    auto raw_buffer{read_file(name_raw, offset)};
 
     const auto& frame_info{decoder.frame_info()};
     if (frame_info.bits_per_sample > 8)
@@ -173,9 +173,9 @@ void decompress_file(const char* name_encoded, const char* name_raw, const int o
 
 const array<uint8_t, 16> buffer{0, 0, 90, 74, 68, 50, 43, 205, 64, 145, 145, 145, 100, 145, 145, 145};
 ////const uint8_t bufferEncoded[] =   {   0xFF, 0xD8, 0xFF, 0xF7, 0x00, 0x0B, 0x08, 0x00, 0x04, 0x00, 0x04, 0x01, 0x01, 0x11,
-///0x00, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, /0xC0, 0x00, 0x00, 0x6C, 0x80, 0x20, 0x8E, /0x01, 0xC0,
-///0x00, 0x00, 0x57, 0x40, 0x00, 0x00, 0x6E, 0xE6, 0x00, 0x00, 0x01, 0xBC, 0x18, 0x00, /0x00, 0x05, 0xD8, 0x00, 0x00, 0x91,
-///0x60, 0xFF, 0xD9};
+/// 0x00, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, /0xC0, 0x00, 0x00, 0x6C, 0x80, 0x20, 0x8E, /0x01, 0xC0,
+/// 0x00, 0x00, 0x57, 0x40, 0x00, 0x00, 0x6E, 0xE6, 0x00, 0x00, 0x01, 0xBC, 0x18, 0x00, /0x00, 0x05, 0xD8, 0x00, 0x00, 0x91,
+/// 0x60, 0xFF, 0xD9};
 
 } // namespace
 

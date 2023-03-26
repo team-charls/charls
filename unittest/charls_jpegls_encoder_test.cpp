@@ -11,6 +11,7 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
+using std::byte;
 
 MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
@@ -34,7 +35,7 @@ public:
 
     TEST_METHOD(set_destination_buffer_nullptr) // NOLINT
     {
-        array<uint8_t, 10> buffer{};
+        array<byte, 10> buffer{};
         auto error{charls_jpegls_encoder_set_destination_buffer(nullptr, buffer.data(), buffer.size())};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -117,7 +118,7 @@ public:
 
     TEST_METHOD(encode_from_buffer_nullptr) // NOLINT
     {
-        constexpr array<uint8_t, 10> source_buffer{};
+        constexpr array<byte, 10> source_buffer{};
         auto error{charls_jpegls_encoder_encode_from_buffer(nullptr, source_buffer.data(), source_buffer.size(), 0)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -148,7 +149,7 @@ public:
 
     TEST_METHOD(write_spiff_entry_nullptr) // NOLINT
     {
-        constexpr array<uint8_t, 10> entry_data{};
+        constexpr array<byte, 10> entry_data{};
         auto error{charls_jpegls_encoder_write_spiff_entry(nullptr, 5, entry_data.data(), entry_data.size())};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
@@ -166,14 +167,14 @@ public:
 
     TEST_METHOD(write_comment_nullptr) // NOLINT
     {
-        constexpr array<uint8_t, 10> buffer{};
+        constexpr array<byte, 10> buffer{};
         const auto error{charls_jpegls_encoder_write_comment(nullptr, buffer.data(), buffer.size())};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
     TEST_METHOD(write_application_data_nullptr) // NOLINT
     {
-        constexpr array<uint8_t, 10> buffer{};
+        constexpr array<byte, 10> buffer{};
         const auto error{charls_jpegls_encoder_write_application_data(nullptr, 0, buffer.data(), buffer.size())};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
@@ -194,7 +195,7 @@ public:
         error = charls_jpegls_encoder_set_frame_info(encoder, &frame_info);
         Assert::AreEqual(jpegls_errc::success, error);
 
-        constexpr array<uint8_t, 10> buffer{};
+        constexpr array<byte, 10> buffer{};
         error = charls_jpegls_encoder_encode_from_buffer(encoder, buffer.data(), buffer.size(), 0);
         Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);
 
@@ -205,7 +206,7 @@ public:
     {
         auto* encoder{charls_jpegls_encoder_create()};
 
-        array<uint8_t, 10> buffer{};
+        array<byte, 10> buffer{};
         auto error{charls_jpegls_encoder_set_destination_buffer(encoder, buffer.data(), buffer.size())};
         Assert::AreEqual(jpegls_errc::success, error);
 

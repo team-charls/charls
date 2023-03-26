@@ -94,11 +94,11 @@ void decode_performance_tests(const int loop_count)
         // This test expect the file decodetest.jls to exist.
         // It can be any valid JPEG-LS file.
         // Changing the content of this file allows different performance measurements.
-        const vector<uint8_t> encoded_source{read_file("decodetest.jls")};
+        const auto encoded_source{read_file("decodetest.jls")};
 
         // Pre-allocate the destination outside the measurement loop.
         // std::vector initializes its elements and this step needs to be excluded from the measurement.
-        vector<uint8_t> destination(jpegls_decoder{encoded_source, true}.destination_size());
+        vector<std::byte> destination(jpegls_decoder{encoded_source, true}.destination_size());
 
         const auto start{steady_clock::now()};
         for (int i{}; i != loop_count; ++i)

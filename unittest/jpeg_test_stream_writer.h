@@ -11,19 +11,19 @@
 
 namespace charls::test {
 
-inline void push_back(std::vector<uint8_t>& values, const uint16_t value)
+inline void push_back(std::vector<std::byte>& values, const uint16_t value)
 {
-    values.push_back(static_cast<uint8_t>(value >> 8));
-    values.push_back(static_cast<uint8_t>(value));
+    values.push_back(static_cast<std::byte>(value >> 8));
+    values.push_back(static_cast<std::byte>(value));
 }
 
 
-inline void push_back(std::vector<uint8_t>& values, const uint32_t value)
+inline void push_back(std::vector<std::byte>& values, const uint32_t value)
 {
-    values.push_back(static_cast<uint8_t>(value >> 24));
-    values.push_back(static_cast<uint8_t>(value >> 16));
-    values.push_back(static_cast<uint8_t>(value >> 8));
-    values.push_back(static_cast<uint8_t>(value));
+    values.push_back(static_cast<std::byte>(value >> 24));
+    values.push_back(static_cast<std::byte>(value >> 16));
+    values.push_back(static_cast<std::byte>(value >> 8));
+    values.push_back(static_cast<std::byte>(value));
 }
 
 
@@ -39,26 +39,27 @@ public:
                                       const int component_count)
     {
         // Create a Frame Header as defined in T.87, C.2.2 and T.81, B.2.2
-        std::vector<uint8_t> segment;
-        segment.push_back(static_cast<uint8_t>(bits_per_sample)); // P = Sample precision
-        push_back(segment, static_cast<uint16_t>(height));        // Y = Number of lines
-        push_back(segment, static_cast<uint16_t>(width));         // X = Number of samples per line
+        std::vector<std::byte> segment;
+        segment.push_back(static_cast<std::byte>(bits_per_sample)); // P = Sample precision
+        push_back(segment, static_cast<uint16_t>(height));          // Y = Number of lines
+        push_back(segment, static_cast<uint16_t>(width));           // X = Number of samples per line
 
         // Components
-        segment.push_back(static_cast<uint8_t>(component_count)); // Nf = Number of image components in frame
+        segment.push_back(static_cast<std::byte>(component_count)); // Nf = Number of image components in frame
         for (int component_id{}; component_id < component_count; ++component_id)
         {
             // Component Specification parameters
             if (componentIdOverride == 0)
             {
-                segment.push_back(static_cast<uint8_t>(component_id)); // Ci = Component identifier
+                segment.push_back(static_cast<std::byte>(component_id)); // Ci = Component identifier
             }
             else
             {
-                segment.push_back(static_cast<uint8_t>(componentIdOverride)); // Ci = Component identifier
+                segment.push_back(static_cast<std::byte>(componentIdOverride)); // Ci = Component identifier
             }
-            segment.push_back(0x11); // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
-            segment.push_back(0); // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
+            segment.push_back(std::byte{0x11}); // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
+            segment.push_back(
+                std::byte{0}); // Tqi = Quantization table destination selector (reserved for JPEG-LS, should be set to 0)
         }
 
         write_segment(jpeg_marker_code::start_of_frame_jpegls, segment.data(), segment.size());
@@ -66,9 +67,9 @@ public:
 
     void write_jpegls_preset_parameters_segment(const jpegls_pc_parameters& preset_coding_parameters)
     {
-        std::vector<uint8_t> segment;
+        std::vector<std::byte> segment;
 
-        segment.push_back(static_cast<uint8_t>(jpegls_preset_parameters_type::preset_coding_parameters));
+        segment.push_back(static_cast<std::byte>(jpegls_preset_parameters_type::preset_coding_parameters));
 
         push_back(segment, static_cast<uint16_t>(preset_coding_parameters.maximum_sample_value));
         push_back(segment, static_cast<uint16_t>(preset_coding_parameters.threshold1));
@@ -79,13 +80,15 @@ public:
         write_segment(jpeg_marker_code::jpegls_preset_parameters, segment.data(), segment.size());
     }
 
-    void write_oversize_image_dimension(const uint32_t number_of_bytes, const uint32_t height, const uint32_t width, const bool extra_byte = false)
+    void write_oversize_image_dimension(const uint32_t number_of_bytes, const uint32_t height, const uint32_t width,
+                                        const bool extra_byte = false)
     {
         // Format is defined in ISO/IEC 14495-1, C.2.4.1.4
-        std::vector<uint8_t> segment;
+        std::vector<std::byte> segment;
 
-        segment.push_back(static_cast<uint8_t>(jpegls_preset_parameters_type::oversize_image_dimension));
-        segment.push_back(static_cast<uint8_t>(number_of_bytes)); // Wxy: number of bytes used to represent Ye and Xe [2..4].
+        segment.push_back(static_cast<std::byte>(jpegls_preset_parameters_type::oversize_image_dimension));
+        segment.push_back(
+            static_cast<std::byte>(number_of_bytes)); // Wxy: number of bytes used to represent Ye and Xe [2..4].
         switch (number_of_bytes)
         {
         case 2:
@@ -107,7 +110,7 @@ public:
         if (extra_byte)
         {
             // This will make the segment non-conforming.
-            segment.push_back(0);
+            segment.push_back({});
         }
 
         write_segment(jpeg_marker_code::jpegls_preset_parameters, segment.data(), segment.size());
@@ -118,26 +121,26 @@ public:
                                      const interleave_mode interleave_mode)
     {
         // Create a Scan Header as defined in T.87, C.2.3 and T.81, B.2.3
-        std::vector<uint8_t> segment;
+        std::vector<std::byte> segment;
 
-        segment.push_back(static_cast<uint8_t>(component_count));
+        segment.push_back(static_cast<std::byte>(component_count));
         for (int i{}; i < component_count; ++i)
         {
-            segment.push_back(static_cast<uint8_t>(component_id));
+            segment.push_back(static_cast<std::byte>(component_id));
             ++component_id;
-            segment.push_back(mapping_table_selector); // Mapping table selector (0 = no table)
+            segment.push_back(static_cast<std::byte>(mapping_table_selector)); // Mapping table selector (0 = no table)
         }
 
-        segment.push_back(static_cast<uint8_t>(near_lossless));   // NEAR parameter
-        segment.push_back(static_cast<uint8_t>(interleave_mode)); // ILV parameter
-        segment.push_back(0);                                     // transformation
+        segment.push_back(static_cast<std::byte>(near_lossless));   // NEAR parameter
+        segment.push_back(static_cast<std::byte>(interleave_mode)); // ILV parameter
+        segment.push_back({});                                      // transformation
 
         write_segment(jpeg_marker_code::start_of_scan, segment.data(), segment.size());
     }
 
     void write_define_restart_interval(const uint32_t restart_interval, const int size)
     {
-        std::vector<uint8_t> segment;
+        std::vector<std::byte> segment;
         switch (size)
         {
         case 2:
@@ -174,24 +177,24 @@ public:
 
     void write_marker(jpeg_marker_code marker_code)
     {
-        write_byte(jpeg_marker_start_byte);
-        write_byte(static_cast<uint8_t>(marker_code));
+        write_byte(static_cast<std::byte>(jpeg_marker_start_byte));
+        write_byte(static_cast<std::byte>(marker_code));
     }
 
     void write_uint16(const uint16_t value)
     {
-        write_byte(static_cast<uint8_t>(value / 0x100));
-        write_byte(static_cast<uint8_t>(value % 0x100));
+        write_byte(static_cast<std::byte>(value / 0x100));
+        write_byte(static_cast<std::byte>(value % 0x100));
     }
 
-    void write_byte(const uint8_t value)
+    void write_byte(const std::byte value)
     {
         buffer.push_back(value);
     }
 
     void write_bytes(const void* data, const size_t data_size)
     {
-        const auto* const bytes{static_cast<const uint8_t*>(data)};
+        const auto* const bytes{static_cast<const std::byte*>(data)};
 
         for (size_t i{}; i < data_size; ++i)
         {
@@ -201,14 +204,14 @@ public:
 
     int componentIdOverride{};
     uint8_t mapping_table_selector{};
-    std::vector<uint8_t> buffer;
+    std::vector<std::byte> buffer;
 
 private:
-    static void push_back_uint24(std::vector<uint8_t>& values, const uint32_t value)
+    static void push_back_uint24(std::vector<std::byte>& values, const uint32_t value)
     {
-        values.push_back(static_cast<uint8_t>(value >> 16));
-        values.push_back(static_cast<uint8_t>(value >> 8));
-        values.push_back(static_cast<uint8_t>(value));
+        values.push_back(static_cast<std::byte>(value >> 16));
+        values.push_back(static_cast<std::byte>(value >> 8));
+        values.push_back(static_cast<std::byte>(value));
     }
 };
 

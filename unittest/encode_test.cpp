@@ -11,6 +11,7 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using namespace charls_test;
+using std::byte;
 using std::vector;
 
 namespace charls::test {
@@ -69,7 +70,7 @@ private:
                          reference_file.bits_per_sample(), reference_file.component_count()})
             .interleave_mode(interleave_mode);
 
-        vector<uint8_t> charls_encoded(encoder.estimated_destination_size());
+        vector<byte> charls_encoded(encoder.estimated_destination_size());
         encoder.destination(charls_encoded);
 
         const size_t bytes_written{encoder.encode(reference_file.image_data())};
@@ -78,7 +79,7 @@ private:
         test_by_decoding(charls_encoded, reference_file, interleave_mode);
     }
 
-    static void test_by_decoding(const vector<uint8_t>& encoded_source, const portable_anymap_file& reference_file,
+    static void test_by_decoding(const vector<byte>& encoded_source, const portable_anymap_file& reference_file,
                                  const interleave_mode interleave_mode)
     {
         jpegls_decoder decoder;
@@ -92,10 +93,10 @@ private:
         Assert::AreEqual(reference_file.component_count(), frame_info.component_count);
         Assert::IsTrue(interleave_mode == decoder.interleave_mode());
 
-        vector<uint8_t> destination(decoder.destination_size());
+        vector<byte> destination(decoder.destination_size());
         decoder.decode(destination);
 
-        const vector<uint8_t>& uncompressed_source{reference_file.image_data()};
+        const auto& uncompressed_source{reference_file.image_data()};
 
         Assert::AreEqual(destination.size(), uncompressed_source.size());
 

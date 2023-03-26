@@ -10,21 +10,6 @@
 #include <string>
 #include <vector>
 
-
-// Visual Studio 2015 supports C++14, but not all constexpr scenarios. VS 2017 has full C++14 support.
-#ifdef _MSC_VER
-
-#if _MSC_VER >= 1910
-#define CONSTEXPR constexpr
-#else
-#define CONSTEXPR
-#endif
-
-#else
-#define CONSTEXPR constexpr
-#endif
-
-
 namespace charls_test {
 
 // Purpose: this class can read an image stored in the Portable Anymap Format (PNM).
@@ -57,32 +42,32 @@ public:
         convert_to_little_endian_if_needed();
     }
 
-    int width() const noexcept
+    [[nodiscard]] int width() const noexcept
     {
         return width_;
     }
 
-    int height() const noexcept
+    [[nodiscard]] int height() const noexcept
     {
         return height_;
     }
 
-    int component_count() const noexcept
+    [[nodiscard]] int component_count() const noexcept
     {
         return component_count_;
     }
 
-    int bits_per_sample() const noexcept
+    [[nodiscard]] int bits_per_sample() const noexcept
     {
         return bits_per_sample_;
     }
 
-    std::vector<uint8_t>& image_data() noexcept
+    std::vector<std::byte>& image_data() noexcept
     {
         return input_buffer_;
     }
 
-    const std::vector<uint8_t>& image_data() const noexcept
+    [[nodiscard]] const std::vector<std::byte>& image_data() const noexcept
     {
         return input_buffer_;
     }
@@ -92,10 +77,8 @@ private:
     {
         std::vector<int> result;
 
-        const auto first{static_cast<char>(pnm_file.get())};
-
         // All portable anymap format (PNM) start with the character P.
-        if (first != 'P')
+        if (const auto first{static_cast<char>(pnm_file.get())}; first != 'P')
             throw std::istream::failure("Missing P");
 
         while (result.size() < 4)
@@ -117,7 +100,7 @@ private:
         return result;
     }
 
-    static CONSTEXPR int32_t log_2(const int32_t n) noexcept
+    [[nodiscard]] static constexpr int32_t log_2(const int32_t n) noexcept
     {
         int32_t x{};
         while (n > (1 << x))
@@ -143,7 +126,7 @@ private:
     int width_;
     int height_;
     int bits_per_sample_;
-    std::vector<uint8_t> input_buffer_;
+    std::vector<std::byte> input_buffer_;
 };
 
 } // namespace charls_test
