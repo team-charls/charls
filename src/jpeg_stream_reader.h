@@ -66,15 +66,15 @@ private:
         position_ += count;
     }
 
-    [[nodiscard]] uint8_t read_byte_checked();
+    [[nodiscard]] std::byte read_byte_checked();
     [[nodiscard]] uint16_t read_uint16_checked();
 
-    [[nodiscard]] uint8_t read_byte() noexcept;
+    [[nodiscard]] std::byte read_byte() noexcept;
     void skip_byte() noexcept;
 
     [[nodiscard]] uint8_t read_uint8() noexcept
     {
-        return read_byte();
+        return std::to_integer<uint8_t>(read_byte());
     }
 
     [[nodiscard]] uint16_t read_uint16() noexcept;

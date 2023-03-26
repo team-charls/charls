@@ -106,13 +106,13 @@ protected:
             if (is_ff_written_)
             {
                 // JPEG-LS requirement (T.87, A.1) to detect markers: after a xFF value a single 0 bit needs to be inserted.
-                *position_ = static_cast<uint8_t>(bit_buffer_ >> 25);
+                *position_ = static_cast<std::byte>(bit_buffer_ >> 25);
                 bit_buffer_ = bit_buffer_ << 7;
                 free_bit_count_ += 7;
             }
             else
             {
-                *position_ = static_cast<uint8_t>(bit_buffer_ >> 24);
+                *position_ = static_cast<std::byte>(bit_buffer_ >> 24);
                 bit_buffer_ = bit_buffer_ << 8;
                 free_bit_count_ += 8;
             }
@@ -145,7 +145,7 @@ private:
     size_t compressed_length_{};
 
     // encoding
-    uint8_t* position_{};
+    std::byte* position_{};
     bool is_ff_written_{};
     size_t bytes_written_{};
 };

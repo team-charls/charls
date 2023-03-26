@@ -4,48 +4,51 @@
 #pragma once
 
 #include <cstddef>
-#include <cstdint>
 
 namespace charls {
 
-/// <summary>Simplified span class as replacement for C++20 (std::span<std::byte>).</summary>
+/// <summary>Simplified span class as replacement for C++20 std::span<std::byte>.</summary>
 struct byte_span final
 {
+    using iterator = const std::byte*;
+
     byte_span() = default;
 
-    constexpr byte_span(void* data_arg, const size_t size_arg) noexcept : data{static_cast<uint8_t*>(data_arg)}, size{size_arg}
+    constexpr byte_span(void* data_arg, const size_t size_arg) noexcept :
+        data{static_cast<std::byte*>(data_arg)}, size{size_arg}
     {
     }
 
     constexpr byte_span(const void* data_arg, const size_t size_arg) noexcept :
-        data{static_cast<uint8_t*>(const_cast<void*>(data_arg))}, size{size_arg}
+        data{static_cast<std::byte*>(const_cast<void*>(data_arg))}, size{size_arg}
     {
     }
 
-    [[nodiscard]] constexpr uint8_t* begin() const noexcept
+    [[nodiscard]] constexpr iterator begin() const noexcept
     {
         return data;
     }
 
-    [[nodiscard]] constexpr uint8_t* end() const noexcept
+    [[nodiscard]] constexpr iterator end() const noexcept
     {
         return data + size;
     }
 
-    uint8_t* data{};
+    std::byte* data{};
     size_t size{};
 };
 
 
-/// <summary>Simplified span class as replacement for C++20 (std::span<const std::byte>).</summary>
+/// <summary>Simplified span class as replacement for C++20 std::span<const std::byte>.</summary>
 class const_byte_span final
 {
 public:
-    using iterator = const uint8_t*;
+    using iterator = const std::byte*;
 
     const_byte_span() = default;
 
-    constexpr const_byte_span(const void* data, const size_t size) noexcept : data_{static_cast<const uint8_t*>(data)}, size_{size}
+    constexpr const_byte_span(const void* data, const size_t size) noexcept :
+        data_{static_cast<const std::byte*>(data)}, size_{size}
     {
     }
 
@@ -59,7 +62,7 @@ public:
         return size_;
     }
 
-    [[nodiscard]] constexpr const uint8_t* data() const noexcept
+    [[nodiscard]] constexpr const std::byte* data() const noexcept
     {
         return data_;
     }
@@ -80,7 +83,7 @@ public:
     }
 
 private:
-    const uint8_t* data_{};
+    const std::byte* data_{};
     size_t size_{};
 };
 
