@@ -8,8 +8,6 @@
 #include "jpeg_marker_code.h"
 #include "util.h"
 
-#include <limits>
-
 namespace charls {
 
 // Purpose: 'Writer' class that can generate JPEG-LS file streams.
@@ -126,20 +124,19 @@ private:
 
     void write_uint8(const uint8_t value) noexcept
     {
-        ASSERT(byte_offset_ + sizeof(uint8_t) <= destination_.size);
-        destination_.data[byte_offset_++] = value;
+        write_byte(static_cast<std::byte>(value));
     }
 
     void write_uint8(const int32_t value) noexcept
     {
         ASSERT(value >= 0 && value <= std::numeric_limits<uint8_t>::max());
-        write_uint8(static_cast<uint8_t>(value));
+        write_byte(static_cast<std::byte>(value));
     }
 
     void write_uint8(const size_t value) noexcept
     {
         ASSERT(value <= std::numeric_limits<uint8_t>::max());
-        write_uint8(static_cast<uint8_t>(value));
+        write_byte(static_cast<std::byte>(value));
     }
 
     void write_uint16(const uint16_t value) noexcept
@@ -179,6 +176,12 @@ private:
         write_bytes(&big_endian_value, sizeof big_endian_value);
     }
 
+    void write_byte(const std::byte value) noexcept
+    {
+        ASSERT(byte_offset_ + sizeof(std::byte) <= destination_.size);
+        destination_.data[byte_offset_++] = value;
+    }
+
     void write_bytes(const const_byte_span data) noexcept
     {
         write_bytes(data.data(), data.size());
@@ -193,8 +196,8 @@ private:
 
     void write_marker(const jpeg_marker_code marker_code) noexcept
     {
-        write_uint8(jpeg_marker_start_byte);
-        write_uint8(static_cast<uint8_t>(marker_code));
+        write_byte(jpeg_marker_start_byte);
+        write_byte(static_cast<std::byte>(marker_code));
     }
 
     void write_segment_without_data(const jpeg_marker_code marker_code)
@@ -202,8 +205,8 @@ private:
         if (UNLIKELY(byte_offset_ + 2 > destination_.size))
             impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-        write_uint8(jpeg_marker_start_byte);
-        write_uint8(static_cast<uint8_t>(marker_code));
+        write_byte(jpeg_marker_start_byte);
+        write_byte(static_cast<std::byte>(marker_code));
     }
 
     byte_span destination_{};

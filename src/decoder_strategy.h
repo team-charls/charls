@@ -81,10 +81,10 @@ public:
             impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
     }
 
-    [[nodiscard]] const uint8_t* get_cur_byte_pos() const noexcept
+    [[nodiscard]] const std::byte* get_cur_byte_pos() const noexcept
     {
         int32_t valid_bits{valid_bits_};
-        const uint8_t* compressed_bytes{position_};
+        const std::byte* compressed_bytes{position_};
 
         for (;;)
         {
@@ -184,12 +184,12 @@ public:
         return (read_value(length - 24) << 24) + read_value(24);
     }
 
-    uint8_t read_byte()
+    std::byte read_byte()
     {
         if (UNLIKELY(position_ == end_position_))
             impl::throw_jpegls_error(jpegls_errc::source_buffer_too_small);
 
-        const uint8_t value = *position_;
+        const std::byte value = *position_;
         ++position_;
         return value;
     }
@@ -222,11 +222,11 @@ private:
                 return;
             }
 
-            const cache_t new_byte_value{*position_};
+            const cache_t new_byte_value{std::to_integer<cache_t>(*position_)};
 
             // JPEG-LS bit stream rule: if FF is followed by a 1 bit then it is a marker
-            if (new_byte_value == jpeg_marker_start_byte &&
-                (position_ == end_position_ - 1 || (position_[1] & 0x80) != 0))
+            if (new_byte_value == std::to_integer<cache_t>(jpeg_marker_start_byte) &&
+                (position_ == end_position_ - 1 || (position_[1] & std::byte{0x80}) != std::byte{}))
             {
                 if (UNLIKELY(valid_bits_ <= 0))
                 {
@@ -242,7 +242,7 @@ private:
             valid_bits_ += 8;
             ++position_;
 
-            if (new_byte_value == jpeg_marker_start_byte)
+            if (new_byte_value == std::to_integer<cache_t>(jpeg_marker_start_byte))
             {
                 // The next bit after an 0xFF needs to be ignored, compensate for the next read (see ISO/IEC 14495-1,A.1)
                 --valid_bits_;
@@ -271,7 +271,8 @@ private:
     void find_jpeg_marker_start_byte() noexcept
     {
         // Use memchr to find next start byte (0xFF). memchr is optimized on some platforms to search faster.
-        position_ff_ = static_cast<const uint8_t*>(memchr(position_, jpeg_marker_start_byte, end_position_ - position_));
+        position_ff_ = static_cast<const std::byte*>(
+            memchr(position_, std::to_integer<int>(jpeg_marker_start_byte), end_position_ - position_));
         if (!position_ff_)
         {
             position_ff_ = end_position_;
@@ -284,9 +285,9 @@ private:
     // decoding
     cache_t read_cache_{};
     int32_t valid_bits_{};
-    const uint8_t* position_{};
-    const uint8_t* end_position_{};
-    const uint8_t* position_ff_{};
+    const std::byte* position_{};
+    const std::byte* end_position_{};
+    const std::byte* position_ff_{};
 };
 
 } // namespace charls

@@ -602,17 +602,17 @@ private:
 
     void read_restart_marker()
     {
-        auto byte{Strategy::read_byte()};
-        if (UNLIKELY(byte != jpeg_marker_start_byte))
+        auto value{Strategy::read_byte()};
+        if (UNLIKELY(value != jpeg_marker_start_byte))
             impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
 
         // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see T.81, B.1.1.2)
         do
         {
-            byte = Strategy::read_byte();
-        } while (byte == jpeg_marker_start_byte);
+            value = Strategy::read_byte();
+        } while (value == jpeg_marker_start_byte);
 
-        if (UNLIKELY(byte != jpeg_restart_marker_base + restart_interval_counter_))
+        if (UNLIKELY(std::to_integer<uint32_t>(value) != jpeg_restart_marker_base + restart_interval_counter_))
             impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
     }
 

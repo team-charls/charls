@@ -19,6 +19,7 @@ namespace charls {
 
 using impl::throw_jpegls_error;
 using std::array;
+using std::byte;
 using std::equal;
 using std::find;
 
@@ -172,17 +173,17 @@ void jpeg_stream_reader::read_next_start_of_scan()
 
 jpeg_marker_code jpeg_stream_reader::read_next_marker_code()
 {
-    auto byte{read_byte_checked()};
-    if (UNLIKELY(byte != jpeg_marker_start_byte))
+    auto value{read_byte_checked()};
+    if (UNLIKELY(value != jpeg_marker_start_byte))
         throw_jpegls_error(jpegls_errc::jpeg_marker_start_byte_not_found);
 
     // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see ISO/IEC 10918-1, B.1.1.2)
     do
     {
-        byte = read_byte_checked();
-    } while (byte == jpeg_marker_start_byte);
+        value = read_byte_checked();
+    } while (value == jpeg_marker_start_byte);
 
-    return static_cast<jpeg_marker_code>(byte);
+    return static_cast<jpeg_marker_code>(value);
 }
 
 
@@ -359,9 +360,9 @@ void jpeg_stream_reader::read_start_of_frame_segment()
     for (int32_t i{}; i != frame_info_.component_count; ++i)
     {
         // Component specification parameters
-        add_component(read_byte()); // Ci = Component identifier
+        add_component(read_uint8()); // Ci = Component identifier
         if (const uint8_t horizontal_vertical_sampling_factor{
-                read_byte()}; // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
+                read_uint8()}; // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
             UNLIKELY(horizontal_vertical_sampling_factor != 0x11))
             throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
@@ -527,14 +528,14 @@ void jpeg_stream_reader::read_start_of_scan_segment()
     check_interleave_mode(mode);
     parameters_.interleave_mode = mode;
 
-    if (UNLIKELY((read_byte() & 0xFU) != 0)) // Read Ah (no meaning) and Al (point transform).
+    if (UNLIKELY((read_byte() & byte{0xFU}) != byte{})) // Read Ah (no meaning) and Al (point transform).
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
     state_ = state::bit_stream_section;
 }
 
 
-uint8_t jpeg_stream_reader::read_byte_checked()
+byte jpeg_stream_reader::read_byte_checked()
 {
     if (UNLIKELY(position_ == end_position_))
         throw_jpegls_error(jpegls_errc::source_buffer_too_small);
@@ -552,11 +553,11 @@ uint16_t jpeg_stream_reader::read_uint16_checked()
 }
 
 
-uint8_t jpeg_stream_reader::read_byte() noexcept
+byte jpeg_stream_reader::read_byte() noexcept
 {
     ASSERT(position_ != end_position_);
 
-    const uint8_t value{*position_};
+    const byte value{*position_};
     advance_position(1);
     return value;
 }
@@ -657,11 +658,11 @@ void jpeg_stream_reader::try_read_hp_color_transform_segment()
 {
     ASSERT(segment_data_.size() == 5);
 
-    if (const array<uint8_t, 4> mrfx_tag{'m', 'r', 'f', 'x'}; // mrfx = xfrm (in big endian) = colorXFoRM
-        !equal(mrfx_tag.cbegin(), mrfx_tag.cend(), read_bytes(4).begin()))
+    if (const array mrfx_tag{byte{'m'}, byte{'r'}, byte{'f'}, byte{'x'}}; // mrfx = xfrm (in big endian) = colorXFoRM
+        !equal(mrfx_tag.cbegin(), mrfx_tag.cend(), read_bytes(mrfx_tag.size()).begin()))
         return;
 
-    switch (const auto transformation{read_byte()})
+    switch (const auto transformation{read_uint8()})
     {
     case static_cast<uint8_t>(color_transformation::none):
     case static_cast<uint8_t>(color_transformation::hp1):
@@ -684,15 +685,15 @@ USE_DECL_ANNOTATIONS void jpeg_stream_reader::try_read_spiff_header_segment(spif
 {
     ASSERT(segment_data_.size() >= 30);
 
-    if (const array<uint8_t, 6> spiff_tag{'S', 'P', 'I', 'F', 'F', 0};
-        !equal(spiff_tag.cbegin(), spiff_tag.cend(), read_bytes(6).begin()))
+    if (const array spiff_tag{byte{'S'}, byte{'P'}, byte{'I'}, byte{'F'}, byte{'F'}, byte{0}};
+        !equal(spiff_tag.cbegin(), spiff_tag.cend(), read_bytes(spiff_tag.size()).begin()))
     {
         header = {};
         spiff_header_found = false;
         return;
     }
 
-    if (const auto high_version{read_byte()}; high_version > spiff_major_revision_number)
+    if (const auto high_version{read_uint8()}; high_version > spiff_major_revision_number)
     {
         header = {};
         spiff_header_found = false;

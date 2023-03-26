@@ -31,7 +31,7 @@ void jpeg_stream_writer::write_end_of_image(const bool even_destination_size)
     if (even_destination_size && bytes_written() % 2 != 0)
     {
         // Write an additional 0xFF byte to ensure that the encoded bit stream has an even size.
-        write_uint8(jpeg_marker_start_byte);
+        write_byte(jpeg_marker_start_byte);
     }
 
     write_segment_without_data(jpeg_marker_code::end_of_image);
