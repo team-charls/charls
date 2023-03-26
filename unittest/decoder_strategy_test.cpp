@@ -11,6 +11,7 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
+using std::byte;
 using std::unique_ptr;
 
 namespace charls::test {
@@ -20,8 +21,8 @@ namespace {
 class decoder_strategy_tester final : public decoder_strategy
 {
 public:
-    decoder_strategy_tester(const frame_info& frame_info, const coding_parameters& parameters,
-                            uint8_t* const destination, const size_t count) :
+    decoder_strategy_tester(const frame_info& frame_info, const coding_parameters& parameters, byte* const destination,
+                            const size_t count) :
         decoder_strategy(frame_info, parameters)
     {
         initialize({destination, count});
@@ -66,7 +67,7 @@ public:
 
         constexpr array<data_t, 5> in_data{{{0x00, 24}, {0xFF, 8}, {0xFFFF, 16}, {0xFFFF, 16}, {0x12345678, 31}}};
 
-        array<uint8_t, 100> enc_buf{};
+        array<byte, 100> enc_buf{};
         constexpr frame_info frame_info{};
         constexpr coding_parameters parameters{};
 
@@ -96,7 +97,7 @@ public:
         constexpr frame_info frame_info{};
         constexpr coding_parameters parameters{};
 
-        array<uint8_t, 4> buffer{7, 100, 23, 99};
+        array buffer{byte{7}, byte{100}, byte{23}, byte{99}};
 
         decoder_strategy_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
 
@@ -108,7 +109,7 @@ public:
         constexpr frame_info frame_info{};
         constexpr coding_parameters parameters{};
 
-        array<uint8_t, 4> buffer{0xAA, 100, 23, 99};
+        array buffer{byte{0xAA}, byte{100}, byte{23}, byte{99}};
 
         decoder_strategy_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
 
@@ -128,21 +129,21 @@ public:
         constexpr coding_parameters parameters{};
 
         {
-            array<uint8_t, 4> buffer{0xF, 100, 23, 99};
+            array buffer{byte{0xF}, byte{100}, byte{23}, byte{99}};
 
             decoder_strategy_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
             Assert::AreEqual(4, decoder_strategy.peek_0_bits());
         }
 
         {
-            array<uint8_t, 4> buffer{0, 1, 0, 0};
+            array buffer{byte{0}, byte{1}, byte{0}, byte{0}};
 
             decoder_strategy_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
             Assert::AreEqual(15, decoder_strategy.peek_0_bits());
         }
 
         {
-            array<uint8_t, 4> buffer{0, 0, 0, 0};
+            array<byte, 4> buffer{};
 
             decoder_strategy_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
             Assert::AreEqual(-1, decoder_strategy.peek_0_bits());

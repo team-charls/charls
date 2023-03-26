@@ -23,9 +23,9 @@ namespace {
 // The following functions are used as sample code in the documentation
 // Ensure that the code compiles and works by unit testing it.
 
-std::vector<uint8_t> decode_simple_8_bit_monochrome(const std::vector<uint8_t>& source)
+std::vector<std::byte> decode_simple_8_bit_monochrome(const std::vector<std::byte>& source)
 {
-    std::vector<uint8_t> destination;
+    std::vector<std::byte> destination;
 
     frame_info frame_info;
     std::tie(frame_info, std::ignore) = jpegls_decoder::decode(source, destination);
@@ -36,7 +36,7 @@ std::vector<uint8_t> decode_simple_8_bit_monochrome(const std::vector<uint8_t>& 
     return destination;
 }
 
-std::vector<uint8_t> decode_advanced(const std::vector<uint8_t>& source)
+std::vector<std::byte> decode_advanced(const std::vector<std::byte>& source)
 {
     const jpegls_decoder decoder{source, true};
 
@@ -50,24 +50,24 @@ std::vector<uint8_t> decode_advanced(const std::vector<uint8_t>& source)
         // Handle lossy images.
     }
 
-    return decoder.decode<std::vector<uint8_t>>();
+    return decoder.decode<std::vector<std::byte>>();
 }
 
-std::vector<uint8_t> encode_simple_8_bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width,
-                                                    const uint32_t height)
+std::vector<std::byte> encode_simple_8_bit_monochrome(const std::vector<std::byte>& source, const uint32_t width,
+                                                      const uint32_t height)
 {
     constexpr auto bits_per_sample{8};
     constexpr auto component_count{1};
     return jpegls_encoder::encode(source, {width, height, bits_per_sample, component_count});
 }
 
-std::vector<uint8_t> encode_advanced_8_bit_monochrome(const std::vector<uint8_t>& source, const uint32_t width,
-                                                      const uint32_t height)
+std::vector<std::byte> encode_advanced_8_bit_monochrome(const std::vector<std::byte>& source, const uint32_t width,
+                                                        const uint32_t height)
 {
     jpegls_encoder encoder;
     encoder.frame_info({width, height, 8, 1});
 
-    std::vector<uint8_t> destination(encoder.estimated_destination_size());
+    std::vector<std::byte> destination(encoder.estimated_destination_size());
     encoder.destination(destination);
 
     encoder.write_standard_spiff_header(spiff_color_space::grayscale);
@@ -86,16 +86,16 @@ TEST_CLASS(documentation_test)
 public:
     TEST_METHOD(call_decode_simple_8_bit_monochrome) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
-        const vector<uint8_t> charls_decoded{decode_simple_8_bit_monochrome(source)};
+        const auto source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
+        const auto charls_decoded{decode_simple_8_bit_monochrome(source)};
 
         test_decoded_data(charls_decoded, "DataFiles/tulips-gray-8bit-512-512.pgm");
     }
 
     TEST_METHOD(call_decode_advanced) // NOLINT
     {
-        const vector<uint8_t> source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
-        const vector<uint8_t> charls_decoded{decode_advanced(source)};
+        const auto source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
+        const auto charls_decoded{decode_advanced(source)};
 
         test_decoded_data(charls_decoded, "DataFiles/tulips-gray-8bit-512-512.pgm");
     }
@@ -103,9 +103,9 @@ public:
     TEST_METHOD(call_encode_simple_8_bit_monochrome) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/tulips-gray-8bit-512-512.pgm");
-        const vector<uint8_t> charls_encoded{encode_simple_8_bit_monochrome(reference_file.image_data(),
-                                                                            static_cast<uint32_t>(reference_file.width()),
-                                                                            static_cast<uint32_t>(reference_file.height()))};
+        const auto charls_encoded{encode_simple_8_bit_monochrome(reference_file.image_data(),
+                                                                 static_cast<uint32_t>(reference_file.width()),
+                                                                 static_cast<uint32_t>(reference_file.height()))};
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
@@ -113,18 +113,18 @@ public:
     TEST_METHOD(call_encode_advanced_8_bit_monochrome) // NOLINT
     {
         portable_anymap_file reference_file("DataFiles/tulips-gray-8bit-512-512.pgm");
-        const vector<uint8_t> charls_encoded{
-            encode_advanced_8_bit_monochrome(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()),
-                                             static_cast<uint32_t>(reference_file.height()))};
+        const auto charls_encoded{encode_advanced_8_bit_monochrome(reference_file.image_data(),
+                                                                   static_cast<uint32_t>(reference_file.width()),
+                                                                   static_cast<uint32_t>(reference_file.height()))};
 
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
 
 private:
-    static void test_decoded_data(const vector<uint8_t>& decoded_source, const char* raw_filename)
+    static void test_decoded_data(const vector<std::byte>& decoded_source, const char* raw_filename)
     {
         portable_anymap_file reference_file{read_anymap_reference_file(raw_filename, interleave_mode::none)};
-        const vector<uint8_t>& uncompressed_source{reference_file.image_data()};
+        const vector<std::byte>& uncompressed_source{reference_file.image_data()};
 
         Assert::AreEqual(decoded_source.size(), uncompressed_source.size());
 
@@ -137,7 +137,7 @@ private:
         }
     }
 
-    static void test_by_decoding(const vector<uint8_t>& encoded_source, const portable_anymap_file& reference_file,
+    static void test_by_decoding(const vector<std::byte>& encoded_source, const portable_anymap_file& reference_file,
                                  const interleave_mode interleave_mode)
     {
         jpegls_decoder decoder;
@@ -151,10 +151,10 @@ private:
         Assert::AreEqual(reference_file.bits_per_sample(), frame_info.bits_per_sample);
         Assert::AreEqual(interleave_mode, decoder.interleave_mode());
 
-        vector<uint8_t> destination(decoder.destination_size());
+        vector<std::byte> destination(decoder.destination_size());
         decoder.decode(destination);
 
-        const vector<uint8_t>& uncompressed_source{reference_file.image_data()};
+        const vector<std::byte>& uncompressed_source{reference_file.image_data()};
 
         Assert::AreEqual(destination.size(), uncompressed_source.size());
 

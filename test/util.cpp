@@ -53,7 +53,7 @@ ofstream open_output_stream(const char* filename)
 }
 
 
-void fix_endian(vector<uint8_t>* buffer, const bool little_endian_data) noexcept
+void fix_endian(vector<std::byte>* buffer, const bool little_endian_data) noexcept
 {
     if (little_endian_data == is_machine_little_endian())
         return;
@@ -65,7 +65,7 @@ void fix_endian(vector<uint8_t>* buffer, const bool little_endian_data) noexcept
 }
 
 
-vector<uint8_t> read_file(const char* filename, long offset, size_t bytes)
+vector<std::byte> read_file(const char* filename, long offset, size_t bytes)
 {
     ifstream input;
     input.exceptions(ios::eofbit | ios::failbit | ios::badbit);
@@ -85,7 +85,7 @@ vector<uint8_t> read_file(const char* filename, long offset, size_t bytes)
         bytes = static_cast<size_t>(byte_count_file) - offset;
     }
 
-    vector<uint8_t> buffer(bytes);
+    vector<std::byte> buffer(bytes);
     read(input, buffer);
 
     return buffer;
@@ -100,15 +100,15 @@ void write_file(const char* filename, const void* data, const size_t size)
     output.close(); // close explicitly to get feedback on failures.
 }
 
-void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, const rect_size size,
+void test_round_trip(const char* name, const vector<std::byte>& original_buffer, const rect_size size,
                      const int bits_per_sample, const int component_count, const int loop_count)
 {
     const auto height = static_cast<int>(size.cy);
     const auto width = static_cast<int>(size.cx);
 
-    vector<uint8_t> encoded_buffer(height * width * component_count * bits_per_sample / 4);
+    vector<std::byte> encoded_buffer(height * width * component_count * bits_per_sample / 4);
 
-    vector<uint8_t> decoded_buffer(static_cast<size_t>(height) * width * bit_to_byte_count(bits_per_sample) *
+    vector<std::byte> decoded_buffer(static_cast<size_t>(height) * width * bit_to_byte_count(bits_per_sample) *
                                    component_count);
 
     interleave_mode interleave_mode{};
@@ -175,7 +175,7 @@ void test_round_trip(const char* name, const vector<uint8_t>& original_buffer, c
          << ", Encode time:" << encode_time << " ms, Decode time:" << decode_time
          << " ms, Bits per sample:" << bits_per_sample_f << ", Decode rate:" << symbol_rate << " M/s\n";
 
-    const uint8_t* byte_out{decoded_buffer.data()};
+    const std::byte* byte_out{decoded_buffer.data()};
     for (size_t i{}; i != decoded_buffer.size(); ++i)
     {
         if (original_buffer[i] != byte_out[i])
@@ -191,7 +191,7 @@ void test_file(const char* filename, const int offset, const rect_size size2, co
                const int component_count, const bool little_endian_file, const int loop_count)
 {
     const size_t byte_count{size2.cx * size2.cy * component_count * bit_to_byte_count(bits_per_sample)};
-    vector<uint8_t> uncompressed_buffer{read_file(filename, offset, byte_count)};
+    auto uncompressed_buffer{read_file(filename, offset, byte_count)};
 
     if (bits_per_sample > 8)
     {

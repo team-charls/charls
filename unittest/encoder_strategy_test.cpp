@@ -4,11 +4,13 @@
 #include "pch.h"
 
 #include "encoder_strategy_tester.h"
+#include "util.h"
 
 #include <array>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
+using std::byte;
 
 namespace charls::test {
 
@@ -22,7 +24,7 @@ public:
 
         encoder_strategy_tester strategy(frame_info, parameters);
 
-        array<uint8_t, 1024> data{};
+        array<byte, 1024> data{};
 
         strategy.initialize_forward({data.data(), data.size()});
 
@@ -37,8 +39,8 @@ public:
 
         encoder_strategy_tester strategy(frame_info, parameters);
 
-        array<uint8_t, 1024> destination{};
-        destination[13] = 0x77; // marker byte to detect overruns.
+        array<byte, 1024> destination{};
+        destination[13] = byte{0x77}; // marker byte to detect overruns.
 
         strategy.initialize_forward({destination.data(), destination.size()});
 
@@ -57,20 +59,20 @@ public:
 
         // Verify output.
         Assert::AreEqual(size_t{13}, strategy.get_length_forward());
-        Assert::AreEqual(uint8_t{}, destination[0]);
-        Assert::AreEqual(uint8_t{}, destination[1]);
-        Assert::AreEqual(uint8_t{}, destination[2]);
-        Assert::AreEqual(uint8_t{0xFF}, destination[3]);
-        Assert::AreEqual(uint8_t{0x7F}, destination[4]); // extra 0 bit.
-        Assert::AreEqual(uint8_t{0xFF}, destination[5]);
-        Assert::AreEqual(uint8_t{0x7F}, destination[6]); // extra 0 bit.
-        Assert::AreEqual(uint8_t{0xFF}, destination[7]);
-        Assert::AreEqual(uint8_t{0x60}, destination[8]);
-        Assert::AreEqual(uint8_t{}, destination[9]);
-        Assert::AreEqual(uint8_t{}, destination[10]);
-        Assert::AreEqual(uint8_t{}, destination[11]);
-        Assert::AreEqual(uint8_t{0xC0}, destination[12]);
-        Assert::AreEqual(uint8_t{0x77}, destination[13]);
+        Assert::AreEqual({}, destination[0]);
+        Assert::AreEqual({}, destination[1]);
+        Assert::AreEqual({}, destination[2]);
+        Assert::AreEqual(byte{0xFF}, destination[3]);
+        Assert::AreEqual(byte{0x7F}, destination[4]); // extra 0 bit.
+        Assert::AreEqual(byte{0xFF}, destination[5]);
+        Assert::AreEqual(byte{0x7F}, destination[6]); // extra 0 bit.
+        Assert::AreEqual(byte{0xFF}, destination[7]);
+        Assert::AreEqual(byte{0x60}, destination[8]);
+        Assert::AreEqual({}, destination[9]);
+        Assert::AreEqual({}, destination[10]);
+        Assert::AreEqual({}, destination[11]);
+        Assert::AreEqual(byte{0xC0}, destination[12]);
+        Assert::AreEqual(byte{0x77}, destination[13]);
     }
 };
 

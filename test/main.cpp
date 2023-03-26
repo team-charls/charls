@@ -21,6 +21,7 @@
 #include <vector>
 
 using std::array;
+using std::byte;
 using std::cout;
 using std::error_code;
 using std::getline;
@@ -31,10 +32,10 @@ using std::iter_swap;
 using std::mt19937;
 using std::ofstream;
 using std::ostream;
+using std::runtime_error;
 using std::streamoff;
 using std::string;
 using std::stringstream;
-using std::runtime_error;
 using std::uniform_int_distribution;
 using std::vector;
 using namespace charls;
@@ -167,7 +168,7 @@ void test_traits8_bit()
 }
 
 
-vector<uint8_t> make_some_noise(const size_t length, const size_t bit_count, const int seed)
+vector<byte> make_some_noise(const size_t length, const size_t bit_count, const int seed)
 {
     const auto max_value{(1U << bit_count) - 1U};
     mt19937 generator(seed);
@@ -175,17 +176,17 @@ vector<uint8_t> make_some_noise(const size_t length, const size_t bit_count, con
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
     uniform_int_distribution<uint32_t> distribution(0, max_value);
 
-    vector<uint8_t> buffer(length);
+    vector<byte> buffer(length);
     for (auto& pixel_value : buffer)
     {
-        pixel_value = static_cast<uint8_t>(distribution(generator));
+        pixel_value = static_cast<byte>(distribution(generator));
     }
 
     return buffer;
 }
 
 
-vector<uint8_t> make_some_noise16_bit(const size_t length, const int bit_count, const int seed)
+vector<byte> make_some_noise16_bit(const size_t length, const int bit_count, const int seed)
 {
     const auto max_value{static_cast<uint16_t>((1U << bit_count) - 1U)};
     mt19937 generator(seed);
@@ -193,13 +194,13 @@ vector<uint8_t> make_some_noise16_bit(const size_t length, const int bit_count, 
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
     uniform_int_distribution<uint16_t> distribution{0, max_value};
 
-    vector<uint8_t> buffer(length * 2);
+    vector<byte> buffer(length * 2);
     for (size_t i{}; i != length; i = i + 2)
     {
         const uint16_t value{distribution(generator)};
 
-        buffer[i] = static_cast<uint8_t>(value);
-        buffer[i] = static_cast<uint8_t>(value >> 8);
+        buffer[i] = static_cast<byte>(value);
+        buffer[i] = static_cast<byte>(value >> 8);
     }
 
     return buffer;
@@ -215,7 +216,7 @@ void test_noise_image()
         stringstream label;
         label << "noise, bit depth: " << bit_depth;
 
-        const vector<uint8_t> noise_bytes{make_some_noise(size2.cx * size2.cy, bit_depth, 21344)};
+        const auto noise_bytes{make_some_noise(size2.cx * size2.cy, bit_depth, 21344)};
         test_round_trip(label.str().c_str(), noise_bytes, size2, static_cast<int>(bit_depth), 1);
     }
 
@@ -224,7 +225,7 @@ void test_noise_image()
         stringstream label;
         label << "noise, bit depth: " << bit_depth;
 
-        const vector<uint8_t> noise_bytes{make_some_noise16_bit(size2.cx * size2.cy, bit_depth, 21344)};
+        const auto noise_bytes{make_some_noise16_bit(size2.cx * size2.cy, bit_depth, 21344)};
         test_round_trip(label.str().c_str(), noise_bytes, size2, bit_depth, 1);
     }
 }
@@ -237,7 +238,7 @@ void test_fail_on_too_small_output_buffer()
     // Trigger a "destination buffer too small" when writing the header markers.
     try
     {
-        vector<uint8_t> output_buffer(1);
+        vector<byte> output_buffer(1);
         jpegls_encoder encoder;
         encoder.destination(output_buffer);
         encoder.frame_info({8, 8, 8, 1});
@@ -252,7 +253,7 @@ void test_fail_on_too_small_output_buffer()
     // Trigger a "destination buffer too small" when writing the encoded pixel bytes.
     try
     {
-        vector<uint8_t> output_buffer(100);
+        vector<byte> output_buffer(100);
         jpegls_encoder encoder;
         encoder.destination(output_buffer);
         encoder.frame_info({8, 8, 8, 1});
@@ -268,8 +269,8 @@ void test_fail_on_too_small_output_buffer()
 
 void test_too_small_output_buffer()
 {
-    const vector<uint8_t> encoded{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
-    vector<uint8_t> destination(size_t{512} * 511);
+    const auto encoded{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
+    vector<byte> destination(size_t{512} * 511);
 
     jpegls_decoder decoder;
     decoder.source(encoded).read_header();
@@ -290,8 +291,8 @@ void test_too_small_output_buffer()
 
 void test_decode_bit_stream_with_no_marker_start()
 {
-    const array<uint8_t, 2> encoded_data{0x33, 0x33};
-    array<uint8_t, 1000> output{};
+    const array encoded_data{byte{0x33}, byte{0x33}};
+    array<byte, 1000> output{};
 
     error_code error;
     try
@@ -311,12 +312,12 @@ void test_decode_bit_stream_with_no_marker_start()
 
 void test_decode_bit_stream_with_unsupported_encoding()
 {
-    const array<uint8_t, 6> encoded_data{
-        0xFF, 0xD8, // Start Of Image (JPEG_SOI)
-        0xFF, 0xC3, // Start Of Frame (lossless, Huffman) (JPEG_SOF_3)
-        0x00, 0x00  // Length of data of the marker
+    const array encoded_data{
+        byte{0xFF}, byte{0xD8}, // Start Of Image (JPEG_SOI)
+        byte{0xFF}, byte{0xC3}, // Start Of Frame (lossless, Huffman) (JPEG_SOF_3)
+        byte{0x00}, byte{0x00}  // Length of data of the marker
     };
-    array<uint8_t, 1000> output{};
+    array<byte, 1000> output{};
 
     error_code error;
     try
@@ -336,12 +337,12 @@ void test_decode_bit_stream_with_unsupported_encoding()
 
 void test_decode_bit_stream_with_unknown_jpeg_marker()
 {
-    const array<uint8_t, 6> encoded_data{
-        0xFF, 0xD8, // Start Of Image (JPEG_SOI)
-        0xFF, 0x01, // Undefined marker
-        0x00, 0x00  // Length of data of the marker
+    const array encoded_data{
+        byte{0xFF}, byte{0xD8}, // Start Of Image (JPEG_SOI)
+        byte{0xFF}, byte{0x01}, // Undefined marker
+        byte{0x00}, byte{0x00}  // Length of data of the marker
     };
-    array<uint8_t, 1000> output{};
+    array<byte, 1000> output{};
 
     error_code error;
     try
@@ -370,13 +371,13 @@ void test_encode_from_stream(const char* filename, const size_t offset, const ui
     length -= offset;
 
     // Note: use a buffer until the new API provides passing a callback function to read.
-    vector<uint8_t> source(length);
+    vector<byte> source(length);
     read(source_file, source);
 
     jpegls_encoder encoder;
     encoder.frame_info({width, height, bits_per_sample, component_count}).interleave_mode(interleave_mode);
 
-    vector<uint8_t> encoded_destination(encoder.estimated_destination_size());
+    vector<byte> encoded_destination(encoder.estimated_destination_size());
     encoder.destination(encoded_destination);
 
     assert::is_true(encoder.encode(source) == expected_length);
@@ -389,10 +390,10 @@ try
     ifstream input{open_input_stream(filename_input)};
 
     const size_t length{get_stream_length(input)};
-    vector<uint8_t> encoded_source(length);
+    vector<byte> encoded_source(length);
     read(input, encoded_source);
 
-    vector<uint8_t> decoded_destination;
+    vector<byte> decoded_destination;
     frame_info frame_info;
     interleave_mode interleave_mode;
     std::tie(frame_info, interleave_mode) = jpegls_decoder::decode(encoded_source, decoded_destination);
@@ -406,7 +407,7 @@ try
     // PPM format only supports by-pixel, convert if needed.
     if (interleave_mode == charls::interleave_mode::none && frame_info.component_count == 3)
     {
-        vector<uint8_t> pixels(decoded_destination.size());
+        vector<byte> pixels(decoded_destination.size());
         if (frame_info.bits_per_sample > 8)
         {
             convert_planar_to_pixel<uint16_t>(frame_info.width, frame_info.height, decoded_destination.data(),
@@ -452,10 +453,8 @@ vector<int> read_pnm_header(istream& pnm_file)
 {
     vector<int> read_values;
 
-    const auto first{static_cast<char>(pnm_file.get())};
-
     // All portable anymap format (PNM) start with the character P.
-    if (first != 'P')
+    if (const auto first{static_cast<char>(pnm_file.get())}; first != 'P')
         return read_values;
 
     while (read_values.size() < 4)
@@ -487,7 +486,7 @@ try
 {
     ifstream pnm_file(open_input_stream(filename_input));
 
-    const vector<int> read_values{read_pnm_header(pnm_file)};
+    const auto read_values{read_pnm_header(pnm_file)};
     if (read_values.size() != 4)
         return false;
 
@@ -534,14 +533,14 @@ catch (const runtime_error& error)
 
 bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
 {
-    const vector<int> header1{read_pnm_header(pnm_file1)};
+    const auto header1{read_pnm_header(pnm_file1)};
     if (header1.size() != 4)
     {
         cout << "Cannot read header from input file 1\n";
         return false;
     }
 
-    const vector<int> header2{read_pnm_header(pnm_file2)};
+    const auto header2{read_pnm_header(pnm_file2)};
     if (header2.size() != 4)
     {
         cout << "Cannot read header from input file 2\n";
@@ -576,8 +575,8 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
     const auto bytes_per_sample{header1[3] > 255 ? 2 : 1};
 
     const size_t byte_count{width * height * bytes_per_sample};
-    vector<uint8_t> bytes1(byte_count);
-    vector<uint8_t> bytes2(byte_count);
+    vector<byte> bytes1(byte_count);
+    vector<byte> bytes2(byte_count);
 
     read(pnm_file1, bytes1);
     read(pnm_file2, bytes2);
@@ -614,8 +613,8 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
 bool decode_raw(const char* filename_encoded, const char* filename_output)
 try
 {
-    const vector<uint8_t> encoded_source{read_file(filename_encoded)};
-    vector<uint8_t> decoded_destination;
+    const auto encoded_source{read_file(filename_encoded)};
+    vector<byte> decoded_destination;
     jpegls_decoder::decode(encoded_source, decoded_destination);
     write_file(filename_output, decoded_destination.data(), decoded_destination.size());
     return true;

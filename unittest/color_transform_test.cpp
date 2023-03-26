@@ -13,6 +13,7 @@
 #include <vector>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
+using std::byte;
 using std::vector;
 
 namespace charls::test {
@@ -102,11 +103,11 @@ public:
 
     TEST_METHOD(decode_non_8_or_16_bit_that_is_not_supported_throws) // NOLINT
     {
-        const vector<uint8_t> jpegls_data{read_file("land10-10bit-rgb-hp3-invalid.jls")};
+        const auto jpegls_data{read_file("land10-10bit-rgb-hp3-invalid.jls")};
 
         const jpegls_decoder decoder{jpegls_data, true};
 
-        vector<uint8_t> destination(decoder.destination_size());
+        vector<byte> destination(decoder.destination_size());
 
         assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported,
                                 [&decoder, &destination] { decoder.decode(destination); });
@@ -117,9 +118,9 @@ public:
         constexpr frame_info frame_info{2, 1, 10, 3};
         jpegls_encoder encoder;
 
-        vector<uint8_t> destination(40);
+        vector<byte> destination(40);
         encoder.destination(destination).frame_info(frame_info).color_transformation(color_transformation::hp3);
-        const vector<uint8_t> source(20);
+        const vector<byte> source(20);
         assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported,
                                 [&encoder, &source] { std::ignore = encoder.encode(source); });
     }
