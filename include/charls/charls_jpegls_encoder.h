@@ -290,9 +290,9 @@ public:
     /// <exception cref="std::bad_alloc">Thrown when memory for the encoder could not be allocated.</exception>
     /// <returns>Container with the JPEG-LS encoded bytes.</returns>
     template<typename Container, typename T = typename Container::value_type>
-    static Container encode(const Container& source, const charls::frame_info& frame,
-                            const charls::interleave_mode interleave_mode = charls::interleave_mode::none,
-                            const encoding_options options = charls::encoding_options::none)
+    static Container encode(const Container& source, const frame_info& frame,
+                            const interleave_mode interleave_mode = interleave_mode::none,
+                            const encoding_options options = encoding_options::none)
     {
         jpegls_encoder encoder;
         encoder.frame_info(frame).interleave_mode(interleave_mode).encoding_options(options);

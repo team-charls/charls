@@ -48,7 +48,7 @@ struct charls_jpegls_encoder final
         frame_info_ = frame_info;
     }
 
-    void interleave_mode(const charls::interleave_mode interleave_mode)
+    void interleave_mode(const interleave_mode interleave_mode)
     {
         check_interleave_mode(interleave_mode, jpegls_errc::invalid_argument_interleave_mode);
 
@@ -63,7 +63,7 @@ struct charls_jpegls_encoder final
         near_lossless_ = near_lossless;
     }
 
-    void encoding_options(const charls::encoding_options encoding_options)
+    void encoding_options(const encoding_options encoding_options)
     {
         constexpr charls::encoding_options all_options = encoding_options::even_destination_size |
                                                          encoding_options::include_version_number |
@@ -80,10 +80,10 @@ struct charls_jpegls_encoder final
         user_preset_coding_parameters_ = preset_coding_parameters;
     }
 
-    void color_transformation(const charls::color_transformation color_transformation)
+    void color_transformation(const color_transformation color_transformation)
     {
-        check_argument(color_transformation >= charls::color_transformation::none &&
-                           color_transformation <= charls::color_transformation::hp3,
+        check_argument(color_transformation >= color_transformation::none &&
+                           color_transformation <= color_transformation::hp3,
                        jpegls_errc::invalid_argument_color_transformation);
 
         color_transformation_ = color_transformation;
@@ -178,7 +178,7 @@ struct charls_jpegls_encoder final
 
         transition_to_tables_and_miscellaneous_state();
 
-        if (color_transformation_ != charls::color_transformation::none)
+        if (color_transformation_ != color_transformation::none)
         {
             if (UNLIKELY(frame_info_.bits_per_sample != 8 && frame_info_.bits_per_sample != 16))
                 throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
@@ -200,7 +200,7 @@ struct charls_jpegls_encoder final
             writer_.write_jpegls_preset_parameters_segment(preset_coding_parameters_);
         }
 
-        if (interleave_mode_ == charls::interleave_mode::none)
+        if (interleave_mode_ == interleave_mode::none)
         {
             const size_t byte_count_component{stride * frame_info_.height};
             const int32_t last_component{frame_info_.component_count - 1};
@@ -272,7 +272,7 @@ private:
     [[nodiscard]] size_t calculate_stride() const noexcept
     {
         const auto stride{static_cast<size_t>(frame_info_.width) * bit_to_byte_count(frame_info_.bits_per_sample)};
-        if (interleave_mode_ == charls::interleave_mode::none)
+        if (interleave_mode_ == interleave_mode::none)
             return stride;
 
         return stride * frame_info_.component_count;
@@ -286,7 +286,7 @@ private:
 
         // Simple check to verify user input, and prevent out-of-bound read access.
         // Stride parameter defines the number of bytes on a scan line.
-        if (interleave_mode_ == charls::interleave_mode::none)
+        if (interleave_mode_ == interleave_mode::none)
         {
             if (const size_t minimum_source_size{stride * frame_info_.component_count * frame_info_.height -
                                                  (stride - minimum_stride)};

@@ -373,7 +373,7 @@ inline void check_argument(const bool expression, const jpegls_errc error_value 
 }
 
 
-inline void check_interleave_mode(const charls::interleave_mode mode, const jpegls_errc error_value)
+inline void check_interleave_mode(const interleave_mode mode, const jpegls_errc error_value)
 {
     if (UNLIKELY(!(mode == interleave_mode::none || mode == interleave_mode::line || mode == interleave_mode::sample)))
         impl::throw_jpegls_error(error_value);

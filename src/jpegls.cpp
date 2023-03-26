@@ -64,7 +64,7 @@ vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
 template<typename Strategy, typename Traits>
 unique_ptr<Strategy> make_codec(const Traits& traits, const frame_info& frame_info, const coding_parameters& parameters)
 {
-    return make_unique<charls::jls_codec<Traits, Strategy>>(traits, frame_info, parameters);
+    return make_unique<jls_codec<Traits, Strategy>>(traits, frame_info, parameters);
 }
 
 // Functions to build tables used to decode short Golomb codes.

@@ -78,7 +78,7 @@ void jpeg_stream_writer::write_spiff_end_of_directory_entry()
     // but only 6 data bytes. This approach allows to wrap existing bit streams\encoders with a SPIFF header.
     // In this implementation the SOI marker is added as data bytes to simplify the design.
     static constexpr array<uint8_t, 6> spiff_end_of_directory{
-        {0, 0, 0, spiff_end_of_directory_entry_type, 0xFF, to_underlying_type(charls::jpeg_marker_code::start_of_image)}};
+        {0, 0, 0, spiff_end_of_directory_entry_type, 0xFF, to_underlying_type(jpeg_marker_code::start_of_image)}};
 
     write_segment_header(jpeg_marker_code::application_data8, spiff_end_of_directory.size());
     write_bytes(spiff_end_of_directory.data(), spiff_end_of_directory.size());

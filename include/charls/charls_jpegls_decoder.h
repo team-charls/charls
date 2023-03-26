@@ -242,7 +242,7 @@ public:
     /// <returns>Frame info of the decoded image and the interleave mode.</returns>
     template<typename SourceContainer, typename DestinationContainer, typename T1 = typename SourceContainer::value_type,
              typename T2 = typename DestinationContainer::value_type>
-    static std::pair<charls::frame_info, charls::interleave_mode>
+    static std::pair<frame_info, interleave_mode>
     decode(const SourceContainer& source, DestinationContainer& destination,
            const size_t maximum_size_in_bytes = size_t{7680} * 4320 * 3)
     {
