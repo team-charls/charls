@@ -53,7 +53,7 @@ bool is_valid_resolution_units(const spiff_resolution_units resolution_units) no
     return false;
 }
 
-bool is_valid_spiff_header(const spiff_header& header, const charls::frame_info& frame_info) noexcept
+bool is_valid_spiff_header(const spiff_header& header, const frame_info& frame_info) noexcept
 {
     if (header.compression_type != spiff_compression_type::jpeg_ls)
         return false;

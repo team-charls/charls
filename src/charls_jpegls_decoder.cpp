@@ -91,14 +91,14 @@ struct charls_jpegls_decoder final
 
         switch (interleave_mode())
         {
-        case charls::interleave_mode::none: {
+        case interleave_mode::none: {
             const size_t minimum_stride{static_cast<size_t>(width) * bit_to_byte_count(bits_per_sample)};
             check_argument(stride >= minimum_stride, jpegls_errc::invalid_argument_stride);
             return checked_mul(checked_mul(stride, component_count), height) - (stride - minimum_stride);
         }
 
-        case charls::interleave_mode::line:
-        case charls::interleave_mode::sample: {
+        case interleave_mode::line:
+        case interleave_mode::sample: {
             const size_t minimum_stride{static_cast<size_t>(width) * component_count *
                                         bit_to_byte_count(bits_per_sample)};
             check_argument(stride >= minimum_stride, jpegls_errc::invalid_argument_stride);
