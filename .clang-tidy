@@ -14,6 +14,7 @@
 # -hicpp-signed-bitwise => Rationale: Bad test, types are checked, not values.
 # -clang-diagnostic-c++98-compat* => Rationale: CharLS targets C++17
 # -clang-diagnostic-c++98-c++11-compat => Rationale: CharLS targets C++17
+# -clang-diagnostic-pre-c++14-compat => Rationale: CharLS targets C++17
 # -clang-diagnostic-pre-c++17-compat => Rationale: CharLS targets C++17
 # -clang-diagnostic-unused-macros => Rationale: Macros defined in header are reported as problem
 # -clang-diagnostic-sign-conversion => Rationale: warning will be enabled in additional steps
@@ -65,6 +66,7 @@ Checks:          '*,
                   -hicpp-named-parameter,
                   -clang-diagnostic-c++98-compat*,
                   -clang-diagnostic-c++98-c++11-compat,
+                  -clang-diagnostic-pre-c++14-compat,
                   -clang-diagnostic-pre-c++17-compat,
                   -clang-diagnostic-unused-macros,
                   -clang-diagnostic-sign-conversion,

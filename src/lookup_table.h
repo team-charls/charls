@@ -16,7 +16,7 @@ struct golomb_code final
 {
     golomb_code() = default;
 
-    golomb_code(const int32_t value, const uint32_t length) noexcept : value_{value}, length_{length}
+    constexpr golomb_code(const int32_t value, const uint32_t length) noexcept : value_{value}, length_{length}
     {
     }
 
@@ -25,7 +25,7 @@ struct golomb_code final
         return value_;
     }
 
-    [[nodiscard]] uint32_t length() const noexcept
+    [[nodiscard]] constexpr uint32_t length() const noexcept
     {
         return length_;
     }
@@ -41,15 +41,15 @@ class golomb_code_table final
 public:
     static constexpr size_t byte_bit_count{8};
 
-    void add_entry(const uint8_t value, const golomb_code c) noexcept
+    constexpr void add_entry(const uint8_t value, const golomb_code code) noexcept
     {
-        const uint32_t length{c.length()};
+        const uint32_t length{code.length()};
         ASSERT(static_cast<size_t>(length) <= byte_bit_count);
 
         for (size_t i{}; i < conditional_static_cast<size_t>(1U) << (byte_bit_count - length); ++i)
         {
             ASSERT(types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i].length() == 0);
-            types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i] = c;
+            types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i] = code;
         }
     }
 
