@@ -11,13 +11,13 @@
 namespace charls {
 
 template<typename T, typename U, std::enable_if_t<!std::is_same_v<T, U>, int> = 0>
-T conditional_static_cast(U value) noexcept
+constexpr T conditional_static_cast(U value) noexcept
 {
     return static_cast<T>(value);
 }
 
 template<typename T, typename U, std::enable_if_t<std::is_same_v<T, U>, int> = 0>
-T conditional_static_cast(U value) noexcept
+constexpr T conditional_static_cast(U value) noexcept
 {
     return value;
 }
