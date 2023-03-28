@@ -240,11 +240,10 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <exception cref="std::bad_alloc">Thrown when memory for the decoder could not be allocated.</exception>
     /// <returns>Frame info of the decoded image and the interleave mode.</returns>
-    template<typename SourceContainer, typename DestinationContainer, typename T1 = typename SourceContainer::value_type,
-             typename T2 = typename DestinationContainer::value_type>
-    static std::pair<frame_info, interleave_mode>
-    decode(const SourceContainer& source, DestinationContainer& destination,
-           const size_t maximum_size_in_bytes = size_t{7680} * 4320 * 3)
+    template<typename SourceContainer, typename DestinationContainer,
+             typename DestinationContainerValueType = typename DestinationContainer::value_type>
+    static std::pair<frame_info, interleave_mode> decode(const SourceContainer& source, DestinationContainer& destination,
+                                                         const size_t maximum_size_in_bytes = size_t{7680} * 4320 * 3)
     {
         jpegls_decoder decoder{source, true};
 
@@ -252,7 +251,7 @@ public:
         if (destination_size > maximum_size_in_bytes)
             impl::throw_jpegls_error(jpegls_errc::not_enough_memory);
 
-        destination.resize(destination_size / sizeof(typename DestinationContainer::value_type));
+        destination.resize(destination_size / sizeof(DestinationContainerValueType));
         decoder.decode(destination);
 
         return std::make_pair(decoder.frame_info(), decoder.interleave_mode());
@@ -294,10 +293,9 @@ public:
     /// </param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <exception cref="std::bad_alloc">Thrown when memory for the decoder could not be allocated.</exception>
-    template<typename Container, typename T = typename Container::value_type>
+    template<typename Container, typename ContainerValueType = typename Container::value_type>
     jpegls_decoder(const Container& source_container, const bool parse_header) :
-        jpegls_decoder(source_container.data(), source_container.size() * sizeof(typename Container::value_type),
-                       parse_header)
+        jpegls_decoder(source_container.data(), source_container.size() * sizeof(ContainerValueType), parse_header)
     {
     }
 
@@ -324,10 +322,10 @@ public:
     /// A STL like container that provides the functions data() and size() and the type value_type.
     /// </param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
-    template<typename Container, typename T = typename Container::value_type>
+    template<typename Container, typename ContainerValueType = typename Container::value_type>
     jpegls_decoder& source(const Container& source_container)
     {
-        return source(source_container.data(), source_container.size() * sizeof(typename Container::value_type));
+        return source(source_container.data(), source_container.size() * sizeof(ContainerValueType));
     }
 
     /// <summary>
@@ -532,10 +530,10 @@ public:
     /// </param>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
-    template<typename Container, typename T = typename Container::value_type>
+    template<typename Container, typename ContainerValueType = typename Container::value_type>
     void decode(CHARLS_OUT Container& destination_container, const uint32_t stride = 0) const
     {
-        decode(destination_container.data(), destination_container.size() * sizeof(typename Container::value_type), stride);
+        decode(destination_container.data(), destination_container.size() * sizeof(ContainerValueType), stride);
     }
 
     /// <summary>
@@ -544,12 +542,12 @@ public:
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>Container with the decoded data.</returns>
-    template<typename Container, typename T = typename Container::value_type>
+    template<typename Container, typename ContainerValueType = typename Container::value_type>
     [[nodiscard]] Container decode(const uint32_t stride = 0) const
     {
-        Container destination(destination_size() / sizeof(typename Container::value_type));
+        Container destination(destination_size() / sizeof(ContainerValueType));
 
-        decode(destination.data(), destination.size() * sizeof(typename Container::value_type), stride);
+        decode(destination.data(), destination.size() * sizeof(ContainerValueType), stride);
         return destination;
     }
 

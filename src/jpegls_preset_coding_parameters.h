@@ -91,13 +91,13 @@ inline bool is_valid(const jpegls_pc_parameters& pc_parameters, const int32_t ma
         (pc_parameters.threshold1 < near_lossless + 1 || pc_parameters.threshold1 > maximum_sample_value))
         return false;
 
-    const jpegls_pc_parameters default_parameters{compute_default(maximum_sample_value, near_lossless)};
-    if (const int32_t threshold1{pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : default_parameters.threshold1};
+    const auto [_, d_threshold1, d_threshold2, d_threshold3, d_reset_value]{compute_default(maximum_sample_value, near_lossless)};
+    if (const int32_t threshold1{pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : d_threshold1};
         pc_parameters.threshold2 != 0 &&
         (pc_parameters.threshold2 < threshold1 || pc_parameters.threshold2 > maximum_sample_value))
         return false;
 
-    if (const int32_t threshold2{pc_parameters.threshold2 != 0 ? pc_parameters.threshold2 : default_parameters.threshold2};
+    if (const int32_t threshold2{pc_parameters.threshold2 != 0 ? pc_parameters.threshold2 : d_threshold2};
         pc_parameters.threshold3 != 0 &&
         (pc_parameters.threshold3 < threshold2 || pc_parameters.threshold3 > maximum_sample_value))
         return false;
@@ -110,13 +110,13 @@ inline bool is_valid(const jpegls_pc_parameters& pc_parameters, const int32_t ma
     {
         validated_parameters->maximum_sample_value = maximum_sample_value;
         validated_parameters->threshold1 =
-            pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : default_parameters.threshold1;
+            pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : d_threshold1;
         validated_parameters->threshold2 =
-            pc_parameters.threshold2 != 0 ? pc_parameters.threshold2 : default_parameters.threshold2;
+            pc_parameters.threshold2 != 0 ? pc_parameters.threshold2 : d_threshold2;
         validated_parameters->threshold3 =
-            pc_parameters.threshold3 != 0 ? pc_parameters.threshold3 : default_parameters.threshold3;
+            pc_parameters.threshold3 != 0 ? pc_parameters.threshold3 : d_threshold3;
         validated_parameters->reset_value =
-            pc_parameters.reset_value != 0 ? pc_parameters.reset_value : default_parameters.reset_value;
+            pc_parameters.reset_value != 0 ? pc_parameters.reset_value : d_reset_value;
     }
 
     return true;
