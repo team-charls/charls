@@ -120,6 +120,7 @@ const array<golomb_code_table, max_k_value> decoding_tables{
     initialize_table(12), initialize_table(13), initialize_table(14), initialize_table(15)};
 
 // Lookup tables: sample differences to bin indexes.
+// ReSharper disable CppTemplateArgumentsCanBeDeduced
 // NOLINTNEXTLINE(clang-diagnostic-global-constructors)
 const vector<int8_t> quantization_lut_lossless_8{create_quantize_lut_lossless(8)};
 
@@ -131,6 +132,7 @@ const vector<int8_t> quantization_lut_lossless_12{create_quantize_lut_lossless(1
 
 // NOLINTNEXTLINE(clang-diagnostic-global-constructors)
 const vector<int8_t> quantization_lut_lossless_16{create_quantize_lut_lossless(16)};
+// ReSharper restore CppTemplateArgumentsCanBeDeduced
 
 
 template<typename Strategy>

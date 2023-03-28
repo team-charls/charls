@@ -289,7 +289,7 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <exception cref="std::bad_alloc">Thrown when memory for the encoder could not be allocated.</exception>
     /// <returns>Container with the JPEG-LS encoded bytes.</returns>
-    template<typename Container, typename T = typename Container::value_type>
+    template<typename Container, typename ContainerValueType = typename Container::value_type>
     static Container encode(const Container& source, const frame_info& frame,
                             const interleave_mode interleave_mode = interleave_mode::none,
                             const encoding_options options = encoding_options::none)
@@ -300,7 +300,7 @@ public:
         Container destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
-        const size_t bytes_written{encoder.encode(source)};
+        const size_t bytes_written{encoder.encode<Container, ContainerValueType>(source)};
         destination.resize(bytes_written);
 
         return destination;
@@ -414,11 +414,10 @@ public:
     /// <param name="destination_container">
     /// The STL like container, that supports the functions data() and size() and the typedef value_type.
     /// </param>
-    template<typename Container, typename T = typename Container::value_type>
+    template<typename Container, typename ContainerValueType = typename Container::value_type>
     jpegls_encoder& destination(Container& destination_container)
     {
-        return destination(destination_container.data(),
-                           destination_container.size() * sizeof(typename Container::value_type));
+        return destination(destination_container.data(), destination_container.size() * sizeof(ContainerValueType));
     }
 
     template<typename Container, typename T = typename Container::value_type>
@@ -552,10 +551,10 @@ public:
     /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
     /// </param>
     /// <returns>The number of bytes written to the destination.</returns>
-    template<typename Container, typename T = typename Container::value_type>
+    template<typename Container, typename ContainerValueType = typename Container::value_type>
     size_t encode(const Container& source_container, const uint32_t stride = 0) const
     {
-        return encode(source_container.data(), source_container.size() * sizeof(typename Container::value_type), stride);
+        return encode(source_container.data(), source_container.size() * sizeof(ContainerValueType), stride);
     }
 
     /// <summary>

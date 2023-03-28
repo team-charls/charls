@@ -744,7 +744,7 @@ private:
         const pixel_type ra{current_line_[start_index - 1]};
 
         const int32_t run_length{decode_run_pixels(ra, current_line_ + start_index, width_ - start_index)};
-        const uint32_t end_index{static_cast<uint32_t>(start_index + run_length)};
+        const auto end_index{static_cast<uint32_t>(start_index + run_length)};
 
         if (end_index == width_)
             return end_index - start_index;
