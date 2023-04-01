@@ -35,7 +35,7 @@ public:
 
     TEST_METHOD(is_error_code_enum) // NOLINT
     {
-        constexpr std::is_error_code_enum<charls::jpegls_errc> test;
+        constexpr std::is_error_code_enum<jpegls_errc> test;
 
         Assert::IsTrue(test);
     }

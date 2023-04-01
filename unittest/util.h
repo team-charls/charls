@@ -14,15 +14,17 @@
 
 namespace charls::test {
 
-std::vector<std::byte> read_file(const char* filename);
+[[nodiscard]] std::vector<std::byte> read_file(const char* filename);
 
-charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode,
-                                                             const frame_info& frame_info);
-charls_test::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode);
-std::vector<std::byte> create_test_spiff_header(uint8_t high_version = 2, uint8_t low_version = 0,
-                                                bool end_of_directory = true, uint8_t component_count = 3);
-std::vector<std::byte> create_noise_image_16_bit(size_t pixel_count, int bit_count, uint32_t seed);
-bool verify_encoded_bytes(const std::vector<std::byte>& uncompressed_source, const std::vector<std::byte>& encoded_source);
+[[nodiscard]] charls_test::portable_anymap_file
+read_anymap_reference_file(const char* filename, interleave_mode interleave_mode, const frame_info& frame_info);
+[[nodiscard]] charls_test::portable_anymap_file read_anymap_reference_file(const char* filename,
+                                                                           interleave_mode interleave_mode);
+[[nodiscard]] std::vector<std::byte> create_test_spiff_header(uint8_t high_version = 2, uint8_t low_version = 0,
+                                                              bool end_of_directory = true, uint8_t component_count = 3);
+[[nodiscard]] std::vector<std::byte> create_noise_image_16_bit(size_t pixel_count, int bit_count, uint32_t seed);
+[[nodiscard]] bool verify_encoded_bytes(const std::vector<std::byte>& uncompressed_source,
+                                        const std::vector<std::byte>& encoded_source);
 void verify_decoded_bytes(interleave_mode interleave_mode, const frame_info& frame_info,
                           const std::vector<std::byte>& uncompressed_data, size_t destination_stride,
                           const char* reference_filename);
@@ -33,7 +35,7 @@ void test_compliance(const std::vector<std::byte>& encoded_source, const std::ve
 /// <summary>
 /// Computes how many bytes are needed to hold the number of bits.
 /// </summary>
-constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
+[[nodiscard]] constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
 {
     return static_cast<uint32_t>((bit_count + 7) / 8);
 }

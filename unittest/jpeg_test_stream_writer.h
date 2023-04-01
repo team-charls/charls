@@ -172,12 +172,12 @@ public:
     {
         write_marker(marker_code);
         write_uint16(static_cast<uint16_t>(data_size + 2));
-        write_bytes(data, data_size);
+        write_bytes(static_cast<const std::byte*>(data), data_size);
     }
 
     void write_marker(jpeg_marker_code marker_code)
     {
-        write_byte(static_cast<std::byte>(jpeg_marker_start_byte));
+        write_byte(jpeg_marker_start_byte);
         write_byte(static_cast<std::byte>(marker_code));
     }
 
@@ -192,13 +192,11 @@ public:
         buffer.push_back(value);
     }
 
-    void write_bytes(const void* data, const size_t data_size)
+    void write_bytes(const std::byte* data, const size_t data_size)
     {
-        const auto* const bytes{static_cast<const std::byte*>(data)};
-
-        for (size_t i{}; i < data_size; ++i)
+        for (size_t i{}; i != data_size; ++i)
         {
-            write_byte(bytes[i]);
+            write_byte(data[i]);
         }
     }
 

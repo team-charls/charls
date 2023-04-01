@@ -1157,7 +1157,7 @@ public:
 
     TEST_METHOD(encode_1_component_4_bit_with_high_bits_set) // NOLINT
     {
-        const vector<byte> source(size_t{512} * 512, byte{0xFF});
+        const vector source(size_t{512} * 512, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 4, 1};
 
         jpegls_encoder encoder;
@@ -1169,13 +1169,13 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<byte> expected(size_t{512} * 512, byte{15});
+        const vector expected(size_t{512} * 512, byte{15});
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
     }
 
     TEST_METHOD(encode_1_component_12_bit_with_high_bits_set) // NOLINT
     {
-        const vector<byte> source(size_t{512} * 512 * 2, byte{0xFF});
+        const vector source(size_t{512} * 512 * 2, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 12, 1};
 
         jpegls_encoder encoder;
@@ -1686,8 +1686,10 @@ private:
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
+    // ReSharper disable CppPassValueParameterByConstReference (iterators are not simple pointers in debug builds)
     static vector<byte>::const_iterator find_first_lse_segment(const vector<byte>::const_iterator begin,
                                                                const vector<byte>::const_iterator end) noexcept
+    // ReSharper restore CppPassValueParameterByConstReference
     {
         constexpr byte lse_marker{0xF8};
 

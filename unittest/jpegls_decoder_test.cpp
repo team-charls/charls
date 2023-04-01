@@ -22,7 +22,6 @@ using std::byte;
 using std::error_code;
 using std::ignore;
 using std::numeric_limits;
-using std::tie;
 using std::vector;
 using namespace charls_test;
 
@@ -30,7 +29,7 @@ namespace charls::test {
 
 namespace {
 
-jpegls_decoder create_decoder(const vector<byte>& source)
+[[nodiscard]] jpegls_decoder create_decoder(const vector<byte>& source)
 {
     return {source, true};
 }
@@ -569,9 +568,7 @@ public:
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
         vector<byte> decoded_destination;
-        frame_info frame_info;
-        interleave_mode interleave_mode;
-        tie(frame_info, interleave_mode) = jpegls_decoder::decode(encoded_source, decoded_destination);
+        const auto [frame_info, interleave_mode]{jpegls_decoder::decode(encoded_source, decoded_destination)};
 
         Assert::AreEqual(3, frame_info.component_count);
         Assert::AreEqual(8, frame_info.bits_per_sample);
@@ -588,9 +585,7 @@ public:
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
         vector<uint16_t> decoded_destination;
-        frame_info frame_info;
-        interleave_mode interleave_mode;
-        tie(frame_info, interleave_mode) = jpegls_decoder::decode(encoded_source, decoded_destination);
+        const auto [frame_info, interleave_mode]{jpegls_decoder::decode(encoded_source, decoded_destination)};
 
         Assert::AreEqual(3, frame_info.component_count);
         Assert::AreEqual(8, frame_info.bits_per_sample);
@@ -630,7 +625,7 @@ public:
         {
             // Copy the vector to ensure source buffer has a defined limit (resize() keeps memory)
             // that can be checked with address sanitizer.
-            const vector<byte> source(encoded.cbegin(), encoded.cend() - 1);
+            const vector source(encoded.cbegin(), encoded.cend() - 1);
 
             const jpegls_decoder decoder{source, true};
             vector<byte> destination(decoder.destination_size());
@@ -639,7 +634,7 @@ public:
         }
 
         {
-            const vector<byte> source(encoded.cbegin(), encoded.cend() - 2);
+            const vector source(encoded.cbegin(), encoded.cend() - 2);
             const jpegls_decoder decoder{source, true};
             vector<byte> destination(decoder.destination_size());
 
@@ -996,7 +991,7 @@ public:
         constexpr frame_info frame_info{100, 100, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
 
-        const vector<byte> encoded_source{
+        const vector encoded_source{
             jpegls_encoder::encode(source, frame_info, interleave_mode::none, encoding_options::even_destination_size)};
 
         jpegls_decoder decoder;
@@ -1013,8 +1008,10 @@ public:
     }
 
 private:
-    static vector<byte>::iterator find_scan_header(const vector<byte>::iterator begin,
-                                                   const vector<byte>::iterator end) noexcept
+    // ReSharper disable CppPassValueParameterByConstReference
+    [[nodiscard]] static vector<byte>::iterator find_scan_header(const vector<byte>::iterator begin,
+                                                                 const vector<byte>::iterator end) noexcept
+    // ReSharper restore CppPassValueParameterByConstReference
     {
         constexpr byte start_of_scan{0xDA};
 
@@ -1027,8 +1024,10 @@ private:
         return end;
     }
 
-    static vector<byte>::iterator find_first_restart_marker(const vector<byte>::iterator begin,
-                                                               const vector<byte>::iterator end) noexcept
+    // ReSharper disable CppPassValueParameterByConstReference
+    [[nodiscard]] static vector<byte>::iterator find_first_restart_marker(const vector<byte>::iterator begin,
+                                                                          const vector<byte>::iterator end) noexcept
+    // ReSharper restore CppPassValueParameterByConstReference
     {
         constexpr byte first_restart_marker{0xD0};
 
@@ -1041,7 +1040,7 @@ private:
         return end;
     }
 
-    static vector<byte> create_default_pc_parameters_segment()
+    [[nodiscard]] static vector<byte> create_default_pc_parameters_segment()
     {
         vector<byte> segment;
 

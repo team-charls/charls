@@ -75,9 +75,9 @@ public:
 
         encoder.initialize_forward({enc_buf.data(), enc_buf.size()});
 
-        for (const auto& data : in_data)
+        for (const auto& [value, bits] : in_data)
         {
-            encoder.append_to_bit_stream_forward(data.value, data.bits);
+            encoder.append_to_bit_stream_forward(value, bits);
         }
 
         encoder.end_scan_forward();
@@ -85,10 +85,10 @@ public:
 
         const auto length{encoder.get_length_forward()};
         decoder_strategy_tester decoder(frame_info, parameters, enc_buf.data(), length);
-        for (const auto& data : in_data)
+        for (const auto& [value, bits] : in_data)
         {
-            const auto actual{decoder.read(data.bits)};
-            Assert::AreEqual(data.value, actual);
+            const auto actual{decoder.read(bits)};
+            Assert::AreEqual(value, actual);
         }
     }
 

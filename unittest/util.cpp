@@ -187,8 +187,7 @@ bool verify_encoded_bytes(const vector<byte>& uncompressed_source, const vector<
     vector<byte> our_encoded_bytes(encoded_source.size() + 16);
     encoder.destination(our_encoded_bytes);
 
-    const size_t bytes_written{encoder.encode(uncompressed_source)};
-    if (bytes_written != encoded_source.size())
+    if (const size_t bytes_written{encoder.encode(uncompressed_source)}; bytes_written != encoded_source.size())
         return false;
 
     for (size_t i{}; i != encoded_source.size(); ++i)
