@@ -51,7 +51,7 @@ std::vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
 }
 
 
-const std::vector<int8_t> quantization_lut_lossless_8{create_quantize_lut_lossless(8)};
+const std::vector quantization_lut_lossless_8{create_quantize_lut_lossless(8)};
 
 template<typename Traits>
 struct scan_decoder
@@ -70,7 +70,7 @@ struct scan_decoder
         t3_ = preset.threshold3;
     }
 
-    int8_t quantize_gradient_org(const int32_t di) const noexcept
+    [[nodiscard]] int8_t quantize_gradient_org(const int32_t di) const noexcept
     {
         if (di <= -t3_)
             return -4;
@@ -288,12 +288,12 @@ public:
         size_ = new_size;
     }
 
-    uint8_t* data() const noexcept
+    [[nodiscard]] uint8_t* data() const noexcept
     {
         return data_.get();
     }
 
-    size_t size() const noexcept
+    [[nodiscard]] size_t size() const noexcept
     {
         return size_;
     }

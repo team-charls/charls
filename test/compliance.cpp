@@ -121,15 +121,15 @@ void decompress_file(const char* name_encoded, const char* name_raw, const int o
 
     auto raw_buffer{read_file(name_raw, offset)};
 
-    const auto& frame_info{decoder.frame_info()};
-    if (frame_info.bits_per_sample > 8)
+    const auto& [width, height, bits_per_sample, component_count]{decoder.frame_info()};
+    if (bits_per_sample > 8)
     {
         fix_endian(&raw_buffer, false);
     }
 
-    if (decoder.interleave_mode() == interleave_mode::none && frame_info.component_count == 3)
+    if (decoder.interleave_mode() == interleave_mode::none && component_count == 3)
     {
-        triplet2_planar(raw_buffer, rect_size(frame_info.width, frame_info.height));
+        triplet2_planar(raw_buffer, {width, height});
     }
 
     test_compliance(encoded_buffer.data(), encoded_buffer.size(), raw_buffer.data(), raw_buffer.size(), check_encode);

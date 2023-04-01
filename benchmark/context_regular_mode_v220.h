@@ -23,7 +23,7 @@ struct jls_context_v220 final
     {
     }
 
-    FORCE_INLINE int32_t get_error_correction(const int32_t k) const noexcept
+    [[nodiscard]] FORCE_INLINE int32_t get_error_correction(const int32_t k) const noexcept
     {
         if (k != 0)
             return 0;
@@ -42,8 +42,7 @@ struct jls_context_v220 final
         int b{B + error_value * (2 * near_lossless + 1)};
         int n{N};
 
-        constexpr int limit{65536 * 256};
-        if (UNLIKELY(a >= limit || std::abs(b) >= limit))
+        if (constexpr int limit{65536 * 256}; UNLIKELY(a >= limit || std::abs(b) >= limit))
             impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
 
         if (n == reset_threshold)
@@ -84,7 +83,7 @@ struct jls_context_v220 final
     /// <para>Computes the Golomb coding parameter using the algorithm as defined in ISO/IEC 14495-1, code segment A.10 </para>
     /// <para>Original algorithm is: for (k = 0; (N[Q] << k) < A[Q]; k++) </para>
     /// </summary>
-    FORCE_INLINE int32_t get_golomb_coding_parameter() const
+    [[nodiscard]] FORCE_INLINE int32_t get_golomb_coding_parameter() const
     {
         int32_t k{};
         for (; N << k < A && k < max_k_value; ++k)

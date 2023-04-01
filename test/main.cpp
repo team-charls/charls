@@ -423,9 +423,8 @@ try
 
     // PNM format requires most significant byte first (big endian).
     const int max_value{(1 << frame_info.bits_per_sample) - 1};
-    const int bytes_per_sample{max_value > 255 ? 2 : 1};
 
-    if (bytes_per_sample == 2)
+    if (const int bytes_per_sample{max_value > 255 ? 2 : 1}; bytes_per_sample == 2)
     {
         for (auto i{decoded_destination.begin()}; i != decoded_destination.end(); i += 2)
         {
@@ -757,8 +756,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 
             // Extract the optional loop count from the command line. Longer running tests make the measurements more
             // reliable.
-            auto index{str.find(':')};
-            if (index != string::npos)
+            if (auto index{str.find(':')}; index != string::npos)
             {
                 loop_count = stoi(str.substr(++index));
                 if (loop_count < 1)
@@ -785,8 +783,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 
             // Extract the optional loop count from the command line. Longer running tests make the measurements more
             // reliable.
-            auto index{str.find(':')};
-            if (index != string::npos)
+            if (auto index{str.find(':')}; index != string::npos)
             {
                 loop_count = stoi(str.substr(++index));
                 if (loop_count < 1)
@@ -806,8 +803,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 
             // Extract the optional loop count from the command line. Longer running tests make the measurements more
             // reliable.
-            auto index{str.find(':')};
-            if (index != string::npos)
+            if (auto index{str.find(':')}; index != string::npos)
             {
                 loop_count = stoi(str.substr(++index));
                 if (loop_count < 1)
