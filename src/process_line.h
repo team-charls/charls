@@ -43,9 +43,9 @@ class post_process_single_component final : public process_line
 {
 public:
     post_process_single_component(void* raw_data, const size_t stride, const size_t bytes_per_pixel) noexcept :
-        raw_data_{static_cast<uint8_t*>(raw_data)}, bytes_per_pixel_{bytes_per_pixel}, stride_{stride}
+        raw_data_{static_cast<std::byte*>(raw_data)}, bytes_per_pixel_{bytes_per_pixel}, stride_{stride}
     {
-        ASSERT(bytes_per_pixel == sizeof(uint8_t) || bytes_per_pixel == sizeof(uint16_t));
+        ASSERT(bytes_per_pixel == sizeof(std::byte) || bytes_per_pixel == sizeof(uint16_t));
     }
 
     void new_line_requested(void* destination, const size_t pixel_count,
@@ -62,7 +62,7 @@ public:
     }
 
 private:
-    uint8_t* raw_data_;
+    std::byte* raw_data_;
     size_t bytes_per_pixel_;
     size_t stride_;
 };
@@ -77,37 +77,37 @@ public:
         bytes_per_pixel_{bytes_per_pixel},
         stride_{stride},
         mask_{(1U << bits_per_pixel) - 1U},
-        single_byte_pixel_{bytes_per_pixel_ == sizeof(uint8_t)}
+        single_byte_pixel_{bytes_per_pixel_ == sizeof(std::byte)}
     {
-        ASSERT(bytes_per_pixel == sizeof(uint8_t) || bytes_per_pixel == sizeof(uint16_t));
+        ASSERT(bytes_per_pixel == sizeof(std::byte) || bytes_per_pixel == sizeof(uint16_t));
     }
 
     void new_line_requested(void* destination, const size_t pixel_count,
-                            size_t /* destination_stride */) noexcept(false) override
+                            const size_t /* destination_stride */) noexcept(false) override
     {
         if (single_byte_pixel_)
         {
-            const auto* pixel_source{static_cast<uint8_t*>(raw_data_)};
-            auto* pixel_destination{static_cast<uint8_t*>(destination)};
-            for (size_t i{}; i < pixel_count; ++i)
+            const auto* pixel_source{static_cast<std::byte*>(raw_data_)};
+            auto* pixel_destination{static_cast<std::byte*>(destination)};
+            for (size_t i{}; i != pixel_count; ++i)
             {
-                pixel_destination[i] = static_cast<uint8_t>(pixel_source[i] & mask_);
+                pixel_destination[i] = pixel_source[i] & static_cast<std::byte>(mask_);
             }
         }
         else
         {
             const auto* pixel_source{static_cast<uint16_t*>(raw_data_)};
             auto* pixel_destination{static_cast<uint16_t*>(destination)};
-            for (size_t i{}; i < pixel_count; ++i)
+            for (size_t i{}; i != pixel_count; ++i)
             {
                 pixel_destination[i] = static_cast<uint16_t>(pixel_source[i] & mask_);
             }
         }
 
-        raw_data_ = static_cast<uint8_t*>(raw_data_) + stride_;
+        raw_data_ = static_cast<std::byte*>(raw_data_) + stride_;
     }
 
-    void new_line_decoded(const void* source, const size_t pixel_count, size_t /* source_stride */) noexcept(false) override
+    void new_line_decoded(const void* source, const size_t pixel_count, const size_t /* source_stride */) noexcept(false) override
     {
         memcpy(raw_data_, source, pixel_count * bytes_per_pixel_);
         raw_data_ = static_cast<uint8_t*>(raw_data_) + stride_;
