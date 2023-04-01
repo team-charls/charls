@@ -265,9 +265,7 @@ private:
 
     FORCE_INLINE void encode_mapped_value(const int32_t k, const int32_t mapped_error, const int32_t limit)
     {
-        int32_t high_bits{mapped_error >> k};
-
-        if (high_bits < limit - traits_.quantized_bits_per_pixel - 1)
+        if (int32_t high_bits{mapped_error >> k}; high_bits < limit - traits_.quantized_bits_per_pixel - 1)
         {
             if (high_bits + 1 > 31)
             {
@@ -559,7 +557,7 @@ private:
             for (uint32_t mcu{}; mcu < lines_in_interval; ++mcu, ++line)
             {
                 previous_line_ = &line_buffer[1];
-                current_line_ = &line_buffer[1 + static_cast<size_t>(component_count) * pixel_stride];
+                current_line_ = &line_buffer[1 + component_count * pixel_stride];
                 if ((line & 1) == 1)
                 {
                     std::swap(previous_line_, current_line_);
@@ -579,8 +577,7 @@ private:
                     current_line_ += pixel_stride;
                 }
 
-                Strategy::on_line_end(current_line_ - (static_cast<size_t>(component_count) * pixel_stride),
-                                      frame_info().width, pixel_stride);
+                Strategy::on_line_end(current_line_ - (component_count * pixel_stride), frame_info().width, pixel_stride);
             }
 
             if (line == frame_info().height)

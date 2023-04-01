@@ -239,47 +239,47 @@ struct callback_function final
 // C++23 comes with std::byteswap. Use our own byte_swap implementation for now.
 
 // A simple overload with uint64_t\uint32_t doesn't work for macOS. size_t is not the same type as uint64_t.
-template<int Bits, typename T>
-constexpr bool is_uint_v = sizeof(T) == Bits / 8 && std::is_integral_v<T> && !std::is_signed_v<T>;
+template<int BitCount, typename T>
+constexpr bool is_uint_v = sizeof(T) == BitCount / 8 && std::is_integral_v<T> && !std::is_signed_v<T>;
 
 template<typename T>
-[[nodiscard]] auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<16, T>, uint16_t>
+[[nodiscard]] auto byte_swap(const T value) noexcept
 {
+    if constexpr (is_uint_v<16, T>)
+    {
 #ifdef _MSC_VER
-    return _byteswap_ushort(value);
+        return _byteswap_ushort(value);
 #else
-    // Note: GCC and Clang will optimize this pattern to a built-in intrinsic.
-    return static_cast<uint16_t>(value << 8 | value >> 8);
+        // Note: GCC and Clang will optimize this pattern to a built-in intrinsic.
+        return static_cast<uint16_t>(value << 8 | value >> 8);
 #endif
+    }
+    else if constexpr (is_uint_v<32, T>)
+    {
+#ifdef _MSC_VER
+        return _byteswap_ulong(value);
+#else
+        // Note: GCC and Clang will optimize this pattern to a built-in intrinsic.
+        return value >> 24 | (value & 0x00FF0000) >> 8 | (value & 0x0000FF00) << 8 | value << 24;
+#endif
+    }
+    else
+    {
+        static_assert(is_uint_v<64, T>);
+#ifdef _MSC_VER
+        return _byteswap_uint64(value);
+#else
+        // Note: GCC and Clang will optimize this pattern to a built-in intrinsic.
+        return (value << 56) | ((value << 40) & 0x00FF'0000'0000'0000) | ((value << 24) & 0x0000'FF00'0000'0000) |
+               ((value << 8) & 0x0000'00FF'0000'0000) | ((value >> 8) & 0x0000'0000'FF00'0000) |
+               ((value >> 24) & 0x0000'0000'00FF'0000) | ((value >> 40) & 0x0000'0000'0000'FF00) | (value >> 56);
+#endif
+    }
 }
 
-template<typename T>
-[[nodiscard]] auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, uint32_t>
-{
-#ifdef _MSC_VER
-    return _byteswap_ulong(value);
-#else
-    // Note: GCC and Clang will optimize this pattern to a built-in intrinsic.
-    return value >> 24 | (value & 0x00FF0000) >> 8 | (value & 0x0000FF00) << 8 | value << 24;
-#endif
-}
 
 template<typename T>
-[[nodiscard]] auto byte_swap(const T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, uint64_t>
-{
-#ifdef _MSC_VER
-    return _byteswap_uint64(value);
-#else
-    // Note: GCC and Clang will optimize this pattern to a built-in intrinsic.
-    return (value << 56) | ((value << 40) & 0x00FF'0000'0000'0000) | ((value << 24) & 0x0000'FF00'0000'0000) |
-           ((value << 8) & 0x0000'00FF'0000'0000) | ((value >> 8) & 0x0000'0000'FF00'0000) |
-           ((value >> 24) & 0x0000'0000'00FF'0000) | ((value >> 40) & 0x0000'0000'0000'FF00) | (value >> 56);
-#endif
-}
-
-
-template<typename T>
-T read_unaligned(const void* buffer) noexcept
+[[nodiscard]] T read_unaligned(const void* buffer) noexcept
 {
     // Note: MSVC, GCC and clang will replace this with a direct register read if the CPU architecture allows it
     // On x86, x64 and ARM64 this will just be 1 register load.
