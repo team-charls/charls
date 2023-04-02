@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "decoder_strategy.h"
+#include "jpeg_marker_code.h"
 #include "process_line.h"
 
 namespace charls {
@@ -45,9 +45,7 @@ protected:
 
     void append_to_bit_stream(const uint32_t bits, const int32_t bit_count)
     {
-        ASSERT(bit_count < 32 && bit_count >= 0);
-        ASSERT((!decoder_) || (bit_count == 0 && bits == 0) ||
-               (static_cast<uint32_t>(decoder_->read_long_value(bit_count)) == bits));
+        ASSERT(0 <= bit_count && bit_count < 32);
 #ifndef NDEBUG
         const uint32_t mask{(1U << bit_count) - 1U};
         ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
@@ -136,7 +134,6 @@ protected:
 
     frame_info frame_info_;
     coding_parameters parameters_;
-    std::unique_ptr<decoder_strategy> decoder_;
     std::unique_ptr<process_line> process_line_;
 
 private:
