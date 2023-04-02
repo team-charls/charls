@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "conditional_static_cast.h"
+#include "decoder_strategy.h"
 #include "default_traits.h"
 #include "encoder_strategy.h"
 #include "jls_codec_factory.h"
