@@ -5,6 +5,8 @@
 
 #include <cstddef>
 
+#include "util.h"
+
 namespace charls {
 
 /// <summary>Simplified span class as replacement for C++20 std::span<std::byte>.</summary>
@@ -43,6 +45,12 @@ struct byte_span final
     [[nodiscard]] constexpr bool empty() const noexcept
     {
         return size_ == 0;
+    }
+
+    [[nodiscard]] constexpr byte_span subspan(const size_t offset) const noexcept
+    {
+        ASSERT(offset <= size_);
+        return {data_ + offset, size_ - offset};
     }
 
 private:
@@ -93,6 +101,12 @@ public:
     [[nodiscard]] constexpr bool empty() const noexcept
     {
         return size_ == 0;
+    }
+
+    [[nodiscard]] constexpr const_byte_span subspan(const size_t offset) const noexcept
+    {
+        ASSERT(offset <= size_);
+        return {data_ + offset, size_ - offset};
     }
 
 private:

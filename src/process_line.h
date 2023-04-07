@@ -4,7 +4,7 @@
 #pragma once
 
 #include "coding_parameters.h"
-#include "util.h"
+#include "byte_span.h"
 
 #include <algorithm>
 #include <cstring>
