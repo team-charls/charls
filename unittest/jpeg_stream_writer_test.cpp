@@ -24,8 +24,8 @@ public:
     TEST_METHOD(remaining_destination_will_be_zero_after_create_with_default) // NOLINT
     {
         const jpeg_stream_writer writer;
-        Assert::AreEqual(size_t{}, writer.remaining_destination().size);
-        Assert::IsNull(writer.remaining_destination().data);
+        Assert::AreEqual(size_t{}, writer.remaining_destination().size());
+        Assert::IsNull(writer.remaining_destination().data());
     }
 
     TEST_METHOD(write_start_of_image) // NOLINT

@@ -24,7 +24,7 @@ public:
     encoder_strategy& operator=(const encoder_strategy&) = delete;
     encoder_strategy& operator=(encoder_strategy&&) = delete;
 
-    virtual std::unique_ptr<process_line> create_process_line(byte_span stream_info, size_t stride) = 0;
+    virtual std::unique_ptr<process_line> create_process_line(const_byte_span source, size_t stride) = 0;
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters, uint32_t restart_interval) = 0;
     virtual size_t encode_scan(std::unique_ptr<process_line> raw_data, byte_span destination) = 0;
 
@@ -39,8 +39,8 @@ protected:
         free_bit_count_ = sizeof(bit_buffer_) * 8;
         bit_buffer_ = 0;
 
-        position_ = destination.data;
-        compressed_length_ = destination.size;
+        position_ = destination.data();
+        compressed_length_ = destination.size();
     }
 
     void append_to_bit_stream(const uint32_t bits, const int32_t bit_count)

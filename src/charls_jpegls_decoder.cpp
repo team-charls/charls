@@ -122,7 +122,7 @@ struct charls_jpegls_decoder final
 
     void decode(const byte_span destination, const size_t stride)
     {
-        check_argument(destination.data || destination.size == 0);
+        check_argument(destination.data() || destination.empty());
         check_operation(state_ == state::header_read);
 
         reader_.decode(destination, stride);

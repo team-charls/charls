@@ -48,6 +48,12 @@ public:
         ASSERT(bytes_per_pixel == sizeof(std::byte) || bytes_per_pixel == sizeof(uint16_t));
     }
 
+    post_process_single_component(const void* raw_data, const size_t stride, const size_t bytes_per_pixel) noexcept :
+        raw_data_{static_cast<std::byte*>(const_cast<void*>(raw_data))}, bytes_per_pixel_{bytes_per_pixel}, stride_{stride}
+    {
+        ASSERT(bytes_per_pixel == sizeof(std::byte) || bytes_per_pixel == sizeof(uint16_t));
+    }
+
     void new_line_requested(void* destination, const size_t pixel_count,
                             size_t /* destination_stride */) noexcept(false) override
     {
@@ -74,6 +80,17 @@ public:
     post_process_single_component_masked(void* raw_data, const size_t stride, const size_t bytes_per_pixel,
                                          const uint32_t bits_per_pixel) noexcept :
         raw_data_{raw_data},
+        bytes_per_pixel_{bytes_per_pixel},
+        stride_{stride},
+        mask_{(1U << bits_per_pixel) - 1U},
+        single_byte_pixel_{bytes_per_pixel_ == sizeof(std::byte)}
+    {
+        ASSERT(bytes_per_pixel == sizeof(std::byte) || bytes_per_pixel == sizeof(uint16_t));
+    }
+
+    post_process_single_component_masked(const void* raw_data, const size_t stride, const size_t bytes_per_pixel,
+                                         const uint32_t bits_per_pixel) noexcept :
+        raw_data_{const_cast<void*>(raw_data)},
         bytes_per_pixel_{bytes_per_pixel},
         stride_{stride},
         mask_{(1U << bits_per_pixel) - 1U},
@@ -286,7 +303,21 @@ public:
         buffer_(static_cast<size_t>(info.component_count) * info.width * sizeof(size_type)),
         transform_{transform},
         inverse_transform_{transform},
-        raw_pixels_{source_pixels},
+        raw_pixels_{source_pixels.data()},
+        mask_{(1U << info.bits_per_sample) - 1U}
+    {
+    }
+
+    process_transformed(const const_byte_span source_pixels, const size_t stride, const frame_info& info,
+                        const coding_parameters& parameters, TransformType transform) :
+        frame_info_{info},
+        parameters_{parameters},
+        stride_{stride},
+        temp_line_(static_cast<size_t>(info.component_count) * info.width),
+        buffer_(static_cast<size_t>(info.component_count) * info.width * sizeof(size_type)),
+        transform_{transform},
+        inverse_transform_{transform},
+        raw_pixels_{const_cast<std::byte*>(source_pixels.data())},
         mask_{(1U << info.bits_per_sample) - 1U}
     {
     }
@@ -294,8 +325,8 @@ public:
     void new_line_requested(void* destination, const size_t pixel_count,
                             const size_t destination_stride) noexcept(false) override
     {
-        encode_transform(raw_pixels_.data, destination, pixel_count, destination_stride);
-        raw_pixels_.data += stride_;
+        encode_transform(raw_pixels_, destination, pixel_count, destination_stride);
+        raw_pixels_ += stride_;
     }
 
     void encode_transform(const void* source, void* destination, const size_t pixel_count,
@@ -361,8 +392,8 @@ public:
 
     void new_line_decoded(const void* source, const size_t pixel_count, const size_t source_stride) noexcept(false) override
     {
-        decode_transform(source, raw_pixels_.data, pixel_count, source_stride);
-        raw_pixels_.data += stride_;
+        decode_transform(source, raw_pixels_, pixel_count, source_stride);
+        raw_pixels_ += stride_;
     }
 
 private:
@@ -375,7 +406,7 @@ private:
     std::vector<uint8_t> buffer_;
     TransformType transform_;
     typename TransformType::inverse inverse_transform_;
-    byte_span raw_pixels_;
+    std::byte* raw_pixels_;
     uint32_t mask_;
 };
 

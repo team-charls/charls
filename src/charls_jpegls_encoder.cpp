@@ -28,7 +28,7 @@ struct charls_jpegls_encoder final
 {
     void destination(const byte_span destination)
     {
-        check_argument(destination.data || destination.size == 0);
+        check_argument(destination.data() || destination.empty());
         check_operation(state_ == state::initial);
 
         writer_.destination(destination);
@@ -156,9 +156,9 @@ struct charls_jpegls_encoder final
         writer_.write_application_data_segment(application_data_id, application_data);
     }
 
-    void encode(byte_span source, size_t stride)
+    void encode(const_byte_span source, size_t stride)
     {
-        check_argument(source.data || source.size == 0);
+        check_argument(source.data() || source.empty());
         check_operation(is_frame_info_configured() && state_ != state::initial);
         check_interleave_mode_against_component_count();
 
@@ -173,7 +173,7 @@ struct charls_jpegls_encoder final
         }
         else
         {
-            check_stride(stride, source.size);
+            check_stride(stride, source.size());
         }
 
         transition_to_tables_and_miscellaneous_state();
@@ -255,7 +255,7 @@ private:
         return frame_info_.width != 0;
     }
 
-    void encode_scan(const byte_span source, const size_t stride, const int32_t component_count)
+    void encode_scan(const const_byte_span source, const size_t stride, const int32_t component_count)
     {
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample,
                                             component_count};

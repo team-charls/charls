@@ -121,7 +121,7 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
     const size_t bytes_per_plane{stride * frame_info_.height};
     const size_t plane_count{parameters_.interleave_mode == interleave_mode::none ? frame_info_.component_count : 1U};
     if (const size_t minimum_destination_size = bytes_per_plane * plane_count - (stride - minimum_stride);
-        UNLIKELY(destination.size < minimum_destination_size))
+        UNLIKELY(destination.size() < minimum_destination_size))
         throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
     for (size_t i{}; i < plane_count; ++i)

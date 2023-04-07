@@ -203,7 +203,7 @@ void jpeg_stream_writer::write_segment_header(const jpeg_marker_code marker_code
     // Other methods assume that the checking in done here and don't check again.
     constexpr size_t marker_code_size{2};
     if (const size_t total_segment_size{marker_code_size + segment_length_size + data_size};
-        UNLIKELY(byte_offset_ + total_segment_size > destination_.size))
+        UNLIKELY(byte_offset_ + total_segment_size > destination_.size()))
         impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
     write_marker(marker_code);

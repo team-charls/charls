@@ -99,12 +99,12 @@ public:
 
     [[nodiscard]] byte_span remaining_destination() const noexcept
     {
-        return {destination_.data + byte_offset_, destination_.size - byte_offset_};
+        return {destination_.data() + byte_offset_, destination_.size() - byte_offset_};
     }
 
     void seek(const size_t byte_count) noexcept
     {
-        ASSERT(byte_offset_ + byte_count <= destination_.size);
+        ASSERT(byte_offset_ + byte_count <= destination_.size());
         byte_offset_ += byte_count;
     }
 
@@ -164,7 +164,7 @@ private:
     template<typename UnsignedIntType>
     void write_uint(const UnsignedIntType value) noexcept
     {
-        ASSERT(byte_offset_ + sizeof(UnsignedIntType) <= destination_.size);
+        ASSERT(byte_offset_ + sizeof(UnsignedIntType) <= destination_.size());
 
         // Use write_bytes to write to the unaligned byte array.
         // The compiler will perform the correct optimization when the target platform support unaligned writes.
@@ -178,8 +178,8 @@ private:
 
     void write_byte(const std::byte value) noexcept
     {
-        ASSERT(byte_offset_ + sizeof(std::byte) <= destination_.size);
-        destination_.data[byte_offset_++] = value;
+        ASSERT(byte_offset_ + sizeof(std::byte) <= destination_.size());
+        destination_.data()[byte_offset_++] = value;
     }
 
     void write_bytes(const const_byte_span data) noexcept
@@ -189,8 +189,8 @@ private:
 
     void write_bytes(CHARLS_IN_READS_BYTES(size) const void* data, const size_t size) noexcept
     {
-        ASSERT(byte_offset_ + size <= destination_.size);
-        memcpy(destination_.data + byte_offset_, data, size);
+        ASSERT(byte_offset_ + size <= destination_.size());
+        memcpy(destination_.data() + byte_offset_, data, size);
         byte_offset_ += size;
     }
 
@@ -202,7 +202,7 @@ private:
 
     void write_segment_without_data(const jpeg_marker_code marker_code)
     {
-        if (UNLIKELY(byte_offset_ + 2 > destination_.size))
+        if (UNLIKELY(byte_offset_ + 2 > destination_.size()))
             impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
         write_byte(jpeg_marker_start_byte);
