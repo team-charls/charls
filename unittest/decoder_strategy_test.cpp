@@ -33,7 +33,7 @@ public:
     {
     }
 
-    unique_ptr<process_line> create_process_line(byte_span /*rawStreamInfo*/,
+    unique_ptr<process_line> create_process_line(byte_span /*destination*/,
                                                  size_t /*stride*/) noexcept(false) override
     {
         return nullptr;
