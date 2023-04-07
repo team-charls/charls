@@ -127,10 +127,10 @@ void encode_performance_tests(const int loop_count)
 {
     cout << "Test encode performance with loop count " << loop_count << "\n";
 
-    const charls_test::portable_anymap_file anymap_file("encode-test.pnm");
-
     try
     {
+        const charls_test::portable_anymap_file anymap_file("encode-test.pnm");
+
         const frame_info info{static_cast<uint32_t>(anymap_file.width()), static_cast<uint32_t>(anymap_file.height()),
                               anymap_file.bits_per_sample(), anymap_file.component_count()};
         const auto interleave_mode{anymap_file.component_count() > 1 ? charls::interleave_mode::sample
@@ -158,5 +158,9 @@ void encode_performance_tests(const int loop_count)
     catch (const jpegls_error& e)
     {
         cout << "Encoding failure: " << e.what() << "\n";
+    }
+    catch (const std::ios_base::failure& e)
+    {
+        cout << "IO failure (missing encode-test.pnm?): " << e.what() << "\n";
     }
 }
