@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "conditional_static_cast.h"
-#include "decoder_strategy.h"
 #include "default_traits.h"
-#include "encoder_strategy.h"
 #include "jls_codec_factory.h"
 #include "jpegls_preset_coding_parameters.h"
 #include "lossless_traits.h"
@@ -65,7 +63,14 @@ vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
 template<typename Strategy, typename Traits>
 unique_ptr<Strategy> make_codec(const Traits& traits, const frame_info& frame_info, const coding_parameters& parameters)
 {
-    return make_unique<jls_codec<Traits, Strategy>>(traits, frame_info, parameters);
+    if constexpr (std::is_same_v<Strategy, encoder_strategy>)
+    {
+        return make_unique<scan_encoder_implementation<Traits>>(traits, frame_info, parameters);
+    }
+    else
+    {
+        return make_unique<scan_decoder_implementation<Traits>>(traits, frame_info, parameters);
+    }
 }
 
 // Functions to build tables used to decode short Golomb codes.
@@ -154,14 +159,14 @@ unique_ptr<Strategy> jls_codec_factory<Strategy>::create_codec(const frame_info&
             default_traits<uint8_t, uint8_t> traits(calculate_maximum_sample_value(frame.bits_per_sample),
                                                     parameters.near_lossless, preset_coding_parameters.reset_value);
             traits.maximum_sample_value = preset_coding_parameters.maximum_sample_value;
-            codec = make_unique<jls_codec<default_traits<uint8_t, uint8_t>, Strategy>>(traits, frame, parameters);
+            codec = make_codec<Strategy, default_traits<uint8_t, uint8_t>>(traits, frame, parameters);
         }
         else
         {
             default_traits<uint16_t, uint16_t> traits(calculate_maximum_sample_value(frame.bits_per_sample),
                                                       parameters.near_lossless, preset_coding_parameters.reset_value);
             traits.maximum_sample_value = preset_coding_parameters.maximum_sample_value;
-            codec = make_unique<jls_codec<default_traits<uint16_t, uint16_t>, Strategy>>(traits, frame, parameters);
+            codec = make_codec<Strategy, default_traits<uint16_t, uint16_t>>(traits, frame, parameters);
         }
     }
 
