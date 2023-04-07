@@ -129,7 +129,7 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
         if (state_ == state::scan_section)
         {
             read_next_start_of_scan();
-            skip_bytes(destination, bytes_per_plane);
+            destination = destination.subspan(bytes_per_plane);
         }
 
         const auto codec{jls_codec_factory<decoder_strategy>().create_codec(frame_info_, parameters_,

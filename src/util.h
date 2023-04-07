@@ -5,7 +5,6 @@
 
 #include "charls/jpegls_error.h"
 
-#include "byte_span.h"
 #include "constants.h"
 
 #include <algorithm>
@@ -330,14 +329,6 @@ T read_big_endian_unaligned(const void* buffer) noexcept
 }
 
 #endif
-
-
-template<typename Span>
-void skip_bytes(Span& span, const size_t count) noexcept
-{
-    ASSERT(count <= span.size());
-    span = Span{span.data() + count, span.size() - count};
-}
 
 
 template<typename T>

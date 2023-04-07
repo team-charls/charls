@@ -212,7 +212,7 @@ struct charls_jpegls_encoder final
                 // Synchronize the source stream (encode_scan works on a local copy)
                 if (component != last_component)
                 {
-                    skip_bytes(source, byte_count_component);
+                    source = source.subspan(byte_count_component);
                 }
             }
         }
