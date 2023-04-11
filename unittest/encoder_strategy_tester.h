@@ -15,18 +15,13 @@ public:
     {
     }
 
-    void set_presets(const jpegls_pc_parameters&, uint32_t /*restart_interval*/) noexcept(false) override
+    void set_presets(const jpegls_pc_parameters&) noexcept(false) override
     {
     }
 
-    size_t encode_scan(std::unique_ptr<process_line>, byte_span) noexcept(false) override
+    size_t encode_scan(const_byte_span /*source*/, size_t /*stride*/, byte_span) noexcept(false) override
     {
         return 0;
-    }
-
-    std::unique_ptr<process_line> create_process_line(const_byte_span, size_t /*stride*/) noexcept(false) override
-    {
-        return nullptr;
     }
 
     void initialize_forward(const byte_span destination) noexcept

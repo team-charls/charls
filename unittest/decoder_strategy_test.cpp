@@ -12,7 +12,6 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
 using std::byte;
-using std::unique_ptr;
 
 namespace charls::test {
 
@@ -28,19 +27,11 @@ public:
         initialize({destination, count});
     }
 
-    void set_presets(const jpegls_pc_parameters& /*preset_coding_parameters*/,
-                     uint32_t /*restart_interval*/) noexcept(false) override
+    void set_presets(const jpegls_pc_parameters& /*preset_coding_parameters*/) noexcept(false) override
     {
     }
 
-    unique_ptr<process_line> create_process_line(byte_span /*destination*/,
-                                                 size_t /*stride*/) noexcept(false) override
-    {
-        return nullptr;
-    }
-
-    size_t decode_scan(unique_ptr<process_line> /*process_line*/,
-                       const_byte_span /*encoded_source*/) noexcept(false) override
+    size_t decode_scan(const_byte_span /*encoded_source*/, byte_span /*destination*/, size_t /*stride*/) noexcept(false) override
     {
         return {};
     }
