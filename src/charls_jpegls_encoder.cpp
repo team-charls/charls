@@ -262,8 +262,7 @@ private:
 
         const auto codec{jls_codec_factory<encoder_strategy>().create_codec(
             frame_info, {near_lossless_, 0, interleave_mode_, color_transformation_}, preset_coding_parameters_)};
-        const size_t bytes_written{
-            codec->encode_scan(codec->create_process_line(source, stride), writer_.remaining_destination())};
+        const size_t bytes_written{codec->encode_scan(source, stride, writer_.remaining_destination())};
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
         writer_.seek(bytes_written);

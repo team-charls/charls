@@ -107,8 +107,9 @@ public:
         ASSERT(traits_.is_valid());
     }
 
+private:
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
-    std::unique_ptr<process_line> create_process_line(const_byte_span source, const size_t stride) override
+    std::unique_ptr<process_line> create_process_line(const_byte_span source, const size_t stride)
     {
         if (!is_interleaved())
         {
@@ -147,11 +148,9 @@ public:
         impl::throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
     }
 
-private:
-    void set_presets(const jpegls_pc_parameters& presets, const uint32_t restart_interval) override
+    void set_presets(const jpegls_pc_parameters& presets) override
     {
         initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
-        restart_interval_ = restart_interval;
     }
 
     [[nodiscard]] bool is_interleaved() const noexcept
@@ -404,9 +403,9 @@ private:
         }
     }
 
-    size_t encode_scan(std::unique_ptr<process_line> process_line, byte_span destination) override
+    size_t encode_scan(const const_byte_span source, const size_t stride, const byte_span destination) override
     {
-        process_line_ = std::move(process_line);
+        process_line_ = create_process_line(source, stride);
 
         initialize(destination);
         encode_lines();
@@ -611,8 +610,6 @@ private:
     int32_t t2_{};
     int32_t t3_{};
     uint8_t reset_threshold_{};
-    uint32_t restart_interval_{};
-    uint32_t restart_interval_counter_{};
 
     // compression context
     std::array<context_regular_mode, 365> contexts_;
@@ -644,8 +641,9 @@ public:
         ASSERT(traits_.is_valid());
     }
 
+private:
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
-    std::unique_ptr<process_line> create_process_line(byte_span destination, const size_t stride) override
+    std::unique_ptr<process_line> create_process_line(byte_span destination, const size_t stride)
     {
         if (!is_interleaved())
         {
@@ -684,11 +682,9 @@ public:
         impl::throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
     }
 
-private:
-    void set_presets(const jpegls_pc_parameters& presets, const uint32_t restart_interval) override
+    void set_presets(const jpegls_pc_parameters& presets) override
     {
         initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
-        restart_interval_ = restart_interval;
     }
 
     [[nodiscard]] bool is_interleaved() const noexcept
@@ -939,18 +935,18 @@ private:
         }
     }
 
-    size_t decode_scan(std::unique_ptr<process_line> process_line, const_byte_span encoded_source) override
+    size_t decode_scan(const const_byte_span source, const byte_span destination, const size_t stride) override
     {
-        process_line_ = std::move(process_line);
+        process_line_ = create_process_line(destination, stride);
 
-        const auto* scan_begin{encoded_source.begin()};
+        const auto* scan_begin{source.begin()};
 
-        initialize(encoded_source);
+        initialize(source);
 
-        // Process images without a restart interval, as 1 large restart interval.
-        if (restart_interval_ == 0)
+        // Process images without a restart interval, as 1 large restart interval.b
+        if (parameters_.restart_interval == 0)
         {
-            restart_interval_ = frame_info().height;
+            parameters_.restart_interval = frame_info().height;
         }
 
         decode_lines();
@@ -1000,13 +996,14 @@ private:
         const uint32_t pixel_stride{width_ + 4U};
         const size_t component_count{
             parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
+        uint32_t restart_interval_counter{};
 
         std::vector<pixel_type> line_buffer(component_count * pixel_stride * 2);
         std::vector<int32_t> run_index(component_count);
 
         for (uint32_t line{};;)
         {
-            const uint32_t lines_in_interval{std::min(frame_info().height - line, restart_interval_)};
+            const uint32_t lines_in_interval{std::min(frame_info().height - line, parameters_.restart_interval)};
 
             for (uint32_t mcu{}; mcu < lines_in_interval; ++mcu, ++line)
             {
@@ -1038,8 +1035,8 @@ private:
                 break;
 
             // At this point in the byte stream a restart marker should be present: process it.
-            read_restart_marker();
-            restart_interval_counter_ = (restart_interval_counter_ + 1) % jpeg_restart_marker_range;
+            read_restart_marker(restart_interval_counter);
+            restart_interval_counter = (restart_interval_counter + 1) % jpeg_restart_marker_range;
 
             // After a restart marker it is required to reset the decoder.
             reset();
@@ -1051,19 +1048,19 @@ private:
         end_scan();
     }
 
-    void read_restart_marker()
+    void read_restart_marker(const uint32_t expected_restart_marker_id)
     {
         auto value{read_byte()};
         if (UNLIKELY(value != jpeg_marker_start_byte))
             impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
 
-        // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see T.81, B.1.1.2)
+        // Read all preceding 0xFF fill bytes until a non 0xFF byte has been found. (see T.81, B.1.1.2)
         do
         {
             value = read_byte();
         } while (value == jpeg_marker_start_byte);
 
-        if (UNLIKELY(std::to_integer<uint32_t>(value) != jpeg_restart_marker_base + restart_interval_counter_))
+        if (UNLIKELY(std::to_integer<uint32_t>(value) != jpeg_restart_marker_base + expected_restart_marker_id))
             impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
     }
 
@@ -1173,8 +1170,6 @@ private:
     int32_t t2_{};
     int32_t t3_{};
     uint8_t reset_threshold_{};
-    uint32_t restart_interval_{};
-    uint32_t restart_interval_counter_{};
 
     // compression context
     std::array<context_regular_mode, 365> contexts_;
