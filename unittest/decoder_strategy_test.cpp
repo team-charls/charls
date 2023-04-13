@@ -20,7 +20,7 @@ namespace {
 class decoder_strategy_tester final : public decoder_strategy
 {
 public:
-    decoder_strategy_tester(const frame_info& frame_info, const coding_parameters& parameters, byte* const destination,
+    decoder_strategy_tester(const charls::frame_info& frame_info, const coding_parameters& parameters, byte* const destination,
                             const size_t count) :
         decoder_strategy(frame_info, parameters)
     {

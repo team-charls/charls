@@ -4,7 +4,7 @@
 #pragma once
 
 #include "constants.h"
-#include "util.h"
+#include "jpegls_algorithm.h"
 
 #include <cassert>
 #include <cmath>

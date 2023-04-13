@@ -4,9 +4,11 @@
 #pragma once
 
 #include "charls/jpegls_error.h"
+
 #include "jpeg_marker_code.h"
 #include "process_line.h"
 #include "util.h"
+#include "scan_codec.h"
 
 #include <cassert>
 #include <memory>
@@ -14,11 +16,10 @@
 namespace charls {
 
 // Purpose: Implements encoding to stream of bits. In encoding mode jls_codec inherits from decoder_strategy
-class decoder_strategy
+class decoder_strategy : protected scan_codec
 {
 public:
-    decoder_strategy(const frame_info& frame, const coding_parameters& parameters) noexcept :
-        frame_info_{frame}, parameters_{parameters}
+    decoder_strategy(const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept : scan_codec{frame_info, parameters}
     {
     }
 
@@ -194,8 +195,6 @@ public:
     }
 
 protected:
-    frame_info frame_info_;
-    coding_parameters parameters_;
     std::unique_ptr<process_line> process_line_;
 
 private:

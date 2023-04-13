@@ -5,15 +5,16 @@
 
 #include "jpeg_marker_code.h"
 #include "process_line.h"
+#include "scan_codec.h"
 
 namespace charls {
 
 // Purpose: Implements encoding to stream of bits. In encoding mode jls_codec inherits from encoder_strategy
-class encoder_strategy
+class encoder_strategy : protected scan_codec
 {
 public:
-    encoder_strategy(const frame_info& info, const coding_parameters& parameters) noexcept :
-        frame_info_{info}, parameters_{parameters}
+    encoder_strategy(const charls::frame_info& info, const coding_parameters& parameters) noexcept :
+        scan_codec{info, parameters}
     {
     }
 
@@ -131,8 +132,6 @@ protected:
         append_to_bit_stream((1U << length) - 1U, length);
     }
 
-    frame_info frame_info_;
-    coding_parameters parameters_;
     std::unique_ptr<process_line> process_line_;
 
 private:

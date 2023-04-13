@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "charls/charls_jpegls_decoder.h"
+
+#include "constants.h"
 #include "jpeg_stream_reader.h"
 #include "util.h"
 

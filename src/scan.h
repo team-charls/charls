@@ -12,9 +12,9 @@
 #include "jpeg_marker_code.h"
 #include "lookup_table.h"
 #include "process_line.h"
+#include "jpegls_algorithm.h"
 
 #include <array>
-#include <limits>
 #include <sstream>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
@@ -28,67 +28,6 @@ extern const std::vector<int8_t> quantization_lut_lossless_10;
 extern const std::vector<int8_t> quantization_lut_lossless_12;
 extern const std::vector<int8_t> quantization_lut_lossless_16;
 
-// Used to determine how large runs should be encoded at a time. Defined by the JPEG-LS standard, A.2.1., Initialization
-// step 3.
-constexpr std::array<int, 32> J{
-    {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15}};
-
-constexpr int32_t apply_sign(const int32_t i, const int32_t sign) noexcept
-{
-    return (sign ^ i) - sign;
-}
-
-
-inline int32_t get_predicted_value(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
-{
-    // sign trick reduces the number of if statements (branches)
-    const int32_t sign{bit_wise_sign(rb - ra)};
-
-    // is Ra between Rc and Rb?
-    if ((sign ^ (rc - ra)) < 0)
-    {
-        return rb;
-    }
-    if ((sign ^ (rb - rc)) < 0)
-    {
-        return ra;
-    }
-
-    // default case, valid if Rc element of [Ra,Rb]
-    return ra + rb - rc;
-}
-
-
-/// <summary>
-/// This is the optimized inverse algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
-/// It will map unsigned values back to signed values.
-/// </summary>
-constexpr int32_t unmap_error_value(const int32_t mapped_error) noexcept
-{
-    const int32_t sign{static_cast<int32_t>(static_cast<uint32_t>(mapped_error) << (int32_t_bit_count - 1)) >>
-                       (int32_t_bit_count - 1)};
-    return sign ^ (mapped_error >> 1);
-}
-
-
-/// <summary>
-/// This is the algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
-/// It will map signed values to unsigned values. It has been optimized to prevent branching.
-/// </summary>
-constexpr int32_t map_error_value(const int32_t error_value) noexcept
-{
-    ASSERT(error_value <= std::numeric_limits<int32_t>::max() / 2);
-
-    const int32_t mapped_error{(error_value >> (int32_t_bit_count - 2)) ^ (2 * error_value)};
-    return mapped_error;
-}
-
-
-constexpr int32_t compute_context_id(const int32_t q1, const int32_t q2, const int32_t q3) noexcept
-{
-    return (q1 * 9 + q2) * 9 + q3;
-}
-
 
 template<typename Traits>
 class scan_encoder_implementation final : public encoder_strategy
@@ -97,7 +36,7 @@ public:
     using pixel_type = typename Traits::pixel_type;
     using sample_type = typename Traits::sample_type;
 
-    scan_encoder_implementation(Traits traits, const frame_info& frame_info, const coding_parameters& parameters) noexcept :
+    scan_encoder_implementation(Traits traits, const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
         encoder_strategy{update_component_count(frame_info, parameters), parameters},
         traits_{std::move(traits)},
         width_{frame_info.width}
@@ -153,49 +92,9 @@ private:
         initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
     }
 
-    [[nodiscard]] bool is_interleaved() const noexcept
-    {
-        ASSERT((parameters().interleave_mode == interleave_mode::none && frame_info().component_count == 1) ||
-               parameters().interleave_mode != interleave_mode::none);
-
-        return parameters().interleave_mode != interleave_mode::none;
-    }
-
-    [[nodiscard]] const coding_parameters& parameters() const noexcept
-    {
-        return parameters_;
-    }
-
-    [[nodiscard]] const charls::frame_info& frame_info() const noexcept
-    {
-        return frame_info_;
-    }
-
-    [[nodiscard]] int8_t quantize_gradient_org(const int32_t di) const noexcept
-    {
-        if (di <= -t3_)
-            return -4;
-        if (di <= -t2_)
-            return -3;
-        if (di <= -t1_)
-            return -2;
-        if (di < -traits_.near_lossless)
-            return -1;
-        if (di <= traits_.near_lossless)
-            return 0;
-        if (di < t1_)
-            return 1;
-        if (di < t2_)
-            return 2;
-        if (di < t3_)
-            return 3;
-
-        return 4;
-    }
-
     [[nodiscard]] FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
     {
-        ASSERT(quantize_gradient_org(di) == *(quantization_ + di));
+        ASSERT(quantize_gradient_org(di, traits_.near_lossless) == *(quantization_ + di));
         return *(quantization_ + di);
     }
 
@@ -241,7 +140,7 @@ private:
         quantization_lut_.resize(static_cast<size_t>(range) * 2);
         for (size_t i{}; i < quantization_lut_.size(); ++i)
         {
-            quantization_lut_[i] = quantize_gradient_org(-range + static_cast<int32_t>(i));
+            quantization_lut_[i] = quantize_gradient_org(-range + static_cast<int32_t>(i), traits_.near_lossless);
         }
 
         quantization_ = &quantization_lut_[range];
@@ -606,9 +505,6 @@ private:
     // codec parameters
     Traits traits_;
     uint32_t width_;
-    int32_t t1_{};
-    int32_t t2_{};
-    int32_t t3_{};
     uint8_t reset_threshold_{};
 
     // compression context
@@ -631,7 +527,7 @@ public:
     using pixel_type = typename Traits::pixel_type;
     using sample_type = typename Traits::sample_type;
 
-    scan_decoder_implementation(Traits traits, const frame_info& frame_info, const coding_parameters& parameters) noexcept :
+    scan_decoder_implementation(Traits traits, const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
         decoder_strategy{update_component_count(frame_info, parameters), parameters},
         traits_{std::move(traits)},
         width_{frame_info.width}
@@ -687,49 +583,9 @@ private:
         initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
     }
 
-    [[nodiscard]] bool is_interleaved() const noexcept
-    {
-        ASSERT((parameters().interleave_mode == interleave_mode::none && frame_info().component_count == 1) ||
-               parameters().interleave_mode != interleave_mode::none);
-
-        return parameters().interleave_mode != interleave_mode::none;
-    }
-
-    [[nodiscard]] const coding_parameters& parameters() const noexcept
-    {
-        return parameters_;
-    }
-
-    [[nodiscard]] const charls::frame_info& frame_info() const noexcept
-    {
-        return frame_info_;
-    }
-
-    [[nodiscard]] int8_t quantize_gradient_org(const int32_t di) const noexcept
-    {
-        if (di <= -t3_)
-            return -4;
-        if (di <= -t2_)
-            return -3;
-        if (di <= -t1_)
-            return -2;
-        if (di < -traits_.near_lossless)
-            return -1;
-        if (di <= traits_.near_lossless)
-            return 0;
-        if (di < t1_)
-            return 1;
-        if (di < t2_)
-            return 2;
-        if (di < t3_)
-            return 3;
-
-        return 4;
-    }
-
     [[nodiscard]] FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
     {
-        ASSERT(quantize_gradient_org(di) == *(quantization_ + di));
+        ASSERT(quantize_gradient_org(di, traits_.near_lossless) == *(quantization_ + di));
         return *(quantization_ + di);
     }
 
@@ -775,7 +631,7 @@ private:
         quantization_lut_.resize(static_cast<size_t>(range) * 2);
         for (size_t i{}; i < quantization_lut_.size(); ++i)
         {
-            quantization_lut_[i] = quantize_gradient_org(-range + static_cast<int32_t>(i));
+            quantization_lut_[i] = quantize_gradient_org(-range + static_cast<int32_t>(i), traits_.near_lossless);
         }
 
         quantization_ = &quantization_lut_[range];
@@ -1166,9 +1022,6 @@ private:
     // codec parameters
     Traits traits_;
     uint32_t width_;
-    int32_t t1_{};
-    int32_t t2_{};
-    int32_t t3_{};
     uint8_t reset_threshold_{};
 
     // compression context

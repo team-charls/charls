@@ -117,6 +117,12 @@
     <ClInclude Include="..\include\charls\validate_spiff_header.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jpegls_algorithm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scan_codec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />

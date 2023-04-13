@@ -240,6 +240,7 @@
     <ClInclude Include="default_traits.h" />
     <ClInclude Include="encoder_strategy.h" />
     <ClInclude Include="jls_codec_factory.h" />
+    <ClInclude Include="jpegls_algorithm.h" />
     <ClInclude Include="jpegls_preset_coding_parameters.h" />
     <ClInclude Include="jpeg_marker_code.h" />
     <ClInclude Include="jpeg_stream_reader.h" />
@@ -250,6 +251,7 @@
     <ClInclude Include="process_line.h" />
     <ClInclude Include="scan.h" />
     <ClInclude Include="byte_span.h" />
+    <ClInclude Include="scan_codec.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
