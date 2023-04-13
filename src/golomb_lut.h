@@ -4,14 +4,13 @@
 #pragma once
 
 #include "conditional_static_cast.h"
+#include "constants.h"
 #include "util.h"
 
 #include <array>
-#include <cassert>
 
 namespace charls {
 
-// Tables for fast decoding of short Golomb Codes.
 struct golomb_code final
 {
     golomb_code() = default;
@@ -62,4 +61,7 @@ private:
     std::array<golomb_code, 1 << byte_bit_count> types_;
 };
 
-} // namespace charls
+
+extern const std::array<golomb_code_table, max_k_value> golomb_lut;
+
+}

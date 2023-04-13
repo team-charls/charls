@@ -5,7 +5,7 @@
 
 #include "util.h"
 
-#include "../src/lookup_table.h"
+#include "../src/golomb_lut.h"
 
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;

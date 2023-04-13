@@ -10,19 +10,16 @@
 #include "encoder_strategy.h"
 #include "decoder_strategy.h"
 #include "jpeg_marker_code.h"
-#include "lookup_table.h"
 #include "process_line.h"
 #include "jpegls_algorithm.h"
+#include "golomb_lut.h"
 
-#include <array>
-#include <sstream>
 
 // This file contains the code for handling a "scan". Usually an image is encoded as a single scan.
 // Note: the functions in this header could be moved into jpegls.cpp as they are only used in that file.
 
 namespace charls {
 
-extern const std::array<golomb_code_table, max_k_value> decoding_tables;
 extern const std::vector<int8_t> quantization_lut_lossless_8;
 extern const std::vector<int8_t> quantization_lut_lossless_10;
 extern const std::vector<int8_t> quantization_lut_lossless_12;
@@ -669,7 +666,7 @@ private:
         const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
 
         int32_t error_value;
-        if (const golomb_code& code = decoding_tables[k].get(peek_byte()); code.length() != 0)
+        if (const golomb_code& code = golomb_lut[k].get(peek_byte()); code.length() != 0)
         {
             skip(code.length());
             error_value = code.value();
