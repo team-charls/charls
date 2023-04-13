@@ -211,6 +211,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="golomb_lut.cpp" />
     <ClCompile Include="validate_spiff_header.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include="charls_jpegls_decoder.cpp" />
@@ -239,13 +240,13 @@
     <ClInclude Include="decoder_strategy.h" />
     <ClInclude Include="default_traits.h" />
     <ClInclude Include="encoder_strategy.h" />
+    <ClInclude Include="golomb_lut.h" />
     <ClInclude Include="jls_codec_factory.h" />
     <ClInclude Include="jpegls_algorithm.h" />
     <ClInclude Include="jpegls_preset_coding_parameters.h" />
     <ClInclude Include="jpeg_marker_code.h" />
     <ClInclude Include="jpeg_stream_reader.h" />
     <ClInclude Include="jpeg_stream_writer.h" />
-    <ClInclude Include="lookup_table.h" />
     <ClInclude Include="lossless_traits.h" />
     <ClInclude Include="jpegls_preset_parameters_type.h" />
     <ClInclude Include="process_line.h" />

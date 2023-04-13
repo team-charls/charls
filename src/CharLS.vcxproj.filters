@@ -25,6 +25,9 @@
     <ClCompile Include="validate_spiff_header.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="golomb_lut.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="context_regular_mode.h">
@@ -75,9 +78,6 @@
     <ClInclude Include="jpeg_stream_writer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lookup_table.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="lossless_traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -121,6 +121,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scan_codec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="golomb_lut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
