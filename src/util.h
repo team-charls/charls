@@ -5,13 +5,11 @@
 
 #include "charls/jpegls_error.h"
 
-#include "constants.h"
-
-#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <type_traits>
+#include <limits>
 
 
 // Use an uppercase alias for assert to make it clear that ASSERT is a pre-processor macro.
@@ -128,36 +126,6 @@ constexpr int32_t log2_ceil(const int32_t n) noexcept
         ++x;
     }
     return x;
-}
-
-
-constexpr int32_t sign(const int32_t n) noexcept
-{
-    return (n >> (int32_t_bit_count - 1)) | 1;
-}
-
-
-constexpr int32_t bit_wise_sign(const int32_t i) noexcept
-{
-    return i >> (int32_t_bit_count - 1);
-}
-
-
-/// <summary>
-/// Computes the parameter RANGE. When NEAR = 0, RANGE = MAXVAL + 1. (see ISO/IEC 14495-1, A.2.1)
-/// </summary>
-constexpr int32_t compute_range_parameter(const int32_t maximum_sample_value, const int32_t near_lossless) noexcept
-{
-    return (maximum_sample_value + 2 * near_lossless) / (2 * near_lossless + 1) + 1;
-}
-
-
-/// <summary>
-/// Computes the parameter LIMIT. (see ISO/IEC 14495-1, A.2.1)
-/// </summary>
-constexpr int32_t compute_limit_parameter(const int32_t bits_per_pixel)
-{
-    return 2 * (bits_per_pixel + std::max(8, bits_per_pixel));
 }
 
 
