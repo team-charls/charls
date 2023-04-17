@@ -1,6 +1,19 @@
 # Copyright (c) Team CharLS.
 # SPDX-License-Identifier: BSD-3-Clause
 
+# Branches that trigger a build on commit
+trigger:
+- main
+- release/*
+
+# Branches that trigger builds on PR
+pr:
+  branches:
+    include:
+    - main
+    - release/*
+
+
 variables:
   solution: '*.sln'
 
