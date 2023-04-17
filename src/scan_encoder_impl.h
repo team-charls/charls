@@ -7,9 +7,9 @@
 #include "color_transform.h"
 #include "context_regular_mode.h"
 #include "context_run_mode.h"
-#include "scan_encoder.h"
-#include "process_line.h"
 #include "jpegls_algorithm.h"
+#include "process_line.h"
+#include "scan_encoder.h"
 
 namespace charls {
 
@@ -28,6 +28,17 @@ public:
         ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) ||
                parameters.interleave_mode != interleave_mode::none);
         ASSERT(traits_.is_valid());
+    }
+
+    size_t encode_scan(const const_byte_span source, const size_t stride, const byte_span destination) override
+    {
+        process_line_ = create_process_line(source, stride);
+
+        initialize(destination);
+        encode_lines();
+        end_scan();
+
+        return get_length();
     }
 
 private:
@@ -82,33 +93,6 @@ private:
         return *(quantization_ + di);
     }
 
-    FORCE_INLINE void encode_mapped_value(const int32_t k, const int32_t mapped_error, const int32_t limit)
-    {
-        if (int32_t high_bits{mapped_error >> k}; high_bits < limit - traits_.quantized_bits_per_pixel - 1)
-        {
-            if (high_bits + 1 > 31)
-            {
-                append_to_bit_stream(0, high_bits / 2);
-                high_bits = high_bits - high_bits / 2;
-            }
-            append_to_bit_stream(1, high_bits + 1);
-            append_to_bit_stream((mapped_error & ((1 << k) - 1)), k);
-            return;
-        }
-
-        if (limit - traits_.quantized_bits_per_pixel > 31)
-        {
-            append_to_bit_stream(0, 31);
-            append_to_bit_stream(1, limit - traits_.quantized_bits_per_pixel - 31);
-        }
-        else
-        {
-            append_to_bit_stream(1, limit - traits_.quantized_bits_per_pixel);
-        }
-        append_to_bit_stream((mapped_error - 1) & ((1 << traits_.quantized_bits_per_pixel) - 1),
-                             traits_.quantized_bits_per_pixel);
-    }
-
     void increment_run_index() noexcept
     {
         run_index_ = std::min(31, run_index_ + 1);
@@ -117,168 +101,6 @@ private:
     void decrement_run_index() noexcept
     {
         run_index_ = std::max(0, run_index_ - 1);
-    }
-
-    FORCE_INLINE sample_type do_regular(const int32_t qs, const int32_t x, const int32_t predicted)
-    {
-        const int32_t sign{bit_wise_sign(qs)};
-        context_regular_mode& context{contexts_[apply_sign(qs, sign)]};
-        const int32_t k{context.get_golomb_coding_parameter()};
-        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
-        const int32_t error_value{traits_.compute_error_value(apply_sign(x - predicted_value, sign))};
-
-        encode_mapped_value(k, map_error_value(context.get_error_correction(k | traits_.near_lossless) ^ error_value),
-                            traits_.limit);
-        context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
-        ASSERT(traits_.is_near(traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)), x));
-        return static_cast<sample_type>(
-            traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)));
-    }
-
-    /// <summary>Encodes a scan line of samples</summary>
-    FORCE_INLINE void do_line(sample_type* /*template_selector*/)
-    {
-        int32_t index{};
-        int32_t rb{previous_line_[index - 1]};
-        int32_t rd{previous_line_[index]};
-
-        while (static_cast<uint32_t>(index) < width_)
-        {
-            const int32_t ra{current_line_[index - 1]};
-            const int32_t rc{rb};
-            rb = rd;
-            rd = previous_line_[index + 1];
-
-            if (const int32_t qs{
-                    compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
-                qs != 0)
-            {
-                current_line_[index] =
-                    do_regular(qs, current_line_[index], get_predicted_value(ra, rb, rc));
-                ++index;
-            }
-            else
-            {
-                index += do_run_mode(index);
-                rb = previous_line_[index - 1];
-                rd = previous_line_[index];
-            }
-        }
-    }
-
-    /// <summary>Encodes a scan line of triplets in ILV_SAMPLE mode</summary>
-    void do_line(triplet<sample_type>* /*template_selector*/)
-    {
-        int32_t index{};
-        while (static_cast<uint32_t>(index) < width_)
-        {
-            const triplet<sample_type> ra{current_line_[index - 1]};
-            const triplet<sample_type> rc{previous_line_[index - 1]};
-            const triplet<sample_type> rb{previous_line_[index]};
-            const triplet<sample_type> rd{previous_line_[index + 1]};
-
-            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
-                                                 quantize_gradient(rc.v1 - ra.v1))};
-            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
-                                                 quantize_gradient(rc.v2 - ra.v2))};
-
-            if (const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
-                                                     quantize_gradient(rc.v3 - ra.v3))};
-                qs1 == 0 && qs2 == 0 && qs3 == 0)
-            {
-                index += do_run_mode(index);
-            }
-            else
-            {
-                triplet<sample_type> rx;
-                rx.v1 = do_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1));
-                rx.v2 = do_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2));
-                rx.v3 = do_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3));
-                current_line_[index] = rx;
-                ++index;
-            }
-        }
-    }
-
-    /// <summary>Encodes a scan line of quads in ILV_SAMPLE mode</summary>
-    void do_line(quad<sample_type>* /*template_selector*/)
-    {
-        int32_t index{};
-        while (static_cast<uint32_t>(index) < width_)
-        {
-            const quad<sample_type> ra{current_line_[index - 1]};
-            const quad<sample_type> rc{previous_line_[index - 1]};
-            const quad<sample_type> rb{previous_line_[index]};
-            const quad<sample_type> rd{previous_line_[index + 1]};
-
-            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
-                                                 quantize_gradient(rc.v1 - ra.v1))};
-            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
-                                                 quantize_gradient(rc.v2 - ra.v2))};
-            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
-                                                 quantize_gradient(rc.v3 - ra.v3))};
-
-            if (const int32_t qs4{compute_context_id(quantize_gradient(rd.v4 - rb.v4), quantize_gradient(rb.v4 - rc.v4),
-                                                     quantize_gradient(rc.v4 - ra.v4))};
-                qs1 == 0 && qs2 == 0 && qs3 == 0 && qs4 == 0)
-            {
-                index += do_run_mode(index);
-            }
-            else
-            {
-                quad<sample_type> rx;
-                rx.v1 = do_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1));
-                rx.v2 = do_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2));
-                rx.v3 = do_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3));
-                rx.v4 = do_regular(qs4, current_line_[index].v4, get_predicted_value(ra.v4, rb.v4, rc.v4));
-                current_line_[index] = rx;
-                ++index;
-            }
-        }
-    }
-
-    size_t encode_scan(const const_byte_span source, const size_t stride, const byte_span destination) override
-    {
-        process_line_ = create_process_line(source, stride);
-
-        initialize(destination);
-        encode_lines();
-
-        return get_length();
-    }
-
-    void initialize_parameters(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t reset_threshold)
-    {
-        t1_ = t1;
-        t2_ = t2;
-        t3_ = t3;
-        reset_threshold_ = static_cast<uint8_t>(reset_threshold);
-
-        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
-        reset_parameters();
-    }
-
-    void reset_parameters() noexcept
-    {
-        const context_regular_mode context_initial_value(traits_.range);
-        for (auto& context : contexts_)
-        {
-            context = context_initial_value;
-        }
-
-        context_run_mode_[0] = context_run_mode(0, traits_.range);
-        context_run_mode_[1] = context_run_mode(1, traits_.range);
-        run_index_ = 0;
-    }
-
-    static charls::frame_info update_component_count(charls::frame_info frame, const coding_parameters& parameters) noexcept
-    {
-        if (parameters.interleave_mode == interleave_mode::none)
-        {
-            frame.component_count = 1;
-        }
-
-        return frame;
     }
 
     // In ILV_SAMPLE mode, multiple components are handled in do_line
@@ -311,15 +133,233 @@ private:
                 // initialize edge pixels used for prediction
                 previous_line_[width_] = previous_line_[width_ - 1];
                 current_line_[-1] = previous_line_[0];
-                do_line(static_cast<pixel_type*>(nullptr)); // dummy argument for overload resolution
+
+                if constexpr (std::is_same_v<pixel_type, sample_type>)
+                {
+                    encode_sample_line();
+                }
+                else if constexpr (std::is_same_v<pixel_type, triplet<sample_type>>)
+                {
+                    encode_triplet_line();
+                }
+                else
+                {
+                    static_assert(std::is_same_v<pixel_type, quad<sample_type>>);
+                    encode_quad_line();
+                }
 
                 run_index[component] = run_index_;
                 previous_line_ += pixel_stride;
                 current_line_ += pixel_stride;
             }
         }
+    }
 
-        end_scan();
+    /// <summary>Encodes a scan line of samples</summary>
+    FORCE_INLINE void encode_sample_line()
+    {
+        int32_t index{};
+        int32_t rb{previous_line_[index - 1]};
+        int32_t rd{previous_line_[index]};
+
+        while (static_cast<uint32_t>(index) < width_)
+        {
+            const int32_t ra{current_line_[index - 1]};
+            const int32_t rc{rb};
+            rb = rd;
+            rd = previous_line_[index + 1];
+
+            if (const int32_t qs{
+                    compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
+                qs != 0)
+            {
+                current_line_[index] = encode_regular(qs, current_line_[index], get_predicted_value(ra, rb, rc));
+                ++index;
+            }
+            else
+            {
+                index += do_run_mode(index);
+                rb = previous_line_[index - 1];
+                rd = previous_line_[index];
+            }
+        }
+    }
+
+    /// <summary>Encodes a scan line of triplets in ILV_SAMPLE mode</summary>
+    void encode_triplet_line()
+    {
+        int32_t index{};
+        while (static_cast<uint32_t>(index) < width_)
+        {
+            const triplet<sample_type> ra{current_line_[index - 1]};
+            const triplet<sample_type> rc{previous_line_[index - 1]};
+            const triplet<sample_type> rb{previous_line_[index]};
+            const triplet<sample_type> rd{previous_line_[index + 1]};
+
+            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
+                                                 quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
+                                                 quantize_gradient(rc.v2 - ra.v2))};
+
+            if (const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
+                                                     quantize_gradient(rc.v3 - ra.v3))};
+                qs1 == 0 && qs2 == 0 && qs3 == 0)
+            {
+                index += do_run_mode(index);
+            }
+            else
+            {
+                triplet<sample_type> rx;
+                rx.v1 = encode_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1));
+                rx.v2 = encode_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2));
+                rx.v3 = encode_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3));
+                current_line_[index] = rx;
+                ++index;
+            }
+        }
+    }
+
+    /// <summary>Encodes a scan line of quads in ILV_SAMPLE mode</summary>
+    void encode_quad_line()
+    {
+        int32_t index{};
+        while (static_cast<uint32_t>(index) < width_)
+        {
+            const quad<sample_type> ra{current_line_[index - 1]};
+            const quad<sample_type> rc{previous_line_[index - 1]};
+            const quad<sample_type> rb{previous_line_[index]};
+            const quad<sample_type> rd{previous_line_[index + 1]};
+
+            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
+                                                 quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
+                                                 quantize_gradient(rc.v2 - ra.v2))};
+            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
+                                                 quantize_gradient(rc.v3 - ra.v3))};
+
+            if (const int32_t qs4{compute_context_id(quantize_gradient(rd.v4 - rb.v4), quantize_gradient(rb.v4 - rc.v4),
+                                                     quantize_gradient(rc.v4 - ra.v4))};
+                qs1 == 0 && qs2 == 0 && qs3 == 0 && qs4 == 0)
+            {
+                index += do_run_mode(index);
+            }
+            else
+            {
+                quad<sample_type> rx;
+                rx.v1 = encode_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1));
+                rx.v2 = encode_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2));
+                rx.v3 = encode_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3));
+                rx.v4 = encode_regular(qs4, current_line_[index].v4, get_predicted_value(ra.v4, rb.v4, rc.v4));
+                current_line_[index] = rx;
+                ++index;
+            }
+        }
+    }
+
+    [[nodiscard]] int32_t do_run_mode(const int32_t index)
+    {
+        const int32_t count_type_remain = width_ - index;
+        pixel_type* type_cur_x{current_line_ + index};
+        const pixel_type* type_prev_x{previous_line_ + index};
+
+        const pixel_type ra{type_cur_x[-1]};
+
+        int32_t run_length{};
+        while (traits_.is_near(type_cur_x[run_length], ra))
+        {
+            type_cur_x[run_length] = ra;
+            ++run_length;
+
+            if (run_length == count_type_remain)
+                break;
+        }
+
+        encode_run_pixels(run_length, run_length == count_type_remain);
+
+        if (run_length == count_type_remain)
+            return run_length;
+
+        type_cur_x[run_length] = encode_run_interruption_pixel(type_cur_x[run_length], ra, type_prev_x[run_length]);
+        decrement_run_index();
+        return run_length + 1;
+    }
+
+    [[nodiscard]] FORCE_INLINE sample_type encode_regular(const int32_t qs, const int32_t x, const int32_t predicted)
+    {
+        const int32_t sign{bit_wise_sign(qs)};
+        context_regular_mode& context{contexts_[apply_sign(qs, sign)]};
+        const int32_t k{context.get_golomb_coding_parameter()};
+        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
+        const int32_t error_value{traits_.compute_error_value(apply_sign(x - predicted_value, sign))};
+
+        encode_mapped_value(k, map_error_value(context.get_error_correction(k | traits_.near_lossless) ^ error_value),
+                            traits_.limit);
+        context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
+        ASSERT(traits_.is_near(traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)), x));
+        return static_cast<sample_type>(
+            traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)));
+    }
+
+    FORCE_INLINE void encode_mapped_value(const int32_t k, const int32_t mapped_error, const int32_t limit)
+    {
+        if (int32_t high_bits{mapped_error >> k}; high_bits < limit - traits_.quantized_bits_per_pixel - 1)
+        {
+            if (high_bits + 1 > 31)
+            {
+                append_to_bit_stream(0, high_bits / 2);
+                high_bits = high_bits - high_bits / 2;
+            }
+            append_to_bit_stream(1, high_bits + 1);
+            append_to_bit_stream((mapped_error & ((1 << k) - 1)), k);
+            return;
+        }
+
+        if (limit - traits_.quantized_bits_per_pixel > 31)
+        {
+            append_to_bit_stream(0, 31);
+            append_to_bit_stream(1, limit - traits_.quantized_bits_per_pixel - 31);
+        }
+        else
+        {
+            append_to_bit_stream(1, limit - traits_.quantized_bits_per_pixel);
+        }
+        append_to_bit_stream((mapped_error - 1) & ((1 << traits_.quantized_bits_per_pixel) - 1),
+                             traits_.quantized_bits_per_pixel);
+    }
+
+    void initialize_parameters(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t reset_threshold)
+    {
+        t1_ = t1;
+        t2_ = t2;
+        t3_ = t3;
+        reset_threshold_ = static_cast<uint8_t>(reset_threshold);
+
+        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
+        reset_parameters();
+    }
+
+    void reset_parameters() noexcept
+    {
+        const context_regular_mode context_initial_value(traits_.range);
+        for (auto& context : contexts_)
+        {
+            context = context_initial_value;
+        }
+
+        context_run_mode_[0] = context_run_mode(0, traits_.range);
+        context_run_mode_[1] = context_run_mode(1, traits_.range);
+        run_index_ = 0;
+    }
+
+    [[nodiscard]] static charls::frame_info update_component_count(charls::frame_info frame,
+                                                                   const coding_parameters& parameters) noexcept
+    {
+        if (parameters.interleave_mode == interleave_mode::none)
+        {
+            frame.component_count = 1;
+        }
+
+        return frame;
     }
 
     void encode_run_interruption_error(context_run_mode& context, const int32_t error_value)
@@ -334,7 +374,7 @@ private:
         context.update_variables(error_value, e_mapped_error_value, reset_threshold_);
     }
 
-    sample_type encode_run_interruption_pixel(const int32_t x, const int32_t ra, const int32_t rb)
+    [[nodiscard]] sample_type encode_run_interruption_pixel(const int32_t x, const int32_t ra, const int32_t rb)
     {
         if (std::abs(ra - rb) <= traits_.near_lossless)
         {
@@ -348,8 +388,8 @@ private:
         return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
     }
 
-    triplet<sample_type> encode_run_interruption_pixel(const triplet<sample_type> x, const triplet<sample_type> ra,
-                                                       const triplet<sample_type> rb)
+    [[nodiscard]] triplet<sample_type>
+    encode_run_interruption_pixel(const triplet<sample_type> x, const triplet<sample_type> ra, const triplet<sample_type> rb)
     {
         const int32_t error_value1{traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1))};
         encode_run_interruption_error(context_run_mode_[0], error_value1);
@@ -365,8 +405,8 @@ private:
                                     traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3)));
     }
 
-    quad<sample_type> encode_run_interruption_pixel(const quad<sample_type> x, const quad<sample_type> ra,
-                                                    const quad<sample_type> rb)
+    [[nodiscard]] quad<sample_type> encode_run_interruption_pixel(const quad<sample_type> x, const quad<sample_type> ra,
+                                                                  const quad<sample_type> rb)
     {
         const int32_t error_value1{traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1))};
         encode_run_interruption_error(context_run_mode_[0], error_value1);
@@ -407,34 +447,6 @@ private:
         {
             append_to_bit_stream(run_length, J[run_index_] + 1); // leading 0 + actual remaining length
         }
-    }
-
-    int32_t do_run_mode(const int32_t index)
-    {
-        const int32_t count_type_remain = width_ - index;
-        pixel_type* type_cur_x{current_line_ + index};
-        const pixel_type* type_prev_x{previous_line_ + index};
-
-        const pixel_type ra{type_cur_x[-1]};
-
-        int32_t run_length{};
-        while (traits_.is_near(type_cur_x[run_length], ra))
-        {
-            type_cur_x[run_length] = ra;
-            ++run_length;
-
-            if (run_length == count_type_remain)
-                break;
-        }
-
-        encode_run_pixels(run_length, run_length == count_type_remain);
-
-        if (run_length == count_type_remain)
-            return run_length;
-
-        type_cur_x[run_length] = encode_run_interruption_pixel(type_cur_x[run_length], ra, type_prev_x[run_length]);
-        decrement_run_index();
-        return run_length + 1;
     }
 
     // codec parameters

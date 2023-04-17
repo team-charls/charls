@@ -6,8 +6,8 @@
 #include "color_transform.h"
 #include "context_regular_mode.h"
 #include "context_run_mode.h"
-#include "scan_decoder.h"
 #include "golomb_lut.h"
+#include "scan_decoder.h"
 
 namespace charls {
 
@@ -18,8 +18,7 @@ public:
     using pixel_type = typename Traits::pixel_type;
     using sample_type = typename Traits::sample_type;
 
-    scan_decoder_impl(Traits traits, const charls::frame_info& frame_info,
-                                const coding_parameters& parameters) noexcept :
+    scan_decoder_impl(Traits traits, const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
         scan_decoder{update_component_count(frame_info, parameters), parameters},
         traits_{std::move(traits)},
         width_{frame_info.width}
@@ -27,6 +26,26 @@ public:
         ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) ||
                parameters.interleave_mode != interleave_mode::none);
         ASSERT(traits_.is_valid());
+    }
+
+    size_t decode_scan(const const_byte_span source, const byte_span destination, const size_t stride) override
+    {
+        process_line_ = create_process_line(destination, stride);
+
+        const auto* scan_begin{source.begin()};
+
+        initialize(source);
+
+        // Process images without a restart interval, as 1 large restart interval.
+        if (parameters_.restart_interval == 0)
+        {
+            parameters_.restart_interval = frame_info().height;
+        }
+
+        decode_lines();
+        end_scan();
+
+        return get_cur_byte_pos() - scan_begin;
     }
 
 private:
@@ -104,7 +123,7 @@ private:
         run_index_ = std::max(0, run_index_ - 1);
     }
 
-    [[nodiscard]] FORCE_INLINE sample_type do_regular(const int32_t qs, int32_t /*x*/, const int32_t predicted)
+    [[nodiscard]] FORCE_INLINE sample_type decode_regular(const int32_t qs, const int32_t predicted)
     {
         const int32_t sign{bit_wise_sign(qs)};
         context_regular_mode& context{contexts_[apply_sign(qs, sign)]};
@@ -131,160 +150,6 @@ private:
         context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
         error_value = apply_sign(error_value, sign);
         return traits_.compute_reconstructed_sample(predicted_value, error_value);
-    }
-
-    /// <summary>Decodes a scan line of samples</summary>
-    FORCE_INLINE void do_line(sample_type* /*template_selector*/)
-    {
-        int32_t index{};
-        int32_t rb{previous_line_[index - 1]};
-        int32_t rd{previous_line_[index]};
-
-        while (static_cast<uint32_t>(index) < width_)
-        {
-            const int32_t ra{current_line_[index - 1]};
-            const int32_t rc{rb};
-            rb = rd;
-            rd = previous_line_[index + 1];
-
-            if (const int32_t qs{
-                    compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
-                qs != 0)
-            {
-                current_line_[index] = do_regular(qs, current_line_[index], get_predicted_value(ra, rb, rc));
-                ++index;
-            }
-            else
-            {
-                index += do_run_mode(index);
-                rb = previous_line_[index - 1];
-                rd = previous_line_[index];
-            }
-        }
-    }
-
-    /// <summary>Decodes a scan line of triplets in ILV_SAMPLE mode</summary>
-    void do_line(triplet<sample_type>* /*template_selector*/)
-    {
-        int32_t index{};
-        while (static_cast<uint32_t>(index) < width_)
-        {
-            const triplet<sample_type> ra{current_line_[index - 1]};
-            const triplet<sample_type> rc{previous_line_[index - 1]};
-            const triplet<sample_type> rb{previous_line_[index]};
-            const triplet<sample_type> rd{previous_line_[index + 1]};
-
-            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
-                                                 quantize_gradient(rc.v1 - ra.v1))};
-            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
-                                                 quantize_gradient(rc.v2 - ra.v2))};
-
-            if (const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
-                                                     quantize_gradient(rc.v3 - ra.v3))};
-                qs1 == 0 && qs2 == 0 && qs3 == 0)
-            {
-                index += do_run_mode(index);
-            }
-            else
-            {
-                triplet<sample_type> rx;
-                rx.v1 = do_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1));
-                rx.v2 = do_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2));
-                rx.v3 = do_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3));
-                current_line_[index] = rx;
-                ++index;
-            }
-        }
-    }
-
-    /// <summary>Decodes a scan line of quads in ILV_SAMPLE mode</summary>
-    void do_line(quad<sample_type>* /*template_selector*/)
-    {
-        int32_t index{};
-        while (static_cast<uint32_t>(index) < width_)
-        {
-            const quad<sample_type> ra{current_line_[index - 1]};
-            const quad<sample_type> rc{previous_line_[index - 1]};
-            const quad<sample_type> rb{previous_line_[index]};
-            const quad<sample_type> rd{previous_line_[index + 1]};
-
-            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
-                                                 quantize_gradient(rc.v1 - ra.v1))};
-            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
-                                                 quantize_gradient(rc.v2 - ra.v2))};
-            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
-                                                 quantize_gradient(rc.v3 - ra.v3))};
-
-            if (const int32_t qs4{compute_context_id(quantize_gradient(rd.v4 - rb.v4), quantize_gradient(rb.v4 - rc.v4),
-                                                     quantize_gradient(rc.v4 - ra.v4))};
-                qs1 == 0 && qs2 == 0 && qs3 == 0 && qs4 == 0)
-            {
-                index += do_run_mode(index);
-            }
-            else
-            {
-                quad<sample_type> rx;
-                rx.v1 = do_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1));
-                rx.v2 = do_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2));
-                rx.v3 = do_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3));
-                rx.v4 = do_regular(qs4, current_line_[index].v4, get_predicted_value(ra.v4, rb.v4, rc.v4));
-                current_line_[index] = rx;
-                ++index;
-            }
-        }
-    }
-
-    size_t decode_scan(const const_byte_span source, const byte_span destination, const size_t stride) override
-    {
-        process_line_ = create_process_line(destination, stride);
-
-        const auto* scan_begin{source.begin()};
-
-        initialize(source);
-
-        // Process images without a restart interval, as 1 large restart interval.b
-        if (parameters_.restart_interval == 0)
-        {
-            parameters_.restart_interval = frame_info().height;
-        }
-
-        decode_lines();
-
-        return get_cur_byte_pos() - scan_begin;
-    }
-
-    void initialize_parameters(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t reset_threshold)
-    {
-        t1_ = t1;
-        t2_ = t2;
-        t3_ = t3;
-        reset_threshold_ = static_cast<uint8_t>(reset_threshold);
-
-        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
-        reset_parameters();
-    }
-
-    void reset_parameters() noexcept
-    {
-        const context_regular_mode context_initial_value(traits_.range);
-        for (auto& context : contexts_)
-        {
-            context = context_initial_value;
-        }
-
-        context_run_mode_[0] = context_run_mode(0, traits_.range);
-        context_run_mode_[1] = context_run_mode(1, traits_.range);
-        run_index_ = 0;
-    }
-
-    static charls::frame_info update_component_count(charls::frame_info frame, const coding_parameters& parameters) noexcept
-    {
-        if (parameters.interleave_mode == interleave_mode::none)
-        {
-            frame.component_count = 1;
-        }
-
-        return frame;
     }
 
     // In ILV_SAMPLE mode, multiple components are handled in do_line
@@ -320,7 +185,20 @@ private:
                     // initialize edge pixels used for prediction
                     previous_line_[width_] = previous_line_[width_ - 1];
                     current_line_[-1] = previous_line_[0];
-                    do_line(static_cast<pixel_type*>(nullptr)); // dummy argument for overload resolution
+
+                    if constexpr (std::is_same_v<pixel_type, sample_type>)
+                    {
+                        decode_sample_line();
+                    }
+                    else if constexpr (std::is_same_v<pixel_type, triplet<sample_type>>)
+                    {
+                        decode_triplet_line();
+                    }
+                    else
+                    {
+                        static_assert(std::is_same_v<pixel_type, quad<sample_type>>);
+                        decode_quad_line();
+                    }
 
                     run_index[component] = run_index_;
                     previous_line_ += pixel_stride;
@@ -343,8 +221,159 @@ private:
             std::fill(run_index.begin(), run_index.end(), 0);
             reset_parameters();
         }
+    }
 
-        end_scan();
+    /// <summary>Decodes a scan line of samples</summary>
+    FORCE_INLINE void decode_sample_line()
+    {
+        int32_t index{};
+        int32_t rb{previous_line_[index - 1]};
+        int32_t rd{previous_line_[index]};
+
+        while (static_cast<uint32_t>(index) < width_)
+        {
+            const int32_t ra{current_line_[index - 1]};
+            const int32_t rc{rb};
+            rb = rd;
+            rd = previous_line_[index + 1];
+
+            if (const int32_t qs{
+                    compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
+                qs != 0)
+            {
+                current_line_[index] = decode_regular(qs, get_predicted_value(ra, rb, rc));
+                ++index;
+            }
+            else
+            {
+                index += decode_run_mode(index);
+                rb = previous_line_[index - 1];
+                rd = previous_line_[index];
+            }
+        }
+    }
+
+    /// <summary>Decodes a scan line of triplets in ILV_SAMPLE mode</summary>
+    void decode_triplet_line()
+    {
+        int32_t index{};
+        while (static_cast<uint32_t>(index) < width_)
+        {
+            const triplet<sample_type> ra{current_line_[index - 1]};
+            const triplet<sample_type> rc{previous_line_[index - 1]};
+            const triplet<sample_type> rb{previous_line_[index]};
+            const triplet<sample_type> rd{previous_line_[index + 1]};
+
+            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
+                                                 quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
+                                                 quantize_gradient(rc.v2 - ra.v2))};
+
+            if (const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
+                                                     quantize_gradient(rc.v3 - ra.v3))};
+                qs1 == 0 && qs2 == 0 && qs3 == 0)
+            {
+                index += decode_run_mode(index);
+            }
+            else
+            {
+                triplet<sample_type> rx;
+                rx.v1 = decode_regular(qs1, get_predicted_value(ra.v1, rb.v1, rc.v1));
+                rx.v2 = decode_regular(qs2, get_predicted_value(ra.v2, rb.v2, rc.v2));
+                rx.v3 = decode_regular(qs3, get_predicted_value(ra.v3, rb.v3, rc.v3));
+                current_line_[index] = rx;
+                ++index;
+            }
+        }
+    }
+
+    /// <summary>Decodes a scan line of quads in ILV_SAMPLE mode</summary>
+    void decode_quad_line()
+    {
+        int32_t index{};
+        while (static_cast<uint32_t>(index) < width_)
+        {
+            const quad<sample_type> ra{current_line_[index - 1]};
+            const quad<sample_type> rc{previous_line_[index - 1]};
+            const quad<sample_type> rb{previous_line_[index]};
+            const quad<sample_type> rd{previous_line_[index + 1]};
+
+            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
+                                                 quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
+                                                 quantize_gradient(rc.v2 - ra.v2))};
+            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
+                                                 quantize_gradient(rc.v3 - ra.v3))};
+
+            if (const int32_t qs4{compute_context_id(quantize_gradient(rd.v4 - rb.v4), quantize_gradient(rb.v4 - rc.v4),
+                                                     quantize_gradient(rc.v4 - ra.v4))};
+                qs1 == 0 && qs2 == 0 && qs3 == 0 && qs4 == 0)
+            {
+                index += decode_run_mode(index);
+            }
+            else
+            {
+                quad<sample_type> rx;
+                rx.v1 = decode_regular(qs1, get_predicted_value(ra.v1, rb.v1, rc.v1));
+                rx.v2 = decode_regular(qs2, get_predicted_value(ra.v2, rb.v2, rc.v2));
+                rx.v3 = decode_regular(qs3, get_predicted_value(ra.v3, rb.v3, rc.v3));
+                rx.v4 = decode_regular(qs4, get_predicted_value(ra.v4, rb.v4, rc.v4));
+                current_line_[index] = rx;
+                ++index;
+            }
+        }
+    }
+
+    [[nodiscard]] int32_t decode_run_mode(const int32_t start_index)
+    {
+        const pixel_type ra{current_line_[start_index - 1]};
+
+        const int32_t run_length{decode_run_pixels(ra, current_line_ + start_index, width_ - start_index)};
+        const auto end_index{static_cast<uint32_t>(start_index + run_length)};
+
+        if (end_index == width_)
+            return end_index - start_index;
+
+        // run interruption
+        const pixel_type rb{previous_line_[end_index]};
+        current_line_[end_index] = decode_run_interruption_pixel(ra, rb);
+        decrement_run_index();
+        return end_index - start_index + 1;
+    }
+
+    void initialize_parameters(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t reset_threshold)
+    {
+        t1_ = t1;
+        t2_ = t2;
+        t3_ = t3;
+        reset_threshold_ = static_cast<uint8_t>(reset_threshold);
+
+        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
+        reset_parameters();
+    }
+
+    void reset_parameters() noexcept
+    {
+        const context_regular_mode context_initial_value(traits_.range);
+        for (auto& context : contexts_)
+        {
+            context = context_initial_value;
+        }
+
+        context_run_mode_[0] = context_run_mode(0, traits_.range);
+        context_run_mode_[1] = context_run_mode(1, traits_.range);
+        run_index_ = 0;
+    }
+
+    [[nodiscard]] static charls::frame_info update_component_count(charls::frame_info frame,
+                                                                   const coding_parameters& parameters) noexcept
+    {
+        if (parameters.interleave_mode == interleave_mode::none)
+        {
+            frame.component_count = 1;
+        }
+
+        return frame;
     }
 
     void read_restart_marker(const uint32_t expected_restart_marker_id)
@@ -363,7 +392,7 @@ private:
             impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
     }
 
-    int32_t decode_run_interruption_error(context_run_mode& context)
+    [[nodiscard]] int32_t decode_run_interruption_error(context_run_mode& context)
     {
         const int32_t k{context.get_golomb_code()};
         const int32_t e_mapped_error_value{
@@ -373,7 +402,7 @@ private:
         return error_value;
     }
 
-    triplet<sample_type> decode_run_interruption_pixel(triplet<sample_type> ra, triplet<sample_type> rb)
+    [[nodiscard]] triplet<sample_type> decode_run_interruption_pixel(triplet<sample_type> ra, triplet<sample_type> rb)
     {
         const int32_t error_value1{decode_run_interruption_error(context_run_mode_[0])};
         const int32_t error_value2{decode_run_interruption_error(context_run_mode_[0])};
@@ -384,7 +413,7 @@ private:
                                     traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3)));
     }
 
-    quad<sample_type> decode_run_interruption_pixel(quad<sample_type> ra, quad<sample_type> rb)
+    [[nodiscard]] quad<sample_type> decode_run_interruption_pixel(quad<sample_type> ra, quad<sample_type> rb)
     {
         const int32_t error_value1{decode_run_interruption_error(context_run_mode_[0])};
         const int32_t error_value2{decode_run_interruption_error(context_run_mode_[0])};
@@ -398,7 +427,7 @@ private:
             traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4)));
     }
 
-    sample_type decode_run_interruption_pixel(int32_t ra, int32_t rb)
+    [[nodiscard]] sample_type decode_run_interruption_pixel(int32_t ra, int32_t rb)
     {
         if (std::abs(ra - rb) <= traits_.near_lossless)
         {
@@ -410,7 +439,7 @@ private:
         return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
     }
 
-    int32_t decode_run_pixels(pixel_type ra, pixel_type* start_pos, const int32_t pixel_count)
+    [[nodiscard]] int32_t decode_run_pixels(pixel_type ra, pixel_type* start_pos, const int32_t pixel_count)
     {
         int32_t index{};
         while (read_bit())
@@ -443,23 +472,6 @@ private:
         }
 
         return index;
-    }
-
-    int32_t do_run_mode(const int32_t start_index)
-    {
-        const pixel_type ra{current_line_[start_index - 1]};
-
-        const int32_t run_length{decode_run_pixels(ra, current_line_ + start_index, width_ - start_index)};
-        const auto end_index{static_cast<uint32_t>(start_index + run_length)};
-
-        if (end_index == width_)
-            return end_index - start_index;
-
-        // run interruption
-        const pixel_type rb{previous_line_[end_index]};
-        current_line_[end_index] = decode_run_interruption_pixel(ra, rb);
-        decrement_run_index();
-        return end_index - start_index + 1;
     }
 
     // codec parameters
