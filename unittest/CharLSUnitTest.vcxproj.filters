@@ -21,7 +21,7 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="encoder_strategy_tester.h">
+    <ClInclude Include="scan_encoder_tester.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jpeg_test_stream_writer.h">
@@ -41,13 +41,13 @@
     <ClCompile Include="color_transform_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="decoder_strategy_test.cpp">
+    <ClCompile Include="scan_decoder_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="default_traits_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="encoder_strategy_test.cpp">
+    <ClCompile Include="scan_encoder_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jpeg_stream_reader_test.cpp">
@@ -95,7 +95,7 @@
     <ClCompile Include="golomb_table_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="scan_test.cpp">
+    <ClCompile Include="jpegls_algorithm_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="context_run_mode_test.cpp">

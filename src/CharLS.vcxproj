@@ -216,7 +216,7 @@
     <ClCompile Include="validate_spiff_header.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include="charls_jpegls_decoder.cpp" />
-    <ClCompile Include="jpegls.cpp" />
+    <ClCompile Include="scan_codec_factory.cpp" />
     <ClCompile Include="charls_jpegls_encoder.cpp" />
     <ClCompile Include="jpegls_error.cpp" />
     <ClCompile Include="jpeg_stream_reader.cpp" />
@@ -238,11 +238,11 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="context_regular_mode.h" />
     <ClInclude Include="context_run_mode.h" />
-    <ClInclude Include="decoder_strategy.h" />
+    <ClInclude Include="scan_decoder.h" />
     <ClInclude Include="default_traits.h" />
-    <ClInclude Include="encoder_strategy.h" />
+    <ClInclude Include="scan_encoder.h" />
     <ClInclude Include="golomb_lut.h" />
-    <ClInclude Include="jls_codec_factory.h" />
+    <ClInclude Include="scan_codec_factory.h" />
     <ClInclude Include="jpegls_algorithm.h" />
     <ClInclude Include="jpegls_preset_coding_parameters.h" />
     <ClInclude Include="jpeg_marker_code.h" />
@@ -252,7 +252,8 @@
     <ClInclude Include="jpegls_preset_parameters_type.h" />
     <ClInclude Include="process_line.h" />
     <ClInclude Include="quantization_lut.h" />
-    <ClInclude Include="scan.h" />
+    <ClInclude Include="scan_decoder_impl.h" />
+    <ClInclude Include="scan_encoder_impl.h" />
     <ClInclude Include="byte_span.h" />
     <ClInclude Include="scan_codec.h" />
     <ClInclude Include="util.h" />

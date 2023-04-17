@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="jpegls.cpp">
+    <ClCompile Include="scan_codec_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jpegls_error.cpp">
@@ -36,7 +36,7 @@
     <ClInclude Include="context_regular_mode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scan.h">
+    <ClInclude Include="scan_encoder_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="util.h">
@@ -60,16 +60,16 @@
     <ClInclude Include="context_run_mode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="decoder_strategy.h">
+    <ClInclude Include="scan_decoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="default_traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="encoder_strategy.h">
+    <ClInclude Include="scan_encoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jls_codec_factory.h">
+    <ClInclude Include="scan_codec_factory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jpeg_marker_code.h">
@@ -130,6 +130,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="quantization_lut.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scan_decoder_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

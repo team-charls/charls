@@ -65,11 +65,11 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)build\intermediate\CharLS\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories Condition="'$(Platform)'=='Win32'">$(SolutionDir)build\intermediate\CharLS\x86\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>jpegls.obj;jpegls_error.obj;jpeg_stream_writer.obj;jpeg_stream_reader.obj;charls_jpegls_decoder.obj;charls_jpegls_encoder.obj;version.obj;validate_spiff_header.obj;golomb_lut.obj;quantization_lut.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>scan_codec_factory.obj;jpegls_error.obj;jpeg_stream_writer.obj;jpeg_stream_reader.obj;charls_jpegls_decoder.obj;charls_jpegls_encoder.obj;version.obj;validate_spiff_header.obj;golomb_lut.obj;quantization_lut.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="encoder_strategy_tester.h" />
+    <ClInclude Include="scan_encoder_tester.h" />
     <ClInclude Include="jpegls_preset_coding_parameters_test.h" />
     <ClInclude Include="jpeg_test_stream_writer.h" />
     <ClInclude Include="pch.h" />
@@ -81,10 +81,10 @@
     <ClCompile Include="compliance_test.cpp" />
     <ClCompile Include="context_run_mode_test.cpp" />
     <ClCompile Include="golomb_table_test.cpp" />
-    <ClCompile Include="decoder_strategy_test.cpp" />
+    <ClCompile Include="scan_decoder_test.cpp" />
     <ClCompile Include="default_traits_test.cpp" />
     <ClCompile Include="documentation_test.cpp" />
-    <ClCompile Include="encoder_strategy_test.cpp" />
+    <ClCompile Include="scan_encoder_test.cpp" />
     <ClCompile Include="encode_test.cpp" />
     <ClCompile Include="jpegls_decoder_test.cpp" />
     <ClCompile Include="jpegls_encoder_test.cpp" />
@@ -97,7 +97,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="jpeg_stream_writer_test.cpp" />
-    <ClCompile Include="scan_test.cpp" />
+    <ClCompile Include="jpegls_algorithm_test.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="util_test.cpp" />
     <ClCompile Include="validate_spiff_header_test.cpp" />
