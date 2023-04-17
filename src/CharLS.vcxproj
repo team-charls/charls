@@ -212,6 +212,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="golomb_lut.cpp" />
+    <ClCompile Include="quantization_lut.cpp" />
     <ClCompile Include="validate_spiff_header.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include="charls_jpegls_decoder.cpp" />
@@ -250,6 +251,7 @@
     <ClInclude Include="lossless_traits.h" />
     <ClInclude Include="jpegls_preset_parameters_type.h" />
     <ClInclude Include="process_line.h" />
+    <ClInclude Include="quantization_lut.h" />
     <ClInclude Include="scan.h" />
     <ClInclude Include="byte_span.h" />
     <ClInclude Include="scan_codec.h" />

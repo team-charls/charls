@@ -113,6 +113,8 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/jpegls_preset_parameters_type.h"
     "${CMAKE_CURRENT_LIST_DIR}/lossless_traits.h"
     "${CMAKE_CURRENT_LIST_DIR}/process_line.h"
+    "${CMAKE_CURRENT_LIST_DIR}/quantization_lut.h"
+    "${CMAKE_CURRENT_LIST_DIR}/quantization_lut.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/scan.h"
     "${CMAKE_CURRENT_LIST_DIR}/scan_codec.h"
     "${CMAKE_CURRENT_LIST_DIR}/util.h"

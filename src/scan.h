@@ -20,12 +20,6 @@
 
 namespace charls {
 
-extern const std::vector<int8_t> quantization_lut_lossless_8;
-extern const std::vector<int8_t> quantization_lut_lossless_10;
-extern const std::vector<int8_t> quantization_lut_lossless_12;
-extern const std::vector<int8_t> quantization_lut_lossless_16;
-
-
 template<typename Traits>
 class scan_encoder_implementation final : public encoder_strategy
 {
@@ -94,55 +88,6 @@ private:
         ASSERT(quantize_gradient_org(di, traits_.near_lossless) == *(quantization_ + di));
         return *(quantization_ + di);
     }
-
-    // C4127 = conditional expression is constant (caused by some template methods that are not fully specialized) [VS2017]
-    // C6326 = Potential comparison of a constant with another constant. (false warning, triggered by template construction
-    // in Checked build)
-    // C26814 = The const variable 'RANGE' can be computed at compile-time. [incorrect warning, VS 16.3.0 P3]
-    MSVC_WARNING_SUPPRESS(4127 6326 26814)
-
-    void initialize_quantization_lut()
-    {
-        // for lossless mode with default parameters, we have precomputed the look up table for bit counts 8, 10, 12 and 16.
-        if (traits_.near_lossless == 0 && traits_.maximum_sample_value == (1 << traits_.bits_per_pixel) - 1)
-        {
-            if (const jpegls_pc_parameters presets{compute_default(traits_.maximum_sample_value, traits_.near_lossless)};
-                presets.threshold1 == t1_ && presets.threshold2 == t2_ && presets.threshold3 == t3_)
-            {
-                if (traits_.bits_per_pixel == 8)
-                {
-                    quantization_ = &quantization_lut_lossless_8[quantization_lut_lossless_8.size() / 2];
-                    return;
-                }
-                if (traits_.bits_per_pixel == 10)
-                {
-                    quantization_ = &quantization_lut_lossless_10[quantization_lut_lossless_10.size() / 2];
-                    return;
-                }
-                if (traits_.bits_per_pixel == 12)
-                {
-                    quantization_ = &quantization_lut_lossless_12[quantization_lut_lossless_12.size() / 2];
-                    return;
-                }
-                if (traits_.bits_per_pixel == 16)
-                {
-                    quantization_ = &quantization_lut_lossless_16[quantization_lut_lossless_16.size() / 2];
-                    return;
-                }
-            }
-        }
-
-        // Initialize the quantization lookup table dynamic.
-        const int32_t range{1 << traits_.bits_per_pixel};
-        quantization_lut_.resize(static_cast<size_t>(range) * 2);
-        for (size_t i{}; i < quantization_lut_.size(); ++i)
-        {
-            quantization_lut_[i] = quantize_gradient_org(-range + static_cast<int32_t>(i), traits_.near_lossless);
-        }
-
-        quantization_ = &quantization_lut_[range];
-    }
-    MSVC_WARNING_UNSUPPRESS()
 
     FORCE_INLINE void encode_mapped_value(const int32_t k, const int32_t mapped_error, const int32_t limit)
     {
@@ -316,7 +261,7 @@ private:
         t3_ = t3;
         reset_threshold_ = static_cast<uint8_t>(reset_threshold);
 
-        initialize_quantization_lut();
+        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
         reset_parameters();
     }
 
@@ -510,10 +455,6 @@ private:
     int32_t run_index_{};
     pixel_type* previous_line_{};
     pixel_type* current_line_{};
-
-    // quantization lookup table
-    const int8_t* quantization_{};
-    std::vector<int8_t> quantization_lut_;
 };
 
 
@@ -586,56 +527,7 @@ private:
         return *(quantization_ + di);
     }
 
-    // C4127 = conditional expression is constant (caused by some template methods that are not fully specialized) [VS2017]
-    // C6326 = Potential comparison of a constant with another constant. (false warning, triggered by template construction
-    // in Checked build)
-    // C26814 = The const variable 'RANGE' can be computed at compile-time. [incorrect warning, VS 16.3.0 P3]
-    MSVC_WARNING_SUPPRESS(4127 6326 26814)
-
-    void initialize_quantization_lut()
-    {
-        // for lossless mode with default parameters, we have precomputed the look up table for bit counts 8, 10, 12 and 16.
-        if (traits_.near_lossless == 0 && traits_.maximum_sample_value == (1 << traits_.bits_per_pixel) - 1)
-        {
-            if (const jpegls_pc_parameters presets{compute_default(traits_.maximum_sample_value, traits_.near_lossless)};
-                presets.threshold1 == t1_ && presets.threshold2 == t2_ && presets.threshold3 == t3_)
-            {
-                if (traits_.bits_per_pixel == 8)
-                {
-                    quantization_ = &quantization_lut_lossless_8[quantization_lut_lossless_8.size() / 2];
-                    return;
-                }
-                if (traits_.bits_per_pixel == 10)
-                {
-                    quantization_ = &quantization_lut_lossless_10[quantization_lut_lossless_10.size() / 2];
-                    return;
-                }
-                if (traits_.bits_per_pixel == 12)
-                {
-                    quantization_ = &quantization_lut_lossless_12[quantization_lut_lossless_12.size() / 2];
-                    return;
-                }
-                if (traits_.bits_per_pixel == 16)
-                {
-                    quantization_ = &quantization_lut_lossless_16[quantization_lut_lossless_16.size() / 2];
-                    return;
-                }
-            }
-        }
-
-        // Initialize the quantization lookup table dynamic.
-        const int32_t range{1 << traits_.bits_per_pixel};
-        quantization_lut_.resize(static_cast<size_t>(range) * 2);
-        for (size_t i{}; i < quantization_lut_.size(); ++i)
-        {
-            quantization_lut_[i] = quantize_gradient_org(-range + static_cast<int32_t>(i), traits_.near_lossless);
-        }
-
-        quantization_ = &quantization_lut_[range];
-    }
-    MSVC_WARNING_UNSUPPRESS()
-
-    int32_t decode_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
+    [[nodiscard]] int32_t decode_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
     {
         const int32_t high_bits{read_high_bits()};
 
@@ -658,7 +550,7 @@ private:
         run_index_ = std::max(0, run_index_ - 1);
     }
 
-    FORCE_INLINE sample_type do_regular(const int32_t qs, int32_t /*x*/, const int32_t predicted)
+    [[nodiscard]] FORCE_INLINE sample_type do_regular(const int32_t qs, int32_t /*x*/, const int32_t predicted)
     {
         const int32_t sign{bit_wise_sign(qs)};
         context_regular_mode& context{contexts_[apply_sign(qs, sign)]};
@@ -814,7 +706,7 @@ private:
         t3_ = t3;
         reset_threshold_ = static_cast<uint8_t>(reset_threshold);
 
-        initialize_quantization_lut();
+        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
         reset_parameters();
     }
 
@@ -1027,11 +919,6 @@ private:
     int32_t run_index_{};
     pixel_type* previous_line_{};
     pixel_type* current_line_{};
-
-    // quantization lookup table
-    const int8_t* quantization_{};
-    std::vector<int8_t> quantization_lut_;
 };
-
 
 } // namespace charls

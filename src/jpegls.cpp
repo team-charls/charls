@@ -8,54 +8,12 @@
 #include "scan.h"
 #include "util.h"
 
-#include <vector>
-
 namespace charls {
 
 using std::make_unique;
 using std::unique_ptr;
-using std::vector;
 
 namespace {
-
-// See JPEG-LS standard ISO/IEC 14495-1, A.3.3, golomb_code Segment A.4
-int8_t quantize_gradient_org(const jpegls_pc_parameters& preset, const int32_t di) noexcept
-{
-    constexpr int32_t near_lossless{};
-
-    if (di <= -preset.threshold3)
-        return -4;
-    if (di <= -preset.threshold2)
-        return -3;
-    if (di <= -preset.threshold1)
-        return -2;
-    if (di < -near_lossless)
-        return -1;
-    if (di <= near_lossless)
-        return 0;
-    if (di < preset.threshold1)
-        return 1;
-    if (di < preset.threshold2)
-        return 2;
-    if (di < preset.threshold3)
-        return 3;
-
-    return 4;
-}
-
-vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
-{
-    const jpegls_pc_parameters preset{compute_default(calculate_maximum_sample_value(bit_count), 0)};
-    const int32_t range{preset.maximum_sample_value + 1};
-
-    vector<int8_t> lut(static_cast<size_t>(range) * 2);
-    for (size_t i{}; i != lut.size(); ++i)
-    {
-        lut[i] = quantize_gradient_org(preset, static_cast<int32_t>(i) - range);
-    }
-
-    return lut;
-}
 
 template<typename Strategy, typename Traits>
 unique_ptr<Strategy> make_codec(const Traits& traits, const frame_info& frame_info, const coding_parameters& parameters)
@@ -71,22 +29,6 @@ unique_ptr<Strategy> make_codec(const Traits& traits, const frame_info& frame_in
 }
 
 } // namespace
-
-
-// Lookup tables: sample differences to bin indexes.
-// ReSharper disable CppTemplateArgumentsCanBeDeduced
-// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
-const vector<int8_t> quantization_lut_lossless_8{create_quantize_lut_lossless(8)};
-
-// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
-const vector<int8_t> quantization_lut_lossless_10{create_quantize_lut_lossless(10)};
-
-// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
-const vector<int8_t> quantization_lut_lossless_12{create_quantize_lut_lossless(12)};
-
-// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
-const vector<int8_t> quantization_lut_lossless_16{create_quantize_lut_lossless(16)};
-// ReSharper restore CppTemplateArgumentsCanBeDeduced
 
 
 template<typename Strategy>

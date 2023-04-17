@@ -28,6 +28,9 @@
     <ClCompile Include="golomb_lut.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="quantization_lut.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="context_regular_mode.h">
@@ -124,6 +127,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="golomb_lut.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="quantization_lut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
