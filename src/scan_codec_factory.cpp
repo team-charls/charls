@@ -17,16 +17,26 @@ using std::unique_ptr;
 
 namespace {
 
+/// <summary>
+/// scan_codec_factory receives the actual frame info. scan_codec expects 1 when encoding/decoding a single scan in interleave mode none.
+/// </summary>
+[[nodiscard]] frame_info update_component_count(const frame_info& frame, const coding_parameters& parameters) noexcept
+{
+    return {frame.width, frame.height, frame.bits_per_sample,
+            parameters.interleave_mode == interleave_mode::none ? 1 : frame.component_count};
+}
+
+
 template<typename ScanProcess, typename Traits>
-unique_ptr<ScanProcess> make_codec(const Traits& traits, const frame_info& frame_info, const coding_parameters& parameters)
+unique_ptr<ScanProcess> make_codec(const Traits& traits, const frame_info& frame, const coding_parameters& parameters)
 {
     if constexpr (std::is_same_v<ScanProcess, scan_encoder>)
     {
-        return make_unique<scan_encoder_impl<Traits>>(traits, frame_info, parameters);
+        return make_unique<scan_encoder_impl<Traits>>(traits, update_component_count(frame, parameters), parameters);
     }
     else
     {
-        return make_unique<scan_decoder_impl<Traits>>(traits, frame_info, parameters);
+        return make_unique<scan_decoder_impl<Traits>>(traits, update_component_count(frame, parameters), parameters);
     }
 }
 
@@ -34,8 +44,9 @@ unique_ptr<ScanProcess> make_codec(const Traits& traits, const frame_info& frame
 
 
 template<typename ScanProcess>
-unique_ptr<ScanProcess> scan_codec_factory<ScanProcess>::create_codec(const frame_info& frame, const coding_parameters& parameters,
-                                                               const jpegls_pc_parameters& preset_coding_parameters)
+unique_ptr<ScanProcess> scan_codec_factory<ScanProcess>::create_codec(const frame_info& frame,
+                                                                      const coding_parameters& parameters,
+                                                                      const jpegls_pc_parameters& preset_coding_parameters)
 {
     unique_ptr<ScanProcess> codec;
 
@@ -68,7 +79,7 @@ unique_ptr<ScanProcess> scan_codec_factory<ScanProcess>::create_codec(const fram
 
 template<typename ScanProcess>
 unique_ptr<ScanProcess> scan_codec_factory<ScanProcess>::try_create_optimized_codec(const frame_info& frame,
-                                                                             const coding_parameters& parameters)
+                                                                                    const coding_parameters& parameters)
 {
     if (parameters.interleave_mode == interleave_mode::sample && frame.component_count != 3 && frame.component_count != 4)
         return nullptr;
@@ -112,17 +123,18 @@ unique_ptr<ScanProcess> scan_codec_factory<ScanProcess>::try_create_optimized_co
             if (frame.component_count == 3)
             {
                 return make_codec<ScanProcess>(default_traits<uint8_t, triplet<uint8_t>>(maxval, parameters.near_lossless),
-                                            frame, parameters);
+                                               frame, parameters);
             }
 
             if (frame.component_count == 4)
             {
-                return make_codec<ScanProcess>(default_traits<uint8_t, quad<uint8_t>>(maxval, parameters.near_lossless), frame,
-                                            parameters);
+                return make_codec<ScanProcess>(default_traits<uint8_t, quad<uint8_t>>(maxval, parameters.near_lossless),
+                                               frame, parameters);
             }
         }
 
-        return make_codec<ScanProcess>(default_traits<uint8_t, uint8_t>(maxval, parameters.near_lossless), frame, parameters);
+        return make_codec<ScanProcess>(default_traits<uint8_t, uint8_t>(maxval, parameters.near_lossless), frame,
+                                       parameters);
     }
     if (frame.bits_per_sample <= 16)
     {
@@ -131,17 +143,18 @@ unique_ptr<ScanProcess> scan_codec_factory<ScanProcess>::try_create_optimized_co
             if (frame.component_count == 3)
             {
                 return make_codec<ScanProcess>(default_traits<uint16_t, triplet<uint16_t>>(maxval, parameters.near_lossless),
-                                            frame, parameters);
+                                               frame, parameters);
             }
 
             if (frame.component_count == 4)
             {
                 return make_codec<ScanProcess>(default_traits<uint16_t, quad<uint16_t>>(maxval, parameters.near_lossless),
-                                            frame, parameters);
+                                               frame, parameters);
             }
         }
 
-        return make_codec<ScanProcess>(default_traits<uint16_t, uint16_t>(maxval, parameters.near_lossless), frame, parameters);
+        return make_codec<ScanProcess>(default_traits<uint16_t, uint16_t>(maxval, parameters.near_lossless), frame,
+                                       parameters);
     }
     return nullptr;
 }

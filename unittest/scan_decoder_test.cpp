@@ -59,7 +59,7 @@ public:
         constexpr array<data_t, 5> in_data{{{0x00, 24}, {0xFF, 8}, {0xFFFF, 16}, {0xFFFF, 16}, {0x12345678, 31}}};
 
         array<byte, 100> enc_buf{};
-        constexpr frame_info frame_info{};
+        constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
 
         scan_encoder_tester encoder(frame_info, parameters);
@@ -85,7 +85,7 @@ public:
 
     TEST_METHOD(peek_byte) // NOLINT
     {
-        constexpr frame_info frame_info{};
+        constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
 
         array buffer{byte{7}, byte{100}, byte{23}, byte{99}};
@@ -97,7 +97,7 @@ public:
 
     TEST_METHOD(read_bit) // NOLINT
     {
-        constexpr frame_info frame_info{};
+        constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
 
         array buffer{byte{0xAA}, byte{100}, byte{23}, byte{99}};
@@ -116,7 +116,7 @@ public:
 
     TEST_METHOD(peek_0_bits) // NOLINT
     {
-        constexpr frame_info frame_info{};
+        constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
 
         {
@@ -132,13 +132,17 @@ public:
             scan_decoder_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
             Assert::AreEqual(15, decoder_strategy.peek_0_bits());
         }
+    }
 
-        {
-            array<byte, 4> buffer{};
+    TEST_METHOD(peek_0_bits_empty_buffer) // NOLINT
+    {
+        constexpr frame_info frame_info{1, 1, 8, 1};
+        constexpr coding_parameters parameters{};
 
-            scan_decoder_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
-            Assert::AreEqual(-1, decoder_strategy.peek_0_bits());
-        }
+        array<byte, 4> buffer{};
+
+        scan_decoder_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
+        Assert::AreEqual(-1, decoder_strategy.peek_0_bits());
     }
 };
 

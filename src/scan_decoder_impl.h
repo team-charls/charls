@@ -4,8 +4,6 @@
 #pragma once
 
 #include "color_transform.h"
-#include "context_regular_mode.h"
-#include "context_run_mode.h"
 #include "golomb_lut.h"
 #include "scan_decoder.h"
 
@@ -18,14 +16,16 @@ public:
     using pixel_type = typename Traits::pixel_type;
     using sample_type = typename Traits::sample_type;
 
-    scan_decoder_impl(Traits traits, const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        scan_decoder{update_component_count(frame_info, parameters), parameters},
-        traits_{std::move(traits)},
-        width_{frame_info.width}
+    scan_decoder_impl(const Traits& traits, const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
+        scan_decoder{frame_info, parameters},
+        traits_{traits}
     {
-        ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) ||
-               parameters.interleave_mode != interleave_mode::none);
         ASSERT(traits_.is_valid());
+    }
+
+    void set_presets(const jpegls_pc_parameters& presets) override
+    {
+        initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
     }
 
     size_t decode_scan(const const_byte_span source, const byte_span destination, const size_t stride) override
@@ -49,6 +49,30 @@ public:
     }
 
 private:
+    void initialize_parameters(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t reset_threshold)
+    {
+        t1_ = t1;
+        t2_ = t2;
+        t3_ = t3;
+        reset_threshold_ = static_cast<uint8_t>(reset_threshold);
+
+        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
+        reset_parameters();
+    }
+
+    void reset_parameters() noexcept
+    {
+        const context_regular_mode context_initial_value(traits_.range);
+        for (auto& context : contexts_)
+        {
+            context = context_initial_value;
+        }
+
+        context_run_mode_[0] = context_run_mode(0, traits_.range);
+        context_run_mode_[1] = context_run_mode(1, traits_.range);
+        run_index_ = 0;
+    }
+
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
     std::unique_ptr<process_line> create_process_line(byte_span destination, const size_t stride)
     {
@@ -89,11 +113,6 @@ private:
         impl::throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
     }
 
-    void set_presets(const jpegls_pc_parameters& presets) override
-    {
-        initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
-    }
-
     [[nodiscard]] FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
     {
         ASSERT(quantize_gradient_org(di, traits_.near_lossless) == *(quantization_ + di));
@@ -111,45 +130,6 @@ private:
             return high_bits;
 
         return (high_bits << k) + read_value(k);
-    }
-
-    void increment_run_index() noexcept
-    {
-        run_index_ = std::min(31, run_index_ + 1);
-    }
-
-    void decrement_run_index() noexcept
-    {
-        run_index_ = std::max(0, run_index_ - 1);
-    }
-
-    [[nodiscard]] FORCE_INLINE sample_type decode_regular(const int32_t qs, const int32_t predicted)
-    {
-        const int32_t sign{bit_wise_sign(qs)};
-        context_regular_mode& context{contexts_[apply_sign(qs, sign)]};
-        const int32_t k{context.get_golomb_coding_parameter()};
-        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
-
-        int32_t error_value;
-        if (const golomb_code& code = golomb_lut[k].get(peek_byte()); code.length() != 0)
-        {
-            skip(code.length());
-            error_value = code.value();
-            ASSERT(std::abs(error_value) < 65535);
-        }
-        else
-        {
-            error_value = unmap_error_value(decode_value(k, traits_.limit, traits_.quantized_bits_per_pixel));
-            if (UNLIKELY(std::abs(error_value) > 65535))
-                impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
-        }
-        if (k == 0)
-        {
-            error_value = error_value ^ context.get_error_correction(traits_.near_lossless);
-        }
-        context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
-        error_value = apply_sign(error_value, sign);
-        return traits_.compute_reconstructed_sample(predicted_value, error_value);
     }
 
     // In ILV_SAMPLE mode, multiple components are handled in do_line
@@ -341,39 +321,33 @@ private:
         return end_index - start_index + 1;
     }
 
-    void initialize_parameters(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t reset_threshold)
+    [[nodiscard]] FORCE_INLINE sample_type decode_regular(const int32_t qs, const int32_t predicted)
     {
-        t1_ = t1;
-        t2_ = t2;
-        t3_ = t3;
-        reset_threshold_ = static_cast<uint8_t>(reset_threshold);
+        const int32_t sign{bit_wise_sign(qs)};
+        context_regular_mode& context{contexts_[apply_sign(qs, sign)]};
+        const int32_t k{context.get_golomb_coding_parameter()};
+        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
 
-        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
-        reset_parameters();
-    }
-
-    void reset_parameters() noexcept
-    {
-        const context_regular_mode context_initial_value(traits_.range);
-        for (auto& context : contexts_)
+        int32_t error_value;
+        if (const golomb_code& code = golomb_lut[k].get(peek_byte()); code.length() != 0)
         {
-            context = context_initial_value;
+            skip(code.length());
+            error_value = code.value();
+            ASSERT(std::abs(error_value) < 65535);
         }
-
-        context_run_mode_[0] = context_run_mode(0, traits_.range);
-        context_run_mode_[1] = context_run_mode(1, traits_.range);
-        run_index_ = 0;
-    }
-
-    [[nodiscard]] static charls::frame_info update_component_count(charls::frame_info frame,
-                                                                   const coding_parameters& parameters) noexcept
-    {
-        if (parameters.interleave_mode == interleave_mode::none)
+        else
         {
-            frame.component_count = 1;
+            error_value = unmap_error_value(decode_value(k, traits_.limit, traits_.quantized_bits_per_pixel));
+            if (UNLIKELY(std::abs(error_value) > 65535))
+                impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
         }
-
-        return frame;
+        if (k == 0)
+        {
+            error_value = error_value ^ context.get_error_correction(traits_.near_lossless);
+        }
+        context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
+        error_value = apply_sign(error_value, sign);
+        return traits_.compute_reconstructed_sample(predicted_value, error_value);
     }
 
     void read_restart_marker(const uint32_t expected_restart_marker_id)
@@ -474,15 +448,7 @@ private:
         return index;
     }
 
-    // codec parameters
     Traits traits_;
-    uint32_t width_;
-    uint8_t reset_threshold_{};
-
-    // compression context
-    std::array<context_regular_mode, 365> contexts_;
-    std::array<context_run_mode, 2> context_run_mode_;
-    int32_t run_index_{};
     pixel_type* previous_line_{};
     pixel_type* current_line_{};
 };
