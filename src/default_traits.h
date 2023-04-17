@@ -25,6 +25,9 @@ struct default_traits final
     using sample_type = SampleType;
     using pixel_type = PixelType;
 
+    static constexpr bool always_lossless_and_default_parameters{};
+    static constexpr bool fixed_bits_per_pixel{};
+
     int32_t maximum_sample_value;
     const int32_t near_lossless;
     const int32_t range;
@@ -32,6 +35,7 @@ struct default_traits final
     const int32_t bits_per_pixel;
     const int32_t limit;
     const int32_t reset_threshold;
+    const int32_t quantization_range;
 
     default_traits(const int32_t arg_maximum_sample_value, const int32_t arg_near_lossless,
                    const int32_t reset = default_reset_value) noexcept :
@@ -41,7 +45,8 @@ struct default_traits final
         quantized_bits_per_pixel{log2_ceil(range)},
         bits_per_pixel{log2_ceil(maximum_sample_value)},
         limit{compute_limit_parameter(bits_per_pixel)},
-        reset_threshold{reset}
+        reset_threshold{reset},
+        quantization_range{1 << bits_per_pixel}
     {
     }
 
