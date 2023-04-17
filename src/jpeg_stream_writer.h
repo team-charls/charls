@@ -3,8 +3,9 @@
 
 #pragma once
 
-#include "byte_span.h"
 #include "charls/jpegls_error.h"
+
+#include "byte_span.h"
 #include "jpeg_marker_code.h"
 #include "util.h"
 

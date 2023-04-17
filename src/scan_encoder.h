@@ -9,21 +9,21 @@
 
 namespace charls {
 
-// Purpose: Implements encoding to stream of bits. In encoding mode jls_codec inherits from encoder_strategy
-class encoder_strategy : protected scan_codec
+// Purpose: Implements encoding to stream of bits. In encoding mode jls_codec inherits from scan_encoder
+class scan_encoder : protected scan_codec
 {
 public:
-    encoder_strategy(const charls::frame_info& info, const coding_parameters& parameters) noexcept :
+    scan_encoder(const charls::frame_info& info, const coding_parameters& parameters) noexcept :
         scan_codec{info, parameters}
     {
     }
 
-    virtual ~encoder_strategy() = default;
+    virtual ~scan_encoder() = default;
 
-    encoder_strategy(const encoder_strategy&) = delete;
-    encoder_strategy(encoder_strategy&&) = delete;
-    encoder_strategy& operator=(const encoder_strategy&) = delete;
-    encoder_strategy& operator=(encoder_strategy&&) = delete;
+    scan_encoder(const scan_encoder&) = delete;
+    scan_encoder(scan_encoder&&) = delete;
+    scan_encoder& operator=(const scan_encoder&) = delete;
+    scan_encoder& operator=(scan_encoder&&) = delete;
 
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual size_t encode_scan(const_byte_span source, size_t stride, byte_span destination) = 0;

@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "../src/encoder_strategy.h"
+#include "../src/scan_encoder.h"
 
 namespace charls::test {
 
-class encoder_strategy_tester final : encoder_strategy
+class scan_encoder_tester final : scan_encoder
 {
 public:
-    explicit encoder_strategy_tester(const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        encoder_strategy(frame_info, parameters)
+    explicit scan_encoder_tester(const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
+        scan_encoder(frame_info, parameters)
     {
     }
 

@@ -4,11 +4,11 @@
 #include "jpeg_stream_reader.h"
 
 #include "constants.h"
-#include "decoder_strategy.h"
-#include "jls_codec_factory.h"
 #include "jpeg_marker_code.h"
 #include "jpegls_preset_coding_parameters.h"
 #include "jpegls_preset_parameters_type.h"
+#include "scan_codec_factory.h"
+#include "scan_decoder.h"
 #include "util.h"
 
 #include <algorithm>
@@ -132,9 +132,9 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
             destination = destination.subspan(bytes_per_plane);
         }
 
-        const auto codec{jls_codec_factory<decoder_strategy>().create_codec(frame_info_, parameters_,
-                                                                            get_validated_preset_coding_parameters())};
-        const size_t bytes_read{codec->decode_scan({position_, end_position_}, destination, stride)};
+        const auto scan_codec{scan_codec_factory<scan_decoder>().create_codec(frame_info_, parameters_,
+                                                                              get_validated_preset_coding_parameters())};
+        const size_t bytes_read{scan_codec->decode_scan({position_, end_position_}, destination, stride)};
         advance_position(bytes_read);
         state_ = state::scan_section;
     }

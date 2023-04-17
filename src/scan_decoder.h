@@ -7,28 +7,29 @@
 
 #include "jpeg_marker_code.h"
 #include "process_line.h"
-#include "util.h"
 #include "scan_codec.h"
+#include "util.h"
 
 #include <cassert>
 #include <memory>
 
 namespace charls {
 
-// Purpose: Implements encoding to stream of bits. In encoding mode jls_codec inherits from decoder_strategy
-class decoder_strategy : protected scan_codec
+// Purpose: Implements decoding from a stream of bits.
+class scan_decoder : protected scan_codec
 {
 public:
-    decoder_strategy(const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept : scan_codec{frame_info, parameters}
+    scan_decoder(const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
+        scan_codec{frame_info, parameters}
     {
     }
 
-    virtual ~decoder_strategy() = default;
+    virtual ~scan_decoder() = default;
 
-    decoder_strategy(const decoder_strategy&) = delete;
-    decoder_strategy(decoder_strategy&&) = delete;
-    decoder_strategy& operator=(const decoder_strategy&) = delete;
-    decoder_strategy& operator=(decoder_strategy&&) = delete;
+    scan_decoder(const scan_decoder&) = delete;
+    scan_decoder(scan_decoder&&) = delete;
+    scan_decoder& operator=(const scan_decoder&) = delete;
+    scan_decoder& operator=(scan_decoder&&) = delete;
 
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual size_t decode_scan(const_byte_span source, byte_span destination, size_t stride) = 0;

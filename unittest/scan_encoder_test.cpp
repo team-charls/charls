@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include "encoder_strategy_tester.h"
+#include "scan_encoder_tester.h"
 #include "util.h"
 
 #include <array>
@@ -14,7 +14,7 @@ using std::byte;
 
 namespace charls::test {
 
-TEST_CLASS(encoder_strategy_test)
+TEST_CLASS(scan_encoder_test)
 {
 public:
     TEST_METHOD(append_to_bit_stream_zero_length) // NOLINT
@@ -22,7 +22,7 @@ public:
         constexpr frame_info frame_info{};
         constexpr coding_parameters parameters{};
 
-        encoder_strategy_tester strategy(frame_info, parameters);
+        scan_encoder_tester strategy(frame_info, parameters);
 
         array<byte, 1024> data{};
 
@@ -37,7 +37,7 @@ public:
         constexpr frame_info frame_info{};
         constexpr coding_parameters parameters{};
 
-        encoder_strategy_tester strategy(frame_info, parameters);
+        scan_encoder_tester strategy(frame_info, parameters);
 
         array<byte, 1024> destination{};
         destination[13] = byte{0x77}; // marker byte to detect overruns.

@@ -5,7 +5,7 @@
 
 #include "util.h"
 
-#include "../src/scan.h"
+#include "../src/jpegls_algorithm.h"
 
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
@@ -71,7 +71,7 @@ int32_t unmap_error_value_alternative1(const int32_t mapped_error_value) noexcep
 }
 
 
-TEST_CLASS(scan_test)
+TEST_CLASS(jpegls_algorithm_test)
 {
 public:
     TEST_METHOD(map_error_value_algorithm) // NOLINT
