@@ -25,6 +25,9 @@ struct lossless_traits_impl
     static constexpr int32_t bits_per_pixel{BitsPerPixel};
     static constexpr int32_t limit{compute_limit_parameter(BitsPerPixel)};
     static constexpr int32_t reset_threshold{default_reset_value};
+    static constexpr int32_t quantization_range{1 << BitsPerPixel};
+    static constexpr bool always_lossless_and_default_parameters{true};
+    static constexpr bool fixed_bits_per_pixel{true};
 
     FORCE_INLINE constexpr static int32_t compute_error_value(const int32_t d) noexcept
     {
