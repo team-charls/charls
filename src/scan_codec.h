@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "context_regular_mode.h"
+#include "context_run_mode.h"
 #include "jpegls_algorithm.h"
 #include "quantization_lut.h"
 
@@ -76,8 +78,7 @@ const int8_t* initialize_quantization_lut(const Traits& traits, const int32_t th
     for (size_t i{}; i < quantization_lut.size(); ++i)
     {
         quantization_lut[i] = quantize_gradient_org(-traits.quantization_range + static_cast<int32_t>(i), threshold1,
-                                                    threshold2,
-                                                    threshold3, traits.near_lossless);
+                                                    threshold2, threshold3, traits.near_lossless);
     }
 
     return &quantization_lut[traits.quantization_range];
@@ -101,8 +102,11 @@ protected:
     /// Copy frame_info and parameters to prevent 1 indirection during encoding/decoding.
     /// </remarks>
     scan_codec(const frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        frame_info_{frame_info}, parameters_{parameters}
+        frame_info_{frame_info},
+        parameters_{parameters}, width_{frame_info.width}
     {
+        ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) ||
+               parameters.interleave_mode != interleave_mode::none);
     }
 
     ~scan_codec() = default;
@@ -130,11 +134,26 @@ protected:
         return parameters().interleave_mode != interleave_mode::none;
     }
 
+    void increment_run_index() noexcept
+    {
+        run_index_ = std::min(31, run_index_ + 1);
+    }
+
+    void decrement_run_index() noexcept
+    {
+        run_index_ = std::max(0, run_index_ - 1);
+    }
+
     charls::frame_info frame_info_;
     coding_parameters parameters_;
     int32_t t1_{};
     int32_t t2_{};
     int32_t t3_{};
+    int32_t run_index_{};
+    std::array<context_regular_mode, 365> contexts_;
+    std::array<context_run_mode, 2> context_run_mode_;
+    uint32_t width_;
+    uint8_t reset_threshold_{};
 
     // Quantization lookup table
     const int8_t* quantization_{};

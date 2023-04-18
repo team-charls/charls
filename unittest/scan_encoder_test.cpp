@@ -19,7 +19,7 @@ TEST_CLASS(scan_encoder_test)
 public:
     TEST_METHOD(append_to_bit_stream_zero_length) // NOLINT
     {
-        constexpr frame_info frame_info{};
+        constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
 
         scan_encoder_tester strategy(frame_info, parameters);
@@ -34,7 +34,7 @@ public:
 
     TEST_METHOD(append_to_bit_stream_ff_pattern) // NOLINT
     {
-        constexpr frame_info frame_info{};
+        constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
 
         scan_encoder_tester strategy(frame_info, parameters);

@@ -5,8 +5,6 @@
 
 #include "coding_parameters.h"
 #include "color_transform.h"
-#include "context_regular_mode.h"
-#include "context_run_mode.h"
 #include "jpegls_algorithm.h"
 #include "process_line.h"
 #include "scan_encoder.h"
@@ -20,14 +18,16 @@ public:
     using pixel_type = typename Traits::pixel_type;
     using sample_type = typename Traits::sample_type;
 
-    scan_encoder_impl(Traits traits, const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        scan_encoder{update_component_count(frame_info, parameters), parameters},
-        traits_{std::move(traits)},
-        width_{frame_info.width}
+    scan_encoder_impl(const Traits& traits, const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
+        scan_encoder{frame_info, parameters},
+        traits_{traits}
     {
-        ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) ||
-               parameters.interleave_mode != interleave_mode::none);
         ASSERT(traits_.is_valid());
+    }
+
+    void set_presets(const jpegls_pc_parameters& presets) override
+    {
+        initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
     }
 
     size_t encode_scan(const const_byte_span source, const size_t stride, const byte_span destination) override
@@ -42,6 +42,30 @@ public:
     }
 
 private:
+    void initialize_parameters(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t reset_threshold)
+    {
+        t1_ = t1;
+        t2_ = t2;
+        t3_ = t3;
+        reset_threshold_ = static_cast<uint8_t>(reset_threshold);
+
+        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
+        reset_parameters();
+    }
+
+    void reset_parameters() noexcept
+    {
+        const context_regular_mode context_initial_value(traits_.range);
+        for (auto& context : contexts_)
+        {
+            context = context_initial_value;
+        }
+
+        context_run_mode_[0] = context_run_mode(0, traits_.range);
+        context_run_mode_[1] = context_run_mode(1, traits_.range);
+        run_index_ = 0;
+    }
+
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
     std::unique_ptr<process_line> create_process_line(const_byte_span source, const size_t stride)
     {
@@ -82,25 +106,10 @@ private:
         impl::throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
     }
 
-    void set_presets(const jpegls_pc_parameters& presets) override
-    {
-        initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
-    }
-
     [[nodiscard]] FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
     {
         ASSERT(quantize_gradient_org(di, traits_.near_lossless) == *(quantization_ + di));
         return *(quantization_ + di);
-    }
-
-    void increment_run_index() noexcept
-    {
-        run_index_ = std::min(31, run_index_ + 1);
-    }
-
-    void decrement_run_index() noexcept
-    {
-        run_index_ = std::max(0, run_index_ - 1);
     }
 
     // In ILV_SAMPLE mode, multiple components are handled in do_line
@@ -178,7 +187,7 @@ private:
             }
             else
             {
-                index += do_run_mode(index);
+                index += encode_run_mode(index);
                 rb = previous_line_[index - 1];
                 rd = previous_line_[index];
             }
@@ -205,7 +214,7 @@ private:
                                                      quantize_gradient(rc.v3 - ra.v3))};
                 qs1 == 0 && qs2 == 0 && qs3 == 0)
             {
-                index += do_run_mode(index);
+                index += encode_run_mode(index);
             }
             else
             {
@@ -241,7 +250,7 @@ private:
                                                      quantize_gradient(rc.v4 - ra.v4))};
                 qs1 == 0 && qs2 == 0 && qs3 == 0 && qs4 == 0)
             {
-                index += do_run_mode(index);
+                index += encode_run_mode(index);
             }
             else
             {
@@ -256,7 +265,7 @@ private:
         }
     }
 
-    [[nodiscard]] int32_t do_run_mode(const int32_t index)
+    [[nodiscard]] int32_t encode_run_mode(const int32_t index)
     {
         const int32_t count_type_remain = width_ - index;
         pixel_type* type_cur_x{current_line_ + index};
@@ -325,41 +334,6 @@ private:
         }
         append_to_bit_stream((mapped_error - 1) & ((1 << traits_.quantized_bits_per_pixel) - 1),
                              traits_.quantized_bits_per_pixel);
-    }
-
-    void initialize_parameters(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t reset_threshold)
-    {
-        t1_ = t1;
-        t2_ = t2;
-        t3_ = t3;
-        reset_threshold_ = static_cast<uint8_t>(reset_threshold);
-
-        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
-        reset_parameters();
-    }
-
-    void reset_parameters() noexcept
-    {
-        const context_regular_mode context_initial_value(traits_.range);
-        for (auto& context : contexts_)
-        {
-            context = context_initial_value;
-        }
-
-        context_run_mode_[0] = context_run_mode(0, traits_.range);
-        context_run_mode_[1] = context_run_mode(1, traits_.range);
-        run_index_ = 0;
-    }
-
-    [[nodiscard]] static charls::frame_info update_component_count(charls::frame_info frame,
-                                                                   const coding_parameters& parameters) noexcept
-    {
-        if (parameters.interleave_mode == interleave_mode::none)
-        {
-            frame.component_count = 1;
-        }
-
-        return frame;
     }
 
     void encode_run_interruption_error(context_run_mode& context, const int32_t error_value)
@@ -449,15 +423,7 @@ private:
         }
     }
 
-    // codec parameters
     Traits traits_;
-    uint32_t width_;
-    uint8_t reset_threshold_{};
-
-    // compression context
-    std::array<context_regular_mode, 365> contexts_;
-    std::array<context_run_mode, 2> context_run_mode_;
-    int32_t run_index_{};
     pixel_type* previous_line_{};
     pixel_type* current_line_{};
 };
