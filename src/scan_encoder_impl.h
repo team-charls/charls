@@ -18,9 +18,9 @@ public:
     using pixel_type = typename Traits::pixel_type;
     using sample_type = typename Traits::sample_type;
 
-    scan_encoder_impl(const Traits& traits, const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        scan_encoder{frame_info, parameters},
-        traits_{traits}
+    scan_encoder_impl(const Traits& traits, const charls::frame_info& frame_info,
+                      const coding_parameters& parameters) noexcept :
+        scan_encoder{frame_info, parameters}, traits_{traits}
     {
         ASSERT(traits_.is_valid());
     }
@@ -85,7 +85,7 @@ private:
             return std::make_unique<process_transformed<transform_none<typename Traits::sample_type>>>(
                 source, stride, frame_info(), parameters(), transform_none<sample_type>());
 
-        if (frame_info().bits_per_sample == sizeof(sample_type) * 8)
+        if (frame_info().bits_per_sample == sizeof(sample_type) * 8 && frame_info().component_count == 3)
         {
             switch (parameters().transformation)
             {
@@ -374,9 +374,9 @@ private:
         const int32_t error_value3{traits_.compute_error_value(sign(rb.v3 - ra.v3) * (x.v3 - rb.v3))};
         encode_run_interruption_error(context_run_mode_[0], error_value3);
 
-        return triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
-                                    traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
-                                    traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3)));
+        return {traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
+                traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
+                traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3))};
     }
 
     [[nodiscard]] quad<sample_type> encode_run_interruption_pixel(const quad<sample_type> x, const quad<sample_type> ra,
@@ -394,11 +394,10 @@ private:
         const int32_t error_value4{traits_.compute_error_value(sign(rb.v4 - ra.v4) * (x.v4 - rb.v4))};
         encode_run_interruption_error(context_run_mode_[0], error_value4);
 
-        return quad<sample_type>(
-            triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
-                                 traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
-                                 traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3))),
-            traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4)));
+        return {traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
+                traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
+                traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3)),
+                traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4))};
     }
 
     void encode_run_pixels(int32_t run_length, const bool end_of_line)

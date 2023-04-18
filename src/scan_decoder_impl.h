@@ -92,7 +92,7 @@ private:
             return std::make_unique<process_transformed<transform_none<typename Traits::sample_type>>>(
                 destination, stride, frame_info(), parameters(), transform_none<sample_type>());
 
-        if (frame_info().bits_per_sample == sizeof(sample_type) * 8)
+        if (frame_info().bits_per_sample == sizeof(sample_type) * 8 && frame_info().component_count == 3)
         {
             switch (parameters().transformation)
             {
@@ -382,9 +382,9 @@ private:
         const int32_t error_value2{decode_run_interruption_error(context_run_mode_[0])};
         const int32_t error_value3{decode_run_interruption_error(context_run_mode_[0])};
 
-        return triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
-                                    traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
-                                    traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3)));
+        return {traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
+                traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
+                traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3))};
     }
 
     [[nodiscard]] quad<sample_type> decode_run_interruption_pixel(quad<sample_type> ra, quad<sample_type> rb)
@@ -394,11 +394,10 @@ private:
         const int32_t error_value3{decode_run_interruption_error(context_run_mode_[0])};
         const int32_t error_value4{decode_run_interruption_error(context_run_mode_[0])};
 
-        return quad<sample_type>(
-            triplet<sample_type>(traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
-                                 traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
-                                 traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3))),
-            traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4)));
+        return {traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
+                traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
+                traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3)),
+                traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4))};
     }
 
     [[nodiscard]] sample_type decode_run_interruption_pixel(int32_t ra, int32_t rb)

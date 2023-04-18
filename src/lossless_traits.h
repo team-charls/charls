@@ -81,14 +81,14 @@ struct lossless_traits<uint8_t, 8> final : lossless_traits_impl<uint8_t, 8>
 {
     using pixel_type = sample_type;
 
-    FORCE_INLINE constexpr static signed char mod_range(const int32_t error_value) noexcept
+    FORCE_INLINE constexpr static int8_t mod_range(const int32_t error_value) noexcept
     {
-        return static_cast<signed char>(error_value);
+        return static_cast<int8_t>(error_value);
     }
 
     FORCE_INLINE constexpr static int32_t compute_error_value(const int32_t d) noexcept
     {
-        return static_cast<signed char>(d);
+        return static_cast<int8_t>(d);
     }
 
     FORCE_INLINE constexpr static uint8_t compute_reconstructed_sample(const int32_t predicted_value,
@@ -104,14 +104,14 @@ struct lossless_traits<uint16_t, 16> final : lossless_traits_impl<uint16_t, 16>
 {
     using pixel_type = sample_type;
 
-    FORCE_INLINE constexpr static short mod_range(const int32_t error_value) noexcept
+    FORCE_INLINE constexpr static int16_t mod_range(const int32_t error_value) noexcept
     {
-        return static_cast<short>(error_value);
+        return static_cast<int16_t>(error_value);
     }
 
     FORCE_INLINE constexpr static int32_t compute_error_value(const int32_t d) noexcept
     {
-        return static_cast<short>(d);
+        return static_cast<int16_t>(d);
     }
 
     FORCE_INLINE constexpr static sample_type compute_reconstructed_sample(const int32_t predicted_value,
@@ -132,7 +132,7 @@ struct lossless_traits<triplet<PixelType>, BitsPerPixel> final : lossless_traits
         return lhs == rhs;
     }
 
-    FORCE_INLINE static bool is_near(pixel_type lhs, pixel_type rhs) noexcept
+    FORCE_INLINE constexpr static bool is_near(pixel_type lhs, pixel_type rhs) noexcept
     {
         return lhs == rhs;
     }
@@ -155,7 +155,7 @@ struct lossless_traits<quad<PixelType>, BitsPerPixel> final : lossless_traits_im
         return lhs == rhs;
     }
 
-    FORCE_INLINE static bool is_near(pixel_type lhs, pixel_type rhs) noexcept
+    FORCE_INLINE constexpr static bool is_near(pixel_type lhs, pixel_type rhs) noexcept
     {
         return lhs == rhs;
     }
