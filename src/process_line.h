@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "coding_parameters.h"
 #include "byte_span.h"
+#include "coding_parameters.h"
 
 #include <algorithm>
 #include <cstring>
@@ -124,7 +124,8 @@ public:
         raw_data_ = static_cast<std::byte*>(raw_data_) + stride_;
     }
 
-    void new_line_decoded(const void* source, const size_t pixel_count, const size_t /* source_stride */) noexcept(false) override
+    void new_line_decoded(const void* source, const size_t pixel_count,
+                          const size_t /* source_stride */) noexcept(false) override
     {
         memcpy(raw_data_, source, pixel_count * bytes_per_pixel_);
         raw_data_ = static_cast<uint8_t*>(raw_data_) + stride_;
@@ -147,9 +148,8 @@ void transform_line_to_quad(const PixelType* source, const size_t pixel_stride_i
 
     for (size_t i{}; i < pixel_count; ++i)
     {
-        const quad<PixelType> pixel(transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in]),
-                                    source[i + 3 * pixel_stride_in]);
-        destination[i] = pixel;
+        destination[i] = transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in],
+                                   source[i + 3 * pixel_stride_in]);
     }
 }
 
@@ -163,7 +163,7 @@ void transform_quad_to_line(const quad<PixelType>* source, const size_t pixel_st
     for (size_t i{}; i < pixel_count; ++i)
     {
         const quad<PixelType> color{source[i]};
-        const quad<PixelType> color_transformed(transform(color.v1, color.v2, color.v3), color.v4);
+        const quad<PixelType> color_transformed(transform(color.v1, color.v2, color.v3, color.v4));
 
         destination[i] = color_transformed.v1;
         destination[i + pixel_stride] = color_transformed.v2;
@@ -182,8 +182,8 @@ void transform_quad_to_line(const quad<PixelType>* source, const size_t pixel_st
     for (size_t i{}; i < pixel_count; ++i)
     {
         const quad<PixelType> color{source[i]};
-        const quad<PixelType> color_transformed(transform(color.v1 & mask, color.v2 & mask, color.v3 & mask),
-                                                color.v4 & mask);
+        const quad<PixelType> color_transformed(
+            transform(color.v1 & mask, color.v2 & mask, color.v3 & mask, color.v4 & mask));
 
         destination[i] = color_transformed.v1;
         destination[i + pixel_stride] = color_transformed.v2;
@@ -221,7 +221,7 @@ void transform_line(quad<PixelType>* destination, const quad<PixelType>* source,
 {
     for (size_t i{}; i < pixel_count; ++i)
     {
-        destination[i] = quad<PixelType>(transform(source[i].v1, source[i].v2, source[i].v3), source[i].v4);
+        destination[i] = transform(source[i].v1, source[i].v2, source[i].v3, source[i].v4);
     }
 }
 
@@ -232,8 +232,7 @@ void transform_line(quad<PixelType>* destination, const quad<PixelType>* source,
 {
     for (size_t i{}; i < pixel_count; ++i)
     {
-        destination[i] =
-            quad<PixelType>(transform(source[i].v1 & mask, source[i].v2 & mask, source[i].v3 & mask), source[i].v4 & mask);
+        destination[i] = transform(source[i].v1 & mask, source[i].v2 & mask, source[i].v3 & mask, source[i].v4 & mask);
     }
 }
 

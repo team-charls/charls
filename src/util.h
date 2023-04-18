@@ -43,9 +43,6 @@
 
 
 #ifdef _MSC_VER
-#define MSVC_WARNING_SUPPRESS(x) \
-    __pragma(warning(push)) __pragma(warning(disable : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses)
-#define MSVC_WARNING_UNSUPPRESS() __pragma(warning(pop))
 
 #define MSVC_WARNING_SUPPRESS_NEXT_LINE(x) \
     __pragma(warning(suppress \
@@ -55,10 +52,10 @@
 #define USE_DECL_ANNOTATIONS _Use_decl_annotations_
 
 #else
-#define MSVC_WARNING_SUPPRESS(x)
-#define MSVC_WARNING_UNSUPPRESS()
+
 #define MSVC_WARNING_SUPPRESS_NEXT_LINE(x)
 #define USE_DECL_ANNOTATIONS
+
 #endif
 
 // C++20 has support for [[likely]] and [[unlikely]]. Use for now the GCC\Clang extension.
@@ -156,42 +153,36 @@ struct triplet
         SampleType v3;
         SampleType B;
     };
+
+    [[nodiscard]] friend constexpr bool operator==(const triplet& lhs, const triplet& rhs) noexcept
+    {
+        return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3;
+    }
 };
 
 
-inline bool operator==(const triplet<uint8_t>& lhs, const triplet<uint8_t>& rhs) noexcept
-{
-    return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3;
-}
-
-
-inline bool operator!=(const triplet<uint8_t>& lhs, const triplet<uint8_t>& rhs) noexcept
-{
-    return !(lhs == rhs);
-}
-
-
 template<typename SampleType>
-struct quad final : triplet<SampleType>
+struct quad final
 {
-    MSVC_WARNING_SUPPRESS(26495) // false warning that v4 is uninitialized [VS 2017 15.9.4]
-    quad() noexcept : triplet<SampleType>(), v4{}
+    quad() = default;
+
+    quad(const int32_t x1, const int32_t x2, const int32_t x3, const int32_t x4) noexcept :
+        v1(static_cast<SampleType>(x1)),
+        v2(static_cast<SampleType>(x2)),
+        v3(static_cast<SampleType>(x3)),
+        v4(static_cast<SampleType>(x4))
     {
     }
-    MSVC_WARNING_UNSUPPRESS()
 
-    MSVC_WARNING_SUPPRESS(26495) // false warning that v4 is uninitialized [VS 2017 15.9.4]
-    quad(triplet<SampleType> triplet_value, int32_t alpha) noexcept :
-        triplet<SampleType>(triplet_value), A(static_cast<SampleType>(alpha))
+    SampleType v1{};
+    SampleType v2{};
+    SampleType v3{};
+    SampleType v4{};
+
+    [[nodiscard]] friend constexpr bool operator==(const quad& lhs, const quad& rhs) noexcept
     {
+        return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3 && lhs.v4 == rhs.v4;
     }
-    MSVC_WARNING_UNSUPPRESS()
-
-    union
-    {
-        SampleType v4;
-        SampleType A;
-    };
 };
 
 
