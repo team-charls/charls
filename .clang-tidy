@@ -36,7 +36,6 @@
 # -cppcoreguidelines-pro-type-reinterpret-cast => Rationale: To strict for conditions that require its usage
 # -cppcoreguidelines-macro-usage => Rationale: Many false warnings
 # -cppcoreguidelines-pro-bounds-array-to-pointer-decay => Span is not available
-# -cppcoreguidelines-pro-type-const-cast => Rationale: const cast is needed for legacy functions
 # -cppcoreguidelines-pro-type-union-access => Rationale: usage of union is more efficient is used scenarios
 # -cppcoreguidelines-non-private-member-variables-in-classes => Warning is too strict, manual review code review is preferred
 # -cppcoreguidelines-pro-bounds-constant-array-index => gsl:at is not used by design
@@ -88,7 +87,6 @@ Checks:          '*,
                   -cppcoreguidelines-pro-type-reinterpret-cast,
                   -cppcoreguidelines-macro-usage,
                   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
-                  -cppcoreguidelines-pro-type-const-cast,
                   -cppcoreguidelines-pro-type-union-access,
                   -cppcoreguidelines-non-private-member-variables-in-classes,
                   -cppcoreguidelines-pro-bounds-constant-array-index,

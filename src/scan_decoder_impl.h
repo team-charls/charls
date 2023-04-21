@@ -16,9 +16,9 @@ public:
     using pixel_type = typename Traits::pixel_type;
     using sample_type = typename Traits::sample_type;
 
-    scan_decoder_impl(const Traits& traits, const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        scan_decoder{frame_info, parameters},
-        traits_{traits}
+    scan_decoder_impl(const Traits& traits, const charls::frame_info& frame_info,
+                      const coding_parameters& parameters) noexcept :
+        scan_decoder{frame_info, parameters}, traits_{traits}
     {
         ASSERT(traits_.is_valid());
     }
@@ -28,7 +28,7 @@ public:
         initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
     }
 
-    size_t decode_scan(const const_byte_span source, const byte_span destination, const size_t stride) override
+    size_t decode_scan(const const_byte_span source, std::byte* destination, const size_t stride) override
     {
         process_line_ = create_process_line(destination, stride);
 
@@ -74,22 +74,16 @@ private:
     }
 
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
-    std::unique_ptr<process_line> create_process_line(byte_span destination, const size_t stride)
+    std::unique_ptr<process_decoded_line> create_process_line(std::byte* destination, const size_t stride)
     {
         if (!is_interleaved())
         {
-            if (frame_info().bits_per_sample == sizeof(sample_type) * 8)
-            {
-                return std::make_unique<post_process_single_component>(destination.data(), stride,
-                                                                       sizeof(typename Traits::pixel_type));
-            }
-
-            return std::make_unique<post_process_single_component_masked>(
-                destination.data(), stride, sizeof(typename Traits::pixel_type), frame_info().bits_per_sample);
+            return std::make_unique<process_decoded_single_component>(destination, stride,
+                                                                      sizeof(typename Traits::pixel_type));
         }
 
         if (parameters().transformation == color_transformation::none)
-            return std::make_unique<process_transformed<transform_none<typename Traits::sample_type>>>(
+            return std::make_unique<process_decoded_transformed<transform_none<typename Traits::sample_type>>>(
                 destination, stride, frame_info(), parameters(), transform_none<sample_type>());
 
         if (frame_info().bits_per_sample == sizeof(sample_type) * 8 && frame_info().component_count == 3)
@@ -97,13 +91,13 @@ private:
             switch (parameters().transformation)
             {
             case color_transformation::hp1:
-                return std::make_unique<process_transformed<transform_hp1<sample_type>>>(
+                return std::make_unique<process_decoded_transformed<transform_hp1<sample_type>>>(
                     destination, stride, frame_info(), parameters(), transform_hp1<sample_type>());
             case color_transformation::hp2:
-                return std::make_unique<process_transformed<transform_hp2<sample_type>>>(
+                return std::make_unique<process_decoded_transformed<transform_hp2<sample_type>>>(
                     destination, stride, frame_info(), parameters(), transform_hp2<sample_type>());
             case color_transformation::hp3:
-                return std::make_unique<process_transformed<transform_hp3<sample_type>>>(
+                return std::make_unique<process_decoded_transformed<transform_hp3<sample_type>>>(
                     destination, stride, frame_info(), parameters(), transform_hp3<sample_type>());
             default:
                 impl::throw_jpegls_error(jpegls_errc::color_transform_not_supported);

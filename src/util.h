@@ -8,8 +8,8 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
-#include <type_traits>
 #include <limits>
+#include <type_traits>
 
 
 // Use an uppercase alias for assert to make it clear that ASSERT is a pre-processor macro.

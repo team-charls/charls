@@ -238,6 +238,7 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="context_regular_mode.h" />
     <ClInclude Include="context_run_mode.h" />
+    <ClInclude Include="process_encoded_line.h" />
     <ClInclude Include="scan_decoder.h" />
     <ClInclude Include="default_traits.h" />
     <ClInclude Include="scan_encoder.h" />
@@ -250,7 +251,7 @@
     <ClInclude Include="jpeg_stream_writer.h" />
     <ClInclude Include="lossless_traits.h" />
     <ClInclude Include="jpegls_preset_parameters_type.h" />
-    <ClInclude Include="process_line.h" />
+    <ClInclude Include="process_decoded_line.h" />
     <ClInclude Include="quantization_lut.h" />
     <ClInclude Include="scan_decoder_impl.h" />
     <ClInclude Include="scan_encoder_impl.h" />

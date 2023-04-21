@@ -3,8 +3,9 @@
 
 #pragma once
 
+#include "byte_span.h"
 #include "jpeg_marker_code.h"
-#include "process_line.h"
+#include "process_encoded_line.h"
 #include "scan_codec.h"
 
 namespace charls {
@@ -13,8 +14,7 @@ namespace charls {
 class scan_encoder : protected scan_codec
 {
 public:
-    scan_encoder(const charls::frame_info& info, const coding_parameters& parameters) noexcept :
-        scan_codec{info, parameters}
+    scan_encoder(const charls::frame_info& info, const coding_parameters& parameters) noexcept : scan_codec{info, parameters}
     {
     }
 
@@ -26,7 +26,7 @@ public:
     scan_encoder& operator=(scan_encoder&&) = delete;
 
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
-    virtual size_t encode_scan(const_byte_span source, size_t stride, byte_span destination) = 0;
+    virtual size_t encode_scan(const std::byte* source, size_t stride, byte_span destination) = 0;
 
     void on_line_begin(void* destination, const size_t pixel_count, const size_t pixel_stride) const
     {
@@ -132,7 +132,7 @@ protected:
         append_to_bit_stream((1U << length) - 1U, length);
     }
 
-    std::unique_ptr<process_line> process_line_;
+    std::unique_ptr<process_encoded_line> process_line_;
 
 private:
     unsigned int bit_buffer_{};

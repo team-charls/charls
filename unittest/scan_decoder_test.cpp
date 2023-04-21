@@ -21,7 +21,7 @@ class scan_decoder_tester final : public scan_decoder
 {
 public:
     scan_decoder_tester(const charls::frame_info& frame_info, const coding_parameters& parameters, byte* const destination,
-                            const size_t count) :
+                        const size_t count) :
         scan_decoder(frame_info, parameters)
     {
         initialize({destination, count});
@@ -31,7 +31,7 @@ public:
     {
     }
 
-    size_t decode_scan(const_byte_span /*encoded_source*/, byte_span /*destination*/, size_t /*stride*/) noexcept(false) override
+    size_t decode_scan(const_byte_span /*source*/, std::byte* /*destination*/, size_t /*stride*/) noexcept(false) override
     {
         return {};
     }

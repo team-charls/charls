@@ -6,7 +6,7 @@
 #include "coding_parameters.h"
 #include "color_transform.h"
 #include "jpegls_algorithm.h"
-#include "process_line.h"
+#include "process_encoded_line.h"
 #include "scan_encoder.h"
 
 namespace charls {
@@ -30,7 +30,7 @@ public:
         initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
     }
 
-    size_t encode_scan(const const_byte_span source, const size_t stride, const byte_span destination) override
+    size_t encode_scan(const std::byte* source, const size_t stride, const byte_span destination) override
     {
         process_line_ = create_process_line(source, stride);
 
@@ -67,22 +67,22 @@ private:
     }
 
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
-    std::unique_ptr<process_line> create_process_line(const_byte_span source, const size_t stride)
+    std::unique_ptr<process_encoded_line> create_process_line(const std::byte* source, const size_t stride)
     {
         if (!is_interleaved())
         {
             if (frame_info().bits_per_sample == sizeof(sample_type) * 8)
             {
-                return std::make_unique<post_process_single_component>(source.data(), stride,
-                                                                       sizeof(typename Traits::pixel_type));
+                return std::make_unique<process_encoded_single_component>(source, stride,
+                                                                          sizeof(typename Traits::pixel_type));
             }
 
-            return std::make_unique<post_process_single_component_masked>(
-                source.data(), stride, sizeof(typename Traits::pixel_type), frame_info().bits_per_sample);
+            return std::make_unique<process_encoded_single_component_masked>(
+                source, stride, sizeof(typename Traits::pixel_type), frame_info().bits_per_sample);
         }
 
         if (parameters().transformation == color_transformation::none)
-            return std::make_unique<process_transformed<transform_none<typename Traits::sample_type>>>(
+            return std::make_unique<process_encoded_transformed<transform_none<typename Traits::sample_type>>>(
                 source, stride, frame_info(), parameters(), transform_none<sample_type>());
 
         if (frame_info().bits_per_sample == sizeof(sample_type) * 8 && frame_info().component_count == 3)
@@ -90,13 +90,13 @@ private:
             switch (parameters().transformation)
             {
             case color_transformation::hp1:
-                return std::make_unique<process_transformed<transform_hp1<sample_type>>>(
+                return std::make_unique<process_encoded_transformed<transform_hp1<sample_type>>>(
                     source, stride, frame_info(), parameters(), transform_hp1<sample_type>());
             case color_transformation::hp2:
-                return std::make_unique<process_transformed<transform_hp2<sample_type>>>(
+                return std::make_unique<process_encoded_transformed<transform_hp2<sample_type>>>(
                     source, stride, frame_info(), parameters(), transform_hp2<sample_type>());
             case color_transformation::hp3:
-                return std::make_unique<process_transformed<transform_hp3<sample_type>>>(
+                return std::make_unique<process_encoded_transformed<transform_hp3<sample_type>>>(
                     source, stride, frame_info(), parameters(), transform_hp3<sample_type>());
             default:
                 impl::throw_jpegls_error(jpegls_errc::color_transform_not_supported);
