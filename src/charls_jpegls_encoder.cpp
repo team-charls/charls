@@ -15,6 +15,7 @@
 
 using namespace charls;
 using impl::throw_jpegls_error;
+using std::byte;
 
 namespace charls { namespace {
 
@@ -28,7 +29,7 @@ constexpr bool has_option(encoding_options options, encoding_options option_to_t
 
 struct charls_jpegls_encoder final
 {
-    void destination(const byte_span destination)
+    void destination(const span<byte> destination)
     {
         check_argument(destination.data() || destination.empty());
         check_operation(state_ == state::initial);
@@ -136,7 +137,7 @@ struct charls_jpegls_encoder final
         transition_to_tables_and_miscellaneous_state();
     }
 
-    void write_comment(const const_byte_span comment)
+    void write_comment(const span<const byte> comment)
     {
         check_argument(comment.data() || comment.empty());
         check_argument(comment.size() <= segment_max_data_size, jpegls_errc::invalid_argument_size);
@@ -146,7 +147,7 @@ struct charls_jpegls_encoder final
         writer_.write_comment_segment(comment);
     }
 
-    void write_application_data(const int32_t application_data_id, const const_byte_span application_data)
+    void write_application_data(const int32_t application_data_id, const span<const byte> application_data)
     {
         check_argument(application_data_id >= minimum_application_data_id &&
                        application_data_id <= maximum_application_data_id);
@@ -158,7 +159,7 @@ struct charls_jpegls_encoder final
         writer_.write_application_data_segment(application_data_id, application_data);
     }
 
-    void encode(const_byte_span source, size_t stride)
+    void encode(span<const byte> source, size_t stride)
     {
         check_argument(source.data() || source.empty());
         check_operation(is_frame_info_configured() && state_ != state::initial);
@@ -257,7 +258,7 @@ private:
         return frame_info_.width != 0;
     }
 
-    void encode_scan(const std::byte* source, const size_t stride, const int32_t component_count)
+    void encode_scan(const byte* source, const size_t stride, const int32_t component_count)
     {
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample,
                                             component_count};
@@ -326,7 +327,7 @@ private:
         {
             const char* version_number{"charls " TO_STRING(CHARLS_VERSION_MAJOR) "." TO_STRING(
                 CHARLS_VERSION_MINOR) "." TO_STRING(CHARLS_VERSION_PATCH)};
-            writer_.write_comment_segment({version_number, strlen(version_number) + 1});
+            writer_.write_comment_segment({reinterpret_cast<const byte*>(version_number), strlen(version_number) + 1});
         }
 
         state_ = state::tables_and_miscellaneous;
@@ -369,7 +370,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_enc
     charls_jpegls_encoder* encoder, void* destination_buffer, const size_t destination_size_bytes) noexcept
 try
 {
-    check_pointer(encoder)->destination({destination_buffer, destination_size_bytes});
+    check_pointer(encoder)->destination({static_cast<byte*>(destination_buffer), destination_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)
@@ -487,7 +488,7 @@ charls_jpegls_encoder_encode_from_buffer(charls_jpegls_encoder* encoder, const v
                                          const size_t source_size_bytes, const uint32_t stride) noexcept
 try
 {
-    check_pointer(encoder)->encode({source_buffer, source_size_bytes}, stride);
+    check_pointer(encoder)->encode({static_cast<const byte*>(source_buffer), source_size_bytes}, stride);
     return jpegls_errc::success;
 }
 catch (...)
@@ -556,7 +557,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_enc
     charls_jpegls_encoder* encoder, const void* comment, const size_t comment_size_bytes) noexcept
 try
 {
-    check_pointer(encoder)->write_comment({comment, comment_size_bytes});
+    check_pointer(encoder)->write_comment({static_cast<const byte*>(comment), comment_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)
@@ -570,7 +571,7 @@ charls_jpegls_encoder_write_application_data(charls_jpegls_encoder* encoder, con
                                              const void* application_data, const size_t application_data_size_bytes) noexcept
 try
 {
-    check_pointer(encoder)->write_application_data(application_data_id, {application_data, application_data_size_bytes});
+    check_pointer(encoder)->write_application_data(application_data_id, {static_cast<const byte*>(application_data), application_data_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)

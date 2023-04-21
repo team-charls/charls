@@ -79,7 +79,7 @@ public:
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         // writer.
-        constexpr uint8_t comment{99};
+        constexpr byte comment{99};
         writer.write_comment_segment({&comment, 1});
         writer.write_end_of_image(true);
 
@@ -100,7 +100,7 @@ public:
         jpeg_stream_writer writer({buffer.data(), buffer.size()});
 
         // writer.
-        constexpr uint8_t comment{99};
+        constexpr byte comment{99};
         writer.write_comment_segment({&comment, 1});
         writer.write_end_of_image(false);
 

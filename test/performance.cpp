@@ -16,6 +16,7 @@ using charls::frame_info;
 using charls::jpegls_decoder;
 using charls::jpegls_encoder;
 using charls::jpegls_error;
+using std::byte;
 using std::cout;
 using std::istream;
 using std::milli;
@@ -98,7 +99,7 @@ void decode_performance_tests(const int loop_count)
 
         // Pre-allocate the destination outside the measurement loop.
         // std::vector initializes its elements and this step needs to be excluded from the measurement.
-        vector<std::byte> destination(jpegls_decoder{encoded_source, true}.destination_size());
+        vector<byte> destination(jpegls_decoder{encoded_source, true}.destination_size());
 
         const auto start{steady_clock::now()};
         for (int i{}; i != loop_count; ++i)
@@ -138,7 +139,7 @@ void encode_performance_tests(const int loop_count)
 
         jpegls_encoder encoder1;
         encoder1.frame_info(info).interleave_mode(interleave_mode);
-        vector<uint8_t> destination(encoder1.estimated_destination_size());
+        vector<byte> destination(encoder1.estimated_destination_size());
 
         const auto start{steady_clock::now()};
         for (int i{}; i != loop_count; ++i)

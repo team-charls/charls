@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "byte_span.h"
 #include "jpeg_marker_code.h"
 #include "process_encoded_line.h"
 #include "scan_codec.h"
+#include "span.h"
 
 namespace charls {
 
@@ -26,7 +26,7 @@ public:
     scan_encoder& operator=(scan_encoder&&) = delete;
 
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
-    virtual size_t encode_scan(const std::byte* source, size_t stride, byte_span destination) = 0;
+    virtual size_t encode_scan(const std::byte* source, size_t stride, span<std::byte> destination) = 0;
 
 protected:
     scan_encoder(const charls::frame_info& info, const coding_parameters& parameters) noexcept : scan_codec{info, parameters}
@@ -38,7 +38,7 @@ protected:
         process_line_->new_line_requested(destination, pixel_count, pixel_stride);
     }
 
-    void initialize(const byte_span destination) noexcept
+    void initialize(const span<std::byte> destination) noexcept
     {
         free_bit_count_ = sizeof(bit_buffer_) * 8;
         bit_buffer_ = 0;

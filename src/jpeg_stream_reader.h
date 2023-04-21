@@ -5,8 +5,8 @@
 
 #include "charls/public_types.h"
 
-#include "byte_span.h"
 #include "coding_parameters.h"
+#include "span.h"
 #include "util.h"
 
 #include <cstdint>
@@ -28,7 +28,7 @@ public:
     jpeg_stream_reader(jpeg_stream_reader&&) = default;
     jpeg_stream_reader& operator=(jpeg_stream_reader&&) = default;
 
-    void source(const_byte_span source) noexcept;
+    void source(span<const std::byte> source) noexcept;
 
     [[nodiscard]] const charls::frame_info& frame_info() const noexcept
     {
@@ -56,7 +56,7 @@ public:
     }
 
     void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
-    void decode(byte_span destination, size_t stride);
+    void decode(span<std::byte> destination, size_t stride);
     void read_end_of_image();
 
 private:
@@ -80,7 +80,7 @@ private:
     [[nodiscard]] uint16_t read_uint16() noexcept;
     [[nodiscard]] uint32_t read_uint24() noexcept;
     [[nodiscard]] uint32_t read_uint32() noexcept;
-    [[nodiscard]] const_byte_span read_bytes(size_t byte_count) noexcept;
+    [[nodiscard]] span<const std::byte> read_bytes(size_t byte_count) noexcept;
     void read_segment_size();
     void check_minimal_segment_size(size_t minimum_size) const;
     void check_segment_size(size_t expected_size) const;
@@ -124,9 +124,9 @@ private:
         after_end_of_image
     };
 
-    const_byte_span::iterator position_{};
-    const_byte_span::iterator end_position_{};
-    const_byte_span segment_data_;
+    span<const std::byte>::iterator position_{};
+    span<const std::byte>::iterator end_position_{};
+    span<const std::byte> segment_data_;
     charls::frame_info frame_info_{};
     coding_parameters parameters_{};
     jpegls_pc_parameters preset_coding_parameters_{};

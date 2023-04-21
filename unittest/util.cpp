@@ -202,7 +202,7 @@ bool verify_encoded_bytes(const vector<byte>& uncompressed_source, const vector<
 }
 
 void verify_decoded_bytes(const interleave_mode interleave_mode, const frame_info& frame_info,
-                          const vector<std::byte>& uncompressed_data, const size_t destination_stride,
+                          const vector<byte>& uncompressed_data, const size_t destination_stride,
                           const char* reference_filename)
 {
     const auto anymap_reference{read_anymap_reference_file(reference_filename, interleave_mode, frame_info)};

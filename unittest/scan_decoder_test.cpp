@@ -31,7 +31,7 @@ public:
     {
     }
 
-    size_t decode_scan(const_byte_span /*source*/, std::byte* /*destination*/, size_t /*stride*/) noexcept(false) override
+    size_t decode_scan(span<const byte> /*source*/, byte* /*destination*/, size_t /*stride*/) noexcept(false) override
     {
         return {};
     }

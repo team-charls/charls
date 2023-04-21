@@ -11,6 +11,7 @@
 #include <vector>
 
 using std::array;
+using std::byte;
 using std::cout;
 using std::swap;
 using std::vector;
@@ -18,9 +19,9 @@ using namespace charls;
 
 namespace {
 
-void triplet2_planar(vector<std::byte>& buffer, const rect_size size)
+void triplet2_planar(vector<byte>& buffer, const rect_size size)
 {
-    vector<std::byte> work_buffer(buffer.size());
+    vector<byte> work_buffer(buffer.size());
 
     const size_t byte_count{size.cx * size.cy};
     for (size_t i{}; i != byte_count; ++i)
@@ -68,7 +69,7 @@ bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompress
 }
 
 
-void test_compliance(const std::byte* compressed_bytes, const size_t compressed_length, const std::byte* uncompressed_data,
+void test_compliance(const byte* compressed_bytes, const size_t compressed_length, const byte* uncompressed_data,
                      const size_t uncompressed_length, const bool check_encode)
 {
     try
@@ -82,7 +83,7 @@ void test_compliance(const std::byte* compressed_bytes, const size_t compressed_
                 verify_encoded_bytes(uncompressed_data, uncompressed_length, compressed_bytes, compressed_length));
         }
 
-        const auto destination{decoder.decode<vector<std::byte>>()};
+        const auto destination{decoder.decode<vector<byte>>()};
 
         if (decoder.near_lossless() == 0)
         {

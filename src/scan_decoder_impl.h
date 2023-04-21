@@ -28,7 +28,7 @@ public:
         initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
     }
 
-    size_t decode_scan(const const_byte_span source, std::byte* destination, const size_t stride) override
+    size_t decode_scan(const span<const std::byte> source, std::byte* destination, const size_t stride) override
     {
         process_line_ = create_process_line(destination, stride);
 

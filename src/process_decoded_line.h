@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "byte_span.h"
 #include "coding_parameters.h"
+#include "span.h"
 
 #include <algorithm>
 #include <cstring>
@@ -115,7 +115,7 @@ class process_decoded_transformed final : public process_decoded_line
 {
 public:
     process_decoded_transformed(std::byte* destination, const size_t stride, const frame_info& info,
-                        const coding_parameters& parameters, TransformType transform) :
+                                const coding_parameters& parameters, TransformType transform) :
         frame_info_{info},
         parameters_{parameters},
         stride_{stride},

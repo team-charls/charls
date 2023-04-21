@@ -13,9 +13,10 @@
 namespace charls {
 
 using std::array;
+using std::byte;
 using std::numeric_limits;
 
-jpeg_stream_writer::jpeg_stream_writer(const byte_span destination) noexcept : destination_{destination}
+jpeg_stream_writer::jpeg_stream_writer(const span<byte> destination) noexcept : destination_{destination}
 {
 }
 
@@ -128,7 +129,7 @@ void jpeg_stream_writer::write_color_transform_segment(const color_transformatio
 }
 
 
-void jpeg_stream_writer::write_comment_segment(const const_byte_span comment)
+void jpeg_stream_writer::write_comment_segment(const span<const byte> comment)
 {
     write_segment_header(jpeg_marker_code::comment, comment.size());
     write_bytes(comment);
@@ -136,7 +137,7 @@ void jpeg_stream_writer::write_comment_segment(const const_byte_span comment)
 
 
 void jpeg_stream_writer::write_application_data_segment(const int32_t application_data_id,
-                                                        const const_byte_span application_data)
+                                                        const span<const byte> application_data)
 {
     ASSERT(application_data_id >= minimum_application_data_id && application_data_id <= maximum_application_data_id);
 
