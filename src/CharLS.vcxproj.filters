@@ -84,7 +84,7 @@
     <ClInclude Include="lossless_traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="process_line.h">
+    <ClInclude Include="process_decoded_line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\charls\public_types.h">
@@ -133,6 +133,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scan_decoder_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="process_encoded_line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

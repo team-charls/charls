@@ -209,7 +209,7 @@ struct charls_jpegls_encoder final
             for (int32_t component{}; component != frame_info_.component_count; ++component)
             {
                 writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
-                encode_scan(source, stride, 1);
+                encode_scan(source.data(), stride, 1);
 
                 // Synchronize the source stream (encode_scan works on a local copy)
                 if (component != last_component)
@@ -221,7 +221,7 @@ struct charls_jpegls_encoder final
         else
         {
             writer_.write_start_of_scan_segment(frame_info_.component_count, near_lossless_, interleave_mode_);
-            encode_scan(source, stride, frame_info_.component_count);
+            encode_scan(source.data(), stride, frame_info_.component_count);
         }
 
         writer_.write_end_of_image(has_option(encoding_options::even_destination_size));
@@ -257,7 +257,7 @@ private:
         return frame_info_.width != 0;
     }
 
-    void encode_scan(const const_byte_span source, const size_t stride, const int32_t component_count)
+    void encode_scan(const std::byte* source, const size_t stride, const int32_t component_count)
     {
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample,
                                             component_count};

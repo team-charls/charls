@@ -1,4 +1,4 @@
-﻿# Comments on disabled Visual Studio C++ Core Guidelines Rules
+# Comments on disabled Visual Studio C++ Core Guidelines Rules
 
 C26426: Global initializer calls a non-constexpr function 'xxx'
 -> Rationale: many false warnings. CharLS is a library, globals are correctly initialized.
@@ -23,9 +23,6 @@ C26482: Only index into arrays using constant expressions.
 
 C26490: Don't use reinterpret_cast
 -> Rationale: required to cast unsigned char* to char*.
-
-C26492: Don't use const_cast to cast away const (type.3).
--> Rationale: required for some special cases.
 
 C26494: Variable 'x' is uninitialized. Always initialize an object
 -> Rationale: many false warnings, other analyzers are better.

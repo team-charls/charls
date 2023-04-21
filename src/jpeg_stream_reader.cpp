@@ -134,7 +134,7 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
 
         const auto scan_codec{scan_codec_factory<scan_decoder>().create_codec(frame_info_, parameters_,
                                                                               get_validated_preset_coding_parameters())};
-        const size_t bytes_read{scan_codec->decode_scan({position_, end_position_}, destination, stride)};
+        const size_t bytes_read{scan_codec->decode_scan({position_, end_position_}, destination.data(), stride)};
         advance_position(bytes_read);
         state_ = state::scan_section;
     }

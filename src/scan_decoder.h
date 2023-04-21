@@ -6,7 +6,7 @@
 #include "charls/jpegls_error.h"
 
 #include "jpeg_marker_code.h"
-#include "process_line.h"
+#include "process_decoded_line.h"
 #include "scan_codec.h"
 #include "util.h"
 
@@ -32,7 +32,7 @@ public:
     scan_decoder& operator=(scan_decoder&&) = delete;
 
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
-    virtual size_t decode_scan(const_byte_span source, byte_span destination, size_t stride) = 0;
+    virtual size_t decode_scan(const_byte_span source, std::byte* destination, size_t stride) = 0;
 
     void initialize(const const_byte_span source)
     {
@@ -196,7 +196,7 @@ public:
     }
 
 protected:
-    std::unique_ptr<process_line> process_line_;
+    std::unique_ptr<process_decoded_line> process_line_;
 
 private:
     using cache_t = size_t;
