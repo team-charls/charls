@@ -15,15 +15,14 @@
 
 namespace charls {
 
-// Purpose: Implements decoding from a stream of bits.
+/// <summary>
+/// Interface and primary class for scan_decoder.
+/// The actual instance will be a template implementation class.
+/// This class can decode the encoded entropy data to pixels.
+/// </summary>
 class scan_decoder : protected scan_codec
 {
 public:
-    scan_decoder(const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        scan_codec{frame_info, parameters}
-    {
-    }
-
     virtual ~scan_decoder() = default;
 
     scan_decoder(const scan_decoder&) = delete;
@@ -33,6 +32,12 @@ public:
 
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual size_t decode_scan(const_byte_span source, std::byte* destination, size_t stride) = 0;
+
+protected:
+    scan_decoder(const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
+        scan_codec{frame_info, parameters}
+    {
+    }
 
     void initialize(const const_byte_span source)
     {
@@ -97,6 +102,19 @@ public:
             valid_bits -= last_bits_count;
             --compressed_bytes;
         }
+    }
+
+    [[nodiscard]] int32_t decode_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
+    {
+        const int32_t high_bits{read_high_bits()};
+
+        if (high_bits >= limit - (quantized_bits_per_pixel + 1))
+            return read_value(quantized_bits_per_pixel) + 1;
+
+        if (k == 0)
+            return high_bits;
+
+        return (high_bits << k) + read_value(k);
     }
 
     FORCE_INLINE int32_t read_value(const int32_t length)
@@ -195,7 +213,22 @@ public:
         return value;
     }
 
-protected:
+    void read_restart_marker(const uint32_t expected_restart_marker_id)
+    {
+        auto value{read_byte()};
+        if (UNLIKELY(value != jpeg_marker_start_byte))
+            impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
+
+        // Read all preceding 0xFF fill bytes until a non 0xFF byte has been found. (see T.81, B.1.1.2)
+        do
+        {
+            value = read_byte();
+        } while (value == jpeg_marker_start_byte);
+
+        if (UNLIKELY(std::to_integer<uint32_t>(value) != jpeg_restart_marker_base + expected_restart_marker_id))
+            impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
+    }
+
     std::unique_ptr<process_decoded_line> process_line_;
 
 private:

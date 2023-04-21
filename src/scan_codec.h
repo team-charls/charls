@@ -134,6 +134,19 @@ protected:
         return parameters().interleave_mode != interleave_mode::none;
     }
 
+    void reset_parameters(const int32_t range) noexcept
+    {
+        const context_regular_mode context_initial_value(range);
+        for (auto& context : contexts_)
+        {
+            context = context_initial_value;
+        }
+
+        context_run_mode_[0] = context_run_mode(0, range);
+        context_run_mode_[1] = context_run_mode(1, range);
+        run_index_ = 0;
+    }
+
     void increment_run_index() noexcept
     {
         run_index_ = std::min(31, run_index_ + 1);

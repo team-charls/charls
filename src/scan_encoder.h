@@ -10,14 +10,14 @@
 
 namespace charls {
 
-// Purpose: Implements encoding to stream of bits. In encoding mode jls_codec inherits from scan_encoder
+/// <summary>
+/// Interface and primary class for scan_encoder.
+/// The actual instance will be a template derived implementation class.
+/// This class can encode pixels to entropy data.
+/// </summary>
 class scan_encoder : protected scan_codec
 {
 public:
-    scan_encoder(const charls::frame_info& info, const coding_parameters& parameters) noexcept : scan_codec{info, parameters}
-    {
-    }
-
     virtual ~scan_encoder() = default;
 
     scan_encoder(const scan_encoder&) = delete;
@@ -28,12 +28,16 @@ public:
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual size_t encode_scan(const std::byte* source, size_t stride, byte_span destination) = 0;
 
+protected:
+    scan_encoder(const charls::frame_info& info, const coding_parameters& parameters) noexcept : scan_codec{info, parameters}
+    {
+    }
+
     void on_line_begin(void* destination, const size_t pixel_count, const size_t pixel_stride) const
     {
         process_line_->new_line_requested(destination, pixel_count, pixel_stride);
     }
 
-protected:
     void initialize(const byte_span destination) noexcept
     {
         free_bit_count_ = sizeof(bit_buffer_) * 8;
@@ -41,6 +45,28 @@ protected:
 
         position_ = destination.data();
         compressed_length_ = destination.size();
+    }
+
+    void encode_run_pixels(int32_t run_length, const bool end_of_line)
+    {
+        while (run_length >= 1 << J[run_index_])
+        {
+            append_ones_to_bit_stream(1);
+            run_length = run_length - (1 << J[run_index_]);
+            increment_run_index();
+        }
+
+        if (end_of_line)
+        {
+            if (run_length != 0)
+            {
+                append_ones_to_bit_stream(1);
+            }
+        }
+        else
+        {
+            append_to_bit_stream(run_length, J[run_index_] + 1); // leading 0 + actual remaining length
+        }
     }
 
     void append_to_bit_stream(const uint32_t bits, const int32_t bit_count)
