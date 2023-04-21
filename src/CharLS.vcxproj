@@ -255,7 +255,7 @@
     <ClInclude Include="quantization_lut.h" />
     <ClInclude Include="scan_decoder_impl.h" />
     <ClInclude Include="scan_encoder_impl.h" />
-    <ClInclude Include="byte_span.h" />
+    <ClInclude Include="span.h" />
     <ClInclude Include="scan_codec.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>

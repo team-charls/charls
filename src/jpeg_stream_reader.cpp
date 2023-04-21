@@ -39,7 +39,7 @@ constexpr int32_t to_application_data_id(const jpeg_marker_code marker_code) noe
 } // namespace
 
 
-void jpeg_stream_reader::source(const const_byte_span source) noexcept
+void jpeg_stream_reader::source(const span<const byte> source) noexcept
 {
     ASSERT(state_ == state::before_start_of_image);
 
@@ -95,7 +95,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 }
 
 
-void jpeg_stream_reader::decode(byte_span destination, size_t stride)
+void jpeg_stream_reader::decode(span<byte> destination, size_t stride)
 {
     ASSERT(state_ == state::bit_stream_section);
 
@@ -595,11 +595,11 @@ uint32_t jpeg_stream_reader::read_uint32() noexcept
 }
 
 
-const_byte_span jpeg_stream_reader::read_bytes(const size_t byte_count) noexcept
+span<const byte> jpeg_stream_reader::read_bytes(const size_t byte_count) noexcept
 {
     ASSERT(position_ + byte_count <= end_position_);
 
-    const const_byte_span bytes{position_, byte_count};
+    const span bytes{position_, byte_count};
     advance_position(byte_count);
     return bytes;
 }

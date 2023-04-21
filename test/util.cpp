@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 
+using std::byte;
 using std::cout;
 using std::ifstream;
 using std::ios;
@@ -53,7 +54,7 @@ ofstream open_output_stream(const char* filename)
 }
 
 
-void fix_endian(vector<std::byte>* buffer, const bool little_endian_data) noexcept
+void fix_endian(vector<byte>* buffer, const bool little_endian_data) noexcept
 {
     if (little_endian_data == is_machine_little_endian())
         return;
@@ -65,7 +66,7 @@ void fix_endian(vector<std::byte>* buffer, const bool little_endian_data) noexce
 }
 
 
-vector<std::byte> read_file(const char* filename, long offset, size_t bytes)
+vector<byte> read_file(const char* filename, long offset, size_t bytes)
 {
     ifstream input;
     input.exceptions(ios::eofbit | ios::failbit | ios::badbit);
@@ -85,7 +86,7 @@ vector<std::byte> read_file(const char* filename, long offset, size_t bytes)
         bytes = static_cast<size_t>(byte_count_file) - offset;
     }
 
-    vector<std::byte> buffer(bytes);
+    vector<byte> buffer(bytes);
     read(input, buffer);
 
     return buffer;
@@ -100,16 +101,16 @@ void write_file(const char* filename, const void* data, const size_t size)
     output.close(); // close explicitly to get feedback on failures.
 }
 
-void test_round_trip(const char* name, const vector<std::byte>& original_buffer, const rect_size size,
+void test_round_trip(const char* name, const vector<byte>& original_buffer, const rect_size size,
                      const int bits_per_sample, const int component_count, const int loop_count)
 {
     const auto height = static_cast<int>(size.cy);
     const auto width = static_cast<int>(size.cx);
 
-    vector<std::byte> encoded_buffer(height * width * component_count * bits_per_sample / 4);
+    vector<byte> encoded_buffer(height * width * component_count * bits_per_sample / 4);
 
-    vector<std::byte> decoded_buffer(static_cast<size_t>(height) * width * bit_to_byte_count(bits_per_sample) *
-                                   component_count);
+    vector<byte> decoded_buffer(static_cast<size_t>(height) * width * bit_to_byte_count(bits_per_sample) *
+                                     component_count);
 
     interleave_mode interleave_mode{};
     color_transformation color_transformation{};
@@ -132,8 +133,7 @@ void test_round_trip(const char* name, const vector<std::byte>& original_buffer,
         {
             jpegls_encoder encoder;
             encoder.destination(encoded_buffer)
-                .frame_info({static_cast<uint32_t>(width), static_cast<uint32_t>(height), bits_per_sample,
-                             component_count})
+                .frame_info({static_cast<uint32_t>(width), static_cast<uint32_t>(height), bits_per_sample, component_count})
                 .interleave_mode(interleave_mode)
                 .color_transformation(color_transformation);
 
@@ -171,11 +171,11 @@ void test_round_trip(const char* name, const vector<std::byte>& original_buffer,
     const double decode_time{duration<double, milli>(total_decode_duration).count() / loop_count};
     const double symbol_rate{(static_cast<double>(component_count) * height * width) / (1000.0 * decode_time)};
 
-    cout << "Size:" << setw(10) << width << "x" << height << setw(7) << setprecision(2)
-         << ", Encode time:" << encode_time << " ms, Decode time:" << decode_time
-         << " ms, Bits per sample:" << bits_per_sample_f << ", Decode rate:" << symbol_rate << " M/s\n";
+    cout << "Size:" << setw(10) << width << "x" << height << setw(7) << setprecision(2) << ", Encode time:" << encode_time
+         << " ms, Decode time:" << decode_time << " ms, Bits per sample:" << bits_per_sample_f
+         << ", Decode rate:" << symbol_rate << " M/s\n";
 
-    const std::byte* byte_out{decoded_buffer.data()};
+    const byte* byte_out{decoded_buffer.data()};
     for (size_t i{}; i != decoded_buffer.size(); ++i)
     {
         if (original_buffer[i] != byte_out[i])

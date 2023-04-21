@@ -5,8 +5,8 @@
 
 #include "charls/jpegls_error.h"
 
-#include "byte_span.h"
 #include "jpeg_marker_code.h"
+#include "span.h"
 #include "util.h"
 
 namespace charls {
@@ -16,7 +16,7 @@ class jpeg_stream_writer final
 {
 public:
     jpeg_stream_writer() = default;
-    explicit jpeg_stream_writer(byte_span destination) noexcept;
+    explicit jpeg_stream_writer(span<std::byte> destination) noexcept;
     ~jpeg_stream_writer() = default;
 
     jpeg_stream_writer(const jpeg_stream_writer&) = delete;
@@ -52,14 +52,14 @@ public:
     /// Writes a comment (COM) segment.
     /// </summary>
     /// <param name="comment">The bytes of the comment.</param>
-    void write_comment_segment(const_byte_span comment);
+    void write_comment_segment(span<const std::byte> comment);
 
     /// <summary>
     /// Writes an application data (APPn) segment.
     /// </summary>
     /// <param name="application_data_id">The ID of the application data segment.</param>
     /// <param name="application_data">The bytes of the application data.</param>
-    void write_application_data_segment(int32_t application_data_id, const_byte_span application_data);
+    void write_application_data_segment(int32_t application_data_id, span<const std::byte> application_data);
 
     /// <summary>
     /// Writes a JPEG-LS preset parameters (LSE) segment.
@@ -78,7 +78,9 @@ public:
     /// Writes a JPEG-LS Start Of Frame (SOF-55) segment.
     /// </summary>
     /// <param name="frame">Properties of the frame.</param>
-    /// <returns>true if the image dimensions are oversized and need to be written to a JPEG-LS preset parameters (LSE) segment.</returns>
+    /// <returns>
+    /// true if the image dimensions are oversized and need to be written to a JPEG-LS preset parameters (LSE) segment.
+    /// </returns>
     bool write_start_of_frame_segment(const frame_info& frame);
 
     /// <summary>
@@ -98,7 +100,7 @@ public:
         return byte_offset_;
     }
 
-    [[nodiscard]] byte_span remaining_destination() const noexcept
+    [[nodiscard]] span<std::byte> remaining_destination() const noexcept
     {
         return {destination_.data() + byte_offset_, destination_.size() - byte_offset_};
     }
@@ -109,7 +111,7 @@ public:
         byte_offset_ += byte_count;
     }
 
-    void destination(const byte_span destination) noexcept
+    void destination(const span<std::byte> destination) noexcept
     {
         destination_ = destination;
     }
@@ -183,7 +185,7 @@ private:
         destination_.data()[byte_offset_++] = value;
     }
 
-    void write_bytes(const const_byte_span data) noexcept
+    void write_bytes(const span<const std::byte> data) noexcept
     {
         write_bytes(data.data(), data.size());
     }
@@ -210,7 +212,7 @@ private:
         write_byte(static_cast<std::byte>(marker_code));
     }
 
-    byte_span destination_{};
+    span<std::byte> destination_{};
     size_t byte_offset_{};
     uint8_t component_id_{1};
 };

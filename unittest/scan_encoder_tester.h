@@ -19,12 +19,12 @@ public:
     {
     }
 
-    size_t encode_scan(const std::byte* /*source*/, size_t /*stride*/, byte_span) noexcept(false) override
+    size_t encode_scan(const std::byte* /*source*/, size_t /*stride*/, span<std::byte>) noexcept(false) override
     {
         return 0;
     }
 
-    void initialize_forward(const byte_span destination) noexcept
+    void initialize_forward(const span<std::byte> destination) noexcept
     {
         initialize(destination);
     }

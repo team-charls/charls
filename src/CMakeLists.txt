@@ -88,7 +88,6 @@ target_sources(charls
   PUBLIC
     ${CHARLS_PUBLIC_HEADERS}
   PRIVATE
-    "${CMAKE_CURRENT_LIST_DIR}/byte_span.h"
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_decoder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_encoder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/coding_parameters.h"
@@ -121,6 +120,7 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/scan_decoder_impl.h"
     "${CMAKE_CURRENT_LIST_DIR}/scan_encoder.h"
     "${CMAKE_CURRENT_LIST_DIR}/scan_encoder_impl.h"
+    "${CMAKE_CURRENT_LIST_DIR}/span.h"
     "${CMAKE_CURRENT_LIST_DIR}/util.h"
     "${CMAKE_CURRENT_LIST_DIR}/validate_spiff_header.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/version.cpp"

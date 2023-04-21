@@ -31,7 +31,7 @@ public:
     scan_decoder& operator=(scan_decoder&&) = delete;
 
     virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
-    virtual size_t decode_scan(const_byte_span source, std::byte* destination, size_t stride) = 0;
+    virtual size_t decode_scan(span<const std::byte> source, std::byte* destination, size_t stride) = 0;
 
 protected:
     scan_decoder(const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
@@ -39,7 +39,7 @@ protected:
     {
     }
 
-    void initialize(const const_byte_span source)
+    void initialize(const span<const std::byte> source)
     {
         position_ = source.data();
         end_position_ = source.end();

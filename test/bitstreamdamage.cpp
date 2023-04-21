@@ -16,13 +16,14 @@ using std::error_code;
 using std::mt19937;
 using std::uniform_int_distribution;
 using std::vector;
+using std::byte;
 
 namespace {
 
 void test_damaged_bit_stream1()
 {
     const auto encoded_buffer{read_file("test/incorrect_images/InfiniteLoopFFMPEG.jls")};
-    vector<std::byte> destination(size_t{256} * 256 * 2);
+    vector<byte> destination(size_t{256} * 256 * 2);
 
     error_code error;
     try
@@ -43,7 +44,7 @@ void test_damaged_bit_stream2()
     auto encoded_buffer{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
 
     encoded_buffer.resize(900);
-    encoded_buffer.resize(40000, std::byte{3});
+    encoded_buffer.resize(40000, byte{3});
 
     vector<uint8_t> destination(size_t{512} * 512);
 
@@ -65,8 +66,8 @@ void test_damaged_bit_stream3()
 {
     auto encoded_buffer{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
 
-    encoded_buffer[300] = std::byte{0xFF};
-    encoded_buffer[301] = std::byte{0xFF};
+    encoded_buffer[300] = byte{0xFF};
+    encoded_buffer[301] = byte{0xFF};
 
     vector<uint8_t> destination(size_t{512} * 512);
 
@@ -93,7 +94,7 @@ void test_file_with_random_header_damage(const char* filename)
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
     uniform_int_distribution<uint32_t> distribution(0, 255);
 
-    vector<std::byte> destination(size_t{512} * 512);
+    vector<byte> destination(size_t{512} * 512);
 
     for (size_t i{}; i != 40; ++i)
     {
@@ -102,10 +103,10 @@ void test_file_with_random_header_damage(const char* filename)
 
         for (int j{}; j != 20; ++j)
         {
-            encoded_buffer[i] = static_cast<std::byte>(distribution(generator));
-            encoded_buffer[i + 1] = static_cast<std::byte>(distribution(generator));
-            encoded_buffer[i + 2] = static_cast<std::byte>(distribution(generator));
-            encoded_buffer[i + 3] = static_cast<std::byte>(distribution(generator));
+            encoded_buffer[i] = static_cast<byte>(distribution(generator));
+            encoded_buffer[i + 1] = static_cast<byte>(distribution(generator));
+            encoded_buffer[i + 2] = static_cast<byte>(distribution(generator));
+            encoded_buffer[i + 3] = static_cast<byte>(distribution(generator));
 
             error_code error;
             try

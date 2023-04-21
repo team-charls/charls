@@ -30,7 +30,7 @@ public:
         initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
     }
 
-    size_t encode_scan(const std::byte* source, const size_t stride, const byte_span destination) override
+    size_t encode_scan(const std::byte* source, const size_t stride, const span<std::byte> destination) override
     {
         process_line_ = create_process_line(source, stride);
 

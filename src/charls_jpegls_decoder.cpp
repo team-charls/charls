@@ -11,10 +11,11 @@
 #include <new>
 
 using namespace charls;
+using std::byte;
 
 struct charls_jpegls_decoder final
 {
-    void source(const const_byte_span source)
+    void source(const span<const byte> source)
     {
         check_argument(source.data() || source.empty());
         check_operation(state_ == state::initial);
@@ -122,7 +123,7 @@ struct charls_jpegls_decoder final
         reader_.at_application_data(at_application_data_callback);
     }
 
-    void decode(const byte_span destination, const size_t stride)
+    void decode(const span<byte> destination, const size_t stride)
     {
         check_argument(destination.data() || destination.empty());
         check_operation(state_ == state::header_read);
@@ -170,7 +171,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_dec
     charls_jpegls_decoder* decoder, const void* source_buffer, const size_t source_size_bytes) noexcept
 try
 {
-    check_pointer(decoder)->source({source_buffer, source_size_bytes});
+    check_pointer(decoder)->source({static_cast<const byte*>(source_buffer), source_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)
@@ -289,7 +290,7 @@ charls_jpegls_decoder_decode_to_buffer(charls_jpegls_decoder* decoder, void* des
                                        const size_t destination_size_bytes, const uint32_t stride) noexcept
 try
 {
-    check_pointer(decoder)->decode({destination_buffer, destination_size_bytes}, stride);
+    check_pointer(decoder)->decode({static_cast<byte*>(destination_buffer), destination_size_bytes}, stride);
     return jpegls_errc::success;
 }
 catch (...)
