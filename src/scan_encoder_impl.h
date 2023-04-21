@@ -50,20 +50,7 @@ private:
         reset_threshold_ = static_cast<uint8_t>(reset_threshold);
 
         quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
-        reset_parameters();
-    }
-
-    void reset_parameters() noexcept
-    {
-        const context_regular_mode context_initial_value(traits_.range);
-        for (auto& context : contexts_)
-        {
-            context = context_initial_value;
-        }
-
-        context_run_mode_[0] = context_run_mode(0, traits_.range);
-        context_run_mode_[1] = context_run_mode(1, traits_.range);
-        run_index_ = 0;
+        reset_parameters(traits_.range);
     }
 
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
@@ -398,28 +385,6 @@ private:
                 traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
                 traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3)),
                 traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4))};
-    }
-
-    void encode_run_pixels(int32_t run_length, const bool end_of_line)
-    {
-        while (run_length >= 1 << J[run_index_])
-        {
-            append_ones_to_bit_stream(1);
-            run_length = run_length - (1 << J[run_index_]);
-            increment_run_index();
-        }
-
-        if (end_of_line)
-        {
-            if (run_length != 0)
-            {
-                append_ones_to_bit_stream(1);
-            }
-        }
-        else
-        {
-            append_to_bit_stream(run_length, J[run_index_] + 1); // leading 0 + actual remaining length
-        }
     }
 
     Traits traits_;

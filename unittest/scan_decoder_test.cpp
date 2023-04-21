@@ -36,9 +36,24 @@ public:
         return {};
     }
 
-    int32_t read(const int32_t length)
+    [[nodiscard]] int32_t read(const int32_t length)
     {
         return read_long_value(length);
+    }
+
+    [[nodiscard]] int32_t peek_byte_forward()
+    {
+        return peek_byte();
+    }
+
+    [[nodiscard]] bool read_bit_forward()
+    {
+        return read_bit();
+    }
+
+    [[nodiscard]] int32_t peek_0_bits_forward()
+    {
+        return peek_0_bits();
     }
 };
 
@@ -62,19 +77,19 @@ public:
         constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
 
-        scan_encoder_tester encoder(frame_info, parameters);
+        scan_encoder_tester scan_decoder(frame_info, parameters);
 
-        encoder.initialize_forward({enc_buf.data(), enc_buf.size()});
+        scan_decoder.initialize_forward({enc_buf.data(), enc_buf.size()});
 
         for (const auto& [value, bits] : in_data)
         {
-            encoder.append_to_bit_stream_forward(value, bits);
+            scan_decoder.append_to_bit_stream_forward(value, bits);
         }
 
-        encoder.end_scan_forward();
+        scan_decoder.end_scan_forward();
         // Note: Correct encoding is tested in encoder_strategy_test::append_to_bit_stream_ff_pattern.
 
-        const auto length{encoder.get_length_forward()};
+        const auto length{scan_decoder.get_length_forward()};
         scan_decoder_tester decoder(frame_info, parameters, enc_buf.data(), length);
         for (const auto& [value, bits] : in_data)
         {
@@ -90,9 +105,9 @@ public:
 
         array buffer{byte{7}, byte{100}, byte{23}, byte{99}};
 
-        scan_decoder_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
+        scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), buffer.size());
 
-        Assert::AreEqual(7, decoder_strategy.peek_byte());
+        Assert::AreEqual(7, scan_decoder.peek_byte_forward());
     }
 
     TEST_METHOD(read_bit) // NOLINT
@@ -102,16 +117,16 @@ public:
 
         array buffer{byte{0xAA}, byte{100}, byte{23}, byte{99}};
 
-        scan_decoder_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
+        scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), buffer.size());
 
-        Assert::IsTrue(decoder_strategy.read_bit());
-        Assert::IsFalse(decoder_strategy.read_bit());
-        Assert::IsTrue(decoder_strategy.read_bit());
-        Assert::IsFalse(decoder_strategy.read_bit());
-        Assert::IsTrue(decoder_strategy.read_bit());
-        Assert::IsFalse(decoder_strategy.read_bit());
-        Assert::IsTrue(decoder_strategy.read_bit());
-        Assert::IsFalse(decoder_strategy.read_bit());
+        Assert::IsTrue(scan_decoder.read_bit_forward());
+        Assert::IsFalse(scan_decoder.read_bit_forward());
+        Assert::IsTrue(scan_decoder.read_bit_forward());
+        Assert::IsFalse(scan_decoder.read_bit_forward());
+        Assert::IsTrue(scan_decoder.read_bit_forward());
+        Assert::IsFalse(scan_decoder.read_bit_forward());
+        Assert::IsTrue(scan_decoder.read_bit_forward());
+        Assert::IsFalse(scan_decoder.read_bit_forward());
     }
 
     TEST_METHOD(peek_0_bits) // NOLINT
@@ -122,15 +137,15 @@ public:
         {
             array buffer{byte{0xF}, byte{100}, byte{23}, byte{99}};
 
-            scan_decoder_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
-            Assert::AreEqual(4, decoder_strategy.peek_0_bits());
+            scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), buffer.size());
+            Assert::AreEqual(4, scan_decoder.peek_0_bits_forward());
         }
 
         {
             array buffer{byte{0}, byte{1}, byte{0}, byte{0}};
 
-            scan_decoder_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
-            Assert::AreEqual(15, decoder_strategy.peek_0_bits());
+            scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), buffer.size());
+            Assert::AreEqual(15, scan_decoder.peek_0_bits_forward());
         }
     }
 
@@ -141,8 +156,8 @@ public:
 
         array<byte, 4> buffer{};
 
-        scan_decoder_tester decoder_strategy(frame_info, parameters, buffer.data(), buffer.size());
-        Assert::AreEqual(-1, decoder_strategy.peek_0_bits());
+        scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), buffer.size());
+        Assert::AreEqual(-1, scan_decoder.peek_0_bits_forward());
     }
 };
 

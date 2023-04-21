@@ -57,20 +57,7 @@ private:
         reset_threshold_ = static_cast<uint8_t>(reset_threshold);
 
         quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
-        reset_parameters();
-    }
-
-    void reset_parameters() noexcept
-    {
-        const context_regular_mode context_initial_value(traits_.range);
-        for (auto& context : contexts_)
-        {
-            context = context_initial_value;
-        }
-
-        context_run_mode_[0] = context_run_mode(0, traits_.range);
-        context_run_mode_[1] = context_run_mode(1, traits_.range);
-        run_index_ = 0;
+        reset_parameters(traits_.range);
     }
 
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
@@ -111,19 +98,6 @@ private:
     {
         ASSERT(quantize_gradient_org(di, traits_.near_lossless) == *(quantization_ + di));
         return *(quantization_ + di);
-    }
-
-    [[nodiscard]] int32_t decode_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
-    {
-        const int32_t high_bits{read_high_bits()};
-
-        if (high_bits >= limit - (quantized_bits_per_pixel + 1))
-            return read_value(quantized_bits_per_pixel) + 1;
-
-        if (k == 0)
-            return high_bits;
-
-        return (high_bits << k) + read_value(k);
     }
 
     // In ILV_SAMPLE mode, multiple components are handled in do_line
@@ -193,7 +167,7 @@ private:
             reset();
             std::fill(line_buffer.begin(), line_buffer.end(), pixel_type{});
             std::fill(run_index.begin(), run_index.end(), 0);
-            reset_parameters();
+            reset_parameters(traits_.range);
         }
     }
 
@@ -342,22 +316,6 @@ private:
         context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
         error_value = apply_sign(error_value, sign);
         return traits_.compute_reconstructed_sample(predicted_value, error_value);
-    }
-
-    void read_restart_marker(const uint32_t expected_restart_marker_id)
-    {
-        auto value{read_byte()};
-        if (UNLIKELY(value != jpeg_marker_start_byte))
-            impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
-
-        // Read all preceding 0xFF fill bytes until a non 0xFF byte has been found. (see T.81, B.1.1.2)
-        do
-        {
-            value = read_byte();
-        } while (value == jpeg_marker_start_byte);
-
-        if (UNLIKELY(std::to_integer<uint32_t>(value) != jpeg_restart_marker_base + expected_restart_marker_id))
-            impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
     }
 
     [[nodiscard]] int32_t decode_run_interruption_error(context_run_mode& context)
