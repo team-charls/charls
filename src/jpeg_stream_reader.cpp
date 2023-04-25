@@ -7,13 +7,10 @@
 #include "jpeg_marker_code.h"
 #include "jpegls_preset_coding_parameters.h"
 #include "jpegls_preset_parameters_type.h"
-#include "scan_codec_factory.h"
-#include "scan_decoder.h"
 #include "util.h"
 
 #include <algorithm>
 #include <array>
-#include <memory>
 
 namespace charls {
 
@@ -95,55 +92,9 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 }
 
 
-void jpeg_stream_reader::decode(span<byte> destination, size_t stride)
-{
-    ASSERT(state_ == state::bit_stream_section);
-
-    check_parameter_coherent();
-
-    // Compute the stride for the uncompressed destination buffer.
-    const size_t components_in_plane_count{
-        parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<size_t>(frame_info_.component_count)};
-    const size_t minimum_stride{components_in_plane_count * frame_info_.width *
-                                bit_to_byte_count(frame_info_.bits_per_sample)};
-
-    if (stride == auto_calculate_stride)
-    {
-        stride = minimum_stride;
-    }
-    else
-    {
-        if (UNLIKELY(stride < minimum_stride))
-            throw_jpegls_error(jpegls_errc::invalid_argument_stride);
-    }
-
-    // Compute the layout of the destination buffer.
-    const size_t bytes_per_plane{stride * frame_info_.height};
-    const size_t plane_count{parameters_.interleave_mode == interleave_mode::none ? frame_info_.component_count : 1U};
-    if (const size_t minimum_destination_size = bytes_per_plane * plane_count - (stride - minimum_stride);
-        UNLIKELY(destination.size() < minimum_destination_size))
-        throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
-
-    for (size_t i{}; i < plane_count; ++i)
-    {
-        if (state_ == state::scan_section)
-        {
-            read_next_start_of_scan();
-            destination = destination.subspan(bytes_per_plane);
-        }
-
-        const auto scan_codec{scan_codec_factory<scan_decoder>().create_codec(frame_info_, parameters_,
-                                                                              get_validated_preset_coding_parameters())};
-        const size_t bytes_read{scan_codec->decode_scan({position_, end_position_}, destination.data(), stride)};
-        advance_position(bytes_read);
-        state_ = state::scan_section;
-    }
-}
-
-
 void jpeg_stream_reader::read_end_of_image()
 {
-    ASSERT(state_ == state::scan_section);
+    ASSERT(state_ == state::bit_stream_section);
 
     if (const jpeg_marker_code marker_code{read_next_marker_code()}; UNLIKELY(marker_code != jpeg_marker_code::end_of_image))
         throw_jpegls_error(jpegls_errc::end_of_image_marker_not_found);
@@ -156,7 +107,8 @@ void jpeg_stream_reader::read_end_of_image()
 
 void jpeg_stream_reader::read_next_start_of_scan()
 {
-    ASSERT(state_ == state::scan_section);
+    ASSERT(state_ == state::bit_stream_section);
+    state_ = state::scan_section;
 
     do
     {
@@ -721,22 +673,6 @@ void jpeg_stream_reader::add_component(const uint8_t component_id)
         throw_jpegls_error(jpegls_errc::duplicate_component_id_in_sof_segment);
 
     component_ids_.push_back(component_id);
-}
-
-
-void jpeg_stream_reader::check_parameter_coherent() const
-{
-    switch (frame_info_.component_count)
-    {
-    case 4:
-    case 3:
-        break;
-    default:
-        if (UNLIKELY(parameters_.interleave_mode != interleave_mode::none))
-            throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
-
-        break;
-    }
 }
 
 
