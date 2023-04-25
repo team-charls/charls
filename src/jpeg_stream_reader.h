@@ -55,17 +55,24 @@ public:
         at_application_data_callback_ = at_application_data_callback;
     }
 
-    void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
-    void decode(span<std::byte> destination, size_t stride);
-    void read_end_of_image();
+    [[nodiscard]] span<const std::byte> remaining_source() const noexcept
+    {
+        ASSERT(state_ == state::bit_stream_section);
+        return {position_, end_position_};
+    }
 
-private:
+    void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
+    void read_next_start_of_scan();
+    void read_end_of_image();
+    [[nodiscard]] jpegls_pc_parameters get_validated_preset_coding_parameters() const;
+
     void advance_position(const size_t count) noexcept
     {
         ASSERT(position_ + count <= end_position_);
         position_ += count;
     }
 
+private:
     [[nodiscard]] std::byte read_byte_checked();
     [[nodiscard]] uint16_t read_uint16_checked();
 
@@ -84,10 +91,8 @@ private:
     void read_segment_size();
     void check_minimal_segment_size(size_t minimum_size) const;
     void check_segment_size(size_t expected_size) const;
-    void read_next_start_of_scan();
     [[nodiscard]] jpeg_marker_code read_next_marker_code();
     void validate_marker_code(jpeg_marker_code marker_code) const;
-    [[nodiscard]] jpegls_pc_parameters get_validated_preset_coding_parameters() const;
     void read_marker_segment(jpeg_marker_code marker_code, spiff_header* header = nullptr,
                              bool* spiff_header_found = nullptr);
     void read_spiff_directory_entry(jpeg_marker_code marker_code);
@@ -103,7 +108,6 @@ private:
     void try_read_spiff_header_segment(CHARLS_OUT spiff_header& header, CHARLS_OUT bool& spiff_header_found);
     void try_read_hp_color_transform_segment();
     void add_component(uint8_t component_id);
-    void check_parameter_coherent() const;
     void check_interleave_mode(interleave_mode mode) const;
     [[nodiscard]] uint32_t maximum_sample_value() const noexcept;
     void skip_remaining_segment_data() noexcept;
