@@ -129,30 +129,16 @@ constexpr int32_t log2_ceil(const int32_t n) noexcept
 template<typename SampleType>
 struct triplet
 {
-    triplet() noexcept : v1{}, v2{}, v3{}
-    {
-    }
+    triplet() = default;
 
     triplet(int32_t x1, int32_t x2, int32_t x3) noexcept :
         v1(static_cast<SampleType>(x1)), v2(static_cast<SampleType>(x2)), v3(static_cast<SampleType>(x3))
     {
     }
 
-    union
-    {
-        SampleType v1;
-        SampleType R;
-    };
-    union
-    {
-        SampleType v2;
-        SampleType G;
-    };
-    union
-    {
-        SampleType v3;
-        SampleType B;
-    };
+    SampleType v1{};
+    SampleType v2{};
+    SampleType v3{};
 
     [[nodiscard]] friend constexpr bool operator==(const triplet& lhs, const triplet& rhs) noexcept
     {
