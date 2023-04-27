@@ -54,7 +54,7 @@ struct transform_hp1 final
 
         FORCE_INLINE triplet<T> operator()(const int v1, const int v2, const int v3) const noexcept
         {
-            return triplet<T>(static_cast<T>(v1 + v2 - range_ / 2), v2, static_cast<T>(v3 + v2 - range_ / 2));
+            return {static_cast<T>(v1 + v2 - range_ / 2), v2, static_cast<T>(v3 + v2 - range_ / 2)};
         }
 
         quad<T> operator()(int, int, int, int) const noexcept
@@ -66,11 +66,7 @@ struct transform_hp1 final
 
     FORCE_INLINE triplet<T> operator()(const int red, const int green, const int blue) const noexcept
     {
-        triplet<T> hp1;
-        hp1.v2 = static_cast<T>(green);
-        hp1.v1 = static_cast<T>(red - green + range_ / 2);
-        hp1.v3 = static_cast<T>(blue - green + range_ / 2);
-        return hp1;
+        return {static_cast<T>(red - green + range_ / 2), static_cast<T>(green), static_cast<T>(blue - green + range_ / 2)};
     }
 
     quad<T> operator()(int, int, int, int) const noexcept
@@ -99,11 +95,8 @@ struct transform_hp2 final
 
         FORCE_INLINE triplet<T> operator()(const int v1, const int v2, const int v3) const noexcept
         {
-            triplet<T> rgb;
-            rgb.R = static_cast<T>(v1 + v2 - range_ / 2);                     // new R
-            rgb.G = static_cast<T>(v2);                                       // new G
-            rgb.B = static_cast<T>(v3 + ((rgb.R + rgb.G) >> 1) - range_ / 2); // new B
-            return rgb;
+            const auto r{static_cast<T>(v1 + v2 - range_ / 2)};
+            return {r, static_cast<T>(v2), static_cast<T>(v3 + ((r + static_cast<T>(v2)) >> 1) - range_ / 2)};
         }
 
         quad<T> operator()(int, int, int, int) const noexcept
@@ -115,7 +108,7 @@ struct transform_hp2 final
 
     FORCE_INLINE triplet<T> operator()(const int red, const int green, const int blue) const noexcept
     {
-        return triplet<T>(static_cast<T>(red - green + range_ / 2), green, static_cast<T>(blue - ((red + green) >> 1) - range_ / 2));
+        return {static_cast<T>(red - green + range_ / 2), green, static_cast<T>(blue - ((red + green) >> 1) - range_ / 2)};
     }
 
     quad<T> operator()(int, int, int, int) const noexcept
@@ -145,11 +138,7 @@ struct transform_hp3 final
         FORCE_INLINE triplet<T> operator()(const int v1, const int v2, const int v3) const noexcept
         {
             const auto g{static_cast<int>(v1 - ((v3 + v2) >> 2) + range_ / 4)};
-            triplet<T> rgb;
-            rgb.R = static_cast<T>(v3 + g - range_ / 2); // new R
-            rgb.G = static_cast<T>(g);                   // new G
-            rgb.B = static_cast<T>(v2 + g - range_ / 2); // new B
-            return rgb;
+            return {static_cast<T>(v3 + g - range_ / 2), static_cast<T>(g), static_cast<T>(v2 + g - range_ / 2)};
         }
 
         quad<T> operator()(int, int, int, int) const noexcept
@@ -161,11 +150,11 @@ struct transform_hp3 final
 
     FORCE_INLINE triplet<T> operator()(const int red, const int green, const int blue) const noexcept
     {
-        triplet<T> hp3;
-        hp3.v2 = static_cast<T>(blue - green + range_ / 2);
-        hp3.v3 = static_cast<T>(red - green + range_ / 2);
-        hp3.v1 = static_cast<T>(green + ((hp3.v2 + hp3.v3) >> 2) - range_ / 4);
-        return hp3;
+        const auto v2{static_cast<T>(blue - green + range_ / 2)};
+        const auto v3{static_cast<T>(red - green + range_ / 2)};
+
+        return {static_cast<T>(green + ((v2 + v3) >> 2) - range_ / 4), static_cast<T>(blue - green + range_ / 2),
+                static_cast<T>(red - green + range_ / 2)};
     }
 
     quad<T> operator()(int, int, int, int) const noexcept
