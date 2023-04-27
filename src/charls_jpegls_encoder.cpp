@@ -325,9 +325,9 @@ private:
 
         if (has_option(encoding_options::include_version_number))
         {
-            const char* version_number{"charls " TO_STRING(CHARLS_VERSION_MAJOR) "." TO_STRING(
+            constexpr std::string_view version_number{"charls " TO_STRING(CHARLS_VERSION_MAJOR) "." TO_STRING(
                 CHARLS_VERSION_MINOR) "." TO_STRING(CHARLS_VERSION_PATCH)};
-            writer_.write_comment_segment({reinterpret_cast<const byte*>(version_number), strlen(version_number) + 1});
+            writer_.write_comment_segment({reinterpret_cast<const byte*>(version_number.data()), version_number.size() + 1});
         }
 
         state_ = state::tables_and_miscellaneous;
