@@ -1437,7 +1437,8 @@ public:
         encoder.frame_info(frame_info);
 
         vector<byte> destination(encoder.estimated_destination_size());
-        encoder.destination(destination);
+        encoder.destination(destination).encoding_options(encoding_options::include_pc_parameters_jai);
+
         // Note: encoding_options::include_pc_parameters_jai is enabled by default (until the next major version)
 
         const size_t bytes_written{encoder.encode(source)};
@@ -1512,7 +1513,7 @@ public:
         encoder.destination(destination);
 
         const size_t bytes_written{encoder.encode(source)};
-        Assert::AreEqual(size_t{61}, bytes_written);
+        Assert::AreEqual(size_t{46}, bytes_written);
 
         destination.resize(bytes_written);
         const auto it{find_first_lse_segment(destination.cbegin(), destination.cend())};

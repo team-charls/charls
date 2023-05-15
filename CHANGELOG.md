@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 
 - Updated the source code to C++17. This is a breaking change, high version is updated to 3.
+- encoding_options::include_pc_parameters_jai is not enabled by default anymore. This is a breaking change.
 
 ## [2.4.1] - 2023-1-2
 

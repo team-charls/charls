@@ -461,14 +461,14 @@ enum class encoding_options : unsigned
     /// an extra 0xFF byte to the End Of Image (EOI) marker.
     /// DICOM requires that data is always even. This can be done by adding a zero padding byte
     /// after the encoded data or with this option.
-    /// This option is not default enabled.
+    /// This option is not enabled by default.
     /// </summary>
     even_destination_size = impl::CHARLS_ENCODING_OPTIONS_EVEN_DESTINATION_SIZE,
 
     /// <summary>
     /// Add a comment (COM) segment with the content: "charls [version-number]" to the encoded data.
     /// Storing the used encoder version can be helpful for long term archival of images.
-    /// This option is not default enabled.
+    /// This option is not enabled by default.
     /// </summary>
     include_version_number = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_VERSION_NUMBER,
 
@@ -478,7 +478,7 @@ enum class encoding_options : unsigned
     /// The Java Advanced Imaging (JAI) JPEG-LS codec has a defect that causes it to use invalid
     /// preset coding parameters for these types of images.
     /// Most users of this codec are aware of this problem and have implemented a work-around.
-    /// This option is default enabled. Will not be default enabled in the next major version upgrade.
+    /// This option is not enabled by default.
     /// </summary>
     include_pc_parameters_jai = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_JAI
 };

@@ -342,7 +342,7 @@ private:
     int32_t near_lossless_{};
     charls::interleave_mode interleave_mode_{};
     charls::color_transformation color_transformation_{};
-    charls::encoding_options encoding_options_{encoding_options::include_pc_parameters_jai};
+    charls::encoding_options encoding_options_{};
     state state_{};
     jpeg_stream_writer writer_;
     jpegls_pc_parameters user_preset_coding_parameters_{};

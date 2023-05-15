@@ -7,7 +7,6 @@
 
 #include <charls/charls.h>
 
-#include <tuple>
 #include <vector>
 
 #include "../test/portable_anymap_file.h"
@@ -27,10 +26,8 @@ std::vector<std::byte> decode_simple_8_bit_monochrome(const std::vector<std::byt
 {
     std::vector<std::byte> destination;
 
-    frame_info frame_info;
-    std::tie(frame_info, std::ignore) = jpegls_decoder::decode(source, destination);
-
-    if (frame_info.component_count != 1 || frame_info.bits_per_sample != 8)
+    if (const auto [frame_info, _] = jpegls_decoder::decode(source, destination);
+        frame_info.component_count != 1 || frame_info.bits_per_sample != 8)
         throw std::runtime_error("Not a 8 bit monochrome image");
 
     return destination;
@@ -65,7 +62,8 @@ std::vector<std::byte> encode_advanced_8_bit_monochrome(const std::vector<std::b
                                                         const uint32_t height)
 {
     jpegls_encoder encoder;
-    encoder.frame_info({width, height, 8, 1});
+    encoder.frame_info({width, height, 8, 1})
+           .encoding_options(encoding_options::include_version_number);
 
     std::vector<std::byte> destination(encoder.estimated_destination_size());
     encoder.destination(destination);
