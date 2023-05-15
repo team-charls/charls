@@ -487,7 +487,7 @@ auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, i
     if (value == 0)
         return 64;
 
-    return __builtin_clzl(value);
+    return __builtin_clzll(value);
 }
 
 /// <summary>

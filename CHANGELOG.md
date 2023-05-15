@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.2] - 2023-5-?
+
+### Fixed
+
+- Fixed [#269](https://github.com/team-charls/charls/issues/269), Decoding doesn't work when compiled with mingw64.
+
 ## [2.4.1] - 2023-1-2
 
 ### Fixed
@@ -21,7 +27,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 
 - Improved compatibility of public headers with C++20.
-- Switch order of APP8 and SOF55 markers during encoding to allign with user application data markers.
+- Switch order of APP8 and SOF55 markers during encoding to align with user application data markers.
 
 ### Fixed
 
