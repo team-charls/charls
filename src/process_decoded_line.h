@@ -116,8 +116,8 @@ class process_decoded_transformed final : public process_decoded_line
 public:
     process_decoded_transformed(std::byte* destination, const size_t stride, const frame_info& info,
                                 const coding_parameters& parameters, TransformType transform) :
-        frame_info_{info},
-        parameters_{parameters},
+        frame_info_{&info},
+        parameters_{&parameters},
         stride_{stride},
         temp_line_(static_cast<size_t>(info.component_count) * info.width),
         buffer_(static_cast<size_t>(info.component_count) * info.width * sizeof(size_type)),
@@ -136,9 +136,9 @@ public:
 
     void decode_transform(const void* source, void* destination, const size_t pixel_count, const size_t byte_stride) noexcept
     {
-        if (frame_info_.component_count == 3)
+        if (frame_info_->component_count == 3)
         {
-            if (parameters_.interleave_mode == interleave_mode::sample)
+            if (parameters_->interleave_mode == interleave_mode::sample)
             {
                 transform_line(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source),
                                pixel_count, inverse_transform_);
@@ -149,14 +149,14 @@ public:
                                           static_cast<triplet<size_type>*>(destination), pixel_count, inverse_transform_);
             }
         }
-        else if (frame_info_.component_count == 4)
+        else if (frame_info_->component_count == 4)
         {
-            if (parameters_.interleave_mode == interleave_mode::sample)
+            if (parameters_->interleave_mode == interleave_mode::sample)
             {
                 transform_line(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source),
                                pixel_count, inverse_transform_);
             }
-            else if (parameters_.interleave_mode == interleave_mode::line)
+            else if (parameters_->interleave_mode == interleave_mode::line)
             {
                 transform_line_to_quad(static_cast<const size_type*>(source), byte_stride,
                                        static_cast<quad<size_type>*>(destination), pixel_count, inverse_transform_);
@@ -167,9 +167,9 @@ public:
 private:
     using size_type = typename TransformType::size_type;
 
-    const frame_info& frame_info_;
-    const coding_parameters& parameters_;
-    const size_t stride_;
+    const frame_info* frame_info_;
+    const coding_parameters* parameters_;
+    size_t stride_;
     std::vector<size_type> temp_line_;
     std::vector<uint8_t> buffer_;
     TransformType transform_;
