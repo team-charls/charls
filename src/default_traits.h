@@ -29,13 +29,13 @@ struct default_traits final
     static constexpr bool fixed_bits_per_pixel{};
 
     int32_t maximum_sample_value;
-    const int32_t near_lossless;
-    const int32_t range;
-    const int32_t quantized_bits_per_pixel;
-    const int32_t bits_per_pixel;
-    const int32_t limit;
-    const int32_t reset_threshold;
-    const int32_t quantization_range;
+    int32_t near_lossless;
+    int32_t range;
+    int32_t quantized_bits_per_pixel;
+    int32_t bits_per_pixel;
+    int32_t limit;
+    int32_t reset_threshold;
+    int32_t quantization_range;
 
     default_traits(const int32_t arg_maximum_sample_value, const int32_t arg_near_lossless,
                    const int32_t reset = default_reset_value) noexcept :
