@@ -105,6 +105,7 @@
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug' OR '$(Configuration)'=='Checked'">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <LinkIncremental Condition="'$(CHARLS_PROFILE)'!=''">false</LinkIncremental>
   </PropertyGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' OR '$(Configuration)'=='Checked'">
@@ -113,6 +114,7 @@
     </ClCompile>
     <Link>
       <RandomizedBaseAddress Condition="'$(Platform)'!='ARM64'">false</RandomizedBaseAddress>
+      <Profile Condition="'$(CHARLS_PROFILE)'!=''">true</Profile>
     </Link>
   </ItemDefinitionGroup>
 
@@ -147,7 +149,6 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <LinkIncremental>false</LinkIncremental>
 
       <!-- Store only the filename of the PDB file into the .exe/.dll for deterministic builds. -->
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
