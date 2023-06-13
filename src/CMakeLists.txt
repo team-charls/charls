@@ -4,6 +4,13 @@
 # Define the library "charls" target
 add_library(charls "")
 
+if(MSVC)
+  if(MSVC_VERSION GREATER_EQUAL 1910)
+    # https://github.com/team-charls/charls/issues/278
+    set_target_properties(charls PROPERTIES INTERFACE_COMPILE_OPTIONS "/permissive-")
+  endif()
+endif()
+
 # Enable IPO (Interprocedural optimization) for shared lib in release mode with GCC for better performance.
 # Note: MSVC and Clang will create with IPO larger binaries that are not significant faster.
 if(BUILD_SHARED_LIBS AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
