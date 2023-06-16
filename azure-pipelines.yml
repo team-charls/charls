@@ -60,15 +60,8 @@ jobs:
       configuration: '$(buildConfiguration)'
       runInParallel: true
       resultsFolder: '$(build.ArtifactStagingDirectory)/Test/Results'
-      otherConsoleOptions: '/collect:"Code Coverage;Format=Cobertura"'
       codeCoverageEnabled: true
       runSettingsFile: 'unittest\CodeCoverage.runsettings'
-
-  - task: PublishCodeCoverageResults@1
-    inputs:
-      codeCoverageTool: 'Cobertura'
-      summaryFileLocation: '$(build.ArtifactStagingDirectory)/Test/Results/**/*.xml'
-
 
 - job: 'cppVS2022'
   pool:
