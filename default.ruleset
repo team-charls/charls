@@ -7,6 +7,7 @@
     <Rule Id="C26446" Action="None" />
     <Rule Id="C26459" Action="None" />
     <Rule Id="C26472" Action="None" />
+    <Rule Id="C26478" Action="None" />
     <Rule Id="C26481" Action="None" />
     <Rule Id="C26482" Action="None" />
     <Rule Id="C26485" Action="None" />

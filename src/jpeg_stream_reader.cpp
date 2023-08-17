@@ -327,7 +327,7 @@ void jpeg_stream_reader::read_start_of_frame_segment()
 void jpeg_stream_reader::read_comment_segment()
 {
     if (at_comment_callback_.handler &&
-        UNLIKELY(static_cast<bool>(at_comment_callback_.handler(segment_data_.empty() ? nullptr : position_,
+        UNLIKELY(static_cast<bool>(at_comment_callback_.handler(segment_data_.empty() ? nullptr : to_address(position_),
                                                                 segment_data_.size(), at_comment_callback_.user_context))))
         throw_jpegls_error(jpegls_errc::callback_failed);
 
@@ -524,7 +524,7 @@ uint16_t jpeg_stream_reader::read_uint16() noexcept
 {
     ASSERT(position_ + sizeof(uint16_t) <= end_position_);
 
-    const auto value{read_big_endian_unaligned<uint16_t>(position_)};
+    const auto value{read_big_endian_unaligned<uint16_t>(to_address(position_))};
     advance_position(2);
     return value;
 }
@@ -541,7 +541,7 @@ uint32_t jpeg_stream_reader::read_uint32() noexcept
 {
     ASSERT(position_ + sizeof(uint32_t) <= end_position_);
 
-    const auto value{read_big_endian_unaligned<uint32_t>(position_)};
+    const auto value{read_big_endian_unaligned<uint32_t>(to_address(position_))};
     advance_position(4);
     return value;
 }
@@ -739,8 +739,8 @@ void jpeg_stream_reader::call_application_data_callback(const jpeg_marker_code m
 {
     if (at_application_data_callback_.handler &&
         UNLIKELY(static_cast<bool>(at_application_data_callback_.handler(
-            to_application_data_id(marker_code), segment_data_.empty() ? nullptr : position_, segment_data_.size(),
-            at_application_data_callback_.user_context))))
+            to_application_data_id(marker_code), segment_data_.empty() ? nullptr : to_address(position_),
+            segment_data_.size(), at_application_data_callback_.user_context))))
         throw_jpegls_error(jpegls_errc::callback_failed);
 }
 

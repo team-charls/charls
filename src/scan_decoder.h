@@ -42,7 +42,7 @@ protected:
     void initialize(const span<const std::byte> source)
     {
         position_ = source.data();
-        end_position_ = source.end();
+        end_position_ = to_address(source.end());
 
         find_jpeg_marker_start_byte();
         fill_read_cache();
