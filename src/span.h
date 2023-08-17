@@ -9,8 +9,16 @@
 
 namespace charls {
 
-/// <summary>Simplified span class as temporarily replacement for C++20 std::span<std::byte>.</summary>
-template<class T>
+// Replacement for std::to_address, which is not available in C++17.
+template<typename Ptr> 
+constexpr auto to_address(const Ptr& it)
+{
+    return &*it;
+}
+
+
+// Replacement for std::span, which is not available in C++17.
+template<typename T>
 class span final
 {
 public:
@@ -63,5 +71,8 @@ private:
     pointer data_{};
     size_t size_{};
 };
+
+template<typename T>
+span(T) -> span<T>;
 
 } // namespace charls

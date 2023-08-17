@@ -32,7 +32,7 @@ public:
     {
         process_line_ = create_process_line(destination, stride);
 
-        const auto* scan_begin{source.begin()};
+        const auto* scan_begin{to_address(source.begin())};
 
         initialize(source);
 
