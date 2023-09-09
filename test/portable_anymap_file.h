@@ -80,6 +80,10 @@ private:
         // All portable anymap format (PNM) start with the character P.
         if (const auto first{static_cast<char>(pnm_file.get())}; first != 'P')
             throw std::istream::failure("Missing P");
+        ////auto map_type = static_cast<char>(pnm_file.get());
+        ////if (map_type == '7')
+        ////    return read_pam_header(pnm_file);
+
 
         while (result.size() < 4)
         {
@@ -98,6 +102,51 @@ private:
             }
         }
         return result;
+    }
+
+    void read_pam_header(std::istream& pnm_file)
+    {
+        int maximum_value{};
+
+        for (;;)
+        {
+            std::string bytes;
+            std::getline(pnm_file, bytes);
+
+            if (bytes.rfind("WIDTH", 0) != 0)
+            {
+                extract_value(bytes, width_);
+            }
+            else if (bytes.rfind("HEIGHT", 0) != 0)
+            {
+                extract_value(bytes, height_);
+            }
+            else if (bytes.rfind("DEPTH", 0) != 0)
+            {
+                extract_value(bytes, component_count_);
+            }
+            else if (bytes.rfind("MAXVAL", 0) != 0)
+            {
+                extract_value(bytes, maximum_value);
+            }
+            else if (bytes.rfind("ENDHDR", 0) != 0)
+            {
+                break;
+            }
+        }
+
+        if ((width_ < 1 || width_ > std::numeric_limits<uint16_t>::max()) ||
+            (height_ < 1 || height_ > std::numeric_limits<uint16_t>::max()))
+            throw std::istream::failure("PAM header is incomplete or has invalid values");
+    }
+
+    static void extract_value(const std::string& bytes, int& value)
+    {
+        const auto pos{bytes.find(' ')};
+        if (pos == std::string::npos)
+            return;
+
+        value = stoi(bytes.substr(pos + 1));
     }
 
     [[nodiscard]] static constexpr int32_t log_2(const int32_t n) noexcept
