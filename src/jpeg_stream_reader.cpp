@@ -110,7 +110,7 @@ void jpeg_stream_reader::read_next_start_of_scan()
     ASSERT(state_ == state::bit_stream_section);
     state_ = state::scan_section;
 
-    do
+    do // NOLINT(cppcoreguidelines-avoid-do-while): the loop must be executed at least once.
     {
         const jpeg_marker_code marker_code{read_next_marker_code()};
         validate_marker_code(marker_code);
@@ -129,7 +129,7 @@ jpeg_marker_code jpeg_stream_reader::read_next_marker_code()
         throw_jpegls_error(jpegls_errc::jpeg_marker_start_byte_not_found);
 
     // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see ISO/IEC 10918-1, B.1.1.2)
-    do
+    do // NOLINT(cppcoreguidelines-avoid-do-while): the loop must be executed at least once.
     {
         value = read_byte_checked();
     } while (value == jpeg_marker_start_byte);
