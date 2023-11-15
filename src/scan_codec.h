@@ -37,7 +37,7 @@ template<typename Traits>
 const int8_t* initialize_quantization_lut(const Traits& traits, const int32_t threshold1, const int32_t threshold2,
                                           const int32_t threshold3, std::vector<int8_t>& quantization_lut)
 {
-    // For lossless mode with default parameters, we have precomputed the look up table for bit counts 8, 10, 12 and 16.
+    // For lossless mode with default parameters, we have precomputed the lookup table for bit counts 8, 10, 12 and 16.
     if (precomputed_quantization_lut_available(traits, threshold1, threshold2, threshold3))
     {
         if constexpr (Traits::fixed_bits_per_pixel)

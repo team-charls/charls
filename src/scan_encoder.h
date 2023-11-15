@@ -84,7 +84,7 @@ protected:
         }
         else
         {
-            // Add as much bits in the remaining space as possible and flush.
+            // Add as many bits in the remaining space as possible and flush.
             bit_buffer_ |= bits >> -free_bit_count_;
             flush();
 

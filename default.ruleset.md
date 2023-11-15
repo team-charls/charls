@@ -15,9 +15,6 @@ Rationale: gsl:span() cannot be used. Update to std:span when available (C++20).
 C26472: Don't use static_cast for arithmetic conversions
  -> Rationale: can only be solved with gsl::narrow_cast
 
-C26478: Don't use std::move on constant variables. (es.56).
--> Rationale: false warnings [Visual Studio 2022 17.7.0, note: fixed in 17.8.0]
-
 C26481: Do not pass an array as a single pointer.
 -> Rationale: gsl::span is not available.
 
