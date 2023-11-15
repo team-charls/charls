@@ -22,7 +22,7 @@
 #define CHARLS_API_IMPORT_EXPORT __declspec(dllimport)
 #endif
 
-// Ensure that the exported functions of a 32 bit Windows DLL use the __stdcall convention.
+// Ensure that the exported functions of a 32-bit Windows DLL use the __stdcall convention.
 #if defined(_M_IX86) || defined(__MINGW32__)
 #define CHARLS_API_CALLING_CONVENTION __stdcall
 #else

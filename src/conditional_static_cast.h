@@ -5,7 +5,7 @@
 
 #include <type_traits>
 
-// Some cross platform builds require an explicit static_cast, while others don't.
+// Some cross-platform builds require an explicit static_cast, while others don't.
 // These templates can be used to keep code compatible with the GCC useless-cast warning and ReSharper.
 
 namespace charls {

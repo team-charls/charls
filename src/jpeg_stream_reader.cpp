@@ -54,7 +54,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
         if (UNLIKELY(read_next_marker_code() != jpeg_marker_code::start_of_image))
             throw_jpegls_error(jpegls_errc::start_of_image_marker_not_found);
 
-        component_ids_.reserve(4); // expect 4 components or less.
+        component_ids_.reserve(4); // expect 4 components or fewer.
         state_ = state::header_section;
     }
 
@@ -453,7 +453,7 @@ void jpeg_stream_reader::read_start_of_scan_segment()
     check_minimal_segment_size(1);
     const size_t component_count_in_scan{read_uint8()};
 
-    // ISO 10918-1, B2.3. defines the limits for the number of image components parameter in a SOS.
+    // ISO 10918-1, B2.3. defines the limits for the number of image components parameter in an SOS.
     if (UNLIKELY(component_count_in_scan < 1U || component_count_in_scan > 4U ||
                  component_count_in_scan > static_cast<size_t>(frame_info_.component_count)))
         throw_jpegls_error(jpegls_errc::invalid_parameter_component_count);
@@ -609,7 +609,7 @@ void jpeg_stream_reader::try_read_hp_color_transform_segment()
 {
     ASSERT(segment_data_.size() == 5);
 
-    if (const array mrfx_tag{byte{'m'}, byte{'r'}, byte{'f'}, byte{'x'}}; // mrfx = xfrm (in big endian) = colorXFoRM
+    if (constexpr array mrfx_tag{byte{'m'}, byte{'r'}, byte{'f'}, byte{'x'}}; // mrfx = xfrm (in big endian) = colorXFoRM
         !equal(mrfx_tag.cbegin(), mrfx_tag.cend(), read_bytes(mrfx_tag.size()).begin()))
         return;
 
@@ -622,8 +622,8 @@ void jpeg_stream_reader::try_read_hp_color_transform_segment()
         parameters_.transformation = static_cast<color_transformation>(transformation);
         return;
 
-    case 4: // RgbAsYuvLossy (The standard lossy RGB to YCbCr transform used in JPEG.)
-    case 5: // Matrix (transformation is controlled using a matrix that is also stored in the segment.
+    case 4: // RgbAsYuvLossy: the standard lossy RGB to YCbCr transform used in JPEG.
+    case 5: // Matrix: transformation is controlled using a matrix that is also stored in the segment.
         throw_jpegls_error(jpegls_errc::color_transform_not_supported);
 
     default:
@@ -636,7 +636,7 @@ USE_DECL_ANNOTATIONS void jpeg_stream_reader::try_read_spiff_header_segment(spif
 {
     ASSERT(segment_data_.size() >= 30);
 
-    if (const array spiff_tag{byte{'S'}, byte{'P'}, byte{'I'}, byte{'F'}, byte{'F'}, byte{0}};
+    if (constexpr array spiff_tag{byte{'S'}, byte{'P'}, byte{'I'}, byte{'F'}, byte{'F'}, byte{0}};
         !equal(spiff_tag.cbegin(), spiff_tag.cend(), read_bytes(spiff_tag.size()).begin()))
     {
         header = {};
@@ -648,7 +648,7 @@ USE_DECL_ANNOTATIONS void jpeg_stream_reader::try_read_spiff_header_segment(spif
     {
         header = {};
         spiff_header_found = false;
-        return; // Treat unknown versions as if the SPIFF header doesn't exists.
+        return; // Treat unknown versions as if the SPIFF header doesn't exist.
     }
     skip_byte(); // low version
 
