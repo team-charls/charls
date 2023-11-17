@@ -6,7 +6,9 @@
 #ifdef _MSC_VER
 
 // Use the Microsoft Source Code Annotation Language when compiling with the MSVC compiler.
+#ifndef CHARLS_BUILD_AS_CPP_MODULE
 #include <sal.h>
+#endif
 
 #define CHARLS_IN _In_
 #define CHARLS_IN_OPT _In_opt_

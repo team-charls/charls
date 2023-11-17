@@ -50,6 +50,12 @@
 #define CHARLS_NOEXCEPT noexcept
 #define CHARLS_C_VOID
 
+#ifdef CHARLS_BUILD_AS_CPP_MODULE
+#define CHARLS_EXPORT export
+#else
+#define CHARLS_EXPORT
+#endif
+
 #else
 
 #define CHARLS_FINAL

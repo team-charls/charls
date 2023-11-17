@@ -15,6 +15,7 @@ CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION charls_get_er
 #ifdef __cplusplus
 }
 
+CHARLS_EXPORT
 namespace charls {
 
 [[nodiscard]] inline const std::error_category& jpegls_category() noexcept

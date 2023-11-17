@@ -271,6 +271,7 @@ charls_jpegls_encoder_rewind(CHARLS_IN charls_jpegls_encoder* encoder) CHARLS_NO
 
 } // extern "C"
 
+CHARLS_EXPORT
 namespace charls {
 
 /// <summary>
