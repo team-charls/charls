@@ -8,9 +8,11 @@
 
 #ifdef __cplusplus
 
+#ifndef CHARLS_BUILD_AS_CPP_MODULE
 #include <cstddef>
 #include <cstdint>
 #include <system_error>
+#endif
 
 namespace charls::impl {
 
@@ -164,6 +166,7 @@ enum charls_spiff_entry_tag
 #ifdef __cplusplus
 } // namespace charls::impl
 
+CHARLS_EXPORT
 namespace charls {
 
 /// <summary>
@@ -802,6 +805,7 @@ enum class spiff_entry_tag : uint32_t
 
 } // namespace charls
 
+CHARLS_EXPORT
 template<>
 struct std::is_error_code_enum<charls::jpegls_errc> final : std::true_type
 {
@@ -952,6 +956,7 @@ using charls_at_application_data_handler = int32_t(CHARLS_API_CALLING_CONVENTION
                                                                                    const void* data, size_t size,
                                                                                    void* user_context);
 
+CHARLS_EXPORT
 namespace charls {
 
 using spiff_header = charls_spiff_header;

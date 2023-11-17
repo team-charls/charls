@@ -7,9 +7,13 @@
 #include "validate_spiff_header.h"
 
 #ifdef __cplusplus
+
+#ifndef CHARLS_BUILD_AS_CPP_MODULE
 #include <functional>
 #include <memory>
 #include <utility>
+#endif
+
 #else
 #include <stddef.h>
 #endif
@@ -219,6 +223,7 @@ charls_jpegls_decoder_at_application_data(CHARLS_IN charls_jpegls_decoder* decod
 
 } // extern "C"
 
+CHARLS_EXPORT
 namespace charls {
 
 /// <summary>
