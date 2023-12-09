@@ -23,7 +23,7 @@ struct charls_jpegls_decoder final
         check_argument(source.data() || source.empty());
         check_operation(state_ == state::initial);
 
-        reader_.source({source.data(), source.size()});
+        reader_.source(source);
         state_ = state::source_set;
     }
 

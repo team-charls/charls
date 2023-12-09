@@ -55,11 +55,11 @@ public:
 
     TEST_METHOD(read_header_from_buffer_not_starting_with_ff_throws) // NOLINT
     {
-        array buffer{byte{0x0F}, byte{0xFF}, byte{0xD8},
-                     byte{0xFF}, byte{0xFF}, byte{0xDA}}; // 0xDA = SOS: Marks the start of scan.
+        constexpr array buffer{byte{0x0F}, byte{0xFF}, byte{0xD8},
+                               byte{0xFF}, byte{0xFF}, byte{0xDA}}; // 0xDA = SOS: Marks the start of scan.
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::jpeg_marker_start_byte_not_found, [&reader] { reader.read_header(); });
     }
@@ -74,12 +74,12 @@ public:
 
     TEST_METHOD(read_header_with_jpegls_extended_frame_throws) // NOLINT
     {
-        array<byte, 6> buffer{
+        constexpr array<byte, 6> buffer{
             byte{0xFF}, byte{0xD8}, byte{0xFF},
             byte{0xF9}}; // 0xF9 = SOF_57: Marks the start of a JPEG-LS extended (ISO/IEC 14495-2) encoded frame.
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::encoding_not_supported, [&reader] { reader.read_header(); });
     }
@@ -111,36 +111,36 @@ public:
 
     TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_throws) // NOLINT
     {
-        const array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
-                           byte{0xF8}, // LSE: Marks the start of a JPEG-LS preset parameters segment.
-                           byte{0x00}, byte{0x02}, byte{0x01}};
+        constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
+                               byte{0xF8}, // LSE: Marks the start of a JPEG-LS preset parameters segment.
+                               byte{0x00}, byte{0x02}, byte{0x01}};
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_with_coding_parameters_throws) // NOLINT
     {
-        const array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
-                           byte{0xF8}, // LSE: Marks the start of a JPEG-LS preset parameters segment.
-                           byte{0x00}, byte{0x0A}, byte{0x01}};
+        constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
+                               byte{0xF8}, // LSE: Marks the start of a JPEG-LS preset parameters segment.
+                               byte{0x00}, byte{0x0A}, byte{0x01}};
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_with_too_large_jpegls_preset_parameter_segment_with_coding_parameters_throws) // NOLINT
     {
-        const array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
-                           byte{0xF8}, // LSE: Marks the start of a JPEG-LS preset parameters segment.
-                           byte{0x00}, byte{0x0C}, byte{0x01}};
+        constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
+                               byte{0xF8}, // LSE: Marks the start of a JPEG-LS preset parameters segment.
+                               byte{0x00}, byte{0x0C}, byte{0x01}};
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
@@ -157,36 +157,36 @@ public:
 
     TEST_METHOD(read_header_with_too_small_segment_size_throws) // NOLINT
     {
-        const array buffer{
+        constexpr array buffer{
             byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xF7},  // SOF_55: Marks the start of JPEG-LS extended scan.
             byte{0x00}, byte{0x01}, byte{0xFF}, byte{0xDA}}; // SOS: Marks the start of scan.
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_with_too_small_start_of_frame_throws) // NOLINT
     {
-        const array buffer{byte{0xFF}, byte{0xD8},
-                           byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
-                           byte{0x00}, byte{0x07}};
+        constexpr array buffer{byte{0xFF}, byte{0xD8},
+                               byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
+                               byte{0x00}, byte{0x07}};
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_with_too_small_start_of_frame_in_component_info_throws) // NOLINT
     {
-        const array buffer{byte{0xFF}, byte{0xD8},
-                           byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
-                           byte{0x00}, byte{0x07}};
+        constexpr array buffer{byte{0xFF}, byte{0xD8},
+                               byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
+                               byte{0x00}, byte{0x07}};
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
@@ -325,56 +325,56 @@ public:
 
     TEST_METHOD(read_header_with_too_small_start_of_scan_throws) // NOLINT
     {
-        const array buffer{byte{0xFF}, byte{0xD8},
-                           byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
-                           byte{},     byte{0x08}, // size
-                           byte{0x08},             // bits per sample
-                           byte{},     byte{0x01}, // width
-                           byte{},     byte{0x01}, // height
-                           byte{0x01},             // component count
-                           byte{0xFF}, byte{0xDA}, // SOS
-                           byte{},     byte{0x03}};
+        constexpr array buffer{byte{0xFF}, byte{0xD8},
+                               byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
+                               byte{},     byte{0x08}, // size
+                               byte{0x08},             // bits per sample
+                               byte{},     byte{0x01}, // width
+                               byte{},     byte{0x01}, // height
+                               byte{0x01},             // component count
+                               byte{0xFF}, byte{0xDA}, // SOS
+                               byte{},     byte{0x03}};
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_with_too_small_start_of_scan_component_count_throws) // NOLINT
     {
-        const array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
-                           byte{0xF7},             // SOF_55: Marks the start of JPEG-LS extended scan.
-                           byte{0x00}, byte{0x08}, // size
-                           byte{0x08},             // bits per sample
-                           byte{0x00}, byte{0x01}, // width
-                           byte{0x00}, byte{0x01}, // height
-                           byte{0x01},             // component count
-                           byte{0xFF}, byte{0xDA}, // SOS
-                           byte{0x00}, byte{0x07}, byte{0x01}};
+        constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
+                               byte{0xF7},             // SOF_55: Marks the start of JPEG-LS extended scan.
+                               byte{0x00}, byte{0x08}, // size
+                               byte{0x08},             // bits per sample
+                               byte{0x00}, byte{0x01}, // width
+                               byte{0x00}, byte{0x01}, // height
+                               byte{0x01},             // component count
+                               byte{0xFF}, byte{0xDA}, // SOS
+                               byte{0x00}, byte{0x07}, byte{0x01}};
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_with_directly_end_of_image_throws) // NOLINT
     {
-        const array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xD9}}; // 0xD9 = EOI
+        constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xD9}}; // 0xD9 = EOI
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::unexpected_end_of_image_marker, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_with_duplicate_start_of_image_throws) // NOLINT
     {
-        const array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xD8}}; // 0xD8 = SOI.
+        constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xD8}}; // 0xD8 = SOI.
 
         jpeg_stream_reader reader;
-        reader.source({buffer.data(), buffer.size()});
+        reader.source(buffer);
 
         assert_expect_exception(jpegls_errc::duplicate_start_of_image_marker, [&reader] { reader.read_header(); });
     }
@@ -391,7 +391,7 @@ public:
 
     TEST_METHOD(read_spiff_header_high_version_to_new) // NOLINT
     {
-        auto buffer{create_test_spiff_header(3)};
+        const auto buffer{create_test_spiff_header(3)};
         jpeg_stream_reader reader;
         reader.source({buffer.data(), buffer.size()});
 
@@ -405,7 +405,7 @@ public:
 
     TEST_METHOD(read_spiff_header_without_end_of_directory) // NOLINT
     {
-        auto buffer = create_test_spiff_header(2, 0, false);
+        const auto buffer{create_test_spiff_header(2, 0, false)};
         jpeg_stream_reader reader;
         reader.source({buffer.data(), buffer.size()});
 
