@@ -4,13 +4,14 @@
 #pragma once
 
 #include <cstddef>
+#include <array>
 
 #include "util.h"
 
 namespace charls {
 
 // Replacement for std::to_address, which is not available in C++17.
-template<typename Ptr> 
+template<typename Ptr>
 constexpr auto to_address(const Ptr& it)
 {
     return &*it;
@@ -33,6 +34,11 @@ public:
 
     template<typename It>
     constexpr span(It first, It last) noexcept : span(first, last - first)
+    {
+    }
+
+    template<typename OtherType, size_t Size>
+    constexpr span(const std::array<OtherType, Size>& data) noexcept : data_{data.data()}, size_{Size}
     {
     }
 
