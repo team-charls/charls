@@ -29,9 +29,7 @@ public:
     virtual size_t encode_scan(const std::byte* source, size_t stride, span<std::byte> destination) = 0;
 
 protected:
-    scan_encoder(const charls::frame_info& info, const coding_parameters& parameters) noexcept : scan_codec{info, parameters}
-    {
-    }
+    using scan_codec::scan_codec;
 
     void on_line_begin(void* destination, const size_t pixel_count, const size_t pixel_stride) const
     {
