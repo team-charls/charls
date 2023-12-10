@@ -34,10 +34,7 @@ public:
     virtual size_t decode_scan(span<const std::byte> source, std::byte* destination, size_t stride) = 0;
 
 protected:
-    scan_decoder(const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        scan_codec{frame_info, parameters}
-    {
-    }
+    using scan_codec::scan_codec;
 
     void initialize(const span<const std::byte> source)
     {
