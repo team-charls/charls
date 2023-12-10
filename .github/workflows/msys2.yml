@@ -17,8 +17,8 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: msys2/setup-msys2@v2.21.0
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
         with:
           msystem: UCRT64
           update: true
