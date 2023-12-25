@@ -9,7 +9,7 @@
 
 namespace charls {
 
-// Purpose: a JPEG-LS context with it's current statistics.
+// Purpose: a JPEG-LS context with its current statistics.
 struct jls_context_v220 final
 {
     int32_t A{};
@@ -23,7 +23,8 @@ struct jls_context_v220 final
     {
     }
 
-    [[nodiscard]] FORCE_INLINE int32_t get_error_correction(const int32_t k) const noexcept
+    [[nodiscard]]
+    FORCE_INLINE int32_t get_error_correction(const int32_t k) const noexcept
     {
         if (k != 0)
             return 0;
@@ -32,8 +33,7 @@ struct jls_context_v220 final
     }
 
     /// <summary>Code segment A.12 – Variables update.</summary>
-    FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless,
-                                       const int32_t reset_threshold)
+    FORCE_INLINE void update_variables(const int32_t error_value, const int32_t near_lossless, const int32_t reset_threshold)
     {
         ASSERT(N != 0);
 
@@ -80,10 +80,11 @@ struct jls_context_v220 final
     }
 
     /// <summary>
-    /// <para>Computes the Golomb coding parameter using the algorithm as defined in ISO/IEC 14495-1, code segment A.10 </para>
-    /// <para>Original algorithm is: for (k = 0; (N[Q] << k) < A[Q]; k++) </para>
+    /// <para>Computes the Golomb coding parameter using the algorithm as defined in ISO/IEC 14495-1, code segment A.10
+    /// </para> <para>Original algorithm is: for (k = 0; (N[Q] << k) < A[Q]; k++) </para>
     /// </summary>
-    [[nodiscard]] FORCE_INLINE int32_t get_golomb_coding_parameter() const
+    [[nodiscard]]
+    FORCE_INLINE int32_t get_golomb_coding_parameter() const
     {
         int32_t k{};
         for (; N << k < A && k < max_k_value; ++k)

@@ -18,12 +18,14 @@ CHARLS_API_IMPORT_EXPORT const char* CHARLS_API_CALLING_CONVENTION charls_get_er
 CHARLS_EXPORT
 namespace charls {
 
-[[nodiscard]] inline const std::error_category& jpegls_category() noexcept
+[[nodiscard]]
+inline const std::error_category& jpegls_category() noexcept
 {
     return *(charls_get_jpegls_category());
 }
 
-[[nodiscard]] inline std::error_code make_error_code(jpegls_errc error_value) noexcept
+[[nodiscard]]
+inline std::error_code make_error_code(jpegls_errc error_value) noexcept
 {
     return {static_cast<int>(error_value), jpegls_category()};
 }
@@ -58,7 +60,8 @@ namespace impl {
 
 // Not inlined by design, as this code path is the exceptional case.
 // It will help to allow the compiler to inline other functions.
-[[noreturn]] inline CHARLS_NO_INLINE void throw_jpegls_error(const jpegls_errc error_value)
+[[noreturn]]
+inline CHARLS_NO_INLINE void throw_jpegls_error(const jpegls_errc error_value)
 {
     throw jpegls_error(error_value);
 }

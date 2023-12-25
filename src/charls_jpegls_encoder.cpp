@@ -92,7 +92,8 @@ struct charls_jpegls_encoder final
         color_transformation_ = color_transformation;
     }
 
-    [[nodiscard]] size_t estimated_destination_size() const
+    [[nodiscard]]
+    size_t estimated_destination_size() const
     {
         check_operation(is_frame_info_configured());
         return checked_mul(checked_mul(checked_mul(frame_info_.width, frame_info_.height), frame_info_.component_count),
@@ -229,7 +230,8 @@ struct charls_jpegls_encoder final
         state_ = state::completed;
     }
 
-    [[nodiscard]] size_t bytes_written() const noexcept
+    [[nodiscard]]
+    size_t bytes_written() const noexcept
     {
         return writer_.bytes_written();
     }
@@ -253,7 +255,8 @@ private:
         completed
     };
 
-    [[nodiscard]] bool is_frame_info_configured() const noexcept
+    [[nodiscard]]
+    bool is_frame_info_configured() const noexcept
     {
         return frame_info_.width != 0;
     }
@@ -271,7 +274,8 @@ private:
         writer_.seek(bytes_written);
     }
 
-    [[nodiscard]] size_t calculate_stride() const noexcept
+    [[nodiscard]]
+    size_t calculate_stride() const noexcept
     {
         const auto stride{static_cast<size_t>(frame_info_.width) * bit_to_byte_count(frame_info_.bits_per_sample)};
         if (interleave_mode_ == interleave_mode::none)
@@ -333,7 +337,8 @@ private:
         state_ = state::tables_and_miscellaneous;
     }
 
-    [[nodiscard]] bool has_option(const charls::encoding_options option_to_test) const noexcept
+    [[nodiscard]]
+    bool has_option(const charls::encoding_options option_to_test) const noexcept
     {
         return ::has_option(encoding_options_, option_to_test);
     }
@@ -571,7 +576,8 @@ charls_jpegls_encoder_write_application_data(charls_jpegls_encoder* encoder, con
                                              const void* application_data, const size_t application_data_size_bytes) noexcept
 try
 {
-    check_pointer(encoder)->write_application_data(application_data_id, {static_cast<const byte*>(application_data), application_data_size_bytes});
+    check_pointer(encoder)->write_application_data(
+        application_data_id, {static_cast<const byte*>(application_data), application_data_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)

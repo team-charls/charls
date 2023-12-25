@@ -50,13 +50,15 @@ struct charls_jpegls_decoder final
         state_ = state::header_read;
     }
 
-    [[nodiscard]] charls::frame_info frame_info_checked() const
+    [[nodiscard]]
+    charls::frame_info frame_info_checked() const
     {
         check_operation(state_ >= state::header_read);
         return frame_info();
     }
 
-    [[nodiscard]] int32_t near_lossless(int32_t /*component*/ = 0) const
+    [[nodiscard]]
+    int32_t near_lossless(int32_t /*component*/ = 0) const
     {
         check_operation(state_ >= state::header_read);
 
@@ -64,7 +66,8 @@ struct charls_jpegls_decoder final
         return reader_.parameters().near_lossless;
     }
 
-    [[nodiscard]] charls::interleave_mode interleave_mode() const
+    [[nodiscard]]
+    charls::interleave_mode interleave_mode() const
     {
         check_operation(state_ >= state::header_read);
 
@@ -73,19 +76,22 @@ struct charls_jpegls_decoder final
         return reader_.parameters().interleave_mode;
     }
 
-    [[nodiscard]] charls::color_transformation color_transformation() const
+    [[nodiscard]]
+    charls::color_transformation color_transformation() const
     {
         check_operation(state_ >= state::header_read);
         return reader_.parameters().transformation;
     }
 
-    [[nodiscard]] const jpegls_pc_parameters& preset_coding_parameters() const
+    [[nodiscard]]
+    const jpegls_pc_parameters& preset_coding_parameters() const
     {
         check_operation(state_ >= state::header_read);
         return reader_.preset_coding_parameters();
     }
 
-    [[nodiscard]] size_t destination_size(const size_t stride) const
+    [[nodiscard]]
+    size_t destination_size(const size_t stride) const
     {
         const auto [width, height, bits_per_sample, component_count]{frame_info_checked()};
 
@@ -172,12 +178,14 @@ struct charls_jpegls_decoder final
     }
 
 private:
-    [[nodiscard]] const charls::frame_info& frame_info() const noexcept
+    [[nodiscard]]
+    const charls::frame_info& frame_info() const noexcept
     {
         return reader_.frame_info();
     }
 
-    [[nodiscard]] size_t calculate_minimum_stride() const noexcept
+    [[nodiscard]]
+    size_t calculate_minimum_stride() const noexcept
     {
         const size_t components_in_plane_count{reader_.parameters().interleave_mode == interleave_mode::none
                                                    ? 1U

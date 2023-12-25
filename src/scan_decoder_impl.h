@@ -94,7 +94,8 @@ private:
         impl::throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
     }
 
-    [[nodiscard]] FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
+    [[nodiscard]]
+    FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
     {
         ASSERT(quantize_gradient_org(di, traits_.near_lossless) == *(quantization_ + di));
         return *(quantization_ + di);
@@ -272,7 +273,8 @@ private:
         }
     }
 
-    [[nodiscard]] int32_t decode_run_mode(const int32_t start_index)
+    [[nodiscard]]
+    int32_t decode_run_mode(const int32_t start_index)
     {
         const pixel_type ra{current_line_[start_index - 1]};
 
@@ -289,7 +291,8 @@ private:
         return end_index - start_index + 1;
     }
 
-    [[nodiscard]] FORCE_INLINE sample_type decode_regular(const int32_t qs, const int32_t predicted)
+    [[nodiscard]]
+    FORCE_INLINE sample_type decode_regular(const int32_t qs, const int32_t predicted)
     {
         const int32_t sign{bit_wise_sign(qs)};
         context_regular_mode& context{contexts_[apply_sign(qs, sign)]};
@@ -318,7 +321,8 @@ private:
         return traits_.compute_reconstructed_sample(predicted_value, error_value);
     }
 
-    [[nodiscard]] int32_t decode_run_interruption_error(context_run_mode& context)
+    [[nodiscard]]
+    int32_t decode_run_interruption_error(context_run_mode& context)
     {
         const int32_t k{context.get_golomb_code()};
         const int32_t e_mapped_error_value{
@@ -328,7 +332,8 @@ private:
         return error_value;
     }
 
-    [[nodiscard]] triplet<sample_type> decode_run_interruption_pixel(triplet<sample_type> ra, triplet<sample_type> rb)
+    [[nodiscard]]
+    triplet<sample_type> decode_run_interruption_pixel(triplet<sample_type> ra, triplet<sample_type> rb)
     {
         const int32_t error_value1{decode_run_interruption_error(context_run_mode_[0])};
         const int32_t error_value2{decode_run_interruption_error(context_run_mode_[0])};
@@ -339,7 +344,8 @@ private:
                 traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3))};
     }
 
-    [[nodiscard]] quad<sample_type> decode_run_interruption_pixel(quad<sample_type> ra, quad<sample_type> rb)
+    [[nodiscard]]
+    quad<sample_type> decode_run_interruption_pixel(quad<sample_type> ra, quad<sample_type> rb)
     {
         const int32_t error_value1{decode_run_interruption_error(context_run_mode_[0])};
         const int32_t error_value2{decode_run_interruption_error(context_run_mode_[0])};
@@ -352,7 +358,8 @@ private:
                 traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4))};
     }
 
-    [[nodiscard]] sample_type decode_run_interruption_pixel(int32_t ra, int32_t rb)
+    [[nodiscard]]
+    sample_type decode_run_interruption_pixel(int32_t ra, int32_t rb)
     {
         if (std::abs(ra - rb) <= traits_.near_lossless)
         {
@@ -364,7 +371,8 @@ private:
         return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
     }
 
-    [[nodiscard]] int32_t decode_run_pixels(pixel_type ra, pixel_type* start_pos, const int32_t pixel_count)
+    [[nodiscard]]
+    int32_t decode_run_pixels(pixel_type ra, pixel_type* start_pos, const int32_t pixel_count)
     {
         int32_t index{};
         while (read_bit())

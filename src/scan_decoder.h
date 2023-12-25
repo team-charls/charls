@@ -84,7 +84,8 @@ protected:
             impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
     }
 
-    [[nodiscard]] const std::byte* get_cur_byte_pos() const noexcept
+    [[nodiscard]]
+    const std::byte* get_cur_byte_pos() const noexcept
     {
         int32_t valid_bits{valid_bits_};
         const std::byte* compressed_bytes{position_};
@@ -101,7 +102,8 @@ protected:
         }
     }
 
-    [[nodiscard]] int32_t decode_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
+    [[nodiscard]]
+    int32_t decode_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
     {
         const int32_t high_bits{read_high_bits()};
 

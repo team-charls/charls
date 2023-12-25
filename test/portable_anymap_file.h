@@ -42,22 +42,26 @@ public:
         convert_to_little_endian_if_needed();
     }
 
-    [[nodiscard]] int width() const noexcept
+    [[nodiscard]]
+    int width() const noexcept
     {
         return width_;
     }
 
-    [[nodiscard]] int height() const noexcept
+    [[nodiscard]]
+    int height() const noexcept
     {
         return height_;
     }
 
-    [[nodiscard]] int component_count() const noexcept
+    [[nodiscard]]
+    int component_count() const noexcept
     {
         return component_count_;
     }
 
-    [[nodiscard]] int bits_per_sample() const noexcept
+    [[nodiscard]]
+    int bits_per_sample() const noexcept
     {
         return bits_per_sample_;
     }
@@ -67,7 +71,8 @@ public:
         return input_buffer_;
     }
 
-    [[nodiscard]] const std::vector<std::byte>& image_data() const noexcept
+    [[nodiscard]]
+    const std::vector<std::byte>& image_data() const noexcept
     {
         return input_buffer_;
     }
@@ -100,7 +105,8 @@ private:
         return result;
     }
 
-    [[nodiscard]] static constexpr int32_t log_2(const int32_t n) noexcept
+    [[nodiscard]]
+    static constexpr int32_t log_2(const int32_t n) noexcept
     {
         int32_t x{};
         while (n > (1 << x))

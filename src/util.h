@@ -140,7 +140,9 @@ struct triplet
     SampleType v2{};
     SampleType v3{};
 
-    [[nodiscard]] friend constexpr bool operator==(const triplet& lhs, const triplet& rhs) noexcept
+    [[nodiscard]]
+    friend constexpr bool
+    operator==(const triplet& lhs, const triplet& rhs) noexcept
     {
         return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3;
     }
@@ -165,7 +167,9 @@ struct quad final
     SampleType v3{};
     SampleType v4{};
 
-    [[nodiscard]] friend constexpr bool operator==(const quad& lhs, const quad& rhs) noexcept
+    [[nodiscard]]
+    friend constexpr bool
+    operator==(const quad& lhs, const quad& rhs) noexcept
     {
         return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3 && lhs.v4 == rhs.v4;
     }
@@ -187,7 +191,8 @@ template<int BitCount, typename T>
 constexpr bool is_uint_v = sizeof(T) == BitCount / 8 && std::is_integral_v<T> && !std::is_signed_v<T>;
 
 template<typename T>
-[[nodiscard]] auto byte_swap(const T value) noexcept
+[[nodiscard]]
+auto byte_swap(const T value) noexcept
 {
     if constexpr (is_uint_v<16, T>)
     {
@@ -223,7 +228,8 @@ template<typename T>
 
 
 template<typename T>
-[[nodiscard]] T read_unaligned(const void* buffer) noexcept
+[[nodiscard]]
+T read_unaligned(const void* buffer) noexcept
 {
     // Note: MSVC, GCC and clang will replace this with a direct register read if the CPU architecture allows it
     // On x86, x64 and ARM64 this will just be 1 register load.

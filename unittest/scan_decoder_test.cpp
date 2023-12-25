@@ -36,22 +36,26 @@ public:
         return {};
     }
 
-    [[nodiscard]] int32_t read(const int32_t length)
+    [[nodiscard]]
+    int32_t read(const int32_t length)
     {
         return read_long_value(length);
     }
 
-    [[nodiscard]] int32_t peek_byte_forward()
+    [[nodiscard]]
+    int32_t peek_byte_forward()
     {
         return peek_byte();
     }
 
-    [[nodiscard]] bool read_bit_forward()
+    [[nodiscard]]
+    bool read_bit_forward()
     {
         return read_bit();
     }
 
-    [[nodiscard]] int32_t peek_0_bits_forward()
+    [[nodiscard]]
+    int32_t peek_0_bits_forward()
     {
         return peek_0_bits();
     }

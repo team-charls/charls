@@ -26,12 +26,14 @@ public:
     {
     }
 
-    [[nodiscard]] int32_t run_interruption_type() const noexcept
+    [[nodiscard]]
+    int32_t run_interruption_type() const noexcept
     {
         return run_interruption_type_;
     }
 
-    [[nodiscard]] FORCE_INLINE int32_t get_golomb_code() const noexcept
+    [[nodiscard]]
+    FORCE_INLINE int32_t get_golomb_code() const noexcept
     {
         const int32_t temp{a_ + (n_ >> 1) * run_interruption_type_};
         int32_t n_test{n_};
@@ -65,7 +67,8 @@ public:
         ++n_;
     }
 
-    [[nodiscard]] FORCE_INLINE int32_t compute_error_value(const int32_t temp, const int32_t k) const noexcept
+    [[nodiscard]]
+    FORCE_INLINE int32_t compute_error_value(const int32_t temp, const int32_t k) const noexcept
     {
         const bool map = temp & 1;
         const int32_t error_value_abs{(temp + static_cast<int32_t>(map)) / 2};
@@ -81,7 +84,8 @@ public:
     }
 
     /// <summary>Code segment A.21 – Computation of map for Errval mapping.</summary>
-    [[nodiscard]] bool compute_map(const int32_t error_value, const int32_t k) const noexcept
+    [[nodiscard]]
+    bool compute_map(const int32_t error_value, const int32_t k) const noexcept
     {
         if (k == 0 && error_value > 0 && 2 * nn_ < n_)
             return true;
@@ -95,7 +99,8 @@ public:
         return false;
     }
 
-    [[nodiscard]] FORCE_INLINE bool compute_map_negative_e(const int32_t k) const noexcept
+    [[nodiscard]]
+    FORCE_INLINE bool compute_map_negative_e(const int32_t k) const noexcept
     {
         return k != 0 || 2 * nn_ >= n_;
     }

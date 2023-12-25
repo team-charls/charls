@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include <cstddef>
 #include <array>
+#include <cstddef>
 
 #include "util.h"
 
@@ -42,32 +42,38 @@ public:
     {
     }
 
-    [[nodiscard]] constexpr size_t size() const noexcept
+    [[nodiscard]]
+    constexpr size_t size() const noexcept
     {
         return size_;
     }
 
-    [[nodiscard]] constexpr pointer data() const noexcept
+    [[nodiscard]]
+    constexpr pointer data() const noexcept
     {
         return data_;
     }
 
-    [[nodiscard]] constexpr iterator begin() const noexcept
+    [[nodiscard]]
+    constexpr iterator begin() const noexcept
     {
         return data_;
     }
 
-    [[nodiscard]] constexpr iterator end() const noexcept
+    [[nodiscard]]
+    constexpr iterator end() const noexcept
     {
         return data_ + size_;
     }
 
-    [[nodiscard]] constexpr bool empty() const noexcept
+    [[nodiscard]]
+    constexpr bool empty() const noexcept
     {
         return size_ == 0;
     }
 
-    [[nodiscard]] constexpr span subspan(const size_t offset) const noexcept
+    [[nodiscard]]
+    constexpr span subspan(const size_t offset) const noexcept
     {
         ASSERT(offset <= size_);
         return {data_ + offset, size_ - offset};
