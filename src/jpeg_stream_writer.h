@@ -95,12 +95,14 @@ public:
 
     void write_end_of_image(bool even_destination_size);
 
-    [[nodiscard]] size_t bytes_written() const noexcept
+    [[nodiscard]]
+    size_t bytes_written() const noexcept
     {
         return byte_offset_;
     }
 
-    [[nodiscard]] span<std::byte> remaining_destination() const noexcept
+    [[nodiscard]]
+    span<std::byte> remaining_destination() const noexcept
     {
         return {destination_.data() + byte_offset_, destination_.size() - byte_offset_};
     }

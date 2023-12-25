@@ -70,7 +70,8 @@ struct scan_decoder
         t3_ = preset.threshold3;
     }
 
-    [[nodiscard]] int8_t quantize_gradient_org(const int32_t di) const noexcept
+    [[nodiscard]]
+    int8_t quantize_gradient_org(const int32_t di) const noexcept
     {
         if (di <= -t3_)
             return -4;
@@ -97,7 +98,6 @@ struct lossless_traits final
 {
     static constexpr int32_t near_lossless{};
 };
-
 
 
 __declspec(noinline) int32_t get_predicted_value_default(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
@@ -288,12 +288,14 @@ public:
         size_ = new_size;
     }
 
-    [[nodiscard]] uint8_t* data() const noexcept
+    [[nodiscard]]
+    uint8_t* data() const noexcept
     {
         return data_.get();
     }
 
-    [[nodiscard]] size_t size() const noexcept
+    [[nodiscard]]
+    size_t size() const noexcept
     {
         return size_;
     }
@@ -304,14 +306,12 @@ private:
 };
 
 
-
 overwrite_buffer allocate_overwrite_buffer(const size_t size)
 {
     overwrite_buffer buffer;
     buffer.reset(size);
     return buffer;
 }
-
 
 
 static void bm_resize_overwrite_buffer(benchmark::State& state)
@@ -323,8 +323,6 @@ static void bm_resize_overwrite_buffer(benchmark::State& state)
     }
 }
 BENCHMARK(bm_resize_overwrite_buffer);
-
-
 
 
 BENCHMARK_MAIN();

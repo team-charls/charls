@@ -39,7 +39,8 @@ public:
         flush();
     }
 
-    [[nodiscard]] size_t get_length_forward() const noexcept
+    [[nodiscard]]
+    size_t get_length_forward() const noexcept
     {
         return get_length();
     }

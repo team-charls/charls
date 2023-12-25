@@ -19,12 +19,14 @@ struct golomb_code final
     {
     }
 
-    [[nodiscard]] int32_t value() const noexcept
+    [[nodiscard]]
+    int32_t value() const noexcept
     {
         return value_;
     }
 
-    [[nodiscard]] constexpr uint32_t length() const noexcept
+    [[nodiscard]]
+    constexpr uint32_t length() const noexcept
     {
         return length_;
     }
@@ -52,7 +54,8 @@ public:
         }
     }
 
-    [[nodiscard]] FORCE_INLINE const golomb_code& get(const uint32_t value) const noexcept
+    [[nodiscard]]
+    FORCE_INLINE const golomb_code& get(const uint32_t value) const noexcept
     {
         return types_[value];
     }
@@ -64,4 +67,4 @@ private:
 
 extern const std::array<golomb_code_table, max_k_value> golomb_lut;
 
-}
+} // namespace charls

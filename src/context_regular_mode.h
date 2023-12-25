@@ -25,12 +25,14 @@ public:
     }
 
     /// <summary>counter with prediction correction value</summary>
-    [[nodiscard]] int32_t c() const noexcept
+    [[nodiscard]]
+    int32_t c() const noexcept
     {
         return c_;
     }
 
-    [[nodiscard]] FORCE_INLINE int32_t get_error_correction(const int32_t k) const noexcept
+    [[nodiscard]]
+    FORCE_INLINE int32_t get_error_correction(const int32_t k) const noexcept
     {
         if (k != 0)
             return 0;
@@ -92,7 +94,8 @@ public:
     /// <summary>
     /// Computes the Golomb coding parameter using the algorithm as defined in ISO 14495-1, code segment A.10
     /// </summary>
-    [[nodiscard]] FORCE_INLINE int32_t get_golomb_coding_parameter() const
+    [[nodiscard]]
+    FORCE_INLINE int32_t get_golomb_coding_parameter() const
     {
         int32_t k{};
         for (; n_ << k < a_ && k < max_k_value; ++k)

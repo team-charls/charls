@@ -30,17 +30,20 @@ public:
 
     void source(span<const std::byte> source) noexcept;
 
-    [[nodiscard]] const charls::frame_info& frame_info() const noexcept
+    [[nodiscard]]
+    const charls::frame_info& frame_info() const noexcept
     {
         return frame_info_;
     }
 
-    [[nodiscard]] const coding_parameters& parameters() const noexcept
+    [[nodiscard]]
+    const coding_parameters& parameters() const noexcept
     {
         return parameters_;
     }
 
-    [[nodiscard]] const jpegls_pc_parameters& preset_coding_parameters() const noexcept
+    [[nodiscard]]
+    const jpegls_pc_parameters& preset_coding_parameters() const noexcept
     {
         return preset_coding_parameters_;
     }
@@ -55,7 +58,8 @@ public:
         at_application_data_callback_ = at_application_data_callback;
     }
 
-    [[nodiscard]] span<const std::byte> remaining_source() const noexcept
+    [[nodiscard]]
+    span<const std::byte> remaining_source() const noexcept
     {
         ASSERT(state_ == state::bit_stream_section);
         return {position_, end_position_};
@@ -64,7 +68,8 @@ public:
     void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
     void read_next_start_of_scan();
     void read_end_of_image();
-    [[nodiscard]] jpegls_pc_parameters get_validated_preset_coding_parameters() const;
+    [[nodiscard]]
+    jpegls_pc_parameters get_validated_preset_coding_parameters() const;
 
     void advance_position(const size_t count) noexcept
     {
@@ -73,25 +78,41 @@ public:
     }
 
 private:
-    [[nodiscard]] std::byte read_byte_checked();
-    [[nodiscard]] uint16_t read_uint16_checked();
+    [[nodiscard]]
+    std::byte read_byte_checked();
 
-    [[nodiscard]] std::byte read_byte() noexcept;
+    [[nodiscard]]
+    uint16_t read_uint16_checked();
+
+    [[nodiscard]]
+    std::byte read_byte() noexcept;
     void skip_byte() noexcept;
 
-    [[nodiscard]] uint8_t read_uint8() noexcept
+    [[nodiscard]]
+    uint8_t read_uint8() noexcept
     {
         return std::to_integer<uint8_t>(read_byte());
     }
 
-    [[nodiscard]] uint16_t read_uint16() noexcept;
-    [[nodiscard]] uint32_t read_uint24() noexcept;
-    [[nodiscard]] uint32_t read_uint32() noexcept;
-    [[nodiscard]] span<const std::byte> read_bytes(size_t byte_count) noexcept;
+    [[nodiscard]]
+    uint16_t read_uint16() noexcept;
+
+    [[nodiscard]]
+    uint32_t read_uint24() noexcept;
+
+    [[nodiscard]]
+    uint32_t read_uint32() noexcept;
+
+    [[nodiscard]]
+    span<const std::byte> read_bytes(size_t byte_count) noexcept;
+
     void read_segment_size();
     void check_minimal_segment_size(size_t minimum_size) const;
     void check_segment_size(size_t expected_size) const;
-    [[nodiscard]] jpeg_marker_code read_next_marker_code();
+
+    [[nodiscard]]
+    jpeg_marker_code read_next_marker_code();
+
     void validate_marker_code(jpeg_marker_code marker_code) const;
     void read_marker_segment(jpeg_marker_code marker_code, spiff_header* header = nullptr,
                              bool* spiff_header_found = nullptr);
@@ -109,7 +130,10 @@ private:
     void try_read_hp_color_transform_segment();
     void add_component(uint8_t component_id);
     void check_interleave_mode(interleave_mode mode) const;
-    [[nodiscard]] uint32_t maximum_sample_value() const noexcept;
+
+    [[nodiscard]]
+    uint32_t maximum_sample_value() const noexcept;
+
     void skip_remaining_segment_data() noexcept;
     void check_frame_info() const;
     void frame_info_height(uint32_t height);

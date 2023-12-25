@@ -29,7 +29,8 @@ namespace charls::test {
 
 namespace {
 
-[[nodiscard]] jpegls_decoder create_decoder(const vector<byte>& source)
+ [[nodiscard]]
+jpegls_decoder create_decoder(const vector<byte>& source)
 {
     return {source, true};
 }
@@ -1009,8 +1010,9 @@ public:
 
 private:
     // ReSharper disable CppPassValueParameterByConstReference
-    [[nodiscard]] static vector<byte>::iterator find_scan_header(const vector<byte>::iterator begin,
-                                                                 const vector<byte>::iterator end) noexcept
+    [[nodiscard]]
+    static vector<byte>::iterator find_scan_header(const vector<byte>::iterator begin,
+                                                   const vector<byte>::iterator end) noexcept
     // ReSharper restore CppPassValueParameterByConstReference
     {
         constexpr byte start_of_scan{0xDA};
@@ -1025,8 +1027,9 @@ private:
     }
 
     // ReSharper disable CppPassValueParameterByConstReference
-    [[nodiscard]] static vector<byte>::iterator find_first_restart_marker(const vector<byte>::iterator begin,
-                                                                          const vector<byte>::iterator end) noexcept
+    [[nodiscard]]
+    static vector<byte>::iterator find_first_restart_marker(const vector<byte>::iterator begin,
+                                                            const vector<byte>::iterator end) noexcept
     // ReSharper restore CppPassValueParameterByConstReference
     {
         constexpr byte first_restart_marker{0xD0};
@@ -1040,7 +1043,8 @@ private:
         return end;
     }
 
-    [[nodiscard]] static vector<byte> create_default_pc_parameters_segment()
+    [[nodiscard]]
+    static vector<byte> create_default_pc_parameters_segment()
     {
         vector<byte> segment;
 

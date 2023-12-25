@@ -102,8 +102,7 @@ protected:
     /// Copy frame_info and parameters to prevent 1 indirection during encoding/decoding.
     /// </remarks>
     scan_codec(const frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        frame_info_{frame_info},
-        parameters_{parameters}, width_{frame_info.width}
+        frame_info_{frame_info}, parameters_{parameters}, width_{frame_info.width}
     {
         ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) ||
                parameters.interleave_mode != interleave_mode::none);
@@ -111,22 +110,26 @@ protected:
 
     ~scan_codec() = default;
 
-    [[nodiscard]] int8_t quantize_gradient_org(const int32_t di, const int32_t near_lossless) const noexcept
+    [[nodiscard]]
+    int8_t quantize_gradient_org(const int32_t di, const int32_t near_lossless) const noexcept
     {
         return charls::quantize_gradient_org(di, t1_, t2_, t3_, near_lossless);
     }
 
-    [[nodiscard]] const coding_parameters& parameters() const noexcept
+    [[nodiscard]]
+    const coding_parameters& parameters() const noexcept
     {
         return parameters_;
     }
 
-    [[nodiscard]] const charls::frame_info& frame_info() const noexcept
+    [[nodiscard]]
+    const charls::frame_info& frame_info() const noexcept
     {
         return frame_info_;
     }
 
-    [[nodiscard]] bool is_interleaved() const noexcept
+    [[nodiscard]]
+    bool is_interleaved() const noexcept
     {
         ASSERT((parameters().interleave_mode == interleave_mode::none && frame_info().component_count == 1) ||
                parameters().interleave_mode != interleave_mode::none);

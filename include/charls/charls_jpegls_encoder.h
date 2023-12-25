@@ -226,8 +226,7 @@ charls_jpegls_encoder_write_comment(CHARLS_IN charls_jpegls_encoder* encoder,
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_write_application_data(CHARLS_IN charls_jpegls_encoder* encoder,
-                                             int32_t application_data_id,
+charls_jpegls_encoder_write_application_data(CHARLS_IN charls_jpegls_encoder* encoder, int32_t application_data_id,
                                              CHARLS_IN_READS_BYTES(application_data_size_bytes) const void* application_data,
                                              size_t application_data_size_bytes) CHARLS_NOEXCEPT;
 
@@ -386,7 +385,8 @@ public:
     /// Size for dynamic extras like SPIFF entries and other tables are not included in this size.
     /// </remarks>
     /// <returns>The estimated size in bytes needed to hold the encoded image.</returns>
-    [[nodiscard]] size_t estimated_destination_size() const
+    [[nodiscard]]
+    size_t estimated_destination_size() const
     {
         size_t size_in_bytes;
         check_jpegls_errc(charls_jpegls_encoder_get_estimated_destination_size(encoder_.get(), &size_in_bytes));
@@ -562,7 +562,8 @@ public:
     /// Returns the size in bytes, that are written to the destination.
     /// </summary>
     /// <returns>The bytes written.</returns>
-    [[nodiscard]] size_t bytes_written() const
+    [[nodiscard]]
+    size_t bytes_written() const
     {
         size_t bytes_written;
         check_jpegls_errc(charls_jpegls_encoder_get_bytes_written(encoder_.get(), &bytes_written));
@@ -578,7 +579,8 @@ public:
     }
 
 private:
-    [[nodiscard]] static charls_jpegls_encoder* create_encoder()
+    [[nodiscard]]
+    static charls_jpegls_encoder* create_encoder()
     {
         charls_jpegls_encoder* encoder{charls_jpegls_encoder_create()};
         if (!encoder)

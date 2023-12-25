@@ -18,9 +18,11 @@ using std::unique_ptr;
 namespace {
 
 /// <summary>
-/// scan_codec_factory receives the actual frame info. scan_codec expects 1 when encoding/decoding a single scan in interleave mode none.
+/// scan_codec_factory receives the actual frame info.
+/// scan_codec expects 1 when encoding/decoding a single scan in interleave mode none.
 /// </summary>
-[[nodiscard]] frame_info update_component_count(const frame_info& frame, const coding_parameters& parameters) noexcept
+[[nodiscard]]
+frame_info update_component_count(const frame_info& frame, const coding_parameters& parameters) noexcept
 {
     return {frame.width, frame.height, frame.bits_per_sample,
             parameters.interleave_mode == interleave_mode::none ? 1 : frame.component_count};

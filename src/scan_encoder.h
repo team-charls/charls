@@ -146,7 +146,8 @@ protected:
         }
     }
 
-    [[nodiscard]] size_t get_length() const noexcept
+    [[nodiscard]]
+    size_t get_length() const noexcept
     {
         return bytes_written_ - (static_cast<size_t>(free_bit_count_) - 32U) / 8U;
     }
