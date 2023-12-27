@@ -113,7 +113,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
             vector<uint8_t> destination;
             jpegls_decoder::decode(source, destination);
         }
-        catch (const jpegls_error&)
+        catch (const jpegls_error&)  // NOLINT(bugprone-empty-catch)
         {
         }
     }

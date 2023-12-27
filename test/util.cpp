@@ -6,6 +6,7 @@
 #include "portable_anymap_file.h"
 
 #include <chrono>
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
 #include <vector>
@@ -67,6 +68,7 @@ void fix_endian(vector<byte>* buffer, const bool little_endian_data) noexcept
 
 
 vector<byte> read_file(const char* filename, long offset, size_t bytes)
+try
 {
     ifstream input;
     input.exceptions(ios::eofbit | ios::failbit | ios::badbit);
@@ -90,6 +92,11 @@ vector<byte> read_file(const char* filename, long offset, size_t bytes)
     read(input, buffer);
 
     return buffer;
+}
+catch (const std::ifstream::failure&)
+{
+    cout << "Failed to open/read file: " << std::filesystem::absolute(filename) << "\n";
+    throw;
 }
 
 void write_file(const char* filename, const void* data, const size_t size)

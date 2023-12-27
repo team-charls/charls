@@ -66,11 +66,11 @@ private:
         if (!is_interleaved())
         {
             return std::make_unique<process_decoded_single_component>(destination, stride,
-                                                                      sizeof(typename Traits::pixel_type));
+                                                                      sizeof(pixel_type));
         }
 
         if (parameters().transformation == color_transformation::none)
-            return std::make_unique<process_decoded_transformed<transform_none<typename Traits::sample_type>>>(
+            return std::make_unique<process_decoded_transformed<transform_none<sample_type>>>(
                 destination, stride, frame_info(), parameters(), transform_none<sample_type>());
 
         if (frame_info().bits_per_sample == sizeof(sample_type) * 8 && frame_info().component_count == 3)

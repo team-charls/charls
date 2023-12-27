@@ -24,12 +24,16 @@ endif ()
 
 # The basic options to control what is build extra.
 option(CHARLS_BUILD_TESTS "Build test application" ${MASTER_PROJECT})
-option(CHARLS_BUILD_FUZZ_TEST "Build AFL fuzzer application" ${MASTER_PROJECT})
+option(CHARLS_BUILD_AFL_FUZZ_TEST "Build AFL test fuzzer application" ${MASTER_PROJECT})
+option(CHARLS_BUILD_LIBFUZZER_FUZZ_TEST "Build LibFuzzer test fuzzer application" ${MASTER_PROJECT})
 option(CHARLS_BUILD_SAMPLES "Build sample applications" ${MASTER_PROJECT})
 option(CHARLS_INSTALL "Generate the install target." ${MASTER_PROJECT})
 
 # Provide BUILD_SHARED_LIBS as an option for GUI tools
 option(BUILD_SHARED_LIBS "Will control if charls lib is build as shared lib/DLL or static library")
+
+# Provide option to build CharLS with address sanitizer
+option(CHARLS_ENABLE_ASAN "Build with address sanitizer enabled." OFF)
 
 # These options are used by the CI pipeline to ensure new warnings are detected quickly.
 # Not enabled by default to ensure the CharLS package is end-user friendly.
@@ -143,6 +147,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   if (NOT CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
     set(WARNINGS_AS_ERRORS_FLAG_LINKER LINKER:--fatal-warnings)
   endif()
+
+  if(NOT APPLE)
+    set(LIBFUZZER_SUPPORTED 1)
+  endif()
 endif()
 
 if(MSVC)
@@ -192,6 +200,11 @@ if(MSVC)
     add_link_options("/CETCOMPAT")
   endif()
 
+  # Enable LibFuzzer support for MSVC
+  if(${ARM_DETECTED} EQUAL 0 AND MSVC_VERSION GREATER_EQUAL 1930)
+    set(LIBFUZZER_SUPPORTED 1)
+  endif()
+
 endif()
 
 # When enabled apply the pedantic warnings options and warnings as errors to globally.
@@ -223,8 +236,12 @@ if(CHARLS_BUILD_TESTS)
   )
 endif()
 
-if(CHARLS_BUILD_FUZZ_TEST)
-  add_subdirectory(fuzztest)
+if(CHARLS_BUILD_AFL_FUZZ_TEST)
+  add_subdirectory(fuzzing/afl)
+endif()
+
+if(CHARLS_BUILD_LIBFUZZER_FUZZ_TEST AND LIBFUZZER_SUPPORTED)
+  add_subdirectory(fuzzing/libfuzzer)
 endif()
 
 if(CHARLS_BUILD_SAMPLES)
