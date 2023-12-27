@@ -55,6 +55,11 @@ if(MSVC)
   target_compile_options(charls PRIVATE /GR-)
 endif()
 
+if(CHARLS_ENABLE_ASAN)
+  target_compile_options(charls PRIVATE -fsanitize=address)
+  target_link_libraries(charls PRIVATE -fsanitize=address)
+endif()
+
 set_target_properties(charls PROPERTIES
                       VERSION ${PROJECT_VERSION}
                       SOVERSION ${PROJECT_VERSION_MAJOR})

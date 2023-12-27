@@ -39,7 +39,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>16.0</VCProjectVersion>
+    <VCProjectVersion>17.0</VCProjectVersion>
     <ProjectGuid>{1E31F9F1-F175-4082-B3E2-B1F0ECA3F44C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>CharLS</ProjectName>

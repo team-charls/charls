@@ -20,7 +20,7 @@ struct golomb_code final
     }
 
     [[nodiscard]]
-    int32_t value() const noexcept
+    constexpr int32_t value() const noexcept
     {
         return value_;
     }

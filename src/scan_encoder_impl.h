@@ -61,15 +61,15 @@ private:
             if (frame_info().bits_per_sample == sizeof(sample_type) * 8)
             {
                 return std::make_unique<process_encoded_single_component>(source, stride,
-                                                                          sizeof(typename Traits::pixel_type));
+                                                                          sizeof(pixel_type));
             }
 
             return std::make_unique<process_encoded_single_component_masked>(
-                source, stride, sizeof(typename Traits::pixel_type), frame_info().bits_per_sample);
+                source, stride, sizeof(pixel_type), frame_info().bits_per_sample);
         }
 
         if (parameters().transformation == color_transformation::none)
-            return std::make_unique<process_encoded_transformed<transform_none<typename Traits::sample_type>>>(
+            return std::make_unique<process_encoded_transformed<transform_none<sample_type>>>(
                 source, stride, frame_info(), parameters(), transform_none<sample_type>());
 
         if (frame_info().bits_per_sample == sizeof(sample_type) * 8 && frame_info().component_count == 3)

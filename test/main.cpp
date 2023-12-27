@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <array>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <random>
@@ -45,12 +46,18 @@ namespace {
 constexpr ios::openmode mode_input{ios::in | ios::binary};
 
 ifstream open_input_stream(const char* filename)
+try
 {
     ifstream stream;
     stream.exceptions(ios::eofbit | ios::failbit | ios::badbit);
     stream.open(filename, mode_input);
 
     return stream;
+}
+catch (const std::ifstream::failure&)
+{
+    cout << "Failed to open/read file: " << std::filesystem::absolute(filename) << "\n";
+    throw;
 }
 
 
