@@ -423,5 +423,18 @@ inline size_t checked_mul(const size_t a, const size_t b)
 }
 #endif
 
+// Replacement for std::unreachable (introduced in C++23).
+MSVC_WARNING_SUPPRESS_NEXT_LINE(26497) // method cannot be constexpr
+[[noreturn]]
+inline void unreachable() noexcept
+{
+#ifdef __GNUC__ // GCC, Clang, ICC
+    __builtin_unreachable();
+#endif
+
+#ifdef _MSC_VER
+    __assume(false);
+#endif
+}
 
 } // namespace charls
