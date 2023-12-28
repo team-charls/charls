@@ -30,7 +30,6 @@ public:
     scan_decoder& operator=(const scan_decoder&) = delete;
     scan_decoder& operator=(scan_decoder&&) = delete;
 
-    virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual size_t decode_scan(span<const std::byte> source, std::byte* destination, size_t stride) = 0;
 
 protected:

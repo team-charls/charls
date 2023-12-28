@@ -267,7 +267,7 @@ private:
                                             component_count};
 
         const auto encoder{make_scan_codec<scan_encoder>(
-            frame_info, {near_lossless_, 0, interleave_mode_, color_transformation_}, preset_coding_parameters_)};
+            frame_info, preset_coding_parameters_, {near_lossless_, 0, interleave_mode_, color_transformation_})};
         const size_t bytes_written{encoder->encode_scan(source, stride, writer_.remaining_destination())};
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)

@@ -159,7 +159,7 @@ struct charls_jpegls_decoder final
         for (size_t plane{};;)
         {
             const auto decoder{make_scan_codec<scan_decoder>(
-                frame_info(), reader_.parameters(), reader_.get_validated_preset_coding_parameters())};
+                frame_info(), reader_.get_validated_preset_coding_parameters(), reader_.parameters())};
             const size_t bytes_read{decoder->decode_scan(reader_.remaining_source(), destination.data(), stride)};
             reader_.advance_position(bytes_read);
 

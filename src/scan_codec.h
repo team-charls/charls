@@ -101,8 +101,15 @@ protected:
     /// <remarks>
     /// Copy frame_info and parameters to prevent 1 indirection during encoding/decoding.
     /// </remarks>
-    scan_codec(const frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        frame_info_{frame_info}, parameters_{parameters}, width_{frame_info.width}
+    scan_codec(const frame_info& frame_info, const jpegls_pc_parameters& pc_parameters,
+               const coding_parameters& parameters) noexcept :
+        frame_info_{frame_info},
+        parameters_{parameters},
+        t1_{pc_parameters.threshold1},
+        t2_{pc_parameters.threshold2},
+        t3_{pc_parameters.threshold3},
+        width_{frame_info.width},
+        reset_value_{static_cast<uint8_t>(pc_parameters.reset_value)}
     {
         ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) ||
                parameters.interleave_mode != interleave_mode::none);
@@ -169,7 +176,7 @@ protected:
     std::array<context_regular_mode, 365> contexts_;
     std::array<context_run_mode, 2> context_run_mode_;
     uint32_t width_;
-    uint8_t reset_threshold_{};
+    uint8_t reset_value_{};
 
     // Quantization lookup table
     const int8_t* quantization_{};

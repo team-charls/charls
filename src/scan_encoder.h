@@ -27,7 +27,6 @@ public:
     scan_encoder& operator=(const scan_encoder&) = delete;
     scan_encoder& operator=(scan_encoder&&) = delete;
 
-    virtual void set_presets(const jpegls_pc_parameters& preset_coding_parameters) = 0;
     virtual size_t encode_scan(const std::byte* source, size_t stride, span<std::byte> destination) = 0;
 
 protected:
