@@ -5,7 +5,7 @@
 
 #include "constants.h"
 #include "jpeg_stream_reader.h"
-#include "scan_codec_factory.h"
+#include "make_scan_codec.h"
 #include "scan_decoder.h"
 #include "util.h"
 
@@ -53,14 +53,14 @@ struct charls_jpegls_decoder final
     [[nodiscard]]
     charls::frame_info frame_info_checked() const
     {
-        check_operation(state_ >= state::header_read);
+        check_header_read();
         return frame_info();
     }
 
     [[nodiscard]]
     int32_t near_lossless(int32_t /*component*/ = 0) const
     {
-        check_operation(state_ >= state::header_read);
+        check_header_read();
 
         // Note: The JPEG-LS standard allows to define different NEAR parameter for every scan.
         return reader_.parameters().near_lossless;
@@ -69,7 +69,7 @@ struct charls_jpegls_decoder final
     [[nodiscard]]
     charls::interleave_mode interleave_mode() const
     {
-        check_operation(state_ >= state::header_read);
+        check_header_read();
 
         // Note: The JPEG-LS standard allows to define different interleave modes for every scan.
         //       CharLS doesn't support mixed interleave modes, first scan determines the mode.
@@ -79,14 +79,14 @@ struct charls_jpegls_decoder final
     [[nodiscard]]
     charls::color_transformation color_transformation() const
     {
-        check_operation(state_ >= state::header_read);
+        check_header_read();
         return reader_.parameters().transformation;
     }
 
     [[nodiscard]]
     const jpegls_pc_parameters& preset_coding_parameters() const
     {
-        check_operation(state_ >= state::header_read);
+        check_header_read();
         return reader_.preset_coding_parameters();
     }
 
@@ -134,7 +134,6 @@ struct charls_jpegls_decoder final
     {
         check_argument(destination.data() || destination.empty());
         check_operation(state_ == state::header_read);
-
         check_parameter_coherent();
 
         // Compute the stride for the uncompressed destination buffer.
@@ -159,9 +158,9 @@ struct charls_jpegls_decoder final
 
         for (size_t plane{};;)
         {
-            const auto scan_codec{scan_codec_factory<scan_decoder>().create_codec(
+            const auto decoder{make_scan_codec<scan_decoder>(
                 frame_info(), reader_.parameters(), reader_.get_validated_preset_coding_parameters())};
-            const size_t bytes_read{scan_codec->decode_scan(reader_.remaining_source(), destination.data(), stride)};
+            const size_t bytes_read{decoder->decode_scan(reader_.remaining_source(), destination.data(), stride)};
             reader_.advance_position(bytes_read);
 
             ++plane;
@@ -191,6 +190,11 @@ private:
                                                    ? 1U
                                                    : static_cast<size_t>(frame_info().component_count)};
         return components_in_plane_count * frame_info().width * bit_to_byte_count(frame_info().bits_per_sample);
+    }
+
+    void check_header_read() const
+    {
+        check_operation(state_ >= state::header_read);
     }
 
     void check_parameter_coherent() const

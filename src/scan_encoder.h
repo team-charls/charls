@@ -8,6 +8,8 @@
 #include "scan_codec.h"
 #include "span.h"
 
+#include <memory>
+
 namespace charls {
 
 /// <summary>

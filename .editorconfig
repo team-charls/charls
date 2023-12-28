@@ -8,6 +8,7 @@ root = true
 charset = utf-8
 indent_style = space
 trim_trailing_whitespace = true
+spelling_exclusion_path = spelling.dic
 
 [*.md]
 trim_trailing_whitespace = false

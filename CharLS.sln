@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 		SECURITY.md = SECURITY.md
 		sonar-project.properties = sonar-project.properties
+		spelling.dic = spelling.dic
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "convert-c", "samples\convert.c\convert-c.vcxproj", "{F42C0547-FEB3-40F4-9379-0FF87B44FA0F}"
