@@ -29,7 +29,7 @@ namespace charls::test {
 
 namespace {
 
- [[nodiscard]]
+[[nodiscard]]
 jpegls_decoder create_decoder(const vector<byte>& source)
 {
     return {source, true};
@@ -672,6 +672,24 @@ public:
                                 [&decoder, &destination] { decoder.decode(destination); });
     }
 
+    TEST_METHOD(decode_file_with_no_start_byte_after_encoded_scan_throws) // NOLINT
+    {
+        const auto source{read_file("DataFiles/no_start_byte_after_encoded_scan.jls")};
+
+        const jpegls_decoder decoder{source, true};
+
+        const auto& frame_info{decoder.frame_info()};
+        Assert::AreEqual(3, frame_info.component_count);
+        Assert::AreEqual(8, frame_info.bits_per_sample);
+        Assert::AreEqual(1U, frame_info.height);
+        Assert::AreEqual(1U, frame_info.width);
+
+        vector<byte> destination(decoder.destination_size());
+
+        assert_expect_exception(jpegls_errc::source_buffer_too_small,
+                                [&decoder, &destination] { decoder.decode(destination); });
+    }
+
     TEST_METHOD(decode_file_with_missing_restart_marker_throws) // NOLINT
     {
         auto source{read_file("DataFiles/t8c0e0.jls")};
@@ -713,8 +731,8 @@ public:
         // Add additional 0xFF marker begin bytes
         auto it{find_scan_header(source.begin(), source.end())};
         it = find_first_restart_marker(it + 1, source.end());
-        const array<byte, 7> extra_begin_bytes{byte{0xFF}, byte{0xFF}, byte{0xFF}, byte{0xFF},
-                                               byte{0xFF}, byte{0xFF}, byte{0xFF}};
+        constexpr array extra_begin_bytes{byte{0xFF}, byte{0xFF}, byte{0xFF}, byte{0xFF},
+                                          byte{0xFF}, byte{0xFF}, byte{0xFF}};
         source.insert(it, extra_begin_bytes.cbegin(), extra_begin_bytes.cend());
 
         const jpegls_decoder decoder{source, true};

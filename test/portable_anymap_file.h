@@ -118,7 +118,7 @@ private:
 
     void convert_to_little_endian_if_needed() noexcept
     {
-        // Anymap files with multi byte pixels are stored in big endian format in the file.
+        // Anymap files with multibyte pixels are stored in big endian format in the file.
         if (bits_per_sample_ > 8)
         {
             for (size_t i{}; i < input_buffer_.size() - 1; i += 2)
