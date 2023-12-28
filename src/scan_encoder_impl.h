@@ -19,7 +19,7 @@ public:
     using sample_type = typename Traits::sample_type;
 
     scan_encoder_impl(const charls::frame_info& frame_info, const jpegls_pc_parameters& pc_parameters,
-                      const coding_parameters& parameters, const Traits& traits) noexcept :
+                      const coding_parameters& parameters, const Traits& traits) :
         scan_encoder{frame_info, pc_parameters, parameters}, traits_{traits}
     {
         ASSERT(traits_.is_valid());

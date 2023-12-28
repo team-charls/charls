@@ -192,6 +192,9 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
     case jpeg_marker_code::start_of_frame_jpegls_extended:
         throw_jpegls_error(jpegls_errc::encoding_not_supported);
 
+    case jpeg_marker_code::define_number_of_lines: // DLN is a JPEG-LS valid marker, but not supported: handle as unknown.
+        throw_jpegls_error(jpegls_errc::unknown_jpeg_marker_found);
+
     case jpeg_marker_code::start_of_image:
         throw_jpegls_error(jpegls_errc::duplicate_start_of_image_marker);
 
@@ -265,10 +268,8 @@ void jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code,
         read_application_data_segment(marker_code);
         break;
 
-    // Other tags not supported (among which DNL)
     default:
-        ASSERT(false);
-        break;
+        unreachable();
     }
 }
 

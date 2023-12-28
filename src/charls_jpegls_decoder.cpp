@@ -116,8 +116,7 @@ struct charls_jpegls_decoder final
         }
         }
 
-        ASSERT(false);
-        return 0;
+        unreachable();
     }
 
     void at_comment(const callback_function<at_comment_handler> at_comment_callback) noexcept

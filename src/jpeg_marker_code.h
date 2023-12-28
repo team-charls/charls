@@ -31,6 +31,9 @@ enum class jpeg_marker_code : uint8_t
     /// <summary>SOS: Marks the start of scan.</summary>
     start_of_scan = 0xDA,
 
+    /// <summary>DNL: Defines the number of lines in a scan.</summary>
+    define_number_of_lines = 0xDC,
+
     /// <summary>DRI: Defines the restart interval used in succeeding scans.</summary>
     define_restart_interval = 0xDD,
 
