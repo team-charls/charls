@@ -76,6 +76,9 @@ protected:
         {
             read_bit();
 
+            if (UNLIKELY(position_ >= end_position_))
+                impl::throw_jpegls_error(jpegls_errc::source_buffer_too_small);
+
             if (UNLIKELY(*position_ != jpeg_marker_start_byte))
                 impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
         }

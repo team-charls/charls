@@ -215,8 +215,10 @@
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>
-  </ItemGroup>
-  <ItemGroup>
+    <CopyFileToFolders Include="no_start_byte_after_encoded_scan.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
+    </CopyFileToFolders>
     <CopyFileToFolders Include="8bit-monochrome-2x2.jls">
       <FileType>Document</FileType>
     </CopyFileToFolders>

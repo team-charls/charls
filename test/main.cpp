@@ -298,7 +298,7 @@ void test_too_small_output_buffer()
 
 void test_decode_bit_stream_with_no_marker_start()
 {
-    const array encoded_data{byte{0x33}, byte{0x33}};
+    constexpr array encoded_data{byte{0x33}, byte{0x33}};
     array<byte, 1000> output{};
 
     error_code error;
@@ -319,7 +319,7 @@ void test_decode_bit_stream_with_no_marker_start()
 
 void test_decode_bit_stream_with_unsupported_encoding()
 {
-    const array encoded_data{
+    constexpr array encoded_data{
         byte{0xFF}, byte{0xD8}, // Start Of Image (JPEG_SOI)
         byte{0xFF}, byte{0xC3}, // Start Of Frame (lossless, Huffman) (JPEG_SOF_3)
         byte{0x00}, byte{0x00}  // Length of data of the marker
@@ -344,7 +344,7 @@ void test_decode_bit_stream_with_unsupported_encoding()
 
 void test_decode_bit_stream_with_unknown_jpeg_marker()
 {
-    const array encoded_data{
+    constexpr array encoded_data{
         byte{0xFF}, byte{0xD8}, // Start Of Image (JPEG_SOI)
         byte{0xFF}, byte{0x01}, // Undefined marker
         byte{0x00}, byte{0x00}  // Length of data of the marker

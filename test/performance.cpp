@@ -31,13 +31,13 @@ void test_performance(const int loop_count)
     // RGBA image (This is a common PNG sample)
     test_file("test/alphatest.raw", 0, {380, 287}, 8, 4, false, loop_count);
 
-    // 16 bit mono
+    // 16-bit mono
     test_file("test/MR2_UNC", 1728, {1024, 1024}, 16, 1, true, loop_count);
 
-    // 8 bit mono
+    // 8-bit mono
     test_file("test/0015.raw", 0, {1024, 1024}, 8, 1, false, loop_count);
 
-    // 8 bit color
+    // 8-bit color
     test_file("test/desktop.ppm", 40, {1280, 1024}, 8, 3, false, loop_count);
 }
 
