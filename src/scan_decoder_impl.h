@@ -16,16 +16,14 @@ public:
     using pixel_type = typename Traits::pixel_type;
     using sample_type = typename Traits::sample_type;
 
-    scan_decoder_impl(const Traits& traits, const charls::frame_info& frame_info,
-                      const coding_parameters& parameters) noexcept :
-        scan_decoder{frame_info, parameters}, traits_{traits}
+    scan_decoder_impl(const charls::frame_info& frame_info, const jpegls_pc_parameters& pc_parameters,
+                      const coding_parameters& parameters, const Traits& traits) noexcept :
+        scan_decoder{frame_info, pc_parameters, parameters}, traits_{traits}
     {
         ASSERT(traits_.is_valid());
-    }
 
-    void set_presets(const jpegls_pc_parameters& presets) override
-    {
-        initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
+        quantization_ = initialize_quantization_lut(traits_, t1_, t2_, t3_, quantization_lut_);
+        reset_parameters(traits_.range);
     }
 
     size_t decode_scan(const span<const std::byte> source, std::byte* destination, const size_t stride) override
@@ -49,24 +47,12 @@ public:
     }
 
 private:
-    void initialize_parameters(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t reset_threshold)
-    {
-        t1_ = t1;
-        t2_ = t2;
-        t3_ = t3;
-        reset_threshold_ = static_cast<uint8_t>(reset_threshold);
-
-        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
-        reset_parameters(traits_.range);
-    }
-
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
     std::unique_ptr<process_decoded_line> create_process_line(std::byte* destination, const size_t stride)
     {
         if (!is_interleaved())
         {
-            return std::make_unique<process_decoded_single_component>(destination, stride,
-                                                                      sizeof(pixel_type));
+            return std::make_unique<process_decoded_single_component>(destination, stride, sizeof(pixel_type));
         }
 
         if (parameters().transformation == color_transformation::none)
@@ -328,7 +314,7 @@ private:
         const int32_t e_mapped_error_value{
             decode_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_pixel)};
         const int32_t error_value{context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k)};
-        context.update_variables(error_value, e_mapped_error_value, reset_threshold_);
+        context.update_variables(error_value, e_mapped_error_value, reset_value_);
         return error_value;
     }
 

@@ -12,13 +12,13 @@ namespace charls {
 
 template<typename ScanProcess>
 [[nodiscard]]
-std::unique_ptr<ScanProcess> make_scan_codec(const frame_info& frame, const coding_parameters& parameters,
-                                             const jpegls_pc_parameters& preset_coding_parameters);
+std::unique_ptr<ScanProcess> make_scan_codec(const frame_info& frame,
+                                             const jpegls_pc_parameters& pc_parameters, const coding_parameters& parameters);
 
 
 extern template std::unique_ptr<class scan_decoder>
-make_scan_codec<scan_decoder>(const frame_info&, const coding_parameters&, const jpegls_pc_parameters&);
+make_scan_codec<scan_decoder>(const frame_info&, const jpegls_pc_parameters& , const coding_parameters&);
 extern template std::unique_ptr<class scan_encoder>
-make_scan_codec<scan_encoder>(const frame_info&, const coding_parameters&, const jpegls_pc_parameters&);
+make_scan_codec<scan_encoder>(const frame_info&, const jpegls_pc_parameters&, const coding_parameters&);
 
 } // namespace charls

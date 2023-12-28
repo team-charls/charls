@@ -22,13 +22,9 @@ class scan_decoder_tester final : public scan_decoder
 public:
     scan_decoder_tester(const charls::frame_info& frame_info, const coding_parameters& parameters, byte* const destination,
                         const size_t count) :
-        scan_decoder(frame_info, parameters)
+        scan_decoder(frame_info, {}, parameters)
     {
         initialize({destination, count});
-    }
-
-    void set_presets(const jpegls_pc_parameters& /*preset_coding_parameters*/) noexcept(false) override
-    {
     }
 
     size_t decode_scan(span<const byte> /*source*/, byte* /*destination*/, size_t /*stride*/) noexcept(false) override

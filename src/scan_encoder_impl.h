@@ -18,16 +18,14 @@ public:
     using pixel_type = typename Traits::pixel_type;
     using sample_type = typename Traits::sample_type;
 
-    scan_encoder_impl(const Traits& traits, const charls::frame_info& frame_info,
-                      const coding_parameters& parameters) noexcept :
-        scan_encoder{frame_info, parameters}, traits_{traits}
+    scan_encoder_impl(const charls::frame_info& frame_info, const jpegls_pc_parameters& pc_parameters,
+                      const coding_parameters& parameters, const Traits& traits) noexcept :
+        scan_encoder{frame_info, pc_parameters, parameters}, traits_{traits}
     {
         ASSERT(traits_.is_valid());
-    }
 
-    void set_presets(const jpegls_pc_parameters& presets) override
-    {
-        initialize_parameters(presets.threshold1, presets.threshold2, presets.threshold3, presets.reset_value);
+        quantization_ = initialize_quantization_lut(traits_, t1_, t2_, t3_, quantization_lut_);
+        reset_parameters(traits_.range);
     }
 
     size_t encode_scan(const std::byte* source, const size_t stride, const span<std::byte> destination) override
@@ -42,17 +40,6 @@ public:
     }
 
 private:
-    void initialize_parameters(const int32_t t1, const int32_t t2, const int32_t t3, const int32_t reset_threshold)
-    {
-        t1_ = t1;
-        t2_ = t2;
-        t3_ = t3;
-        reset_threshold_ = static_cast<uint8_t>(reset_threshold);
-
-        quantization_ = initialize_quantization_lut(traits_, t1, t2, t3, quantization_lut_);
-        reset_parameters(traits_.range);
-    }
-
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
     std::unique_ptr<process_encoded_line> create_process_line(const std::byte* source, const size_t stride)
     {
@@ -335,7 +322,7 @@ private:
 
         ASSERT(error_value == context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k));
         encode_mapped_value(k, e_mapped_error_value, traits_.limit - J[run_index_] - 1);
-        context.update_variables(error_value, e_mapped_error_value, reset_threshold_);
+        context.update_variables(error_value, e_mapped_error_value, reset_value_);
     }
 
     [[nodiscard]]
