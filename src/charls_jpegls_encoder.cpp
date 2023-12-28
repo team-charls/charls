@@ -7,7 +7,7 @@
 
 #include "jpeg_stream_writer.h"
 #include "jpegls_preset_coding_parameters.h"
-#include "scan_codec_factory.h"
+#include "make_scan_codec.h"
 #include "scan_encoder.h"
 #include "util.h"
 
@@ -266,9 +266,9 @@ private:
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample,
                                             component_count};
 
-        const auto scan_codec{scan_codec_factory<scan_encoder>().create_codec(
+        const auto encoder{make_scan_codec<scan_encoder>(
             frame_info, {near_lossless_, 0, interleave_mode_, color_transformation_}, preset_coding_parameters_)};
-        const size_t bytes_written{scan_codec->encode_scan(source, stride, writer_.remaining_destination())};
+        const size_t bytes_written{encoder->encode_scan(source, stride, writer_.remaining_destination())};
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
         writer_.seek(bytes_written);

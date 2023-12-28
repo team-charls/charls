@@ -28,6 +28,7 @@
 # -clang-diagnostic-unsafe-buffer-usage => Rationale: Too many false warnings, access is verified with other tools.
 # -clang-analyzer-core.NonNullParamChecker => Rationale: cannot be effective disabled, already checked by other checkers.
 # -misc-non-private-member-variables-in-classes => Rationale: design can be ok, manual review is better
+# -misc-include-cleaner => complains about no direct includes
 # -modernize-use-trailing-return-type => Rationale: A style recommendation, this style is selected for CharLS
 # -readability-magic-numbers => Rationale: To critical rule, used numbers are logical
 # -readability-named-parameter => Rationale: to many non problematic warnings
@@ -81,6 +82,7 @@ Checks:          '*,
                   -clang-diagnostic-unsafe-buffer-usage,
                   -clang-analyzer-core.NonNullParamChecker,
                   -misc-non-private-member-variables-in-classes,
+                  -misc-include-cleaner,
                   -modernize-use-trailing-return-type,
                   -readability-magic-numbers,
                   -readability-named-parameter,
