@@ -146,9 +146,6 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
     case jpegls_errc::invalid_operation:
         return "Method call is invalid for the current state";
 
-    case jpegls_errc::bit_depth_for_transform_not_supported:
-        return "The bit depth for the transformation is not supported";
-
     case jpegls_errc::color_transform_not_supported:
         return "The color transform is not supported";
 
@@ -184,6 +181,9 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
 
     case jpegls_errc::invalid_parameter_jpegls_preset_parameters:
         return "Invalid JPEG-LS stream: JPEG-LS preset parameters segment contains invalid values";
+
+    case jpegls_errc::invalid_parameter_color_transformation:
+        return "Invalid JPEG-LS stream: Color transformation segment contains invalid values or doesn't match with frame info";
     }
 
     return "Unknown";

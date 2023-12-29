@@ -3,21 +3,16 @@
 
 #pragma once
 
-#include "coding_parameters.h"
 #include "util.h"
 
 #include <cstring>
 #include <vector>
 
 
-//
-// This file defines the ProcessLine base class, its derivatives and helper functions.
-// During coding/decoding, CharLS process one line at a time. The different ProcessLine implementations
+// During encoding, CharLS process one line at a time. The different implementations
 // convert the uncompressed format to and from the internal format for encoding.
 // Conversions include color transforms, line interleaved vs sample interleaved, masking out unused bits,
 // accounting for line padding etc.
-// This mechanism could be used to encode/decode images as they are received.
-//
 
 namespace charls {
 
@@ -118,32 +113,14 @@ void transform_line(triplet<PixelType>* destination, const triplet<PixelType>* s
 }
 
 
-template<typename Transform, typename PixelType>
+template<typename PixelType>
 void transform_line(quad<PixelType>* destination, const quad<PixelType>* source, const size_t pixel_count,
-                    Transform& transform, const uint32_t mask) noexcept
+                    const uint32_t mask) noexcept
 {
     for (size_t i{}; i < pixel_count; ++i)
     {
-        destination[i] = transform(source[i].v1 & mask, source[i].v2 & mask, source[i].v3 & mask, source[i].v4 & mask);
-    }
-}
-
-
-template<typename Transform, typename PixelType>
-void transform_triplet_to_line(const triplet<PixelType>* source, const size_t pixel_stride_in, PixelType* destination,
-                               const size_t pixel_stride, Transform& transform) noexcept
-{
-    const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
-    const triplet<PixelType>* type_buffer_in{source};
-
-    for (size_t i{}; i < pixel_count; ++i)
-    {
-        const triplet<PixelType> color{type_buffer_in[i]};
-        const triplet<PixelType> color_transformed{transform(color.v1, color.v2, color.v3)};
-
-        destination[i] = color_transformed.v1;
-        destination[i + pixel_stride] = color_transformed.v2;
-        destination[i + 2 * pixel_stride] = color_transformed.v3;
+        destination[i] = {static_cast<PixelType>(source[i].v1 & mask), static_cast<PixelType>(source[i].v2 & mask),
+                          static_cast<PixelType>(source[i].v3 & mask), static_cast<PixelType>(source[i].v4 & mask)};
     }
 }
 
@@ -167,41 +144,20 @@ void transform_triplet_to_line(const triplet<PixelType>* source, const size_t pi
 }
 
 
-template<typename TransformType, typename PixelType>
+template<typename PixelType>
 void transform_quad_to_line(const quad<PixelType>* source, const size_t pixel_stride_in, PixelType* destination,
-                            const size_t pixel_stride, TransformType& transform) noexcept
+                            const size_t pixel_stride, const uint32_t mask) noexcept
 {
     const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
 
     for (size_t i{}; i < pixel_count; ++i)
     {
-        const quad<PixelType> color{source[i]};
-        const quad<PixelType> color_transformed(transform(color.v1, color.v2, color.v3, color.v4));
+        const quad<PixelType>& color{source[i]};
 
-        destination[i] = color_transformed.v1;
-        destination[i + pixel_stride] = color_transformed.v2;
-        destination[i + 2 * pixel_stride] = color_transformed.v3;
-        destination[i + 3 * pixel_stride] = color_transformed.v4;
-    }
-}
-
-
-template<typename TransformType, typename PixelType>
-void transform_quad_to_line(const quad<PixelType>* source, const size_t pixel_stride_in, PixelType* destination,
-                            const size_t pixel_stride, TransformType& transform, const uint32_t mask) noexcept
-{
-    const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
-
-    for (size_t i{}; i < pixel_count; ++i)
-    {
-        const quad<PixelType> color{source[i]};
-        const quad<PixelType> color_transformed(
-            transform(color.v1 & mask, color.v2 & mask, color.v3 & mask, color.v4 & mask));
-
-        destination[i] = color_transformed.v1;
-        destination[i + pixel_stride] = color_transformed.v2;
-        destination[i + 2 * pixel_stride] = color_transformed.v3;
-        destination[i + 3 * pixel_stride] = color_transformed.v4;
+        destination[i] = color.v1 & mask;
+        destination[i + pixel_stride] = color.v2 & mask;
+        destination[i + 2 * pixel_stride] = color.v3 & mask;
+        destination[i + 3 * pixel_stride] = color.v4 & mask;
     }
 }
 
@@ -211,16 +167,12 @@ class process_encoded_transformed final : public process_encoded_line
 {
 public:
     process_encoded_transformed(const std::byte* const source, const size_t stride, const frame_info& info,
-                                const coding_parameters& parameters, TransformType transform) :
-        frame_info_{&info},
-        parameters_{&parameters},
-        stride_{stride},
-        temp_line_(static_cast<size_t>(info.component_count) * info.width),
-        buffer_(static_cast<size_t>(info.component_count) * info.width * sizeof(size_type)),
-        transform_{transform},
-        inverse_transform_{transform},
+                                const interleave_mode interleave_mode) noexcept :
         source_{source},
-        mask_{(1U << info.bits_per_sample) - 1U}
+        stride_{stride},
+        mask_{(1U << info.bits_per_sample) - 1U},
+        component_count_{info.component_count},
+        interleave_mode_{interleave_mode}
     {
     }
 
@@ -234,9 +186,9 @@ public:
     void encode_transform(const void* source, void* destination, const size_t pixel_count,
                           const size_t destination_stride) noexcept
     {
-        if (frame_info_->component_count == 3)
+        if (component_count_ == 3)
         {
-            if (parameters_->interleave_mode == interleave_mode::sample)
+            if (interleave_mode_ == interleave_mode::sample)
             {
                 transform_line(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source),
                                pixel_count, transform_, mask_);
@@ -247,17 +199,17 @@ public:
                                           static_cast<size_type*>(destination), destination_stride, transform_, mask_);
             }
         }
-        else if (frame_info_->component_count == 4)
+        else if (component_count_ == 4)
         {
-            if (parameters_->interleave_mode == interleave_mode::sample)
+            if (interleave_mode_ == interleave_mode::sample)
             {
                 transform_line(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source),
-                               pixel_count, transform_, mask_);
+                               pixel_count, mask_);
             }
-            else if (parameters_->interleave_mode == interleave_mode::line)
+            else if (interleave_mode_ == interleave_mode::line)
             {
                 transform_quad_to_line(static_cast<const quad<size_type>*>(source), pixel_count,
-                                       static_cast<size_type*>(destination), destination_stride, transform_, mask_);
+                                       static_cast<size_type*>(destination), destination_stride, mask_);
             }
         }
     }
@@ -265,15 +217,12 @@ public:
 private:
     using size_type = typename TransformType::size_type;
 
-    const frame_info* frame_info_;
-    const coding_parameters* parameters_;
-    size_t stride_;
-    std::vector<size_type> temp_line_;
-    std::vector<uint8_t> buffer_;
-    TransformType transform_;
-    typename TransformType::inverse inverse_transform_;
     const std::byte* source_;
+    size_t stride_;
     uint32_t mask_;
+    int32_t component_count_;
+    interleave_mode interleave_mode_;
+    TransformType transform_{};
 };
 
 } // namespace charls

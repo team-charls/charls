@@ -136,6 +136,7 @@ private:
 
     void skip_remaining_segment_data() noexcept;
     void check_frame_info() const;
+    void check_coding_parameters() const;
     void frame_info_height(uint32_t height);
     void frame_info_width(uint32_t width);
     void call_application_data_callback(jpeg_marker_code marker_code) const;

@@ -5,6 +5,7 @@
 
 #include "charls/version.h"
 
+#include "color_transform.h"
 #include "jpeg_stream_writer.h"
 #include "jpegls_preset_coding_parameters.h"
 #include "make_scan_codec.h"
@@ -181,14 +182,7 @@ struct charls_jpegls_encoder final
         }
 
         transition_to_tables_and_miscellaneous_state();
-
-        if (color_transformation_ != color_transformation::none)
-        {
-            if (UNLIKELY(frame_info_.bits_per_sample != 8 && frame_info_.bits_per_sample != 16))
-                throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
-
-            writer_.write_color_transform_segment(color_transformation_);
-        }
+        write_color_transform_segment();
 
         if (writer_.write_start_of_frame_segment(frame_info_))
         {
@@ -335,6 +329,17 @@ private:
         }
 
         state_ = state::tables_and_miscellaneous;
+    }
+
+    void write_color_transform_segment()
+    {
+        if (color_transformation_ == color_transformation::none)
+            return;
+
+        if (UNLIKELY(!color_transformation_possible(frame_info_)))
+            throw_jpegls_error(jpegls_errc::invalid_argument_color_transformation);
+
+        writer_.write_color_transform_segment(color_transformation_);
     }
 
     [[nodiscard]]

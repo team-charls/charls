@@ -43,41 +43,37 @@ private:
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
     std::unique_ptr<process_encoded_line> create_process_line(const std::byte* source, const size_t stride)
     {
-        if (!is_interleaved())
+        if (parameters().interleave_mode == interleave_mode::none)
         {
             if (frame_info().bits_per_sample == sizeof(sample_type) * 8)
             {
-                return std::make_unique<process_encoded_single_component>(source, stride,
-                                                                          sizeof(pixel_type));
+                return std::make_unique<process_encoded_single_component>(source, stride, sizeof(pixel_type));
             }
 
-            return std::make_unique<process_encoded_single_component_masked>(
-                source, stride, sizeof(pixel_type), frame_info().bits_per_sample);
+            return std::make_unique<process_encoded_single_component_masked>(source, stride, sizeof(pixel_type),
+                                                                             frame_info().bits_per_sample);
         }
 
-        if (parameters().transformation == color_transformation::none)
-            return std::make_unique<process_encoded_transformed<transform_none<sample_type>>>(
-                source, stride, frame_info(), parameters(), transform_none<sample_type>());
-
-        if (frame_info().bits_per_sample == sizeof(sample_type) * 8 && frame_info().component_count == 3)
+        switch (parameters().transformation)
         {
-            switch (parameters().transformation)
-            {
-            case color_transformation::hp1:
-                return std::make_unique<process_encoded_transformed<transform_hp1<sample_type>>>(
-                    source, stride, frame_info(), parameters(), transform_hp1<sample_type>());
-            case color_transformation::hp2:
-                return std::make_unique<process_encoded_transformed<transform_hp2<sample_type>>>(
-                    source, stride, frame_info(), parameters(), transform_hp2<sample_type>());
-            case color_transformation::hp3:
-                return std::make_unique<process_encoded_transformed<transform_hp3<sample_type>>>(
-                    source, stride, frame_info(), parameters(), transform_hp3<sample_type>());
-            default:
-                impl::throw_jpegls_error(jpegls_errc::color_transform_not_supported);
-            }
+        case color_transformation::none:
+            return std::make_unique<process_encoded_transformed<transform_none<sample_type>>>(source, stride, frame_info(),
+                                                                                              parameters().interleave_mode);
+        case color_transformation::hp1:
+            ASSERT(color_transformation_possible(frame_info()));
+            return std::make_unique<process_encoded_transformed<transform_hp1<sample_type>>>(source, stride, frame_info(),
+                                                                                             parameters().interleave_mode);
+        case color_transformation::hp2:
+            ASSERT(color_transformation_possible(frame_info()));
+            return std::make_unique<process_encoded_transformed<transform_hp2<sample_type>>>(source, stride, frame_info(),
+                                                                                             parameters().interleave_mode);
+        case color_transformation::hp3:
+            ASSERT(color_transformation_possible(frame_info()));
+            return std::make_unique<process_encoded_transformed<transform_hp3<sample_type>>>(source, stride, frame_info(),
+                                                                                             parameters().interleave_mode);
         }
 
-        impl::throw_jpegls_error(jpegls_errc::bit_depth_for_transform_not_supported);
+        unreachable();
     }
 
     [[nodiscard]]

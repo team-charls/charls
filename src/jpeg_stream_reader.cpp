@@ -3,6 +3,7 @@
 
 #include "jpeg_stream_reader.h"
 
+#include "color_transform.h"
 #include "constants.h"
 #include "jpeg_marker_code.h"
 #include "jpegls_preset_coding_parameters.h"
@@ -86,6 +87,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
         if (state_ == state::bit_stream_section)
         {
             check_frame_info();
+            check_coding_parameters();
             return;
         }
     }
@@ -628,7 +630,7 @@ void jpeg_stream_reader::try_read_hp_color_transform_segment()
         throw_jpegls_error(jpegls_errc::color_transform_not_supported);
 
     default:
-        throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+        throw_jpegls_error(jpegls_errc::invalid_parameter_color_transformation);
     }
 }
 
@@ -709,6 +711,13 @@ void jpeg_stream_reader::check_frame_info() const
 
     if (UNLIKELY(frame_info_.width < 1))
         throw_jpegls_error(jpegls_errc::invalid_parameter_width);
+}
+
+
+void jpeg_stream_reader::check_coding_parameters() const
+{
+    if (parameters_.transformation != color_transformation::none && !color_transformation_possible(frame_info_))
+        throw_jpegls_error(jpegls_errc::invalid_parameter_color_transformation);
 }
 
 

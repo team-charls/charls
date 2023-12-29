@@ -12,14 +12,9 @@
 #include <vector>
 
 
-//
-// This file defines the ProcessLine base class, its derivatives and helper functions.
-// During coding/decoding, CharLS process one line at a time. The different ProcessLine implementations
-// convert the uncompressed format to and from the internal format for encoding.
+// During decoding, CharLS process one line at a time.
 // Conversions include color transforms, line interleaved vs sample interleaved, masking out unused bits,
 // accounting for line padding etc.
-// This mechanism could be used to encode/decode images as they are received.
-//
 
 namespace charls {
 
@@ -62,7 +57,7 @@ private:
 
 template<typename Transform, typename PixelType>
 void transform_line(triplet<PixelType>* destination, const triplet<PixelType>* source, const size_t pixel_count,
-                    Transform& transform) noexcept
+                    const Transform& transform) noexcept
 {
     for (size_t i{}; i < pixel_count; ++i)
     {
@@ -71,41 +66,39 @@ void transform_line(triplet<PixelType>* destination, const triplet<PixelType>* s
 }
 
 
-template<typename Transform, typename PixelType>
-void transform_line(quad<PixelType>* destination, const quad<PixelType>* source, const size_t pixel_count,
-                    Transform& transform) noexcept
+template<typename PixelType>
+void transform_line(quad<PixelType>* destination, const quad<PixelType>* source, const size_t pixel_count) noexcept
 {
     for (size_t i{}; i < pixel_count; ++i)
     {
-        destination[i] = transform(source[i].v1, source[i].v2, source[i].v3, source[i].v4);
+        destination[i] = source[i];
     }
 }
 
 
-template<typename Transform, typename PixelType>
+template<typename PixelType>
 void transform_line_to_quad(const PixelType* source, const size_t pixel_stride_in, quad<PixelType>* destination,
-                            const size_t pixel_stride, Transform& transform) noexcept
+                            const size_t pixel_stride) noexcept
 {
     const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
 
     for (size_t i{}; i < pixel_count; ++i)
     {
-        destination[i] = transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in],
-                                   source[i + 3 * pixel_stride_in]);
+        destination[i] = {source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in],
+                          source[i + 3 * pixel_stride_in]};
     }
 }
 
 
 template<typename Transform, typename PixelType>
 void transform_line_to_triplet(const PixelType* source, const size_t pixel_stride_in, triplet<PixelType>* destination,
-                               const size_t pixel_stride, Transform& transform) noexcept
+                               const size_t pixel_stride, const Transform& transform) noexcept
 {
     const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
-    triplet<PixelType>* type_buffer = destination;
 
     for (size_t i{}; i < pixel_count; ++i)
     {
-        type_buffer[i] = transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in]);
+        destination[i] = transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in]);
     }
 }
 
@@ -114,17 +107,9 @@ template<typename TransformType>
 class process_decoded_transformed final : public process_decoded_line
 {
 public:
-    process_decoded_transformed(std::byte* destination, const size_t stride, const frame_info& info,
-                                const coding_parameters& parameters, TransformType transform) :
-        frame_info_{&info},
-        parameters_{&parameters},
-        stride_{stride},
-        temp_line_(static_cast<size_t>(info.component_count) * info.width),
-        buffer_(static_cast<size_t>(info.component_count) * info.width * sizeof(size_type)),
-        transform_{transform},
-        inverse_transform_{transform},
-        destination_{destination},
-        mask_{(1U << info.bits_per_sample) - 1U}
+    process_decoded_transformed(std::byte* destination, const size_t stride, const int32_t component_count,
+                                const interleave_mode interleave_mode) noexcept :
+        destination_{destination}, stride_{stride}, component_count_{component_count}, interleave_mode_{interleave_mode}
     {
     }
 
@@ -136,9 +121,9 @@ public:
 
     void decode_transform(const void* source, void* destination, const size_t pixel_count, const size_t byte_stride) noexcept
     {
-        if (frame_info_->component_count == 3)
+        if (component_count_ == 3)
         {
-            if (parameters_->interleave_mode == interleave_mode::sample)
+            if (interleave_mode_ == interleave_mode::sample)
             {
                 transform_line(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source),
                                pixel_count, inverse_transform_);
@@ -149,17 +134,17 @@ public:
                                           static_cast<triplet<size_type>*>(destination), pixel_count, inverse_transform_);
             }
         }
-        else if (frame_info_->component_count == 4)
+        else if (component_count_ == 4)
         {
-            if (parameters_->interleave_mode == interleave_mode::sample)
+            if (interleave_mode_ == interleave_mode::sample)
             {
                 transform_line(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source),
-                               pixel_count, inverse_transform_);
+                               pixel_count);
             }
-            else if (parameters_->interleave_mode == interleave_mode::line)
+            else if (interleave_mode_ == interleave_mode::line)
             {
                 transform_line_to_quad(static_cast<const size_type*>(source), byte_stride,
-                                       static_cast<quad<size_type>*>(destination), pixel_count, inverse_transform_);
+                                       static_cast<quad<size_type>*>(destination), pixel_count);
             }
         }
     }
@@ -167,15 +152,11 @@ public:
 private:
     using size_type = typename TransformType::size_type;
 
-    const frame_info* frame_info_;
-    const coding_parameters* parameters_;
-    size_t stride_;
-    std::vector<size_type> temp_line_;
-    std::vector<uint8_t> buffer_;
-    TransformType transform_;
-    typename TransformType::inverse inverse_transform_;
     std::byte* destination_;
-    uint32_t mask_;
+    size_t stride_;
+    int32_t component_count_;
+    interleave_mode interleave_mode_;
+    typename TransformType::inverse inverse_transform_{};
 };
 
 } // namespace charls

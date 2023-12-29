@@ -71,10 +71,7 @@ protected:
     void append_to_bit_stream(const uint32_t bits, const int32_t bit_count)
     {
         ASSERT(0 <= bit_count && bit_count < 32);
-#ifndef NDEBUG
-        const uint32_t mask{(1U << bit_count) - 1U};
-        ASSERT((bits | mask) == mask); // Not used bits must be set to zero.
-#endif
+        ASSERT((bits | ((1U << bit_count) - 1U)) == ((1U << bit_count) - 1U)); // Not used bits must be set to zero.
 
         free_bit_count_ -= bit_count;
         if (free_bit_count_ >= 0)

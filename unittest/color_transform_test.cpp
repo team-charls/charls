@@ -36,7 +36,7 @@ public:
                 {
                     constexpr transform_hp1<uint8_t> transform{};
                     const auto sample{transform(red, green, blue)};
-                    const transform_hp1<uint8_t>::inverse inverse(transform);
+                    constexpr transform_hp1<uint8_t>::inverse inverse{};
 
                     const auto round_trip{inverse(sample.v1, sample.v2, sample.v3)};
 
@@ -63,7 +63,7 @@ public:
                 {
                     constexpr transform_hp2<uint8_t> transform{};
                     const auto sample{transform(red, green, blue)};
-                    const transform_hp2<uint8_t>::inverse inverse(transform);
+                    constexpr transform_hp2<uint8_t>::inverse inverse{};
 
                     const auto round_trip{inverse(sample.v1, sample.v2, sample.v3)};
 
@@ -90,7 +90,7 @@ public:
                 {
                     constexpr transform_hp3<uint8_t> transformation{};
                     const auto sample{transformation(red, green, blue)};
-                    const transform_hp3<uint8_t>::inverse inverse(transformation);
+                    constexpr transform_hp3<uint8_t>::inverse inverse{};
                     const auto round_trip{inverse(sample.v1, sample.v2, sample.v3)};
 
                     Assert::AreEqual(static_cast<uint8_t>(red), round_trip.v1);
@@ -105,12 +105,10 @@ public:
     {
         const auto jpegls_data{read_file("land10-10bit-rgb-hp3-invalid.jls")};
 
-        const jpegls_decoder decoder{jpegls_data, true};
+        jpegls_decoder decoder{jpegls_data, false};
 
-        vector<byte> destination(decoder.destination_size());
-
-        assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported,
-                                [&decoder, &destination] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_color_transformation,
+                                [&decoder] { decoder.read_header(); });
     }
 
     TEST_METHOD(encode_non_8_or_16_bit_that_is_not_supported_throws) // NOLINT
@@ -121,7 +119,19 @@ public:
         vector<byte> destination(40);
         encoder.destination(destination).frame_info(frame_info).color_transformation(color_transformation::hp3);
         const vector<byte> source(20);
-        assert_expect_exception(jpegls_errc::bit_depth_for_transform_not_supported,
+        assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
+                                [&encoder, &source] { std::ignore = encoder.encode(source); });
+    }
+
+    TEST_METHOD(encode_non_3_components_that_is_not_supported_throws) // NOLINT
+    {
+        constexpr frame_info frame_info{2, 1, 8, 4};
+        jpegls_encoder encoder;
+
+        vector<byte> destination(40);
+        encoder.destination(destination).frame_info(frame_info).color_transformation(color_transformation::hp3);
+        const vector<byte> source(20);
+        assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
                                 [&encoder, &source] { std::ignore = encoder.encode(source); });
     }
 };

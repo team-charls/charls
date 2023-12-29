@@ -7,6 +7,7 @@
 #include "context_run_mode.h"
 #include "jpegls_algorithm.h"
 #include "quantization_lut.h"
+#include "coding_parameters.h"
 
 #include <array>
 

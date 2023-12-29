@@ -698,7 +698,7 @@ public:
         array<byte, 10> destination;
         encoder.destination(destination);
 
-        const array application_data{byte{1}, byte{2}, byte{3}, byte{4}};
+        constexpr array application_data{byte{1}, byte{2}, byte{3}, byte{4}};
         encoder.write_application_data(1, application_data.data(), application_data.size());
 
         Assert::AreEqual(size_t{10}, encoder.bytes_written());
@@ -771,7 +771,7 @@ public:
         array<byte, 14> destination;
         encoder.destination(destination);
 
-        const array application_data{byte{1}, byte{2}, byte{3}, byte{4}};
+        constexpr array application_data{byte{1}, byte{2}, byte{3}, byte{4}};
         encoder.write_application_data(0, application_data.data(), application_data.size());
         encoder.write_application_data(8, nullptr, 0);
 
@@ -886,7 +886,7 @@ public:
 
     TEST_METHOD(set_preset_coding_parameters_bad_values_throws) // NOLINT
     {
-        const array source{byte{0}, byte{1}, byte{1}, byte{1}, byte{0}};
+        constexpr array source{byte{0}, byte{1}, byte{1}, byte{1}, byte{0}};
         constexpr frame_info frame_info{5, 1, 8, 1};
         jpegls_encoder encoder;
 
@@ -940,7 +940,7 @@ public:
 
     TEST_METHOD(encode_with_spiff_header) // NOLINT
     {
-        const array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}};
+        constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}};
         constexpr frame_info frame_info{5, 1, 8, 1};
 
         jpegls_encoder encoder;
@@ -958,13 +958,13 @@ public:
 
     TEST_METHOD(encode_with_color_transformation) // NOLINT
     {
-        const array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
+        constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{2, 1, 8, 3};
 
         jpegls_encoder encoder;
-        encoder.frame_info(frame_info);
+        encoder.frame_info(frame_info).color_transformation(color_transformation::hp1);
         vector<byte> destination(encoder.estimated_destination_size());
-        encoder.destination(destination).color_transformation(color_transformation::hp1);
+        encoder.destination(destination);
 
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
@@ -975,7 +975,7 @@ public:
 
     TEST_METHOD(encode_16_bit) // NOLINT
     {
-        const array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
+        constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{3, 1, 16, 1};
 
         jpegls_encoder encoder;
@@ -1002,9 +1002,9 @@ public:
 
     TEST_METHOD(encode_with_stride_interleave_none_8_bit) // NOLINT
     {
-        const array<byte, 30> source{byte{100}, byte{100}, byte{100}, byte{0},   byte{0},   byte{0},   byte{0},  byte{0},
-                                     byte{0},   byte{0},   byte{150}, byte{150}, byte{150}, byte{0},   byte{0},  byte{0},
-                                     byte{0},   byte{0},   byte{0},   byte{0},   byte{200}, byte{200}, byte{200}};
+        constexpr array<byte, 30> source{byte{100}, byte{100}, byte{100}, byte{0},   byte{0},   byte{0},   byte{0},  byte{0},
+                                         byte{0},   byte{0},   byte{150}, byte{150}, byte{150}, byte{0},   byte{0},  byte{0},
+                                         byte{0},   byte{0},   byte{0},   byte{0},   byte{200}, byte{200}, byte{200}};
         constexpr frame_info frame_info{3, 1, 8, 3};
 
         jpegls_encoder encoder;
@@ -1015,14 +1015,14 @@ public:
         const size_t bytes_written{encoder.encode(source, 10)};
         destination.resize(bytes_written);
 
-        const array expected{byte{100}, byte{100}, byte{100}, byte{150}, byte{150},
-                             byte{150}, byte{200}, byte{200}, byte{200}};
+        constexpr array expected{byte{100}, byte{100}, byte{100}, byte{150}, byte{150},
+                                 byte{150}, byte{200}, byte{200}, byte{200}};
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
     }
 
     TEST_METHOD(encode_with_stride_interleave_none_8_bit_small_image) // NOLINT
     {
-        const array source{byte{100}, byte{99}, byte{0}, byte{0}, byte{101}, byte{98}};
+        constexpr array source{byte{100}, byte{99}, byte{0}, byte{0}, byte{101}, byte{98}};
         constexpr frame_info frame_info{2, 2, 8, 1};
 
         jpegls_encoder encoder;
@@ -1033,14 +1033,14 @@ public:
         const size_t bytes_written{encoder.encode(source, 4)};
         destination.resize(bytes_written);
 
-        const array expected{byte{100}, byte{99}, byte{101}, byte{98}};
+        constexpr array expected{byte{100}, byte{99}, byte{101}, byte{98}};
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
     }
 
     TEST_METHOD(encode_with_stride_interleave_none_16_bit) // NOLINT
     {
-        const array<uint16_t, 30> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
-                                         150, 0,   0,   0, 0, 0, 0, 0, 200, 200, 200};
+        constexpr array<uint16_t, 30> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
+                                             150, 0,   0,   0, 0, 0, 0, 0, 200, 200, 200};
         constexpr frame_info frame_info{3, 1, 16, 3};
 
         jpegls_encoder encoder;
@@ -1051,15 +1051,15 @@ public:
         const size_t bytes_written{encoder.encode(source, 10 * sizeof(uint16_t))};
         destination.resize(bytes_written);
 
-        const array<uint16_t, 9> expected{100, 100, 100, 150, 150, 150, 200, 200, 200};
+        constexpr array<uint16_t, 9> expected{100, 100, 100, 150, 150, 150, 200, 200, 200};
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * sizeof(uint16_t),
                          interleave_mode::none);
     }
 
     TEST_METHOD(encode_with_stride_interleave_sample_8_bit) // NOLINT
     {
-        const array source{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
-                           byte{200}, byte{100}, byte{150}, byte{200}, byte{0}};
+        constexpr array source{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
+                               byte{200}, byte{100}, byte{150}, byte{200}, byte{0}};
         constexpr frame_info frame_info{3, 1, 8, 3};
 
         jpegls_encoder encoder;
@@ -1070,14 +1070,14 @@ public:
         const size_t bytes_written{encoder.encode(source, 10)};
         destination.resize(bytes_written);
 
-        const array expected{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
-                             byte{200}, byte{100}, byte{150}, byte{200}};
+        constexpr array expected{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
+                                 byte{200}, byte{100}, byte{150}, byte{200}};
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::sample);
     }
 
     TEST_METHOD(encode_with_stride_interleave_sample_16_bit) // NOLINT
     {
-        const array<uint16_t, 10> source{100, 150, 200, 100, 150, 200, 100, 150, 200, 0};
+        constexpr array<uint16_t, 10> source{100, 150, 200, 100, 150, 200, 100, 150, 200, 0};
         constexpr frame_info frame_info{3, 1, 16, 3};
 
         jpegls_encoder encoder;
@@ -1088,16 +1088,16 @@ public:
         const size_t bytes_written{encoder.encode(source, 10 * sizeof(uint16_t))};
         destination.resize(bytes_written);
 
-        const array<uint16_t, 9> expected{100, 150, 200, 100, 150, 200, 100, 150, 200};
+        constexpr array<uint16_t, 9> expected{100, 150, 200, 100, 150, 200, 100, 150, 200};
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * sizeof(uint16_t),
                          interleave_mode::sample);
     }
 
     TEST_METHOD(encode_with_bad_stride_interleave_none_throws) // NOLINT
     {
-        const array<byte, 21> source{byte{100}, byte{100}, byte{100}, byte{0},   byte{0},   byte{0},   byte{0},
-                                     byte{0},   byte{0},   byte{0},   byte{150}, byte{150}, byte{150}, byte{0},
-                                     byte{0},   byte{0},   byte{0},   byte{0},   byte{0},   byte{0},   byte{200}};
+        constexpr array<byte, 21> source{byte{100}, byte{100}, byte{100}, byte{0},   byte{0},   byte{0},   byte{0},
+                                         byte{0},   byte{0},   byte{0},   byte{150}, byte{150}, byte{150}, byte{0},
+                                         byte{0},   byte{0},   byte{0},   byte{0},   byte{0},   byte{0},   byte{200}};
         constexpr frame_info frame_info{2, 2, 8, 3};
 
         jpegls_encoder encoder;
@@ -1111,8 +1111,8 @@ public:
 
     TEST_METHOD(encode_with_bad_stride_interleave_sample_throws) // NOLINT
     {
-        const array<byte, 12> source{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
-                                     byte{200}, byte{100}, byte{150}, byte{200}};
+        constexpr array<byte, 12> source{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
+                                         byte{200}, byte{100}, byte{150}, byte{200}};
         constexpr frame_info frame_info{2, 2, 8, 3};
 
         jpegls_encoder encoder;
@@ -1126,9 +1126,9 @@ public:
 
     TEST_METHOD(encode_with_too_small_stride_interleave_none_throws) // NOLINT
     {
-        const array source{byte{100}, byte{100}, byte{100}, byte{},    byte{},    byte{},    byte{},
-                           byte{},    byte{},    byte{},    byte{150}, byte{150}, byte{150}, byte{},
-                           byte{},    byte{},    byte{},    byte{},    byte{},    byte{},    byte{200}};
+        constexpr array source{byte{100}, byte{100}, byte{100}, byte{},    byte{},    byte{},    byte{},
+                               byte{},    byte{},    byte{},    byte{150}, byte{150}, byte{150}, byte{},
+                               byte{},    byte{},    byte{},    byte{},    byte{},    byte{},    byte{200}};
         constexpr frame_info frame_info{2, 1, 8, 3};
 
         jpegls_encoder encoder;
@@ -1142,8 +1142,8 @@ public:
 
     TEST_METHOD(encode_with_too_small_stride_interleave_sample_throws) // NOLINT
     {
-        const array<byte, 12> source{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
-                                     byte{200}, byte{100}, byte{150}, byte{200}};
+        constexpr array<byte, 12> source{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
+                                         byte{200}, byte{100}, byte{150}, byte{200}};
         constexpr frame_info frame_info{2, 1, 8, 3};
 
         jpegls_encoder encoder;
@@ -1338,7 +1338,7 @@ public:
 
     TEST_METHOD(rewind) // NOLINT
     {
-        const array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
+        constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{3, 1, 16, 1};
 
         jpegls_encoder encoder;
@@ -1363,7 +1363,7 @@ public:
 
     TEST_METHOD(rewind_before_destination) // NOLINT
     {
-        const array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
+        constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{3, 1, 16, 1};
 
         jpegls_encoder encoder;
@@ -1671,7 +1671,7 @@ private:
 
     static void encode_with_custom_preset_coding_parameters(const jpegls_pc_parameters& pc_parameters)
     {
-        const array source{byte{0}, byte{1}, byte{1}, byte{1}, byte{0}};
+        constexpr array source{byte{0}, byte{1}, byte{1}, byte{1}, byte{0}};
         constexpr frame_info frame_info{5, 1, 8, 1};
 
         jpegls_encoder encoder;
