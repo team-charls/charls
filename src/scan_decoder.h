@@ -9,6 +9,7 @@
 #include "process_decoded_line.h"
 #include "scan_codec.h"
 #include "util.h"
+#include "span.h"
 
 #include <cassert>
 #include <memory>

@@ -6,7 +6,6 @@
 #include "util.h"
 
 #include <cstring>
-#include <vector>
 
 
 // During encoding, CharLS process one line at a time. The different implementations
@@ -34,8 +33,9 @@ protected:
 class process_encoded_single_component final : public process_encoded_line
 {
 public:
-    process_encoded_single_component(const std::byte* source, const size_t stride, const size_t bytes_per_pixel) noexcept :
-        source_{source}, bytes_per_pixel_{bytes_per_pixel}, stride_{stride}
+    process_encoded_single_component(const std::byte* source, const size_t source_stride,
+                                     const size_t bytes_per_pixel) noexcept :
+        source_{source}, source_stride_{source_stride}, bytes_per_pixel_{bytes_per_pixel}
     {
         ASSERT(bytes_per_pixel == sizeof(std::byte) || bytes_per_pixel == sizeof(uint16_t));
     }
@@ -44,24 +44,24 @@ public:
                             size_t /* destination_stride */) noexcept(false) override
     {
         memcpy(destination, source_, pixel_count * bytes_per_pixel_);
-        source_ += stride_;
+        source_ += source_stride_;
     }
 
 private:
     const std::byte* source_;
+    size_t source_stride_;
     size_t bytes_per_pixel_;
-    size_t stride_;
 };
 
 
 class process_encoded_single_component_masked final : public process_encoded_line
 {
 public:
-    process_encoded_single_component_masked(const void* source, const size_t stride, const size_t bytes_per_pixel,
+    process_encoded_single_component_masked(const void* source, const size_t source_stride, const size_t bytes_per_pixel,
                                             const uint32_t bits_per_pixel) noexcept :
         source_{source},
+        source_stride_{source_stride},
         bytes_per_pixel_{bytes_per_pixel},
-        stride_{stride},
         mask_{(1U << bits_per_pixel) - 1U},
         single_byte_pixel_{bytes_per_pixel_ == sizeof(std::byte)}
     {
@@ -90,21 +90,21 @@ public:
             }
         }
 
-        source_ = static_cast<const std::byte*>(source_) + stride_;
+        source_ = static_cast<const std::byte*>(source_) + source_stride_;
     }
 
 private:
     const void* source_;
+    size_t source_stride_;
     size_t bytes_per_pixel_;
-    size_t stride_;
     uint32_t mask_;
     bool single_byte_pixel_;
 };
 
 
-template<typename Transform, typename PixelType>
-void transform_line(triplet<PixelType>* destination, const triplet<PixelType>* source, const size_t pixel_count,
-                    Transform& transform, const uint32_t mask) noexcept
+template<typename TransformType, typename SampleType>
+void transform_line(triplet<SampleType>* destination, const triplet<SampleType>* source, const size_t pixel_count,
+                    const TransformType& transform, const uint32_t mask) noexcept
 {
     for (size_t i{}; i < pixel_count; ++i)
     {
@@ -113,29 +113,28 @@ void transform_line(triplet<PixelType>* destination, const triplet<PixelType>* s
 }
 
 
-template<typename PixelType>
-void transform_line(quad<PixelType>* destination, const quad<PixelType>* source, const size_t pixel_count,
+template<typename SampleType>
+void transform_line(quad<SampleType>* destination, const quad<SampleType>* source, const size_t pixel_count,
                     const uint32_t mask) noexcept
 {
     for (size_t i{}; i < pixel_count; ++i)
     {
-        destination[i] = {static_cast<PixelType>(source[i].v1 & mask), static_cast<PixelType>(source[i].v2 & mask),
-                          static_cast<PixelType>(source[i].v3 & mask), static_cast<PixelType>(source[i].v4 & mask)};
+        destination[i] = {static_cast<SampleType>(source[i].v1 & mask), static_cast<SampleType>(source[i].v2 & mask),
+                          static_cast<SampleType>(source[i].v3 & mask), static_cast<SampleType>(source[i].v4 & mask)};
     }
 }
 
 
-template<typename Transform, typename PixelType>
-void transform_triplet_to_line(const triplet<PixelType>* source, const size_t pixel_stride_in, PixelType* destination,
-                               const size_t pixel_stride, Transform& transform, const uint32_t mask) noexcept
+template<typename TransformType, typename SampleType>
+void transform_triplet_to_line(const triplet<SampleType>* source, const size_t pixel_stride_in, SampleType* destination,
+                               const size_t pixel_stride, const TransformType& transform, const uint32_t mask) noexcept
 {
     const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
-    const triplet<PixelType>* type_buffer_in{source};
 
     for (size_t i{}; i < pixel_count; ++i)
     {
-        const triplet<PixelType> color{type_buffer_in[i]};
-        const triplet<PixelType> color_transformed{transform(color.v1 & mask, color.v2 & mask, color.v3 & mask)};
+        const triplet<SampleType> color{source[i]};
+        const triplet<SampleType> color_transformed{transform(color.v1 & mask, color.v2 & mask, color.v3 & mask)};
 
         destination[i] = color_transformed.v1;
         destination[i + pixel_stride] = color_transformed.v2;
@@ -144,20 +143,20 @@ void transform_triplet_to_line(const triplet<PixelType>* source, const size_t pi
 }
 
 
-template<typename PixelType>
-void transform_quad_to_line(const quad<PixelType>* source, const size_t pixel_stride_in, PixelType* destination,
+template<typename SampleType>
+void transform_quad_to_line(const quad<SampleType>* source, const size_t pixel_stride_in, SampleType* destination,
                             const size_t pixel_stride, const uint32_t mask) noexcept
 {
     const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
 
     for (size_t i{}; i < pixel_count; ++i)
     {
-        const quad<PixelType>& color{source[i]};
+        const quad<SampleType>& color{source[i]};
 
-        destination[i] = static_cast<PixelType>(color.v1 & mask);
-        destination[i + pixel_stride] = static_cast<PixelType>(color.v2 & mask);
-        destination[i + 2 * pixel_stride] = static_cast<PixelType>(color.v3 & mask);
-        destination[i + 3 * pixel_stride] = static_cast<PixelType>(color.v4 & mask);
+        destination[i] = static_cast<SampleType>(color.v1 & mask);
+        destination[i + pixel_stride] = static_cast<SampleType>(color.v2 & mask);
+        destination[i + 2 * pixel_stride] = static_cast<SampleType>(color.v3 & mask);
+        destination[i + 3 * pixel_stride] = static_cast<SampleType>(color.v4 & mask);
     }
 }
 
@@ -166,12 +165,12 @@ template<typename TransformType>
 class process_encoded_transformed final : public process_encoded_line
 {
 public:
-    process_encoded_transformed(const std::byte* const source, const size_t stride, const frame_info& info,
+    process_encoded_transformed(const std::byte* const source, const size_t stride, const frame_info& frame,
                                 const interleave_mode interleave_mode) noexcept :
         source_{source},
         stride_{stride},
-        mask_{(1U << info.bits_per_sample) - 1U},
-        component_count_{info.component_count},
+        mask_{(1U << frame.bits_per_sample) - 1U},
+        component_count_{frame.component_count},
         interleave_mode_{interleave_mode}
     {
     }
@@ -190,32 +189,32 @@ public:
         {
             if (interleave_mode_ == interleave_mode::sample)
             {
-                transform_line(static_cast<triplet<size_type>*>(destination), static_cast<const triplet<size_type>*>(source),
-                               pixel_count, transform_, mask_);
+                transform_line(static_cast<triplet<sample_type>*>(destination),
+                               static_cast<const triplet<sample_type>*>(source), pixel_count, transform_, mask_);
             }
             else
             {
-                transform_triplet_to_line(static_cast<const triplet<size_type>*>(source), pixel_count,
-                                          static_cast<size_type*>(destination), destination_stride, transform_, mask_);
+                transform_triplet_to_line(static_cast<const triplet<sample_type>*>(source), pixel_count,
+                                          static_cast<sample_type*>(destination), destination_stride, transform_, mask_);
             }
         }
         else if (component_count_ == 4)
         {
             if (interleave_mode_ == interleave_mode::sample)
             {
-                transform_line(static_cast<quad<size_type>*>(destination), static_cast<const quad<size_type>*>(source),
+                transform_line(static_cast<quad<sample_type>*>(destination), static_cast<const quad<sample_type>*>(source),
                                pixel_count, mask_);
             }
             else if (interleave_mode_ == interleave_mode::line)
             {
-                transform_quad_to_line(static_cast<const quad<size_type>*>(source), pixel_count,
-                                       static_cast<size_type*>(destination), destination_stride, mask_);
+                transform_quad_to_line(static_cast<const quad<sample_type>*>(source), pixel_count,
+                                       static_cast<sample_type*>(destination), destination_stride, mask_);
             }
         }
     }
 
 private:
-    using size_type = typename TransformType::size_type;
+    using sample_type = typename TransformType::sample_type;
 
     const std::byte* source_;
     size_t stride_;

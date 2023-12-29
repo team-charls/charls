@@ -69,10 +69,10 @@ struct lossless_traits_impl
 };
 
 
-template<typename PixelType, int32_t BitsPerPixel>
-struct lossless_traits final : lossless_traits_impl<PixelType, BitsPerPixel>
+template<typename SampleType, int32_t BitsPerPixel>
+struct lossless_traits final : lossless_traits_impl<SampleType, BitsPerPixel>
 {
-    using pixel_type = PixelType;
+   using pixel_type = SampleType;
 };
 
 
@@ -122,48 +122,48 @@ struct lossless_traits<uint16_t, 16> final : lossless_traits_impl<uint16_t, 16>
 };
 
 
-template<typename PixelType, int32_t BitsPerPixel>
-struct lossless_traits<triplet<PixelType>, BitsPerPixel> final : lossless_traits_impl<PixelType, BitsPerPixel>
+template<typename SampleType, int32_t BitsPerPixel>
+struct lossless_traits<triplet<SampleType>, BitsPerPixel> final : lossless_traits_impl<SampleType, BitsPerPixel>
 {
-    using pixel_type = triplet<PixelType>;
+    using pixel_type = triplet<SampleType>;
 
     FORCE_INLINE constexpr static bool is_near(const int32_t lhs, const int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
 
-    FORCE_INLINE constexpr static bool is_near(pixel_type lhs, pixel_type rhs) noexcept
+    FORCE_INLINE constexpr static bool is_near(const pixel_type lhs, const pixel_type rhs) noexcept
     {
         return lhs == rhs;
     }
 
-    FORCE_INLINE static PixelType compute_reconstructed_sample(const int32_t predicted_value,
+    FORCE_INLINE static SampleType compute_reconstructed_sample(const int32_t predicted_value,
                                                                const int32_t error_value) noexcept
     {
-        return static_cast<PixelType>(predicted_value + error_value);
+        return static_cast<SampleType>(predicted_value + error_value);
     }
 };
 
 
-template<typename PixelType, int32_t BitsPerPixel>
-struct lossless_traits<quad<PixelType>, BitsPerPixel> final : lossless_traits_impl<PixelType, BitsPerPixel>
+template<typename SampleType, int32_t BitsPerPixel>
+struct lossless_traits<quad<SampleType>, BitsPerPixel> final : lossless_traits_impl<SampleType, BitsPerPixel>
 {
-    using pixel_type = quad<PixelType>;
+    using pixel_type = quad<SampleType>;
 
     FORCE_INLINE constexpr static bool is_near(const int32_t lhs, const int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
 
-    FORCE_INLINE constexpr static bool is_near(pixel_type lhs, pixel_type rhs) noexcept
+    FORCE_INLINE constexpr static bool is_near(const pixel_type lhs, const pixel_type rhs) noexcept
     {
         return lhs == rhs;
     }
 
-    FORCE_INLINE static PixelType compute_reconstructed_sample(const int32_t predicted_value,
+    FORCE_INLINE static SampleType compute_reconstructed_sample(const int32_t predicted_value,
                                                                const int32_t error_value) noexcept
     {
-        return static_cast<PixelType>(predicted_value + error_value);
+        return static_cast<SampleType>(predicted_value + error_value);
     }
 };
 
