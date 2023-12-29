@@ -154,10 +154,10 @@ void transform_quad_to_line(const quad<PixelType>* source, const size_t pixel_st
     {
         const quad<PixelType>& color{source[i]};
 
-        destination[i] = color.v1 & mask;
-        destination[i + pixel_stride] = color.v2 & mask;
-        destination[i + 2 * pixel_stride] = color.v3 & mask;
-        destination[i + 3 * pixel_stride] = color.v4 & mask;
+        destination[i] = static_cast<PixelType>(color.v1 & mask);
+        destination[i + pixel_stride] = static_cast<PixelType>(color.v2 & mask);
+        destination[i + 2 * pixel_stride] = static_cast<PixelType>(color.v3 & mask);
+        destination[i + 3 * pixel_stride] = static_cast<PixelType>(color.v4 & mask);
     }
 }
 

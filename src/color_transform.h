@@ -7,9 +7,9 @@
 
 namespace charls {
 
-inline bool color_transformation_possible(const frame_info& frame_info) noexcept
+inline bool color_transformation_possible(const frame_info& frame) noexcept
 {
-    return frame_info.component_count == 3 && (frame_info.bits_per_sample == 8 || frame_info.bits_per_sample == 16);
+    return frame.component_count == 3 && (frame.bits_per_sample == 8 || frame.bits_per_sample == 16);
 }
 
 // This file defines simple classes that define (lossless) color transforms.
