@@ -44,11 +44,11 @@ void jpeg_stream_writer::write_spiff_header_segment(const spiff_header& header)
     ASSERT(header.height > 0);
     ASSERT(header.width > 0);
 
-    static constexpr array<uint8_t, 6> spiff_magic_id{{'S', 'P', 'I', 'F', 'F', '\0'}};
+    static constexpr array spiff_magic_id{byte{'S'}, byte{'P'}, byte{'I'}, byte{'F'}, byte{'F'}, byte{'\0'}};
 
     // Create a JPEG APP8 segment in Still Picture Interchange File Format (SPIFF), v2.0
     write_segment_header(jpeg_marker_code::application_data8, 30);
-    write_bytes(spiff_magic_id.data(), spiff_magic_id.size());
+    write_bytes(spiff_magic_id);
     write_uint8(spiff_major_revision_number);
     write_uint8(spiff_minor_revision_number);
     write_uint8(to_underlying_type(header.profile_id));
@@ -64,12 +64,12 @@ void jpeg_stream_writer::write_spiff_header_segment(const spiff_header& header)
 }
 
 
-USE_DECL_ANNOTATIONS void jpeg_stream_writer::write_spiff_directory_entry(const uint32_t entry_tag, const void* entry_data,
-                                                                          const size_t entry_data_size_bytes)
+USE_DECL_ANNOTATIONS void jpeg_stream_writer::write_spiff_directory_entry(const uint32_t entry_tag,
+                                                                          const span<const byte> entry_data)
 {
-    write_segment_header(jpeg_marker_code::application_data8, sizeof(uint32_t) + entry_data_size_bytes);
+    write_segment_header(jpeg_marker_code::application_data8, sizeof(uint32_t) + entry_data.size());
     write_uint32(entry_tag);
-    write_bytes(entry_data, entry_data_size_bytes);
+    write_bytes(entry_data);
 }
 
 
@@ -78,11 +78,10 @@ void jpeg_stream_writer::write_spiff_end_of_directory_entry()
     // Note: ISO/IEC 10918-3, Annex F.2.2.3 documents that the EOD entry segment should have a length of 8
     // but only 6 data bytes. This approach allows to wrap existing bit streams\encoders with a SPIFF header.
     // In this implementation the SOI marker is added as data bytes to simplify the design.
-    static constexpr array<uint8_t, 6> spiff_end_of_directory{
-        {0, 0, 0, spiff_end_of_directory_entry_type, 0xFF, to_underlying_type(jpeg_marker_code::start_of_image)}};
-
-    write_segment_header(jpeg_marker_code::application_data8, spiff_end_of_directory.size());
-    write_bytes(spiff_end_of_directory.data(), spiff_end_of_directory.size());
+    static constexpr array spiff_end_of_directory{byte{0},    byte{0},
+                                                  byte{0},    byte{spiff_end_of_directory_entry_type},
+                                                  byte{0xFF}, byte{to_underlying_type(jpeg_marker_code::start_of_image)}};
+    write_segment(jpeg_marker_code::application_data8, spiff_end_of_directory);
 }
 
 
@@ -122,17 +121,14 @@ bool jpeg_stream_writer::write_start_of_frame_segment(const frame_info& frame)
 
 void jpeg_stream_writer::write_color_transform_segment(const color_transformation transformation)
 {
-    const array<uint8_t, 5> segment{'m', 'r', 'f', 'x', static_cast<uint8_t>(transformation)};
-
-    write_segment_header(jpeg_marker_code::application_data8, segment.size());
-    write_bytes(segment.data(), segment.size());
+    const array segment{byte{'m'}, byte{'r'}, byte{'f'}, byte{'x'}, static_cast<byte>(transformation)};
+    write_segment(jpeg_marker_code::application_data8, segment);
 }
 
 
 void jpeg_stream_writer::write_comment_segment(const span<const byte> comment)
 {
-    write_segment_header(jpeg_marker_code::comment, comment.size());
-    write_bytes(comment);
+    write_segment(jpeg_marker_code::comment, comment);
 }
 
 
@@ -140,11 +136,9 @@ void jpeg_stream_writer::write_application_data_segment(const int32_t applicatio
                                                         const span<const byte> application_data)
 {
     ASSERT(application_data_id >= minimum_application_data_id && application_data_id <= maximum_application_data_id);
-
-    write_segment_header(
+    write_segment(
         static_cast<jpeg_marker_code>(static_cast<int32_t>(jpeg_marker_code::application_data0) + application_data_id),
-        application_data.size());
-    write_bytes(application_data);
+        application_data);
 }
 
 

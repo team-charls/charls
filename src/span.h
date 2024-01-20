@@ -37,6 +37,7 @@ public:
     {
     }
 
+    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<typename OtherType, size_t Size>
     constexpr span(const std::array<OtherType, Size>& data) noexcept : data_{data.data()}, size_{Size}
     {

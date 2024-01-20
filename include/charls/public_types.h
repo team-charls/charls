@@ -262,12 +262,12 @@ enum class [[nodiscard]] jpegls_errc
     invalid_marker_segment_size = impl::CHARLS_JPEGLS_ERRC_INVALID_MARKER_SEGMENT_SIZE,
 
     /// <summary>
-    /// This error is returned when the stream contains more then one SOI marker.
+    /// This error is returned when the stream contains more than one SOI marker.
     /// </summary>
     duplicate_start_of_image_marker = impl::CHARLS_JPEGLS_ERRC_DUPLICATE_START_OF_IMAGE_MARKER,
 
     /// <summary>
-    /// This error is returned when the stream contains more then one SOF marker.
+    /// This error is returned when the stream contains more than one SOF marker.
     /// </summary>
     duplicate_start_of_frame_marker = impl::CHARLS_JPEGLS_ERRC_DUPLICATE_START_OF_FRAME_MARKER,
 
@@ -309,7 +309,7 @@ enum class [[nodiscard]] jpegls_errc
     restart_marker_not_found = impl::CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND,
 
     /// <summary>
-    /// This error is returned when a callback function returns a non zero value.
+    /// This error is returned when a callback function returns a nonzero value.
     /// </summary>
     callback_failed = impl::CHARLS_JPEGLS_ERRC_CALLBACK_FAILED,
 
@@ -380,12 +380,12 @@ enum class [[nodiscard]] jpegls_errc
     invalid_argument_encoding_options = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_ENCODING_OPTIONS,
 
     /// <summary>
-    /// This error is returned when the stream contains a width parameter defined more then once or in an incompatible way.
+    /// This error is returned when the stream contains a width parameter defined more than once or in an incompatible way.
     /// </summary>
     invalid_parameter_width = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH,
 
     /// <summary>
-    /// This error is returned when the stream contains a height parameter defined more then once in an incompatible way.
+    /// This error is returned when the stream contains a height parameter defined more than once in an incompatible way.
     /// </summary>
     invalid_parameter_height = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_HEIGHT,
 
@@ -477,7 +477,7 @@ enum class encoding_options : unsigned
 
     /// <summary>
     /// Writes explicitly the default JPEG-LS preset coding parameters when the
-    /// bits per sample is larger then 12 bits.
+    /// bits per sample is larger than 12 bits.
     /// The Java Advanced Imaging (JAI) JPEG-LS codec has a defect that causes it to use invalid
     /// preset coding parameters for these types of images.
     /// Most users of this codec are aware of this problem and have implemented a work-around.
@@ -533,7 +533,7 @@ enum class color_transformation
     hp2 = impl::CHARLS_COLOR_TRANSFORMATION_HP2,
 
     /// <summary>
-    /// Defines the reversible lossless color transformation of Y-Cb-Cr):
+    /// Defines the reversible lossless color transformation of Y-Cb-Cr:
     /// R = R - G
     /// B = B - G
     /// G = G + (R + B) / 4
@@ -841,7 +841,7 @@ typedef int32_t charls_spiff_resolution_units;
 /// Defines the information that can be stored in a SPIFF header as defined in ISO/IEC 10918-3, Annex F
 /// </summary>
 /// <remark>
-/// The type I.8 is an unsigned 8 bit integer, the type I.32 is an 32 bit unsigned integer in the file header itself.
+/// The type I.8 is an unsigned 8-bit  integer, the type I.32 is an 32-bit  unsigned integer in the file header itself.
 /// The type is indicated by the symbol “F.” are 4-byte parameters in “fixed point” notation.
 /// The 16 most significant bits are essentially the same as a parameter of type I.16 and indicate the integer
 /// part of this number.
@@ -947,7 +947,7 @@ using charls_at_comment_handler = int32_t(CHARLS_API_CALLING_CONVENTION*)(const 
 /// </summary>
 /// <remarks>
 /// </remarks>
-/// <param name="application_data_id">Id of the APPn segment [0 .. 15].</param>
+/// <param name="application_data_id">Identifier of the APPn segment [0 - 15].</param>
 /// <param name="data">Reference to the data of the APPn segment.</param>
 /// <param name="size">Size in bytes of the data of the APPn segment.</param>
 /// <param name="user_context">Free to use context information that can be set during the installation of the
