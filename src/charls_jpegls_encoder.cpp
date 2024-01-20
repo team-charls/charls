@@ -122,15 +122,14 @@ struct charls_jpegls_encoder final
                             vertical_resolution, horizontal_resolution});
     }
 
-    void write_spiff_entry(const uint32_t entry_tag, CHARLS_IN_READS_BYTES(entry_data_size_bytes) const void* entry_data,
-                           const size_t entry_data_size_bytes)
+    void write_spiff_entry(const uint32_t entry_tag, const span<const byte> entry_data)
     {
-        check_argument(entry_data || entry_data_size_bytes == 0);
+        check_argument(entry_data.data() || entry_data.empty());
         check_argument(entry_tag != spiff_end_of_directory_entry_type);
-        check_argument(entry_data_size_bytes <= 65528, jpegls_errc::invalid_argument_size);
+        check_argument(entry_data.size() <= 65528, jpegls_errc::invalid_argument_size);
         check_operation(state_ == state::spiff_header);
 
-        writer_.write_spiff_directory_entry(entry_tag, entry_data, entry_data_size_bytes);
+        writer_.write_spiff_directory_entry(entry_tag, entry_data);
     }
 
     void write_spiff_end_of_directory_entry()
@@ -541,7 +540,7 @@ charls_jpegls_encoder_write_spiff_entry(charls_jpegls_encoder* encoder, const ui
                                         const size_t entry_data_size_bytes) noexcept
 try
 {
-    check_pointer(encoder)->write_spiff_entry(entry_tag, entry_data, entry_data_size_bytes);
+    check_pointer(encoder)->write_spiff_entry(entry_tag, {static_cast<const byte*>(entry_data), entry_data_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)

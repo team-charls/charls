@@ -55,7 +55,7 @@ int32_t unmap_error_value_original(const int32_t mapped_error_value) noexcept
 
 /// <remarks>
 /// This version will be auto optimized by GCC(trunk, not 10.2) using a cmove,
-/// and clang(11.0) 8 instructions,. MSVC will create branches.
+/// and clang(11.0) 8 instructions, MSVC will create branches.
 /// Optimized version uses 6 to 5 instructions.
 /// </remarks>
 int32_t unmap_error_value_alternative1(const int32_t mapped_error_value) noexcept

@@ -52,7 +52,7 @@ public:
         strategy.append_to_bit_stream_forward(0xffff, 16);
         strategy.append_to_bit_stream_forward(0xffff, 16);
 
-        // Buffer is full with FFs and _isFFWritten = true: Flush can only write 30 date bits.
+        // Buffer is full of FFs and _isFFWritten = true: Flush can only write 30 date bits.
         strategy.append_to_bit_stream_forward(0x3, 31);
 
         strategy.flush_forward();

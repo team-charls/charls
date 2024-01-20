@@ -101,7 +101,7 @@ struct default_traits final
 
     /// <summary>
     /// Returns the value of errorValue modulo RANGE. ITU.T.87, A.4.5 (code segment A.9)
-    /// This ensures the error is reduced to the range (-⌊RANGE/2⌋ .. ⌈RANGE/2⌉-1)
+    /// This ensures the error is reduced to the range (-⌊RANGE/2⌋ - ⌈RANGE/2⌉-1)
     /// </summary>
     [[nodiscard]]
     FORCE_INLINE int32_t modulo_range(int32_t error_value) const noexcept

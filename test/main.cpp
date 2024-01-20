@@ -3,7 +3,6 @@
 
 #include "../src/default_traits.h"
 #include "../src/lossless_traits.h"
-#include "../src/process_decoded_line.h"
 
 #include "util.h"
 

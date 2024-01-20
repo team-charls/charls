@@ -62,7 +62,7 @@ charls_jpegls_decoder_set_source_buffer(CHARLS_IN charls_jpegls_decoder* decoder
 /// <summary>
 /// Tries to read the SPIFF header from the source buffer.
 /// If a SPIFF header exists its content will be put into the spiff_header parameter and header_found will be set to 1.
-/// Call charls_jpegls_decoder_read_header to read the normal JPEG header afterwards.
+/// Call charls_jpegls_decoder_read_header to read the normal JPEG header afterward.
 /// </summary>
 /// <param name="decoder">Reference to the decoder instance.</param>
 /// <param name="spiff_header">Output argument, will hold the SPIFF header when one could be found.</param>
@@ -240,7 +240,7 @@ public:
     /// Destination container that will hold the image data on return. Container will be resized automatically.
     /// </param>
     /// <param name="maximum_size_in_bytes">
-    /// The maximum output size that may be allocated, default is 94 MiB (enough to decode 8 bit color 8K image).
+    /// The maximum output size that may be allocated, default is 94 MiB (enough to decode 8-bit color 8K image).
     /// </param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <exception cref="std::bad_alloc">Thrown when memory for the decoder could not be allocated.</exception>
@@ -291,7 +291,7 @@ public:
     /// The passed container needs to remain valid until the stream is fully decoded.
     /// </summary>
     /// <param name="source_container">
-    /// A STL like container that provides the functions data() and size() and the type value_type.
+    /// STL like container that provides the functions data() and size() and the type value_type.
     /// </param>
     /// <param name="parse_header">
     /// If true the SPIFF and JPEG header will be directly read from the source.
@@ -324,7 +324,7 @@ public:
     /// This container needs to remain valid until the stream is fully decoded.
     /// </summary>
     /// <param name="source_container">
-    /// A STL like container that provides the functions data() and size() and the type value_type.
+    /// STL like container that provides the functions data() and size() and the type value_type.
     /// </param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     template<typename Container, typename ContainerValueType = typename Container::value_type>
@@ -335,9 +335,9 @@ public:
 
     /// <summary>
     /// Tries to read the SPIFF header from the JPEG-LS stream.
-    /// If a SPIFF header exists its will be returned otherwise the struct will be filled with default values.
+    /// If a SPIFF header exists it will be returned otherwise the struct will be filled with default values.
     /// The header_found parameter will be set to true if the spiff header could be read.
-    /// Call read_header to read the normal JPEG header afterwards.
+    /// Call read_header to read the normal JPEG header afterward.
     /// </summary>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>True if a valid SPIFF header could be found.</returns>
@@ -351,9 +351,9 @@ public:
 
     /// <summary>
     /// Tries to read the SPIFF header from the JPEG-LS stream.
-    /// If a SPIFF header exists its will be returned otherwise the struct will be filled with default values.
+    /// If a SPIFF header exists it will be returned otherwise the struct will be filled with default values.
     /// The header_found parameter will be set to true if the spiff header could be read.
-    /// Call read_header to read the normal JPEG header afterwards.
+    /// Call read_header to read the normal JPEG header afterward.
     /// </summary>
     /// <param name="ec">The out-parameter for error reporting.</param>
     /// <returns>True if a valid SPIFF header could be found.</returns>
@@ -401,7 +401,7 @@ public:
     /// <summary>
     /// Returns true if a valid SPIFF header was found.
     /// </summary>
-    /// <returns>True of false, depending if a SPIFF header was found.</returns>
+    /// <returns>True when a SPIFF header was found, false otherwise.</returns>
     [[nodiscard]]
     bool spiff_header_has_value() const noexcept
     {
@@ -541,7 +541,7 @@ public:
     /// Will decode the JPEG-LS byte stream set with source into the destination container.
     /// </summary>
     /// <param name="destination_container">
-    /// A STL like container that provides the functions data() and size() and the type value_type.
+    /// STL like container that provides the functions data() and size() and the type value_type.
     /// </param>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>

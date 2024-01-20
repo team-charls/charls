@@ -85,7 +85,7 @@ charls_jpegls_encoder_set_interleave_mode(CHARLS_IN charls_jpegls_encoder* encod
 /// <summary>
 /// Configures the preset coding parameters the encoder should use.
 /// If not set the encoder will use the default preset coding parameters as defined by the JPEG-LS standard.
-/// Only when the coding parameters are different than the default parameters or when `include_pc_parameters_jai` is set,
+/// Only when the coding parameters are different from the default parameters or when `include_pc_parameters_jai` is set,
 /// they will be written to the JPEG-LS stream during the encode phase.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
@@ -99,7 +99,7 @@ charls_jpegls_encoder_set_preset_coding_parameters(CHARLS_IN charls_jpegls_encod
 /// <summary>
 /// Configures the HP color transformation the encoder should use.
 /// If not set the encoder will use no color transformation.
-/// Color transformations are a HP extension and not defined by the JPEG-LS standard and can only be set for 3 component
+/// Color transformations are an HP extension and not defined by the JPEG-LS standard and can only be set for 3 component
 /// encodings.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
@@ -117,7 +117,7 @@ charls_jpegls_encoder_set_color_transformation(CHARLS_IN charls_jpegls_encoder* 
 /// Size for dynamic extras like SPIFF entries and other tables are not included in this size.
 /// </remarks>
 /// <param name="encoder">Reference to the encoder instance.</param>
-/// <param name="size_in_bytes">Reference to the size that will be set when the functions returns.</param>
+/// <param name="size_in_bytes">Reference to the size that will be set when the function returns.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_get_estimated_destination_size(CHARLS_IN const charls_jpegls_encoder* encoder,
@@ -186,7 +186,7 @@ charls_jpegls_encoder_write_spiff_entry(CHARLS_IN charls_jpegls_encoder* encoder
 
 /// <summary>
 /// Writes a SPIFF end of directory entry to the destination.
-/// The encoder will normally does this automatically. It is made available
+/// The encoder will normally do this automatically. It is made available
 /// for the scenario to create SPIFF headers in front of existing JPEG-LS streams.
 /// </summary>
 /// <remarks>
@@ -204,7 +204,7 @@ charls_jpegls_encoder_write_spiff_end_of_directory_entry(CHARLS_IN charls_jpegls
 /// Function should be called before encoding the image data.
 /// </remarks>
 /// <param name="encoder">Reference to the encoder instance.</param>
-/// <param name="comment">The 'comment' bytes. Application specific, usually human readable string.</param>
+/// <param name="comment">The 'comment' bytes. Application specific, usually a human-readable string.</param>
 /// <param name="comment_size_bytes">The size in bytes of the comment [0-65533].</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
@@ -252,7 +252,7 @@ charls_jpegls_encoder_encode_from_buffer(CHARLS_IN charls_jpegls_encoder* encode
 /// Returns the size in bytes, that are written to the destination.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
-/// <param name="bytes_written">Reference to the size that will be set when the functions returns.</param>
+/// <param name="bytes_written">Reference to the size that will be set when the function returns.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_get_bytes_written(CHARLS_IN const charls_jpegls_encoder* encoder,
@@ -368,7 +368,7 @@ public:
     /// <summary>
     /// Configures the HP color transformation the encoder should use.
     /// If not set the encoder will use no color transformation.
-    /// Color transformations are a HP extension and not defined by the JPEG-LS standard
+    /// Color transformations are an HP extension and not defined by the JPEG-LS standard
     /// and can only be set for 3 component encodings.
     /// </summary>
     /// <param name="color_transformation">The color transformation parameters.</param>
@@ -409,7 +409,7 @@ public:
     }
 
     /// <summary>
-    /// Set the the container that will contain the encoded JPEG-LS byte stream data after encoding.
+    /// Set the container that will contain the encoded JPEG-LS byte stream data after encoding.
     /// This container needs to remain valid during the encoding process.
     /// </summary>
     /// <param name="destination_container">
@@ -471,7 +471,7 @@ public:
 
     /// <summary>
     /// Writes a SPIFF end of directory entry to the destination.
-    /// The encoder will normally does this automatically. It is made available
+    /// The encoder will normally do this automatically. It is made available
     /// for the scenario to create SPIFF headers in front of existing JPEG-LS streams.
     /// </summary>
     /// <remarks>

@@ -33,8 +33,7 @@ public:
     /// <param name="header">Header info to write into the SPIFF segment.</param>
     void write_spiff_header_segment(const spiff_header& header);
 
-    void write_spiff_directory_entry(uint32_t entry_tag, CHARLS_IN_READS_BYTES(entry_data_size_bytes) const void* entry_data,
-                                     size_t entry_data_size_bytes);
+    void write_spiff_directory_entry(uint32_t entry_tag, span<const std::byte> entry_data);
 
     /// <summary>
     /// Write a JPEG SPIFF end of directory (APP8) segment.
@@ -43,7 +42,7 @@ public:
     void write_spiff_end_of_directory_entry();
 
     /// <summary>
-    /// Writes a HP color transformation (APP8) segment.
+    /// Writes an HP color transformation (APP8) segment.
     /// </summary>
     /// <param name="transformation">Color transformation to put into the segment.</param>
     void write_color_transform_segment(color_transformation transformation);
@@ -178,7 +177,8 @@ private:
 #else
         const UnsignedIntType big_endian_value{value};
 #endif
-        write_bytes(&big_endian_value, sizeof big_endian_value);
+        const void* bytes{&big_endian_value};
+        write_bytes({static_cast<const std::byte*>(bytes), sizeof big_endian_value});
     }
 
     void write_byte(const std::byte value) noexcept
@@ -189,14 +189,9 @@ private:
 
     void write_bytes(const span<const std::byte> data) noexcept
     {
-        write_bytes(data.data(), data.size());
-    }
-
-    void write_bytes(CHARLS_IN_READS_BYTES(size) const void* data, const size_t size) noexcept
-    {
-        ASSERT(byte_offset_ + size <= destination_.size());
-        memcpy(destination_.data() + byte_offset_, data, size);
-        byte_offset_ += size;
+        ASSERT(byte_offset_ + data.size() <= destination_.size());
+        memcpy(destination_.data() + byte_offset_, data.data(), data.size());
+        byte_offset_ += data.size();
     }
 
     void write_marker(const jpeg_marker_code marker_code) noexcept
@@ -212,6 +207,12 @@ private:
 
         write_byte(jpeg_marker_start_byte);
         write_byte(static_cast<std::byte>(marker_code));
+    }
+
+    void write_segment(const jpeg_marker_code marker_code, const span<const std::byte> data)
+    {
+        write_segment_header(marker_code, data.size());
+        write_bytes(data);
     }
 
     span<std::byte> destination_{};

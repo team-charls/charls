@@ -248,9 +248,9 @@ public:
         array<byte, 10> buffer{};
         jpeg_stream_writer writer{{buffer.data(), buffer.size()}};
 
-        const array data{byte{0x77}, byte{0x66}};
+        constexpr array data{byte{0x77}, byte{0x66}};
 
-        writer.write_spiff_directory_entry(2, data.data(), data.size());
+        writer.write_spiff_directory_entry(2, data);
 
         // Verify Entry Magic Number (EMN)
         Assert::AreEqual(byte{0xFF}, buffer[0]);
