@@ -5,7 +5,6 @@
 
 #include "constants.h"
 #include "jpeg_marker_code.h"
-#include "jpegls_preset_parameters_type.h"
 #include "util.h"
 
 #include <array>
@@ -64,8 +63,7 @@ void jpeg_stream_writer::write_spiff_header_segment(const spiff_header& header)
 }
 
 
-void jpeg_stream_writer::write_spiff_directory_entry(const uint32_t entry_tag,
-                                                                          const span<const byte> entry_data)
+void jpeg_stream_writer::write_spiff_directory_entry(const uint32_t entry_tag, const span<const byte> entry_data)
 {
     write_segment_header(jpeg_marker_code::application_data8, sizeof(uint32_t) + entry_data.size());
     write_uint32(entry_tag);
@@ -157,11 +155,33 @@ void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const jpegls_pc_
 void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const uint32_t height, const uint32_t width)
 {
     // Format is defined in ISO/IEC 14495-1, C.2.4.1.4
-    write_segment_header(jpeg_marker_code::jpegls_preset_parameters, sizeof(uint32_t) * 2 + 1 + 1);
+    write_segment_header(jpeg_marker_code::jpegls_preset_parameters, size_t{1} + 1 + 2 * sizeof(uint32_t));
     write_uint8(to_underlying_type(jpegls_preset_parameters_type::oversize_image_dimension));
     write_uint8(sizeof(uint32_t)); // Wxy: number of bytes used to represent Ye and Xe [2..4]. Always 4 for simplicity.
     write_uint32(height);          // Ye: number of lines in the image.
     write_uint32(width);           // Xe: number of columns in the image.
+}
+
+
+void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const int32_t table_id, const int32_t entry_size,
+                                                                const span<const std::byte> table_data)
+{
+    // Write the first 65530 bytes as mapping table specification LSE segment.
+    constexpr size_t max_table_data_size{segment_max_data_size - 3};
+    const byte* table_position{table_data.begin()};
+    size_t table_size_to_write{std::min(table_data.size(), max_table_data_size)};
+    write_jpegls_preset_parameters_segment(jpegls_preset_parameters_type::mapping_table_specification, table_id, entry_size,
+                                           {table_position, table_size_to_write});
+
+    // Write the remaining bytes as mapping table continuation LSE segments.
+    table_position += table_size_to_write;
+    while (table_position < table_data.end())
+    {
+        table_size_to_write = std::min(static_cast<size_t>(table_data.end() - table_position), max_table_data_size);
+        write_jpegls_preset_parameters_segment(jpegls_preset_parameters_type::mapping_table_continuation, table_id,
+                                               entry_size, {table_position, table_size_to_write});
+        table_position += table_size_to_write;
+    }
 }
 
 
@@ -187,6 +207,26 @@ void jpeg_stream_writer::write_start_of_scan_segment(const int32_t component_cou
     write_uint8(near_lossless);                       // NEAR parameter
     write_uint8(to_underlying_type(interleave_mode)); // ILV parameter
     write_uint8(0);                                   // transformation
+}
+
+
+void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const jpegls_preset_parameters_type preset_parameters_type,
+                                                                const int32_t table_id, const int32_t entry_size,
+                                                                const span<const std::byte> table_data)
+{
+    ASSERT(preset_parameters_type == jpegls_preset_parameters_type::mapping_table_specification ||
+           preset_parameters_type == jpegls_preset_parameters_type::mapping_table_continuation);
+    ASSERT(table_id > 0);
+    ASSERT(entry_size > 0);
+    ASSERT(table_data.size() >= static_cast<size_t>(entry_size)); // Need to contain at least 1 entry.
+    ASSERT(table_data.size() <= segment_max_data_size - 3);
+
+    // Format is defined in ISO/IEC 14495-1, C.2.4.1.2 and C.2.4.1.3
+    write_segment_header(jpeg_marker_code::jpegls_preset_parameters, size_t{1} + 1 + 1 + table_data.size());
+    write_uint8(to_underlying_type(preset_parameters_type));
+    write_uint8(table_id);
+    write_uint8(entry_size);
+    write_bytes(table_data);
 }
 
 

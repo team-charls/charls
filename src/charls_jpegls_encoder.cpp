@@ -160,6 +160,18 @@ struct charls_jpegls_encoder final
         writer_.write_application_data_segment(application_data_id, application_data);
     }
 
+    void write_table(const int32_t table_id, const int32_t entry_size, const span<const byte> table_data)
+    {
+        check_argument(table_id > 0 && table_id < 256);
+        check_argument(entry_size > 0 && entry_size < 256);
+        check_argument(table_data.data() || table_data.empty());
+        check_argument(table_data.size() >= static_cast<size_t>(entry_size), jpegls_errc::invalid_argument_size);
+        check_operation(state_ >= state::destination_set && state_ < state::completed);
+
+        transition_to_tables_and_miscellaneous_state();
+        writer_.write_jpegls_preset_parameters_segment(table_id, entry_size, table_data);
+    }
+
     void encode(span<const byte> source, size_t stride)
     {
         check_argument(source.data() || source.empty());
@@ -259,8 +271,8 @@ private:
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample,
                                             component_count};
 
-        const auto encoder{make_scan_codec<scan_encoder>(
-            frame_info, preset_coding_parameters_, {near_lossless_, 0, interleave_mode_, color_transformation_})};
+        const auto encoder{make_scan_codec<scan_encoder>(frame_info, preset_coding_parameters_,
+                                                         {near_lossless_, 0, interleave_mode_, color_transformation_})};
         const size_t bytes_written{encoder->encode_scan(source, stride, writer_.remaining_destination())};
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
@@ -480,33 +492,6 @@ catch (...)
 
 
 USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_get_bytes_written(const charls_jpegls_encoder* encoder, size_t* bytes_written) noexcept
-try
-{
-    *check_pointer(bytes_written) = check_pointer(encoder)->bytes_written();
-    return jpegls_errc::success;
-}
-catch (...)
-{
-    return to_jpegls_errc();
-}
-
-
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_encode_from_buffer(charls_jpegls_encoder* encoder, const void* source_buffer,
-                                         const size_t source_size_bytes, const uint32_t stride) noexcept
-try
-{
-    check_pointer(encoder)->encode({static_cast<const byte*>(source_buffer), source_size_bytes}, stride);
-    return jpegls_errc::success;
-}
-catch (...)
-{
-    return to_jpegls_errc();
-}
-
-
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_write_spiff_header(charls_jpegls_encoder* encoder, const charls_spiff_header* spiff_header) noexcept
 try
 {
@@ -582,6 +567,47 @@ try
 {
     check_pointer(encoder)->write_application_data(
         application_data_id, {static_cast<const byte*>(application_data), application_data_size_bytes});
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_write_table(charls_jpegls_encoder* encoder, const int32_t table_id, const int32_t entry_size,
+                                  const void* table_data, const size_t table_data_size_bytes) noexcept
+try
+{
+    check_pointer(encoder)->write_table(table_id, entry_size, {static_cast<const byte*>(table_data), table_data_size_bytes});
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_encode_from_buffer(charls_jpegls_encoder* encoder, const void* source_buffer,
+                                         const size_t source_size_bytes, const uint32_t stride) noexcept
+try
+{
+    check_pointer(encoder)->encode({static_cast<const byte*>(source_buffer), source_size_bytes}, stride);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_get_bytes_written(const charls_jpegls_encoder* encoder, size_t* bytes_written) noexcept
+try
+{
+    *check_pointer(bytes_written) = check_pointer(encoder)->bytes_written();
     return jpegls_errc::success;
 }
 catch (...)

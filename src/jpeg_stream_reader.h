@@ -123,7 +123,7 @@ private:
     void read_application_data_segment(jpeg_marker_code marker_code);
     void read_preset_parameters_segment();
     void read_preset_coding_parameters();
-    void oversize_image_dimension();
+    void read_oversize_image_dimension();
     void read_define_restart_interval_segment();
     void try_read_application_data8_segment(spiff_header* header, bool* spiff_header_found);
     void try_read_spiff_header_segment(CHARLS_OUT spiff_header& header, CHARLS_OUT bool& spiff_header_found);

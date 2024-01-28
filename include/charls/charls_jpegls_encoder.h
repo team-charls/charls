@@ -231,6 +231,25 @@ charls_jpegls_encoder_write_application_data(CHARLS_IN charls_jpegls_encoder* en
                                              size_t application_data_size_bytes) CHARLS_NOEXCEPT;
 
 /// <summary>
+/// Writes a mapping table to the destination.
+/// During decoding a component can reference a mapping table.
+/// </summary>
+/// <remarks>
+/// No validation is performed if the table ID is unique and if the table size matches the required size.
+/// During decoding the active maximum value determines the required size of the table.
+/// </remarks>
+/// <param name="encoder">Reference to the encoder instance.</param>
+/// <param name="table_id">Table identifier, should be unique for the image.</param>
+/// <param name="entry_size">Number of bytes in a table entry.</param>
+/// <param name="table_data">Byte array that holds the mapping table.</param>
+/// <param name="table_data_size_bytes">The size in bytes of the mapping table.</param>
+CHARLS_ATTRIBUTE_ACCESS((access(read_only, 4, 5)))
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_write_table(CHARLS_IN charls_jpegls_encoder* encoder, int32_t table_id, int32_t entry_size,
+                                  CHARLS_IN_READS_BYTES(table_data_size_bytes) const void* table_data,
+                                  size_t table_data_size_bytes) CHARLS_NOEXCEPT;
+
+/// <summary>
 /// Encodes the passed buffer with the source image data to the destination.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
@@ -521,6 +540,26 @@ public:
     {
         check_jpegls_errc(
             charls_jpegls_encoder_write_application_data(encoder_.get(), application_data_id, application_data, size));
+        return *this;
+    }
+
+    /// <summary>
+    /// Writes a mapping table to the destination.
+    /// During decoding a component can reference a mapping table.
+    /// </summary>
+    /// <remarks>
+    /// No validation is performed if the table ID is unique and if the table size matches the required size.
+    /// During decoding the active maximum value determines the required size of the table.
+    /// </remarks>
+    /// <param name="table_id">Table identifier, should be unique for the image. Valid range is [1,255].</param>
+    /// <param name="entry_size">Number of bytes in a table entry. Valid range is [1,255].</param>
+    /// <param name="table_data">Byte array that holds the mapping table.</param>
+    /// <param name="size">The size in bytes of the mapping table.</param>
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 4, 5)))
+    jpegls_encoder& write_table(const int32_t table_id, const int32_t entry_size,
+                                CHARLS_IN_READS_BYTES(size) const void* table_data, const size_t size)
+    {
+        check_jpegls_errc(charls_jpegls_encoder_write_table(encoder_.get(), table_id, entry_size, table_data, size));
         return *this;
     }
 

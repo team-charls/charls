@@ -6,6 +6,7 @@
 #include "charls/jpegls_error.h"
 
 #include "jpeg_marker_code.h"
+#include "jpegls_preset_parameters_type.h"
 #include "span.h"
 #include "util.h"
 
@@ -61,17 +62,22 @@ public:
     void write_application_data_segment(int32_t application_data_id, span<const std::byte> application_data);
 
     /// <summary>
-    /// Writes a JPEG-LS preset parameters (LSE) segment.
+    /// Writes a JPEG-LS preset parameters (LSE) segment with JPEG-LS preset coding parameters.
     /// </summary>
     /// <param name="preset_coding_parameters">Parameters to write into the JPEG-LS preset segment.</param>
     void write_jpegls_preset_parameters_segment(const jpegls_pc_parameters& preset_coding_parameters);
 
     /// <summary>
-    /// Writes a JPEG-LS preset parameters (LSE) segment for oversize image dimension.
+    /// Writes a JPEG-LS preset parameters (LSE) segment with oversize image dimension information.
     /// </summary>
     /// <param name="width">Height of the image.</param>
     /// <param name="height">Width of the image.</param>
     void write_jpegls_preset_parameters_segment(uint32_t height, uint32_t width);
+
+    /// <summary>
+    /// Writes JPEG-LS preset parameters (LSE) segment(s) with a mapping table.
+    /// </summary>
+    void write_jpegls_preset_parameters_segment(int32_t table_id, int32_t entry_size, span<const std::byte> table_data);
 
     /// <summary>
     /// Writes a JPEG-LS Start Of Frame (SOF-55) segment.
@@ -124,6 +130,8 @@ public:
     }
 
 private:
+    void write_jpegls_preset_parameters_segment(jpegls_preset_parameters_type preset_parameters_type, int32_t table_id,
+                                                int32_t entry_size, span<const std::byte> table_data);
     void write_segment_header(jpeg_marker_code marker_code, size_t data_size);
 
     void write_uint8(const uint8_t value) noexcept

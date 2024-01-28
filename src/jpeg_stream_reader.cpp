@@ -355,7 +355,7 @@ void jpeg_stream_reader::read_preset_parameters_segment()
         return;
 
     case jpegls_preset_parameters_type::oversize_image_dimension:
-        oversize_image_dimension();
+        read_oversize_image_dimension();
         return;
 
     case jpegls_preset_parameters_type::mapping_table_specification:
@@ -390,7 +390,7 @@ void jpeg_stream_reader::read_preset_coding_parameters()
 }
 
 
-void jpeg_stream_reader::oversize_image_dimension()
+void jpeg_stream_reader::read_oversize_image_dimension()
 {
     // Note: The JPEG-LS standard supports a 2,3 or 4 bytes for the size.
     check_minimal_segment_size(2);
