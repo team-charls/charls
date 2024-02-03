@@ -314,6 +314,15 @@ inline void check_argument(const bool expression, const jpegls_errc error_value 
 }
 
 
+template<typename T>
+void check_argument_range(const T minimum, const T maximum, const T value,
+                          const jpegls_errc error_value = jpegls_errc::invalid_argument)
+{
+    if (UNLIKELY(!(minimum <= value && value <= maximum)))
+        impl::throw_jpegls_error(error_value);
+}
+
+
 inline void check_interleave_mode(const interleave_mode mode, const jpegls_errc error_value)
 {
     if (UNLIKELY(!(mode == interleave_mode::none || mode == interleave_mode::line || mode == interleave_mode::sample)))

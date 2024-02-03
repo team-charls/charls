@@ -199,9 +199,9 @@ void jpeg_stream_writer::write_start_of_scan_segment(const int32_t component_cou
 
     for (int32_t i{}; i != component_count; ++i)
     {
-        write_uint8(component_id_);
-        write_uint8(0); // Mapping table selector (0 = no table)
-        ++component_id_;
+        write_uint8(component_index_ + 1); // follow the JPEG-LS standard samples and start with component ID 1.
+        write_uint8(mapping_table_selector());
+        ++component_index_;
     }
 
     write_uint8(near_lossless);                       // NEAR parameter

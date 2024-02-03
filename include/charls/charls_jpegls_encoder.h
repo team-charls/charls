@@ -111,6 +111,17 @@ charls_jpegls_encoder_set_color_transformation(CHARLS_IN charls_jpegls_encoder* 
     CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
+/// Configures the table ID the encoder should use when encoding a component.
+/// The table(s) should be written before encoding, the encoder will not verify this.
+/// </summary>
+/// <param name="encoder">Reference to the encoder instance.</param>
+/// <param name="component_index">Index of the component. Component 0 is the start index.</param>
+/// <param name="table_id">Table ID that will be coupled to this component.</param>
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_set_table_id(CHARLS_IN charls_jpegls_encoder* encoder, int32_t component_index,
+                                   int32_t table_id) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+
+/// <summary>
 /// Returns the size in bytes, that the encoder expects are needed to hold the encoded image.
 /// </summary>
 /// <remarks>

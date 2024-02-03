@@ -86,11 +86,18 @@ struct charls_jpegls_encoder final
 
     void color_transformation(const color_transformation color_transformation)
     {
-        check_argument(color_transformation >= color_transformation::none &&
-                           color_transformation <= color_transformation::hp3,
-                       jpegls_errc::invalid_argument_color_transformation);
+        check_argument_range(color_transformation::none, color_transformation::hp3, color_transformation,
+                             jpegls_errc::invalid_argument_color_transformation);
 
         color_transformation_ = color_transformation;
+    }
+
+    void table_id(const int32_t component_index, const int32_t table_id)
+    {
+        check_argument_range(minimum_component_index, maximum_component_index, component_index);
+        check_argument_range(minimum_table_id, maximum_table_id, table_id);
+
+        writer_.table_id(static_cast<size_t>(component_index), table_id);
     }
 
     [[nodiscard]]
@@ -150,8 +157,7 @@ struct charls_jpegls_encoder final
 
     void write_application_data(const int32_t application_data_id, const span<const byte> application_data)
     {
-        check_argument(application_data_id >= minimum_application_data_id &&
-                       application_data_id <= maximum_application_data_id);
+        check_argument_range(minimum_application_data_id, maximum_application_data_id, application_data_id);
         check_argument(application_data.data() || application_data.empty());
         check_argument(application_data.size() <= segment_max_data_size, jpegls_errc::invalid_argument_size);
         check_operation(state_ >= state::destination_set && state_ < state::completed);
@@ -162,8 +168,8 @@ struct charls_jpegls_encoder final
 
     void write_table(const int32_t table_id, const int32_t entry_size, const span<const byte> table_data)
     {
-        check_argument(table_id > 0 && table_id < 256);
-        check_argument(entry_size > 0 && entry_size < 256);
+        check_argument_range(minimum_table_id, maximum_table_id, table_id);
+        check_argument_range(minimum_entry_size, maximum_entry_size, entry_size);
         check_argument(table_data.data() || table_data.empty());
         check_argument(table_data.size() >= static_cast<size_t>(entry_size), jpegls_errc::invalid_argument_size);
         check_operation(state_ >= state::destination_set && state_ < state::completed);
@@ -470,6 +476,19 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_enc
 try
 {
     check_pointer(encoder)->color_transformation(color_transformation);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_table_id(
+    charls_jpegls_encoder* encoder, const int32_t component_index, const int32_t table_id) noexcept
+try
+{
+    check_pointer(encoder)->table_id(component_index, table_id);
     return jpegls_errc::success;
 }
 catch (...)

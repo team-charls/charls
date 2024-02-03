@@ -5,10 +5,13 @@
 
 #include "charls/jpegls_error.h"
 
+#include "constants.h"
 #include "jpeg_marker_code.h"
 #include "jpegls_preset_parameters_type.h"
 #include "span.h"
 #include "util.h"
+
+#include <vector>
 
 namespace charls {
 
@@ -126,7 +129,21 @@ public:
     void rewind() noexcept
     {
         byte_offset_ = 0;
-        component_id_ = 1;
+        component_index_ = 0;
+    }
+
+    void table_id(const size_t component_index, const int32_t table_id)
+    {
+        ASSERT(component_index < maximum_component_count);
+        ASSERT(minimum_table_id <= table_id && table_id <= maximum_table_id);
+
+        // Usage of mapping tables is rare: use lazy initialization.
+        if (table_ids_.empty())
+        {
+            table_ids_.resize(maximum_component_count);
+        }
+
+        table_ids_[component_index] = static_cast<uint8_t>(table_id);
     }
 
 private:
@@ -223,9 +240,16 @@ private:
         write_bytes(data);
     }
 
+    [[nodiscard]]
+    uint8_t mapping_table_selector() const noexcept
+    {
+        return table_ids_.empty() ? 0 : table_ids_[component_index_];
+    }
+
     span<std::byte> destination_{};
     size_t byte_offset_{};
-    uint8_t component_id_{1};
+    uint8_t component_index_{};
+    std::vector<uint8_t> table_ids_;
 };
 
 } // namespace charls
