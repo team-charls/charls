@@ -54,9 +54,13 @@
         C5246 = the initialization of a subobject should be wrapped in braces [prevents simple usage of std::byte]
         C5264 = 'const' variable is not used [reported for const in header files]
         C5258 = explicit capture of '' is not required for this use [VS 2019 requires capture of constexpr]
+      -->
+      <DisableSpecificWarnings Condition="'$(CHARLS_ALL_WARNINGS)'!=''">4061;4365;4464;4514;4571;4623;4625;4626;4710;4711;4738;4820;5026;5027;5045;5246;5264;5258</DisableSpecificWarnings>
+
+      <!--
         C6393 = A lookup table of size 365 is not sufficient to handle leap years [CharLS doesn't handle leap years]
       -->
-      <DisableSpecificWarnings Condition="'$(CHARLS_ALL_WARNINGS)'!=''">4061;4365;4464;4514;4571;4623;4625;4626;4710;4711;4738;4820;5026;5027;5045;5246;5264;5258;6393</DisableSpecificWarnings>
+      <DisableSpecificWarnings>6393;%(DisableSpecificWarnings)</DisableSpecificWarnings>
 
       <!--
         __cplusplus = Use the correct value for the __cplusplus macro

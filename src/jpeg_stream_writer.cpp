@@ -64,7 +64,7 @@ void jpeg_stream_writer::write_spiff_header_segment(const spiff_header& header)
 }
 
 
-USE_DECL_ANNOTATIONS void jpeg_stream_writer::write_spiff_directory_entry(const uint32_t entry_tag,
+void jpeg_stream_writer::write_spiff_directory_entry(const uint32_t entry_tag,
                                                                           const span<const byte> entry_data)
 {
     write_segment_header(jpeg_marker_code::application_data8, sizeof(uint32_t) + entry_data.size());
