@@ -87,6 +87,12 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
+    TEST_METHOD(charls_jpegls_encoder_set_table_id_nullptr) // NOLINT
+    {
+        const auto error{charls_jpegls_encoder_set_table_id(nullptr, 0, 0)};
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+    }
+
     TEST_METHOD(get_estimated_destination_size_nullptr) // NOLINT
     {
         size_t size_in_bytes{};
@@ -225,6 +231,12 @@ public:
         Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);
 
         charls_jpegls_encoder_destroy(encoder);
+    }
+
+    TEST_METHOD(create_tables_only_null_ptr) // NOLINT
+    {
+        const auto error{charls_jpegls_encoder_create_tables_only(nullptr)};
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 };
 

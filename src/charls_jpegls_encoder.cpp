@@ -92,12 +92,12 @@ struct charls_jpegls_encoder final
         color_transformation_ = color_transformation;
     }
 
-    void table_id(const int32_t component_index, const int32_t table_id)
+    void set_table_id(const int32_t component_index, const int32_t table_id)
     {
         check_argument_range(minimum_component_index, maximum_component_index, component_index);
-        check_argument_range(minimum_table_id, maximum_table_id, table_id);
+        check_argument_range(0, maximum_table_id, table_id);
 
-        writer_.table_id(static_cast<size_t>(component_index), table_id);
+        writer_.set_table_id(static_cast<size_t>(component_index), table_id);
     }
 
     [[nodiscard]]
@@ -237,8 +237,13 @@ struct charls_jpegls_encoder final
             encode_scan(source.data(), stride, frame_info_.component_count);
         }
 
-        writer_.write_end_of_image(has_option(encoding_options::even_destination_size));
-        state_ = state::completed;
+        write_end_of_image();
+    }
+
+    void create_tables_only()
+    {
+        check_operation(state_ == state::tables_and_miscellaneous);
+        write_end_of_image();
     }
 
     [[nodiscard]]
@@ -357,6 +362,12 @@ private:
             throw_jpegls_error(jpegls_errc::invalid_argument_color_transformation);
 
         writer_.write_color_transform_segment(color_transformation_);
+    }
+
+    void write_end_of_image()
+    {
+        writer_.write_end_of_image(has_option(encoding_options::even_destination_size));
+        state_ = state::completed;
     }
 
     [[nodiscard]]
@@ -488,7 +499,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_enc
     charls_jpegls_encoder* encoder, const int32_t component_index, const int32_t table_id) noexcept
 try
 {
-    check_pointer(encoder)->table_id(component_index, table_id);
+    check_pointer(encoder)->set_table_id(component_index, table_id);
     return jpegls_errc::success;
 }
 catch (...)
@@ -614,6 +625,19 @@ charls_jpegls_encoder_encode_from_buffer(charls_jpegls_encoder* encoder, const v
 try
 {
     check_pointer(encoder)->encode({static_cast<const byte*>(source_buffer), source_size_bytes}, stride);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_create_tables_only(charls_jpegls_encoder* encoder) noexcept
+try
+{
+    check_pointer(encoder)->create_tables_only();
     return jpegls_errc::success;
 }
 catch (...)

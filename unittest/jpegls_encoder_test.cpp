@@ -889,7 +889,7 @@ public:
         Assert::AreEqual(byte{0xFF}, destination[0]);
         Assert::AreEqual(static_cast<byte>(jpeg_marker_code::start_of_image), destination[1]);
 
-        // Verify that a APPn segment has been written.
+        // Verify that a JPEG-LS preset segment with the table has been written.
         Assert::AreEqual(byte{0xFF}, destination[2]);
         Assert::AreEqual(static_cast<byte>(jpeg_marker_code::jpegls_preset_parameters), destination[3]);
         Assert::AreEqual(byte{}, destination[4]);
@@ -994,6 +994,48 @@ public:
         });
     }
 
+    TEST_METHOD(create_tables_only) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        array<byte, 12> destination;
+        encoder.destination(destination);
+
+        constexpr array table_data{byte{0}};
+        encoder.write_table(1, 1, table_data.data(), table_data.size());
+        const size_t bytes_written{encoder.create_tables_only()};
+
+        Assert::AreEqual(size_t{12}, bytes_written);
+
+        // Check that SOI marker has been written.
+        Assert::AreEqual(byte{0xFF}, destination[0]);
+        Assert::AreEqual(static_cast<byte>(jpeg_marker_code::start_of_image), destination[1]);
+
+        // Verify that a JPEG-LS preset segment with the table has been written.
+        Assert::AreEqual(byte{0xFF}, destination[2]);
+        Assert::AreEqual(static_cast<byte>(jpeg_marker_code::jpegls_preset_parameters), destination[3]);
+        Assert::AreEqual(byte{}, destination[4]);
+        Assert::AreEqual(byte{6}, destination[5]);
+        Assert::AreEqual(byte{2}, destination[6]);
+        Assert::AreEqual(byte{1}, destination[7]);
+        Assert::AreEqual(byte{1}, destination[8]);
+        Assert::AreEqual(byte{}, destination[9]);
+
+        // Check that SOI marker has been written.
+        Assert::AreEqual(byte{0xFF}, destination[10]);
+        Assert::AreEqual(static_cast<byte>(jpeg_marker_code::end_of_image), destination[11]);
+    }
+
+    TEST_METHOD(create_tables_only_with_no_tables_throws) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        array<byte, 12> destination;
+        encoder.destination(destination);
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&encoder] { ignore = encoder.create_tables_only(); });
+    }
+
     TEST_METHOD(set_preset_coding_parameters) // NOLINT
     {
         jpegls_encoder encoder;
@@ -1038,6 +1080,43 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
                                 [&encoder] { encoder.color_transformation(static_cast<color_transformation>(100)); });
+    }
+
+    TEST_METHOD(set_table_id) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        encoder.set_table_id(0, 1);
+
+        // TODO: verify by decoding.
+        Assert::IsTrue(true);
+    }
+
+    TEST_METHOD(set_table_id_clear_id) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        encoder.set_table_id(0, 1);
+        encoder.set_table_id(0, 0);
+
+        // TODO: verify by decoding.
+        Assert::IsTrue(true);
+    }
+
+    TEST_METHOD(set_table_id_bad_component_index_throws) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        assert_expect_exception(jpegls_errc::invalid_argument,
+                                [&encoder] { encoder.set_table_id(-1, 0); });
+    }
+
+    TEST_METHOD(set_table_id_bad_id_throws) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        assert_expect_exception(jpegls_errc::invalid_argument,
+                                [&encoder] { encoder.set_table_id(0, -1); });
     }
 
     TEST_METHOD(encode_without_destination_throws) // NOLINT

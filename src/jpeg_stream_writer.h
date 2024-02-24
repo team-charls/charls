@@ -132,10 +132,10 @@ public:
         component_index_ = 0;
     }
 
-    void table_id(const size_t component_index, const int32_t table_id)
+    void set_table_id(const size_t component_index, const int32_t table_id)
     {
         ASSERT(component_index < maximum_component_count);
-        ASSERT(minimum_table_id <= table_id && table_id <= maximum_table_id);
+        ASSERT(0 <= table_id && table_id <= maximum_table_id);
 
         // Usage of mapping tables is rare: use lazy initialization.
         if (table_ids_.empty())
