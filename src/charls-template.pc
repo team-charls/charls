@@ -1,7 +1,7 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
 libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
-includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@/charls
 
 Name: CharLS
 Description: JPEG-LS (ISO/IEC 14495-1 / ITU-T.87) library implementation.
