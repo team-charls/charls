@@ -9,7 +9,7 @@
 
 namespace charls {
 
-// Default threshold values for JPEG-LS statistical modeling as defined in ISO/IEC 14495-1, Table C.3
+// Default threshold values for JPEG-LS statistical modeling as defined in ISO/IEC 14495-1, table C.3
 // for the case MAXVAL = 255 and NEAR = 0.
 // Can be overridden at compression time, however this is rarely done.
 constexpr int default_threshold1{3};  // BASIC_T1
@@ -18,12 +18,20 @@ constexpr int default_threshold3{21}; // BASIC_T3
 
 constexpr int default_reset_value{64}; // Default RESET value as defined in ISO/IEC 14495-1, table C.2
 
-constexpr int maximum_component_count{255};
-constexpr int minimum_bits_per_sample{2};
-constexpr int maximum_bits_per_sample{16};
-constexpr int maximum_near_lossless{255};
-constexpr int32_t minimum_application_data_id{0};
+constexpr int32_t maximum_component_count{255};
+constexpr int32_t minimum_component_index{};
+constexpr int32_t maximum_component_index{maximum_component_count - 1};
+constexpr int32_t minimum_bits_per_sample{2};
+constexpr int32_t maximum_bits_per_sample{16};
+constexpr int32_t maximum_near_lossless{255};
+constexpr int32_t minimum_application_data_id{};
 constexpr int32_t maximum_application_data_id{15};
+
+// The following limits for mapping tables are defined in ISO/IEC 14495-1, C.2.4.1.2, table C.4.
+constexpr int32_t minimum_table_id{1};
+constexpr int32_t maximum_table_id{255};
+constexpr int32_t minimum_entry_size{1};
+constexpr int32_t maximum_entry_size{255};
 
 constexpr int max_k_value{16}; // This is an implementation limit (theoretical limit is 32)
 

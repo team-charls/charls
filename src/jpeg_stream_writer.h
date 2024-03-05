@@ -5,9 +5,13 @@
 
 #include "charls/jpegls_error.h"
 
+#include "constants.h"
 #include "jpeg_marker_code.h"
+#include "jpegls_preset_parameters_type.h"
 #include "span.h"
 #include "util.h"
+
+#include <vector>
 
 namespace charls {
 
@@ -61,17 +65,22 @@ public:
     void write_application_data_segment(int32_t application_data_id, span<const std::byte> application_data);
 
     /// <summary>
-    /// Writes a JPEG-LS preset parameters (LSE) segment.
+    /// Writes a JPEG-LS preset parameters (LSE) segment with JPEG-LS preset coding parameters.
     /// </summary>
     /// <param name="preset_coding_parameters">Parameters to write into the JPEG-LS preset segment.</param>
     void write_jpegls_preset_parameters_segment(const jpegls_pc_parameters& preset_coding_parameters);
 
     /// <summary>
-    /// Writes a JPEG-LS preset parameters (LSE) segment for oversize image dimension.
+    /// Writes a JPEG-LS preset parameters (LSE) segment with oversize image dimension information.
     /// </summary>
     /// <param name="width">Height of the image.</param>
     /// <param name="height">Width of the image.</param>
     void write_jpegls_preset_parameters_segment(uint32_t height, uint32_t width);
+
+    /// <summary>
+    /// Writes JPEG-LS preset parameters (LSE) segment(s) with a mapping table.
+    /// </summary>
+    void write_jpegls_preset_parameters_segment(int32_t table_id, int32_t entry_size, span<const std::byte> table_data);
 
     /// <summary>
     /// Writes a JPEG-LS Start Of Frame (SOF-55) segment.
@@ -120,10 +129,26 @@ public:
     void rewind() noexcept
     {
         byte_offset_ = 0;
-        component_id_ = 1;
+        component_index_ = 0;
+    }
+
+    void set_table_id(const size_t component_index, const int32_t table_id)
+    {
+        ASSERT(component_index < maximum_component_count);
+        ASSERT(0 <= table_id && table_id <= maximum_table_id);
+
+        // Usage of mapping tables is rare: use lazy initialization.
+        if (table_ids_.empty())
+        {
+            table_ids_.resize(maximum_component_count);
+        }
+
+        table_ids_[component_index] = static_cast<uint8_t>(table_id);
     }
 
 private:
+    void write_jpegls_preset_parameters_segment(jpegls_preset_parameters_type preset_parameters_type, int32_t table_id,
+                                                int32_t entry_size, span<const std::byte> table_data);
     void write_segment_header(jpeg_marker_code marker_code, size_t data_size);
 
     void write_uint8(const uint8_t value) noexcept
@@ -215,9 +240,16 @@ private:
         write_bytes(data);
     }
 
+    [[nodiscard]]
+    uint8_t mapping_table_selector() const noexcept
+    {
+        return table_ids_.empty() ? 0 : table_ids_[component_index_];
+    }
+
     span<std::byte> destination_{};
     size_t byte_offset_{};
-    uint8_t component_id_{1};
+    uint8_t component_index_{};
+    std::vector<uint8_t> table_ids_;
 };
 
 } // namespace charls

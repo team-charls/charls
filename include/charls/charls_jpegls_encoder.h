@@ -111,6 +111,17 @@ charls_jpegls_encoder_set_color_transformation(CHARLS_IN charls_jpegls_encoder* 
     CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
+/// Configures the table ID the encoder should reference when encoding a component.
+/// The referenced table can be included in the stream or provided in another JPEG-LS abbreviated format stream.
+/// </summary>
+/// <param name="encoder">Reference to the encoder instance.</param>
+/// <param name="component_index">Index of the component. Component 0 is the start index.</param>
+/// <param name="table_id">Table ID that will be referenced by this component.</param>
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_set_table_id(CHARLS_IN charls_jpegls_encoder* encoder, int32_t component_index,
+                                   int32_t table_id) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+
+/// <summary>
 /// Returns the size in bytes, that the encoder expects are needed to hold the encoded image.
 /// </summary>
 /// <remarks>
@@ -231,6 +242,25 @@ charls_jpegls_encoder_write_application_data(CHARLS_IN charls_jpegls_encoder* en
                                              size_t application_data_size_bytes) CHARLS_NOEXCEPT;
 
 /// <summary>
+/// Writes a mapping table to the destination.
+/// During decoding a component can reference a mapping table.
+/// </summary>
+/// <remarks>
+/// No validation is performed if the table ID is unique and if the table size matches the required size.
+/// During decoding the active maximum value determines the required size of the table.
+/// </remarks>
+/// <param name="encoder">Reference to the encoder instance.</param>
+/// <param name="table_id">Table identifier, should be unique for the image.</param>
+/// <param name="entry_size">Number of bytes in a table entry.</param>
+/// <param name="table_data">Byte array that holds the mapping table.</param>
+/// <param name="table_data_size_bytes">The size in bytes of the mapping table.</param>
+CHARLS_ATTRIBUTE_ACCESS((access(read_only, 4, 5)))
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_write_table(CHARLS_IN charls_jpegls_encoder* encoder, int32_t table_id, int32_t entry_size,
+                                  CHARLS_IN_READS_BYTES(table_data_size_bytes) const void* table_data,
+                                  size_t table_data_size_bytes) CHARLS_NOEXCEPT;
+
+/// <summary>
 /// Encodes the passed buffer with the source image data to the destination.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
@@ -246,6 +276,17 @@ CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLI
 charls_jpegls_encoder_encode_from_buffer(CHARLS_IN charls_jpegls_encoder* encoder,
                                          CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
                                          size_t source_size_bytes, uint32_t stride) CHARLS_NOEXCEPT
+    CHARLS_ATTRIBUTE((nonnull));
+
+
+/// <summary>
+/// Creates a JPEG-LS stream in the abbreviated format that only contain mapping tables.
+/// These tables must have been written to the stream first with the method charls_jpegls_encoder_write_table.
+/// </summary>
+/// <param name="encoder">Reference to the encoder instance.</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_create_tables_only(CHARLS_IN charls_jpegls_encoder* encoder) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
@@ -375,6 +416,18 @@ public:
     jpegls_encoder& color_transformation(const color_transformation color_transformation)
     {
         check_jpegls_errc(charls_jpegls_encoder_set_color_transformation(encoder_.get(), color_transformation));
+        return *this;
+    }
+
+    /// <summary>
+    /// Configures the table ID the encoder should reference when encoding a component.
+    /// The referenced table can be included in the stream or provided in another JPEG-LS abbreviated format stream.
+    /// </summary>
+    /// <param name="component_index">Index of the component. Component 0 is the start index.</param>
+    /// <param name="table_id">Table ID that will be referenced by this component.</param>
+    jpegls_encoder& set_table_id(const int32_t component_index, const int32_t table_id)
+    {
+        check_jpegls_errc(charls_jpegls_encoder_set_table_id(encoder_.get(), component_index, table_id));
         return *this;
     }
 
@@ -525,6 +578,26 @@ public:
     }
 
     /// <summary>
+    /// Writes a mapping table to the destination.
+    /// During decoding a component can reference a mapping table.
+    /// </summary>
+    /// <remarks>
+    /// No validation is performed if the table ID is unique and if the table size matches the required size.
+    /// During decoding the active maximum value determines the required size of the table.
+    /// </remarks>
+    /// <param name="table_id">Table identifier, should be unique for the image. Valid range is [1,255].</param>
+    /// <param name="entry_size">Number of bytes in a table entry. Valid range is [1,255].</param>
+    /// <param name="table_data">Byte array that holds the mapping table.</param>
+    /// <param name="size">The size in bytes of the mapping table.</param>
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 4, 5)))
+    jpegls_encoder& write_table(const int32_t table_id, const int32_t entry_size,
+                                CHARLS_IN_READS_BYTES(size) const void* table_data, const size_t size)
+    {
+        check_jpegls_errc(charls_jpegls_encoder_write_table(encoder_.get(), table_id, entry_size, table_data, size));
+        return *this;
+    }
+
+    /// <summary>
     /// Encodes the passed buffer with the source image data to the destination.
     /// </summary>
     /// <param name="source_buffer">Byte array that holds the image data that needs to be encoded.</param>
@@ -556,6 +629,17 @@ public:
     size_t encode(const Container& source_container, const uint32_t stride = 0) const
     {
         return encode(source_container.data(), source_container.size() * sizeof(ContainerValueType), stride);
+    }
+
+    /// <summary>
+    /// Creates a JPEG-LS stream in abbreviated format that only contain mapping tables.
+    /// These tables should have been written to the stream first with the method write_table.
+    /// </summary>
+    /// <returns>The number of bytes written to the destination.</returns>
+    size_t create_tables_only() const
+    {
+        check_jpegls_errc(charls_jpegls_encoder_create_tables_only(encoder_.get()));
+        return bytes_written();
     }
 
     /// <summary>
