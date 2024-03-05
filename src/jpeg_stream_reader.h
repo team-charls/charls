@@ -10,6 +10,7 @@
 #include "util.h"
 
 #include <cstdint>
+#include <numeric>
 #include <vector>
 
 namespace charls {
@@ -68,6 +69,7 @@ public:
     void read_header(spiff_header* header = nullptr, bool* spiff_header_found = nullptr);
     void read_next_start_of_scan();
     void read_end_of_image();
+
     [[nodiscard]]
     jpegls_pc_parameters get_validated_preset_coding_parameters() const;
 
@@ -76,6 +78,20 @@ public:
         ASSERT(position_ + count <= end_position_);
         position_ += count;
     }
+
+    [[nodiscard]]
+    int32_t mapping_table_count() const noexcept
+    {
+        return static_cast<int32_t>(mapping_tables_.size());
+    }
+
+    [[nodiscard]]
+    int32_t get_mapping_table_index(uint8_t table_id) const;
+
+    [[nodiscard]]
+    std::pair<uint8_t, size_t> get_mapping_table_info(size_t index) const;
+
+    void get_mapping_table(size_t index, span<std::byte> destination) const;
 
 private:
     [[nodiscard]]
@@ -124,6 +140,7 @@ private:
     void read_preset_parameters_segment();
     void read_preset_coding_parameters();
     void read_oversize_image_dimension();
+    void read_mapping_table_specification();
     void read_define_restart_interval_segment();
     void try_read_application_data8_segment(spiff_header* header, bool* spiff_header_found);
     void try_read_spiff_header_segment(CHARLS_OUT spiff_header& header, CHARLS_OUT bool& spiff_header_found);
@@ -140,6 +157,7 @@ private:
     void frame_info_height(uint32_t height);
     void frame_info_width(uint32_t width);
     void call_application_data_callback(jpeg_marker_code marker_code) const;
+    void add_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
 
     enum class state
     {
@@ -153,6 +171,47 @@ private:
         after_end_of_image
     };
 
+    class mapping_table_entry final
+    {
+    public:
+        mapping_table_entry(const uint8_t table_id, const uint8_t entry_size, const span<const std::byte> table_data) :
+            table_id_{table_id}, entry_size_{entry_size}
+        {
+            data_fragments_.push_back(table_data);
+        }
+
+        [[nodiscard]]
+        uint8_t table_id() const noexcept
+        {
+            return table_id_;
+        }
+
+        [[nodiscard]]
+        size_t data_size() const
+        {
+            return std::accumulate(
+                data_fragments_.cbegin(), data_fragments_.cend(), size_t{0},
+                [](const size_t result, const span<const std::byte> data_fragment) { return result + data_fragment.size(); });
+        }
+
+        void copy_data(const span<std::byte> destination) const
+        {
+            ASSERT(destination.size() >= data_size());
+
+            auto position{destination.begin()};
+            for (const auto& data_fragment : data_fragments_)
+            {
+                std::copy(data_fragment.begin(), data_fragment.end(), position);
+                position += data_fragment.size();
+            }
+        }
+
+    private:
+        uint8_t table_id_;
+        uint8_t entry_size_;
+        std::vector<span<const std::byte>> data_fragments_;
+    };
+
     span<const std::byte>::iterator position_{};
     span<const std::byte>::iterator end_position_{};
     span<const std::byte> segment_data_;
@@ -160,6 +219,7 @@ private:
     coding_parameters parameters_{};
     jpegls_pc_parameters preset_coding_parameters_{};
     std::vector<uint8_t> component_ids_;
+    std::vector<mapping_table_entry> mapping_tables_;
     state state_{};
     callback_function<at_comment_handler> at_comment_callback_{};
     callback_function<at_application_data_handler> at_application_data_callback_{};

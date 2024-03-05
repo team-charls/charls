@@ -13,3 +13,5 @@ bugprone
 countl
 cppcoreguidelines
 mrfx
+subspan
+cppcoreguidelines

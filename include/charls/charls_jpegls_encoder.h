@@ -423,7 +423,6 @@ public:
     /// Configures the table ID the encoder should reference when encoding a component.
     /// The referenced table can be included in the stream or provided in another JPEG-LS abbreviated format stream.
     /// </summary>
-    /// <param name="encoder">Reference to the encoder instance.</param>
     /// <param name="component_index">Index of the component. Component 0 is the start index.</param>
     /// <param name="table_id">Table ID that will be referenced by this component.</param>
     jpegls_encoder& set_table_id(const int32_t component_index, const int32_t table_id)
@@ -636,7 +635,6 @@ public:
     /// Creates a JPEG-LS stream in abbreviated format that only contain mapping tables.
     /// These tables should have been written to the stream first with the method write_table.
     /// </summary>
-    /// <param name="encoder">Reference to the encoder instance.</param>
     /// <returns>The number of bytes written to the destination.</returns>
     size_t create_tables_only() const
     {

@@ -223,6 +223,32 @@ jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters(
 }
 
 
+int32_t jpeg_stream_reader::get_mapping_table_index(const uint8_t table_id) const
+{
+    const auto it{
+        std::find_if(mapping_tables_.cbegin(), mapping_tables_.cend(),
+                     [table_id](const mapping_table_entry& entry) noexcept { return table_id == entry.table_id(); })};
+
+    if (it == mapping_tables_.cend())
+        throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_preset_parameters); // TODO better error
+
+    return static_cast<int32_t>(it - mapping_tables_.cbegin());
+}
+
+
+std::pair<uint8_t, size_t> jpeg_stream_reader::get_mapping_table_info(const size_t index) const
+{
+    const auto& entry{mapping_tables_[index]};
+    return {entry.table_id(), entry.data_size()};
+}
+
+
+void jpeg_stream_reader::get_mapping_table(const size_t index, const span<std::byte> destination) const
+{
+    mapping_tables_[index].copy_data(destination);
+}
+
+
 void jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code, spiff_header* header,
                                              bool* spiff_header_found)
 {
@@ -359,6 +385,9 @@ void jpeg_stream_reader::read_preset_parameters_segment()
         return;
 
     case jpegls_preset_parameters_type::mapping_table_specification:
+        read_mapping_table_specification();
+        return;
+
     case jpegls_preset_parameters_type::mapping_table_continuation:
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
@@ -424,6 +453,17 @@ void jpeg_stream_reader::read_oversize_image_dimension()
 
     frame_info_height(height);
     frame_info_width(width);
+}
+
+
+void jpeg_stream_reader::read_mapping_table_specification()
+{
+    check_minimal_segment_size(3);
+    const uint8_t table_id{read_uint8()};
+    const uint8_t entry_size{read_uint8()};
+
+    add_table(table_id, entry_size, segment_data_.subspan(3));
+    skip_remaining_segment_data();
 }
 
 
@@ -752,6 +792,12 @@ void jpeg_stream_reader::call_application_data_callback(const jpeg_marker_code m
             to_application_data_id(marker_code), segment_data_.empty() ? nullptr : to_address(position_),
             segment_data_.size(), at_application_data_callback_.user_context))))
         throw_jpegls_error(jpegls_errc::callback_failed);
+}
+
+
+void jpeg_stream_reader::add_table(const uint8_t table_id, const uint8_t entry_size, const span<const std::byte> table_data)
+{
+    mapping_tables_.emplace_back(table_id, entry_size, table_data);
 }
 
 } // namespace charls

@@ -685,6 +685,35 @@ public:
         Assert::IsFalse(called);
     }
 
+    TEST_METHOD(read_mapping_table) // NOLINT
+    {
+        vector<byte> source(100);
+        jpeg_stream_writer writer({source.data(), source.size()});
+        writer.write_start_of_image();
+
+        const array table_data_expected{byte{2}};
+
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data_expected);
+        writer.write_start_of_frame_segment({1, 1, 2, 1});
+        writer.write_start_of_scan_segment(1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({source.data(), source.size()});
+
+        reader.read_header();
+
+        Assert::AreEqual(1, reader.mapping_table_count());
+        Assert::AreEqual(0, reader.get_mapping_table_index(1));
+
+        const auto info{reader.get_mapping_table_info(0)};
+        Assert::AreEqual(uint8_t{1}, info.first);
+        Assert::AreEqual(size_t{1}, info.second);
+
+        vector<byte> table_data(1);
+        reader.get_mapping_table(0, {table_data.data(), table_data.size()});
+        Assert::AreEqual(byte{2}, table_data[0]);
+    }
+
 private:
     static void read_spiff_header(const uint8_t low_version)
     {
