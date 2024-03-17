@@ -32,6 +32,10 @@ public:
         return {};
     }
 
+    void rewind() override
+    {
+    }
+
     [[nodiscard]]
     int32_t read(const int32_t length)
     {

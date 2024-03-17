@@ -1026,6 +1026,27 @@ public:
         decoder.decode(data, size);
     }
 
+
+    TEST_METHOD(rewind) // NOLINT
+    {
+        const auto source{read_file("DataFiles/t8c0e0.jls")};
+
+        jpegls_decoder decoder{source, true};
+        vector<byte> destination(decoder.destination_size());
+        const uint32_t standard_stride{decoder.frame_info().width};
+        decoder.decode(destination);
+
+        verify_decoded_bytes(decoder.interleave_mode(), decoder.frame_info(), destination, standard_stride,
+                             "DataFiles/test8.ppm");
+
+        decoder.rewind();
+        decoder.source(source);
+        decoder.read_header();
+        decoder.decode(destination);
+        verify_decoded_bytes(decoder.interleave_mode(), decoder.frame_info(), destination, standard_stride,
+                             "DataFiles/test8.ppm");
+    }
+
 private:
     // ReSharper disable CppPassValueParameterByConstReference
     [[nodiscard]]

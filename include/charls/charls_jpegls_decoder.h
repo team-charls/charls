@@ -219,6 +219,14 @@ charls_jpegls_decoder_at_application_data(CHARLS_IN charls_jpegls_decoder* decod
                                           charls_at_application_data_handler handler, void* user_context) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull(1)));
 
+/// <summary>
+/// Resets the read position and internal state to allow to decode again.
+/// </summary>
+/// <param name="encoder">Reference to the decoder instance.</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_decoder_rewind(CHARLS_IN charls_jpegls_decoder* encoder) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+
 #ifdef __cplusplus
 
 } // extern "C"
@@ -601,6 +609,12 @@ public:
         application_data_handler_ = std::move(application_data_handler);
         check_jpegls_errc(charls_jpegls_decoder_at_application_data(
             decoder_.get(), application_data_handler_ ? &at_application_data_callback : nullptr, this));
+        return *this;
+    }
+
+    jpegls_decoder& rewind()
+    {
+        check_jpegls_errc(charls_jpegls_decoder_rewind(decoder_.get()));
         return *this;
     }
 

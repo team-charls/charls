@@ -157,9 +157,8 @@ struct charls_jpegls_decoder final
 
         for (size_t plane{};;)
         {
-            const auto decoder{make_scan_codec<scan_decoder>(
-                frame_info(), reader_.get_validated_preset_coding_parameters(), reader_.parameters())};
-            const size_t bytes_read{decoder->decode_scan(reader_.remaining_source(), destination.data(), stride)};
+            prepare_scan_decoder();
+            const size_t bytes_read{scan_decoder_->decode_scan(reader_.remaining_source(), destination.data(), stride)};
             reader_.advance_position(bytes_read);
 
             ++plane;
@@ -173,6 +172,15 @@ struct charls_jpegls_decoder final
         reader_.read_end_of_image();
 
         state_ = state::completed;
+    }
+
+    void rewind() noexcept
+    {
+        if (state_ == state::initial)
+            return; // Nothing to do, stay in the same state.
+
+        reader_.rewind();
+        state_ = state::initial;
     }
 
 private:
@@ -211,6 +219,29 @@ private:
         }
     }
 
+    void prepare_scan_decoder()
+    {
+        if (!scan_decoder_)
+        {
+            scan_decoder_ = make_scan_codec<scan_decoder>(frame_info(), reader_.get_validated_preset_coding_parameters(),
+                                                          reader_.parameters());
+        }
+        else
+        {
+            if (scan_decoder_->is_compatible(frame_info(), reader_.get_validated_preset_coding_parameters(),
+                reader_.parameters()))
+            {
+                scan_decoder_->rewind();
+            }
+            else
+            {
+                scan_decoder_.reset();
+                scan_decoder_ = make_scan_codec<scan_decoder>(frame_info(), reader_.get_validated_preset_coding_parameters(),
+                                                              reader_.parameters());
+            }
+        }
+    }
+
     enum class state
     {
         initial,
@@ -223,6 +254,7 @@ private:
 
     state state_{};
     jpeg_stream_reader reader_;
+    std::unique_ptr<scan_decoder> scan_decoder_;
 };
 
 
@@ -393,6 +425,18 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_dec
 try
 {
     check_pointer(decoder)->at_application_data({handler, user_context});
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_rewind(
+    charls_jpegls_decoder* decoder) noexcept
+try
+{
+    check_pointer(decoder)->rewind();
     return jpegls_errc::success;
 }
 catch (...)

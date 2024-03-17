@@ -8,8 +8,8 @@
 #include "jpeg_marker_code.h"
 #include "process_decoded_line.h"
 #include "scan_codec.h"
-#include "util.h"
 #include "span.h"
+#include "util.h"
 
 #include <cassert>
 #include <memory>
@@ -32,6 +32,23 @@ public:
     scan_decoder& operator=(scan_decoder&&) = delete;
 
     virtual size_t decode_scan(span<const std::byte> source, std::byte* destination, size_t stride) = 0;
+    virtual void rewind() = 0;
+
+    [[nodiscard]]
+    bool is_compatible(const charls::frame_info& frame_info, const jpegls_pc_parameters& pc_parameters,
+                       const coding_parameters& parameters) const noexcept
+    {
+        const int32_t component_count{parameters.interleave_mode == interleave_mode::none ? 1 : frame_info.component_count};
+        const uint32_t restart_interval{parameters.restart_interval == 0 ? frame_info_.height : parameters.restart_interval};
+
+        return frame_info_.width == frame_info.width && frame_info_.height == frame_info.height &&
+               frame_info_.bits_per_sample == frame_info.bits_per_sample && frame_info_.component_count == component_count &&
+               t1_ == pc_parameters.threshold1 && t2_ == pc_parameters.threshold2 && t3_ == pc_parameters.threshold3 &&
+               reset_value_ == pc_parameters.reset_value && parameters_.near_lossless == parameters.near_lossless &&
+               parameters_.restart_interval == restart_interval &&
+               parameters_.interleave_mode == parameters.interleave_mode &&
+               parameters_.transformation == parameters.transformation;
+    }
 
 protected:
     using scan_codec::scan_codec;

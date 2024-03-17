@@ -46,6 +46,11 @@ public:
         return get_cur_byte_pos() - scan_begin;
     }
 
+    void rewind() override
+    {
+        reset_parameters(traits_.range);
+    }
+
 private:
     // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
     std::unique_ptr<process_decoded_line> create_process_line(std::byte* destination, const size_t stride)

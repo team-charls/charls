@@ -55,7 +55,6 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
         if (UNLIKELY(read_next_marker_code() != jpeg_marker_code::start_of_image))
             throw_jpegls_error(jpegls_errc::start_of_image_marker_not_found);
 
-        component_ids_.reserve(4); // expect 4 components or fewer.
         state_ = state::header_section;
     }
 
@@ -221,6 +220,14 @@ jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters(
 
     return preset_coding_parameters;
 }
+
+
+void jpeg_stream_reader::rewind() noexcept
+{
+    state_ = state::before_start_of_image;
+    component_ids_.clear();
+    frame_info_ = {};
+ }
 
 
 void jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code, spiff_header* header,

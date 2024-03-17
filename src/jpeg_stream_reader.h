@@ -20,7 +20,11 @@ enum class jpeg_marker_code : uint8_t;
 class jpeg_stream_reader final
 {
 public:
-    jpeg_stream_reader() = default;
+    jpeg_stream_reader() noexcept(false)
+    {
+        component_ids_.reserve(4); // expect 4 components or less.
+    }
+
     ~jpeg_stream_reader() = default;
 
     jpeg_stream_reader(const jpeg_stream_reader&) = delete;
@@ -76,6 +80,8 @@ public:
         ASSERT(position_ + count <= end_position_);
         position_ += count;
     }
+
+    void rewind() noexcept;
 
 private:
     [[nodiscard]]
