@@ -187,8 +187,14 @@ public:
 
     TEST_METHOD(write_table_data_nullptr) // NOLINT
     {
+        constexpr table_info info{};
         constexpr array<byte, 10> buffer{};
-        const auto error{charls_jpegls_encoder_write_table(nullptr, 0, 0, buffer.data(), buffer.size())};
+        auto error{charls_jpegls_encoder_write_table(nullptr, &info, buffer.data())};
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+
+        auto* const encoder{charls_jpegls_encoder_create()};
+        error = charls_jpegls_encoder_write_table(encoder, nullptr, buffer.data());
+        charls_jpegls_encoder_destroy(encoder);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 

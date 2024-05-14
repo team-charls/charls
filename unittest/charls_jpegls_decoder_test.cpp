@@ -188,6 +188,18 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
+    TEST_METHOD(charls_decoder_get_mapping_table_count_nullptr) // NOLINT
+    {
+        int32_t count{7};
+        auto error{charls_decoder_get_mapping_table_count(nullptr, &count)};
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+        Assert::AreEqual(7, count);
+
+        const auto* decoder{get_initialized_decoder()};
+        error = charls_decoder_get_mapping_table_count(decoder, nullptr);
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+    }
+
 private:
     static charls_jpegls_decoder* get_initialized_decoder()
     {

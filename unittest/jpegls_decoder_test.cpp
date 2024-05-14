@@ -1026,6 +1026,33 @@ public:
         decoder.decode(data, size);
     }
 
+    TEST_METHOD(mapping_table_count_is_zero_at_start) // NOLINT
+    {
+        const jpegls_decoder decoder;
+
+        const int32_t count{decoder.mapping_table_count()};
+
+        Assert::AreEqual(0, count);
+    }
+
+    TEST_METHOD(mapping_table_count_after_read_header) // NOLINT
+    {
+        // TODO
+        Assert::AreEqual(0, 0);
+    }
+
+    TEST_METHOD(mapping_table_count_after_read_header_no_frame) // NOLINT
+    {
+        // TODO
+        Assert::AreEqual(0, 0);
+    }
+
+    TEST_METHOD(mapping_table_count_after_decode_table_after_first_scan) // NOLINT
+    {
+        // TODO
+        Assert::AreEqual(0, 0);
+    }
+
 private:
     // ReSharper disable CppPassValueParameterByConstReference
     [[nodiscard]]

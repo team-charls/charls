@@ -236,16 +236,16 @@ int32_t jpeg_stream_reader::get_mapping_table_index(const uint8_t table_id) cons
 }
 
 
-std::pair<uint8_t, size_t> jpeg_stream_reader::get_mapping_table_info(const size_t index) const
+table_info jpeg_stream_reader::get_mapping_table_info(const size_t index) const
 {
     const auto& entry{mapping_tables_[index]};
-    return {entry.table_id(), entry.data_size()};
+    return {entry.table_id(), entry.entry_size(), static_cast<uint32_t>(entry.data_size())};
 }
 
 
-void jpeg_stream_reader::get_mapping_table(const size_t index, const span<std::byte> destination) const
+void jpeg_stream_reader::get_mapping_table(const size_t index, std::byte* table_data) const
 {
-    mapping_tables_[index].copy_data(destination);
+    mapping_tables_[index].copy_data(table_data);
 }
 
 

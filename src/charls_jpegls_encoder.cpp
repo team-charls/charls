@@ -166,16 +166,18 @@ struct charls_jpegls_encoder final
         writer_.write_application_data_segment(application_data_id, application_data);
     }
 
-    void write_table(const int32_t table_id, const int32_t entry_size, const span<const byte> table_data)
+    void write_table(const table_info& table_info, const byte* table_data)
     {
-        check_argument_range(minimum_table_id, maximum_table_id, table_id);
-        check_argument_range(minimum_entry_size, maximum_entry_size, entry_size);
-        check_argument(table_data.data() || table_data.empty());
-        check_argument(table_data.size() >= static_cast<size_t>(entry_size), jpegls_errc::invalid_argument_size);
+        check_argument_range(minimum_table_id, maximum_table_id, table_info.table_id);
+        check_argument_range(minimum_entry_size, maximum_entry_size, table_info.entry_size);
+        check_argument(table_data != nullptr);
+        check_argument(table_info.data_size >= static_cast<size_t>(table_info.entry_size),
+                       jpegls_errc::invalid_argument_size);
         check_operation(state_ >= state::destination_set && state_ < state::completed);
 
         transition_to_tables_and_miscellaneous_state();
-        writer_.write_jpegls_preset_parameters_segment(table_id, entry_size, table_data);
+        writer_.write_jpegls_preset_parameters_segment(table_info.table_id, table_info.entry_size,
+                                                       {table_data, table_info.data_size});
     }
 
     void encode(span<const byte> source, size_t stride)
@@ -605,12 +607,11 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_write_table(charls_jpegls_encoder* encoder, const int32_t table_id, const int32_t entry_size,
-                                  const void* table_data, const size_t table_data_size_bytes) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_write_table(
+    charls_jpegls_encoder* encoder, const table_info* table_info, const void* table_data) noexcept
 try
 {
-    check_pointer(encoder)->write_table(table_id, entry_size, {static_cast<const byte*>(table_data), table_data_size_bytes});
+    check_pointer(encoder)->write_table(*check_pointer(table_info), static_cast<const byte*>(table_data));
     return jpegls_errc::success;
 }
 catch (...)

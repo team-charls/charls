@@ -691,7 +691,7 @@ public:
         jpeg_stream_writer writer({source.data(), source.size()});
         writer.write_start_of_image();
 
-        const array table_data_expected{byte{2}};
+        constexpr array table_data_expected{byte{2}};
 
         writer.write_jpegls_preset_parameters_segment(1, 1, table_data_expected);
         writer.write_start_of_frame_segment({1, 1, 2, 1});
@@ -706,11 +706,12 @@ public:
         Assert::AreEqual(0, reader.get_mapping_table_index(1));
 
         const auto info{reader.get_mapping_table_info(0)};
-        Assert::AreEqual(uint8_t{1}, info.first);
-        Assert::AreEqual(size_t{1}, info.second);
+        Assert::AreEqual(int32_t{1}, info.table_id);
+        Assert::AreEqual(int32_t{1}, info.entry_size);
+        // TODO check table size.
 
         vector<byte> table_data(1);
-        reader.get_mapping_table(0, {table_data.data(), table_data.size()});
+        reader.get_mapping_table(0, table_data.data());
         Assert::AreEqual(byte{2}, table_data[0]);
     }
 

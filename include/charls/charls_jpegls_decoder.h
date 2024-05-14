@@ -219,6 +219,24 @@ charls_jpegls_decoder_at_application_data(CHARLS_IN charls_jpegls_decoder* decod
                                           charls_at_application_data_handler handler, void* user_context) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull(1)));
 
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_decoder_get_mapping_table_index(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t table_id,
+                                       CHARLS_OUT int32_t* index) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_decoder_get_mapping_table_count(CHARLS_IN const charls_jpegls_decoder* decoder,
+                                       CHARLS_OUT int32_t* count) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+
+
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_decoder_get_mapping_table_info(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t index,
+                                      CHARLS_OUT charls_table_info* table_info) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+
+
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_decoder_get_mapping_table(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t index,
+                                 CHARLS_OUT void* table_data) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+
 #ifdef __cplusplus
 
 } // extern "C"
@@ -602,6 +620,27 @@ public:
         check_jpegls_errc(charls_jpegls_decoder_at_application_data(
             decoder_.get(), application_data_handler_ ? &at_application_data_callback : nullptr, this));
         return *this;
+    }
+
+    [[nodiscard]]
+    int32_t mapping_table_count() const
+    {
+        int32_t count;
+        check_jpegls_errc(charls_decoder_get_mapping_table_count(decoder_.get(), &count));
+        return count;
+    }
+
+    [[nodiscard]]
+    table_info mapping_table_info(const int32_t index) const
+    {
+        table_info table_info;
+        check_jpegls_errc(charls_decoder_get_mapping_table_info(decoder_.get(), index, &table_info));
+        return table_info;
+    }
+
+    void mapping_table(const int32_t index, CHARLS_OUT void* table_data) const
+    {
+        check_jpegls_errc(charls_decoder_get_mapping_table(decoder_.get(), index, table_data));
     }
 
 private:

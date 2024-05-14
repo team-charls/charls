@@ -129,6 +129,34 @@ struct charls_jpegls_decoder final
         reader_.at_application_data(at_application_data_callback);
     }
 
+    [[nodiscard]]
+    int32_t mapping_table_index(const int32_t table_id) const
+    {
+        check_argument_range(minimum_table_id, maximum_table_id, table_id);
+        return reader_.get_mapping_table_index(static_cast<uint8_t>(table_id));
+    }
+
+    [[nodiscard]]
+    int32_t mapping_table_count() const noexcept
+    {
+        return reader_.mapping_table_count();
+    }
+
+    [[nodiscard]]
+    table_info mapping_table_info(const int32_t index) const
+    {
+        check_table_index(index);
+        return reader_.get_mapping_table_info(index);
+    }
+
+    void mapping_table(const int32_t index, byte* const table_data) const
+    {
+        check_table_index(index);
+        check_argument(table_data != nullptr);
+
+        reader_.get_mapping_table(index, table_data);
+    }
+
     void decode(span<byte> destination, size_t stride)
     {
         check_argument(destination.data() || destination.empty());
@@ -157,8 +185,8 @@ struct charls_jpegls_decoder final
 
         for (size_t plane{};;)
         {
-            const auto decoder{make_scan_codec<scan_decoder>(
-                frame_info(), reader_.get_validated_preset_coding_parameters(), reader_.parameters())};
+            const auto decoder{make_scan_codec<scan_decoder>(frame_info(), reader_.get_validated_preset_coding_parameters(),
+                                                             reader_.parameters())};
             const size_t bytes_read{decoder->decode_scan(reader_.remaining_source(), destination.data(), stride)};
             reader_.advance_position(bytes_read);
 
@@ -194,6 +222,11 @@ private:
     void check_header_read() const
     {
         check_operation(state_ >= state::header_read);
+    }
+
+    void check_table_index(const int32_t index) const 
+    {
+        check_argument_range(0, mapping_table_count() - 1, index);
     }
 
     void check_parameter_coherent() const
@@ -399,5 +432,58 @@ catch (...)
 {
     return to_jpegls_errc();
 }
+
+
+USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_decoder_get_mapping_table_index(const charls_jpegls_decoder* decoder, int32_t table_id, int32_t* index) noexcept
+try
+{
+    *check_pointer(index) = check_pointer(decoder)->mapping_table_index(table_id);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_decoder_get_mapping_table_count(const charls_jpegls_decoder* decoder, int32_t* count) noexcept
+try
+{
+    *check_pointer(count) = check_pointer(decoder)->mapping_table_count();
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table_info(
+    const charls_jpegls_decoder* decoder, const int32_t index, table_info* table_info) noexcept
+try
+{
+    *check_pointer(table_info) = check_pointer(decoder)->mapping_table_info(index);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table(
+    const charls_jpegls_decoder* decoder, const int32_t index, CHARLS_OUT void* table_data) noexcept
+try
+{
+    check_pointer(decoder)->mapping_table(index, static_cast<byte*>(table_data));
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
 
 } // extern "C"

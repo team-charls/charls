@@ -929,6 +929,28 @@ struct charls_jpegls_pc_parameters CHARLS_FINAL
 };
 
 
+/// <summary>
+/// Defines the information that describes a mapping table.
+/// </summary>
+struct charls_table_info CHARLS_FINAL
+{
+    /// <summary>
+    /// Identifier of the mapping table, range [1, 255].
+    /// </summary>
+    int32_t table_id;
+
+    /// <summary>
+    /// Width of a table entry in bytes, range [1, 255].
+    /// </summary>
+    int32_t entry_size;
+
+    /// <summary>
+    /// Size of the table in bytes, range [1, 16711680]
+    /// </summary>
+    uint32_t data_size;
+};
+
+
 #ifdef __cplusplus
 
 /// <summary>
@@ -962,6 +984,7 @@ namespace charls {
 using spiff_header = charls_spiff_header;
 using frame_info = charls_frame_info;
 using jpegls_pc_parameters = charls_jpegls_pc_parameters;
+using table_info = charls_table_info;
 using at_comment_handler = charls_at_comment_handler;
 using at_application_data_handler = charls_at_application_data_handler;
 
@@ -981,5 +1004,6 @@ typedef int32_t(CHARLS_API_CALLING_CONVENTION* charls_at_application_data_handle
 typedef struct charls_spiff_header charls_spiff_header;
 typedef struct charls_frame_info charls_frame_info;
 typedef struct charls_jpegls_pc_parameters charls_jpegls_pc_parameters;
+typedef struct charls_table_info charls_table_info;
 
 #endif

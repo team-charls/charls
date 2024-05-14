@@ -89,9 +89,9 @@ public:
     int32_t get_mapping_table_index(uint8_t table_id) const;
 
     [[nodiscard]]
-    std::pair<uint8_t, size_t> get_mapping_table_info(size_t index) const;
+    table_info get_mapping_table_info(size_t index) const;
 
-    void get_mapping_table(size_t index, span<std::byte> destination) const;
+    void get_mapping_table(size_t index, std::byte* table_data) const;
 
 private:
     [[nodiscard]]
@@ -187,6 +187,12 @@ private:
         }
 
         [[nodiscard]]
+        uint8_t entry_size() const noexcept
+        {
+            return entry_size_;
+        }
+
+        [[nodiscard]]
         size_t data_size() const
         {
             return std::accumulate(
@@ -194,15 +200,12 @@ private:
                 [](const size_t result, const span<const std::byte> data_fragment) { return result + data_fragment.size(); });
         }
 
-        void copy_data(const span<std::byte> destination) const
+        void copy_data(std::byte* destination) const
         {
-            ASSERT(destination.size() >= data_size());
-
-            auto position{destination.begin()};
             for (const auto& data_fragment : data_fragments_)
             {
-                std::copy(data_fragment.begin(), data_fragment.end(), position);
-                position += data_fragment.size();
+                std::copy(data_fragment.begin(), data_fragment.end(), destination);
+                destination += data_fragment.size();
             }
         }
 
