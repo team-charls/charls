@@ -633,9 +633,9 @@ public:
     [[nodiscard]]
     table_info mapping_table_info(const int32_t index) const
     {
-        table_info table_info;
-        check_jpegls_errc(charls_decoder_get_mapping_table_info(decoder_.get(), index, &table_info));
-        return table_info;
+        table_info info;
+        check_jpegls_errc(charls_decoder_get_mapping_table_info(decoder_.get(), index, &info));
+        return info;
     }
 
     void mapping_table(const int32_t index, CHARLS_OUT void* table_data) const
