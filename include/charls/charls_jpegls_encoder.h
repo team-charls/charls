@@ -252,7 +252,7 @@ charls_jpegls_encoder_write_application_data(CHARLS_IN charls_jpegls_encoder* en
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="table_info">Table information, describes the mapping table.</param>
 /// <param name="table_data">Byte array that holds the mapping table.</param>
-CHARLS_ATTRIBUTE_ACCESS((access(read_only, 4, 5)))
+CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_write_table(CHARLS_IN charls_jpegls_encoder* encoder, const charls_table_info* table_info,
                                   CHARLS_IN_READS_BYTES(table_info->data_size) const void* table_data) CHARLS_NOEXCEPT;
@@ -582,12 +582,12 @@ public:
     /// No validation is performed if the table ID is unique and if the table size matches the required size.
     /// During decoding the active maximum value determines the required size of the table.
     /// </remarks>
-    /// <param name="table_info">Table info struct that describes the mapping table.</param>
+    /// <param name="info">Table info struct that describes the mapping table.</param>
     /// <param name="table_data">Byte array that holds the mapping table.</param>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 4, 5)))
-    jpegls_encoder& write_table(const table_info& table_info, CHARLS_IN const void* table_data)
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2)))
+    jpegls_encoder& write_table(const table_info& info, CHARLS_IN const void* table_data)
     {
-        check_jpegls_errc(charls_jpegls_encoder_write_table(encoder_.get(), &table_info, table_data));
+        check_jpegls_errc(charls_jpegls_encoder_write_table(encoder_.get(), &info, table_data));
         return *this;
     }
 
