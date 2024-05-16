@@ -52,7 +52,7 @@ jobs:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
       maximumCpuCount: true
-      msbuildArgs: -p:CHARLS_PROFILE=true -p:CHARLS_ALL_WARNINGS=true -p:VCToolsVersion=14.38.33130
+      msbuildArgs: -p:CHARLS_PROFILE=true -p:CHARLS_ALL_WARNINGS=true
 
   - task: VSTest@2
     inputs:
