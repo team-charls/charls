@@ -797,6 +797,12 @@ void jpeg_stream_reader::call_application_data_callback(const jpeg_marker_code m
 
 void jpeg_stream_reader::add_table(const uint8_t table_id, const uint8_t entry_size, const span<const std::byte> table_data)
 {
+    const auto it{
+        std::find_if(mapping_tables_.cbegin(), mapping_tables_.cend(),
+                     [table_id](const mapping_table_entry& entry) noexcept { return entry.table_id() == table_id; })};
+    if (it != mapping_tables_.cend())
+        throw_jpegls_error(jpegls_errc::callback_failed); // TODO throw invalid_parameter_table_id
+
     mapping_tables_.emplace_back(table_id, entry_size, table_data);
 }
 

@@ -1035,10 +1035,56 @@ public:
         Assert::AreEqual(0, count);
     }
 
+    TEST_METHOD(mapping_table_count_after_read_header_before_frame) // NOLINT
+    {
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_start_of_frame_segment(1, 1, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer);
+        decoder.read_header();
+        const int32_t count{decoder.mapping_table_count()};
+
+        Assert::AreEqual(1, count);
+    }
+
+    TEST_METHOD(mapping_table_count_after_read_header_after_frame) // NOLINT
+    {
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 1, 8, 3);
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer);
+        decoder.read_header();
+        const int32_t count{decoder.mapping_table_count()};
+
+        Assert::AreEqual(1, count);
+    }
+
     TEST_METHOD(mapping_table_count_after_read_header) // NOLINT
     {
-        // TODO
-        Assert::AreEqual(0, 0);
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_start_of_frame_segment(1, 1, 8, 3);
+        writer.write_jpegls_preset_parameters_segment(2, 1, table_data);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer);
+        decoder.read_header();
+        const int32_t count{decoder.mapping_table_count()};
+
+        Assert::AreEqual(2, count);
     }
 
     TEST_METHOD(mapping_table_count_after_read_header_no_frame) // NOLINT
@@ -1051,6 +1097,21 @@ public:
     {
         // TODO
         Assert::AreEqual(0, 0);
+    }
+
+    TEST_METHOD(duplicate_table_id_throws) // NOLINT
+    {
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_start_of_frame_segment(1, 1, 8, 3);
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer);
+        assert_expect_exception(jpegls_errc::callback_failed, [&decoder] { decoder.read_header(); });
     }
 
 private:

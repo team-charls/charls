@@ -80,6 +80,20 @@ public:
         write_segment(jpeg_marker_code::jpegls_preset_parameters, segment.data(), segment.size());
     }
 
+    void write_jpegls_preset_parameters_segment(const int32_t table_id, const int32_t entry_size,
+                                                const std::vector<std::byte>& table_data)
+    {
+        // Format is defined in ISO/IEC 14495-1, C.2.4.1.2 and C.2.4.1.3
+        std::vector<std::byte> segment;
+
+        segment.push_back(static_cast<std::byte>(jpegls_preset_parameters_type::mapping_table_specification));
+        segment.push_back(static_cast<std::byte>(table_id));
+        segment.push_back(static_cast<std::byte>(entry_size));
+        segment.insert(end(segment), begin(table_data), end(table_data));
+
+        write_segment(jpeg_marker_code::jpegls_preset_parameters, segment.data(), segment.size());
+    }
+
     void write_oversize_image_dimension(const uint32_t number_of_bytes, const uint32_t height, const uint32_t width,
                                         const bool extra_byte = false)
     {
