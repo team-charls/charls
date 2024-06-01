@@ -1099,6 +1099,18 @@ public:
         Assert::AreEqual(0, 0);
     }
 
+    TEST_METHOD(invalid_table_id_throws) // NOLINT
+    {
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(0, 1, table_data);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer);
+        assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_id, [&decoder] { decoder.read_header(); });
+    }
+
     TEST_METHOD(duplicate_table_id_throws) // NOLINT
     {
         const std::vector<std::byte> table_data(255);
@@ -1111,7 +1123,7 @@ public:
 
         jpegls_decoder decoder;
         decoder.source(writer.buffer);
-        assert_expect_exception(jpegls_errc::callback_failed, [&decoder] { decoder.read_header(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_id, [&decoder] { decoder.read_header(); });
     }
 
 private:

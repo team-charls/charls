@@ -225,12 +225,9 @@ jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters(
 
 int32_t jpeg_stream_reader::get_mapping_table_index(const uint8_t table_id) const
 {
-    const auto it{
-        std::find_if(mapping_tables_.cbegin(), mapping_tables_.cend(),
-                     [table_id](const mapping_table_entry& entry) noexcept { return table_id == entry.table_id(); })};
-
+    const auto it{find_mapping_table_entry(table_id)};
     if (it == mapping_tables_.cend())
-        throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_preset_parameters); // TODO better error
+        throw_jpegls_error(jpegls_errc::invalid_argument);
 
     return static_cast<int32_t>(it - mapping_tables_.cbegin());
 }
@@ -462,7 +459,7 @@ void jpeg_stream_reader::read_mapping_table_specification()
     const uint8_t table_id{read_uint8()};
     const uint8_t entry_size{read_uint8()};
 
-    add_table(table_id, entry_size, segment_data_.subspan(3));
+    add_mapping_table(table_id, entry_size, segment_data_.subspan(3));
     skip_remaining_segment_data();
 }
 
@@ -795,15 +792,20 @@ void jpeg_stream_reader::call_application_data_callback(const jpeg_marker_code m
 }
 
 
-void jpeg_stream_reader::add_table(const uint8_t table_id, const uint8_t entry_size, const span<const std::byte> table_data)
+void jpeg_stream_reader::add_mapping_table(const uint8_t table_id, const uint8_t entry_size, const span<const byte> table_data)
 {
-    const auto it{
-        std::find_if(mapping_tables_.cbegin(), mapping_tables_.cend(),
-                     [table_id](const mapping_table_entry& entry) noexcept { return entry.table_id() == table_id; })};
-    if (it != mapping_tables_.cend())
-        throw_jpegls_error(jpegls_errc::callback_failed); // TODO throw invalid_parameter_table_id
+    if (table_id == 0 || find_mapping_table_entry(table_id) != mapping_tables_.cend())
+        throw_jpegls_error(jpegls_errc::invalid_parameter_mapping_table_id);
 
     mapping_tables_.emplace_back(table_id, entry_size, table_data);
+}
+
+
+std::vector<jpeg_stream_reader::mapping_table_entry>::const_iterator
+jpeg_stream_reader::find_mapping_table_entry(uint8_t table_id) const noexcept
+{
+    return std::find_if(mapping_tables_.cbegin(), mapping_tables_.cend(),
+                        [table_id](const mapping_table_entry& entry) noexcept { return entry.table_id() == table_id; });
 }
 
 } // namespace charls

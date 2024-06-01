@@ -157,7 +157,7 @@ private:
     void frame_info_height(uint32_t height);
     void frame_info_width(uint32_t width);
     void call_application_data_callback(jpeg_marker_code marker_code) const;
-    void add_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
+    void add_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
 
     enum class state
     {
@@ -195,9 +195,10 @@ private:
         [[nodiscard]]
         size_t data_size() const
         {
-            return std::accumulate(
-                data_fragments_.cbegin(), data_fragments_.cend(), size_t{0},
-                [](const size_t result, const span<const std::byte> data_fragment) { return result + data_fragment.size(); });
+            return std::accumulate(data_fragments_.cbegin(), data_fragments_.cend(), size_t{0},
+                                   [](const size_t result, const span<const std::byte> data_fragment) {
+                                       return result + data_fragment.size();
+                                   });
         }
 
         void copy_data(std::byte* destination) const
@@ -214,6 +215,9 @@ private:
         uint8_t entry_size_;
         std::vector<span<const std::byte>> data_fragments_;
     };
+
+    [[nodiscard]]
+    std::vector<mapping_table_entry>::const_iterator find_mapping_table_entry(uint8_t table_id) const noexcept;
 
     span<const std::byte>::iterator position_{};
     span<const std::byte>::iterator end_position_{};
