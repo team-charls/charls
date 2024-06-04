@@ -62,6 +62,14 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
     for (;;)
     {
         const jpeg_marker_code marker_code{read_next_marker_code()};
+        if (marker_code == jpeg_marker_code::end_of_image)
+        {
+            if (is_abbreviated_format_for_table_specification_data())
+                return;
+
+            throw_jpegls_error(jpegls_errc::unexpected_end_of_image_marker);
+        }
+
         validate_marker_code(marker_code);
         read_segment_size();
 
@@ -201,7 +209,7 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
         throw_jpegls_error(jpegls_errc::duplicate_start_of_image_marker);
 
     case jpeg_marker_code::end_of_image:
-        throw_jpegls_error(jpegls_errc::unexpected_end_of_image_marker);
+        unreachable();
     }
 
     if (is_restart_marker_code(marker_code))

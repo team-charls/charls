@@ -1089,8 +1089,18 @@ public:
 
     TEST_METHOD(mapping_table_count_after_read_header_no_frame) // NOLINT
     {
-        // TODO
-        Assert::AreEqual(0, 0);
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer);
+        decoder.read_header();
+        const int32_t count{decoder.mapping_table_count()};
+
+        Assert::AreEqual(1, count);
     }
 
     TEST_METHOD(mapping_table_count_after_decode_table_after_first_scan) // NOLINT

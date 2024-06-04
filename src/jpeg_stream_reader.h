@@ -159,6 +159,13 @@ private:
     void call_application_data_callback(jpeg_marker_code marker_code) const;
     void add_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
 
+    [[nodiscard]]
+    bool is_abbreviated_format_for_table_specification_data() const noexcept
+    {
+        // ISO/IEC 14495-1, Annex C defines 3 data formats. Annex C.4 defines the format that only contains mapping tables.
+        return state_ == state::header_section && mapping_table_count() > 0;
+    }
+
     enum class state
     {
         before_start_of_image,
