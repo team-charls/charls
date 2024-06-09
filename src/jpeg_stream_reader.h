@@ -80,9 +80,18 @@ public:
     }
 
     [[nodiscard]]
+    int32_t mapping_table_id(size_t component_index) const noexcept;
+
+    [[nodiscard]]
     int32_t mapping_table_count() const noexcept
     {
         return static_cast<int32_t>(mapping_tables_.size());
+    }
+
+    [[nodiscard]]
+    size_t component_count() const noexcept
+    {
+        return scan_infos_.size();
     }
 
     [[nodiscard]]
@@ -158,6 +167,7 @@ private:
     void frame_info_width(uint32_t width);
     void call_application_data_callback(jpeg_marker_code marker_code) const;
     void add_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
+    void store_table_id(uint8_t component_id, uint8_t table_id);
 
     [[nodiscard]]
     bool is_abbreviated_format_for_table_specification_data() const noexcept
@@ -176,6 +186,12 @@ private:
         scan_section,
         bit_stream_section,
         after_end_of_image
+    };
+
+    struct scan_info final
+    {
+        uint8_t component_id;
+        uint8_t table_id;
     };
 
     class mapping_table_entry final
@@ -232,7 +248,7 @@ private:
     charls::frame_info frame_info_{};
     coding_parameters parameters_{};
     jpegls_pc_parameters preset_coding_parameters_{};
-    std::vector<uint8_t> component_ids_;
+    std::vector<scan_info> scan_infos_;
     std::vector<mapping_table_entry> mapping_tables_;
     state state_{};
     callback_function<at_comment_handler> at_comment_callback_{};

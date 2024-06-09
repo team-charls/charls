@@ -130,6 +130,13 @@ struct charls_jpegls_decoder final
     }
 
     [[nodiscard]]
+    int32_t mapping_table_id(const size_t component_index) const
+    {
+        check_argument(component_index < reader_.component_count());
+        return reader_.mapping_table_id(component_index);
+    }
+
+    [[nodiscard]]
     int32_t mapping_table_index(const int32_t table_id) const
     {
         check_argument_range(minimum_table_id, maximum_table_id, table_id);
@@ -224,7 +231,7 @@ private:
         check_operation(state_ >= state::header_read);
     }
 
-    void check_table_index(const int32_t index) const 
+    void check_table_index(const int32_t index) const
     {
         check_argument_range(0, mapping_table_count() - 1, index);
     }
@@ -426,6 +433,19 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_dec
 try
 {
     check_pointer(decoder)->at_application_data({handler, user_context});
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table_id(
+    const charls_jpegls_decoder* decoder, const int32_t component_index, int32_t* table_id) noexcept
+try
+{
+    *check_pointer(table_id) = check_pointer(decoder)->mapping_table_id(component_index);
     return jpegls_errc::success;
 }
 catch (...)

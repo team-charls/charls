@@ -56,6 +56,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_CALLBACK_FAILED = 27,
     CHARLS_JPEGLS_ERRC_END_OF_IMAGE_MARKER_NOT_FOUND = 28,
     CHARLS_JPEGLS_ERRC_INVALID_SPIFF_HEADER = 29,
+    CHARLS_JPEGLS_ERRC_UNKNOWN_COMPONENT_ID = 30,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH = 100,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_HEIGHT = 101,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COMPONENT_COUNT = 102,
@@ -323,6 +324,11 @@ enum class [[nodiscard]] jpegls_errc
     /// This error is returned when the SPIFF header is invalid.
     /// </summary>
     invalid_spiff_header = impl::CHARLS_JPEGLS_ERRC_INVALID_SPIFF_HEADER,
+
+    /// <summary>
+    /// This error is returned when an unknown component ID in a scan is detected.
+    /// </summary>
+    unknown_component_id = impl::CHARLS_JPEGLS_ERRC_UNKNOWN_COMPONENT_ID,
 
     /// <summary>
     /// The argument for the width parameter is outside the range [1, 65535].

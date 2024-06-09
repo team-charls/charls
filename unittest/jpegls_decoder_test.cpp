@@ -440,20 +440,6 @@ public:
                              "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_reference_to_mapping_table_selector_throws) // NOLINT
-    {
-        jpeg_test_stream_writer writer;
-
-        writer.write_start_of_image();
-        writer.write_start_of_frame_segment(10, 10, 8, 3);
-        writer.mapping_table_selector = 1;
-        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
-
-        jpegls_decoder decoder{writer.buffer, false};
-
-        assert_expect_exception(jpegls_errc::parameter_value_not_supported, [&decoder] { decoder.read_header(); });
-    }
-
     TEST_METHOD(read_spiff_header) // NOLINT
     {
         const auto source{create_test_spiff_header()};
@@ -1105,8 +1091,76 @@ public:
 
     TEST_METHOD(mapping_table_count_after_decode_table_after_first_scan) // NOLINT
     {
-        // TODO
-        Assert::AreEqual(0, 0);
+        constexpr array data_h10{
+            byte{0xFF}, byte{0xD8}, // Start of image (SOI) marker
+            byte{0xFF}, byte{0xF7}, // Start of JPEG-LS frame (SOF 55) marker - marker segment follows
+            byte{0x00}, byte{0x0E}, // Length of marker segment = 14 bytes including the length field
+            byte{0x02},             // P = Precision = 2 bits per sample
+            byte{0x00}, byte{0x04}, // Y = Number of lines = 4
+            byte{0x00}, byte{0x03}, // X = Number of columns = 3
+            byte{0x02},             // Nf = Number of components in the frame = 2
+            byte{0x01},             // C1  = Component ID = 1 (first and only component)
+            byte{0x11},             // Sub-sampling: H1 = 1, V1 = 1
+            byte{0x00},             // Tq1 = 0 (this field is always 0)
+            byte{0x02},             // C2  = Component ID = 2 (first and only component)
+            byte{0x11},             // Sub-sampling: H1 = 1, V1 = 1
+            byte{0x00},             // Tq1 = 0 (this field is always 0)
+
+            byte{0xFF}, byte{0xF8},             // LSE - JPEG-LS preset parameters marker
+            byte{0x00}, byte{0x11},             // Length of marker segment = 17 bytes including the length field
+            byte{0x02},                         // ID = 2, mapping table
+            byte{0x05},                         // TID = 5 Table identifier (arbitrary)
+            byte{0x03},                         // Wt = 3 Width of table entry
+            byte{0xFF}, byte{0xFF}, byte{0xFF}, // Entry for index 0
+            byte{0xFF}, byte{0x00}, byte{0x00}, // Entry for index 1
+            byte{0x00}, byte{0xFF}, byte{0x00}, // Entry for index 2
+            byte{0x00}, byte{0x00}, byte{0xFF}, // Entry for index 3
+
+            byte{0xFF}, byte{0xDA},             // Start of scan (SOS) marker
+            byte{0x00}, byte{0x08},             // Length of marker segment = 8 bytes including the length field
+            byte{0x01},                         // Ns = Number of components for this scan = 1
+            byte{0x01},                         // C1 = Component ID = 1
+            byte{0x05},                         // Tm 1  = Mapping table identifier = 5
+            byte{0x00},                         // NEAR = 0 (near-lossless max error)
+            byte{0x00},                         // ILV = 0 (interleave mode = non-interleaved)
+            byte{0x00},                         // Al = 0, Ah = 0 (no point transform)
+            byte{0xDB}, byte{0x95}, byte{0xF0}, // 3 bytes of compressed image data
+
+            byte{0xFF}, byte{0xF8},             // LSE - JPEG-LS preset parameters marker
+            byte{0x00}, byte{0x11},             // Length of marker segment = 17 bytes including the length field
+            byte{0x02},                         // ID = 2, mapping table
+            byte{0x06},                         // TID = 6 Table identifier (arbitrary)
+            byte{0x03},                         // Wt = 3 Width of table entry
+            byte{0xFF}, byte{0xFF}, byte{0xFF}, // Entry for index 0
+            byte{0xFF}, byte{0x00}, byte{0x00}, // Entry for index 1
+            byte{0x00}, byte{0xFF}, byte{0x00}, // Entry for index 2
+            byte{0x00}, byte{0x00}, byte{0xFF}, // Entry for index 3
+
+            byte{0xFF}, byte{0xDA},             // Start of scan (SOS) marker
+            byte{0x00}, byte{0x08},             // Length of marker segment = 8 bytes including the length field
+            byte{0x01},                         // Ns = Number of components for this scan = 1
+            byte{0x02},                         // C1 = Component ID = 2
+            byte{0x06},                         // Tm 1  = Mapping table identifier = 6
+            byte{0x00},                         // NEAR = 0 (near-lossless max error)
+            byte{0x00},                         // ILV = 0 (interleave mode = non-interleaved)
+            byte{0x00},                         // Al = 0, Ah = 0 (no point transform)
+            byte{0xDB}, byte{0x95}, byte{0xF0}, // 3 bytes of compressed image data
+
+            byte{0xFF}, byte{0xD9} // End of image (EOI) marker
+        };
+
+        jpegls_decoder decoder;
+        decoder.source(data_h10);
+        decoder.read_header();
+
+        vector<byte> destination(decoder.destination_size());
+        decoder.decode(destination);
+
+        const int32_t count{decoder.mapping_table_count()};
+        Assert::AreEqual(2, count);
+
+        Assert::AreEqual(5, decoder.mapping_table_id(0));
+        Assert::AreEqual(6, decoder.mapping_table_id(1));
     }
 
     TEST_METHOD(invalid_table_id_throws) // NOLINT

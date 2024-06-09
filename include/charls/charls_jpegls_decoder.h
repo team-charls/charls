@@ -220,6 +220,10 @@ charls_jpegls_decoder_at_application_data(CHARLS_IN charls_jpegls_decoder* decod
     CHARLS_ATTRIBUTE((nonnull(1)));
 
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_decoder_get_mapping_table_id(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t component_index,
+                                    CHARLS_OUT int32_t* table_id) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_index(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t table_id,
                                        CHARLS_OUT int32_t* index) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
@@ -620,6 +624,14 @@ public:
         check_jpegls_errc(charls_jpegls_decoder_at_application_data(
             decoder_.get(), application_data_handler_ ? &at_application_data_callback : nullptr, this));
         return *this;
+    }
+
+    [[nodiscard]]
+    int32_t mapping_table_id(const int32_t component_index) const
+    {
+        int32_t table_id;
+        check_jpegls_errc(charls_decoder_get_mapping_table_id(decoder_.get(), component_index, &table_id));
+        return table_id;
     }
 
     [[nodiscard]]
