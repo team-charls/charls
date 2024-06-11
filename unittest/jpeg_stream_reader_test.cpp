@@ -703,9 +703,9 @@ public:
         reader.read_header();
 
         Assert::AreEqual(1, reader.mapping_table_count());
-        Assert::AreEqual(0, reader.get_mapping_table_index(1));
+        Assert::AreEqual(0, *reader.mapping_table_index(1));
 
-        const auto info{reader.get_mapping_table_info(0)};
+        const auto info{reader.mapping_table_info(0)};
         Assert::AreEqual(int32_t{1}, info.table_id);
         Assert::AreEqual(int32_t{1}, info.entry_size);
         // TODO check table size.

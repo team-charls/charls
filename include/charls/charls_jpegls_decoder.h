@@ -11,6 +11,7 @@
 #ifndef CHARLS_BUILD_AS_CPP_MODULE
 #include <functional>
 #include <memory>
+#include <optional>
 #include <utility>
 #endif
 
@@ -632,6 +633,14 @@ public:
         int32_t table_id;
         check_jpegls_errc(charls_decoder_get_mapping_table_id(decoder_.get(), component_index, &table_id));
         return table_id;
+    }
+
+    [[nodiscard]]
+    std::optional<int32_t> mapping_table_index(const int32_t table_id) const
+    {
+        int32_t index;
+        check_jpegls_errc(charls_decoder_get_mapping_table_index(decoder_.get(), table_id, &index));
+        return index != -1 ? index : std::optional<int32_t>{};
     }
 
     [[nodiscard]]

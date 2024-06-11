@@ -137,10 +137,10 @@ struct charls_jpegls_decoder final
     }
 
     [[nodiscard]]
-    int32_t mapping_table_index(const int32_t table_id) const
+    std::optional<int32_t> mapping_table_index(const int32_t table_id) const
     {
         check_argument_range(minimum_table_id, maximum_table_id, table_id);
-        return reader_.get_mapping_table_index(static_cast<uint8_t>(table_id));
+        return reader_.mapping_table_index(static_cast<uint8_t>(table_id));
     }
 
     [[nodiscard]]
@@ -153,7 +153,7 @@ struct charls_jpegls_decoder final
     table_info mapping_table_info(const int32_t index) const
     {
         check_table_index(index);
-        return reader_.get_mapping_table_info(index);
+        return reader_.mapping_table_info(index);
     }
 
     void mapping_table(const int32_t index, byte* const table_data) const
@@ -455,10 +455,10 @@ catch (...)
 
 
 USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_decoder_get_mapping_table_index(const charls_jpegls_decoder* decoder, int32_t table_id, int32_t* index) noexcept
+charls_decoder_get_mapping_table_index(const charls_jpegls_decoder* decoder, const int32_t table_id, int32_t* index) noexcept
 try
 {
-    *check_pointer(index) = check_pointer(decoder)->mapping_table_index(table_id);
+    *check_pointer(index) = check_pointer(decoder)->mapping_table_index(table_id).value_or(-1);
     return jpegls_errc::success;
 }
 catch (...)

@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <numeric>
+#include <optional>
 #include <vector>
 
 namespace charls {
@@ -95,10 +96,10 @@ public:
     }
 
     [[nodiscard]]
-    int32_t get_mapping_table_index(uint8_t table_id) const;
+    std::optional<int32_t> mapping_table_index(uint8_t table_id) const noexcept;
 
     [[nodiscard]]
-    table_info get_mapping_table_info(size_t index) const;
+    table_info mapping_table_info(size_t index) const;
 
     void get_mapping_table(size_t index, std::byte* table_data) const;
 
