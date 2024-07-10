@@ -76,7 +76,8 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 205,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS = 206,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION = 207,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID = 208
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID = 208,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_CONTINUATION = 209
 };
 
 enum charls_interleave_mode
@@ -430,10 +431,14 @@ enum class [[nodiscard]] jpegls_errc
     invalid_parameter_color_transformation = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION,
 
     /// <summary>
-    /// This error is returned when the stream contains an invalid color transformation segment or one that doesn't match
-    /// with frame info.
+    /// This error is returned when the stream contains a mapping table with an invalid ID.
     /// </summary>
-    invalid_parameter_mapping_table_id = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID
+    invalid_parameter_mapping_table_id = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID,
+
+    /// <summary>
+    /// This error is returned when the stream contains an invalid mapping table continuation.
+    /// </summary>
+    invalid_parameter_mapping_table_continuation = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_CONTINUATION
 };
 
 

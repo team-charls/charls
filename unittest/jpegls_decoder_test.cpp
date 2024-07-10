@@ -1026,7 +1026,7 @@ public:
         const std::vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
         writer.write_start_of_frame_segment(1, 1, 8, 3);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
@@ -1044,7 +1044,7 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(1, 1, 8, 3);
-        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
         jpegls_decoder decoder;
@@ -1060,9 +1060,9 @@ public:
         const std::vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
         writer.write_start_of_frame_segment(1, 1, 8, 3);
-        writer.write_jpegls_preset_parameters_segment(2, 1, table_data);
+        writer.write_jpegls_preset_parameters_segment(2, 1, table_data, false);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
         jpegls_decoder decoder;
@@ -1078,7 +1078,7 @@ public:
         const std::vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
         writer.write_marker(jpeg_marker_code::end_of_image);
 
         jpegls_decoder decoder;
@@ -1168,7 +1168,7 @@ public:
         const std::vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        writer.write_jpegls_preset_parameters_segment(0, 1, table_data);
+        writer.write_jpegls_preset_parameters_segment(0, 1, table_data, false);
 
         jpegls_decoder decoder;
         decoder.source(writer.buffer);
@@ -1180,9 +1180,9 @@ public:
         const std::vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
         writer.write_start_of_frame_segment(1, 1, 8, 3);
-        writer.write_jpegls_preset_parameters_segment(1, 1, table_data);
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
         jpegls_decoder decoder;

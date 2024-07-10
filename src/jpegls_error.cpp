@@ -190,6 +190,9 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
 
     case jpegls_errc::invalid_parameter_mapping_table_id:
         return "Invalid JPEG-LS stream: mapping table ID outside valid range or duplicate";
+
+    case jpegls_errc::invalid_parameter_mapping_table_continuation:
+        return "Invalid JPEG-LS stream: mapping table continuation without matching mapping table specification";
     }
 
     return "Unknown";

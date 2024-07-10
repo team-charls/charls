@@ -397,7 +397,8 @@ void jpeg_stream_reader::read_preset_parameters_segment()
         return;
 
     case jpegls_preset_parameters_type::mapping_table_continuation:
-        throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+        read_mapping_table_continuation();
+        return;
 
     case jpegls_preset_parameters_type::coding_method_specification:
     case jpegls_preset_parameters_type::near_lossless_error_re_specification:
@@ -471,6 +472,17 @@ void jpeg_stream_reader::read_mapping_table_specification()
     const uint8_t entry_size{read_uint8()};
 
     add_mapping_table(table_id, entry_size, segment_data_.subspan(3));
+    skip_remaining_segment_data();
+}
+
+
+void jpeg_stream_reader::read_mapping_table_continuation()
+{
+    check_minimal_segment_size(3);
+    const uint8_t table_id{read_uint8()};
+    const uint8_t entry_size{read_uint8()};
+
+    extend_mapping_table(table_id, entry_size, segment_data_.subspan(3));
     skip_remaining_segment_data();
 }
 
@@ -815,6 +827,17 @@ void jpeg_stream_reader::add_mapping_table(const uint8_t table_id, const uint8_t
 }
 
 
+void jpeg_stream_reader::extend_mapping_table(const uint8_t table_id, const uint8_t entry_size,
+                                              const span<const byte> table_data)
+{
+    const auto entry{find_mapping_table_entry(table_id)};
+    if (entry == mapping_tables_.cend() || entry->entry_size() != entry_size)
+        throw_jpegls_error(jpegls_errc::invalid_parameter_mapping_table_continuation);
+
+    entry->add_fragment(table_data);
+}
+
+
 void jpeg_stream_reader::store_table_id(const uint8_t component_id, const uint8_t table_id)
 {
     if (table_id == 0)
@@ -835,5 +858,14 @@ jpeg_stream_reader::find_mapping_table_entry(uint8_t table_id) const noexcept
     return find_if(mapping_tables_.cbegin(), mapping_tables_.cend(),
                    [table_id](const mapping_table_entry& entry) noexcept { return entry.table_id() == table_id; });
 }
+
+
+std::vector<jpeg_stream_reader::mapping_table_entry>::iterator
+jpeg_stream_reader::find_mapping_table_entry(uint8_t table_id) noexcept
+{
+    return find_if(mapping_tables_.begin(), mapping_tables_.end(),
+                   [table_id](const mapping_table_entry& entry) noexcept { return entry.table_id() == table_id; });
+}
+
 
 } // namespace charls

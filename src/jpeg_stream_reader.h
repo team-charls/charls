@@ -151,6 +151,7 @@ private:
     void read_preset_coding_parameters();
     void read_oversize_image_dimension();
     void read_mapping_table_specification();
+    void read_mapping_table_continuation();
     void read_define_restart_interval_segment();
     void try_read_application_data8_segment(spiff_header* header, bool* spiff_header_found);
     void try_read_spiff_header_segment(CHARLS_OUT spiff_header& header, CHARLS_OUT bool& spiff_header_found);
@@ -168,6 +169,7 @@ private:
     void frame_info_width(uint32_t width);
     void call_application_data_callback(jpeg_marker_code marker_code) const;
     void add_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
+    void extend_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
     void store_table_id(uint8_t component_id, uint8_t table_id);
 
     [[nodiscard]]
@@ -200,6 +202,11 @@ private:
     public:
         mapping_table_entry(const uint8_t table_id, const uint8_t entry_size, const span<const std::byte> table_data) :
             table_id_{table_id}, entry_size_{entry_size}
+        {
+            data_fragments_.push_back(table_data);
+        }
+
+        void add_fragment(const span<const std::byte> table_data)
         {
             data_fragments_.push_back(table_data);
         }
@@ -242,6 +249,9 @@ private:
 
     [[nodiscard]]
     std::vector<mapping_table_entry>::const_iterator find_mapping_table_entry(uint8_t table_id) const noexcept;
+
+    [[nodiscard]]
+    std::vector<mapping_table_entry>::iterator find_mapping_table_entry(uint8_t table_id) noexcept;
 
     span<const std::byte>::iterator position_{};
     span<const std::byte>::iterator end_position_{};

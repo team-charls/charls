@@ -914,7 +914,7 @@ public:
         encoder.write_table({1, 1, static_cast<uint32_t>(table_data.size())}, table_data.data());
 
         encoded.resize(encoder.encode(source));
-        //// TODO test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
+        test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
     TEST_METHOD(write_table_with_bad_table_id_throws) // NOLINT

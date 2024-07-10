@@ -81,12 +81,13 @@ public:
     }
 
     void write_jpegls_preset_parameters_segment(const int32_t table_id, const int32_t entry_size,
-                                                const std::vector<std::byte>& table_data)
+                                                const std::vector<std::byte>& table_data, const bool continuation)
     {
         // Format is defined in ISO/IEC 14495-1, C.2.4.1.2 and C.2.4.1.3
         std::vector<std::byte> segment;
 
-        segment.push_back(static_cast<std::byte>(jpegls_preset_parameters_type::mapping_table_specification));
+        segment.push_back(static_cast<std::byte>(continuation ? jpegls_preset_parameters_type::mapping_table_continuation
+                                                              : jpegls_preset_parameters_type::mapping_table_specification));
         segment.push_back(static_cast<std::byte>(table_id));
         segment.push_back(static_cast<std::byte>(entry_size));
         segment.insert(end(segment), begin(table_data), end(table_data));

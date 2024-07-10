@@ -703,16 +703,83 @@ public:
         reader.read_header();
 
         Assert::AreEqual(1, reader.mapping_table_count());
-        Assert::AreEqual(0, *reader.mapping_table_index(1));
+        Assert::AreEqual(0, reader.mapping_table_index(1).value_or(-1));
 
         const auto info{reader.mapping_table_info(0)};
         Assert::AreEqual(int32_t{1}, info.table_id);
         Assert::AreEqual(int32_t{1}, info.entry_size);
-        // TODO check table size.
+        Assert::AreEqual(uint32_t{1}, info.data_size);
 
         vector<byte> table_data(1);
         reader.get_mapping_table(0, table_data.data());
         Assert::AreEqual(byte{2}, table_data[0]);
+    }
+
+    TEST_METHOD(read_mapping_table_continuation) // NOLINT
+    {
+        constexpr size_t table_size{100000};
+        vector<byte> source(table_size + 100);
+        jpeg_stream_writer writer({source.data(), source.size()});
+        writer.write_start_of_image();
+
+        vector<byte> table_data_expected(table_size);
+        table_data_expected[0] = byte{7};
+        table_data_expected[table_size - 1] = byte{8};
+
+        writer.write_jpegls_preset_parameters_segment(1, 1, {table_data_expected.data(), table_data_expected.size()});
+        writer.write_start_of_frame_segment({1, 1, 2, 1});
+        writer.write_start_of_scan_segment(1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({source.data(), source.size()});
+
+        reader.read_header();
+
+        Assert::AreEqual(1, reader.mapping_table_count());
+        Assert::AreEqual(0, reader.mapping_table_index(1).value_or(-1));
+
+        const auto info{reader.mapping_table_info(0)};
+        Assert::AreEqual(int32_t{1}, info.table_id);
+        Assert::AreEqual(int32_t{1}, info.entry_size);
+        Assert::AreEqual(uint32_t{100000}, info.data_size);
+
+        vector<byte> table_data(table_size);
+        reader.get_mapping_table(0, table_data.data());
+        Assert::AreEqual(byte{7}, table_data[0]);
+        Assert::AreEqual(byte{8}, table_data[table_size - 1]);
+    }
+
+    TEST_METHOD(read_mapping_table_continuation_without_mapping_table_throws) // NOLINT
+    {
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, true);
+        writer.write_start_of_frame_segment(1, 1, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_continuation,
+                                [&reader] { reader.read_header(); });
+    }
+
+    TEST_METHOD(read_invalid_mapping_table_continuation_throws) // NOLINT
+    {
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
+        writer.write_jpegls_preset_parameters_segment(1, 2, table_data, true);
+        writer.write_start_of_frame_segment(1, 1, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_continuation,
+                                [&reader] { reader.read_header(); });
     }
 
 private:
