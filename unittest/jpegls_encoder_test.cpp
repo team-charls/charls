@@ -1084,23 +1084,41 @@ public:
 
     TEST_METHOD(set_table_id) // NOLINT
     {
+        constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
+        constexpr frame_info frame_info{3, 1, 16, 1};
         jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+        vector<byte> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
 
         encoder.set_table_id(0, 1);
 
-        // TODO: verify by decoding.
-        Assert::IsTrue(true);
+        const size_t bytes_written{encoder.encode(source)};
+        destination.resize(bytes_written);
+        const jpegls_decoder decoder(destination, true);
+        vector<byte> destination_decoded(decoder.destination_size());
+        decoder.decode(destination_decoded);
+        Assert::AreEqual(1, decoder.mapping_table_id(0));
     }
 
     TEST_METHOD(set_table_id_clear_id) // NOLINT
     {
+        constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
+        constexpr frame_info frame_info{3, 1, 16, 1};
         jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+        vector<byte> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
 
         encoder.set_table_id(0, 1);
         encoder.set_table_id(0, 0);
 
-        // TODO: verify by decoding.
-        Assert::IsTrue(true);
+        const size_t bytes_written{encoder.encode(source)};
+        destination.resize(bytes_written);
+        const jpegls_decoder decoder(destination, true);
+        vector<byte> destination_decoded(decoder.destination_size());
+        decoder.decode(destination_decoded);
+        Assert::AreEqual(0, decoder.mapping_table_id(0));
     }
 
     TEST_METHOD(set_table_id_bad_component_index_throws) // NOLINT

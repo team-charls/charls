@@ -132,6 +132,7 @@ struct charls_jpegls_decoder final
     [[nodiscard]]
     int32_t mapping_table_id(const size_t component_index) const
     {
+        check_operation(state_ == state::completed);
         check_argument(component_index < reader_.component_count());
         return reader_.mapping_table_id(component_index);
     }
@@ -296,7 +297,7 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_read_spiff_header(
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_read_spiff_header(
     charls_jpegls_decoder* const decoder, charls_spiff_header* spiff_header, int32_t* header_found) noexcept
 try
 {
@@ -335,7 +336,7 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_near_lossless(
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_near_lossless(
     const charls_jpegls_decoder* decoder, const int32_t component, int32_t* near_lossless) noexcept
 try
 {
@@ -348,7 +349,7 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_interleave_mode(
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_interleave_mode(
     const charls_jpegls_decoder* decoder, charls_interleave_mode* interleave_mode) noexcept
 try
 {
@@ -361,7 +362,7 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_get_preset_coding_parameters(const charls_jpegls_decoder* decoder, const int32_t /*reserved*/,
                                                    charls_jpegls_pc_parameters* preset_coding_parameters) noexcept
 try
@@ -375,7 +376,7 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_color_transformation(
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_color_transformation(
     const charls_jpegls_decoder* decoder, charls_color_transformation* color_transformation) noexcept
 try
 {
@@ -441,7 +442,7 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table_id(
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table_id(
     const charls_jpegls_decoder* decoder, const int32_t component_index, int32_t* table_id) noexcept
 try
 {
@@ -454,11 +455,11 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_index(const charls_jpegls_decoder* decoder, const int32_t table_id, int32_t* index) noexcept
 try
 {
-    *check_pointer(index) = check_pointer(decoder)->mapping_table_index(table_id).value_or(-1);
+    *check_pointer(index) = check_pointer(decoder)->mapping_table_index(table_id).value_or(mapping_table_missing);
     return jpegls_errc::success;
 }
 catch (...)
@@ -467,7 +468,7 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_count(const charls_jpegls_decoder* decoder, int32_t* count) noexcept
 try
 {
@@ -480,7 +481,7 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table_info(
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table_info(
     const charls_jpegls_decoder* decoder, const int32_t index, table_info* table_info) noexcept
 try
 {
@@ -493,8 +494,8 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table(
-    const charls_jpegls_decoder* decoder, const int32_t index, CHARLS_OUT void* table_data) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table(
+    const charls_jpegls_decoder* decoder, const int32_t index, void* table_data) noexcept
 try
 {
     check_pointer(decoder)->mapping_table(index, static_cast<byte*>(table_data));
@@ -504,6 +505,5 @@ catch (...)
 {
     return to_jpegls_errc();
 }
-
 
 } // extern "C"

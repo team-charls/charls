@@ -166,6 +166,11 @@ enum charls_spiff_entry_tag
     CHARLS_SPIFF_ENTRY_TAG_SET_REFERENCE = 16
 };
 
+enum charls_constants
+{
+    CHARLS_MAPPING_TABLE_MISSING = -1
+};
+
 #ifdef __cplusplus
 } // namespace charls::impl
 
@@ -820,6 +825,8 @@ enum class spiff_entry_tag : uint32_t
     /// </summary>
     set_reference = impl::CHARLS_SPIFF_ENTRY_TAG_SET_REFERENCE
 };
+
+constexpr int mapping_table_missing{impl::CHARLS_MAPPING_TABLE_MISSING};
 
 } // namespace charls
 

@@ -1190,6 +1190,61 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_id, [&decoder] { decoder.read_header(); });
     }
 
+    TEST_METHOD(mapping_table_id_returns_zero) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+        vector<byte> decoded_destination(decoder.destination_size());
+
+        decoder.decode(decoded_destination);
+
+        Assert::AreEqual(0, decoder.mapping_table_id(0));
+        Assert::AreEqual(0, decoder.mapping_table_id(1));
+        Assert::AreEqual(0, decoder.mapping_table_id(2));
+    }
+
+    TEST_METHOD(mapping_table_id_for_invalid_component_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+        vector<byte> decoded_destination(decoder.destination_size());
+
+        decoder.decode(decoded_destination);
+
+        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.mapping_table_id(3); });
+    }
+
+    TEST_METHOD(mapping_table_id_before_decode_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_id(0); });
+    }
+
+    TEST_METHOD(mapping_table_index_before_decode_throws) // NOLINT
+    {
+        // TODO
+    }
+
+    TEST_METHOD(mapping_table_count_before_decode_throws) // NOLINT
+    {
+        // TODO
+    }
+
+    TEST_METHOD(mapping_table_info_before_decode_throws) // NOLINT
+    {
+        // TODO
+    }
+
+    TEST_METHOD(mapping_table_before_decode_throws) // NOLINT
+    {
+        // TODO
+    }
+
 private:
     // ReSharper disable CppPassValueParameterByConstReference
     [[nodiscard]]

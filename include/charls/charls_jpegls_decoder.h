@@ -220,24 +220,72 @@ charls_jpegls_decoder_at_application_data(CHARLS_IN charls_jpegls_decoder* decod
                                           charls_at_application_data_handler handler, void* user_context) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull(1)));
 
+/// <summary>
+/// Returns the mapping table ID referenced by the component or 0 when no mapping table is used.
+/// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_decode.
+/// </remarks>
+/// <param name="decoder">Reference to the decoder instance.</param>
+/// <param name="component_index">Index of the component.</param>
+/// <param name="table_id">Output argument, will hold the mapping table ID when the function returns or 0.</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_id(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t component_index,
                                     CHARLS_OUT int32_t* table_id) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
+/// <summary>
+/// Converts the mapping table ID to a mapping table index.
+/// When the requested table is not present in the JPEG-LS stream the value -1 will be returned.
+/// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_decode.
+/// </remarks>
+/// <param name="decoder">Reference to the decoder instance.</param>
+/// <param name="table_id">Mapping table ID to lookup.</param>
+/// <param name="index">Output argument, will hold the mapping table index or -1 when the function returns.</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_index(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t table_id,
                                        CHARLS_OUT int32_t* index) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
+/// <summary>
+/// Returns the count of mapping tables present in the JPEG-LS stream.
+/// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_decode.
+/// </remarks>
+/// <param name="decoder">Reference to the decoder instance.</param>
+/// <param name="count">Output argument, will hold the mapping table count when the function returns.</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_count(CHARLS_IN const charls_jpegls_decoder* decoder,
                                        CHARLS_OUT int32_t* count) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
-
+/// <summary>
+/// Returns information about a mapping table.
+/// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_decode.
+/// </remarks>
+/// <param name="decoder">Reference to the decoder instance.</param>
+/// <param name="index">Index of the requested mapping table.</param>
+/// <param name="table_info">Output argument, will hold the mapping table information when the function returns.</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_info(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t index,
                                       CHARLS_OUT charls_table_info* table_info) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
-
+/// <summary>
+/// Returns a mapping table.
+/// </summary>
+/// <remarks>
+/// Function should be called after calling the function charls_jpegls_decoder_decode.
+/// </remarks>
+/// <param name="decoder">Reference to the decoder instance.</param>
+/// <param name="index">Index of the requested mapping table.</param>
+/// <param name="table_data">Output argument, will hold the mapping table when the function returns.</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t index,
                                  CHARLS_OUT void* table_data) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
@@ -627,6 +675,15 @@ public:
         return *this;
     }
 
+    /// <summary>
+    /// Returns the mapping table ID referenced by the component or 0 when no mapping table is used.
+    /// </summary>
+    /// <remarks>
+    /// Function should be called after calling the function charls_jpegls_decoder_decode.
+    /// </remarks>
+    /// <param name="component_index">Index of the component.</param>
+    /// <returns>The mapping table ID or 0 when no mapping table is referenced by the component.</returns>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     [[nodiscard]]
     int32_t mapping_table_id(const int32_t component_index) const
     {
@@ -635,14 +692,33 @@ public:
         return table_id;
     }
 
+    /// <summary>
+    /// Converts the mapping table ID to a mapping table index.
+    /// </summary>
+    /// <remarks>
+    /// Function should be called after calling the function charls_jpegls_decoder_decode.
+    /// </remarks>
+    /// <param name="table_id">Mapping table ID to lookup.</param>
+    /// <returns>
+    /// The index of the mapping table or an empty optional when the table is not present in the JPEG-LS stream.
+    /// </returns>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     [[nodiscard]]
     std::optional<int32_t> mapping_table_index(const int32_t table_id) const
     {
         int32_t index;
         check_jpegls_errc(charls_decoder_get_mapping_table_index(decoder_.get(), table_id, &index));
-        return index != -1 ? index : std::optional<int32_t>{};
+        return index == mapping_table_missing ? std::optional<int32_t>{} : index;
     }
 
+    /// <summary>
+    /// Returns the count of mapping tables present in the JPEG-LS stream.
+    /// </summary>
+    /// <remarks>
+    /// Function should be called after calling the function charls_jpegls_decoder_decode.
+    /// </remarks>
+    /// <returns>The number of mapping tables present in the JPEG-LS stream.</returns>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     [[nodiscard]]
     int32_t mapping_table_count() const
     {
@@ -651,6 +727,15 @@ public:
         return count;
     }
 
+    /// <summary>
+    /// Returns information about a mapping table.
+    /// </summary>
+    /// <remarks>
+    /// Function should be called after calling the function charls_jpegls_decoder_decode.
+    /// </remarks>
+    /// <param name="index">Index of the requested mapping table.</param>
+    /// <returns>Mapping table information</returns>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     [[nodiscard]]
     table_info mapping_table_info(const int32_t index) const
     {
@@ -659,6 +744,15 @@ public:
         return info;
     }
 
+    /// <summary>
+    /// Returns a mapping table.
+    /// </summary>
+    /// <remarks>
+    /// Function should be called after calling the function charls_jpegls_decoder_decode.
+    /// </remarks>
+    /// <param name="index">Index of the requested mapping table.</param>
+    /// <param name="table_data">Output argument, will hold the mapping table when the function returns.</param>
+    /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     void mapping_table(const int32_t index, CHARLS_OUT void* table_data) const
     {
         check_jpegls_errc(charls_decoder_get_mapping_table(decoder_.get(), index, table_data));
