@@ -50,6 +50,12 @@ public:
         return preset_coding_parameters_;
     }
 
+    [[nodiscard]]
+    bool end_of_image() const noexcept
+    {
+        return state_ == state::after_end_of_image;
+    }
+
     void at_comment(const callback_function<at_comment_handler> at_comment_callback) noexcept
     {
         at_comment_callback_ = at_comment_callback;
@@ -173,10 +179,21 @@ private:
     void store_table_id(uint8_t component_id, uint8_t table_id);
 
     [[nodiscard]]
-    bool is_abbreviated_format_for_table_specification_data() const noexcept
+    bool is_abbreviated_format_for_table_specification_data() const
     {
-        // ISO/IEC 14495-1, Annex C defines 3 data formats. Annex C.4 defines the format that only contains mapping tables.
-        return state_ == state::header_section && mapping_table_count() > 0;
+        if (mapping_table_count() > 0)
+        {
+            if (state_ == state::image_section)
+            {
+                impl::throw_jpegls_error(jpegls_errc::mapping_tables_and_spiff_header);
+            }
+
+            // ISO/IEC 14495-1, Annex C defines 3 data formats.
+            // Annex C.4 defines the format that only contains mapping tables.
+            return state_ == state::header_section;
+        }
+
+        return false;
     }
 
     enum class state

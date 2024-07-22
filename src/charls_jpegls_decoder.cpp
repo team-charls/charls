@@ -47,7 +47,7 @@ struct charls_jpegls_decoder final
             reader_.read_header();
         }
 
-        state_ = state::header_read;
+        state_ = reader_.end_of_image() ? state::completed : state::header_read;
     }
 
     [[nodiscard]]
@@ -132,7 +132,7 @@ struct charls_jpegls_decoder final
     [[nodiscard]]
     int32_t mapping_table_id(const size_t component_index) const
     {
-        check_operation(state_ == state::completed);
+        check_state_completed();
         check_argument(component_index < reader_.component_count());
         return reader_.mapping_table_id(component_index);
     }
@@ -140,13 +140,15 @@ struct charls_jpegls_decoder final
     [[nodiscard]]
     std::optional<int32_t> mapping_table_index(const int32_t table_id) const
     {
+        check_state_completed();
         check_argument_range(minimum_table_id, maximum_table_id, table_id);
         return reader_.mapping_table_index(static_cast<uint8_t>(table_id));
     }
 
     [[nodiscard]]
-    int32_t mapping_table_count() const noexcept
+    int32_t mapping_table_count() const
     {
+        check_state_completed();
         return reader_.mapping_table_count();
     }
 
@@ -230,6 +232,11 @@ private:
     void check_header_read() const
     {
         check_operation(state_ >= state::header_read);
+    }
+
+    void check_state_completed() const
+    {
+        check_operation(state_ == state::completed);
     }
 
     void check_table_index(const int32_t index) const

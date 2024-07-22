@@ -8,6 +8,7 @@
 #include "../src/util.h"
 
 #include <vector>
+#include <array>
 
 namespace charls::test {
 
@@ -33,6 +34,45 @@ public:
     void write_start_of_image()
     {
         write_marker(jpeg_marker_code::start_of_image);
+    }
+
+    void write_spiff_header_segment(const spiff_header& header)
+    {
+        ASSERT(header.height > 0);
+        ASSERT(header.width > 0);
+
+        static constexpr std::array spiff_magic_id{std::byte{'S'}, std::byte{'P'}, std::byte{'I'}, std::byte{'F'}, std::byte{'F'}, std::byte{'\0'}};
+
+        // Create a JPEG APP8 segment in Still Picture Interchange File Format (SPIFF), v2.0
+        write_marker(jpeg_marker_code::application_data8);
+        write_uint16(30 + 2);
+        write_bytes(spiff_magic_id.data(), spiff_magic_id.size());
+        write_uint8(2);
+        write_uint8(0);
+        write_uint8(to_underlying_type(header.profile_id));
+        write_uint8(header.component_count);
+        write_uint32(header.height);
+        write_uint32(header.width);
+        write_uint8(to_underlying_type(header.color_space));
+        write_uint8(header.bits_per_sample);
+        write_uint8(to_underlying_type(header.compression_type));
+        write_uint8(to_underlying_type(header.resolution_units));
+        write_uint32(header.vertical_resolution);
+        write_uint32(header.horizontal_resolution);
+    }
+
+    void write_spiff_end_of_directory_entry()
+    {
+        constexpr uint8_t spiff_end_of_directory_entry_type{1};
+
+        // Note: ISO/IEC 10918-3, Annex F.2.2.3 documents that the EOD entry segment should have a length of 8
+        // but only 6 data bytes. This approach allows to wrap existing bit streams\encoders with a SPIFF header.
+        // In this implementation the SOI marker is added as data bytes to simplify the design.
+        static constexpr std::array spiff_end_of_directory{
+            std::byte{0},    std::byte{0},
+            std::byte{0},    std::byte{spiff_end_of_directory_entry_type},
+            std::byte{0xFF}, std::byte{to_underlying_type(jpeg_marker_code::start_of_image)}};
+        write_segment(jpeg_marker_code::application_data8, spiff_end_of_directory.data(), spiff_end_of_directory.size());
     }
 
     void write_start_of_frame_segment(const int width, const int height, const int bits_per_sample,
@@ -196,10 +236,23 @@ public:
         write_byte(static_cast<std::byte>(marker_code));
     }
 
+    void write_uint8(const uint32_t value)
+    {
+        write_byte(static_cast<std::byte>(value));
+    }
+
     void write_uint16(const uint16_t value)
     {
         write_byte(static_cast<std::byte>(value / 0x100));
         write_byte(static_cast<std::byte>(value % 0x100));
+    }
+
+    void write_uint32(const uint32_t value)
+    {
+        write_byte(static_cast<std::byte>(value > 3));
+        write_byte(static_cast<std::byte>(value > 2));
+        write_byte(static_cast<std::byte>(value > 1));
+        write_byte(static_cast<std::byte>(value));
     }
 
     void write_byte(const std::byte value)

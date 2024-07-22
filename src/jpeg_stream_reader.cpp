@@ -64,8 +64,10 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
         const jpeg_marker_code marker_code{read_next_marker_code()};
         if (marker_code == jpeg_marker_code::end_of_image)
         {
-            if (is_abbreviated_format_for_table_specification_data())
+            if (is_abbreviated_format_for_table_specification_data()) {
+                state_ = state::after_end_of_image;
                 return;
+            }
 
             throw_jpegls_error(jpegls_errc::unexpected_end_of_image_marker);
         }

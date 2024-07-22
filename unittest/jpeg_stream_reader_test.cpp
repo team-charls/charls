@@ -715,6 +715,68 @@ public:
         Assert::AreEqual(byte{2}, table_data[0]);
     }
 
+    TEST_METHOD(mapping_table_count_is_zero_at_start) // NOLINT
+    {
+        const jpeg_stream_reader reader;
+
+        const int32_t count{reader.mapping_table_count()};
+
+        Assert::AreEqual(0, count);
+    }
+
+    TEST_METHOD(mapping_table_count_after_read_header) // NOLINT
+    {
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
+        writer.write_start_of_frame_segment(1, 1, 8, 3);
+        writer.write_jpegls_preset_parameters_segment(2, 1, table_data, false);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        reader.read_header();
+        const int32_t count{reader.mapping_table_count()};
+
+        Assert::AreEqual(2, count);
+    }
+
+    TEST_METHOD(mapping_table_count_after_read_header_after_frame) // NOLINT
+    {
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 1, 8, 3);
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+        const int32_t count{reader.mapping_table_count()};
+
+        Assert::AreEqual(1, count);
+    }
+
+    TEST_METHOD(mapping_table_count_after_read_header_before_frame) // NOLINT
+    {
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
+        writer.write_start_of_frame_segment(1, 1, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+        const int32_t count{reader.mapping_table_count()};
+
+        Assert::AreEqual(1, count);
+    }
+
     TEST_METHOD(read_mapping_table_continuation) // NOLINT
     {
         constexpr size_t table_size{100000};

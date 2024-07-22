@@ -57,6 +57,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_END_OF_IMAGE_MARKER_NOT_FOUND = 28,
     CHARLS_JPEGLS_ERRC_INVALID_SPIFF_HEADER = 29,
     CHARLS_JPEGLS_ERRC_UNKNOWN_COMPONENT_ID = 30,
+    CHARLS_JPEGLS_ERRC_MAPPING_TABLES_AND_SPIFF_HEADER = 31,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH = 100,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_HEIGHT = 101,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COMPONENT_COUNT = 102,
@@ -189,7 +190,7 @@ enum class [[nodiscard]] jpegls_errc
     success = impl::CHARLS_JPEGLS_ERRC_SUCCESS,
 
     /// <summary>
-    /// This error is returned when one of the arguments is invalid and no specific reason is available.
+    /// This error is returned when one of the passed arguments is invalid.
     /// </summary>
     invalid_argument = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT,
 
@@ -335,6 +336,11 @@ enum class [[nodiscard]] jpegls_errc
     /// This error is returned when an unknown component ID in a scan is detected.
     /// </summary>
     unknown_component_id = impl::CHARLS_JPEGLS_ERRC_UNKNOWN_COMPONENT_ID,
+
+    /// <summary>
+    /// This error is returned for stream with only mapping tables and a spiff header.
+    /// </summary>
+    mapping_tables_and_spiff_header = impl::CHARLS_JPEGLS_ERRC_MAPPING_TABLES_AND_SPIFF_HEADER,
 
     /// <summary>
     /// The argument for the width parameter is outside the range [1, 65535].

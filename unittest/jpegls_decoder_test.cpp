@@ -1012,70 +1012,9 @@ public:
         decoder.decode(data, size);
     }
 
-    TEST_METHOD(mapping_table_count_is_zero_at_start) // NOLINT
+    TEST_METHOD(abbreviated_format_mapping_table_count_after_read_header) // NOLINT
     {
-        const jpegls_decoder decoder;
-
-        const int32_t count{decoder.mapping_table_count()};
-
-        Assert::AreEqual(0, count);
-    }
-
-    TEST_METHOD(mapping_table_count_after_read_header_before_frame) // NOLINT
-    {
-        const std::vector<std::byte> table_data(255);
-        jpeg_test_stream_writer writer;
-        writer.write_start_of_image();
-        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
-        writer.write_start_of_frame_segment(1, 1, 8, 3);
-        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
-
-        jpegls_decoder decoder;
-        decoder.source(writer.buffer);
-        decoder.read_header();
-        const int32_t count{decoder.mapping_table_count()};
-
-        Assert::AreEqual(1, count);
-    }
-
-    TEST_METHOD(mapping_table_count_after_read_header_after_frame) // NOLINT
-    {
-        const std::vector<std::byte> table_data(255);
-        jpeg_test_stream_writer writer;
-        writer.write_start_of_image();
-        writer.write_start_of_frame_segment(1, 1, 8, 3);
-        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
-        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
-
-        jpegls_decoder decoder;
-        decoder.source(writer.buffer);
-        decoder.read_header();
-        const int32_t count{decoder.mapping_table_count()};
-
-        Assert::AreEqual(1, count);
-    }
-
-    TEST_METHOD(mapping_table_count_after_read_header) // NOLINT
-    {
-        const std::vector<std::byte> table_data(255);
-        jpeg_test_stream_writer writer;
-        writer.write_start_of_image();
-        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
-        writer.write_start_of_frame_segment(1, 1, 8, 3);
-        writer.write_jpegls_preset_parameters_segment(2, 1, table_data, false);
-        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
-
-        jpegls_decoder decoder;
-        decoder.source(writer.buffer);
-        decoder.read_header();
-        const int32_t count{decoder.mapping_table_count()};
-
-        Assert::AreEqual(2, count);
-    }
-
-    TEST_METHOD(mapping_table_count_after_read_header_no_frame) // NOLINT
-    {
-        const std::vector<std::byte> table_data(255);
+        const vector<byte> table_data(255);
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
@@ -1087,6 +1026,32 @@ public:
         const int32_t count{decoder.mapping_table_count()};
 
         Assert::AreEqual(1, count);
+    }
+
+    TEST_METHOD(abbreviated_format_with_spiff_header_throws) // NOLINT
+    {
+        const vector<byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+
+        spiff_header header{};
+        header.bits_per_sample = 8;
+        header.color_space = spiff_color_space::rgb;
+        header.component_count = 3;
+        header.height = 1;
+        header.width = 1;
+
+        writer.write_spiff_header_segment(header);
+        writer.write_spiff_end_of_directory_entry();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer);
+        decoder.read_spiff_header();
+
+        assert_expect_exception(jpegls_errc::mapping_tables_and_spiff_header,
+                                [&decoder] { ignore = decoder.read_header(); });
     }
 
     TEST_METHOD(mapping_table_count_after_decode_table_after_first_scan) // NOLINT
@@ -1227,22 +1192,65 @@ public:
 
     TEST_METHOD(mapping_table_index_before_decode_throws) // NOLINT
     {
-        // TODO
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_index(3); });
+    }
+
+    TEST_METHOD(mapping_table_index_invalid_index_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+        vector<byte> decoded_destination(decoder.destination_size());
+        decoder.decode(decoded_destination);
+
+        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.mapping_table_index(0); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.mapping_table_index(256); });
     }
 
     TEST_METHOD(mapping_table_count_before_decode_throws) // NOLINT
     {
-        // TODO
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_count(); });
     }
 
     TEST_METHOD(mapping_table_info_before_decode_throws) // NOLINT
     {
-        // TODO
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_info(0); });
     }
 
     TEST_METHOD(mapping_table_before_decode_throws) // NOLINT
     {
-        // TODO
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+        vector<byte> table(1000);
+
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&decoder, &table] { decoder.mapping_table(0, table.data()); });
+    }
+
+    TEST_METHOD(mapping_table_invalid_index_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+        vector<byte> decoded_destination(decoder.destination_size());
+        decoder.decode(decoded_destination);
+        vector<byte> table(1000);
+
+        assert_expect_exception(jpegls_errc::invalid_argument,
+                                [&decoder, &table] { decoder.mapping_table(0, table.data()); });
     }
 
 private:
