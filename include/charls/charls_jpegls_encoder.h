@@ -452,7 +452,7 @@ public:
     /// </summary>
     /// <param name="destination_buffer">Reference to the start of the destination buffer.</param>
     /// <param name="destination_size_bytes">Size of the destination buffer in bytes.</param>
-    CHARLS_ATTRIBUTE_ACCESS((access(write_only, 1, 2)))
+    CHARLS_ATTRIBUTE_ACCESS((access(write_only, 2, 3)))
     jpegls_encoder& destination(CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
                                 const size_t destination_size_bytes)
     {
@@ -555,7 +555,7 @@ public:
     /// </summary>
     /// <param name="comment">The bytes of the comment: application specific.</param>
     /// <param name="size">The size of the comment in bytes.</param>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 1, 2)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     jpegls_encoder& write_comment(CHARLS_IN_READS_BYTES(size) const void* comment, const size_t size)
     {
         check_jpegls_errc(charls_jpegls_encoder_write_comment(encoder_.get(), comment, size));
@@ -568,7 +568,7 @@ public:
     /// <param name="application_data_id">The ID of the application data segment.</param>
     /// <param name="application_data">The bytes of the application data: application specific.</param>
     /// <param name="size">The size of the comment in bytes.</param>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
     jpegls_encoder& write_application_data(const int32_t application_data_id,
                                            CHARLS_IN_READS_BYTES(size) const void* application_data, const size_t size)
     {
@@ -587,7 +587,7 @@ public:
     /// <param name="entry_size">Size in bytes of a single table entry.</param>
     /// <param name="table_data">Byte buffer that holds the mapping table.</param>
     /// <param name="size">The size of the buffer in bytes.</param>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 4, 5)))
     jpegls_encoder& write_table(const int32_t table_id, const int32_t entry_size, CHARLS_IN const void* table_data,
                                 const size_t size)
     {
@@ -621,7 +621,7 @@ public:
     /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
     /// </param>
     /// <returns>The number of bytes written to the destination.</returns>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 1, 2)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     size_t encode(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const size_t source_size_bytes,
                   const uint32_t stride = 0) const
     {

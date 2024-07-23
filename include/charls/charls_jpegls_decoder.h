@@ -385,7 +385,7 @@ public:
     /// <param name="source_buffer">Reference to the start of the source buffer.</param>
     /// <param name="source_size_bytes">Size of the source buffer in bytes.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 1, 2)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     jpegls_decoder& source(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
                            const size_t source_size_bytes)
     {
@@ -601,7 +601,7 @@ public:
     /// <param name="destination_size_bytes">Length of the destination buffer in bytes.</param>
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
-    CHARLS_ATTRIBUTE_ACCESS((access(write_only, 1, 2)))
+    CHARLS_ATTRIBUTE_ACCESS((access(write_only, 2, 3)))
     void decode(CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
                 const size_t destination_size_bytes, const uint32_t stride = 0) const
     {
@@ -755,7 +755,7 @@ public:
     /// <param name="table_data">Output argument, will hold the data of mapping table when the function returns.</param>
     /// <param name="table_size_bytes">Length of the table buffer in bytes.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
-    CHARLS_ATTRIBUTE_ACCESS((access(write_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(write_only, 3, 4)))
     void mapping_table(const int32_t index, CHARLS_OUT_WRITES_BYTES(table_size_bytes) void* table_data,
                        const size_t table_size_bytes) const
     {
