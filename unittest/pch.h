@@ -26,6 +26,7 @@
 #include <memory>
 #include <vector>
 #include <limits>
+#include <array>
 
 #ifdef _MSC_VER
 #define MSVC_WARNING_SUPPRESS(x) \

@@ -6,3 +6,4 @@
 void test_conformance();
 void test_color_transforms_hp_images();
 void test_sample_annex_h3();
+void test_sample_annex_h4_5();

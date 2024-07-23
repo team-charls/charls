@@ -663,14 +663,15 @@ bool unit_test()
         cout << "Test Annex H3\n";
         test_sample_annex_h3();
 
+        cout << "Test Annex H.4.5\n";
+        test_sample_annex_h4_5();
+
         test_noise_image();
 
         cout << "Test robustness\n";
         test_decode_bit_stream_with_no_marker_start();
         test_decode_bit_stream_with_unsupported_encoding();
         test_decode_bit_stream_with_unknown_jpeg_marker();
-
-        cout << "Test Legacy API\n";
 
         return true;
     }
