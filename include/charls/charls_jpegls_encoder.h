@@ -250,12 +250,15 @@ charls_jpegls_encoder_write_application_data(CHARLS_IN charls_jpegls_encoder* en
 /// During decoding the active maximum value determines the required size of the table.
 /// </remarks>
 /// <param name="encoder">Reference to the encoder instance.</param>
-/// <param name="table_info">Table information, describes the mapping table.</param>
+/// <param name="table_id">Table ID. Unique identifier of the mapping table in the range [1..255]</param>
+/// <param name="entry_size">Size in bytes of a single table entry.</param>
 /// <param name="table_data">Byte array that holds the mapping table.</param>
-CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3)))
+/// <param name="table_data_size_bytes">The size in bytes of the table data.</param>
+CHARLS_ATTRIBUTE_ACCESS((access(read_only, 4, 5)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_write_table(CHARLS_IN charls_jpegls_encoder* encoder, const charls_table_info* table_info,
-                                  CHARLS_IN_READS_BYTES(table_info->data_size) const void* table_data) CHARLS_NOEXCEPT;
+charls_jpegls_encoder_write_table(CHARLS_IN charls_jpegls_encoder* encoder, int32_t table_id, int32_t entry_size,
+                                  CHARLS_IN_READS_BYTES(table_data_size_bytes) const void* table_data,
+                                  size_t table_data_size_bytes) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Encodes the passed buffer with the source image data to the destination.
@@ -449,7 +452,7 @@ public:
     /// </summary>
     /// <param name="destination_buffer">Reference to the start of the destination buffer.</param>
     /// <param name="destination_size_bytes">Size of the destination buffer in bytes.</param>
-    CHARLS_ATTRIBUTE_ACCESS((access(write_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(write_only, 1, 2)))
     jpegls_encoder& destination(CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
                                 const size_t destination_size_bytes)
     {
@@ -509,7 +512,7 @@ public:
     /// <param name="entry_data">The entry data of the directory entry.</param>
     /// <param name="entry_data_size_bytes">The size in bytes of the directory entry [0-65528].</param>
     template<typename IntDerivedType>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     jpegls_encoder& write_spiff_entry(const IntDerivedType entry_tag,
                                       CHARLS_IN_READS_BYTES(entry_data_size_bytes) const void* entry_data,
                                       const size_t entry_data_size_bytes)
@@ -552,7 +555,7 @@ public:
     /// </summary>
     /// <param name="comment">The bytes of the comment: application specific.</param>
     /// <param name="size">The size of the comment in bytes.</param>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 1, 2)))
     jpegls_encoder& write_comment(CHARLS_IN_READS_BYTES(size) const void* comment, const size_t size)
     {
         check_jpegls_errc(charls_jpegls_encoder_write_comment(encoder_.get(), comment, size));
@@ -565,7 +568,7 @@ public:
     /// <param name="application_data_id">The ID of the application data segment.</param>
     /// <param name="application_data">The bytes of the application data: application specific.</param>
     /// <param name="size">The size of the comment in bytes.</param>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     jpegls_encoder& write_application_data(const int32_t application_data_id,
                                            CHARLS_IN_READS_BYTES(size) const void* application_data, const size_t size)
     {
@@ -576,19 +579,36 @@ public:
 
     /// <summary>
     /// Writes a mapping table to the destination.
-    /// During decoding a component can reference a mapping table.
     /// </summary>
     /// <remarks>
     /// No validation is performed if the table ID is unique and if the table size matches the required size.
-    /// During decoding the active maximum value determines the required size of the table.
     /// </remarks>
-    /// <param name="info">Table info struct that describes the mapping table.</param>
-    /// <param name="table_data">Byte array that holds the mapping table.</param>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2)))
-    jpegls_encoder& write_table(const table_info& info, CHARLS_IN const void* table_data)
+    /// <param name="table_id">Table ID. Unique identifier of the mapping table in the range [1..255]</param>
+    /// <param name="entry_size">Size in bytes of a single table entry.</param>
+    /// <param name="table_data">Byte buffer that holds the mapping table.</param>
+    /// <param name="size">The size of the buffer in bytes.</param>
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
+    jpegls_encoder& write_table(const int32_t table_id, const int32_t entry_size, CHARLS_IN const void* table_data,
+                                const size_t size)
     {
-        check_jpegls_errc(charls_jpegls_encoder_write_table(encoder_.get(), &info, table_data));
+        check_jpegls_errc(charls_jpegls_encoder_write_table(encoder_.get(), table_id, entry_size, table_data, size));
         return *this;
+    }
+
+    /// <summary>
+    /// Writes a mapping table to the destination.
+    /// </summary>
+    /// <remarks>
+    /// No validation is performed if the table ID is unique and if the table size matches the required size.
+    /// </remarks>
+    /// <param name="table_id">Table ID. Unique identifier of the mapping table in the range [1..255]</param>
+    /// <param name="entry_size">Size in bytes of a single table entry.</param>
+    /// <param name="table_container">Buffer that holds the mapping table.</param>
+    template<typename Container, typename ContainerValueType = typename Container::value_type>
+    jpegls_encoder& write_table(const int32_t table_id, const int32_t entry_size, Container& table_container)
+    {
+        return write_table(table_id, entry_size, table_container.data(),
+                           table_container.size() * sizeof(ContainerValueType));
     }
 
     /// <summary>
@@ -601,7 +621,7 @@ public:
     /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
     /// </param>
     /// <returns>The number of bytes written to the destination.</returns>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 1, 2)))
     size_t encode(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const size_t source_size_bytes,
                   const uint32_t stride = 0) const
     {

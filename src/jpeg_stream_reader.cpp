@@ -253,9 +253,13 @@ table_info jpeg_stream_reader::mapping_table_info(const size_t index) const
 }
 
 
-void jpeg_stream_reader::get_mapping_table(const size_t index, byte* table_data) const
+void jpeg_stream_reader::get_mapping_table(const size_t index, const span<byte> table) const
 {
-    mapping_tables_[index].copy_data(table_data);
+    const auto& mapping_table{mapping_tables_[index]};
+    if (mapping_table.data_size() > table.size())
+        throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
+
+    mapping_table.copy(table.data());
 }
 
 

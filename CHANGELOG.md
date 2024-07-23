@@ -2,14 +2,22 @@
 
 All notable changes to this project are documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.0.0] -
+## [3.0.0] - UNRELEASED
+
+### Added
+
+- Support to encode and decode mapping tables.
 
 ### Changed
 
-- Updated the source code to C++17. This is a breaking change, high version is updated to 3.
-- encoding_options::include_pc_parameters_jai is not enabled by default anymore. This is a breaking change.
+- BREAKING: Updated the minimal required C++ language version to C++17.
+- BREAKING: encoding_options::include_pc_parameters_jai is not enabled by default anymore.
+
+### Removed
+
+- BREAKING: Legacy 1.x API methods have been removed.
 
 ## [2.4.2] - 2023-5-16
 

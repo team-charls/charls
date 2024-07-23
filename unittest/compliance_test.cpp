@@ -195,7 +195,7 @@ public:
         const table_info table_info{decoder.mapping_table_info(table_index)};
         vector<byte> mapping_table(table_info.data_size);
 
-        decoder.mapping_table(table_index, mapping_table.data());
+        decoder.mapping_table(table_index, mapping_table);
 
         constexpr array expected_mapping_table{byte{0xFF}, byte{0xFF}, byte{0xFF}, byte{0xFF}, byte{0}, byte{0},
                                                byte{0},    byte{0xFF}, byte{0},    byte{0},    byte{0}, byte{0xFF}};

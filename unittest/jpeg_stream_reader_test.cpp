@@ -711,8 +711,30 @@ public:
         Assert::AreEqual(uint32_t{1}, info.data_size);
 
         vector<byte> table_data(1);
-        reader.get_mapping_table(0, table_data.data());
+        reader.get_mapping_table(0, {table_data.data(), table_data.size()});
         Assert::AreEqual(byte{2}, table_data[0]);
+    }
+
+    TEST_METHOD(read_mapping_table_too_small_buffer_throws) // NOLINT
+    {
+        vector<byte> source(100);
+        jpeg_stream_writer writer({source.data(), source.size()});
+        writer.write_start_of_image();
+
+        constexpr array table_data_expected{byte{2}, byte{3}};
+
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data_expected);
+        writer.write_start_of_frame_segment({1, 1, 2, 1});
+        writer.write_start_of_scan_segment(1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({source.data(), source.size()});
+        reader.read_header();
+
+        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&reader] {
+            vector<byte> table_data(1);
+            reader.get_mapping_table(0, {table_data.data(), table_data.size()});
+        });
     }
 
     TEST_METHOD(mapping_table_count_is_zero_at_start) // NOLINT
@@ -806,7 +828,7 @@ public:
         Assert::AreEqual(uint32_t{100000}, info.data_size);
 
         vector<byte> table_data(table_size);
-        reader.get_mapping_table(0, table_data.data());
+        reader.get_mapping_table(0, {table_data.data(), table_data.size()});
         Assert::AreEqual(byte{7}, table_data[0]);
         Assert::AreEqual(byte{8}, table_data[table_size - 1]);
     }

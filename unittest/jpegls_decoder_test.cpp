@@ -1237,7 +1237,7 @@ public:
         vector<byte> table(1000);
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-                                [&decoder, &table] { decoder.mapping_table(0, table.data()); });
+                                [&decoder, &table] { decoder.mapping_table(0, table); });
     }
 
     TEST_METHOD(mapping_table_invalid_index_throws) // NOLINT
@@ -1250,7 +1250,7 @@ public:
         vector<byte> table(1000);
 
         assert_expect_exception(jpegls_errc::invalid_argument,
-                                [&decoder, &table] { decoder.mapping_table(0, table.data()); });
+                                [&decoder, &table] { decoder.mapping_table(0, table); });
     }
 
 private:

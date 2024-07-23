@@ -881,7 +881,7 @@ public:
         encoder.destination(destination);
 
         constexpr array table_data{byte{0}};
-        encoder.write_table({1, 1, static_cast<uint32_t>(table_data.size())}, table_data.data());
+        encoder.write_table(1, 1, table_data);
 
         Assert::AreEqual(size_t{10}, encoder.bytes_written());
 
@@ -911,7 +911,7 @@ public:
         encoder.destination(encoded);
         encoder.frame_info(frame_info);
 
-        encoder.write_table({1, 1, static_cast<uint32_t>(table_data.size())}, table_data.data());
+        encoder.write_table(1, 1, table_data);
 
         encoded.resize(encoder.encode(source));
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
@@ -925,13 +925,11 @@ public:
         vector<byte> destination(100);
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder, &table_data] {
-            ignore = encoder.write_table({0, 1, static_cast<uint32_t>(table_data.size())}, table_data.data());
-        });
+        assert_expect_exception(jpegls_errc::invalid_argument,
+                                [&encoder, &table_data] { ignore = encoder.write_table(0, 1, table_data); });
 
-        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder, &table_data] {
-            ignore = encoder.write_table({256, 1, static_cast<uint32_t>(table_data.size())}, table_data.data());
-        });
+        assert_expect_exception(jpegls_errc::invalid_argument,
+                                [&encoder, &table_data] { ignore = encoder.write_table(256, 1, table_data); });
     }
 
     TEST_METHOD(write_table_with_bad_entry_size_throws) // NOLINT
@@ -942,13 +940,11 @@ public:
         vector<byte> destination(100);
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder, &table_data] {
-            ignore = encoder.write_table({1, 0, static_cast<uint32_t>(table_data.size())}, table_data.data());
-        });
+        assert_expect_exception(jpegls_errc::invalid_argument,
+                                [&encoder, &table_data] { ignore = encoder.write_table(1, 0, table_data); });
 
-        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder, &table_data] {
-            ignore = encoder.write_table({1, 256, static_cast<uint32_t>(table_data.size())}, table_data.data());
-        });
+        assert_expect_exception(jpegls_errc::invalid_argument,
+                                [&encoder, &table_data] { ignore = encoder.write_table(1, 256, table_data); });
     }
 
     TEST_METHOD(write_table_with_too_small_table_throws) // NOLINT
@@ -960,7 +956,7 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_argument_size, [&encoder, &table_data] {
-            ignore = encoder.write_table({1, 2, static_cast<uint32_t>(table_data.size())}, table_data.data());
+            ignore = encoder.write_table(1, 2, table_data);
         });
     }
 
@@ -973,7 +969,7 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] {
             MSVC_WARNING_SUPPRESS_NEXT_LINE(6387)
-            ignore = encoder.write_table({1, 1, 1}, nullptr);
+            ignore = encoder.write_table(1, 1, nullptr, 1);
         });
     }
 
@@ -990,7 +986,7 @@ public:
         ignore = encoder.encode(source);
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&encoder, &table_data] {
-            ignore = encoder.write_table({1, 1, static_cast<uint32_t>(table_data.size())}, table_data.data());
+            ignore = encoder.write_table(1, 1, table_data);
         });
     }
 
@@ -1002,7 +998,7 @@ public:
         encoder.destination(destination);
 
         constexpr array table_data{byte{0}};
-        encoder.write_table({1, 1, static_cast<uint32_t>(table_data.size())}, table_data.data());
+        encoder.write_table(1, 1, table_data);
         const size_t bytes_written{encoder.create_tables_only()};
 
         Assert::AreEqual(size_t{12}, bytes_written);
@@ -1125,16 +1121,14 @@ public:
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument,
-                                [&encoder] { encoder.set_table_id(-1, 0); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] { encoder.set_table_id(-1, 0); });
     }
 
     TEST_METHOD(set_table_id_bad_id_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument,
-                                [&encoder] { encoder.set_table_id(0, -1); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] { encoder.set_table_id(0, -1); });
     }
 
     TEST_METHOD(encode_without_destination_throws) // NOLINT

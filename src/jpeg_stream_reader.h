@@ -107,7 +107,7 @@ public:
     [[nodiscard]]
     table_info mapping_table_info(size_t index) const;
 
-    void get_mapping_table(size_t index, std::byte* table_data) const;
+    void get_mapping_table(size_t index, span<std::byte> table) const;
 
 private:
     [[nodiscard]]
@@ -249,7 +249,7 @@ private:
                                    });
         }
 
-        void copy_data(std::byte* destination) const
+        void copy(std::byte* destination) const
         {
             for (const auto& data_fragment : data_fragments_)
             {
