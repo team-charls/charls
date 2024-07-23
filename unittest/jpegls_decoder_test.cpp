@@ -440,20 +440,6 @@ public:
                              "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_reference_to_mapping_table_selector_throws) // NOLINT
-    {
-        jpeg_test_stream_writer writer;
-
-        writer.write_start_of_image();
-        writer.write_start_of_frame_segment(10, 10, 8, 3);
-        writer.mapping_table_selector = 1;
-        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
-
-        jpegls_decoder decoder{writer.buffer, false};
-
-        assert_expect_exception(jpegls_errc::parameter_value_not_supported, [&decoder] { decoder.read_header(); });
-    }
-
     TEST_METHOD(read_spiff_header) // NOLINT
     {
         const auto source{create_test_spiff_header()};
@@ -1024,6 +1010,247 @@ public:
 
         // size is not a perfect match and needs a conversion.
         decoder.decode(data, size);
+    }
+
+    TEST_METHOD(abbreviated_format_mapping_table_count_after_read_header) // NOLINT
+    {
+        const vector<byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer);
+        decoder.read_header();
+        const int32_t count{decoder.mapping_table_count()};
+
+        Assert::AreEqual(1, count);
+    }
+
+    TEST_METHOD(abbreviated_format_with_spiff_header_throws) // NOLINT
+    {
+        const vector<byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+
+        spiff_header header{};
+        header.bits_per_sample = 8;
+        header.color_space = spiff_color_space::rgb;
+        header.component_count = 3;
+        header.height = 1;
+        header.width = 1;
+
+        writer.write_spiff_header_segment(header);
+        writer.write_spiff_end_of_directory_entry();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer);
+        decoder.read_spiff_header();
+
+        assert_expect_exception(jpegls_errc::mapping_tables_and_spiff_header,
+                                [&decoder] { ignore = decoder.read_header(); });
+    }
+
+    TEST_METHOD(mapping_table_count_after_decode_table_after_first_scan) // NOLINT
+    {
+        constexpr array data_h10{
+            byte{0xFF}, byte{0xD8}, // Start of image (SOI) marker
+            byte{0xFF}, byte{0xF7}, // Start of JPEG-LS frame (SOF 55) marker - marker segment follows
+            byte{0x00}, byte{0x0E}, // Length of marker segment = 14 bytes including the length field
+            byte{0x02},             // P = Precision = 2 bits per sample
+            byte{0x00}, byte{0x04}, // Y = Number of lines = 4
+            byte{0x00}, byte{0x03}, // X = Number of columns = 3
+            byte{0x02},             // Nf = Number of components in the frame = 2
+            byte{0x01},             // C1  = Component ID = 1 (first and only component)
+            byte{0x11},             // Sub-sampling: H1 = 1, V1 = 1
+            byte{0x00},             // Tq1 = 0 (this field is always 0)
+            byte{0x02},             // C2  = Component ID = 2 (first and only component)
+            byte{0x11},             // Sub-sampling: H1 = 1, V1 = 1
+            byte{0x00},             // Tq1 = 0 (this field is always 0)
+
+            byte{0xFF}, byte{0xF8},             // LSE - JPEG-LS preset parameters marker
+            byte{0x00}, byte{0x11},             // Length of marker segment = 17 bytes including the length field
+            byte{0x02},                         // ID = 2, mapping table
+            byte{0x05},                         // TID = 5 Table identifier (arbitrary)
+            byte{0x03},                         // Wt = 3 Width of table entry
+            byte{0xFF}, byte{0xFF}, byte{0xFF}, // Entry for index 0
+            byte{0xFF}, byte{0x00}, byte{0x00}, // Entry for index 1
+            byte{0x00}, byte{0xFF}, byte{0x00}, // Entry for index 2
+            byte{0x00}, byte{0x00}, byte{0xFF}, // Entry for index 3
+
+            byte{0xFF}, byte{0xDA},             // Start of scan (SOS) marker
+            byte{0x00}, byte{0x08},             // Length of marker segment = 8 bytes including the length field
+            byte{0x01},                         // Ns = Number of components for this scan = 1
+            byte{0x01},                         // C1 = Component ID = 1
+            byte{0x05},                         // Tm 1  = Mapping table identifier = 5
+            byte{0x00},                         // NEAR = 0 (near-lossless max error)
+            byte{0x00},                         // ILV = 0 (interleave mode = non-interleaved)
+            byte{0x00},                         // Al = 0, Ah = 0 (no point transform)
+            byte{0xDB}, byte{0x95}, byte{0xF0}, // 3 bytes of compressed image data
+
+            byte{0xFF}, byte{0xF8},             // LSE - JPEG-LS preset parameters marker
+            byte{0x00}, byte{0x11},             // Length of marker segment = 17 bytes including the length field
+            byte{0x02},                         // ID = 2, mapping table
+            byte{0x06},                         // TID = 6 Table identifier (arbitrary)
+            byte{0x03},                         // Wt = 3 Width of table entry
+            byte{0xFF}, byte{0xFF}, byte{0xFF}, // Entry for index 0
+            byte{0xFF}, byte{0x00}, byte{0x00}, // Entry for index 1
+            byte{0x00}, byte{0xFF}, byte{0x00}, // Entry for index 2
+            byte{0x00}, byte{0x00}, byte{0xFF}, // Entry for index 3
+
+            byte{0xFF}, byte{0xDA},             // Start of scan (SOS) marker
+            byte{0x00}, byte{0x08},             // Length of marker segment = 8 bytes including the length field
+            byte{0x01},                         // Ns = Number of components for this scan = 1
+            byte{0x02},                         // C1 = Component ID = 2
+            byte{0x06},                         // Tm 1  = Mapping table identifier = 6
+            byte{0x00},                         // NEAR = 0 (near-lossless max error)
+            byte{0x00},                         // ILV = 0 (interleave mode = non-interleaved)
+            byte{0x00},                         // Al = 0, Ah = 0 (no point transform)
+            byte{0xDB}, byte{0x95}, byte{0xF0}, // 3 bytes of compressed image data
+
+            byte{0xFF}, byte{0xD9} // End of image (EOI) marker
+        };
+
+        jpegls_decoder decoder;
+        decoder.source(data_h10);
+        decoder.read_header();
+
+        vector<byte> destination(decoder.destination_size());
+        decoder.decode(destination);
+
+        const int32_t count{decoder.mapping_table_count()};
+        Assert::AreEqual(2, count);
+
+        Assert::AreEqual(5, decoder.mapping_table_id(0));
+        Assert::AreEqual(6, decoder.mapping_table_id(1));
+    }
+
+    TEST_METHOD(invalid_table_id_throws) // NOLINT
+    {
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(0, 1, table_data, false);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer);
+        assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_id, [&decoder] { decoder.read_header(); });
+    }
+
+    TEST_METHOD(duplicate_table_id_throws) // NOLINT
+    {
+        const std::vector<std::byte> table_data(255);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
+        writer.write_start_of_frame_segment(1, 1, 8, 3);
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer);
+        assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_id, [&decoder] { decoder.read_header(); });
+    }
+
+    TEST_METHOD(mapping_table_id_returns_zero) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+        vector<byte> decoded_destination(decoder.destination_size());
+
+        decoder.decode(decoded_destination);
+
+        Assert::AreEqual(0, decoder.mapping_table_id(0));
+        Assert::AreEqual(0, decoder.mapping_table_id(1));
+        Assert::AreEqual(0, decoder.mapping_table_id(2));
+    }
+
+    TEST_METHOD(mapping_table_id_for_invalid_component_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+        vector<byte> decoded_destination(decoder.destination_size());
+
+        decoder.decode(decoded_destination);
+
+        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.mapping_table_id(3); });
+    }
+
+    TEST_METHOD(mapping_table_id_before_decode_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_id(0); });
+    }
+
+    TEST_METHOD(mapping_table_index_before_decode_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_index(3); });
+    }
+
+    TEST_METHOD(mapping_table_index_invalid_index_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+        vector<byte> decoded_destination(decoder.destination_size());
+        decoder.decode(decoded_destination);
+
+        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.mapping_table_index(0); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.mapping_table_index(256); });
+    }
+
+    TEST_METHOD(mapping_table_count_before_decode_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_count(); });
+    }
+
+    TEST_METHOD(mapping_table_info_before_decode_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_info(0); });
+    }
+
+    TEST_METHOD(mapping_table_before_decode_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+        vector<byte> table(1000);
+
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&decoder, &table] { decoder.mapping_table(0, table); });
+    }
+
+    TEST_METHOD(mapping_table_invalid_index_throws) // NOLINT
+    {
+        const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
+
+        const jpegls_decoder decoder(encoded_source, true);
+        vector<byte> decoded_destination(decoder.destination_size());
+        decoder.decode(decoded_destination);
+        vector<byte> table(1000);
+
+        assert_expect_exception(jpegls_errc::invalid_argument,
+                                [&decoder, &table] { decoder.mapping_table(0, table); });
     }
 
 private:

@@ -125,6 +125,12 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
     case jpegls_errc::invalid_spiff_header:
         return "Invalid JPEG-LS stream: invalid SPIFF header";
 
+    case jpegls_errc::unknown_component_id:
+        return "Invalid JPEG-LS stream: unknown component ID in scan segment";
+
+    case jpegls_errc::mapping_tables_and_spiff_header:
+        return "Invalid JPEG-LS stream: mapping tables without SOF but with spiff header";
+
     case jpegls_errc::invalid_parameter_bits_per_sample:
         return "Invalid JPEG-LS stream: the bit per sample (sample precision) parameter is not in the range [2, 16]";
 
@@ -184,6 +190,12 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
 
     case jpegls_errc::invalid_parameter_color_transformation:
         return "Invalid JPEG-LS stream: Color transformation segment contains invalid values or doesn't match with frame info";
+
+    case jpegls_errc::invalid_parameter_mapping_table_id:
+        return "Invalid JPEG-LS stream: mapping table ID outside valid range or duplicate";
+
+    case jpegls_errc::invalid_parameter_mapping_table_continuation:
+        return "Invalid JPEG-LS stream: mapping table continuation without matching mapping table specification";
     }
 
     return "Unknown";

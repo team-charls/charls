@@ -1,16 +1,10 @@
 # GIT ignore file for CharLS
 
-obj/
-bin/
-Win32/
-x64/
 .vscode/
 .vs/
 .idea
 build*/
-[Dd]ebug/
-[Rr]elease/
-[Cc]hecked/
+cmake-build-debug/
 TestResults/
 vcpkg_installed/
 *.opensdf

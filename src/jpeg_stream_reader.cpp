@@ -19,7 +19,7 @@ using impl::throw_jpegls_error;
 using std::array;
 using std::byte;
 using std::equal;
-using std::find;
+using std::optional;
 
 namespace {
 
@@ -55,13 +55,23 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
         if (UNLIKELY(read_next_marker_code() != jpeg_marker_code::start_of_image))
             throw_jpegls_error(jpegls_errc::start_of_image_marker_not_found);
 
-        component_ids_.reserve(4); // expect 4 components or fewer.
+        scan_infos_.reserve(4); // expect 4 components or fewer.
         state_ = state::header_section;
     }
 
     for (;;)
     {
         const jpeg_marker_code marker_code{read_next_marker_code()};
+        if (marker_code == jpeg_marker_code::end_of_image)
+        {
+            if (is_abbreviated_format_for_table_specification_data()) {
+                state_ = state::after_end_of_image;
+                return;
+            }
+
+            throw_jpegls_error(jpegls_errc::unexpected_end_of_image_marker);
+        }
+
         validate_marker_code(marker_code);
         read_segment_size();
 
@@ -201,7 +211,7 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
         throw_jpegls_error(jpegls_errc::duplicate_start_of_image_marker);
 
     case jpeg_marker_code::end_of_image:
-        throw_jpegls_error(jpegls_errc::unexpected_end_of_image_marker);
+        unreachable();
     }
 
     if (is_restart_marker_code(marker_code))
@@ -220,6 +230,36 @@ jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters(
         throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_preset_parameters);
 
     return preset_coding_parameters;
+}
+
+
+int32_t jpeg_stream_reader::mapping_table_id(const size_t component_index) const noexcept
+{
+    return scan_infos_[component_index].table_id;
+}
+
+
+optional<int32_t> jpeg_stream_reader::mapping_table_index(const uint8_t table_id) const noexcept
+{
+    const auto it{find_mapping_table_entry(table_id)};
+    return it != mapping_tables_.cend() ? static_cast<int32_t>(it - mapping_tables_.cbegin()) : optional<int32_t>{};
+}
+
+
+table_info jpeg_stream_reader::mapping_table_info(const size_t index) const
+{
+    const auto& entry{mapping_tables_[index]};
+    return {entry.table_id(), entry.entry_size(), static_cast<uint32_t>(entry.data_size())};
+}
+
+
+void jpeg_stream_reader::get_mapping_table(const size_t index, const span<byte> table) const
+{
+    const auto& mapping_table{mapping_tables_[index]};
+    if (mapping_table.data_size() > table.size())
+        throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
+
+    mapping_table.copy(table.data());
 }
 
 
@@ -355,12 +395,16 @@ void jpeg_stream_reader::read_preset_parameters_segment()
         return;
 
     case jpegls_preset_parameters_type::oversize_image_dimension:
-        oversize_image_dimension();
+        read_oversize_image_dimension();
         return;
 
     case jpegls_preset_parameters_type::mapping_table_specification:
+        read_mapping_table_specification();
+        return;
+
     case jpegls_preset_parameters_type::mapping_table_continuation:
-        throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+        read_mapping_table_continuation();
+        return;
 
     case jpegls_preset_parameters_type::coding_method_specification:
     case jpegls_preset_parameters_type::near_lossless_error_re_specification:
@@ -390,7 +434,7 @@ void jpeg_stream_reader::read_preset_coding_parameters()
 }
 
 
-void jpeg_stream_reader::oversize_image_dimension()
+void jpeg_stream_reader::read_oversize_image_dimension()
 {
     // Note: The JPEG-LS standard supports a 2,3 or 4 bytes for the size.
     check_minimal_segment_size(2);
@@ -424,6 +468,28 @@ void jpeg_stream_reader::oversize_image_dimension()
 
     frame_info_height(height);
     frame_info_width(width);
+}
+
+
+void jpeg_stream_reader::read_mapping_table_specification()
+{
+    check_minimal_segment_size(3);
+    const uint8_t table_id{read_uint8()};
+    const uint8_t entry_size{read_uint8()};
+
+    add_mapping_table(table_id, entry_size, segment_data_.subspan(3));
+    skip_remaining_segment_data();
+}
+
+
+void jpeg_stream_reader::read_mapping_table_continuation()
+{
+    check_minimal_segment_size(3);
+    const uint8_t table_id{read_uint8()};
+    const uint8_t entry_size{read_uint8()};
+
+    extend_mapping_table(table_id, entry_size, segment_data_.subspan(3));
+    skip_remaining_segment_data();
 }
 
 
@@ -469,9 +535,9 @@ void jpeg_stream_reader::read_start_of_scan_segment()
 
     for (size_t i{}; i != component_count_in_scan; ++i)
     {
-        skip_byte(); // Skip scan component selector
-        if (const uint8_t mapping_table_selector{read_uint8()}; UNLIKELY(mapping_table_selector != 0))
-            throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+        const uint8_t component_id{read_uint8()};
+        const uint8_t table_id{read_uint8()};
+        store_table_id(component_id, table_id);
     }
 
     parameters_.near_lossless = read_uint8(); // Read NEAR parameter
@@ -672,10 +738,12 @@ USE_DECL_ANNOTATIONS void jpeg_stream_reader::try_read_spiff_header_segment(spif
 
 void jpeg_stream_reader::add_component(const uint8_t component_id)
 {
-    if (UNLIKELY(find(component_ids_.cbegin(), component_ids_.cend(), component_id) != component_ids_.cend()))
+    if (UNLIKELY(find_if(scan_infos_.cbegin(), scan_infos_.cend(), [component_id](const scan_info& info) noexcept {
+                     return info.component_id == component_id;
+                 }) != scan_infos_.cend()))
         throw_jpegls_error(jpegls_errc::duplicate_component_id_in_sof_segment);
 
-    component_ids_.push_back(component_id);
+    scan_infos_.push_back({component_id, 0});
 }
 
 
@@ -753,5 +821,57 @@ void jpeg_stream_reader::call_application_data_callback(const jpeg_marker_code m
             segment_data_.size(), at_application_data_callback_.user_context))))
         throw_jpegls_error(jpegls_errc::callback_failed);
 }
+
+
+void jpeg_stream_reader::add_mapping_table(const uint8_t table_id, const uint8_t entry_size,
+                                           const span<const byte> table_data)
+{
+    if (table_id == 0 || find_mapping_table_entry(table_id) != mapping_tables_.cend())
+        throw_jpegls_error(jpegls_errc::invalid_parameter_mapping_table_id);
+
+    mapping_tables_.emplace_back(table_id, entry_size, table_data);
+}
+
+
+void jpeg_stream_reader::extend_mapping_table(const uint8_t table_id, const uint8_t entry_size,
+                                              const span<const byte> table_data)
+{
+    const auto entry{find_mapping_table_entry(table_id)};
+    if (entry == mapping_tables_.cend() || entry->entry_size() != entry_size)
+        throw_jpegls_error(jpegls_errc::invalid_parameter_mapping_table_continuation);
+
+    entry->add_fragment(table_data);
+}
+
+
+void jpeg_stream_reader::store_table_id(const uint8_t component_id, const uint8_t table_id)
+{
+    if (table_id == 0)
+        return; // default is already 0, no need to search and update.
+
+    const auto it{find_if(scan_infos_.begin(), scan_infos_.end(),
+                          [component_id](const scan_info& info) noexcept { return info.component_id == component_id; })};
+    if (it == scan_infos_.end())
+        throw_jpegls_error(jpegls_errc::unknown_component_id);
+
+    it->table_id = table_id;
+}
+
+
+std::vector<jpeg_stream_reader::mapping_table_entry>::const_iterator
+jpeg_stream_reader::find_mapping_table_entry(uint8_t table_id) const noexcept
+{
+    return find_if(mapping_tables_.cbegin(), mapping_tables_.cend(),
+                   [table_id](const mapping_table_entry& entry) noexcept { return entry.table_id() == table_id; });
+}
+
+
+std::vector<jpeg_stream_reader::mapping_table_entry>::iterator
+jpeg_stream_reader::find_mapping_table_entry(uint8_t table_id) noexcept
+{
+    return find_if(mapping_tables_.begin(), mapping_tables_.end(),
+                   [table_id](const mapping_table_entry& entry) noexcept { return entry.table_id() == table_id; });
+}
+
 
 } // namespace charls

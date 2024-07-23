@@ -56,6 +56,8 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_CALLBACK_FAILED = 27,
     CHARLS_JPEGLS_ERRC_END_OF_IMAGE_MARKER_NOT_FOUND = 28,
     CHARLS_JPEGLS_ERRC_INVALID_SPIFF_HEADER = 29,
+    CHARLS_JPEGLS_ERRC_UNKNOWN_COMPONENT_ID = 30,
+    CHARLS_JPEGLS_ERRC_MAPPING_TABLES_AND_SPIFF_HEADER = 31,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH = 100,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_HEIGHT = 101,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COMPONENT_COUNT = 102,
@@ -75,6 +77,8 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 205,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS = 206,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION = 207,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID = 208,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_CONTINUATION = 209
 };
 
 enum charls_interleave_mode
@@ -163,6 +167,11 @@ enum charls_spiff_entry_tag
     CHARLS_SPIFF_ENTRY_TAG_SET_REFERENCE = 16
 };
 
+enum charls_constants
+{
+    CHARLS_MAPPING_TABLE_MISSING = -1
+};
+
 #ifdef __cplusplus
 } // namespace charls::impl
 
@@ -181,7 +190,7 @@ enum class [[nodiscard]] jpegls_errc
     success = impl::CHARLS_JPEGLS_ERRC_SUCCESS,
 
     /// <summary>
-    /// This error is returned when one of the arguments is invalid and no specific reason is available.
+    /// This error is returned when one of the passed arguments is invalid.
     /// </summary>
     invalid_argument = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT,
 
@@ -324,6 +333,16 @@ enum class [[nodiscard]] jpegls_errc
     invalid_spiff_header = impl::CHARLS_JPEGLS_ERRC_INVALID_SPIFF_HEADER,
 
     /// <summary>
+    /// This error is returned when an unknown component ID in a scan is detected.
+    /// </summary>
+    unknown_component_id = impl::CHARLS_JPEGLS_ERRC_UNKNOWN_COMPONENT_ID,
+
+    /// <summary>
+    /// This error is returned for stream with only mapping tables and a spiff header.
+    /// </summary>
+    mapping_tables_and_spiff_header = impl::CHARLS_JPEGLS_ERRC_MAPPING_TABLES_AND_SPIFF_HEADER,
+
+    /// <summary>
     /// The argument for the width parameter is outside the range [1, 65535].
     /// </summary>
     invalid_argument_width = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH,
@@ -420,7 +439,17 @@ enum class [[nodiscard]] jpegls_errc
     /// <summary>
     /// This error is returned when the stream contains an invalid color transformation segment or one that doesn't match with frame info.
     /// </summary>
-    invalid_parameter_color_transformation = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION
+    invalid_parameter_color_transformation = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION,
+
+    /// <summary>
+    /// This error is returned when the stream contains a mapping table with an invalid ID.
+    /// </summary>
+    invalid_parameter_mapping_table_id = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID,
+
+    /// <summary>
+    /// This error is returned when the stream contains an invalid mapping table continuation.
+    /// </summary>
+    invalid_parameter_mapping_table_continuation = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_CONTINUATION
 };
 
 
@@ -803,6 +832,8 @@ enum class spiff_entry_tag : uint32_t
     set_reference = impl::CHARLS_SPIFF_ENTRY_TAG_SET_REFERENCE
 };
 
+constexpr int mapping_table_missing{impl::CHARLS_MAPPING_TABLE_MISSING};
+
 } // namespace charls
 
 CHARLS_EXPORT
@@ -929,6 +960,28 @@ struct charls_jpegls_pc_parameters CHARLS_FINAL
 };
 
 
+/// <summary>
+/// Defines the information that describes a mapping table.
+/// </summary>
+struct charls_table_info CHARLS_FINAL
+{
+    /// <summary>
+    /// Identifier of the mapping table, range [1, 255].
+    /// </summary>
+    int32_t table_id;
+
+    /// <summary>
+    /// Width of a table entry in bytes, range [1, 255].
+    /// </summary>
+    int32_t entry_size;
+
+    /// <summary>
+    /// Size of the table in bytes, range [1, 16711680]
+    /// </summary>
+    uint32_t data_size;
+};
+
+
 #ifdef __cplusplus
 
 /// <summary>
@@ -962,6 +1015,7 @@ namespace charls {
 using spiff_header = charls_spiff_header;
 using frame_info = charls_frame_info;
 using jpegls_pc_parameters = charls_jpegls_pc_parameters;
+using table_info = charls_table_info;
 using at_comment_handler = charls_at_comment_handler;
 using at_application_data_handler = charls_at_application_data_handler;
 
@@ -981,5 +1035,6 @@ typedef int32_t(CHARLS_API_CALLING_CONVENTION* charls_at_application_data_handle
 typedef struct charls_spiff_header charls_spiff_header;
 typedef struct charls_frame_info charls_frame_info;
 typedef struct charls_jpegls_pc_parameters charls_jpegls_pc_parameters;
+typedef struct charls_table_info charls_table_info;
 
 #endif

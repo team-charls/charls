@@ -86,11 +86,18 @@ struct charls_jpegls_encoder final
 
     void color_transformation(const color_transformation color_transformation)
     {
-        check_argument(color_transformation >= color_transformation::none &&
-                           color_transformation <= color_transformation::hp3,
-                       jpegls_errc::invalid_argument_color_transformation);
+        check_argument_range(color_transformation::none, color_transformation::hp3, color_transformation,
+                             jpegls_errc::invalid_argument_color_transformation);
 
         color_transformation_ = color_transformation;
+    }
+
+    void set_table_id(const int32_t component_index, const int32_t table_id)
+    {
+        check_argument_range(minimum_component_index, maximum_component_index, component_index);
+        check_argument_range(0, maximum_table_id, table_id);
+
+        writer_.set_table_id(static_cast<size_t>(component_index), table_id);
     }
 
     [[nodiscard]]
@@ -150,14 +157,25 @@ struct charls_jpegls_encoder final
 
     void write_application_data(const int32_t application_data_id, const span<const byte> application_data)
     {
-        check_argument(application_data_id >= minimum_application_data_id &&
-                       application_data_id <= maximum_application_data_id);
+        check_argument_range(minimum_application_data_id, maximum_application_data_id, application_data_id);
         check_argument(application_data.data() || application_data.empty());
         check_argument(application_data.size() <= segment_max_data_size, jpegls_errc::invalid_argument_size);
         check_operation(state_ >= state::destination_set && state_ < state::completed);
 
         transition_to_tables_and_miscellaneous_state();
         writer_.write_application_data_segment(application_data_id, application_data);
+    }
+
+    void write_table(const int32_t table_id, const int32_t entry_size, const span<const byte> table_data)
+    {
+        check_argument_range(minimum_table_id, maximum_table_id, table_id);
+        check_argument_range(minimum_entry_size, maximum_entry_size, entry_size);
+        check_argument(table_data.data() || table_data.empty());
+        check_argument(table_data.size() >= static_cast<size_t>(entry_size), jpegls_errc::invalid_argument_size);
+        check_operation(state_ >= state::destination_set && state_ < state::completed);
+
+        transition_to_tables_and_miscellaneous_state();
+        writer_.write_jpegls_preset_parameters_segment(table_id, entry_size, table_data);
     }
 
     void encode(span<const byte> source, size_t stride)
@@ -219,8 +237,13 @@ struct charls_jpegls_encoder final
             encode_scan(source.data(), stride, frame_info_.component_count);
         }
 
-        writer_.write_end_of_image(has_option(encoding_options::even_destination_size));
-        state_ = state::completed;
+        write_end_of_image();
+    }
+
+    void create_tables_only()
+    {
+        check_operation(state_ == state::tables_and_miscellaneous);
+        write_end_of_image();
     }
 
     [[nodiscard]]
@@ -259,8 +282,8 @@ private:
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample,
                                             component_count};
 
-        const auto encoder{make_scan_codec<scan_encoder>(
-            frame_info, preset_coding_parameters_, {near_lossless_, 0, interleave_mode_, color_transformation_})};
+        const auto encoder{make_scan_codec<scan_encoder>(frame_info, preset_coding_parameters_,
+                                                         {near_lossless_, 0, interleave_mode_, color_transformation_})};
         const size_t bytes_written{encoder->encode_scan(source, stride, writer_.remaining_destination())};
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
@@ -339,6 +362,12 @@ private:
             throw_jpegls_error(jpegls_errc::invalid_argument_color_transformation);
 
         writer_.write_color_transform_segment(color_transformation_);
+    }
+
+    void write_end_of_image()
+    {
+        writer_.write_end_of_image(has_option(encoding_options::even_destination_size));
+        state_ = state::completed;
     }
 
     [[nodiscard]]
@@ -466,38 +495,24 @@ catch (...)
 }
 
 
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_table_id(
+    charls_jpegls_encoder* encoder, const int32_t component_index, const int32_t table_id) noexcept
+try
+{
+    check_pointer(encoder)->set_table_id(component_index, table_id);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
 USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_get_estimated_destination_size(const charls_jpegls_encoder* encoder, size_t* size_in_bytes) noexcept
 try
 {
     *check_pointer(size_in_bytes) = check_pointer(encoder)->estimated_destination_size();
-    return jpegls_errc::success;
-}
-catch (...)
-{
-    return to_jpegls_errc();
-}
-
-
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_get_bytes_written(const charls_jpegls_encoder* encoder, size_t* bytes_written) noexcept
-try
-{
-    *check_pointer(bytes_written) = check_pointer(encoder)->bytes_written();
-    return jpegls_errc::success;
-}
-catch (...)
-{
-    return to_jpegls_errc();
-}
-
-
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_encode_from_buffer(charls_jpegls_encoder* encoder, const void* source_buffer,
-                                         const size_t source_size_bytes, const uint32_t stride) noexcept
-try
-{
-    check_pointer(encoder)->encode({static_cast<const byte*>(source_buffer), source_size_bytes}, stride);
     return jpegls_errc::success;
 }
 catch (...)
@@ -582,6 +597,60 @@ try
 {
     check_pointer(encoder)->write_application_data(
         application_data_id, {static_cast<const byte*>(application_data), application_data_size_bytes});
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_write_table(charls_jpegls_encoder* encoder, const int32_t table_id, const int32_t entry_size,
+                                  const void* table_data, size_t table_data_size_bytes) noexcept
+try
+{
+    check_pointer(encoder)->write_table(table_id, entry_size, {static_cast<const byte*>(table_data), table_data_size_bytes});
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_encode_from_buffer(charls_jpegls_encoder* encoder, const void* source_buffer,
+                                         const size_t source_size_bytes, const uint32_t stride) noexcept
+try
+{
+    check_pointer(encoder)->encode({static_cast<const byte*>(source_buffer), source_size_bytes}, stride);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_create_tables_only(charls_jpegls_encoder* encoder) noexcept
+try
+{
+    check_pointer(encoder)->create_tables_only();
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_get_bytes_written(const charls_jpegls_encoder* encoder, size_t* bytes_written) noexcept
+try
+{
+    *check_pointer(bytes_written) = check_pointer(encoder)->bytes_written();
     return jpegls_errc::success;
 }
 catch (...)
