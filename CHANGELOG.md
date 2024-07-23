@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 - BREAKING: Updated the minimal required C++ language version to C++17.
 - BREAKING: encoding_options::include_pc_parameters_jai is not enabled by default anymore.
+- BREAKING: charls::jpegls_decoder and charls::jpegls_encoder follow the same const pattern as the C API.
 
 ### Removed
 

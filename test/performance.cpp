@@ -104,7 +104,7 @@ void decode_performance_tests(const int loop_count)
         const auto start{steady_clock::now()};
         for (int i{}; i != loop_count; ++i)
         {
-            const jpegls_decoder decoder{encoded_source, true};
+            jpegls_decoder decoder{encoded_source, true};
 
             decoder.decode(destination);
         }
