@@ -24,7 +24,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Install sonar-scanner and build-wrapper
-        uses: SonarSource/sonarcloud-github-c-cpp@v2
+        uses: SonarSource/sonarcloud-github-c-cpp@v3
 
       - name: Run build-wrapper
         run: |
