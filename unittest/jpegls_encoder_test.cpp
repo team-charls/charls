@@ -1091,7 +1091,7 @@ public:
 
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
-        const jpegls_decoder decoder(destination, true);
+        jpegls_decoder decoder(destination, true);
         vector<byte> destination_decoded(decoder.destination_size());
         decoder.decode(destination_decoded);
         Assert::AreEqual(1, decoder.mapping_table_id(0));
@@ -1111,7 +1111,7 @@ public:
 
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
-        const jpegls_decoder decoder(destination, true);
+        jpegls_decoder decoder(destination, true);
         vector<byte> destination_decoded(decoder.destination_size());
         decoder.decode(destination_decoded);
         Assert::AreEqual(0, decoder.mapping_table_id(0));

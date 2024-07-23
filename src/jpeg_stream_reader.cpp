@@ -23,12 +23,14 @@ using std::optional;
 
 namespace {
 
+[[nodiscard]]
 constexpr bool is_restart_marker_code(const jpeg_marker_code marker_code) noexcept
 {
     return static_cast<uint8_t>(marker_code) >= jpeg_restart_marker_base &&
            static_cast<uint8_t>(marker_code) < jpeg_restart_marker_base + jpeg_restart_marker_range;
 }
 
+[[nodiscard]]
 constexpr int32_t to_application_data_id(const jpeg_marker_code marker_code) noexcept
 {
     return static_cast<int32_t>(marker_code) - static_cast<int32_t>(jpeg_marker_code::application_data0);

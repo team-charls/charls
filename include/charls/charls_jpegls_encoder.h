@@ -355,7 +355,7 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_encoder& frame_info(const frame_info& frame_info)
     {
-        check_jpegls_errc(charls_jpegls_encoder_set_frame_info(encoder_.get(), &frame_info));
+        check_jpegls_errc(charls_jpegls_encoder_set_frame_info(encoder(), &frame_info));
         return *this;
     }
 
@@ -366,7 +366,7 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_encoder& near_lossless(const int32_t near_lossless)
     {
-        check_jpegls_errc(charls_jpegls_encoder_set_near_lossless(encoder_.get(), near_lossless));
+        check_jpegls_errc(charls_jpegls_encoder_set_near_lossless(encoder(), near_lossless));
         return *this;
     }
 
@@ -378,7 +378,7 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_encoder& interleave_mode(const interleave_mode interleave_mode)
     {
-        check_jpegls_errc(charls_jpegls_encoder_set_interleave_mode(encoder_.get(), interleave_mode));
+        check_jpegls_errc(charls_jpegls_encoder_set_interleave_mode(encoder(), interleave_mode));
         return *this;
     }
 
@@ -389,7 +389,7 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_encoder& encoding_options(const encoding_options encoding_options)
     {
-        check_jpegls_errc(charls_jpegls_encoder_set_encoding_options(encoder_.get(), encoding_options));
+        check_jpegls_errc(charls_jpegls_encoder_set_encoding_options(encoder(), encoding_options));
         return *this;
     }
 
@@ -402,7 +402,7 @@ public:
     /// <param name="preset_coding_parameters">Reference to the preset coding parameters.</param>
     jpegls_encoder& preset_coding_parameters(const jpegls_pc_parameters& preset_coding_parameters)
     {
-        check_jpegls_errc(charls_jpegls_encoder_set_preset_coding_parameters(encoder_.get(), &preset_coding_parameters));
+        check_jpegls_errc(charls_jpegls_encoder_set_preset_coding_parameters(encoder(), &preset_coding_parameters));
         return *this;
     }
 
@@ -415,7 +415,7 @@ public:
     /// <param name="color_transformation">The color transformation parameters.</param>
     jpegls_encoder& color_transformation(const color_transformation color_transformation)
     {
-        check_jpegls_errc(charls_jpegls_encoder_set_color_transformation(encoder_.get(), color_transformation));
+        check_jpegls_errc(charls_jpegls_encoder_set_color_transformation(encoder(), color_transformation));
         return *this;
     }
 
@@ -427,7 +427,7 @@ public:
     /// <param name="table_id">Table ID that will be referenced by this component.</param>
     jpegls_encoder& set_table_id(const int32_t component_index, const int32_t table_id)
     {
-        check_jpegls_errc(charls_jpegls_encoder_set_table_id(encoder_.get(), component_index, table_id));
+        check_jpegls_errc(charls_jpegls_encoder_set_table_id(encoder(), component_index, table_id));
         return *this;
     }
 
@@ -442,7 +442,7 @@ public:
     size_t estimated_destination_size() const
     {
         size_t size_in_bytes;
-        check_jpegls_errc(charls_jpegls_encoder_get_estimated_destination_size(encoder_.get(), &size_in_bytes));
+        check_jpegls_errc(charls_jpegls_encoder_get_estimated_destination_size(encoder(), &size_in_bytes));
         return size_in_bytes;
     }
 
@@ -457,7 +457,7 @@ public:
                                 const size_t destination_size_bytes)
     {
         check_jpegls_errc(
-            charls_jpegls_encoder_set_destination_buffer(encoder_.get(), destination_buffer, destination_size_bytes));
+            charls_jpegls_encoder_set_destination_buffer(encoder(), destination_buffer, destination_size_bytes));
         return *this;
     }
 
@@ -490,7 +490,7 @@ public:
                                 const spiff_resolution_units resolution_units = spiff_resolution_units::aspect_ratio,
                                 const uint32_t vertical_resolution = 1, const uint32_t horizontal_resolution = 1)
     {
-        check_jpegls_errc(charls_jpegls_encoder_write_standard_spiff_header(encoder_.get(), color_space, resolution_units,
+        check_jpegls_errc(charls_jpegls_encoder_write_standard_spiff_header(encoder(), color_space, resolution_units,
                                                                             vertical_resolution, horizontal_resolution));
         return *this;
     }
@@ -501,7 +501,7 @@ public:
     /// <param name="header">Reference to a SPIFF header that will be written to the destination.</param>
     jpegls_encoder& write_spiff_header(const spiff_header& header)
     {
-        check_jpegls_errc(charls_jpegls_encoder_write_spiff_header(encoder_.get(), &header));
+        check_jpegls_errc(charls_jpegls_encoder_write_spiff_header(encoder(), &header));
         return *this;
     }
 
@@ -517,7 +517,7 @@ public:
                                       CHARLS_IN_READS_BYTES(entry_data_size_bytes) const void* entry_data,
                                       const size_t entry_data_size_bytes)
     {
-        check_jpegls_errc(charls_jpegls_encoder_write_spiff_entry(encoder_.get(), static_cast<uint32_t>(entry_tag),
+        check_jpegls_errc(charls_jpegls_encoder_write_spiff_entry(encoder(), static_cast<uint32_t>(entry_tag),
                                                                   entry_data, entry_data_size_bytes));
         return *this;
     }
@@ -532,7 +532,7 @@ public:
     /// </remarks>
     jpegls_encoder& write_spiff_end_of_directory_entry()
     {
-        check_jpegls_errc(charls_jpegls_encoder_write_spiff_end_of_directory_entry(encoder_.get()));
+        check_jpegls_errc(charls_jpegls_encoder_write_spiff_end_of_directory_entry(encoder()));
         return *this;
     }
 
@@ -558,7 +558,7 @@ public:
     CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     jpegls_encoder& write_comment(CHARLS_IN_READS_BYTES(size) const void* comment, const size_t size)
     {
-        check_jpegls_errc(charls_jpegls_encoder_write_comment(encoder_.get(), comment, size));
+        check_jpegls_errc(charls_jpegls_encoder_write_comment(encoder(), comment, size));
         return *this;
     }
 
@@ -573,7 +573,7 @@ public:
                                            CHARLS_IN_READS_BYTES(size) const void* application_data, const size_t size)
     {
         check_jpegls_errc(
-            charls_jpegls_encoder_write_application_data(encoder_.get(), application_data_id, application_data, size));
+            charls_jpegls_encoder_write_application_data(encoder(), application_data_id, application_data, size));
         return *this;
     }
 
@@ -591,7 +591,7 @@ public:
     jpegls_encoder& write_table(const int32_t table_id, const int32_t entry_size, CHARLS_IN const void* table_data,
                                 const size_t size)
     {
-        check_jpegls_errc(charls_jpegls_encoder_write_table(encoder_.get(), table_id, entry_size, table_data, size));
+        check_jpegls_errc(charls_jpegls_encoder_write_table(encoder(), table_id, entry_size, table_data, size));
         return *this;
     }
 
@@ -623,10 +623,10 @@ public:
     /// <returns>The number of bytes written to the destination.</returns>
     CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     size_t encode(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const size_t source_size_bytes,
-                  const uint32_t stride = 0) const
+                  const uint32_t stride = 0)
     {
         check_jpegls_errc(
-            charls_jpegls_encoder_encode_from_buffer(encoder_.get(), source_buffer, source_size_bytes, stride));
+            charls_jpegls_encoder_encode_from_buffer(encoder(), source_buffer, source_size_bytes, stride));
         return bytes_written();
     }
 
@@ -640,7 +640,7 @@ public:
     /// </param>
     /// <returns>The number of bytes written to the destination.</returns>
     template<typename Container, typename ContainerValueType = typename Container::value_type>
-    size_t encode(const Container& source_container, const uint32_t stride = 0) const
+    size_t encode(const Container& source_container, const uint32_t stride = 0)
     {
         return encode(source_container.data(), source_container.size() * sizeof(ContainerValueType), stride);
     }
@@ -650,9 +650,9 @@ public:
     /// These tables should have been written to the stream first with the method write_table.
     /// </summary>
     /// <returns>The number of bytes written to the destination.</returns>
-    size_t create_tables_only() const
+    size_t create_tables_only()
     {
-        check_jpegls_errc(charls_jpegls_encoder_create_tables_only(encoder_.get()));
+        check_jpegls_errc(charls_jpegls_encoder_create_tables_only(encoder()));
         return bytes_written();
     }
 
@@ -664,19 +664,31 @@ public:
     size_t bytes_written() const
     {
         size_t bytes_written;
-        check_jpegls_errc(charls_jpegls_encoder_get_bytes_written(encoder_.get(), &bytes_written));
+        check_jpegls_errc(charls_jpegls_encoder_get_bytes_written(encoder(), &bytes_written));
         return bytes_written;
     }
 
     /// <summary>
     /// Resets the write position of the destination buffer to the beginning.
     /// </summary>
-    void rewind() const
+    void rewind()
     {
-        check_jpegls_errc(charls_jpegls_encoder_rewind(encoder_.get()));
+        check_jpegls_errc(charls_jpegls_encoder_rewind(encoder()));
     }
 
 private:
+    [[nodiscard]]
+    charls_jpegls_encoder* encoder() noexcept
+    {
+        return encoder_.get();
+    }
+
+    [[nodiscard]]
+    const charls_jpegls_encoder* encoder() const noexcept
+    {
+        return encoder_.get();
+    }
+
     [[nodiscard]]
     static charls_jpegls_encoder* create_encoder()
     {

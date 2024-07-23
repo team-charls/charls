@@ -35,7 +35,7 @@ std::vector<std::byte> decode_simple_8_bit_monochrome(const std::vector<std::byt
 
 std::vector<std::byte> decode_advanced(const std::vector<std::byte>& source)
 {
-    const jpegls_decoder decoder{source, true};
+    jpegls_decoder decoder{source, true};
 
     // Standalone JPEG-LS files may have a SPIFF header (color space info, etc.)
     if (decoder.spiff_header_has_value() && decoder.spiff_header().color_space != spiff_color_space::grayscale)
