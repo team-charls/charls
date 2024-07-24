@@ -75,7 +75,7 @@ void jpeg_stream_writer::write_spiff_end_of_directory_entry()
 {
     // Note: ISO/IEC 10918-3, Annex F.2.2.3 documents that the EOD entry segment should have a length of 8
     // but only 6 data bytes. This approach allows to wrap existing bit streams\encoders with a SPIFF header.
-    // In this implementation the SOI marker is added as data bytes to simplify the design.
+    // In this implementation the SOI marker is added as data bytes to simplify the stream writer design.
     static constexpr array spiff_end_of_directory{byte{0},    byte{0},
                                                   byte{0},    byte{spiff_end_of_directory_entry_type},
                                                   byte{0xFF}, byte{to_underlying_type(jpeg_marker_code::start_of_image)}};
