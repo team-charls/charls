@@ -51,7 +51,20 @@ After releasing the original baseline JPEG-LS standard ISO 14495-1:1999, ISO rel
 
 ## Supported platforms
 
-The code is regularly compiled/tested on Windows and 64 bit Linux. Additionally, the code has been successfully tested on Linux Intel/AMD 32/64 bit (slackware, debian, gentoo), Solaris SPARC systems, Intel based Macs and Windows CE (ARM CPU, emulated), where the less common compilers may require minor code edits. It leverages C++ language features (templates, traits) to create optimized code, which generally perform best with recent compilers. If you compile with GCC, 64 bit code performs substantially better.
+The code is regularly compiled/tested on Windows and 64 bit Linux. Additionally, the code has been successfully tested on Linux Intel/AMD 32/64 bit (slackware, debian, gentoo), Solaris SPARC systems, Intel based Macs and Windows CE (ARM CPU, emulated), where the less common compilers may require minor code edits. It leverages C++ language features (templates, traits) to create optimized code, which generally perform best with recent compilers.
+
+### Support Matrix
+
+| Dimension     | Supported Version      |
+|---------------|------------------------|
+| C Version     | >= 17                  |
+| C++ Version   | >= 17                  |
+| CMake         | >= 3.16                |
+| GCC           | >= 9.1                 |
+| Clang         | >= 7.0.0               |
+| MSVC          | >= 2019                |
+| Apple Clang   | >= 12                  |
+
 
 ## Getting Started
 

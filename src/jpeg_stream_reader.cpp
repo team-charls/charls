@@ -23,6 +23,40 @@ using std::optional;
 
 namespace {
 
+constexpr bool is_known_jpeg_sof_marker(const jpeg_marker_code marker_code)
+{
+    // The following start of frame (SOF) markers are defined in ISO/IEC 10918-1 | ITU T.81 (general JPEG standard).
+    constexpr uint8_t sof_baseline_jpeg = 0xC0;            // SOF_0: Baseline jpeg encoded frame.
+    constexpr uint8_t sof_extended_sequential = 0xC1;      // SOF_1: Extended sequential Huffman encoded frame.
+    constexpr uint8_t sof_progressive = 0xC2;              // SOF_2: Progressive Huffman encoded frame.
+    constexpr uint8_t sof_lossless = 0xC3;                 // SOF_3: Lossless Huffman encoded frame.
+    constexpr uint8_t sof_differential_sequential = 0xC5;  // SOF_5: Differential sequential Huffman encoded frame.
+    constexpr uint8_t sof_differential_progressive = 0xC6; // SOF_6: Differential progressive Huffman encoded frame.
+    constexpr uint8_t sof_differential_lossless = 0xC7;    // SOF_7: Differential lossless Huffman encoded frame.
+    constexpr uint8_t sof_extended_arithmetic = 0xC9;      // SOF_9: Extended sequential arithmetic encoded frame.
+    constexpr uint8_t sof_progressive_arithmetic = 0xCA;   // SOF_10: Progressive arithmetic encoded frame.
+    constexpr uint8_t sof_lossless_arithmetic = 0xCB;      // SOF_11: Lossless arithmetic encoded frame.
+    constexpr uint8_t sof_jpegls_extended = 0xF9;          // SOF_57: JPEG-LS extended (ISO/IEC 14495-2) encoded frame.
+
+    switch (to_underlying_type(marker_code))
+    {
+    case sof_baseline_jpeg:
+    case sof_extended_sequential:
+    case sof_progressive:
+    case sof_lossless:
+    case sof_differential_sequential:
+    case sof_differential_progressive:
+    case sof_differential_lossless:
+    case sof_extended_arithmetic:
+    case sof_progressive_arithmetic:
+    case sof_lossless_arithmetic:
+    case sof_jpegls_extended:
+        return true;
+    default:
+        return false;
+    }
+}
+
 [[nodiscard]]
 constexpr bool is_restart_marker_code(const jpeg_marker_code marker_code) noexcept
 {
@@ -66,7 +100,8 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
         const jpeg_marker_code marker_code{read_next_marker_code()};
         if (marker_code == jpeg_marker_code::end_of_image)
         {
-            if (is_abbreviated_format_for_table_specification_data()) {
+            if (is_abbreviated_format_for_table_specification_data())
+            {
                 state_ = state::after_end_of_image;
                 return;
             }
@@ -192,20 +227,6 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
     case jpeg_marker_code::application_data15:
         return;
 
-    // Check explicit for one of the other common JPEG encodings.
-    case jpeg_marker_code::start_of_frame_baseline_jpeg:
-    case jpeg_marker_code::start_of_frame_extended_sequential:
-    case jpeg_marker_code::start_of_frame_progressive:
-    case jpeg_marker_code::start_of_frame_lossless:
-    case jpeg_marker_code::start_of_frame_differential_sequential:
-    case jpeg_marker_code::start_of_frame_differential_progressive:
-    case jpeg_marker_code::start_of_frame_differential_lossless:
-    case jpeg_marker_code::start_of_frame_extended_arithmetic:
-    case jpeg_marker_code::start_of_frame_progressive_arithmetic:
-    case jpeg_marker_code::start_of_frame_lossless_arithmetic:
-    case jpeg_marker_code::start_of_frame_jpegls_extended:
-        throw_jpegls_error(jpegls_errc::encoding_not_supported);
-
     case jpeg_marker_code::define_number_of_lines: // DLN is a JPEG-LS valid marker, but not supported: handle as unknown.
         throw_jpegls_error(jpegls_errc::unknown_jpeg_marker_found);
 
@@ -215,6 +236,10 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
     case jpeg_marker_code::end_of_image:
         unreachable();
     }
+
+    // Check explicit for one of the other common JPEG encodings.
+    if (is_known_jpeg_sof_marker(marker_code))
+        throw_jpegls_error(jpegls_errc::encoding_not_supported);
 
     if (is_restart_marker_code(marker_code))
         throw_jpegls_error(jpegls_errc::unexpected_restart_marker);
@@ -390,7 +415,8 @@ void jpeg_stream_reader::read_application_data_segment(const jpeg_marker_code ma
 void jpeg_stream_reader::read_preset_parameters_segment()
 {
     check_minimal_segment_size(1);
-    switch (static_cast<jpegls_preset_parameters_type>(read_byte()))
+    const byte preset_parameter{read_byte()};
+    switch (static_cast<jpegls_preset_parameters_type>(preset_parameter))
     {
     case jpegls_preset_parameters_type::preset_coding_parameters:
         read_preset_coding_parameters();
@@ -407,19 +433,12 @@ void jpeg_stream_reader::read_preset_parameters_segment()
     case jpegls_preset_parameters_type::mapping_table_continuation:
         read_mapping_table_continuation();
         return;
-
-    case jpegls_preset_parameters_type::coding_method_specification:
-    case jpegls_preset_parameters_type::near_lossless_error_re_specification:
-    case jpegls_preset_parameters_type::visually_oriented_quantization_specification:
-    case jpegls_preset_parameters_type::extended_prediction_specification:
-    case jpegls_preset_parameters_type::start_of_fixed_length_coding:
-    case jpegls_preset_parameters_type::end_of_fixed_length_coding:
-    case jpegls_preset_parameters_type::extended_preset_coding_parameters:
-    case jpegls_preset_parameters_type::inverse_color_transform_specification:
-        throw_jpegls_error(jpegls_errc::jpegls_preset_extended_parameter_type_not_supported);
     }
 
-    throw_jpegls_error(jpegls_errc::invalid_jpegls_preset_parameter_type);
+    constexpr byte jpegls_extended_preset_parameter_last{0xD}; // defined in JPEG-LS Extended (ISO/IEC 14495-2) (first = 0x5)
+    throw_jpegls_error(preset_parameter <= jpegls_extended_preset_parameter_last
+                           ? jpegls_errc::jpegls_preset_extended_parameter_type_not_supported
+                           : jpegls_errc::invalid_jpegls_preset_parameter_type);
 }
 
 
