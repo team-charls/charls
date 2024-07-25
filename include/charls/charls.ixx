@@ -12,6 +12,7 @@ module;
 #include <functional>
 #include <memory>
 #include <utility>
+#include <optional>
 
 export module charls;
 

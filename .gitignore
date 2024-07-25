@@ -1,4 +1,5 @@
-# GIT ignore file for CharLS
+# Copyright (c) Team CharLS.
+# SPDX-License-Identifier: BSD-3-Clause
 
 .vscode/
 .vs/
@@ -18,13 +19,6 @@ vcpkg_installed/
 *.db
 *.aps
 *.sqlite
-
-# NuGet Packages
-*.nupkg
-# The packages folder can be ignored because of Package Restore
-**/packages/*
-# except build/, which is used as an MSBuild target.
-!**/packages/build/
 
 # Ignore Coverity build folder
 cov-int/
