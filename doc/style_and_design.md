@@ -130,31 +130,32 @@ sense to define a good naming convention. Not all JPEG-LS names are good C++ var
 
 ### Supported C++ language
 
-CharLS currently targets C++17 on the main branch. This will be done until December 2025 (5 years after the release of C++20)
-
-#### Features currently not available (C++17)
-
-* nodiscard attribute
-* maybe_unused attribute
-* Inline variables
-* Guaranteed copy elision
-* constexpr if-statements
-* __has_include
-* std::byte
-* clamp ?
+CharLS currently targets C++17 on the main branch. Upgrading to C++20 will be done when C++20 is used in
+mainstream C++ development.
 
 #### Features currently not available (C++20)
 
-The following features are available in C++20 (usable after 2023), or in dual language support mode.
+The following features are available in C++20, or in dual language support mode.
 
 * endian
 * \<span>
 * modules
+* [[likely]] and [[unlikely]]
+* std::countl_zero
+
+#### Features currently not available (C++23)
+
+The following features are available in C++23, or in dual language support mode.
+
+* std::byteswap
+* import std;
+* std::to_underlying
+* std::unreachable
 
 ### Portable Anymap Format
 
 The de facto standard used by the JPEG standard to deliver test files is the Portable Anymap Format.
-This format has been made populair by the netpbm project. It is an extreme simple format and only
+This format has been made popular by the netpbm project. It is an extreme simple format and only
 designed to make it easy to exchange images on many platforms.
 It consists of the following variants
 

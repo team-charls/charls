@@ -458,7 +458,8 @@ void jpeg_stream_reader::read_preset_coding_parameters()
 void jpeg_stream_reader::read_oversize_image_dimension()
 {
     // Note: The JPEG-LS standard supports a 2,3 or 4 bytes for the size.
-    check_minimal_segment_size(2);
+    constexpr size_t pc_and_dimension_bytes{2};
+    check_minimal_segment_size(pc_and_dimension_bytes);
     const uint8_t dimension_size{read_uint8()};
 
     uint32_t height;
@@ -466,19 +467,19 @@ void jpeg_stream_reader::read_oversize_image_dimension()
     switch (dimension_size)
     {
     case 2:
-        check_segment_size(sizeof(uint16_t) * 2 + 2);
+        check_segment_size(pc_and_dimension_bytes + sizeof(uint16_t) * 2);
         height = read_uint16();
         width = read_uint16();
         break;
 
     case 3:
-        check_segment_size((sizeof(uint16_t) + 1) * 2 + 2);
+        check_segment_size(pc_and_dimension_bytes + (sizeof(uint16_t) + 1) * 2);
         height = read_uint24();
         width = read_uint24();
         break;
 
     case 4:
-        check_segment_size(sizeof(uint32_t) * 2 + 2);
+        check_segment_size(pc_and_dimension_bytes + sizeof(uint32_t) * 2);
         height = read_uint32();
         width = read_uint32();
         break;
@@ -494,22 +495,24 @@ void jpeg_stream_reader::read_oversize_image_dimension()
 
 void jpeg_stream_reader::read_mapping_table_specification()
 {
-    check_minimal_segment_size(3);
+    constexpr size_t pc_table_id_entry_size_bytes{3};
+    check_minimal_segment_size(pc_table_id_entry_size_bytes);
     const uint8_t table_id{read_uint8()};
     const uint8_t entry_size{read_uint8()};
 
-    add_mapping_table(table_id, entry_size, segment_data_.subspan(3));
+    add_mapping_table(table_id, entry_size, segment_data_.subspan(pc_table_id_entry_size_bytes));
     skip_remaining_segment_data();
 }
 
 
 void jpeg_stream_reader::read_mapping_table_continuation()
 {
-    check_minimal_segment_size(3);
+    constexpr size_t pc_table_id_entry_size_bytes{3};
+    check_minimal_segment_size(pc_table_id_entry_size_bytes);
     const uint8_t table_id{read_uint8()};
     const uint8_t entry_size{read_uint8()};
 
-    extend_mapping_table(table_id, entry_size, segment_data_.subspan(3));
+    extend_mapping_table(table_id, entry_size, segment_data_.subspan(pc_table_id_entry_size_bytes));
     skip_remaining_segment_data();
 }
 
