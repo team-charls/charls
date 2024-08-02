@@ -103,8 +103,8 @@ private:
 
             for (uint32_t mcu{}; mcu < lines_in_interval; ++mcu, ++line)
             {
-                previous_line_ = &line_buffer[1];
-                current_line_ = &line_buffer[1 + component_count * pixel_stride];
+                previous_line_ = line_buffer.data();
+                current_line_ = line_buffer.data() + component_count * pixel_stride;
                 if ((line & 1) == 1)
                 {
                     std::swap(previous_line_, current_line_);
@@ -115,8 +115,8 @@ private:
                     run_index_ = run_index[component];
 
                     // initialize edge pixels used for prediction
-                    previous_line_[width_] = previous_line_[width_ - 1];
-                    current_line_[-1] = previous_line_[0];
+                    previous_line_[width_ + 1] = previous_line_[width_];
+                    current_line_[0] = previous_line_[1];
 
                     if constexpr (std::is_same_v<pixel_type, sample_type>)
                     {
@@ -133,11 +133,11 @@ private:
                     }
 
                     run_index[component] = run_index_;
-                    previous_line_ += pixel_stride;
                     current_line_ += pixel_stride;
+                    previous_line_ += pixel_stride;
                 }
 
-                on_line_end(current_line_ - (component_count * pixel_stride), frame_info().width, pixel_stride);
+                on_line_end(current_line_ + 1 - (component_count * pixel_stride), width_, pixel_stride);
             }
 
             if (line == frame_info().height)
@@ -158,11 +158,11 @@ private:
     /// <summary>Decodes a scan line of samples</summary>
     FORCE_INLINE void decode_sample_line()
     {
-        int32_t index{};
-        int32_t rb{previous_line_[index - 1]};
-        int32_t rd{previous_line_[index]};
+        int32_t index{1};
+        int32_t rb{*previous_line_};       // initial start value is rc, will be copied and overwritten in loop.
+        int32_t rd{previous_line_[index]}; // initial start value is rb, will be copied and overwritten in loop.
 
-        while (static_cast<uint32_t>(index) < width_)
+        while (static_cast<uint32_t>(index) <= width_)
         {
             const int32_t ra{current_line_[index - 1]};
             const int32_t rc{rb};
@@ -188,8 +188,8 @@ private:
     /// <summary>Decodes a scan line of triplets in ILV_SAMPLE mode</summary>
     void decode_triplet_line()
     {
-        int32_t index{};
-        while (static_cast<uint32_t>(index) < width_)
+        int32_t index{1};
+        while (static_cast<uint32_t>(index) <= width_)
         {
             const triplet<sample_type> ra{current_line_[index - 1]};
             const triplet<sample_type> rc{previous_line_[index - 1]};
@@ -222,8 +222,8 @@ private:
     /// <summary>Decodes a scan line of quads in ILV_SAMPLE mode</summary>
     void decode_quad_line()
     {
-        int32_t index{};
-        while (static_cast<uint32_t>(index) < width_)
+        int32_t index{1};
+        while (static_cast<uint32_t>(index) <= width_)
         {
             const quad<sample_type> ra{current_line_[index - 1]};
             const quad<sample_type> rc{previous_line_[index - 1]};
@@ -261,10 +261,10 @@ private:
     {
         const pixel_type ra{current_line_[start_index - 1]};
 
-        const int32_t run_length{decode_run_pixels(ra, current_line_ + start_index, width_ - start_index)};
+        const int32_t run_length{decode_run_pixels(ra, current_line_ + start_index, width_ - (start_index - 1))};
         const auto end_index{static_cast<uint32_t>(start_index + run_length)};
 
-        if (end_index == width_)
+        if (end_index - 1 == width_)
             return end_index - start_index;
 
         // run interruption
