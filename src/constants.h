@@ -3,22 +3,16 @@
 
 #pragma once
 
-#include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 
 namespace charls {
 
-// Default threshold values for JPEG-LS statistical modeling as defined in ISO/IEC 14495-1, table C.3
-// for the case MAXVAL = 255 and NEAR = 0.
-// Can be overridden at compression time, however this is rarely done.
-constexpr int default_threshold1{3};  // BASIC_T1
-constexpr int default_threshold2{7};  // BASIC_T2
-constexpr int default_threshold3{21}; // BASIC_T3
-
-constexpr int default_reset_value{64}; // Default RESET value as defined in ISO/IEC 14495-1, table C.2
+constexpr int32_t default_reset_value{64}; // Default RESET value as defined in ISO/IEC 14495-1, table C.2
 
 constexpr int32_t maximum_component_count{255};
+constexpr size_t maximum_component_count_in_scan{4};
 constexpr int32_t minimum_component_index{};
 constexpr int32_t maximum_component_index{maximum_component_count - 1};
 constexpr int32_t minimum_bits_per_sample{2};
@@ -33,18 +27,7 @@ constexpr int32_t maximum_table_id{255};
 constexpr int32_t minimum_entry_size{1};
 constexpr int32_t maximum_entry_size{255};
 
-constexpr int max_k_value{16}; // This is an implementation limit (theoretical limit is 32)
-
-constexpr int compute_maximum_near_lossless(const int maximum_sample_value) noexcept
-{
-    return std::min(maximum_near_lossless, maximum_sample_value / 2); // As defined by ISO/IEC 14495-1, C.2.3
-}
-
-// Computes the initial value for A. See ISO/IEC 14495-1, A.8, step 1.d and A.2.1
-constexpr int32_t initialization_value_for_a(const int32_t range) noexcept
-{
-    return std::max(2, (range + 32) / 64);
-}
+constexpr int32_t max_k_value{16}; // This is an implementation limit (theoretical limit is 32)
 
 // ISO/IEC 14495-1, section 4.8.1 defines the SPIFF version numbers to be used for the SPIFF header in combination with
 // JPEG-LS.

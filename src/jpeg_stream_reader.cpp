@@ -547,7 +547,7 @@ void jpeg_stream_reader::read_start_of_scan_segment()
     const size_t component_count_in_scan{read_uint8()};
 
     // ISO 10918-1, B2.3. defines the limits for the number of image components parameter in an SOS.
-    if (UNLIKELY(component_count_in_scan < 1U || component_count_in_scan > 4U ||
+    if (UNLIKELY(component_count_in_scan == 0U || component_count_in_scan > maximum_component_count_in_scan ||
                  component_count_in_scan > static_cast<size_t>(frame_info_.component_count)))
         throw_jpegls_error(jpegls_errc::invalid_parameter_component_count);
 

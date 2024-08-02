@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "constants.h"
+#include "jpegls_algorithm.h"
 #include "util.h"
 
 #include <cassert>
@@ -16,12 +16,12 @@ namespace charls {
 /// to maintain the statistic information for the context modeling.
 /// Index 365 and 366 are used for run mode interruption contexts.
 /// </summary>
-class context_run_mode final
+class run_mode_context final
 {
 public:
-    context_run_mode() = default;
+    run_mode_context() = default;
 
-    context_run_mode(const int32_t run_interruption_type, const int32_t range) noexcept :
+    run_mode_context(const int32_t run_interruption_type, const int32_t range) noexcept :
         run_interruption_type_{run_interruption_type}, a_{initialization_value_for_a(range)}
     {
     }

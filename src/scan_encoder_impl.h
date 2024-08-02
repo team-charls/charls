@@ -88,12 +88,12 @@ private:
     // In ILV_NONE mode, do_scan is called for each component
     void encode_lines()
     {
-        const uint32_t pixel_stride{width_ + 4U};
+        const uint32_t pixel_stride{width_ + 2U};
         const size_t component_count{
             parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
 
+        std::array<int32_t, maximum_component_count_in_scan> run_index{};
         std::vector<pixel_type> line_buffer(component_count * pixel_stride * 2);
-        std::vector<int32_t> run_index(component_count);
 
         for (uint32_t line{}; line < frame_info().height; ++line)
         {
@@ -269,7 +269,7 @@ private:
     FORCE_INLINE sample_type encode_regular(const int32_t qs, const int32_t x, const int32_t predicted)
     {
         const int32_t sign{bit_wise_sign(qs)};
-        context_regular_mode& context{contexts_[apply_sign(qs, sign)]};
+        regular_mode_context& context{regular_mode_contexts_[apply_sign(qs, sign)]};
         const int32_t k{context.get_golomb_coding_parameter()};
         const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
         const int32_t error_value{traits_.compute_error_value(apply_sign(x - predicted_value, sign))};
@@ -309,7 +309,7 @@ private:
                              traits_.quantized_bits_per_pixel);
     }
 
-    void encode_run_interruption_error(context_run_mode& context, const int32_t error_value)
+    void encode_run_interruption_error(run_mode_context& context, const int32_t error_value)
     {
         const int32_t k{context.get_golomb_code()};
         const bool map{context.compute_map(error_value, k)};
@@ -327,12 +327,12 @@ private:
         if (std::abs(ra - rb) <= traits_.near_lossless)
         {
             const int32_t error_value{traits_.compute_error_value(x - ra)};
-            encode_run_interruption_error(context_run_mode_[1], error_value);
+            encode_run_interruption_error(run_mode_contexts_[1], error_value);
             return static_cast<sample_type>(traits_.compute_reconstructed_sample(ra, error_value));
         }
 
         const int32_t error_value{traits_.compute_error_value((x - rb) * sign(rb - ra))};
-        encode_run_interruption_error(context_run_mode_[0], error_value);
+        encode_run_interruption_error(run_mode_contexts_[0], error_value);
         return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
     }
 
@@ -341,13 +341,13 @@ private:
                                                        const triplet<sample_type> rb)
     {
         const int32_t error_value1{traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1))};
-        encode_run_interruption_error(context_run_mode_[0], error_value1);
+        encode_run_interruption_error(run_mode_contexts_[0], error_value1);
 
         const int32_t error_value2{traits_.compute_error_value(sign(rb.v2 - ra.v2) * (x.v2 - rb.v2))};
-        encode_run_interruption_error(context_run_mode_[0], error_value2);
+        encode_run_interruption_error(run_mode_contexts_[0], error_value2);
 
         const int32_t error_value3{traits_.compute_error_value(sign(rb.v3 - ra.v3) * (x.v3 - rb.v3))};
-        encode_run_interruption_error(context_run_mode_[0], error_value3);
+        encode_run_interruption_error(run_mode_contexts_[0], error_value3);
 
         return {traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
                 traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
@@ -359,16 +359,16 @@ private:
                                                     const quad<sample_type> rb)
     {
         const int32_t error_value1{traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1))};
-        encode_run_interruption_error(context_run_mode_[0], error_value1);
+        encode_run_interruption_error(run_mode_contexts_[0], error_value1);
 
         const int32_t error_value2{traits_.compute_error_value(sign(rb.v2 - ra.v2) * (x.v2 - rb.v2))};
-        encode_run_interruption_error(context_run_mode_[0], error_value2);
+        encode_run_interruption_error(run_mode_contexts_[0], error_value2);
 
         const int32_t error_value3{traits_.compute_error_value(sign(rb.v3 - ra.v3) * (x.v3 - rb.v3))};
-        encode_run_interruption_error(context_run_mode_[0], error_value3);
+        encode_run_interruption_error(run_mode_contexts_[0], error_value3);
 
         const int32_t error_value4{traits_.compute_error_value(sign(rb.v4 - ra.v4) * (x.v4 - rb.v4))};
-        encode_run_interruption_error(context_run_mode_[0], error_value4);
+        encode_run_interruption_error(run_mode_contexts_[0], error_value4);
 
         return {traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
                 traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),

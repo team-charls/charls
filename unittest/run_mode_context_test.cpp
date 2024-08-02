@@ -3,19 +3,19 @@
 
 #include "pch.h"
 
-#include "../src/context_run_mode.h"
+#include "../src/run_mode_context.h"
 
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 
 namespace charls::test {
 
-TEST_CLASS(context_run_mode_test)
+TEST_CLASS(run_mode_context_test)
 {
 public:
     TEST_METHOD(update_variable) // NOLINT
     {
-        context_run_mode context;
+        run_mode_context context;
 
         context.update_variables(3, 27, 0);
 

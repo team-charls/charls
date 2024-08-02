@@ -15,12 +15,12 @@ namespace charls {
 /// to maintain the statistic information for the context modeling.
 /// As the operations on these variables use the same index it is more efficient to combine A,B,C and N.
 /// </summary>
-class context_regular_mode final
+class regular_mode_context final
 {
 public:
-    context_regular_mode() = default;
+    regular_mode_context() = default;
 
-    explicit context_regular_mode(const int32_t range) noexcept : a_{initialization_value_for_a(range)}
+    explicit regular_mode_context(const int32_t range) noexcept : a_{initialization_value_for_a(range)}
     {
     }
 
@@ -63,8 +63,8 @@ public:
         ASSERT(n_ != 0);
 
         // This part is from: Code segment A.13 – Update of bias-related variables B[Q] and C[Q]
-        constexpr int32_t max_c{127};  // Minimum allowed value of c_[0..364]. ISO 14495-1, section 3.3
-        constexpr int32_t min_c{-128}; // Minimum allowed value of c_[0..364]. ISO 14495-1, section 3.3
+        constexpr int32_t max_c{127};  // MAX_C: maximum allowed value of C[0..364]. ISO 14495-1, section 3.3
+        constexpr int32_t min_c{-128}; // MIN_C: Minimum allowed value of C[0..364]. ISO 14495-1, section 3.3
         if (b_ + n_ <= 0)
         {
             b_ += n_;

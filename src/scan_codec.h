@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "context_regular_mode.h"
-#include "context_run_mode.h"
+#include "regular_mode_context.h"
+#include "run_mode_context.h"
 #include "jpegls_algorithm.h"
 #include "quantization_lut.h"
 #include "coding_parameters.h"
@@ -147,14 +147,14 @@ protected:
 
     void reset_parameters(const int32_t range) noexcept
     {
-        const context_regular_mode context_initial_value(range);
-        for (auto& context : contexts_)
+        const regular_mode_context context_initial_value(range);
+        for (auto& context : regular_mode_contexts_)
         {
             context = context_initial_value;
         }
 
-        context_run_mode_[0] = context_run_mode(0, range);
-        context_run_mode_[1] = context_run_mode(1, range);
+        run_mode_contexts_[0] = run_mode_context(0, range);
+        run_mode_contexts_[1] = run_mode_context(1, range);
         run_index_ = 0;
     }
 
@@ -174,8 +174,8 @@ protected:
     int32_t t2_{};
     int32_t t3_{};
     int32_t run_index_{};
-    std::array<context_regular_mode, 365> contexts_;
-    std::array<context_run_mode, 2> context_run_mode_;
+    std::array<regular_mode_context, 365> regular_mode_contexts_;
+    std::array<run_mode_context, 2> run_mode_contexts_;
     uint32_t width_;
     uint8_t reset_value_{};
 

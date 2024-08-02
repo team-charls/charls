@@ -236,8 +236,8 @@
     <ClInclude Include="color_transform.h" />
     <ClInclude Include="conditional_static_cast.h" />
     <ClInclude Include="constants.h" />
-    <ClInclude Include="context_regular_mode.h" />
-    <ClInclude Include="context_run_mode.h" />
+    <ClInclude Include="regular_mode_context.h" />
+    <ClInclude Include="run_mode_context.h" />
     <ClInclude Include="process_encoded_line.h" />
     <ClInclude Include="scan_decoder.h" />
     <ClInclude Include="default_traits.h" />
