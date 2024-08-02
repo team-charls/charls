@@ -98,7 +98,7 @@
     <ClCompile Include="jpegls_algorithm_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="context_run_mode_test.cpp">
+    <ClCompile Include="run_mode_context_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="util_test.cpp">

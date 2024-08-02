@@ -234,13 +234,12 @@ void verify_decoded_bytes(const interleave_mode interleave_mode, const frame_inf
 
 void test_compliance(const vector<byte>& encoded_source, const vector<byte>& uncompressed_source, const bool check_encode)
 {
-    jpegls_decoder decoder{encoded_source, true};
-
     if (check_encode)
     {
         Assert::IsTrue(verify_encoded_bytes(uncompressed_source, encoded_source));
     }
 
+    jpegls_decoder decoder{encoded_source, true};
     const auto destination{decoder.decode<vector<byte>>()};
 
     if (decoder.near_lossless() == 0)

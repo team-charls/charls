@@ -54,12 +54,12 @@ protected:
         fill_read_cache();
     }
 
-    FORCE_INLINE void skip(const int32_t length) noexcept
+    FORCE_INLINE void skip_bits(const int32_t bit_count) noexcept
     {
-        ASSERT(length);
+        ASSERT(bit_count);
 
-        valid_bits_ -= length; // Note: valid_bits_ may become negative to indicate that extra bits are needed.
-        read_cache_ = read_cache_ << length;
+        valid_bits_ -= bit_count; // Note: valid_bits_ may become negative to indicate that extra bits are needed.
+        read_cache_ = read_cache_ << bit_count;
     }
 
     void on_line_end(const void* source, const size_t pixel_count, const size_t pixel_stride) const
@@ -119,19 +119,20 @@ protected:
         return (high_bits << k) + read_value(k);
     }
 
-    FORCE_INLINE int32_t read_value(const int32_t length)
+    FORCE_INLINE int32_t read_value(const int32_t bit_count)
     {
-        if (valid_bits_ < length)
+        ASSERT(0 < bit_count && bit_count < 32);
+
+        if (valid_bits_ < bit_count)
         {
             fill_read_cache();
-            if (UNLIKELY(valid_bits_ < length))
+            if (UNLIKELY(valid_bits_ < bit_count))
                 impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
         }
 
-        ASSERT(length != 0 && length <= valid_bits_);
-        ASSERT(length < 32);
-        const auto result{static_cast<int32_t>(read_cache_ >> (cache_t_bit_count - length))};
-        skip(length);
+        ASSERT(bit_count <= valid_bits_);
+        const auto result{static_cast<int32_t>(read_cache_ >> (cache_t_bit_count - bit_count))};
+        skip_bits(bit_count);
         return result;
     }
 
@@ -153,7 +154,7 @@ protected:
         }
 
         const bool set{(read_cache_ & (static_cast<cache_t>(1) << (cache_t_bit_count - 1))) != 0};
-        skip(1);
+        skip_bits(1);
         return set;
     }
 
@@ -185,10 +186,10 @@ protected:
     {
         if (const int32_t count{peek_0_bits()}; count >= 0)
         {
-            skip(count + 1);
+            skip_bits(count + 1);
             return count;
         }
-        skip(15);
+        skip_bits(15);
 
         for (int32_t high_bits_count{15};; ++high_bits_count)
         {
@@ -293,9 +294,9 @@ private:
         if (position_ < position_ff_ - (sizeof(cache_t) - 1))
         {
             read_cache_ |= read_big_endian_unaligned<cache_t>(position_) >> valid_bits_;
-            const int bytes_to_read{(cache_t_bit_count - valid_bits_) / 8};
-            position_ += bytes_to_read;
-            valid_bits_ += bytes_to_read * 8;
+            const int bytes_consumed{(cache_t_bit_count - valid_bits_) / 8};
+            position_ += bytes_consumed;
+            valid_bits_ += bytes_consumed * 8;
             ASSERT(valid_bits_ >= max_readable_cache_bits);
             return true;
         }

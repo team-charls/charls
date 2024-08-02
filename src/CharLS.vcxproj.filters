@@ -33,7 +33,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="context_regular_mode.h">
+    <ClInclude Include="regular_mode_context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scan_encoder_impl.h">
@@ -57,7 +57,7 @@
     <ClInclude Include="color_transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="context_run_mode.h">
+    <ClInclude Include="run_mode_context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scan_decoder.h">

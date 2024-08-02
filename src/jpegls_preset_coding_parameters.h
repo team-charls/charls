@@ -4,7 +4,7 @@
 #pragma once
 
 #include "charls/public_types.h"
-#include "constants.h"
+#include "jpegls_algorithm.h"
 #include "util.h"
 
 #include <algorithm>
@@ -23,6 +23,12 @@ inline jpegls_pc_parameters compute_default(const int32_t maximum_sample_value, 
 {
     ASSERT(maximum_sample_value <= std::numeric_limits<uint16_t>::max());
     ASSERT(near_lossless >= 0 && near_lossless <= compute_maximum_near_lossless(maximum_sample_value));
+
+    // Default threshold values for JPEG-LS statistical modeling as defined in ISO/IEC 14495-1, table C.3
+    // for the case MAXVAL = 255 and NEAR = 0.
+    constexpr int default_threshold1{3};  // BASIC_T1
+    constexpr int default_threshold2{7};  // BASIC_T2
+    constexpr int default_threshold3{21}; // BASIC_T3
 
     if (maximum_sample_value >= 128)
     {
@@ -91,7 +97,8 @@ inline bool is_valid(const jpegls_pc_parameters& pc_parameters, const int32_t ma
         (pc_parameters.threshold1 < near_lossless + 1 || pc_parameters.threshold1 > maximum_sample_value))
         return false;
 
-    const auto [_, d_threshold1, d_threshold2, d_threshold3, d_reset_value]{compute_default(maximum_sample_value, near_lossless)};
+    const auto [_, d_threshold1, d_threshold2, d_threshold3,
+                d_reset_value]{compute_default(maximum_sample_value, near_lossless)};
     if (const int32_t threshold1{pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : d_threshold1};
         pc_parameters.threshold2 != 0 &&
         (pc_parameters.threshold2 < threshold1 || pc_parameters.threshold2 > maximum_sample_value))
@@ -109,14 +116,10 @@ inline bool is_valid(const jpegls_pc_parameters& pc_parameters, const int32_t ma
     if (validated_parameters)
     {
         validated_parameters->maximum_sample_value = maximum_sample_value;
-        validated_parameters->threshold1 =
-            pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : d_threshold1;
-        validated_parameters->threshold2 =
-            pc_parameters.threshold2 != 0 ? pc_parameters.threshold2 : d_threshold2;
-        validated_parameters->threshold3 =
-            pc_parameters.threshold3 != 0 ? pc_parameters.threshold3 : d_threshold3;
-        validated_parameters->reset_value =
-            pc_parameters.reset_value != 0 ? pc_parameters.reset_value : d_reset_value;
+        validated_parameters->threshold1 = pc_parameters.threshold1 != 0 ? pc_parameters.threshold1 : d_threshold1;
+        validated_parameters->threshold2 = pc_parameters.threshold2 != 0 ? pc_parameters.threshold2 : d_threshold2;
+        validated_parameters->threshold3 = pc_parameters.threshold3 != 0 ? pc_parameters.threshold3 : d_threshold3;
+        validated_parameters->reset_value = pc_parameters.reset_value != 0 ? pc_parameters.reset_value : d_reset_value;
     }
 
     return true;
