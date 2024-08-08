@@ -280,7 +280,7 @@ table_info jpeg_stream_reader::mapping_table_info(const size_t index) const
 }
 
 
-void jpeg_stream_reader::get_mapping_table(const size_t index, const span<byte> table) const
+void jpeg_stream_reader::mapping_table_data(const size_t index, const span<byte> table) const
 {
     const auto& mapping_table{mapping_tables_[index]};
     if (mapping_table.data_size() > table.size())
@@ -351,7 +351,7 @@ void jpeg_stream_reader::read_spiff_directory_entry(const jpeg_marker_code marke
     if (const uint32_t spiff_directory_type{read_uint32()}; spiff_directory_type == spiff_end_of_directory_entry_type)
     {
         check_segment_size(6); // 4 + 2 for dummy SOI.
-        state_ = state::image_section;
+        state_ = state::frame_section;
     }
 
     skip_remaining_segment_data();

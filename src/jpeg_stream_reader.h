@@ -107,7 +107,7 @@ public:
     [[nodiscard]]
     table_info mapping_table_info(size_t index) const;
 
-    void get_mapping_table(size_t index, span<std::byte> table) const;
+    void mapping_table_data(size_t index, span<std::byte> table) const;
 
 private:
     [[nodiscard]]
@@ -183,7 +183,7 @@ private:
     {
         if (mapping_table_count() > 0)
         {
-            if (state_ == state::image_section)
+            if (state_ == state::frame_section)
             {
                 impl::throw_jpegls_error(jpegls_errc::mapping_tables_and_spiff_header);
             }
@@ -201,7 +201,6 @@ private:
         before_start_of_image,
         header_section,
         spiff_header_section,
-        image_section,
         frame_section,
         scan_section,
         bit_stream_section,

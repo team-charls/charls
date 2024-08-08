@@ -28,26 +28,41 @@ struct default_traits final
     static constexpr bool always_lossless_and_default_parameters{};
     static constexpr bool fixed_bits_per_pixel{};
 
+    // ISO 14495-1 MAXVAL symbol: maximum possible image sample value over all components of a scan.
     int32_t maximum_sample_value;
+
+    // ISO 14495-1 NEAR symbol: difference bound for near-lossless coding, 0 means lossless.
     int32_t near_lossless;
+
+    // ISO 14495-1 RANGE symbol: range of prediction error representation.
     int32_t range;
-    int32_t quantized_bits_per_pixel;
-    int32_t bits_per_pixel;
+
+    // ISO 14495-1 qbpp symbol: number of bits needed to represent a mapped error value.
+    int32_t quantized_bits_per_sample;
+
+    // ISO 14495-1 bpp symbol: number of bits needed to represent MAXVAL (not less than 2).
+    int32_t bits_per_sample;
+
+    // ISO 14495-1 LIMIT symbol: the value of glimit for a sample encoded in regular mode.
     int32_t limit;
+
+    // ISO 14495-1 RESET symbol: threshold value at which A, B, and N are halved.
     int32_t reset_threshold;
+
     int32_t quantization_range;
 
     default_traits(const int32_t arg_maximum_sample_value, const int32_t arg_near_lossless,
-                   const int32_t reset = default_reset_value) noexcept :
+                   const int32_t reset = default_reset_threshold) noexcept :
         maximum_sample_value{arg_maximum_sample_value},
         near_lossless{arg_near_lossless},
         range{compute_range_parameter(maximum_sample_value, near_lossless)},
-        quantized_bits_per_pixel{log2_ceil(range)},
-        bits_per_pixel{log2_ceil(maximum_sample_value)},
-        limit{compute_limit_parameter(bits_per_pixel)},
+        quantized_bits_per_sample{log2_ceiling(range)},
+        bits_per_sample{log2_ceiling(maximum_sample_value)},
+        limit{compute_limit_parameter(bits_per_sample)},
         reset_threshold{reset},
-        quantization_range{1 << bits_per_pixel}
+        quantization_range{1 << bits_per_sample}
     {
+        ASSERT(sizeof(SampleType) * 8 >= static_cast<size_t>(bits_per_sample));
     }
 
     default_traits() = delete;
@@ -129,7 +144,7 @@ struct default_traits final
         if (maximum_sample_value < 1 || maximum_sample_value > std::numeric_limits<uint16_t>::max())
             return false;
 
-        if (bits_per_pixel < 1 || bits_per_pixel > 16)
+        if (bits_per_sample < 1 || bits_per_sample > 16)
             return false;
 
         return true;

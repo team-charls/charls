@@ -40,7 +40,7 @@ inline jpegls_pc_parameters compute_default(const int32_t maximum_sample_value, 
 
         return {maximum_sample_value, threshold1, threshold2,
                 clamp(factor * (default_threshold3 - 4) + 4 + 7 * near_lossless, threshold2, maximum_sample_value),
-                default_reset_value};
+                default_reset_threshold};
     }
 
     const int32_t factor{256 / (maximum_sample_value + 1)};
@@ -51,7 +51,7 @@ inline jpegls_pc_parameters compute_default(const int32_t maximum_sample_value, 
 
     return {maximum_sample_value, threshold1, threshold2,
             clamp(std::max(4, default_threshold3 / factor + 7 * near_lossless), threshold2, maximum_sample_value),
-            default_reset_value};
+            default_reset_threshold};
 }
 
 

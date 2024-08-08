@@ -143,7 +143,7 @@ unique_ptr<ScanProcess> make_scan_codec(const frame_info& frame, const jpegls_pc
 {
     unique_ptr<ScanProcess> codec;
 
-    if (pc_parameters.reset_value == default_reset_value)
+    if (pc_parameters.reset_value == default_reset_threshold)
     {
         codec = try_make_optimized_codec<ScanProcess>(frame, pc_parameters, parameters);
     }

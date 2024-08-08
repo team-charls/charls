@@ -173,7 +173,7 @@ private:
                     compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
                 qs != 0)
             {
-                current_line_[index] = decode_regular(qs, get_predicted_value(ra, rb, rc));
+                current_line_[index] = decode_regular(qs, compute_predicted_value(ra, rb, rc));
                 ++index;
             }
             else
@@ -210,9 +210,9 @@ private:
             else
             {
                 triplet<sample_type> rx;
-                rx.v1 = decode_regular(qs1, get_predicted_value(ra.v1, rb.v1, rc.v1));
-                rx.v2 = decode_regular(qs2, get_predicted_value(ra.v2, rb.v2, rc.v2));
-                rx.v3 = decode_regular(qs3, get_predicted_value(ra.v3, rb.v3, rc.v3));
+                rx.v1 = decode_regular(qs1, compute_predicted_value(ra.v1, rb.v1, rc.v1));
+                rx.v2 = decode_regular(qs2, compute_predicted_value(ra.v2, rb.v2, rc.v2));
+                rx.v3 = decode_regular(qs3, compute_predicted_value(ra.v3, rb.v3, rc.v3));
                 current_line_[index] = rx;
                 ++index;
             }
@@ -246,10 +246,10 @@ private:
             else
             {
                 quad<sample_type> rx;
-                rx.v1 = decode_regular(qs1, get_predicted_value(ra.v1, rb.v1, rc.v1));
-                rx.v2 = decode_regular(qs2, get_predicted_value(ra.v2, rb.v2, rc.v2));
-                rx.v3 = decode_regular(qs3, get_predicted_value(ra.v3, rb.v3, rc.v3));
-                rx.v4 = decode_regular(qs4, get_predicted_value(ra.v4, rb.v4, rc.v4));
+                rx.v1 = decode_regular(qs1, compute_predicted_value(ra.v1, rb.v1, rc.v1));
+                rx.v2 = decode_regular(qs2, compute_predicted_value(ra.v2, rb.v2, rc.v2));
+                rx.v3 = decode_regular(qs3, compute_predicted_value(ra.v3, rb.v3, rc.v3));
+                rx.v4 = decode_regular(qs4, compute_predicted_value(ra.v4, rb.v4, rc.v4));
                 current_line_[index] = rx;
                 ++index;
             }
@@ -291,14 +291,16 @@ private:
         }
         else
         {
-            error_value = unmap_error_value(decode_value(k, traits_.limit, traits_.quantized_bits_per_pixel));
+            error_value = unmap_error_value(decode_value(k, traits_.limit, traits_.quantized_bits_per_sample));
             if (UNLIKELY(std::abs(error_value) > 65535))
                 impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
         }
+
         if (k == 0)
         {
             error_value = error_value ^ context.get_error_correction(traits_.near_lossless);
         }
+
         context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
         error_value = apply_sign(error_value, sign);
         return traits_.compute_reconstructed_sample(predicted_value, error_value);
@@ -309,10 +311,23 @@ private:
     {
         const int32_t k{context.get_golomb_code()};
         const int32_t e_mapped_error_value{
-            decode_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_pixel)};
+            decode_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_sample)};
         const int32_t error_value{context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k)};
         context.update_variables(error_value, e_mapped_error_value, reset_value_);
         return error_value;
+    }
+
+    [[nodiscard]]
+    sample_type decode_run_interruption_pixel(int32_t ra, int32_t rb)
+    {
+        if (std::abs(ra - rb) <= traits_.near_lossless)
+        {
+            const int32_t error_value{decode_run_interruption_error(run_mode_contexts_[1])};
+            return static_cast<sample_type>(traits_.compute_reconstructed_sample(ra, error_value));
+        }
+
+        const int32_t error_value{decode_run_interruption_error(run_mode_contexts_[0])};
+        return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
     }
 
     [[nodiscard]]
@@ -339,19 +354,6 @@ private:
                 traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2)),
                 traits_.compute_reconstructed_sample(rb.v3, error_value3 * sign(rb.v3 - ra.v3)),
                 traits_.compute_reconstructed_sample(rb.v4, error_value4 * sign(rb.v4 - ra.v4))};
-    }
-
-    [[nodiscard]]
-    sample_type decode_run_interruption_pixel(int32_t ra, int32_t rb)
-    {
-        if (std::abs(ra - rb) <= traits_.near_lossless)
-        {
-            const int32_t error_value{decode_run_interruption_error(run_mode_contexts_[1])};
-            return static_cast<sample_type>(traits_.compute_reconstructed_sample(ra, error_value));
-        }
-
-        const int32_t error_value{decode_run_interruption_error(run_mode_contexts_[0])};
-        return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
     }
 
     [[nodiscard]]

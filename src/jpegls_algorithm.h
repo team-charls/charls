@@ -8,6 +8,22 @@
 
 namespace charls {
 
+
+constexpr int32_t log2_ceiling(const int32_t n) noexcept
+{
+    ASSERT(n >= 0);
+    ASSERT(static_cast<uint32_t>(n) <= std::numeric_limits<uint32_t>::max() >> 2); // otherwise 1 << x becomes negative.
+
+    int32_t x{};
+    while (n > (1 << x))
+    {
+        ++x;
+    }
+    return x;
+}
+
+
+[[nodiscard]]
 constexpr int compute_maximum_near_lossless(const int maximum_sample_value) noexcept
 {
     return std::min(maximum_near_lossless, maximum_sample_value / 2); // As defined by ISO/IEC 14495-1, C.2.3
@@ -15,22 +31,11 @@ constexpr int compute_maximum_near_lossless(const int maximum_sample_value) noex
 
 
 // Computes the initial value for A. See ISO/IEC 14495-1, A.8, step 1.d and A.2.1
+[[nodiscard]]
 constexpr int32_t initialization_value_for_a(const int32_t range) noexcept
 {
+    ASSERT(4 <= range && range <= std::numeric_limits<uint16_t>::max() + 1);
     return std::max(2, (range + 32) / 64);
-}
-
-
-/// <summary>
-/// This is the optimized inverse algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
-/// It will map unsigned values back to signed values.
-/// </summary>
-[[nodiscard]]
-constexpr int32_t unmap_error_value(const int32_t mapped_error) noexcept
-{
-    const int32_t sign{static_cast<int32_t>(static_cast<uint32_t>(mapped_error) << (int32_t_bit_count - 1)) >>
-                       (int32_t_bit_count - 1)};
-    return sign ^ (mapped_error >> 1);
 }
 
 
@@ -45,6 +50,19 @@ constexpr int32_t map_error_value(const int32_t error_value) noexcept
 
     const int32_t mapped_error{(error_value >> (int32_t_bit_count - 2)) ^ (2 * error_value)};
     return mapped_error;
+}
+
+
+/// <summary>
+/// This is the optimized inverse algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
+/// It will map unsigned values back to signed values.
+/// </summary>
+[[nodiscard]]
+constexpr int32_t unmap_error_value(const int32_t mapped_error) noexcept
+{
+    const int32_t sign{static_cast<int32_t>(static_cast<uint32_t>(mapped_error) << (int32_t_bit_count - 1)) >>
+                       (int32_t_bit_count - 1)};
+    return sign ^ (mapped_error >> 1);
 }
 
 
@@ -90,7 +108,7 @@ constexpr int32_t compute_limit_parameter(const int32_t bits_per_pixel)
 
 
 [[nodiscard]]
-inline int32_t get_predicted_value(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
+inline int32_t compute_predicted_value(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
 {
     // sign trick reduces the number of if statements (branches)
     const int32_t sign{bit_wise_sign(rb - ra)};

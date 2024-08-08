@@ -26,18 +26,18 @@ namespace charls::test {
 
 namespace {
 
-void triplet_to_planar(vector<byte>& buffer, const uint32_t width, const uint32_t height)
+void triplet_to_planar(vector<byte>& triplet_buffer, const uint32_t width, const uint32_t height)
 {
-    vector<byte> work_buffer(buffer.size());
+    vector<byte> planar_buffer(triplet_buffer.size());
 
     const size_t byte_count{static_cast<size_t>(width) * height};
     for (size_t index{}; index != byte_count; index++)
     {
-        work_buffer[index] = buffer[index * 3 + 0];
-        work_buffer[index + 1 * byte_count] = buffer[index * 3 + 1];
-        work_buffer[index + 2 * byte_count] = buffer[index * 3 + 2];
+        planar_buffer[index] = triplet_buffer[index * 3 + 0];
+        planar_buffer[index + 1 * byte_count] = triplet_buffer[index * 3 + 1];
+        planar_buffer[index + 2 * byte_count] = triplet_buffer[index * 3 + 2];
     }
-    swap(buffer, work_buffer);
+    swap(triplet_buffer, planar_buffer);
 }
 
 } // namespace

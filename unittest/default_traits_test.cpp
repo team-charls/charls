@@ -19,8 +19,8 @@ public:
         Assert::AreEqual(255, traits.maximum_sample_value);
         Assert::AreEqual(256, traits.range);
         Assert::AreEqual(0, traits.near_lossless);
-        Assert::AreEqual(8, traits.quantized_bits_per_pixel);
-        Assert::AreEqual(8, traits.bits_per_pixel);
+        Assert::AreEqual(8, traits.quantized_bits_per_sample);
+        Assert::AreEqual(8, traits.bits_per_sample);
         Assert::AreEqual(32, traits.limit);
         Assert::AreEqual(64, traits.reset_threshold);
     }

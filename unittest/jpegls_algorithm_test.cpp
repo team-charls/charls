@@ -15,6 +15,12 @@ namespace charls::test {
 
 namespace {
 
+void call_and_compare_log2_ceil(const int32_t value)
+{
+    const int32_t expected{static_cast<int32_t>(ceil(std::log2(value)))};
+    Assert::AreEqual(expected, log2_ceiling(value));
+}
+
 /// <summary>
 /// This is the original algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
 /// It will map signed values to unsigned values.
@@ -74,6 +80,27 @@ int32_t unmap_error_value_alternative1(const int32_t mapped_error_value) noexcep
 TEST_CLASS(jpegls_algorithm_test)
 {
 public:
+    TEST_METHOD(log2_ceil) // NOLINT
+    {
+        call_and_compare_log2_ceil(1);
+        call_and_compare_log2_ceil(2);
+        call_and_compare_log2_ceil(31);
+        call_and_compare_log2_ceil(32);
+        call_and_compare_log2_ceil(33);
+        call_and_compare_log2_ceil(numeric_limits<uint16_t>::max());
+        call_and_compare_log2_ceil(numeric_limits<uint16_t>::max() + 1);
+        call_and_compare_log2_ceil(numeric_limits<uint32_t>::max() >> 2);
+    }
+
+    TEST_METHOD(test_initialization_value_for_a) // NOLINT
+    {
+        constexpr int32_t min_value{initialization_value_for_a(4)};
+        constexpr int32_t max_value{initialization_value_for_a(std::numeric_limits<uint16_t>::max() + 1)};
+
+        Assert::AreEqual(2, min_value);
+        Assert::AreEqual(1024, max_value);
+    }
+
     TEST_METHOD(map_error_value_algorithm) // NOLINT
     {
         map_error_value_algorithm(0);

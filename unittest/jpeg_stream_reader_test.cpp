@@ -711,7 +711,7 @@ public:
         Assert::AreEqual(uint32_t{1}, info.data_size);
 
         vector<byte> table_data(1);
-        reader.get_mapping_table(0, {table_data.data(), table_data.size()});
+        reader.mapping_table_data(0, {table_data.data(), table_data.size()});
         Assert::AreEqual(byte{2}, table_data[0]);
     }
 
@@ -733,7 +733,7 @@ public:
 
         assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&reader] {
             vector<byte> table_data(1);
-            reader.get_mapping_table(0, {table_data.data(), table_data.size()});
+            reader.mapping_table_data(0, {table_data.data(), table_data.size()});
         });
     }
 
@@ -828,7 +828,7 @@ public:
         Assert::AreEqual(uint32_t{100000}, info.data_size);
 
         vector<byte> table_data(table_size);
-        reader.get_mapping_table(0, {table_data.data(), table_data.size()});
+        reader.mapping_table_data(0, {table_data.data(), table_data.size()});
         Assert::AreEqual(byte{7}, table_data[0]);
         Assert::AreEqual(byte{8}, table_data[table_size - 1]);
     }

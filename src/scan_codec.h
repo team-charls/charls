@@ -30,7 +30,7 @@ bool precomputed_quantization_lut_available(const Traits& traits, const int32_t 
     if constexpr (Traits::always_lossless_and_default_parameters)
         return true;
     else
-        return traits.near_lossless == 0 && traits.maximum_sample_value == (1 << traits.bits_per_pixel) - 1;
+        return traits.near_lossless == 0 && traits.maximum_sample_value == (1 << traits.bits_per_sample) - 1;
 }
 
 
@@ -43,22 +43,22 @@ const int8_t* initialize_quantization_lut(const Traits& traits, const int32_t th
     {
         if constexpr (Traits::fixed_bits_per_pixel)
         {
-            if constexpr (Traits::bits_per_pixel == 8)
+            if constexpr (Traits::bits_per_sample == 8)
                 return &quantization_lut_lossless_8[quantization_lut_lossless_8.size() / 2];
             else
             {
-                if constexpr (Traits::bits_per_pixel == 12)
+                if constexpr (Traits::bits_per_sample == 12)
                     return &quantization_lut_lossless_12[quantization_lut_lossless_12.size() / 2];
                 else
                 {
-                    static_assert(Traits::bits_per_pixel == 16);
+                    static_assert(Traits::bits_per_sample == 16);
                     return &quantization_lut_lossless_16[quantization_lut_lossless_16.size() / 2];
                 }
             }
         }
         else
         {
-            switch (traits.bits_per_pixel)
+            switch (traits.bits_per_sample)
             {
             case 8:
                 return &quantization_lut_lossless_8[quantization_lut_lossless_8.size() / 2];

@@ -159,12 +159,12 @@ struct charls_jpegls_decoder final
         return reader_.mapping_table_info(index);
     }
 
-    void mapping_table(const int32_t index, const span<byte> table) const
+    void mapping_table_data(const int32_t index, const span<byte> table) const
     {
         check_table_index(index);
         check_argument(table.data() || table.empty());
 
-        reader_.get_mapping_table(index, table);
+        reader_.mapping_table_data(index, table);
     }
 
     void decode(span<byte> destination, size_t stride)
@@ -501,11 +501,11 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table(
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table_data(
     const charls_jpegls_decoder* decoder, const int32_t index, void* table_data, const size_t table_size_bytes) noexcept
 try
 {
-    check_pointer(decoder)->mapping_table(index, {static_cast<byte*>(table_data), table_size_bytes});
+    check_pointer(decoder)->mapping_table_data(index, {static_cast<byte*>(table_data), table_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)

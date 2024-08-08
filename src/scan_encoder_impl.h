@@ -153,7 +153,7 @@ private:
                     compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
                 qs != 0)
             {
-                current_line_[index] = encode_regular(qs, current_line_[index], get_predicted_value(ra, rb, rc));
+                current_line_[index] = encode_regular(qs, current_line_[index], compute_predicted_value(ra, rb, rc));
                 ++index;
             }
             else
@@ -190,9 +190,9 @@ private:
             else
             {
                 triplet<sample_type> rx;
-                rx.v1 = encode_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1));
-                rx.v2 = encode_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2));
-                rx.v3 = encode_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3));
+                rx.v1 = encode_regular(qs1, current_line_[index].v1, compute_predicted_value(ra.v1, rb.v1, rc.v1));
+                rx.v2 = encode_regular(qs2, current_line_[index].v2, compute_predicted_value(ra.v2, rb.v2, rc.v2));
+                rx.v3 = encode_regular(qs3, current_line_[index].v3, compute_predicted_value(ra.v3, rb.v3, rc.v3));
                 current_line_[index] = rx;
                 ++index;
             }
@@ -226,10 +226,10 @@ private:
             else
             {
                 quad<sample_type> rx;
-                rx.v1 = encode_regular(qs1, current_line_[index].v1, get_predicted_value(ra.v1, rb.v1, rc.v1));
-                rx.v2 = encode_regular(qs2, current_line_[index].v2, get_predicted_value(ra.v2, rb.v2, rc.v2));
-                rx.v3 = encode_regular(qs3, current_line_[index].v3, get_predicted_value(ra.v3, rb.v3, rc.v3));
-                rx.v4 = encode_regular(qs4, current_line_[index].v4, get_predicted_value(ra.v4, rb.v4, rc.v4));
+                rx.v1 = encode_regular(qs1, current_line_[index].v1, compute_predicted_value(ra.v1, rb.v1, rc.v1));
+                rx.v2 = encode_regular(qs2, current_line_[index].v2, compute_predicted_value(ra.v2, rb.v2, rc.v2));
+                rx.v3 = encode_regular(qs3, current_line_[index].v3, compute_predicted_value(ra.v3, rb.v3, rc.v3));
+                rx.v4 = encode_regular(qs4, current_line_[index].v4, compute_predicted_value(ra.v4, rb.v4, rc.v4));
                 current_line_[index] = rx;
                 ++index;
             }
@@ -284,7 +284,7 @@ private:
 
     FORCE_INLINE void encode_mapped_value(const int32_t k, const int32_t mapped_error, const int32_t limit)
     {
-        if (int32_t high_bits{mapped_error >> k}; high_bits < limit - traits_.quantized_bits_per_pixel - 1)
+        if (int32_t high_bits{mapped_error >> k}; high_bits < limit - traits_.quantized_bits_per_sample - 1)
         {
             if (high_bits + 1 > 31)
             {
@@ -296,17 +296,17 @@ private:
             return;
         }
 
-        if (limit - traits_.quantized_bits_per_pixel > 31)
+        if (limit - traits_.quantized_bits_per_sample > 31)
         {
             append_to_bit_stream(0, 31);
-            append_to_bit_stream(1, limit - traits_.quantized_bits_per_pixel - 31);
+            append_to_bit_stream(1, limit - traits_.quantized_bits_per_sample - 31);
         }
         else
         {
-            append_to_bit_stream(1, limit - traits_.quantized_bits_per_pixel);
+            append_to_bit_stream(1, limit - traits_.quantized_bits_per_sample);
         }
-        append_to_bit_stream((mapped_error - 1) & ((1 << traits_.quantized_bits_per_pixel) - 1),
-                             traits_.quantized_bits_per_pixel);
+        append_to_bit_stream((mapped_error - 1) & ((1 << traits_.quantized_bits_per_sample) - 1),
+                             traits_.quantized_bits_per_sample);
     }
 
     void encode_run_interruption_error(run_mode_context& context, const int32_t error_value)
