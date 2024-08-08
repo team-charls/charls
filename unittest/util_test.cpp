@@ -24,12 +24,6 @@ uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept
     return log2_floor(max_value) + 1;
 }
 
-void call_and_compare_log2_ceil(const int32_t arg)
-{
-    const int32_t expected{static_cast<int32_t>(ceil(std::log2(arg)))};
-    Assert::AreEqual(expected, log2_ceil(arg));
-}
-
 void call_and_compare_log2_floor(const uint32_t arg)
 {
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26467) // cast from double to uint32 is safe. values always positive.
@@ -43,24 +37,12 @@ void call_and_compare_log2_floor(const uint32_t arg)
 TEST_CLASS(util_test)
 {
 public:
-    TEST_METHOD(log2_ceil) // NOLINT
-    {
-        call_and_compare_log2_ceil(1);
-        call_and_compare_log2_ceil(2);
-        call_and_compare_log2_ceil(32);
-        call_and_compare_log2_ceil(33);
-        call_and_compare_log2_ceil(33);
-        call_and_compare_log2_ceil(numeric_limits<uint16_t>::max());
-        call_and_compare_log2_ceil(numeric_limits<uint16_t>::max() + 1);
-        call_and_compare_log2_ceil(numeric_limits<uint32_t>::max() >> 2);
-    }
-
     TEST_METHOD(log2_floor) // NOLINT
     {
         call_and_compare_log2_floor(1);
         call_and_compare_log2_floor(2);
+        call_and_compare_log2_floor(31);
         call_and_compare_log2_floor(32);
-        call_and_compare_log2_floor(33);
         call_and_compare_log2_floor(33);
         call_and_compare_log2_floor(numeric_limits<uint16_t>::max());
         call_and_compare_log2_floor(numeric_limits<uint16_t>::max() + 1);

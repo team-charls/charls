@@ -21,8 +21,8 @@ public:
         Assert::IsTrue(traits1.limit == lossless_traits::limit);
         Assert::IsTrue(traits1.maximum_sample_value == lossless_traits::maximum_sample_value);
         Assert::IsTrue(traits1.reset_threshold == lossless_traits::reset_threshold);
-        Assert::IsTrue(traits1.bits_per_pixel == lossless_traits::bits_per_pixel);
-        Assert::IsTrue(traits1.quantized_bits_per_pixel == lossless_traits::quantized_bits_per_pixel);
+        Assert::IsTrue(traits1.bits_per_sample == lossless_traits::bits_per_sample);
+        Assert::IsTrue(traits1.quantized_bits_per_sample == lossless_traits::quantized_bits_per_sample);
 
         for (int i{-4096}; i <= 4096; ++i)
         {
@@ -45,8 +45,8 @@ public:
         Assert::IsTrue(traits1.limit == lossless_traits::limit);
         Assert::IsTrue(traits1.maximum_sample_value == lossless_traits::maximum_sample_value);
         Assert::IsTrue(traits1.reset_threshold == lossless_traits::reset_threshold);
-        Assert::IsTrue(traits1.bits_per_pixel == lossless_traits::bits_per_pixel);
-        Assert::IsTrue(traits1.quantized_bits_per_pixel == lossless_traits::quantized_bits_per_pixel);
+        Assert::IsTrue(traits1.bits_per_sample == lossless_traits::bits_per_sample);
+        Assert::IsTrue(traits1.quantized_bits_per_sample == lossless_traits::quantized_bits_per_sample);
 
         for (int i{-255}; i <= 255; ++i)
         {

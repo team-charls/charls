@@ -290,17 +290,16 @@ private:
 
     FORCE_INLINE bool fill_read_cache_optimistic() noexcept
     {
-        // Easy & fast: if there is no 0xFF byte in sight, we can read without bit stuffing
-        if (position_ < position_ff_ - (sizeof(cache_t) - 1))
-        {
-            read_cache_ |= read_big_endian_unaligned<cache_t>(position_) >> valid_bits_;
-            const int bytes_consumed{(cache_t_bit_count - valid_bits_) / 8};
-            position_ += bytes_consumed;
-            valid_bits_ += bytes_consumed * 8;
-            ASSERT(valid_bits_ >= max_readable_cache_bits);
-            return true;
-        }
-        return false;
+        if (position_ >= position_ff_ - (sizeof(cache_t) - 1))
+            return false;
+
+        // Easy & fast: there is no 0xFF byte in sight, read without bit stuffing
+        read_cache_ |= read_big_endian_unaligned<cache_t>(position_) >> valid_bits_;
+        const int bytes_consumed{(cache_t_bit_count - valid_bits_) / 8};
+        position_ += bytes_consumed;
+        valid_bits_ += bytes_consumed * 8;
+        ASSERT(valid_bits_ >= max_readable_cache_bits);
+        return true;
     }
 
     void find_jpeg_marker_start_byte() noexcept

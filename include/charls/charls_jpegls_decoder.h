@@ -289,9 +289,9 @@ charls_decoder_get_mapping_table_info(CHARLS_IN const charls_jpegls_decoder* dec
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_ATTRIBUTE_ACCESS((access(write_only, 3, 4)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_decoder_get_mapping_table(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t index,
-                                 CHARLS_OUT_WRITES_BYTES(table_size_bytes) void* table_data,
-                                 size_t table_size_bytes) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+charls_decoder_get_mapping_table_data(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t index,
+                                      CHARLS_OUT_WRITES_BYTES(table_size_bytes) void* table_data,
+                                      size_t table_size_bytes) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 #ifdef __cplusplus
 
@@ -746,7 +746,7 @@ public:
     }
 
     /// <summary>
-    /// Returns a mapping table.
+    /// Returns the data of a mapping table.
     /// </summary>
     /// <remarks>
     /// Function should be called after processing the complete JPEG-LS stream.
@@ -756,14 +756,14 @@ public:
     /// <param name="table_size_bytes">Length of the table buffer in bytes.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     CHARLS_ATTRIBUTE_ACCESS((access(write_only, 3, 4)))
-    void mapping_table(const int32_t index, CHARLS_OUT_WRITES_BYTES(table_size_bytes) void* table_data,
-                       const size_t table_size_bytes) const
+    void mapping_table_data(const int32_t index, CHARLS_OUT_WRITES_BYTES(table_size_bytes) void* table_data,
+                            const size_t table_size_bytes) const
     {
-        check_jpegls_errc(charls_decoder_get_mapping_table(decoder(), index, table_data, table_size_bytes));
+        check_jpegls_errc(charls_decoder_get_mapping_table_data(decoder(), index, table_data, table_size_bytes));
     }
 
     /// <summary>
-    /// Returns a mapping table.
+    /// Returns the data of a mapping table.
     /// </summary>
     /// <remarks>
     /// Function should be called after processing the complete JPEG-LS stream.
@@ -772,9 +772,9 @@ public:
     /// <param name="table_data">Output argument, will hold data of the mapping table when the function returns.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     template<typename Container, typename ContainerValueType = typename Container::value_type>
-    void mapping_table(const int32_t index, Container& table_data) const
+    void mapping_table_data(const int32_t index, Container& table_data) const
     {
-        mapping_table(index, table_data.data(), table_data.size() * sizeof(ContainerValueType));
+        mapping_table_data(index, table_data.data(), table_data.size() * sizeof(ContainerValueType));
     }
 
 private:

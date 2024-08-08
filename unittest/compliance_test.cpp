@@ -59,7 +59,7 @@ public:
     TEST_METHOD(decompress_color_8_bit_interleave_none_near_lossless_3) // NOLINT
     {
         // ISO 14495-1: official test image 4 (T87_test-1-2-3-4-5-6.zip)
-        decompress_file("DataFiles/t8c2e3.jls", "DataFiles/test8.ppm");
+        decompress_file("DataFiles/t8c0e3.jls", "DataFiles/test8.ppm");
     }
 
     TEST_METHOD(decompress_color_8_bit_interleave_line_near_lossless_3) // NOLINT
@@ -195,7 +195,7 @@ public:
         const table_info table_info{decoder.mapping_table_info(table_index)};
         vector<byte> mapping_table(table_info.data_size);
 
-        decoder.mapping_table(table_index, mapping_table);
+        decoder.mapping_table_data(table_index, mapping_table);
 
         constexpr array expected_mapping_table{byte{0xFF}, byte{0xFF}, byte{0xFF}, byte{0xFF}, byte{0}, byte{0},
                                                byte{0},    byte{0xFF}, byte{0},    byte{0},    byte{0}, byte{0xFF}};

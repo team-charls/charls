@@ -109,23 +109,6 @@ inline jpegls_errc to_jpegls_errc() noexcept
 }
 
 
-/// <Remarks>
-/// Bits per sample can be computed if range is passed as argument.
-/// </Remarks>
-constexpr int32_t log2_ceil(const int32_t n) noexcept
-{
-    ASSERT(n >= 0);
-    ASSERT(static_cast<uint32_t>(n) <= std::numeric_limits<uint32_t>::max() >> 2); // otherwise 1 << x becomes negative.
-
-    int32_t x{};
-    while (n > (1 << x))
-    {
-        ++x;
-    }
-    return x;
-}
-
-
 template<typename SampleType>
 struct triplet
 {
