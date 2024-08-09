@@ -12,6 +12,7 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
+using std::vector;
 using std::byte;
 using std::numeric_limits;
 using std::to_integer;
@@ -31,7 +32,8 @@ public:
     TEST_METHOD(write_start_of_image) // NOLINT
     {
         array<byte, 2> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         writer.write_start_of_image();
 
@@ -43,7 +45,8 @@ public:
     TEST_METHOD(write_start_of_image_in_too_small_buffer_throws) // NOLINT
     {
         array<byte, 1> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&writer] { writer.write_start_of_image(); });
         Assert::AreEqual(size_t{}, writer.bytes_written());
@@ -52,7 +55,8 @@ public:
     TEST_METHOD(write_end_of_image) // NOLINT
     {
         array<byte, 2> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         writer.write_end_of_image(false);
 
@@ -64,7 +68,8 @@ public:
     TEST_METHOD(write_end_of_image_even_no_extra_byte_needed) // NOLINT
     {
         array<byte, 2> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         writer.write_end_of_image(true);
 
@@ -76,7 +81,8 @@ public:
     TEST_METHOD(write_end_of_image_even_extra_byte_needed) // NOLINT
     {
         array<byte, 5 + 3> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         // writer.
         constexpr byte comment{99};
@@ -97,7 +103,8 @@ public:
     TEST_METHOD(write_end_of_image_even_extra_byte_needed_not_enabled) // NOLINT
     {
         array<byte, 5 + 2> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         // writer.
         constexpr byte comment{99};
@@ -117,7 +124,8 @@ public:
     TEST_METHOD(write_end_of_image_in_too_small_buffer_throws) // NOLINT
     {
         array<byte, 1> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&writer] { writer.write_end_of_image(false); });
         Assert::AreEqual(size_t{}, writer.bytes_written());
@@ -126,7 +134,8 @@ public:
     TEST_METHOD(write_spiff_segment) // NOLINT
     {
         array<byte, 34> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         constexpr spiff_header header{spiff_profile_id::none,
                                       3,
@@ -197,7 +206,8 @@ public:
     TEST_METHOD(write_spiff_segment_in_too_small_buffer_throws) // NOLINT
     {
         array<byte, 33> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         spiff_header header{spiff_profile_id::none,
                             3,
@@ -218,7 +228,8 @@ public:
     TEST_METHOD(write_spiff_end_of_directory_segment) // NOLINT
     {
         array<byte, 10> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         writer.write_spiff_end_of_directory_entry();
 
@@ -246,7 +257,8 @@ public:
     TEST_METHOD(write_spiff_directory_entry) // NOLINT
     {
         array<byte, 10> buffer{};
-        jpeg_stream_writer writer{{buffer.data(), buffer.size()}};
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         constexpr array data{byte{0x77}, byte{0x66}};
 
@@ -277,7 +289,8 @@ public:
         constexpr int32_t component_count{3};
 
         array<byte, 19> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         const bool oversized_image{
             writer.write_start_of_frame_segment({100, numeric_limits<uint16_t>::max(), bits_per_sample, component_count})};
@@ -315,7 +328,8 @@ public:
         constexpr int32_t component_count{3};
 
         array<byte, 19> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         const bool oversized_image{writer.write_start_of_frame_segment(
             {100, numeric_limits<uint16_t>::max() + 1U, bits_per_sample, component_count})};
@@ -353,7 +367,8 @@ public:
         constexpr int32_t component_count{1};
 
         array<byte, 13> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         writer.write_start_of_frame_segment({1, 1, bits_per_sample, component_count});
 
@@ -365,7 +380,8 @@ public:
     TEST_METHOD(write_start_of_frame_marker_segment_with_high_boundary_values_and_serialize) // NOLINT
     {
         array<byte, 775> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         writer.write_start_of_frame_segment(
             {numeric_limits<uint16_t>::max(), numeric_limits<uint16_t>::max(), 16, numeric_limits<uint8_t>::max()});
@@ -380,11 +396,12 @@ public:
     TEST_METHOD(write_color_transform_segment) // NOLINT
     {
         constexpr color_transformation transformation = color_transformation::hp1;
-
         array<byte, 9> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         writer.write_color_transform_segment(transformation);
+
         Assert::AreEqual(buffer.size(), writer.bytes_written());
 
         // Verify mrfx identifier string.
@@ -401,7 +418,8 @@ public:
         constexpr jpegls_pc_parameters presets{2, 1, 2, 3, 7};
 
         array<byte, 15> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         writer.write_jpegls_preset_parameters_segment(presets);
         Assert::AreEqual(buffer.size(), writer.bytes_written());
@@ -433,7 +451,8 @@ public:
     TEST_METHOD(write_jpegls_preset_parameters_segment_for_oversized_image_dimensions) // NOLINT
     {
         array<byte, 14> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         writer.write_jpegls_preset_parameters_segment(100, numeric_limits<uint32_t>::max());
         Assert::AreEqual(buffer.size(), writer.bytes_written());
@@ -457,10 +476,11 @@ public:
         Assert::AreEqual(byte{255}, buffer[13]);
     }
 
-    TEST_METHOD(write_start_of_scan_marker) // NOLINT
+    TEST_METHOD(write_start_of_scan_segment) // NOLINT
     {
         array<byte, 10> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         writer.write_start_of_scan_segment(1, 2, interleave_mode::none);
 
@@ -476,7 +496,8 @@ public:
     TEST_METHOD(rewind) // NOLINT
     {
         array<byte, 10> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         writer.write_start_of_scan_segment(1, 2, interleave_mode::none);
         writer.rewind();
@@ -490,7 +511,8 @@ public:
     TEST_METHOD(write_minimal_table) // NOLINT
     {
         array<byte, 8> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         constexpr array table_data{byte{77}};
         writer.write_jpegls_preset_parameters_segment(100, 1, table_data);
@@ -509,7 +531,8 @@ public:
     TEST_METHOD(write_table_max_entry_size) // NOLINT
     {
         array<byte, 7 + 255> buffer{};
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
         constexpr array<byte, 255> table_data{};
         writer.write_jpegls_preset_parameters_segment(100, 255, table_data);
@@ -527,10 +550,11 @@ public:
 
     TEST_METHOD(write_table_fits_in_single_segment) // NOLINT
     {
-        std::vector<byte> buffer(size_t{2} + std::numeric_limits<uint16_t>::max());
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        vector<byte> buffer(size_t{2} + std::numeric_limits<uint16_t>::max());
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
-        std::vector<byte> table_data(std::numeric_limits<uint16_t>::max() - 5);
+        vector<byte> table_data(std::numeric_limits<uint16_t>::max() - 5);
         writer.write_jpegls_preset_parameters_segment(255, 1, {table_data.data(), table_data.size()});
 
         Assert::AreEqual(buffer.size(), writer.bytes_written());
@@ -546,10 +570,11 @@ public:
 
     TEST_METHOD(write_table_that_requires_two_segment) // NOLINT
     {
-        std::vector<byte> buffer(size_t{2} + std::numeric_limits<uint16_t>::max() + 8);
-        jpeg_stream_writer writer({buffer.data(), buffer.size()});
+        vector<byte> buffer(size_t{2} + std::numeric_limits<uint16_t>::max() + 8);
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
 
-        std::vector<byte> table_data(static_cast<size_t>(std::numeric_limits<uint16_t>::max()) - 5 + 1);
+        vector<byte> table_data(static_cast<size_t>(std::numeric_limits<uint16_t>::max()) - 5 + 1);
         writer.write_jpegls_preset_parameters_segment(255, 1, {table_data.data(), table_data.size()});
 
         Assert::AreEqual(buffer.size(), writer.bytes_written());

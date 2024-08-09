@@ -97,22 +97,20 @@ private:
 
         for (uint32_t line{}; line < frame_info().height; ++line)
         {
-            previous_line_ = &line_buffer[1];
-            current_line_ = &line_buffer[1 + static_cast<size_t>(component_count) * pixel_stride];
+            previous_line_ = line_buffer.data();
+            current_line_ = line_buffer.data() + static_cast<size_t>(component_count) * pixel_stride;
             if ((line & 1) == 1)
             {
                 std::swap(previous_line_, current_line_);
             }
 
-            on_line_begin(current_line_, width_, pixel_stride);
+            on_line_begin(current_line_ + 1, width_, pixel_stride);
 
             for (size_t component{}; component < component_count; ++component)
             {
                 run_index_ = run_index[component];
 
-                // initialize edge pixels used for prediction
-                previous_line_[width_] = previous_line_[width_ - 1];
-                current_line_[-1] = previous_line_[0];
+                initialize_edge_pixels(previous_line_, current_line_, width_);
 
                 if constexpr (std::is_same_v<pixel_type, sample_type>)
                 {
@@ -138,11 +136,11 @@ private:
     /// <summary>Encodes a scan line of samples</summary>
     FORCE_INLINE void encode_sample_line()
     {
-        int32_t index{};
+        int32_t index{1};
         int32_t rb{previous_line_[index - 1]};
         int32_t rd{previous_line_[index]};
 
-        while (static_cast<uint32_t>(index) < width_)
+        while (static_cast<uint32_t>(index) <= width_)
         {
             const int32_t ra{current_line_[index - 1]};
             const int32_t rc{rb};
@@ -168,8 +166,8 @@ private:
     /// <summary>Encodes a scan line of triplets in ILV_SAMPLE mode</summary>
     void encode_triplet_line()
     {
-        int32_t index{};
-        while (static_cast<uint32_t>(index) < width_)
+        int32_t index{1};
+        while (static_cast<uint32_t>(index) <= width_)
         {
             const triplet<sample_type> ra{current_line_[index - 1]};
             const triplet<sample_type> rc{previous_line_[index - 1]};
@@ -202,8 +200,8 @@ private:
     /// <summary>Encodes a scan line of quads in ILV_SAMPLE mode</summary>
     void encode_quad_line()
     {
-        int32_t index{};
-        while (static_cast<uint32_t>(index) < width_)
+        int32_t index{1};
+        while (static_cast<uint32_t>(index) <= width_)
         {
             const quad<sample_type> ra{current_line_[index - 1]};
             const quad<sample_type> rc{previous_line_[index - 1]};
@@ -239,7 +237,7 @@ private:
     [[nodiscard]]
     int32_t encode_run_mode(const int32_t index)
     {
-        const int32_t count_type_remain = width_ - index;
+        const int32_t count_type_remain = width_ - (index - 1);
         pixel_type* type_cur_x{current_line_ + index};
         const pixel_type* type_prev_x{previous_line_ + index};
 

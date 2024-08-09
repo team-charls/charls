@@ -8,7 +8,6 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
-#include <limits>
 #include <type_traits>
 
 
@@ -310,22 +309,6 @@ inline void check_interleave_mode(const interleave_mode mode, const jpegls_errc 
 {
     if (UNLIKELY(!(mode == interleave_mode::none || mode == interleave_mode::line || mode == interleave_mode::sample)))
         impl::throw_jpegls_error(error_value);
-}
-
-
-constexpr int32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
-{
-    ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);
-    return static_cast<int32_t>((1U << bits_per_sample) - 1);
-}
-
-
-/// <summary>
-/// Computes how many bytes are needed to hold the number of bits.
-/// </summary>
-constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
-{
-    return static_cast<uint32_t>((bit_count + 7) / 8);
 }
 
 

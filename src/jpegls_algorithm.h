@@ -8,7 +8,7 @@
 
 namespace charls {
 
-
+[[nodiscard]]
 constexpr int32_t log2_ceiling(const int32_t n) noexcept
 {
     ASSERT(n >= 0);
@@ -20,6 +20,24 @@ constexpr int32_t log2_ceiling(const int32_t n) noexcept
         ++x;
     }
     return x;
+}
+
+
+/// <summary>
+/// Computes how many bytes are needed to hold the number of bits.
+/// </summary>
+[[nodiscard]]
+constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
+{
+    return static_cast<uint32_t>((bit_count + 7) / 8);
+}
+
+
+[[nodiscard]]
+constexpr int32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
+{
+    ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);
+    return static_cast<int32_t>((1U << bits_per_sample) - 1);
 }
 
 

@@ -114,9 +114,7 @@ private:
                 {
                     run_index_ = run_index[component];
 
-                    // initialize edge pixels used for prediction
-                    previous_line_[width_ + 1] = previous_line_[width_];
-                    current_line_[0] = previous_line_[1];
+                    initialize_edge_pixels(previous_line_, current_line_, width_);
 
                     if constexpr (std::is_same_v<pixel_type, sample_type>)
                     {
