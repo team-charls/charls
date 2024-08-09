@@ -150,6 +150,39 @@ private:
                                                 int32_t entry_size, span<const std::byte> table_data);
     void write_segment_header(jpeg_marker_code marker_code, size_t data_size);
 
+    void write_segment_without_data(const jpeg_marker_code marker_code)
+    {
+        if (UNLIKELY(byte_offset_ + 2 > destination_.size()))
+            impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
+
+        write_marker(marker_code);
+    }
+
+    void write_segment(const jpeg_marker_code marker_code, const span<const std::byte> data)
+    {
+        write_segment_header(marker_code, data.size());
+        write_bytes(data);
+    }
+
+    void write_marker(const jpeg_marker_code marker_code) noexcept
+    {
+        write_byte(jpeg_marker_start_byte);
+        write_byte(static_cast<std::byte>(marker_code));
+    }
+
+    void write_byte(const std::byte value) noexcept
+    {
+        ASSERT(byte_offset_ + sizeof(std::byte) <= destination_.size());
+        destination_.data()[byte_offset_++] = value;
+    }
+
+    void write_bytes(const span<const std::byte> data) noexcept
+    {
+        ASSERT(byte_offset_ + data.size() <= destination_.size());
+        memcpy(destination_.data() + byte_offset_, data.data(), data.size());
+        byte_offset_ += data.size();
+    }
+
     void write_uint8(const uint8_t value) noexcept
     {
         write_byte(static_cast<std::byte>(value));
@@ -203,40 +236,6 @@ private:
 #endif
         const void* bytes{&big_endian_value};
         write_bytes({static_cast<const std::byte*>(bytes), sizeof big_endian_value});
-    }
-
-    void write_byte(const std::byte value) noexcept
-    {
-        ASSERT(byte_offset_ + sizeof(std::byte) <= destination_.size());
-        destination_.data()[byte_offset_++] = value;
-    }
-
-    void write_bytes(const span<const std::byte> data) noexcept
-    {
-        ASSERT(byte_offset_ + data.size() <= destination_.size());
-        memcpy(destination_.data() + byte_offset_, data.data(), data.size());
-        byte_offset_ += data.size();
-    }
-
-    void write_marker(const jpeg_marker_code marker_code) noexcept
-    {
-        write_byte(jpeg_marker_start_byte);
-        write_byte(static_cast<std::byte>(marker_code));
-    }
-
-    void write_segment_without_data(const jpeg_marker_code marker_code)
-    {
-        if (UNLIKELY(byte_offset_ + 2 > destination_.size()))
-            impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
-
-        write_byte(jpeg_marker_start_byte); // TODO : use write_marker.
-        write_byte(static_cast<std::byte>(marker_code));
-    }
-
-    void write_segment(const jpeg_marker_code marker_code, const span<const std::byte> data)
-    {
-        write_segment_header(marker_code, data.size());
-        write_bytes(data);
     }
 
     [[nodiscard]]
