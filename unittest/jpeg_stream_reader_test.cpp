@@ -87,7 +87,8 @@ public:
     TEST_METHOD(read_header_jpegls_preset_parameter_segment) // NOLINT
     {
         vector<byte> source(100);
-        jpeg_stream_writer writer({source.data(), source.size()});
+        jpeg_stream_writer writer;
+        writer.destination({source.data(), source.size()});
         writer.write_start_of_image();
 
         constexpr jpegls_pc_parameters presets{1, 2, 3, 4, 5};
@@ -688,7 +689,8 @@ public:
     TEST_METHOD(read_mapping_table) // NOLINT
     {
         vector<byte> source(100);
-        jpeg_stream_writer writer({source.data(), source.size()});
+        jpeg_stream_writer writer;
+        writer.destination({source.data(), source.size()});
         writer.write_start_of_image();
 
         constexpr array table_data_expected{byte{2}};
@@ -718,7 +720,8 @@ public:
     TEST_METHOD(read_mapping_table_too_small_buffer_throws) // NOLINT
     {
         vector<byte> source(100);
-        jpeg_stream_writer writer({source.data(), source.size()});
+        jpeg_stream_writer writer;
+        writer.destination({source.data(), source.size()});
         writer.write_start_of_image();
 
         constexpr array table_data_expected{byte{2}, byte{3}};
@@ -803,7 +806,8 @@ public:
     {
         constexpr size_t table_size{100000};
         vector<byte> source(table_size + 100);
-        jpeg_stream_writer writer({source.data(), source.size()});
+        jpeg_stream_writer writer;
+        writer.destination({source.data(), source.size()});
         writer.write_start_of_image();
 
         vector<byte> table_data_expected(table_size);

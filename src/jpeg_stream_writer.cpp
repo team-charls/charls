@@ -15,11 +15,6 @@ using std::array;
 using std::byte;
 using std::numeric_limits;
 
-jpeg_stream_writer::jpeg_stream_writer(const span<byte> destination) noexcept : destination_{destination}
-{
-}
-
-
 void jpeg_stream_writer::write_start_of_image()
 {
     write_segment_without_data(jpeg_marker_code::start_of_image);

@@ -142,7 +142,8 @@ vector<byte> create_test_spiff_header(const uint8_t high_version, const uint8_t 
     const size_t spiff_header_size{buffer.size()};
     buffer.resize(buffer.size() + 100);
 
-    jpeg_stream_writer writer({buffer.data() + spiff_header_size, buffer.size() - spiff_header_size});
+    jpeg_stream_writer writer;
+    writer.destination({buffer.data() + spiff_header_size, buffer.size() - spiff_header_size});
 
     if (end_of_directory)
     {

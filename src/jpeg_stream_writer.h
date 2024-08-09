@@ -20,7 +20,6 @@ class jpeg_stream_writer final
 {
 public:
     jpeg_stream_writer() = default;
-    explicit jpeg_stream_writer(span<std::byte> destination) noexcept;
     ~jpeg_stream_writer() = default;
 
     jpeg_stream_writer(const jpeg_stream_writer&) = delete;
@@ -230,7 +229,7 @@ private:
         if (UNLIKELY(byte_offset_ + 2 > destination_.size()))
             impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
-        write_byte(jpeg_marker_start_byte);
+        write_byte(jpeg_marker_start_byte); // TODO : use write_marker.
         write_byte(static_cast<std::byte>(marker_code));
     }
 

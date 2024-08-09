@@ -168,6 +168,14 @@ protected:
         run_index_ = std::max(0, run_index_ - 1);
     }
 
+    template<typename PixelType>
+    static void initialize_edge_pixels(PixelType* previous_line, PixelType* current_line, const uint32_t width) noexcept
+    {
+        // Initialize edge pixels used for prediction
+        previous_line[width + 1] = previous_line[width];
+        current_line[0] = previous_line[1];
+    }
+
     charls::frame_info frame_info_;
     coding_parameters parameters_;
     int32_t t1_{};
