@@ -46,10 +46,10 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "Invalid argument";
 
     case jpegls_errc::invalid_argument_width:
-        return "The width argument is outside the supported range [1, 65535]";
+        return "The width argument is outside the supported range [1, 4294967295]";
 
     case jpegls_errc::invalid_argument_height:
-        return "The height argument is outside the supported range [1, 65535]";
+        return "The height argument is outside the supported range [1, 4294967295]";
 
     case jpegls_errc::invalid_argument_component_count:
         return "The component count argument is outside the range [1, 255]";
@@ -104,7 +104,7 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "Invalid JPEG-LS stream: JPEG-LS preset parameters segment contains an invalid type";
 
     case jpegls_errc::jpegls_preset_extended_parameter_type_not_supported:
-        return "Unsupported JPEG-LS stream: JPEG-LS preset parameters segment contains an JPEG-LS Extended (ISO/IEC "
+        return "Unsupported JPEG-LS stream: JPEG-LS preset parameters segment contains a JPEG-LS Extended (ISO/IEC "
                "14495-2) type";
 
     case jpegls_errc::missing_end_of_spiff_directory:

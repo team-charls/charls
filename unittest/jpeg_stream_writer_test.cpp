@@ -12,10 +12,10 @@
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;
-using std::vector;
 using std::byte;
 using std::numeric_limits;
 using std::to_integer;
+using std::vector;
 
 namespace charls::test {
 
@@ -322,7 +322,46 @@ public:
         Assert::AreEqual(byte{}, buffer[18]);
     }
 
-    TEST_METHOD(write_start_of_frame_segment_large_image) // NOLINT
+    TEST_METHOD(write_start_of_frame_segment_large_image_width) // NOLINT
+    {
+        constexpr int32_t bits_per_sample{8};
+        constexpr int32_t component_count{3};
+
+        array<byte, 19> buffer{};
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
+
+        const bool oversized_image{writer.write_start_of_frame_segment(
+            {numeric_limits<uint16_t>::max() + 1U, 100, bits_per_sample, component_count})};
+
+        Assert::IsTrue(oversized_image);
+        Assert::AreEqual(size_t{19}, writer.bytes_written());
+
+        Assert::AreEqual(byte{0xFF}, buffer[0]);
+        Assert::AreEqual(byte{0xF7}, buffer[1]); // JPEG_SOF_55
+        Assert::AreEqual(byte{}, buffer[2]);     // 6 + (3 * 3) + 2 (in big endian)
+        Assert::AreEqual(byte{17}, buffer[3]);   // 6 + (3 * 3) + 2 (in big endian)
+        Assert::AreEqual(static_cast<byte>(bits_per_sample), buffer[4]);
+        Assert::AreEqual(byte{}, buffer[5]); // height (in big endian)
+        Assert::AreEqual(byte{}, buffer[6]); // height (in big endian)
+        Assert::AreEqual(byte{}, buffer[7]); // width (in big endian)
+        Assert::AreEqual(byte{}, buffer[8]); // width (in big endian)
+        Assert::AreEqual(static_cast<byte>(component_count), buffer[9]);
+
+        Assert::AreEqual(byte{1}, buffer[10]);
+        Assert::AreEqual(byte{0x11}, buffer[11]);
+        Assert::AreEqual(byte{}, buffer[12]);
+
+        Assert::AreEqual(byte{2}, buffer[13]);
+        Assert::AreEqual(byte{0x11}, buffer[14]);
+        Assert::AreEqual(byte{}, buffer[15]);
+
+        Assert::AreEqual(byte{3}, buffer[16]);
+        Assert::AreEqual(byte{0x11}, buffer[17]);
+        Assert::AreEqual(byte{}, buffer[18]);
+    }
+
+    TEST_METHOD(write_start_of_frame_segment_large_image_height) // NOLINT
     {
         constexpr int32_t bits_per_sample{8};
         constexpr int32_t component_count{3};
@@ -493,6 +532,53 @@ public:
         Assert::AreEqual(byte{}, buffer[9]);  // transformation.
     }
 
+    TEST_METHOD(write_start_of_scan_segment_with_table_id) // NOLINT
+    {
+        array<byte, 10> buffer{};
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
+        writer.set_table_id(0, 77);
+
+        writer.write_start_of_scan_segment(1, 2, interleave_mode::none);
+
+        Assert::AreEqual(buffer.size(), writer.bytes_written());
+        Assert::AreEqual(byte{1}, buffer[4]);  // component count.
+        Assert::AreEqual(byte{1}, buffer[5]);  // component index.
+        Assert::AreEqual(byte{77}, buffer[6]); // table ID.
+        Assert::AreEqual(byte{2}, buffer[7]);  // NEAR parameter.
+        Assert::AreEqual(byte{}, buffer[8]);   // ILV parameter.
+        Assert::AreEqual(byte{}, buffer[9]);   // transformation.
+    }
+
+    TEST_METHOD(write_start_of_scan_segment_with_table_id_after_rewind) // NOLINT
+    {
+        array<byte, 10> buffer{};
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
+        writer.set_table_id(0, 77);
+        writer.rewind();
+
+        writer.write_start_of_scan_segment(1, 2, interleave_mode::none);
+
+        Assert::AreEqual(buffer.size(), writer.bytes_written());
+        Assert::AreEqual(byte{1}, buffer[4]);  // component count.
+        Assert::AreEqual(byte{1}, buffer[5]);  // component index.
+        Assert::AreEqual(byte{77}, buffer[6]); // table ID.
+        Assert::AreEqual(byte{2}, buffer[7]);  // NEAR parameter.
+        Assert::AreEqual(byte{}, buffer[8]);   // ILV parameter.
+        Assert::AreEqual(byte{}, buffer[9]);   // transformation.
+    }
+
+    TEST_METHOD(advance_position) // NOLINT
+    {
+        array<byte, 2> buffer{};
+        jpeg_stream_writer writer;
+        writer.destination({buffer.data(), buffer.size()});
+
+        writer.advance_position(2);
+        Assert::AreEqual(buffer.size(), writer.bytes_written());
+    }
+
     TEST_METHOD(rewind) // NOLINT
     {
         array<byte, 10> buffer{};
@@ -520,7 +606,7 @@ public:
         Assert::AreEqual(buffer.size(), writer.bytes_written());
         Assert::AreEqual(byte{0xFF}, buffer[0]);
         Assert::AreEqual(byte{0xF8}, buffer[1]); // LSE
-        Assert::AreEqual(byte{0}, buffer[2]);
+        Assert::AreEqual(byte{}, buffer[2]);
         Assert::AreEqual(byte{6}, buffer[3]);
         Assert::AreEqual(byte{2}, buffer[4]);   // type = table
         Assert::AreEqual(byte{100}, buffer[5]); // table ID
@@ -535,7 +621,7 @@ public:
         writer.destination({buffer.data(), buffer.size()});
 
         constexpr array<byte, 255> table_data{};
-        writer.write_jpegls_preset_parameters_segment(100, 255, table_data);
+        writer.write_jpegls_preset_parameters_segment(255, 255, table_data);
 
         Assert::AreEqual(buffer.size(), writer.bytes_written());
         Assert::AreEqual(byte{0xFF}, buffer[0]);
@@ -543,9 +629,9 @@ public:
         Assert::AreEqual(byte{1}, buffer[2]);
         Assert::AreEqual(byte{4}, buffer[3]);
         Assert::AreEqual(byte{2}, buffer[4]);   // type = table
-        Assert::AreEqual(byte{100}, buffer[5]); // table ID
+        Assert::AreEqual(byte{255}, buffer[5]); // table ID
         Assert::AreEqual(byte{255}, buffer[6]); // size of entry
-        Assert::AreEqual(byte{0}, buffer[7]);   // table content
+        Assert::AreEqual(byte{}, buffer[7]);    // table content
     }
 
     TEST_METHOD(write_table_fits_in_single_segment) // NOLINT
@@ -565,7 +651,7 @@ public:
         Assert::AreEqual(byte{2}, buffer[4]);   // type = table
         Assert::AreEqual(byte{255}, buffer[5]); // table ID
         Assert::AreEqual(byte{1}, buffer[6]);   // size of entry
-        Assert::AreEqual(byte{0}, buffer[7]);   // table content (first entry)
+        Assert::AreEqual(byte{}, buffer[7]);    // table content (first entry)
     }
 
     TEST_METHOD(write_table_that_requires_two_segment) // NOLINT
@@ -585,7 +671,7 @@ public:
         Assert::AreEqual(byte{2}, buffer[4]);   // type = table
         Assert::AreEqual(byte{255}, buffer[5]); // table ID
         Assert::AreEqual(byte{1}, buffer[6]);   // size of entry
-        Assert::AreEqual(byte{0}, buffer[7]);   // table content (first entry)
+        Assert::AreEqual(byte{}, buffer[7]);    // table content (first entry)
 
         // Validate second segment.
         Assert::AreEqual(byte{0xFF}, buffer[65537]);
@@ -595,7 +681,7 @@ public:
         Assert::AreEqual(byte{3}, buffer[65541]);   // type = table
         Assert::AreEqual(byte{255}, buffer[65542]); // table ID
         Assert::AreEqual(byte{1}, buffer[65543]);   // size of entry
-        Assert::AreEqual(byte{0}, buffer[65544]);   // table content (last entry)
+        Assert::AreEqual(byte{}, buffer[65544]);    // table content (last entry)
     }
 };
 

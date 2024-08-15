@@ -235,11 +235,11 @@ private:
     }
 
     [[nodiscard]]
-    int32_t encode_run_mode(const int32_t index)
+    int32_t encode_run_mode(const int32_t start_index)
     {
-        const int32_t count_type_remain = width_ - (index - 1);
-        pixel_type* type_cur_x{current_line_ + index};
-        const pixel_type* type_prev_x{previous_line_ + index};
+        const int32_t count_type_remain = width_ - (start_index - 1);
+        pixel_type* type_cur_x{current_line_ + start_index};
+        const pixel_type* type_prev_x{previous_line_ + start_index};
 
         const pixel_type ra{type_cur_x[-1]};
 
@@ -268,7 +268,7 @@ private:
     {
         const int32_t sign{bit_wise_sign(qs)};
         regular_mode_context& context{regular_mode_contexts_[apply_sign(qs, sign)]};
-        const int32_t k{context.get_golomb_coding_parameter()};
+        const int32_t k{context.compute_golomb_coding_parameter()};
         const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
         const int32_t error_value{traits_.compute_error_value(apply_sign(x - predicted_value, sign))};
 

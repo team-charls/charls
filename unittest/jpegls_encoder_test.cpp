@@ -246,7 +246,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, 1, 2, 1});
+        encoder.frame_info({1, 1, 2, 4});
 
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
@@ -272,11 +272,41 @@ public:
         Assert::AreEqual({}, destination[11]);
     }
 
+    TEST_METHOD(write_standard_spiff_header_with_non_matching_color_space) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        encoder.frame_info({1, 1, 2, 4});
+
+        vector<byte> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        encoder.write_standard_spiff_header(spiff_color_space::rgb); // by design not checked.
+
+        Assert::AreEqual(serialized_spiff_header_size + 2, encoder.bytes_written());
+
+        // Check that SOI marker has been written.
+        Assert::AreEqual(byte{0xFF}, destination[0]);
+        Assert::AreEqual(static_cast<byte>(jpeg_marker_code::start_of_image), destination[1]);
+
+        // Verify that a APP8 with SPIFF has been written (details already verified by jpeg_stream_writer_test).
+        Assert::AreEqual(byte{0xFF}, destination[2]);
+        Assert::AreEqual(static_cast<byte>(jpeg_marker_code::application_data8), destination[3]);
+        Assert::AreEqual({}, destination[4]);
+        Assert::AreEqual(byte{32}, destination[5]);
+        Assert::AreEqual(byte{'S'}, destination[6]);
+        Assert::AreEqual(byte{'P'}, destination[7]);
+        Assert::AreEqual(byte{'I'}, destination[8]);
+        Assert::AreEqual(byte{'F'}, destination[9]);
+        Assert::AreEqual(byte{'F'}, destination[10]);
+        Assert::AreEqual({}, destination[11]);
+    }
+
     TEST_METHOD(write_standard_spiff_header_without_destination_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, 1, 2, 1});
+        encoder.frame_info({1, 1, 2, 4});
 
         assert_expect_exception(jpegls_errc::invalid_operation,
                                 [&encoder] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
@@ -297,7 +327,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, 1, 2, 1});
+        encoder.frame_info({1, 1, 2, 4});
 
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
@@ -378,7 +408,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, 1, 2, 1});
+        encoder.frame_info({1, 1, 2, 4});
 
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
@@ -393,7 +423,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, 1, 2, 1});
+        encoder.frame_info({1, 1, 2, 4});
 
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
@@ -409,7 +439,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, 1, 2, 1});
+        encoder.frame_info({1, 1, 2, 4});
 
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
@@ -428,20 +458,22 @@ public:
 
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
-        encoder.write_standard_spiff_header(spiff_color_space::cmyk);
+        encoder.write_standard_spiff_header(spiff_color_space::grayscale);
 
-        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] { encoder.write_spiff_entry(1, "test", 4); });
+        constexpr int32_t spiff_end_of_directory_entry_type{1};
+        assert_expect_exception(jpegls_errc::invalid_argument,
+                                [&encoder] { encoder.write_spiff_entry(spiff_end_of_directory_entry_type, "test", 4); });
     }
 
     TEST_METHOD(write_spiff_entry_with_invalid_size_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, 1, 2, 1});
+        encoder.frame_info({1, 1, 2, 3});
 
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
-        encoder.write_standard_spiff_header(spiff_color_space::cmyk);
+        encoder.write_standard_spiff_header(spiff_color_space::rgb);
 
         assert_expect_exception(jpegls_errc::invalid_argument_size, [&encoder] {
             const vector<byte> spiff_entry(65528 + 1);
@@ -873,7 +905,7 @@ public:
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(write_table) // NOLINT
+    TEST_METHOD(write_mapping_table) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -881,7 +913,7 @@ public:
         encoder.destination(destination);
 
         constexpr array table_data{byte{0}};
-        encoder.write_table(1, 1, table_data);
+        encoder.write_mapping_table(1, 1, table_data);
 
         Assert::AreEqual(size_t{10}, encoder.bytes_written());
 
@@ -900,7 +932,7 @@ public:
         Assert::AreEqual(byte{}, destination[9]);
     }
 
-    TEST_METHOD(write_table_before_encode) // NOLINT
+    TEST_METHOD(write_mapping_table_before_encode) // NOLINT
     {
         constexpr array table_data{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
@@ -911,13 +943,13 @@ public:
         encoder.destination(encoded);
         encoder.frame_info(frame_info);
 
-        encoder.write_table(1, 1, table_data);
+        encoder.write_mapping_table(1, 1, table_data);
 
         encoded.resize(encoder.encode(source));
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(write_table_with_bad_table_id_throws) // NOLINT
+    TEST_METHOD(write_mapping_table_with_bad_table_id_throws) // NOLINT
     {
         constexpr array table_data{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         jpegls_encoder encoder;
@@ -926,13 +958,13 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_argument,
-                                [&encoder, &table_data] { ignore = encoder.write_table(0, 1, table_data); });
+                                [&encoder, &table_data] { ignore = encoder.write_mapping_table(0, 1, table_data); });
 
         assert_expect_exception(jpegls_errc::invalid_argument,
-                                [&encoder, &table_data] { ignore = encoder.write_table(256, 1, table_data); });
+                                [&encoder, &table_data] { ignore = encoder.write_mapping_table(256, 1, table_data); });
     }
 
-    TEST_METHOD(write_table_with_bad_entry_size_throws) // NOLINT
+    TEST_METHOD(write_mapping_table_with_bad_entry_size_throws) // NOLINT
     {
         constexpr array table_data{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         jpegls_encoder encoder;
@@ -941,13 +973,13 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_argument,
-                                [&encoder, &table_data] { ignore = encoder.write_table(1, 0, table_data); });
+                                [&encoder, &table_data] { ignore = encoder.write_mapping_table(1, 0, table_data); });
 
         assert_expect_exception(jpegls_errc::invalid_argument,
-                                [&encoder, &table_data] { ignore = encoder.write_table(1, 256, table_data); });
+                                [&encoder, &table_data] { ignore = encoder.write_mapping_table(1, 256, table_data); });
     }
 
-    TEST_METHOD(write_table_with_too_small_table_throws) // NOLINT
+    TEST_METHOD(write_mapping_table_with_too_small_table_throws) // NOLINT
     {
         constexpr array table_data{byte{0}};
         jpegls_encoder encoder;
@@ -955,12 +987,11 @@ public:
         vector<byte> destination(100);
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_argument_size, [&encoder, &table_data] {
-            ignore = encoder.write_table(1, 2, table_data);
-        });
+        assert_expect_exception(jpegls_errc::invalid_argument_size,
+                                [&encoder, &table_data] { ignore = encoder.write_mapping_table(1, 2, table_data); });
     }
 
-    TEST_METHOD(write_table_null_pointer_with_size_throws) // NOLINT
+    TEST_METHOD(write_mapping_table_null_pointer_with_size_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -969,11 +1000,11 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] {
             MSVC_WARNING_SUPPRESS_NEXT_LINE(6387)
-            ignore = encoder.write_table(1, 1, nullptr, 1);
+            ignore = encoder.write_mapping_table(1, 1, nullptr, 1);
         });
     }
 
-    TEST_METHOD(write_table_after_encode_throws) // NOLINT
+    TEST_METHOD(write_mapping_table_after_encode_throws) // NOLINT
     {
         constexpr array table_data{byte{0}};
         const vector source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
@@ -985,12 +1016,11 @@ public:
         encoder.frame_info({3, 1, 16, 1});
         ignore = encoder.encode(source);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&encoder, &table_data] {
-            ignore = encoder.write_table(1, 1, table_data);
-        });
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&encoder, &table_data] { ignore = encoder.write_mapping_table(1, 1, table_data); });
     }
 
-    TEST_METHOD(create_tables_only) // NOLINT
+    TEST_METHOD(create_abbreviated_format) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -998,8 +1028,8 @@ public:
         encoder.destination(destination);
 
         constexpr array table_data{byte{0}};
-        encoder.write_table(1, 1, table_data);
-        const size_t bytes_written{encoder.create_tables_only()};
+        encoder.write_mapping_table(1, 1, table_data);
+        const size_t bytes_written{encoder.create_abbreviated_format()};
 
         Assert::AreEqual(size_t{12}, bytes_written);
 
@@ -1029,7 +1059,7 @@ public:
         array<byte, 12> destination;
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&encoder] { ignore = encoder.create_tables_only(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&encoder] { ignore = encoder.create_abbreviated_format(); });
     }
 
     TEST_METHOD(set_preset_coding_parameters) // NOLINT
@@ -1094,7 +1124,7 @@ public:
         jpegls_decoder decoder(destination, true);
         vector<byte> destination_decoded(decoder.destination_size());
         decoder.decode(destination_decoded);
-        Assert::AreEqual(1, decoder.mapping_table_id(0));
+        Assert::AreEqual(1, decoder.get_mapping_table_id(0));
     }
 
     TEST_METHOD(set_table_id_clear_id) // NOLINT
@@ -1114,7 +1144,7 @@ public:
         jpegls_decoder decoder(destination, true);
         vector<byte> destination_decoded(decoder.destination_size());
         decoder.decode(destination_decoded);
-        Assert::AreEqual(0, decoder.mapping_table_id(0));
+        Assert::AreEqual(0, decoder.get_mapping_table_id(0));
     }
 
     TEST_METHOD(set_table_id_bad_component_index_throws) // NOLINT

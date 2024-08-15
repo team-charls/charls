@@ -704,16 +704,16 @@ public:
 
         reader.read_header();
 
-        Assert::AreEqual(1, reader.mapping_table_count());
-        Assert::AreEqual(0, reader.mapping_table_index(1).value_or(-1));
+        Assert::AreEqual(size_t{1}, reader.mapping_table_count());
+        Assert::AreEqual(0, reader.get_mapping_table_index(1));
 
-        const auto info{reader.mapping_table_info(0)};
+        const auto info{reader.get_mapping_table_info(0)};
         Assert::AreEqual(int32_t{1}, info.table_id);
         Assert::AreEqual(int32_t{1}, info.entry_size);
         Assert::AreEqual(uint32_t{1}, info.data_size);
 
         vector<byte> table_data(1);
-        reader.mapping_table_data(0, {table_data.data(), table_data.size()});
+        reader.get_mapping_table_data(0, {table_data.data(), table_data.size()});
         Assert::AreEqual(byte{2}, table_data[0]);
     }
 
@@ -736,7 +736,7 @@ public:
 
         assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&reader] {
             vector<byte> table_data(1);
-            reader.mapping_table_data(0, {table_data.data(), table_data.size()});
+            reader.get_mapping_table_data(0, {table_data.data(), table_data.size()});
         });
     }
 
@@ -744,9 +744,9 @@ public:
     {
         const jpeg_stream_reader reader;
 
-        const int32_t count{reader.mapping_table_count()};
+        const auto count{reader.mapping_table_count()};
 
-        Assert::AreEqual(0, count);
+        Assert::AreEqual(size_t{}, count);
     }
 
     TEST_METHOD(mapping_table_count_after_read_header) // NOLINT
@@ -763,14 +763,14 @@ public:
         reader.source({writer.buffer.data(), writer.buffer.size()});
 
         reader.read_header();
-        const int32_t count{reader.mapping_table_count()};
+        const auto count{reader.mapping_table_count()};
 
-        Assert::AreEqual(2, count);
+        Assert::AreEqual(size_t{2}, count);
     }
 
     TEST_METHOD(mapping_table_count_after_read_header_after_frame) // NOLINT
     {
-        const std::vector<std::byte> table_data(255);
+        const vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(1, 1, 8, 3);
@@ -780,14 +780,14 @@ public:
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
-        const int32_t count{reader.mapping_table_count()};
+        const auto count{reader.mapping_table_count()};
 
-        Assert::AreEqual(1, count);
+        Assert::AreEqual(size_t{1}, count);
     }
 
     TEST_METHOD(mapping_table_count_after_read_header_before_frame) // NOLINT
     {
-        const std::vector<std::byte> table_data(255);
+        const vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
@@ -797,9 +797,9 @@ public:
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
-        const int32_t count{reader.mapping_table_count()};
+        const auto count{reader.mapping_table_count()};
 
-        Assert::AreEqual(1, count);
+        Assert::AreEqual(size_t{1}, count);
     }
 
     TEST_METHOD(read_mapping_table_continuation) // NOLINT
@@ -823,23 +823,23 @@ public:
 
         reader.read_header();
 
-        Assert::AreEqual(1, reader.mapping_table_count());
-        Assert::AreEqual(0, reader.mapping_table_index(1).value_or(-1));
+        Assert::AreEqual(size_t{1}, reader.mapping_table_count());
+        Assert::AreEqual(0, reader.get_mapping_table_index(1));
 
-        const auto info{reader.mapping_table_info(0)};
+        const auto info{reader.get_mapping_table_info(0)};
         Assert::AreEqual(int32_t{1}, info.table_id);
         Assert::AreEqual(int32_t{1}, info.entry_size);
         Assert::AreEqual(uint32_t{100000}, info.data_size);
 
         vector<byte> table_data(table_size);
-        reader.mapping_table_data(0, {table_data.data(), table_data.size()});
+        reader.get_mapping_table_data(0, {table_data.data(), table_data.size()});
         Assert::AreEqual(byte{7}, table_data[0]);
         Assert::AreEqual(byte{8}, table_data[table_size - 1]);
     }
 
     TEST_METHOD(read_mapping_table_continuation_without_mapping_table_throws) // NOLINT
     {
-        const std::vector<std::byte> table_data(255);
+        const vector<byte> table_data(255);
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_jpegls_preset_parameters_segment(1, 1, table_data, true);
@@ -855,7 +855,7 @@ public:
 
     TEST_METHOD(read_invalid_mapping_table_continuation_throws) // NOLINT
     {
-        const std::vector<std::byte> table_data(255);
+        const vector<byte> table_data(255);
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);

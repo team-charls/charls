@@ -187,9 +187,8 @@ public:
 
     TEST_METHOD(write_table_data_nullptr) // NOLINT
     {
-        constexpr table_info info{};
         constexpr array<byte, 10> buffer{};
-        const auto error{charls_jpegls_encoder_write_table(nullptr, 1, 1, buffer.data(), buffer.size())};
+        const auto error{charls_jpegls_encoder_write_mapping_table(nullptr, 1, 1, buffer.data(), buffer.size())};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
@@ -236,7 +235,7 @@ public:
 
     TEST_METHOD(create_tables_only_null_ptr) // NOLINT
     {
-        const auto error{charls_jpegls_encoder_create_tables_only(nullptr)};
+        const auto error{charls_jpegls_encoder_create_abbreviated_format(nullptr)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 };

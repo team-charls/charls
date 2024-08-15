@@ -93,16 +93,46 @@ public:
         encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 66, interleave_mode::none);
     }
 
+    TEST_METHOD(encode_color_16_bit_interleave_line) // NOLINT
+    {
+        constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
+        encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 45, interleave_mode::line);
+    }
+
+    TEST_METHOD(encode_color_16_bit_interleave_sample) // NOLINT
+    {
+        constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
+        encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 45, interleave_mode::sample);
+    }
+
+    TEST_METHOD(encode_color_16_bit_interleave_line_hp1) // NOLINT
+    {
+        constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
+        encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 59, interleave_mode::line, color_transformation::hp1);
+    }
+
     TEST_METHOD(encode_color_16_bit_interleave_sample_hp1) // NOLINT
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
         encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 59, interleave_mode::sample, color_transformation::hp1);
     }
 
+    TEST_METHOD(encode_color_16_bit_interleave_line_hp2) // NOLINT
+    {
+        constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
+        encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 59, interleave_mode::line, color_transformation::hp2);
+    }
+
     TEST_METHOD(encode_color_16_bit_interleave_sample_hp2) // NOLINT
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
         encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 59, interleave_mode::sample, color_transformation::hp2);
+    }
+
+    TEST_METHOD(encode_color_16_bit_interleave_line_hp3) // NOLINT
+    {
+        constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
+        encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 55, interleave_mode::line, color_transformation::hp3);
     }
 
     TEST_METHOD(encode_color_16_bit_interleave_sample_hp3) // NOLINT

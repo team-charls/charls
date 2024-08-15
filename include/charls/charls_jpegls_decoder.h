@@ -11,7 +11,6 @@
 #ifndef CHARLS_BUILD_AS_CPP_MODULE
 #include <functional>
 #include <memory>
-#include <optional>
 #include <utility>
 #endif
 
@@ -270,11 +269,14 @@ charls_decoder_get_mapping_table_count(CHARLS_IN const charls_jpegls_decoder* de
 /// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
 /// <param name="index">Index of the requested mapping table.</param>
-/// <param name="table_info">Output argument, will hold the mapping table information when the function returns.</param>
+/// <param name="mapping_table_info">
+/// Output argument, will hold the mapping table information when the function returns.
+/// </param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_info(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t index,
-                                      CHARLS_OUT charls_table_info* table_info) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+                                      CHARLS_OUT charls_mapping_table_info* mapping_table_info) CHARLS_NOEXCEPT
+    CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
 /// Returns a mapping table.
@@ -686,7 +688,7 @@ public:
     /// <returns>The mapping table ID or 0 when no mapping table is referenced by the component.</returns>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     [[nodiscard]]
-    int32_t mapping_table_id(const int32_t component_index) const
+    int32_t get_mapping_table_id(const int32_t component_index) const
     {
         int32_t table_id;
         check_jpegls_errc(charls_decoder_get_mapping_table_id(decoder(), component_index, &table_id));
@@ -701,15 +703,15 @@ public:
     /// </remarks>
     /// <param name="table_id">Mapping table ID to lookup.</param>
     /// <returns>
-    /// The index of the mapping table or an empty optional when the table is not present in the JPEG-LS stream.
+    /// The index of the mapping table or -1 (mapping_table_missing) when the table is not present in the JPEG-LS stream.
     /// </returns>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     [[nodiscard]]
-    std::optional<int32_t> mapping_table_index(const int32_t table_id) const
+    int32_t get_mapping_table_index(const int32_t table_id) const
     {
         int32_t index;
         check_jpegls_errc(charls_decoder_get_mapping_table_index(decoder(), table_id, &index));
-        return index == mapping_table_missing ? std::optional<int32_t>{} : index;
+        return index;
     }
 
     /// <summary>
@@ -738,9 +740,9 @@ public:
     /// <returns>Mapping table information</returns>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     [[nodiscard]]
-    table_info mapping_table_info(const int32_t index) const
+    mapping_table_info get_mapping_table_info(const int32_t index) const
     {
-        table_info info;
+        mapping_table_info info;
         check_jpegls_errc(charls_decoder_get_mapping_table_info(decoder(), index, &info));
         return info;
     }
@@ -756,8 +758,8 @@ public:
     /// <param name="table_size_bytes">Length of the table buffer in bytes.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     CHARLS_ATTRIBUTE_ACCESS((access(write_only, 3, 4)))
-    void mapping_table_data(const int32_t index, CHARLS_OUT_WRITES_BYTES(table_size_bytes) void* table_data,
-                            const size_t table_size_bytes) const
+    void get_mapping_table_data(const int32_t index, CHARLS_OUT_WRITES_BYTES(table_size_bytes) void* table_data,
+                                const size_t table_size_bytes) const
     {
         check_jpegls_errc(charls_decoder_get_mapping_table_data(decoder(), index, table_data, table_size_bytes));
     }
@@ -772,9 +774,9 @@ public:
     /// <param name="table_data">Output argument, will hold data of the mapping table when the function returns.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     template<typename Container, typename ContainerValueType = typename Container::value_type>
-    void mapping_table_data(const int32_t index, Container& table_data) const
+    void get_mapping_table_data(const int32_t index, Container& table_data) const
     {
-        mapping_table_data(index, table_data.data(), table_data.size() * sizeof(ContainerValueType));
+        get_mapping_table_data(index, table_data.data(), table_data.size() * sizeof(ContainerValueType));
     }
 
 private:
