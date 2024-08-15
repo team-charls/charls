@@ -15,3 +15,6 @@ cppcoreguidelines
 mrfx
 subspan
 cppcoreguidelines
+uint
+json
+intrinsics

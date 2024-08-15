@@ -283,7 +283,7 @@ void jpeg_stream_reader::get_mapping_table_data(const size_t index, const span<b
 {
     const auto& mapping_table{mapping_tables_[index]};
     if (mapping_table.data_size() > table.size())
-        throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
+        throw_jpegls_error(jpegls_errc::destination_too_small);
 
     mapping_table.copy(table.data());
 }
@@ -581,7 +581,7 @@ void jpeg_stream_reader::read_start_of_scan_segment()
 byte jpeg_stream_reader::read_byte_checked()
 {
     if (UNLIKELY(position_ == end_position_))
-        throw_jpegls_error(jpegls_errc::source_buffer_too_small);
+        throw_jpegls_error(jpegls_errc::need_more_data);
 
     return read_byte();
 }
@@ -590,7 +590,7 @@ byte jpeg_stream_reader::read_byte_checked()
 uint16_t jpeg_stream_reader::read_uint16_checked()
 {
     if (UNLIKELY(position_ + sizeof(uint16_t) > end_position_))
-        throw_jpegls_error(jpegls_errc::source_buffer_too_small);
+        throw_jpegls_error(jpegls_errc::need_more_data);
 
     return read_uint16();
 }

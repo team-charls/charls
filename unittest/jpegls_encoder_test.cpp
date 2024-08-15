@@ -1052,7 +1052,7 @@ public:
         Assert::AreEqual(static_cast<byte>(jpeg_marker_code::end_of_image), destination[11]);
     }
 
-    TEST_METHOD(create_tables_only_with_no_tables_throws) // NOLINT
+    TEST_METHOD(create_abbreviated_format_with_no_tables_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
@@ -1117,7 +1117,7 @@ public:
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
-        encoder.set_table_id(0, 1);
+        encoder.set_mapping_table_id(0, 1);
 
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
@@ -1136,8 +1136,8 @@ public:
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
-        encoder.set_table_id(0, 1);
-        encoder.set_table_id(0, 0);
+        encoder.set_mapping_table_id(0, 1);
+        encoder.set_mapping_table_id(0, 0);
 
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
@@ -1151,14 +1151,14 @@ public:
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] { encoder.set_table_id(-1, 0); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] { encoder.set_mapping_table_id(-1, 0); });
     }
 
     TEST_METHOD(set_table_id_bad_id_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] { encoder.set_table_id(0, -1); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] { encoder.set_mapping_table_id(0, -1); });
     }
 
     TEST_METHOD(encode_without_destination_throws) // NOLINT

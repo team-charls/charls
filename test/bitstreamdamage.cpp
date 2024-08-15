@@ -35,7 +35,7 @@ void test_damaged_bit_stream1()
         error = e.code();
     }
 
-    assert::is_true(error == jpegls_errc::invalid_encoded_data);
+    assert::is_true(error == jpegls_errc::invalid_data);
 }
 
 
@@ -58,7 +58,7 @@ void test_damaged_bit_stream2()
         error = e.code();
     }
 
-    assert::is_true(error == jpegls_errc::invalid_encoded_data);
+    assert::is_true(error == jpegls_errc::invalid_data);
 }
 
 
@@ -81,7 +81,7 @@ void test_damaged_bit_stream3()
         error = e.code();
     }
 
-    assert::is_true(error == jpegls_errc::invalid_encoded_data);
+    assert::is_true(error == jpegls_errc::invalid_data);
 }
 
 

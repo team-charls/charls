@@ -111,15 +111,15 @@ charls_jpegls_encoder_set_color_transformation(CHARLS_IN charls_jpegls_encoder* 
     CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
-/// Configures the table ID the encoder should reference when encoding a component.
-/// The referenced table can be included in the stream or provided in another JPEG-LS abbreviated format stream.
+/// Configures the mapping table ID the encoder should reference when encoding a component.
+/// The referenced mapping table can be included in the stream or provided in another JPEG-LS abbreviated format stream.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="component_index">Index of the component. Component 0 is the start index.</param>
-/// <param name="table_id">Table ID that will be referenced by this component.</param>
+/// <param name="table_id">Mapping table ID that will be referenced by this component.</param>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_set_table_id(CHARLS_IN charls_jpegls_encoder* encoder, int32_t component_index,
-                                   int32_t table_id) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+charls_jpegls_encoder_set_mapping_table_id(CHARLS_IN charls_jpegls_encoder* encoder, int32_t component_index,
+                                           int32_t table_id) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
 /// Returns the size in bytes, that the encoder expects are needed to hold the encoded image.
@@ -252,7 +252,7 @@ charls_jpegls_encoder_write_application_data(CHARLS_IN charls_jpegls_encoder* en
 /// During decoding the active maximum value determines the required size of the table.
 /// </remarks>
 /// <param name="encoder">Reference to the encoder instance.</param>
-/// <param name="table_id">Table ID. Unique identifier of the mapping table in the range [1..255]</param>
+/// <param name="table_id">Mapping table ID. Unique identifier of the mapping table in the range [1..255]</param>
 /// <param name="entry_size">Size in bytes of a single table entry.</param>
 /// <param name="table_data">Byte array that holds the mapping table.</param>
 /// <param name="table_data_size_bytes">The size in bytes of the table data.</param>
@@ -424,14 +424,14 @@ public:
     }
 
     /// <summary>
-    /// Configures the table ID the encoder should reference when encoding a component.
-    /// The referenced table can be included in the stream or provided in another JPEG-LS abbreviated format stream.
+    /// Configures the mapping table ID the encoder should reference when encoding a component.
+    /// The referenced mapping table can be included in the stream or provided in another JPEG-LS abbreviated format stream.
     /// </summary>
     /// <param name="component_index">Index of the component. Component 0 is the start index.</param>
-    /// <param name="table_id">Table ID that will be referenced by this component.</param>
-    jpegls_encoder& set_table_id(const int32_t component_index, const int32_t table_id)
+    /// <param name="table_id">Mapping table ID that will be referenced by this component.</param>
+    jpegls_encoder& set_mapping_table_id(const int32_t component_index, const int32_t table_id)
     {
-        check_jpegls_errc(charls_jpegls_encoder_set_table_id(encoder(), component_index, table_id));
+        check_jpegls_errc(charls_jpegls_encoder_set_mapping_table_id(encoder(), component_index, table_id));
         return *this;
     }
 
@@ -589,7 +589,7 @@ public:
     /// <remarks>
     /// No validation is performed if the table ID is unique and if the table size matches the required size.
     /// </remarks>
-    /// <param name="table_id">Table ID. Unique identifier of the mapping table in the range [1..255]</param>
+    /// <param name="table_id">Mapping table ID. Unique identifier of the mapping table in the range [1..255]</param>
     /// <param name="entry_size">Size in bytes of a single table entry.</param>
     /// <param name="table_data">Byte buffer that holds the mapping table.</param>
     /// <param name="size">The size of the buffer in bytes.</param>

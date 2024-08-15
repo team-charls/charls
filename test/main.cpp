@@ -254,7 +254,7 @@ void test_fail_on_too_small_output_buffer()
     }
     catch (const jpegls_error& e)
     {
-        assert::is_true(e.code() == jpegls_errc::destination_buffer_too_small);
+        assert::is_true(e.code() == jpegls_errc::destination_too_small);
     }
 
     // Trigger a "destination buffer too small" when writing the encoded pixel bytes.
@@ -269,7 +269,7 @@ void test_fail_on_too_small_output_buffer()
     }
     catch (const jpegls_error& e)
     {
-        assert::is_true(e.code() == jpegls_errc::destination_buffer_too_small);
+        assert::is_true(e.code() == jpegls_errc::destination_too_small);
     }
 }
 
@@ -292,7 +292,7 @@ void test_too_small_output_buffer()
         error = e.code();
     }
 
-    assert::is_true(error == jpegls_errc::destination_buffer_too_small);
+    assert::is_true(error == jpegls_errc::destination_too_small);
 }
 
 

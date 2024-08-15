@@ -131,7 +131,7 @@ public:
         component_index_ = 0;
     }
 
-    void set_table_id(const size_t component_index, const int32_t table_id)
+    void set_mapping_table_id(const size_t component_index, const int32_t table_id)
     {
         ASSERT(component_index < maximum_component_count);
         ASSERT(0 <= table_id && table_id <= maximum_table_id);
@@ -153,7 +153,7 @@ private:
     void write_segment_without_data(const jpeg_marker_code marker_code)
     {
         if (UNLIKELY(byte_offset_ + 2 > destination_.size()))
-            impl::throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
+            impl::throw_jpegls_error(jpegls_errc::destination_too_small);
 
         write_marker(marker_code);
     }

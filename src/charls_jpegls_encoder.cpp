@@ -90,12 +90,12 @@ struct charls_jpegls_encoder final
         color_transformation_ = color_transformation;
     }
 
-    void set_table_id(const int32_t component_index, const int32_t table_id)
+    void set_mapping_table_id(const int32_t component_index, const int32_t table_id)
     {
         check_argument_range(minimum_component_index, maximum_component_index, component_index);
         check_argument_range(0, maximum_table_id, table_id);
 
-        writer_.set_table_id(static_cast<size_t>(component_index), table_id);
+        writer_.set_mapping_table_id(static_cast<size_t>(component_index), table_id);
     }
 
     [[nodiscard]]
@@ -223,7 +223,7 @@ struct charls_jpegls_encoder final
         write_end_of_image();
     }
 
-    void create_tables_only()
+    void create_abbreviated_format()
     {
         check_operation(state_ == state::tables_and_miscellaneous);
         write_end_of_image();
@@ -507,11 +507,11 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_table_id(
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_set_mapping_table_id(
     charls_jpegls_encoder* encoder, const int32_t component_index, const int32_t table_id) noexcept
 try
 {
-    check_pointer(encoder)->set_table_id(component_index, table_id);
+    check_pointer(encoder)->set_mapping_table_id(component_index, table_id);
     return jpegls_errc::success;
 }
 catch (...)
@@ -650,7 +650,7 @@ USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_encoder_create_abbreviated_format(charls_jpegls_encoder* encoder) noexcept
 try
 {
-    check_pointer(encoder)->create_tables_only();
+    check_pointer(encoder)->create_abbreviated_format();
     return jpegls_errc::success;
 }
 catch (...)

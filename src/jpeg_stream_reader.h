@@ -184,7 +184,7 @@ private:
         {
             if (state_ == state::frame_section)
             {
-                impl::throw_jpegls_error(jpegls_errc::mapping_tables_and_spiff_header);
+                impl::throw_jpegls_error(jpegls_errc::abbreviated_format_and_spiff_header);
             }
 
             // ISO/IEC 14495-1, Annex C defines 3 data formats.

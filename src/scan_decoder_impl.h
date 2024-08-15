@@ -291,7 +291,7 @@ private:
         {
             error_value = unmap_error_value(decode_value(k, traits_.limit, traits_.quantized_bits_per_sample));
             if (UNLIKELY(std::abs(error_value) > 65535))
-                impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+                impl::throw_jpegls_error(jpegls_errc::invalid_data);
         }
 
         if (k == 0)
@@ -380,7 +380,7 @@ private:
         }
 
         if (UNLIKELY(index > pixel_count))
-            impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+            impl::throw_jpegls_error(jpegls_errc::invalid_data);
 
         for (int32_t i{}; i < index; ++i)
         {

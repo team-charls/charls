@@ -598,7 +598,7 @@ public:
 
         vector<byte> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::invalid_encoded_data,
+        assert_expect_exception(jpegls_errc::invalid_data,
                                 [&decoder, &destination] { decoder.decode(destination); });
     }
 
@@ -616,7 +616,7 @@ public:
 
             jpegls_decoder decoder{source, true};
             vector<byte> destination(decoder.destination_size());
-            assert_expect_exception(jpegls_errc::source_buffer_too_small,
+            assert_expect_exception(jpegls_errc::need_more_data,
                                     [&decoder, &destination] { decoder.decode(destination); });
         }
 
@@ -625,7 +625,7 @@ public:
             jpegls_decoder decoder{source, true};
             vector<byte> destination(decoder.destination_size());
 
-            assert_expect_exception(jpegls_errc::source_buffer_too_small,
+            assert_expect_exception(jpegls_errc::need_more_data,
                                     [&decoder, &destination] { decoder.decode(destination); });
         }
 
@@ -654,7 +654,7 @@ public:
 
         vector<byte> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::invalid_encoded_data,
+        assert_expect_exception(jpegls_errc::invalid_data,
                                 [&decoder, &destination] { decoder.decode(destination); });
     }
 
@@ -672,7 +672,7 @@ public:
 
         vector<byte> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::source_buffer_too_small,
+        assert_expect_exception(jpegls_errc::need_more_data,
                                 [&decoder, &destination] { decoder.decode(destination); });
     }
 
@@ -742,7 +742,7 @@ public:
         jpegls_decoder decoder{too_small_source, true};
         vector<byte> destination(decoder.destination_size());
 
-        assert_expect_exception(jpegls_errc::source_buffer_too_small,
+        assert_expect_exception(jpegls_errc::need_more_data,
                                 [&decoder, &destination] { decoder.decode(destination); });
     }
 
@@ -1050,7 +1050,7 @@ public:
         decoder.source(writer.buffer);
         decoder.read_spiff_header();
 
-        assert_expect_exception(jpegls_errc::mapping_tables_and_spiff_header,
+        assert_expect_exception(jpegls_errc::abbreviated_format_and_spiff_header,
                                 [&decoder] { ignore = decoder.read_header(); });
     }
 
@@ -1342,7 +1342,7 @@ private:
         jpegls_decoder decoder{source, true};
         vector<byte> destination(decoder.destination_size(stride) - 1);
 
-        assert_expect_exception(jpegls_errc::destination_buffer_too_small,
+        assert_expect_exception(jpegls_errc::destination_too_small,
                                 [&decoder, &destination, &stride] { decoder.decode(destination, stride); });
     }
 };

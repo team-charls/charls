@@ -50,7 +50,7 @@ public:
         b_ += error_value * (2 * near_lossless + 1);
 
         if (constexpr int limit{65536 * 256}; UNLIKELY(a_ >= limit || std::abs(b_) >= limit))
-            impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+            impl::throw_jpegls_error(jpegls_errc::invalid_data);
 
         if (n_ == reset_threshold)
         {
@@ -104,7 +104,7 @@ public:
         }
 
         if (UNLIKELY(k == max_k_value))
-            impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+            impl::throw_jpegls_error(jpegls_errc::invalid_data);
 
         return k;
     }
