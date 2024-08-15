@@ -64,7 +64,7 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "The near lossless argument is outside the range [0, 255]";
 
     case jpegls_errc::invalid_argument_size:
-        return "The argument for the entry size parameter is outside the valid range";
+        return "The passed size is outside the valid range";
 
     case jpegls_errc::invalid_argument_color_transformation:
         return "The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component "

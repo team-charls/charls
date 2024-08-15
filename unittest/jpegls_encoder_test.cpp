@@ -461,8 +461,8 @@ public:
         encoder.write_standard_spiff_header(spiff_color_space::grayscale);
 
         constexpr int32_t spiff_end_of_directory_entry_type{1};
-        assert_expect_exception(jpegls_errc::invalid_argument,
-                                [&encoder] { encoder.write_spiff_entry(spiff_end_of_directory_entry_type, "test", 4); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder, spiff_end_of_directory_entry_type]
+            { encoder.write_spiff_entry(spiff_end_of_directory_entry_type, "test", 4); });
     }
 
     TEST_METHOD(write_spiff_entry_with_invalid_size_throws) // NOLINT
