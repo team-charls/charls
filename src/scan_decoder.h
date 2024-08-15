@@ -70,21 +70,21 @@ protected:
     void end_scan()
     {
         if (UNLIKELY(position_ >= end_position_))
-            impl::throw_jpegls_error(jpegls_errc::source_buffer_too_small);
+            impl::throw_jpegls_error(jpegls_errc::need_more_data);
 
         if (*position_ != jpeg_marker_start_byte)
         {
             read_bit();
 
             if (UNLIKELY(position_ >= end_position_))
-                impl::throw_jpegls_error(jpegls_errc::source_buffer_too_small);
+                impl::throw_jpegls_error(jpegls_errc::need_more_data);
 
             if (UNLIKELY(*position_ != jpeg_marker_start_byte))
-                impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
+                impl::throw_jpegls_error(jpegls_errc::invalid_data);
         }
 
         if (UNLIKELY(read_cache_ != 0))
-            impl::throw_jpegls_error(jpegls_errc::too_much_encoded_data);
+            impl::throw_jpegls_error(jpegls_errc::invalid_data);
     }
 
     [[nodiscard]]
@@ -127,7 +127,7 @@ protected:
         {
             fill_read_cache();
             if (UNLIKELY(valid_bits_ < bit_count))
-                impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+                impl::throw_jpegls_error(jpegls_errc::invalid_data);
         }
 
         ASSERT(bit_count <= valid_bits_);
@@ -209,7 +209,7 @@ protected:
     std::byte read_byte()
     {
         if (UNLIKELY(position_ == end_position_))
-            impl::throw_jpegls_error(jpegls_errc::source_buffer_too_small);
+            impl::throw_jpegls_error(jpegls_errc::need_more_data);
 
         const std::byte value = *position_;
         ++position_;
@@ -251,7 +251,7 @@ private:
                 if (UNLIKELY(valid_bits_ == 0))
                 {
                     // Decoding process expects at least some bits to be added to the cache.
-                    impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+                    impl::throw_jpegls_error(jpegls_errc::invalid_data);
                 }
 
                 return;
@@ -266,7 +266,7 @@ private:
                 if (UNLIKELY(valid_bits_ <= 0))
                 {
                     // Decoding process expects at least some bits to be added to the cache.
-                    impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+                    impl::throw_jpegls_error(jpegls_errc::invalid_data);
                 }
 
                 // End of buffer or marker detected. Typical found markers are EOI, SOS (next scan) or RSTm.

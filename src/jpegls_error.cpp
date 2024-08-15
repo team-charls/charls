@@ -42,45 +42,47 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
     case jpegls_errc::success:
         return "Success";
 
-    case jpegls_errc::invalid_argument:
-        return "Invalid argument";
+        // Runtime errors:
 
-    case jpegls_errc::invalid_argument_width:
-        return "The width argument is outside the supported range [1, 4294967295]";
+    case jpegls_errc::not_enough_memory:
+        return "No memory could be allocated for an internal buffer";
 
-    case jpegls_errc::invalid_argument_height:
-        return "The height argument is outside the supported range [1, 4294967295]";
+    case jpegls_errc::callback_failed:
+        return "Callback function returned a failure";
 
-    case jpegls_errc::invalid_argument_component_count:
-        return "The component count argument is outside the range [1, 255]";
+    case jpegls_errc::destination_too_small:
+        return "The destination buffer is too small to hold all the output";
 
-    case jpegls_errc::invalid_argument_bits_per_sample:
-        return "The bit per sample argument is outside the range [2, 16]";
+    case jpegls_errc::need_more_data:
+        return "The source buffer is too small, more input data was expected";
 
-    case jpegls_errc::invalid_argument_interleave_mode:
-        return "The interleave mode is not None, Sample, Line) or invalid in combination with component count";
+    case jpegls_errc::invalid_data:
+        return "Invalid JPEG-LS stream, the encoded bit stream contains a general structural problem";
 
-    case jpegls_errc::invalid_argument_near_lossless:
-        return "The near lossless argument is outside the range [0, 255]";
+    case jpegls_errc::encoding_not_supported:
+        return "Invalid JPEG-LS stream: the JPEG stream is not encoded with the JPEG-LS algorithm";
 
-    case jpegls_errc::invalid_argument_size:
-        return "The passed size is outside the valid range";
+    case jpegls_errc::parameter_value_not_supported:
+        return "The JPEG-LS stream is encoded with a parameter value that is not supported by the CharLS decoder";
 
-    case jpegls_errc::invalid_argument_color_transformation:
-        return "The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component "
-               "count";
+    case jpegls_errc::color_transform_not_supported:
+        return "The color transform is not supported";
 
-    case jpegls_errc::invalid_argument_jpegls_pc_parameters:
-        return "The argument for the JPEG-LS preset coding parameters is not valid";
+    case jpegls_errc::jpegls_preset_extended_parameter_type_not_supported:
+        return "Unsupported JPEG-LS stream: JPEG-LS preset parameters segment contains a JPEG-LS Extended (ISO/IEC "
+               "14495-2) type";
 
-    case jpegls_errc::invalid_argument_stride:
-        return "The stride argument does not match with the frame info and buffer size";
-
-    case jpegls_errc::invalid_argument_encoding_options:
-        return "The encoding options argument has an invalid value";
+    case jpegls_errc::jpeg_marker_start_byte_not_found:
+        return "Invalid JPEG-LS stream: the leading start byte (0xFF) for a JPEG marker was not found";
 
     case jpegls_errc::start_of_image_marker_not_found:
         return "Invalid JPEG-LS stream: first JPEG marker is not a Start Of Image (SOI) marker";
+
+    case jpegls_errc::invalid_spiff_header:
+        return "Invalid JPEG-LS stream: invalid SPIFF header";
+
+    case jpegls_errc::unknown_jpeg_marker_found:
+        return "Invalid JPEG-LS stream: an unknown JPEG marker code was found";
 
     case jpegls_errc::unexpected_marker_found:
         return "Invalid JPEG-LS stream: unexpected marker found";
@@ -103,10 +105,6 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
     case jpegls_errc::invalid_jpegls_preset_parameter_type:
         return "Invalid JPEG-LS stream: JPEG-LS preset parameters segment contains an invalid type";
 
-    case jpegls_errc::jpegls_preset_extended_parameter_type_not_supported:
-        return "Unsupported JPEG-LS stream: JPEG-LS preset parameters segment contains a JPEG-LS Extended (ISO/IEC "
-               "14495-2) type";
-
     case jpegls_errc::missing_end_of_spiff_directory:
         return "Invalid JPEG-LS stream: SPIFF header without End Of Directory (EOD) entry";
 
@@ -116,65 +114,23 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
     case jpegls_errc::restart_marker_not_found:
         return "Invalid JPEG-LS stream: missing expected restart (RTSm) marker";
 
-    case jpegls_errc::callback_failed:
-        return "Callback function returned a failure";
-
     case jpegls_errc::end_of_image_marker_not_found:
         return "Invalid JPEG-LS stream: missing End Of Image (EOI) marker";
-
-    case jpegls_errc::invalid_spiff_header:
-        return "Invalid JPEG-LS stream: invalid SPIFF header";
 
     case jpegls_errc::unknown_component_id:
         return "Invalid JPEG-LS stream: unknown component ID in scan segment";
 
-    case jpegls_errc::mapping_tables_and_spiff_header:
+    case jpegls_errc::abbreviated_format_and_spiff_header:
         return "Invalid JPEG-LS stream: mapping tables without SOF but with spiff header";
-
-    case jpegls_errc::invalid_parameter_bits_per_sample:
-        return "Invalid JPEG-LS stream: the bit per sample (sample precision) parameter is not in the range [2, 16]";
-
-    case jpegls_errc::parameter_value_not_supported:
-        return "The JPEG-LS stream is encoded with a parameter value that is not supported by the CharLS decoder";
-
-    case jpegls_errc::destination_buffer_too_small:
-        return "The destination buffer is too small to hold all the output";
-
-    case jpegls_errc::source_buffer_too_small:
-        return "The source buffer is too small, more input data was expected";
-
-    case jpegls_errc::invalid_encoded_data:
-        return "Invalid JPEG-LS stream, the encoded bit stream contains a general structural problem";
-
-    case jpegls_errc::too_much_encoded_data:
-        return "Invalid JPEG-LS stream, the decoding process is ready but the source buffer still contains encoded data";
-
-    case jpegls_errc::invalid_operation:
-        return "Method call is invalid for the current state";
-
-    case jpegls_errc::color_transform_not_supported:
-        return "The color transform is not supported";
-
-    case jpegls_errc::encoding_not_supported:
-        return "Invalid JPEG-LS stream: the JPEG stream is not encoded with the JPEG-LS algorithm";
-
-    case jpegls_errc::unknown_jpeg_marker_found:
-        return "Invalid JPEG-LS stream: an unknown JPEG marker code was found";
-
-    case jpegls_errc::jpeg_marker_start_byte_not_found:
-        return "Invalid JPEG-LS stream: the leading start byte (0xFF) for a JPEG marker was not found";
-
-    case jpegls_errc::not_enough_memory:
-        return "No memory could be allocated for an internal buffer";
-
-    case jpegls_errc::unexpected_failure:
-        return "An unexpected internal failure occurred";
 
     case jpegls_errc::invalid_parameter_width:
         return "Invalid JPEG-LS stream: the width (Number of samples per line) is already defined";
 
     case jpegls_errc::invalid_parameter_height:
         return "Invalid JPEG-LS stream: the height (Number of lines) is already defined";
+
+    case jpegls_errc::invalid_parameter_bits_per_sample:
+        return "Invalid JPEG-LS stream: the bit per sample (sample precision) parameter is not in the range [2, 16]";
 
     case jpegls_errc::invalid_parameter_component_count:
         return "Invalid JPEG-LS stream: component count in the SOF segment is outside the range [1, 255]";
@@ -189,13 +145,56 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "Invalid JPEG-LS stream: JPEG-LS preset parameters segment contains invalid values";
 
     case jpegls_errc::invalid_parameter_color_transformation:
-        return "Invalid JPEG-LS stream: Color transformation segment contains invalid values or doesn't match with frame info";
+        return "Invalid JPEG-LS stream: Color transformation segment contains invalid values or doesn't match with frame "
+               "info";
 
     case jpegls_errc::invalid_parameter_mapping_table_id:
         return "Invalid JPEG-LS stream: mapping table ID outside valid range or duplicate";
 
     case jpegls_errc::invalid_parameter_mapping_table_continuation:
         return "Invalid JPEG-LS stream: mapping table continuation without matching mapping table specification";
+
+        // Logic errors:
+
+    case jpegls_errc::invalid_operation:
+        return "Method call is invalid for the current state";
+
+    case jpegls_errc::invalid_argument:
+        return "Invalid argument";
+
+    case jpegls_errc::invalid_argument_width:
+        return "The width argument is outside the supported range [1, 4294967295]";
+
+    case jpegls_errc::invalid_argument_height:
+        return "The height argument is outside the supported range [1, 4294967295]";
+
+    case jpegls_errc::invalid_argument_bits_per_sample:
+        return "The bit per sample argument is outside the range [2, 16]";
+
+    case jpegls_errc::invalid_argument_component_count:
+        return "The component count argument is outside the range [1, 255]";
+
+    case jpegls_errc::invalid_argument_interleave_mode:
+        return "The interleave mode is not None, Sample, Line) or invalid in combination with component count";
+
+    case jpegls_errc::invalid_argument_near_lossless:
+        return "The near lossless argument is outside the range [0, min(255, MAXVAL/2)]";
+
+    case jpegls_errc::invalid_argument_size:
+        return "The passed size is outside the valid range";
+
+    case jpegls_errc::invalid_argument_jpegls_pc_parameters:
+        return "The argument for the JPEG-LS preset coding parameters is not valid";
+
+    case jpegls_errc::invalid_argument_color_transformation:
+        return "The argument for the color component is not (None, Hp1, Hp2, Hp3) or invalid in combination with component "
+               "count";
+
+    case jpegls_errc::invalid_argument_stride:
+        return "The stride argument does not match with the frame info and buffer size";
+
+    case jpegls_errc::invalid_argument_encoding_options:
+        return "The encoding options argument has an invalid value";
     }
 
     return "Unknown";

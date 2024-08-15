@@ -89,7 +89,7 @@ public:
 
     TEST_METHOD(charls_jpegls_encoder_set_table_id_nullptr) // NOLINT
     {
-        const auto error{charls_jpegls_encoder_set_table_id(nullptr, 0, 0)};
+        const auto error{charls_jpegls_encoder_set_mapping_table_id(nullptr, 0, 0)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
@@ -210,7 +210,7 @@ public:
 
         constexpr array<byte, 10> buffer{};
         error = charls_jpegls_encoder_encode_from_buffer(encoder, buffer.data(), buffer.size(), 0);
-        Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);
+        Assert::AreEqual(jpegls_errc::destination_too_small, error);
 
         charls_jpegls_encoder_destroy(encoder);
     }
@@ -228,7 +228,7 @@ public:
         Assert::AreEqual(jpegls_errc::success, error);
 
         error = charls_jpegls_encoder_encode_from_buffer(encoder, nullptr, 0, 0);
-        Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);
+        Assert::AreEqual(jpegls_errc::destination_too_small, error);
 
         charls_jpegls_encoder_destroy(encoder);
     }

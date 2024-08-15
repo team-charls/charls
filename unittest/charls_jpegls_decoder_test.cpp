@@ -160,7 +160,7 @@ public:
         Assert::AreEqual(jpegls_errc::success, error);
 
         error = charls_jpegls_decoder_read_header(decoder);
-        Assert::AreEqual(jpegls_errc::source_buffer_too_small, error);
+        Assert::AreEqual(jpegls_errc::need_more_data, error);
 
         charls_jpegls_decoder_destroy(decoder);
     }
@@ -170,7 +170,7 @@ public:
         auto decoder{get_initialized_decoder()};
 
         const auto error{charls_jpegls_decoder_decode_to_buffer(decoder.get(), nullptr, 0, 0)};
-        Assert::AreEqual(jpegls_errc::destination_buffer_too_small, error);
+        Assert::AreEqual(jpegls_errc::destination_too_small, error);
     }
 
     TEST_METHOD(at_comment_nullptr) // NOLINT

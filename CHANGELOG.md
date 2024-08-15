@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - BREAKING: Updated the minimal required C++ language version to C++17.
 - BREAKING: encoding_options::include_pc_parameters_jai is not enabled by default anymore.
 - BREAKING: charls::jpegls_decoder and charls::jpegls_encoder follow the same const pattern as the C API.
+- BREAKING: the failure values of the enum charls::jpegls_errc are now divided in 2 groups: runtime failures and logic.
 
 ### Removed
 
@@ -30,7 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Fixed
 
-- Fixed [#221](https://github.com/team-charls/charls/issues/221), jpegls_errc::destination_buffer_too_small incorrectly thrown for 8 bit 2*2 image with stride = 4 during decoding.
+- Fixed [#221](https://github.com/team-charls/charls/issues/221), jpegls_errc::destination_too_small incorrectly thrown for 8 bit 2*2 image with stride = 4 during decoding.
 
 ## [2.4.0] - 2022-12-29
 

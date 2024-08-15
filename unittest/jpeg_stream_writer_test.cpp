@@ -48,7 +48,7 @@ public:
         jpeg_stream_writer writer;
         writer.destination({buffer.data(), buffer.size()});
 
-        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&writer] { writer.write_start_of_image(); });
+        assert_expect_exception(jpegls_errc::destination_too_small, [&writer] { writer.write_start_of_image(); });
         Assert::AreEqual(size_t{}, writer.bytes_written());
     }
 
@@ -127,7 +127,7 @@ public:
         jpeg_stream_writer writer;
         writer.destination({buffer.data(), buffer.size()});
 
-        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&writer] { writer.write_end_of_image(false); });
+        assert_expect_exception(jpegls_errc::destination_too_small, [&writer] { writer.write_end_of_image(false); });
         Assert::AreEqual(size_t{}, writer.bytes_written());
     }
 
@@ -220,7 +220,7 @@ public:
                             96,
                             1024};
 
-        assert_expect_exception(jpegls_errc::destination_buffer_too_small,
+        assert_expect_exception(jpegls_errc::destination_too_small,
                                 [&writer, &header] { writer.write_spiff_header_segment(header); });
         Assert::AreEqual(size_t{}, writer.bytes_written());
     }
@@ -537,7 +537,7 @@ public:
         array<byte, 10> buffer{};
         jpeg_stream_writer writer;
         writer.destination({buffer.data(), buffer.size()});
-        writer.set_table_id(0, 77);
+        writer.set_mapping_table_id(0, 77);
 
         writer.write_start_of_scan_segment(1, 2, interleave_mode::none);
 
@@ -555,7 +555,7 @@ public:
         array<byte, 10> buffer{};
         jpeg_stream_writer writer;
         writer.destination({buffer.data(), buffer.size()});
-        writer.set_table_id(0, 77);
+        writer.set_mapping_table_id(0, 77);
         writer.rewind();
 
         writer.write_start_of_scan_segment(1, 2, interleave_mode::none);

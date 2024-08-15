@@ -30,7 +30,7 @@ public:
         jpeg_stream_reader reader;
         reader.source({buffer.data(), 0});
 
-        assert_expect_exception(jpegls_errc::source_buffer_too_small, [&reader] { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::need_more_data, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_from_buffer_preceded_with_fill_bytes) // NOLINT
@@ -589,7 +589,7 @@ public:
                            },
                            &called});
 
-        assert_expect_exception(jpegls_errc::source_buffer_too_small, [&reader] { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::need_more_data, [&reader] { reader.read_header(); });
         Assert::IsFalse(called);
     }
 
@@ -682,7 +682,7 @@ public:
                                     },
                                     &called});
 
-        assert_expect_exception(jpegls_errc::source_buffer_too_small, [&reader] { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::need_more_data, [&reader] { reader.read_header(); });
         Assert::IsFalse(called);
     }
 
@@ -734,7 +734,7 @@ public:
         reader.source({source.data(), source.size()});
         reader.read_header();
 
-        assert_expect_exception(jpegls_errc::destination_buffer_too_small, [&reader] {
+        assert_expect_exception(jpegls_errc::destination_too_small, [&reader] {
             vector<byte> table_data(1);
             reader.get_mapping_table_data(0, {table_data.data(), table_data.size()});
         });

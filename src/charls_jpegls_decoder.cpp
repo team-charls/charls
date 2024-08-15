@@ -191,7 +191,7 @@ struct charls_jpegls_decoder final
                                                                                                : 1U};
         if (const size_t minimum_destination_size = bytes_per_plane * plane_count - (stride - minimum_stride);
             UNLIKELY(destination.size() < minimum_destination_size))
-            throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
+            throw_jpegls_error(jpegls_errc::destination_too_small);
 
         for (size_t plane{};;)
         {

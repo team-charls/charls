@@ -28,57 +28,61 @@ CHARLS_RETURN_TYPE_SUCCESS(return == 0)
 enum charls_jpegls_errc
 {
     CHARLS_JPEGLS_ERRC_SUCCESS = 0,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT = 1,
-    CHARLS_JPEGLS_ERRC_PARAMETER_VALUE_NOT_SUPPORTED = 2,
-    CHARLS_JPEGLS_ERRC_DESTINATION_BUFFER_TOO_SMALL = 3,
-    CHARLS_JPEGLS_ERRC_SOURCE_BUFFER_TOO_SMALL = 4,
-    CHARLS_JPEGLS_ERRC_INVALID_ENCODED_DATA = 5,
-    CHARLS_JPEGLS_ERRC_TOO_MUCH_ENCODED_DATA = 6,
-    CHARLS_JPEGLS_ERRC_INVALID_OPERATION = 7,
-    CHARLS_JPEGLS_ERRC_COLOR_TRANSFORM_NOT_SUPPORTED = 9,
-    CHARLS_JPEGLS_ERRC_ENCODING_NOT_SUPPORTED = 10,
-    CHARLS_JPEGLS_ERRC_UNKNOWN_JPEG_MARKER_FOUND = 11,
-    CHARLS_JPEGLS_ERRC_JPEG_MARKER_START_BYTE_NOT_FOUND = 12,
-    CHARLS_JPEGLS_ERRC_NOT_ENOUGH_MEMORY = 13,
-    CHARLS_JPEGLS_ERRC_UNEXPECTED_FAILURE = 14,
-    CHARLS_JPEGLS_ERRC_START_OF_IMAGE_MARKER_NOT_FOUND = 15,
-    CHARLS_JPEGLS_ERRC_UNEXPECTED_MARKER_FOUND = 16,
-    CHARLS_JPEGLS_ERRC_INVALID_MARKER_SEGMENT_SIZE = 17,
-    CHARLS_JPEGLS_ERRC_DUPLICATE_START_OF_IMAGE_MARKER = 18,
-    CHARLS_JPEGLS_ERRC_DUPLICATE_START_OF_FRAME_MARKER = 19,
-    CHARLS_JPEGLS_ERRC_DUPLICATE_COMPONENT_ID_IN_SOF_SEGMENT = 20,
-    CHARLS_JPEGLS_ERRC_UNEXPECTED_END_OF_IMAGE_MARKER = 21,
-    CHARLS_JPEGLS_ERRC_INVALID_JPEGLS_PRESET_PARAMETER_TYPE = 22,
-    CHARLS_JPEGLS_ERRC_JPEGLS_PRESET_EXTENDED_PARAMETER_TYPE_NOT_SUPPORTED = 23,
-    CHARLS_JPEGLS_ERRC_MISSING_END_OF_SPIFF_DIRECTORY = 24,
-    CHARLS_JPEGLS_ERRC_UNEXPECTED_RESTART_MARKER = 25,
-    CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND = 26,
-    CHARLS_JPEGLS_ERRC_CALLBACK_FAILED = 27,
-    CHARLS_JPEGLS_ERRC_END_OF_IMAGE_MARKER_NOT_FOUND = 28,
-    CHARLS_JPEGLS_ERRC_INVALID_SPIFF_HEADER = 29,
-    CHARLS_JPEGLS_ERRC_UNKNOWN_COMPONENT_ID = 30,
-    CHARLS_JPEGLS_ERRC_MAPPING_TABLES_AND_SPIFF_HEADER = 31,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH = 100,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_HEIGHT = 101,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COMPONENT_COUNT = 102,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_BITS_PER_SAMPLE = 103,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_INTERLEAVE_MODE = 104,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_NEAR_LOSSLESS = 105,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_JPEGLS_PC_PARAMETERS = 106,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COLOR_TRANSFORMATION = 107,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SIZE = 108,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_STRIDE = 109,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_ENCODING_OPTIONS = 110,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH = 200,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_HEIGHT = 201,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT = 202,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE = 203,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE = 204,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 205,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS = 206,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION = 207,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID = 208,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_CONTINUATION = 209
+
+    // Runtime errors:
+
+    CHARLS_JPEGLS_ERRC_NOT_ENOUGH_MEMORY = 1,
+    CHARLS_JPEGLS_ERRC_CALLBACK_FAILED = 2,
+    CHARLS_JPEGLS_ERRC_DESTINATION_TOO_SMALL = 3,
+    CHARLS_JPEGLS_ERRC_NEED_MORE_DATA = 4,
+    CHARLS_JPEGLS_ERRC_INVALID_DATA = 5,
+    CHARLS_JPEGLS_ERRC_ENCODING_NOT_SUPPORTED = 6,
+    CHARLS_JPEGLS_ERRC_PARAMETER_VALUE_NOT_SUPPORTED = 7,
+    CHARLS_JPEGLS_ERRC_COLOR_TRANSFORM_NOT_SUPPORTED = 8,
+    CHARLS_JPEGLS_ERRC_JPEGLS_PRESET_EXTENDED_PARAMETER_TYPE_NOT_SUPPORTED = 9,
+    CHARLS_JPEGLS_ERRC_JPEG_MARKER_START_BYTE_NOT_FOUND = 10,
+    CHARLS_JPEGLS_ERRC_START_OF_IMAGE_MARKER_NOT_FOUND = 11,
+    CHARLS_JPEGLS_ERRC_INVALID_SPIFF_HEADER = 12,
+    CHARLS_JPEGLS_ERRC_UNKNOWN_JPEG_MARKER_FOUND = 13,
+    CHARLS_JPEGLS_ERRC_UNEXPECTED_MARKER_FOUND = 14,
+    CHARLS_JPEGLS_ERRC_INVALID_MARKER_SEGMENT_SIZE = 15,
+    CHARLS_JPEGLS_ERRC_DUPLICATE_START_OF_IMAGE_MARKER = 16,
+    CHARLS_JPEGLS_ERRC_DUPLICATE_START_OF_FRAME_MARKER = 17,
+    CHARLS_JPEGLS_ERRC_DUPLICATE_COMPONENT_ID_IN_SOF_SEGMENT = 18,
+    CHARLS_JPEGLS_ERRC_UNEXPECTED_END_OF_IMAGE_MARKER = 19,
+    CHARLS_JPEGLS_ERRC_INVALID_JPEGLS_PRESET_PARAMETER_TYPE = 20,
+    CHARLS_JPEGLS_ERRC_MISSING_END_OF_SPIFF_DIRECTORY = 21,
+    CHARLS_JPEGLS_ERRC_UNEXPECTED_RESTART_MARKER = 22,
+    CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND = 23,
+    CHARLS_JPEGLS_ERRC_END_OF_IMAGE_MARKER_NOT_FOUND = 24,
+    CHARLS_JPEGLS_ERRC_UNKNOWN_COMPONENT_ID = 25,
+    CHARLS_JPEGLS_ERRC_ABBREVIATED_FORMAT_AND_SPIFF_HEADER = 26,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH = 27,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_HEIGHT = 28,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE = 29,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT = 30,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE = 31,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 32,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS = 33,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION = 34,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID = 35,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_CONTINUATION = 36,
+
+    // Logic errors:
+
+    CHARLS_JPEGLS_ERRC_INVALID_OPERATION = 100,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT = 101,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_WIDTH = 102,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_HEIGHT = 103,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_BITS_PER_SAMPLE = 104,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COMPONENT_COUNT = 105,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_INTERLEAVE_MODE = 106,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_NEAR_LOSSLESS = 107,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_JPEGLS_PC_PARAMETERS = 108,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COLOR_TRANSFORMATION = 109,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SIZE = 110,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_STRIDE = 111,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_ENCODING_OPTIONS = 112,
 };
 
 enum charls_interleave_mode
@@ -189,60 +193,7 @@ enum class [[nodiscard]] jpegls_errc
     /// </summary>
     success = impl::CHARLS_JPEGLS_ERRC_SUCCESS,
 
-    /// <summary>
-    /// This error is returned when one of the passed arguments is invalid.
-    /// </summary>
-    invalid_argument = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT,
-
-    /// <summary>
-    /// This error is returned when the JPEG stream contains a parameter value that is not supported by this implementation.
-    /// </summary>
-    parameter_value_not_supported = impl::CHARLS_JPEGLS_ERRC_PARAMETER_VALUE_NOT_SUPPORTED,
-
-    /// <summary>
-    /// The destination buffer is too small to hold all the output.
-    /// </summary>
-    destination_buffer_too_small = impl::CHARLS_JPEGLS_ERRC_DESTINATION_BUFFER_TOO_SMALL,
-
-    /// <summary>
-    /// The source buffer is too small, more input data was expected.
-    /// </summary>
-    source_buffer_too_small = impl::CHARLS_JPEGLS_ERRC_SOURCE_BUFFER_TOO_SMALL,
-
-    /// <summary>
-    /// This error is returned when the encoded bit stream contains a general structural problem.
-    /// </summary>
-    invalid_encoded_data = impl::CHARLS_JPEGLS_ERRC_INVALID_ENCODED_DATA,
-
-    /// <summary>
-    /// Too much compressed data.The decoding process is ready but the input buffer still contains encoded data.
-    /// </summary>
-    too_much_encoded_data = impl::CHARLS_JPEGLS_ERRC_TOO_MUCH_ENCODED_DATA,
-
-    /// <summary>
-    /// This error is returned when a method call is invalid for the current state.
-    /// </summary>
-    invalid_operation = impl::CHARLS_JPEGLS_ERRC_INVALID_OPERATION,
-
-    /// <summary>
-    /// The color transform is not supported.
-    /// </summary>
-    color_transform_not_supported = impl::CHARLS_JPEGLS_ERRC_COLOR_TRANSFORM_NOT_SUPPORTED,
-
-    /// <summary>
-    /// This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
-    /// </summary>
-    encoding_not_supported = impl::CHARLS_JPEGLS_ERRC_ENCODING_NOT_SUPPORTED,
-
-    /// <summary>
-    /// This error is returned when an unknown JPEG marker code is found in the encoded bit stream.
-    /// </summary>
-    unknown_jpeg_marker_found = impl::CHARLS_JPEGLS_ERRC_UNKNOWN_JPEG_MARKER_FOUND,
-
-    /// <summary>
-    /// This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
-    /// </summary>
-    jpeg_marker_start_byte_not_found = impl::CHARLS_JPEGLS_ERRC_JPEG_MARKER_START_BYTE_NOT_FOUND,
+    // Runtime errors:
 
     /// <summary>
     /// This error is returned when the implementation could not allocate memory for its internal buffers.
@@ -250,15 +201,65 @@ enum class [[nodiscard]] jpegls_errc
     not_enough_memory = impl::CHARLS_JPEGLS_ERRC_NOT_ENOUGH_MEMORY,
 
     /// <summary>
-    /// This error is returned when the implementation encountered a failure it did not expect. No guarantees can be given
-    /// for the state after this error.
+    /// This error is returned when a callback function returns a nonzero value.
     /// </summary>
-    unexpected_failure = impl::CHARLS_JPEGLS_ERRC_UNEXPECTED_FAILURE,
+    callback_failed = impl::CHARLS_JPEGLS_ERRC_CALLBACK_FAILED,
+
+    /// <summary>
+    /// The destination buffer is too small to hold all the output.
+    /// </summary>
+    destination_too_small = impl::CHARLS_JPEGLS_ERRC_DESTINATION_TOO_SMALL,
+
+    /// <summary>
+    /// The source buffer is too small, more input data was expected.
+    /// </summary>
+    need_more_data = impl::CHARLS_JPEGLS_ERRC_NEED_MORE_DATA,
+
+    /// <summary>
+    /// This error is returned when the encoded bit stream contains a general structural problem.
+    /// </summary>
+    invalid_data = impl::CHARLS_JPEGLS_ERRC_INVALID_DATA,
+
+    /// <summary>
+    /// This error is returned when an encoded frame is found that is not encoded with the JPEG-LS algorithm.
+    /// </summary>
+    encoding_not_supported = impl::CHARLS_JPEGLS_ERRC_ENCODING_NOT_SUPPORTED,
+
+    /// <summary>
+    /// This error is returned when the JPEG stream contains a parameter value that is not supported by this implementation.
+    /// </summary>
+    parameter_value_not_supported = impl::CHARLS_JPEGLS_ERRC_PARAMETER_VALUE_NOT_SUPPORTED,
+
+    /// <summary>
+    /// The color transform is not supported.
+    /// </summary>
+    color_transform_not_supported = impl::CHARLS_JPEGLS_ERRC_COLOR_TRANSFORM_NOT_SUPPORTED,
+
+    /// <summary>
+    /// This error is returned when the stream contains an unsupported type parameter in the JPEG-LS segment.
+    /// </summary>
+    jpegls_preset_extended_parameter_type_not_supported =
+        impl::CHARLS_JPEGLS_ERRC_JPEGLS_PRESET_EXTENDED_PARAMETER_TYPE_NOT_SUPPORTED,
+
+    /// <summary>
+    /// This error is returned when the algorithm expect a 0xFF code (indicates start of a JPEG marker) but none was found.
+    /// </summary>
+    jpeg_marker_start_byte_not_found = impl::CHARLS_JPEGLS_ERRC_JPEG_MARKER_START_BYTE_NOT_FOUND,
 
     /// <summary>
     /// This error is returned when the first JPEG marker is not the SOI marker.
     /// </summary>
     start_of_image_marker_not_found = impl::CHARLS_JPEGLS_ERRC_START_OF_IMAGE_MARKER_NOT_FOUND,
+
+    /// <summary>
+    /// This error is returned when the SPIFF header is invalid.
+    /// </summary>
+    invalid_spiff_header = impl::CHARLS_JPEGLS_ERRC_INVALID_SPIFF_HEADER,
+
+    /// <summary>
+    /// This error is returned when an unknown JPEG marker code is found in the encoded bit stream.
+    /// </summary>
+    unknown_jpeg_marker_found = impl::CHARLS_JPEGLS_ERRC_UNKNOWN_JPEG_MARKER_FOUND,
 
     /// <summary>
     /// This error is returned when a JPEG marker is found that is not valid for the current state.
@@ -296,12 +297,6 @@ enum class [[nodiscard]] jpegls_errc
     invalid_jpegls_preset_parameter_type = impl::CHARLS_JPEGLS_ERRC_INVALID_JPEGLS_PRESET_PARAMETER_TYPE,
 
     /// <summary>
-    /// This error is returned when the stream contains an unsupported type parameter in the JPEG-LS segment.
-    /// </summary>
-    jpegls_preset_extended_parameter_type_not_supported =
-        impl::CHARLS_JPEGLS_ERRC_JPEGLS_PRESET_EXTENDED_PARAMETER_TYPE_NOT_SUPPORTED,
-
-    /// <summary>
     /// This error is returned when the stream contains a SPIFF header but not an SPIFF end-of-directory entry.
     /// </summary>
     missing_end_of_spiff_directory = impl::CHARLS_JPEGLS_ERRC_MISSING_END_OF_SPIFF_DIRECTORY,
@@ -318,19 +313,9 @@ enum class [[nodiscard]] jpegls_errc
     restart_marker_not_found = impl::CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND,
 
     /// <summary>
-    /// This error is returned when a callback function returns a nonzero value.
-    /// </summary>
-    callback_failed = impl::CHARLS_JPEGLS_ERRC_CALLBACK_FAILED,
-
-    /// <summary>
     /// This error is returned when the End of Image (EOI) marker could not be found.
     /// </summary>
     end_of_image_marker_not_found = impl::CHARLS_JPEGLS_ERRC_END_OF_IMAGE_MARKER_NOT_FOUND,
-
-    /// <summary>
-    /// This error is returned when the SPIFF header is invalid.
-    /// </summary>
-    invalid_spiff_header = impl::CHARLS_JPEGLS_ERRC_INVALID_SPIFF_HEADER,
 
     /// <summary>
     /// This error is returned when an unknown component ID in a scan is detected.
@@ -340,7 +325,72 @@ enum class [[nodiscard]] jpegls_errc
     /// <summary>
     /// This error is returned for stream with only mapping tables and a spiff header.
     /// </summary>
-    mapping_tables_and_spiff_header = impl::CHARLS_JPEGLS_ERRC_MAPPING_TABLES_AND_SPIFF_HEADER,
+    abbreviated_format_and_spiff_header = impl::CHARLS_JPEGLS_ERRC_ABBREVIATED_FORMAT_AND_SPIFF_HEADER,
+
+    /// <summary>
+    /// This error is returned when the stream contains a width parameter defined more than once or in an incompatible way.
+    /// </summary>
+    invalid_parameter_width = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH,
+
+    /// <summary>
+    /// This error is returned when the stream contains a height parameter defined more than once in an incompatible way.
+    /// </summary>
+    invalid_parameter_height = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_HEIGHT,
+
+    /// <summary>
+    /// This error is returned when the stream contains a bits per sample (sample precision) parameter outside the range
+    /// [2,16]
+    /// </summary>
+    invalid_parameter_bits_per_sample = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE,
+
+    /// <summary>
+    /// This error is returned when the stream contains a component count parameter outside the range [1,255] for SOF or
+    /// [1,4] for SOS.
+    /// </summary>
+    invalid_parameter_component_count = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT,
+
+    /// <summary>
+    /// This error is returned when the stream contains an interleave mode (ILV) parameter outside the range [0, 2]
+    /// </summary>
+    invalid_parameter_interleave_mode = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE,
+
+    /// <summary>
+    /// This error is returned when the stream contains a near-lossless (NEAR)
+    /// parameter outside the range [0, min(255, MAXVAL/2)]
+    /// </summary>
+    invalid_parameter_near_lossless = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS,
+
+    /// <summary>
+    /// This error is returned when the stream contains an invalid JPEG-LS preset parameters segment.
+    /// </summary>
+    invalid_parameter_jpegls_preset_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS,
+
+    /// <summary>
+    /// This error is returned when the stream contains an invalid color transformation segment or one that doesn't match with frame info.
+    /// </summary>
+    invalid_parameter_color_transformation = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION,
+
+    /// <summary>
+    /// This error is returned when the stream contains a mapping table with an invalid ID.
+    /// </summary>
+    invalid_parameter_mapping_table_id = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID,
+
+    /// <summary>
+    /// This error is returned when the stream contains an invalid mapping table continuation.
+    /// </summary>
+    invalid_parameter_mapping_table_continuation = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_CONTINUATION,
+
+    // Logic errors:
+
+    /// <summary>
+    /// This error is returned when a method call is invalid for the current state.
+    /// </summary>
+    invalid_operation = impl::CHARLS_JPEGLS_ERRC_INVALID_OPERATION,
+
+    /// <summary>
+    /// This error is returned when one of the passed arguments is invalid.
+    /// </summary>
+    invalid_argument = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT,
 
     /// <summary>
     /// The argument for the width parameter is outside the range [1, 65535].
@@ -353,14 +403,14 @@ enum class [[nodiscard]] jpegls_errc
     invalid_argument_height = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_HEIGHT,
 
     /// <summary>
-    /// The argument for the component count parameter is outside the range [1, 255].
-    /// </summary>
-    invalid_argument_component_count = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COMPONENT_COUNT,
-
-    /// <summary>
     /// The argument for the bit per sample parameter is outside the range [2, 16].
     /// </summary>
     invalid_argument_bits_per_sample = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_BITS_PER_SAMPLE,
+
+    /// <summary>
+    /// The argument for the component count parameter is outside the range [1, 255].
+    /// </summary>
+    invalid_argument_component_count = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COMPONENT_COUNT,
 
     /// <summary>
     /// The argument for the interleave mode is not (None, Sample, Line) or invalid in combination with component count.
@@ -368,7 +418,7 @@ enum class [[nodiscard]] jpegls_errc
     invalid_argument_interleave_mode = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_INTERLEAVE_MODE,
 
     /// <summary>
-    /// The argument for the near lossless parameter is outside the range [0, 255].
+    /// The argument for the near lossless parameter is outside the range [0, min(255, MAXVAL/2)].
     /// </summary>
     invalid_argument_near_lossless = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_NEAR_LOSSLESS,
 
@@ -397,59 +447,6 @@ enum class [[nodiscard]] jpegls_errc
     /// The encoding options argument has an invalid value.
     /// </summary>
     invalid_argument_encoding_options = impl::CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_ENCODING_OPTIONS,
-
-    /// <summary>
-    /// This error is returned when the stream contains a width parameter defined more than once or in an incompatible way.
-    /// </summary>
-    invalid_parameter_width = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH,
-
-    /// <summary>
-    /// This error is returned when the stream contains a height parameter defined more than once in an incompatible way.
-    /// </summary>
-    invalid_parameter_height = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_HEIGHT,
-
-    /// <summary>
-    /// This error is returned when the stream contains a component count parameter outside the range [1,255] for SOF or
-    /// [1,4] for SOS.
-    /// </summary>
-    invalid_parameter_component_count = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT,
-
-    /// <summary>
-    /// This error is returned when the stream contains a bits per sample (sample precision) parameter outside the range
-    /// [2,16]
-    /// </summary>
-    invalid_parameter_bits_per_sample = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE,
-
-    /// <summary>
-    /// This error is returned when the stream contains an interleave mode (ILV) parameter outside the range [0, 2]
-    /// </summary>
-    invalid_parameter_interleave_mode = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE,
-
-    /// <summary>
-    /// This error is returned when the stream contains a near-lossless (NEAR) parameter outside the range [0, min(255,
-    /// MAXVAL/2)]
-    /// </summary>
-    invalid_parameter_near_lossless = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS,
-
-    /// <summary>
-    /// This error is returned when the stream contains an invalid JPEG-LS preset parameters segment.
-    /// </summary>
-    invalid_parameter_jpegls_preset_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS,
-
-    /// <summary>
-    /// This error is returned when the stream contains an invalid color transformation segment or one that doesn't match with frame info.
-    /// </summary>
-    invalid_parameter_color_transformation = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION,
-
-    /// <summary>
-    /// This error is returned when the stream contains a mapping table with an invalid ID.
-    /// </summary>
-    invalid_parameter_mapping_table_id = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID,
-
-    /// <summary>
-    /// This error is returned when the stream contains an invalid mapping table continuation.
-    /// </summary>
-    invalid_parameter_mapping_table_continuation = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_CONTINUATION
 };
 
 

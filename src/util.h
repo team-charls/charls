@@ -86,7 +86,7 @@
 
 namespace charls {
 
-inline jpegls_errc to_jpegls_errc() noexcept
+inline CHARLS_NO_INLINE jpegls_errc to_jpegls_errc() noexcept
 {
     try
     {
@@ -101,10 +101,8 @@ inline jpegls_errc to_jpegls_errc() noexcept
     {
         return jpegls_errc::not_enough_memory;
     }
-    catch (...)
-    {
-        return jpegls_errc::unexpected_failure;
-    }
+
+    // Don't catch exceptions that are not expected: it is safer to terminate then continue in an unknown state.
 }
 
 

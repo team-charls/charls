@@ -66,8 +66,6 @@ inline CHARLS_NO_INLINE void throw_jpegls_error(const jpegls_errc error_value)
     throw jpegls_error(error_value);
 }
 
-#undef CHARLS_NO_INLINE
-
 } // namespace impl
 
 inline void check_jpegls_errc(const jpegls_errc error_value)
