@@ -11,7 +11,6 @@
 
 #include <cstdint>
 #include <numeric>
-#include <optional>
 #include <vector>
 
 namespace charls {
@@ -87,12 +86,12 @@ public:
     }
 
     [[nodiscard]]
-    int32_t mapping_table_id(size_t component_index) const noexcept;
+    int32_t get_mapping_table_id(size_t component_index) const noexcept;
 
     [[nodiscard]]
-    int32_t mapping_table_count() const noexcept
+    size_t mapping_table_count() const noexcept
     {
-        return static_cast<int32_t>(mapping_tables_.size());
+        return mapping_tables_.size();
     }
 
     [[nodiscard]]
@@ -102,12 +101,12 @@ public:
     }
 
     [[nodiscard]]
-    std::optional<int32_t> mapping_table_index(uint8_t table_id) const noexcept;
+    int32_t get_mapping_table_index(uint8_t table_id) const noexcept;
 
     [[nodiscard]]
-    table_info mapping_table_info(size_t index) const;
+    mapping_table_info get_mapping_table_info(size_t index) const;
 
-    void mapping_table_data(size_t index, span<std::byte> table) const;
+    void get_mapping_table_data(size_t index, span<std::byte> table) const;
 
 private:
     [[nodiscard]]

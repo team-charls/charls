@@ -114,7 +114,7 @@ public:
         return {destination_.data() + byte_offset_, destination_.size() - byte_offset_};
     }
 
-    void seek(const size_t byte_count) noexcept
+    void advance_position(const size_t byte_count) noexcept
     {
         ASSERT(byte_offset_ + byte_count <= destination_.size());
         byte_offset_ += byte_count;

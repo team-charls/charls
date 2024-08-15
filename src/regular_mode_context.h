@@ -95,7 +95,7 @@ public:
     /// Computes the Golomb coding parameter using the algorithm as defined in ISO 14495-1, code segment A.10
     /// </summary>
     [[nodiscard]]
-    FORCE_INLINE int32_t get_golomb_coding_parameter() const
+    FORCE_INLINE int32_t compute_golomb_coding_parameter() const
     {
         int32_t k{};
         for (; n_ << k < a_ && k < max_k_value; ++k)

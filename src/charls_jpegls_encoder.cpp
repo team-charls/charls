@@ -43,11 +43,10 @@ struct charls_jpegls_encoder final
     {
         check_argument(frame_info.width > 0, jpegls_errc::invalid_argument_width);
         check_argument(frame_info.height > 0, jpegls_errc::invalid_argument_height);
-        check_argument(frame_info.bits_per_sample >= minimum_bits_per_sample &&
-                           frame_info.bits_per_sample <= maximum_bits_per_sample,
-                       jpegls_errc::invalid_argument_bits_per_sample);
-        check_argument(frame_info.component_count > 0 && frame_info.component_count <= maximum_component_count,
-                       jpegls_errc::invalid_argument_component_count);
+        check_argument_range(minimum_bits_per_sample, maximum_bits_per_sample, frame_info.bits_per_sample,
+                             jpegls_errc::invalid_argument_bits_per_sample);
+        check_argument_range(minimum_component_count, maximum_component_count, frame_info.component_count,
+                             jpegls_errc::invalid_argument_component_count);
 
         frame_info_ = frame_info;
     }
@@ -61,8 +60,7 @@ struct charls_jpegls_encoder final
 
     void near_lossless(const int32_t near_lossless)
     {
-        check_argument(near_lossless >= 0 && near_lossless <= maximum_near_lossless,
-                       jpegls_errc::invalid_argument_near_lossless);
+        check_argument_range(0, maximum_near_lossless, near_lossless, jpegls_errc::invalid_argument_near_lossless);
 
         near_lossless_ = near_lossless;
     }
@@ -113,20 +111,17 @@ struct charls_jpegls_encoder final
     {
         check_argument(spiff_header.height > 0, jpegls_errc::invalid_argument_height);
         check_argument(spiff_header.width > 0, jpegls_errc::invalid_argument_width);
-        check_operation(state_ == state::destination_set);
-
-        writer_.write_start_of_image();
-        writer_.write_spiff_header_segment(spiff_header);
-        state_ = state::spiff_header;
+        write_spiff_header_core(spiff_header);
     }
 
     void write_standard_spiff_header(const spiff_color_space color_space, const spiff_resolution_units resolution_units,
                                      const uint32_t vertical_resolution, const uint32_t horizontal_resolution)
     {
         check_operation(is_frame_info_configured());
-        write_spiff_header({spiff_profile_id::none, frame_info_.component_count, frame_info_.height, frame_info_.width,
-                            color_space, frame_info_.bits_per_sample, spiff_compression_type::jpeg_ls, resolution_units,
-                            vertical_resolution, horizontal_resolution});
+
+        write_spiff_header_core({spiff_profile_id::none, frame_info_.component_count, frame_info_.height, frame_info_.width,
+                                 color_space, frame_info_.bits_per_sample, spiff_compression_type::jpeg_ls, resolution_units,
+                                 vertical_resolution, horizontal_resolution});
     }
 
     void write_spiff_entry(const uint32_t entry_tag, const span<const byte> entry_data)
@@ -166,7 +161,7 @@ struct charls_jpegls_encoder final
         writer_.write_application_data_segment(application_data_id, application_data);
     }
 
-    void write_table(const int32_t table_id, const int32_t entry_size, const span<const byte> table_data)
+    void write_mapping_table(const int32_t table_id, const int32_t entry_size, const span<const byte> table_data)
     {
         check_argument_range(minimum_table_id, maximum_table_id, table_id);
         check_argument_range(minimum_entry_size, maximum_entry_size, entry_size);
@@ -200,20 +195,8 @@ struct charls_jpegls_encoder final
 
         transition_to_tables_and_miscellaneous_state();
         write_color_transform_segment();
-
-        if (writer_.write_start_of_frame_segment(frame_info_))
-        {
-            // Image dimensions are oversized and need to be written to a JPEG-LS preset parameters (LSE) segment.
-            writer_.write_jpegls_preset_parameters_segment(frame_info_.height, frame_info_.width);
-        }
-
-        if (!is_default(user_preset_coding_parameters_, compute_default(maximum_sample_value, near_lossless_)) ||
-            (has_option(encoding_options::include_pc_parameters_jai) && frame_info_.bits_per_sample > 12))
-        {
-            // Write the actual used values to the stream. The user parameters may use 0 (=default) values.
-            // This reduces the risk for decoding by other implementations.
-            writer_.write_jpegls_preset_parameters_segment(preset_coding_parameters_);
-        }
+        write_start_of_frame_segment();
+        write_jpegls_preset_parameters_segment(maximum_sample_value);
 
         if (interleave_mode_ == interleave_mode::none)
         {
@@ -277,6 +260,15 @@ private:
         return frame_info_.width != 0;
     }
 
+    void write_spiff_header_core(const spiff_header& spiff_header)
+    {
+        check_operation(state_ == state::destination_set);
+
+        writer_.write_start_of_image();
+        writer_.write_spiff_header_segment(spiff_header);
+        state_ = state::spiff_header;
+    }
+
     void encode_scan(const byte* source, const size_t stride, const int32_t component_count)
     {
         const charls::frame_info frame_info{frame_info_.width, frame_info_.height, frame_info_.bits_per_sample,
@@ -287,7 +279,7 @@ private:
         const size_t bytes_written{encoder->encode_scan(source, stride, writer_.remaining_destination())};
 
         // Synchronize the destination encapsulated in the writer (encode_scan works on a local copy)
-        writer_.seek(bytes_written);
+        writer_.advance_position(bytes_written);
     }
 
     [[nodiscard]]
@@ -362,6 +354,26 @@ private:
             throw_jpegls_error(jpegls_errc::invalid_argument_color_transformation);
 
         writer_.write_color_transform_segment(color_transformation_);
+    }
+
+    void write_start_of_frame_segment()
+    {
+        if (writer_.write_start_of_frame_segment(frame_info_))
+        {
+            // Image dimensions are oversized and need to be written to a JPEG-LS preset parameters (LSE) segment.
+            writer_.write_jpegls_preset_parameters_segment(frame_info_.height, frame_info_.width);
+        }
+    }
+
+    void write_jpegls_preset_parameters_segment(const int32_t maximum_sample_value)
+    {
+        if (!is_default(user_preset_coding_parameters_, compute_default(maximum_sample_value, near_lossless_)) ||
+            (has_option(encoding_options::include_pc_parameters_jai) && frame_info_.bits_per_sample > 12))
+        {
+            // Write the actual used values to the stream, not zero's.
+            // Explicit values reduces the risk for decoding by other implementations.
+            writer_.write_jpegls_preset_parameters_segment(preset_coding_parameters_);
+        }
     }
 
     void write_end_of_image()
@@ -606,11 +618,12 @@ catch (...)
 
 
 USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_write_table(charls_jpegls_encoder* encoder, const int32_t table_id, const int32_t entry_size,
-                                  const void* table_data, size_t table_data_size_bytes) noexcept
+charls_jpegls_encoder_write_mapping_table(charls_jpegls_encoder* encoder, const int32_t table_id, const int32_t entry_size,
+                                          const void* table_data, size_t table_data_size_bytes) noexcept
 try
 {
-    check_pointer(encoder)->write_table(table_id, entry_size, {static_cast<const byte*>(table_data), table_data_size_bytes});
+    check_pointer(encoder)->write_mapping_table(table_id, entry_size,
+                                                {static_cast<const byte*>(table_data), table_data_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)
@@ -634,7 +647,7 @@ catch (...)
 
 
 USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_create_tables_only(charls_jpegls_encoder* encoder) noexcept
+charls_jpegls_encoder_create_abbreviated_format(charls_jpegls_encoder* encoder) noexcept
 try
 {
     check_pointer(encoder)->create_tables_only();

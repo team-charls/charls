@@ -904,12 +904,12 @@ struct charls_spiff_header CHARLS_FINAL
 struct charls_frame_info CHARLS_FINAL
 {
     /// <summary>
-    /// Width of the image, range [1, 65535].
+    /// Width of the image, range [1, 4294967295].
     /// </summary>
     uint32_t width;
 
     /// <summary>
-    /// Height of the image, range [1, 65535].
+    /// Height of the image, range [1, 4294967295].
     /// </summary>
     uint32_t height;
 
@@ -963,7 +963,7 @@ struct charls_jpegls_pc_parameters CHARLS_FINAL
 /// <summary>
 /// Defines the information that describes a mapping table.
 /// </summary>
-struct charls_table_info CHARLS_FINAL
+struct charls_mapping_table_info CHARLS_FINAL
 {
     /// <summary>
     /// Identifier of the mapping table, range [1, 255].
@@ -1015,13 +1015,14 @@ namespace charls {
 using spiff_header = charls_spiff_header;
 using frame_info = charls_frame_info;
 using jpegls_pc_parameters = charls_jpegls_pc_parameters;
-using table_info = charls_table_info;
+using mapping_table_info = charls_mapping_table_info;
 using at_comment_handler = charls_at_comment_handler;
 using at_application_data_handler = charls_at_application_data_handler;
 
 static_assert(sizeof(spiff_header) == 40, "size of struct is incorrect, check padding settings");
 static_assert(sizeof(frame_info) == 16, "size of struct is incorrect, check padding settings");
 static_assert(sizeof(jpegls_pc_parameters) == 20, "size of struct is incorrect, check padding settings");
+static_assert(sizeof(mapping_table_info) == 12, "size of struct is incorrect, check padding settings");
 
 } // namespace charls
 
@@ -1035,6 +1036,6 @@ typedef int32_t(CHARLS_API_CALLING_CONVENTION* charls_at_application_data_handle
 typedef struct charls_spiff_header charls_spiff_header;
 typedef struct charls_frame_info charls_frame_info;
 typedef struct charls_jpegls_pc_parameters charls_jpegls_pc_parameters;
-typedef struct charls_table_info charls_table_info;
+typedef struct charls_mapping_table_info charls_mapping_table_info;
 
 #endif

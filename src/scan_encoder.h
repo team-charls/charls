@@ -150,9 +150,9 @@ protected:
         return bytes_written_ - (static_cast<size_t>(free_bit_count_) - 32U) / 8U;
     }
 
-    FORCE_INLINE void append_ones_to_bit_stream(const int32_t length)
+    FORCE_INLINE void append_ones_to_bit_stream(const int32_t bit_count)
     {
-        append_to_bit_stream((1U << length) - 1U, length);
+        append_to_bit_stream((1U << bit_count) - 1U, bit_count);
     }
 
     std::unique_ptr<process_encoded_line> process_line_;

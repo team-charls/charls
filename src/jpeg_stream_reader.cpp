@@ -19,7 +19,6 @@ using impl::throw_jpegls_error;
 using std::array;
 using std::byte;
 using std::equal;
-using std::optional;
 
 namespace {
 
@@ -260,27 +259,27 @@ jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters(
 }
 
 
-int32_t jpeg_stream_reader::mapping_table_id(const size_t component_index) const noexcept
+int32_t jpeg_stream_reader::get_mapping_table_id(const size_t component_index) const noexcept
 {
     return scan_infos_[component_index].table_id;
 }
 
 
-optional<int32_t> jpeg_stream_reader::mapping_table_index(const uint8_t table_id) const noexcept
+int32_t jpeg_stream_reader::get_mapping_table_index(const uint8_t table_id) const noexcept
 {
     const auto it{find_mapping_table_entry(table_id)};
-    return it != mapping_tables_.cend() ? static_cast<int32_t>(it - mapping_tables_.cbegin()) : optional<int32_t>{};
+    return it != mapping_tables_.cend() ? static_cast<int32_t>(it - mapping_tables_.cbegin()) : mapping_table_missing;
 }
 
 
-table_info jpeg_stream_reader::mapping_table_info(const size_t index) const
+mapping_table_info jpeg_stream_reader::get_mapping_table_info(const size_t index) const
 {
     const auto& entry{mapping_tables_[index]};
     return {entry.table_id(), entry.entry_size(), static_cast<uint32_t>(entry.data_size())};
 }
 
 
-void jpeg_stream_reader::mapping_table_data(const size_t index, const span<byte> table) const
+void jpeg_stream_reader::get_mapping_table_data(const size_t index, const span<byte> table) const
 {
     const auto& mapping_table{mapping_tables_[index]};
     if (mapping_table.data_size() > table.size())

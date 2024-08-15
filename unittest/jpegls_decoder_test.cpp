@@ -1124,8 +1124,8 @@ public:
         const int32_t count{decoder.mapping_table_count()};
         Assert::AreEqual(2, count);
 
-        Assert::AreEqual(5, decoder.mapping_table_id(0));
-        Assert::AreEqual(6, decoder.mapping_table_id(1));
+        Assert::AreEqual(5, decoder.get_mapping_table_id(0));
+        Assert::AreEqual(6, decoder.get_mapping_table_id(1));
     }
 
     TEST_METHOD(invalid_table_id_throws) // NOLINT
@@ -1164,9 +1164,9 @@ public:
 
         decoder.decode(decoded_destination);
 
-        Assert::AreEqual(0, decoder.mapping_table_id(0));
-        Assert::AreEqual(0, decoder.mapping_table_id(1));
-        Assert::AreEqual(0, decoder.mapping_table_id(2));
+        Assert::AreEqual(0, decoder.get_mapping_table_id(0));
+        Assert::AreEqual(0, decoder.get_mapping_table_id(1));
+        Assert::AreEqual(0, decoder.get_mapping_table_id(2));
     }
 
     TEST_METHOD(mapping_table_id_for_invalid_component_throws) // NOLINT
@@ -1178,7 +1178,7 @@ public:
 
         decoder.decode(decoded_destination);
 
-        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.mapping_table_id(3); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.get_mapping_table_id(3); });
     }
 
     TEST_METHOD(mapping_table_id_before_decode_throws) // NOLINT
@@ -1187,7 +1187,7 @@ public:
 
         const jpegls_decoder decoder(encoded_source, true);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_id(0); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_mapping_table_id(0); });
     }
 
     TEST_METHOD(mapping_table_index_before_decode_throws) // NOLINT
@@ -1196,7 +1196,7 @@ public:
 
         const jpegls_decoder decoder(encoded_source, true);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_index(3); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_mapping_table_index(3); });
     }
 
     TEST_METHOD(mapping_table_index_invalid_index_throws) // NOLINT
@@ -1207,8 +1207,8 @@ public:
         vector<byte> decoded_destination(decoder.destination_size());
         decoder.decode(decoded_destination);
 
-        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.mapping_table_index(0); });
-        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.mapping_table_index(256); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.get_mapping_table_index(0); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.get_mapping_table_index(256); });
     }
 
     TEST_METHOD(mapping_table_count_before_decode_throws) // NOLINT
@@ -1226,7 +1226,7 @@ public:
 
         const jpegls_decoder decoder(encoded_source, true);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_info(0); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_mapping_table_info(0); });
     }
 
     TEST_METHOD(mapping_table_before_decode_throws) // NOLINT
@@ -1237,7 +1237,7 @@ public:
         vector<byte> table(1000);
 
         assert_expect_exception(jpegls_errc::invalid_operation,
-                                [&decoder, &table] { decoder.mapping_table_data(0, table); });
+                                [&decoder, &table] { decoder.get_mapping_table_data(0, table); });
     }
 
     TEST_METHOD(mapping_table_invalid_index_throws) // NOLINT
@@ -1250,7 +1250,7 @@ public:
         vector<byte> table(1000);
 
         assert_expect_exception(jpegls_errc::invalid_argument,
-                                [&decoder, &table] { decoder.mapping_table_data(0, table); });
+                                [&decoder, &table] { decoder.get_mapping_table_data(0, table); });
     }
 
 private:
@@ -1262,9 +1262,9 @@ private:
     {
         constexpr byte start_of_scan{0xDA};
 
-        for (auto it{begin}; it != end; ++it)
+        for (auto it{begin}; it < end  - 1; ++it)
         {
-            if (*it == byte{0xFF} && it + 1 != end && *(it + 1) == start_of_scan)
+            if (*it == byte{0xFF} && *(it + 1) == start_of_scan)
                 return it;
         }
 

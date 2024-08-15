@@ -152,6 +152,7 @@ charls_jpegls_encoder_set_destination_buffer(CHARLS_IN charls_jpegls_encoder* en
 /// <summary>
 /// Writes a standard SPIFF header to the destination. The additional values are computed from the current encoder settings.
 /// A SPIFF header is optional, but recommended for standalone JPEG-LS files.
+/// The encoder will not validate the passed SPIFF header.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="color_space">The color space of the image.</param>
@@ -169,6 +170,7 @@ charls_jpegls_encoder_write_standard_spiff_header(CHARLS_IN charls_jpegls_encode
 
 /// <summary>
 /// Writes a SPIFF header to the destination.
+/// The encoder will not validate the passed SPIFF header.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="spiff_header">Reference to a SPIFF header that will be written to the destination.</param>
@@ -186,8 +188,8 @@ charls_jpegls_encoder_write_spiff_header(CHARLS_IN charls_jpegls_encoder* encode
 /// </remarks>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="entry_tag">The entry tag of the directory entry.</param>
-/// <param name="entry_data">The entry data of the directory entry.</param>
-/// <param name="entry_data_size_bytes">The size in bytes of the directory entry [0-65528].</param>
+/// <param name="entry_data">The data of the directory entry.</param>
+/// <param name="entry_data_size_bytes">The size in bytes of the entry data [0-65528].</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
@@ -256,9 +258,9 @@ charls_jpegls_encoder_write_application_data(CHARLS_IN charls_jpegls_encoder* en
 /// <param name="table_data_size_bytes">The size in bytes of the table data.</param>
 CHARLS_ATTRIBUTE_ACCESS((access(read_only, 4, 5)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_write_table(CHARLS_IN charls_jpegls_encoder* encoder, int32_t table_id, int32_t entry_size,
-                                  CHARLS_IN_READS_BYTES(table_data_size_bytes) const void* table_data,
-                                  size_t table_data_size_bytes) CHARLS_NOEXCEPT;
+charls_jpegls_encoder_write_mapping_table(CHARLS_IN charls_jpegls_encoder* encoder, int32_t table_id, int32_t entry_size,
+                                          CHARLS_IN_READS_BYTES(table_data_size_bytes) const void* table_data,
+                                          size_t table_data_size_bytes) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Encodes the passed buffer with the source image data to the destination.
@@ -280,13 +282,14 @@ charls_jpegls_encoder_encode_from_buffer(CHARLS_IN charls_jpegls_encoder* encode
 
 
 /// <summary>
-/// Creates a JPEG-LS stream in the abbreviated format that only contain mapping tables.
-/// These tables must have been written to the stream first with the method charls_jpegls_encoder_write_table.
+/// Creates a JPEG-LS stream in the abbreviated format that only contain mapping tables (See JPEG-LS standard, C.4).
+/// These mapping tables must have been written to the stream first with the method
+/// charls_jpegls_encoder_write_mapping_table.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_encoder_create_tables_only(CHARLS_IN charls_jpegls_encoder* encoder) CHARLS_NOEXCEPT
+charls_jpegls_encoder_create_abbreviated_format(CHARLS_IN charls_jpegls_encoder* encoder) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
@@ -301,6 +304,7 @@ charls_jpegls_encoder_get_bytes_written(CHARLS_IN const charls_jpegls_encoder* e
 
 /// <summary>
 /// Resets the write position of the destination buffer to the beginning.
+/// All explicit configured options and settings will not be changed.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
@@ -480,6 +484,7 @@ public:
     /// <summary>
     /// Writes a standard SPIFF header to the destination. The additional values are computed from the current encoder
     /// settings.
+    /// The encoder will not validate the passed SPIFF header.
     /// </summary>
     /// <param name="color_space">The color space of the image.</param>
     /// <param name="resolution_units">The resolution units of the next 2 parameters.</param>
@@ -497,6 +502,7 @@ public:
 
     /// <summary>
     /// Writes a SPIFF header to the destination.
+    /// The encoder will not validate the passed SPIFF header.
     /// </summary>
     /// <param name="header">Reference to a SPIFF header that will be written to the destination.</param>
     jpegls_encoder& write_spiff_header(const spiff_header& header)
@@ -509,16 +515,16 @@ public:
     /// Writes a SPIFF directory entry to the destination.
     /// </summary>
     /// <param name="entry_tag">The entry tag of the directory entry.</param>
-    /// <param name="entry_data">The entry data of the directory entry.</param>
-    /// <param name="entry_data_size_bytes">The size in bytes of the directory entry [0-65528].</param>
+    /// <param name="entry_data">The data of the directory entry.</param>
+    /// <param name="entry_data_size_bytes">The size in bytes of the entry data [0-65528].</param>
     template<typename IntDerivedType>
     CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     jpegls_encoder& write_spiff_entry(const IntDerivedType entry_tag,
                                       CHARLS_IN_READS_BYTES(entry_data_size_bytes) const void* entry_data,
                                       const size_t entry_data_size_bytes)
     {
-        check_jpegls_errc(charls_jpegls_encoder_write_spiff_entry(encoder(), static_cast<uint32_t>(entry_tag),
-                                                                  entry_data, entry_data_size_bytes));
+        check_jpegls_errc(charls_jpegls_encoder_write_spiff_entry(encoder(), static_cast<uint32_t>(entry_tag), entry_data,
+                                                                  entry_data_size_bytes));
         return *this;
     }
 
@@ -588,10 +594,10 @@ public:
     /// <param name="table_data">Byte buffer that holds the mapping table.</param>
     /// <param name="size">The size of the buffer in bytes.</param>
     CHARLS_ATTRIBUTE_ACCESS((access(read_only, 4, 5)))
-    jpegls_encoder& write_table(const int32_t table_id, const int32_t entry_size, CHARLS_IN const void* table_data,
-                                const size_t size)
+    jpegls_encoder& write_mapping_table(const int32_t table_id, const int32_t entry_size, CHARLS_IN const void* table_data,
+                                        const size_t size)
     {
-        check_jpegls_errc(charls_jpegls_encoder_write_table(encoder(), table_id, entry_size, table_data, size));
+        check_jpegls_errc(charls_jpegls_encoder_write_mapping_table(encoder(), table_id, entry_size, table_data, size));
         return *this;
     }
 
@@ -605,10 +611,10 @@ public:
     /// <param name="entry_size">Size in bytes of a single table entry.</param>
     /// <param name="table_container">Buffer that holds the mapping table.</param>
     template<typename Container, typename ContainerValueType = typename Container::value_type>
-    jpegls_encoder& write_table(const int32_t table_id, const int32_t entry_size, Container& table_container)
+    jpegls_encoder& write_mapping_table(const int32_t table_id, const int32_t entry_size, Container& table_container)
     {
-        return write_table(table_id, entry_size, table_container.data(),
-                           table_container.size() * sizeof(ContainerValueType));
+        return write_mapping_table(table_id, entry_size, table_container.data(),
+                                   table_container.size() * sizeof(ContainerValueType));
     }
 
     /// <summary>
@@ -625,8 +631,7 @@ public:
     size_t encode(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const size_t source_size_bytes,
                   const uint32_t stride = 0)
     {
-        check_jpegls_errc(
-            charls_jpegls_encoder_encode_from_buffer(encoder(), source_buffer, source_size_bytes, stride));
+        check_jpegls_errc(charls_jpegls_encoder_encode_from_buffer(encoder(), source_buffer, source_size_bytes, stride));
         return bytes_written();
     }
 
@@ -646,13 +651,13 @@ public:
     }
 
     /// <summary>
-    /// Creates a JPEG-LS stream in abbreviated format that only contain mapping tables.
-    /// These tables should have been written to the stream first with the method write_table.
+    /// Creates a JPEG-LS stream in abbreviated format that only contain mapping tables (See JPEG-LS standard, C.4).
+    /// These tables should have been written to the stream first with the method write_mapping_table.
     /// </summary>
     /// <returns>The number of bytes written to the destination.</returns>
-    size_t create_tables_only()
+    size_t create_abbreviated_format()
     {
-        check_jpegls_errc(charls_jpegls_encoder_create_tables_only(encoder()));
+        check_jpegls_errc(charls_jpegls_encoder_create_abbreviated_format(encoder()));
         return bytes_written();
     }
 

@@ -83,7 +83,7 @@ public:
         return error_value_abs;
     }
 
-    /// <summary>Code segment A.21 – Computation of map for Errval mapping.</summary>
+    /// <summary>Code segment A.21 – Computation of map for error value mapping.</summary>
     [[nodiscard]]
     bool compute_map(const int32_t error_value, const int32_t k) const noexcept
     {

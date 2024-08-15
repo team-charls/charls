@@ -215,17 +215,15 @@ void test_sample_annex_h4_5()
                              byte{2}, byte{2}, byte{3}, byte{3}, byte{3}, byte{3}};
     compare_buffers(expected.data(), expected.size(), destination.data(), destination.size());
 
-    const int32_t mapping_table_id{decoder.mapping_table_id(0)};
+    const int32_t mapping_table_id{decoder.get_mapping_table_id(0)};
     assert::is_true(mapping_table_id == 5);
 
-    const auto optional_table_index{decoder.mapping_table_index(mapping_table_id)};
-    assert::is_true(optional_table_index.has_value());
-    const auto table_index{optional_table_index.value_or(-1)};
+    const auto table_index{decoder.get_mapping_table_index(mapping_table_id)};
 
-    const table_info table_info{decoder.mapping_table_info(table_index)};
+    const mapping_table_info table_info{decoder.get_mapping_table_info(table_index)};
     vector<byte> mapping_table(table_info.data_size);
 
-    decoder.mapping_table_data(table_index, mapping_table);
+    decoder.get_mapping_table_data(table_index, mapping_table);
 
     constexpr array expected_mapping_table{byte{0xFF}, byte{0xFF}, byte{0xFF}, byte{0xFF}, byte{0}, byte{0},
                                            byte{0},    byte{0xFF}, byte{0},    byte{0},    byte{0}, byte{0xFF}};

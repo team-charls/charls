@@ -277,7 +277,7 @@ private:
     {
         const int32_t sign{bit_wise_sign(qs)};
         regular_mode_context& context{regular_mode_contexts_[apply_sign(qs, sign)]};
-        const int32_t k{context.get_golomb_coding_parameter()};
+        const int32_t k{context.compute_golomb_coding_parameter()};
         const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
 
         int32_t error_value;
