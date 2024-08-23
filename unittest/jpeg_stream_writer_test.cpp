@@ -1,14 +1,14 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.h"
+#include "pch.hpp"
 
-#include "../src/jpeg_marker_code.h"
-#include "../src/jpeg_stream_writer.h"
+#include "../src/jpeg_marker_code.hpp"
+#include "../src/jpeg_stream_writer.hpp"
 
 #include <array>
 
-#include "util.h"
+#include "util.hpp"
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;

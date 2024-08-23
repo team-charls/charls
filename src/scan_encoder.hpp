@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "jpeg_marker_code.h"
-#include "process_encoded_line.h"
-#include "scan_codec.h"
-#include "span.h"
+#include "jpeg_marker_code.hpp"
+#include "process_encoded_line.hpp"
+#include "scan_codec.hpp"
+#include "span.hpp"
 
 #include <memory>
 

@@ -1,12 +1,12 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "quantization_lut.h"
+#include "quantization_lut.hpp"
 
 #include "charls/public_types.h"
-#include "jpegls_algorithm.h"
+#include "jpegls_algorithm.hpp"
 
-#include "jpegls_preset_coding_parameters.h"
+#include "jpegls_preset_coding_parameters.hpp"
 
 namespace charls {
 

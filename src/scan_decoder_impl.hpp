@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "color_transform.h"
-#include "golomb_lut.h"
-#include "scan_decoder.h"
+#include "color_transform.hpp"
+#include "golomb_lut.hpp"
+#include "scan_decoder.hpp"
 
 namespace charls {
 

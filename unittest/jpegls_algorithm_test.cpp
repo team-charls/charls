@@ -1,11 +1,11 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.h"
+#include "pch.hpp"
 
-#include "util.h"
+#include "util.hpp"
 
-#include "../src/jpegls_algorithm.h"
+#include "../src/jpegls_algorithm.hpp"
 
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;

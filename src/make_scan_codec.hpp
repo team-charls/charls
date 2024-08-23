@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "coding_parameters.h"
+#include "coding_parameters.hpp"
 
 #include <memory>
 

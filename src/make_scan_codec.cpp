@@ -1,14 +1,14 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "make_scan_codec.h"
+#include "make_scan_codec.hpp"
 
-#include "default_traits.h"
-#include "jpegls_preset_coding_parameters.h"
-#include "lossless_traits.h"
-#include "scan_decoder_impl.h"
-#include "scan_encoder_impl.h"
-#include "util.h"
+#include "default_traits.hpp"
+#include "jpegls_preset_coding_parameters.hpp"
+#include "lossless_traits.hpp"
+#include "scan_decoder_impl.hpp"
+#include "scan_encoder_impl.hpp"
+#include "util.hpp"
 
 namespace charls {
 

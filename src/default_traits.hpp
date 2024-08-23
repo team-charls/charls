@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "constants.h"
-#include "jpegls_algorithm.h"
+#include "constants.hpp"
+#include "jpegls_algorithm.hpp"
 
 #include <cassert>
 #include <cmath>

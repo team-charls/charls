@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "../src/jpeg_marker_code.h"
-#include "../src/jpegls_preset_parameters_type.h"
-#include "../src/util.h"
+#include "../src/jpeg_marker_code.hpp"
+#include "../src/jpegls_preset_parameters_type.hpp"
+#include "../src/util.hpp"
 
 #include <vector>
 #include <array>

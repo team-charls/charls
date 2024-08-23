@@ -1,11 +1,11 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.h"
+#include "pch.hpp"
 
-#include "../src/scan_decoder.h"
+#include "../src/scan_decoder.hpp"
 
-#include "scan_encoder_tester.h"
+#include "scan_encoder_tester.hpp"
 
 #include <array>
 

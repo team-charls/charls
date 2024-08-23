@@ -1,8 +1,9 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "compliance.h"
-#include "util.h"
+#include "compliance.hpp"
+
+#include "util.hpp"
 
 #include <array>
 #include <cstring>

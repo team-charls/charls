@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../src/scan_encoder.h"
+#include "../src/scan_encoder.hpp"
 
 namespace charls::test {
 

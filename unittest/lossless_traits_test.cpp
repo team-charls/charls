@@ -1,10 +1,10 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.h"
+#include "pch.hpp"
 
-#include "../src/default_traits.h"
-#include "../src/lossless_traits.h"
+#include "../src/default_traits.hpp"
+#include "../src/lossless_traits.hpp"
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 

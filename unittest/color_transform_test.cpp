@@ -1,13 +1,14 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.h"
+#include "pch.hpp"
 
-#include "util.h"
+#include "util.hpp"
 
-#include "../src/color_transform.h"
+#include "../src/color_transform.hpp"
 
-#include <charls/charls.h>
+#include <charls/jpegls_decoder.hpp>
+#include <charls/jpegls_encoder.hpp>
 
 #include <tuple>
 #include <vector>

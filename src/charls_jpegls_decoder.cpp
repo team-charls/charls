@@ -3,11 +3,11 @@
 
 #include "charls/charls_jpegls_decoder.h"
 
-#include "constants.h"
-#include "jpeg_stream_reader.h"
-#include "make_scan_codec.h"
-#include "scan_decoder.h"
-#include "util.h"
+#include "constants.hpp"
+#include "jpeg_stream_reader.hpp"
+#include "make_scan_codec.hpp"
+#include "scan_decoder.hpp"
+#include "util.hpp"
 
 #include <memory>
 #include <new>

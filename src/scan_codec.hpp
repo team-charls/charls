@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "regular_mode_context.h"
-#include "run_mode_context.h"
-#include "jpegls_algorithm.h"
-#include "quantization_lut.h"
-#include "coding_parameters.h"
+#include "regular_mode_context.hpp"
+#include "run_mode_context.hpp"
+#include "jpegls_algorithm.hpp"
+#include "quantization_lut.hpp"
+#include "coding_parameters.hpp"
 
 #include <array>
 

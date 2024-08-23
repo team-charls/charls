@@ -1,13 +1,13 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.h"
+#include "pch.hpp"
 
-#include "jpegls_preset_coding_parameters_test.h"
-#include "util.h"
+#include "jpegls_preset_coding_parameters_test.hpp"
+#include "util.hpp"
 
-#include "../src/jpeg_marker_code.h"
-#include <charls/charls.h>
+#include "../src/jpeg_marker_code.hpp"
+#include <charls/charls.hpp>
 
 #include <array>
 #include <limits>
