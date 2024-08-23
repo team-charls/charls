@@ -132,7 +132,6 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 
         if (state_ == state::bit_stream_section)
         {
-            check_frame_info();
             check_coding_parameters();
             return;
         }
@@ -147,9 +146,7 @@ void jpeg_stream_reader::read_end_of_image()
     if (const jpeg_marker_code marker_code{read_next_marker_code()}; UNLIKELY(marker_code != jpeg_marker_code::end_of_image))
         throw_jpegls_error(jpegls_errc::end_of_image_marker_not_found);
 
-#ifndef NDEBUG
     state_ = state::after_end_of_image;
-#endif
 }
 
 
@@ -265,10 +262,10 @@ int32_t jpeg_stream_reader::get_mapping_table_id(const size_t component_index) c
 }
 
 
-int32_t jpeg_stream_reader::get_mapping_table_index(const uint8_t table_id) const noexcept
+int32_t jpeg_stream_reader::find_mapping_table_index(const uint8_t mapping_table_id) const noexcept
 {
-    const auto it{find_mapping_table_entry(table_id)};
-    return it != mapping_tables_.cend() ? static_cast<int32_t>(it - mapping_tables_.cbegin()) : mapping_table_missing;
+    const auto it{find_mapping_table_entry(mapping_table_id)};
+    return it == mapping_tables_.cend() ? mapping_table_missing : static_cast<int32_t>(it - mapping_tables_.cbegin());
 }
 
 
@@ -299,6 +296,7 @@ void jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code,
         break;
 
     case jpeg_marker_code::start_of_scan:
+        check_height_and_width();
         read_start_of_scan_segment();
         break;
 
@@ -421,16 +419,16 @@ void jpeg_stream_reader::read_preset_parameters_segment()
         read_preset_coding_parameters();
         return;
 
-    case jpegls_preset_parameters_type::oversize_image_dimension:
-        read_oversize_image_dimension();
-        return;
-
     case jpegls_preset_parameters_type::mapping_table_specification:
         read_mapping_table_specification();
         return;
 
     case jpegls_preset_parameters_type::mapping_table_continuation:
         read_mapping_table_continuation();
+        return;
+
+    case jpegls_preset_parameters_type::oversize_image_dimension:
+        read_oversize_image_dimension();
         return;
     }
 
@@ -559,8 +557,8 @@ void jpeg_stream_reader::read_start_of_scan_segment()
     for (size_t i{}; i != component_count_in_scan; ++i)
     {
         const uint8_t component_id{read_uint8()};
-        const uint8_t table_id{read_uint8()};
-        store_table_id(component_id, table_id);
+        const uint8_t mapping_table_id{read_uint8()};
+        store_mapping_table_id(component_id, mapping_table_id);
     }
 
     parameters_.near_lossless = read_uint8(); // Read NEAR parameter
@@ -795,7 +793,7 @@ void jpeg_stream_reader::skip_remaining_segment_data() noexcept
 }
 
 
-void jpeg_stream_reader::check_frame_info() const
+void jpeg_stream_reader::check_height_and_width() const
 {
     if (UNLIKELY(frame_info_.height < 1))
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
@@ -867,7 +865,7 @@ void jpeg_stream_reader::extend_mapping_table(const uint8_t table_id, const uint
 }
 
 
-void jpeg_stream_reader::store_table_id(const uint8_t component_id, const uint8_t table_id)
+void jpeg_stream_reader::store_mapping_table_id(const uint8_t component_id, const uint8_t table_id)
 {
     if (table_id == 0)
         return; // default is already 0, no need to search and update.

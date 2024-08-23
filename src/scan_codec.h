@@ -136,15 +136,6 @@ protected:
         return frame_info_;
     }
 
-    [[nodiscard]]
-    bool is_interleaved() const noexcept
-    {
-        ASSERT((parameters().interleave_mode == interleave_mode::none && frame_info().component_count == 1) ||
-               parameters().interleave_mode != interleave_mode::none);
-
-        return parameters().interleave_mode != interleave_mode::none;
-    }
-
     void reset_parameters(const int32_t range) noexcept
     {
         const regular_mode_context context_initial_value(range);

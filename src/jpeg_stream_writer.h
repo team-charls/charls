@@ -131,18 +131,18 @@ public:
         component_index_ = 0;
     }
 
-    void set_mapping_table_id(const size_t component_index, const int32_t table_id)
+    void set_mapping_table_id(const size_t component_index, const int32_t mapping_table_id)
     {
         ASSERT(component_index < maximum_component_count);
-        ASSERT(0 <= table_id && table_id <= maximum_table_id);
+        ASSERT(0 <= mapping_table_id && mapping_table_id <= maximum_mapping_table_id);
 
         // Usage of mapping tables is rare: use lazy initialization.
-        if (table_ids_.empty())
+        if (mapping_table_ids_.empty())
         {
-            table_ids_.resize(maximum_component_count);
+            mapping_table_ids_.resize(maximum_component_count);
         }
 
-        table_ids_[component_index] = static_cast<uint8_t>(table_id);
+        mapping_table_ids_[component_index] = static_cast<uint8_t>(mapping_table_id);
     }
 
 private:
@@ -241,13 +241,13 @@ private:
     [[nodiscard]]
     uint8_t mapping_table_selector() const noexcept
     {
-        return table_ids_.empty() ? 0 : table_ids_[component_index_];
+        return mapping_table_ids_.empty() ? 0 : mapping_table_ids_[component_index_];
     }
 
     span<std::byte> destination_{};
     size_t byte_offset_{};
     uint8_t component_index_{};
-    std::vector<uint8_t> table_ids_;
+    std::vector<uint8_t> mapping_table_ids_;
 };
 
 } // namespace charls

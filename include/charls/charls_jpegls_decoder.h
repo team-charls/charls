@@ -241,11 +241,11 @@ charls_decoder_get_mapping_table_id(CHARLS_IN const charls_jpegls_decoder* decod
 /// Function should be called after processing the complete JPEG-LS stream.
 /// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
-/// <param name="table_id">Mapping table ID to lookup.</param>
+/// <param name="mapping_table_id">Mapping table ID to lookup.</param>
 /// <param name="index">Output argument, will hold the mapping table index or -1 when the function returns.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_decoder_get_mapping_table_index(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t table_id,
+charls_decoder_find_mapping_table_index(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t mapping_table_id,
                                        CHARLS_OUT int32_t* index) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
@@ -268,13 +268,13 @@ charls_decoder_get_mapping_table_count(CHARLS_IN const charls_jpegls_decoder* de
 /// Function should be called after processing the complete JPEG-LS stream.
 /// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
-/// <param name="index">Index of the requested mapping table.</param>
+/// <param name="mapping_table_index">Index of the requested mapping table.</param>
 /// <param name="mapping_table_info">
 /// Output argument, will hold the mapping table information when the function returns.
 /// </param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_decoder_get_mapping_table_info(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t index,
+charls_decoder_get_mapping_table_info(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t mapping_table_index,
                                       CHARLS_OUT charls_mapping_table_info* mapping_table_info) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull));
 
@@ -285,15 +285,15 @@ charls_decoder_get_mapping_table_info(CHARLS_IN const charls_jpegls_decoder* dec
 /// Function should be called after processing the complete JPEG-LS stream.
 /// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
-/// <param name="index">Index of the requested mapping table.</param>
-/// <param name="table_data">Output argument, will hold the data of the mapping table when the function returns.</param>
-/// <param name="table_size_bytes">Length of the mapping table buffer in bytes.</param>
+/// <param name="mapping_table_index">Index of the requested mapping table.</param>
+/// <param name="mapping_table_data">Output argument, will hold the data of the mapping table when the function returns.</param>
+/// <param name="mapping_table_size_bytes">Length of the mapping table buffer in bytes.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_ATTRIBUTE_ACCESS((access(write_only, 3, 4)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_decoder_get_mapping_table_data(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t index,
-                                      CHARLS_OUT_WRITES_BYTES(table_size_bytes) void* table_data,
-                                      size_t table_size_bytes) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+charls_decoder_get_mapping_table_data(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t mapping_table_index,
+                                      CHARLS_OUT_WRITES_BYTES(mapping_table_size_bytes) void* mapping_table_data,
+                                      size_t mapping_table_size_bytes) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 #ifdef __cplusplus
 
@@ -328,7 +328,7 @@ public:
     {
         jpegls_decoder decoder{source, true};
 
-        const size_t destination_size{decoder.destination_size()};
+        const size_t destination_size{decoder.get_destination_size()};
         if (destination_size > maximum_size_in_bytes)
             impl::throw_jpegls_error(jpegls_errc::not_enough_memory);
 
@@ -531,14 +531,14 @@ public:
     /// <summary>
     /// Returns the NEAR parameter that was used to encode the scan. A value of 0 means lossless.
     /// </summary>
-    /// <param name="component">The component index for which the NEAR parameter should be retrieved.</param>
+    /// <param name="component_index">The component index for which the NEAR parameter should be retrieved.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The value of the NEAR parameter.</returns>
     [[nodiscard]]
-    int32_t near_lossless(const int32_t component = 0) const
+    int32_t get_near_lossless(const int32_t component_index = 0) const
     {
         int32_t near_lossless;
-        check_jpegls_errc(charls_jpegls_decoder_get_near_lossless(decoder(), component, &near_lossless));
+        check_jpegls_errc(charls_jpegls_decoder_get_near_lossless(decoder(), component_index, &near_lossless));
         return near_lossless;
     }
 
@@ -589,7 +589,7 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The required size in bytes of the destination buffer.</returns>
     [[nodiscard]]
-    size_t destination_size(const uint32_t stride = 0) const
+    size_t get_destination_size(const uint32_t stride = 0) const
     {
         size_t size_in_bytes;
         check_jpegls_errc(charls_jpegls_decoder_get_destination_size(decoder(), stride, &size_in_bytes));
@@ -635,7 +635,7 @@ public:
     [[nodiscard]]
     Container decode(const uint32_t stride = 0)
     {
-        Container destination(destination_size() / sizeof(ContainerValueType));
+        Container destination(get_destination_size() / sizeof(ContainerValueType));
 
         decode(destination.data(), destination.size() * sizeof(ContainerValueType), stride);
         return destination;
@@ -701,16 +701,16 @@ public:
     /// <remarks>
     /// Function should be called after processing the complete JPEG-LS stream.
     /// </remarks>
-    /// <param name="table_id">Mapping table ID to lookup.</param>
+    /// <param name="mapping_table_id">Mapping table ID to lookup.</param>
     /// <returns>
     /// The index of the mapping table or -1 (mapping_table_missing) when the table is not present in the JPEG-LS stream.
     /// </returns>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     [[nodiscard]]
-    int32_t get_mapping_table_index(const int32_t table_id) const
+    int32_t find_mapping_table_index(const int32_t mapping_table_id) const
     {
         int32_t index;
-        check_jpegls_errc(charls_decoder_get_mapping_table_index(decoder(), table_id, &index));
+        check_jpegls_errc(charls_decoder_find_mapping_table_index(decoder(), mapping_table_id, &index));
         return index;
     }
 

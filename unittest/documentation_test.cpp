@@ -42,7 +42,7 @@ std::vector<std::byte> decode_advanced(const std::vector<std::byte>& source)
         throw std::runtime_error("Not a grayscale image");
 
     // After read_header() other properties can also be retrieved.
-    if (decoder.near_lossless() != 0)
+    if (decoder.get_near_lossless() != 0)
     {
         // Handle lossy images.
     }
@@ -149,7 +149,7 @@ private:
         Assert::AreEqual(reference_file.bits_per_sample(), frame_info.bits_per_sample);
         Assert::AreEqual(interleave_mode, decoder.interleave_mode());
 
-        vector<std::byte> destination(decoder.destination_size());
+        vector<std::byte> destination(decoder.get_destination_size());
         decoder.decode(destination);
 
         const vector<std::byte>& uncompressed_source{reference_file.image_data()};

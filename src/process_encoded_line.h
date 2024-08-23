@@ -58,11 +58,11 @@ class process_encoded_single_component_masked final : public process_encoded_lin
 {
 public:
     process_encoded_single_component_masked(const void* source, const size_t source_stride, const size_t bytes_per_pixel,
-                                            const uint32_t bits_per_pixel) noexcept :
+                                            const uint32_t bits_per_sample) noexcept :
         source_{source},
         source_stride_{source_stride},
         bytes_per_pixel_{bytes_per_pixel},
-        mask_{(1U << bits_per_pixel) - 1U},
+        mask_{(1U << bits_per_sample) - 1U},
         single_byte_pixel_{bytes_per_pixel_ == sizeof(std::byte)}
     {
         ASSERT(bytes_per_pixel == sizeof(std::byte) || bytes_per_pixel == sizeof(uint16_t));

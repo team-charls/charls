@@ -135,7 +135,7 @@ public:
         write_segment(jpeg_marker_code::jpegls_preset_parameters, segment.data(), segment.size());
     }
 
-    void write_oversize_image_dimension(const uint32_t number_of_bytes, const uint32_t height, const uint32_t width,
+    void write_oversize_image_dimension(const uint32_t number_of_bytes, const uint32_t width, const uint32_t height,
                                         const bool extra_byte = false)
     {
         // Format is defined in ISO/IEC 14495-1, C.2.4.1.4
@@ -170,7 +170,6 @@ public:
 
         write_segment(jpeg_marker_code::jpegls_preset_parameters, segment.data(), segment.size());
     }
-
 
     void write_start_of_scan_segment(int component_id, const int component_count, const int near_lossless,
                                      const interleave_mode interleave_mode)

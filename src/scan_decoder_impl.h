@@ -43,7 +43,7 @@ public:
         decode_lines();
         end_scan();
 
-        return get_cur_byte_pos() - scan_begin;
+        return get_actual_position() - scan_begin;
     }
 
 private:
@@ -265,7 +265,7 @@ private:
         if (end_index - 1 == width_)
             return end_index - start_index;
 
-        // run interruption
+        // Run interruption
         const pixel_type rb{previous_line_[end_index]};
         current_line_[end_index] = decode_run_interruption_pixel(ra, rb);
         decrement_run_index();
@@ -375,7 +375,7 @@ private:
 
         if (index != pixel_count)
         {
-            // incomplete run.
+            // Incomplete run.
             index += (J[run_index_] > 0) ? read_value(J[run_index_]) : 0;
         }
 

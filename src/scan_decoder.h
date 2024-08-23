@@ -88,7 +88,7 @@ protected:
     }
 
     [[nodiscard]]
-    const std::byte* get_cur_byte_pos() const noexcept
+    const std::byte* get_actual_position() const noexcept
     {
         int32_t valid_bits{valid_bits_};
         const std::byte* compressed_bytes{position_};

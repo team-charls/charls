@@ -62,7 +62,7 @@ bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompress
         encoder.destination(our_encoded_bytes);
         encoder.frame_info(decoder.frame_info());
         encoder.interleave_mode(decoder.interleave_mode());
-        encoder.near_lossless(decoder.near_lossless());
+        encoder.near_lossless(decoder.get_near_lossless());
         encoder.preset_coding_parameters(decoder.preset_coding_parameters());
         std::ignore = encoder.encode(uncompressed_data, uncompressed_length);
 
@@ -99,7 +99,7 @@ void test_compliance(const byte* compressed_bytes, const size_t compressed_lengt
 
         const auto destination{decoder.decode<vector<byte>>()};
 
-        if (decoder.near_lossless() == 0)
+        if (decoder.get_near_lossless() == 0)
         {
             for (size_t i{}; i != uncompressed_length; ++i)
             {
@@ -208,7 +208,7 @@ void test_sample_annex_h4_5()
     jpegls_decoder decoder;
     decoder.source(palettised_data);
     decoder.read_header();
-    vector<byte> destination(decoder.destination_size());
+    vector<byte> destination(decoder.get_destination_size());
     decoder.decode(destination);
 
     constexpr array expected{byte{0}, byte{0}, byte{1}, byte{1}, byte{1}, byte{2},
@@ -218,7 +218,7 @@ void test_sample_annex_h4_5()
     const int32_t mapping_table_id{decoder.get_mapping_table_id(0)};
     assert::is_true(mapping_table_id == 5);
 
-    const auto table_index{decoder.get_mapping_table_index(mapping_table_id)};
+    const auto table_index{decoder.find_mapping_table_index(mapping_table_id)};
 
     const mapping_table_info table_info{decoder.get_mapping_table_info(table_index)};
     vector<byte> mapping_table(table_info.data_size);

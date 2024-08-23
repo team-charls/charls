@@ -15,7 +15,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, const size_t size)
         if (const auto& frame_info{decoder.frame_info()};
             frame_info.height < 500 && frame_info.width < 500 && frame_info.component_count < 4)
         {
-            std::vector<uint8_t> destination(decoder.destination_size());
+            std::vector<uint8_t> destination(decoder.get_destination_size());
             decoder.decode(destination);
         }
     }

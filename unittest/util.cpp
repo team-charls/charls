@@ -182,7 +182,7 @@ bool verify_encoded_bytes(const vector<byte>& uncompressed_source, const vector<
     jpegls_encoder encoder;
     encoder.frame_info(decoder.frame_info())
         .interleave_mode(decoder.interleave_mode())
-        .near_lossless(decoder.near_lossless())
+        .near_lossless(decoder.get_near_lossless())
         .preset_coding_parameters(decoder.preset_coding_parameters());
 
     vector<byte> our_encoded_bytes(encoded_source.size() + 16);
@@ -243,7 +243,7 @@ void test_compliance(const vector<byte>& encoded_source, const vector<byte>& unc
     jpegls_decoder decoder{encoded_source, true};
     const auto destination{decoder.decode<vector<byte>>()};
 
-    if (decoder.near_lossless() == 0)
+    if (decoder.get_near_lossless() == 0)
     {
         for (size_t i{}; i != uncompressed_source.size(); ++i)
         {
@@ -256,7 +256,7 @@ void test_compliance(const vector<byte>& encoded_source, const vector<byte>& unc
     else
     {
         const frame_info frame_info{decoder.frame_info()};
-        const auto near_lossless{decoder.near_lossless()};
+        const auto near_lossless{decoder.get_near_lossless()};
 
         if (frame_info.bits_per_sample <= 8)
         {

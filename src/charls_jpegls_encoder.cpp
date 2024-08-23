@@ -93,7 +93,7 @@ struct charls_jpegls_encoder final
     void set_mapping_table_id(const int32_t component_index, const int32_t table_id)
     {
         check_argument_range(minimum_component_index, maximum_component_index, component_index);
-        check_argument_range(0, maximum_table_id, table_id);
+        check_argument_range(0, maximum_mapping_table_id, table_id);
 
         writer_.set_mapping_table_id(static_cast<size_t>(component_index), table_id);
     }
@@ -163,8 +163,8 @@ struct charls_jpegls_encoder final
 
     void write_mapping_table(const int32_t table_id, const int32_t entry_size, const span<const byte> table_data)
     {
-        check_argument_range(minimum_table_id, maximum_table_id, table_id);
-        check_argument_range(minimum_entry_size, maximum_entry_size, entry_size);
+        check_argument_range(minimum_mapping_table_id, maximum_mapping_table_id, table_id);
+        check_argument_range(minimum_mapping_entry_size, maximum_mapping_entry_size, entry_size);
         check_argument(table_data.data() || table_data.empty());
         check_argument(table_data.size() >= static_cast<size_t>(entry_size), jpegls_errc::invalid_argument_size);
         check_operation(state_ >= state::destination_set && state_ < state::completed);
@@ -178,20 +178,12 @@ struct charls_jpegls_encoder final
         check_argument(source.data() || source.empty());
         check_operation(is_frame_info_configured() && state_ != state::initial);
         check_interleave_mode_against_component_count();
+        stride = check_stride_and_source(source.size(), stride);
 
         const int32_t maximum_sample_value{calculate_maximum_sample_value(frame_info_.bits_per_sample)};
         if (UNLIKELY(
                 !is_valid(user_preset_coding_parameters_, maximum_sample_value, near_lossless_, &preset_coding_parameters_)))
             throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
-
-        if (stride == auto_calculate_stride)
-        {
-            stride = calculate_stride();
-        }
-        else
-        {
-            check_stride(stride, source.size());
-        }
 
         transition_to_tables_and_miscellaneous_state();
         write_color_transform_segment();
@@ -283,36 +275,39 @@ private:
     }
 
     [[nodiscard]]
-    size_t calculate_stride() const noexcept
+    size_t check_stride_and_source(const size_t source_size, size_t stride) const
+    {
+        const size_t minimum_stride{calculate_minimum_stride()};
+        if (stride == auto_calculate_stride)
+        {
+            stride = minimum_stride;
+        }
+        else
+        {
+            if (UNLIKELY(stride < minimum_stride))
+                throw_jpegls_error(jpegls_errc::invalid_argument_stride);
+        }
+
+        const size_t not_used_bytes_at_end{stride - minimum_stride};
+        const size_t minimum_source_size{interleave_mode_ == interleave_mode::none
+                                             ? (stride * frame_info_.component_count * frame_info_.height) -
+                                                   not_used_bytes_at_end
+                                             : (stride * frame_info_.height) - not_used_bytes_at_end};
+
+        if (UNLIKELY(source_size < minimum_source_size))
+            throw_jpegls_error(jpegls_errc::invalid_argument_size);
+
+        return stride;
+    }
+
+    [[nodiscard]]
+    size_t calculate_minimum_stride() const noexcept
     {
         const auto stride{static_cast<size_t>(frame_info_.width) * bit_to_byte_count(frame_info_.bits_per_sample)};
         if (interleave_mode_ == interleave_mode::none)
             return stride;
 
         return stride * frame_info_.component_count;
-    }
-
-    void check_stride(const size_t stride, const size_t source_size) const
-    {
-        const size_t minimum_stride{calculate_stride()};
-        if (UNLIKELY(stride < minimum_stride))
-            throw_jpegls_error(jpegls_errc::invalid_argument_stride);
-
-        // Simple check to verify user input, and prevent out-of-bound read access.
-        // Stride parameter defines the number of bytes on a scan line.
-        if (interleave_mode_ == interleave_mode::none)
-        {
-            if (const size_t minimum_source_size{stride * frame_info_.component_count * frame_info_.height -
-                                                 (stride - minimum_stride)};
-                UNLIKELY(source_size < minimum_source_size))
-                throw_jpegls_error(jpegls_errc::invalid_argument_stride);
-        }
-        else
-        {
-            if (const size_t minimum_source_size{stride * frame_info_.height - (stride - minimum_stride)};
-                UNLIKELY(source_size < minimum_source_size))
-                throw_jpegls_error(jpegls_errc::invalid_argument_stride);
-        }
     }
 
     void check_interleave_mode_against_component_count() const

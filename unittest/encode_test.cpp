@@ -87,6 +87,12 @@ public:
         encode("DataFiles/test8.ppm", 91862, interleave_mode::sample, color_transformation::hp3);
     }
 
+    TEST_METHOD(encode_monchrome_16_bit_interleave_none) // NOLINT
+    {
+        constexpr array data{byte{}, byte{10}, byte{}, byte{20}, byte{}, byte{30}, byte{}, byte{40}};
+        encode({2, 2, 16, 1}, {data.cbegin(), data.cend()}, 36, interleave_mode::none);
+    }
+
     TEST_METHOD(encode_color_16_bit_interleave_none) // NOLINT
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
@@ -101,8 +107,11 @@ public:
 
     TEST_METHOD(encode_color_16_bit_interleave_sample) // NOLINT
     {
-        constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
-        encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 45, interleave_mode::sample);
+        constexpr array data{byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 0
+                             byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 1
+                             byte{1}, byte{10}, byte{1}, byte{20}, byte{1}, byte{30},  // row 1, pixel 0
+                             byte{1}, byte{40}, byte{1}, byte{50}, byte{1}, byte{60}}; // row 1, pixel 1
+        encode({2, 2, 16, 3}, {data.cbegin(), data.cend()}, 51, interleave_mode::sample);
     }
 
     TEST_METHOD(encode_color_16_bit_interleave_line_hp1) // NOLINT
@@ -173,8 +182,14 @@ public:
 
     TEST_METHOD(encode_4_components_16_bit_interleave_sample) // NOLINT
     {
-        constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}, byte{70}, byte{80}};
-        encode({1, 1, 16, 4}, {data.cbegin(), data.cend()}, 52, interleave_mode::sample);
+        constexpr array data{byte{},  byte{},   byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 0
+                             byte{},  byte{},   byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 1
+                             byte{1}, byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40},  // row 1, pixel 0
+                             byte{1}, byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}}; // row 1, pixel 1
+
+
+        // constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}, byte{70}, byte{80}};
+        encode({2, 2, 16, 4}, {data.cbegin(), data.cend()}, 61, interleave_mode::sample);
     }
 
 private:
@@ -222,12 +237,12 @@ private:
         Assert::IsTrue(interleave_mode == decoder.interleave_mode());
         Assert::IsTrue(color_transformation == decoder.color_transformation());
 
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
         decoder.decode(destination);
 
         Assert::AreEqual(destination.size(), reference_source.size());
 
-        if (decoder.near_lossless() == 0)
+        if (decoder.get_near_lossless() == 0)
         {
             for (size_t i{}; i != reference_source.size(); ++i)
             {
