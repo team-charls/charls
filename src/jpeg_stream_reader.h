@@ -101,7 +101,7 @@ public:
     }
 
     [[nodiscard]]
-    int32_t get_mapping_table_index(uint8_t table_id) const noexcept;
+    int32_t find_mapping_table_index(uint8_t mapping_table_id) const noexcept;
 
     [[nodiscard]]
     mapping_table_info get_mapping_table_info(size_t index) const;
@@ -168,31 +168,29 @@ private:
     uint32_t maximum_sample_value() const noexcept;
 
     void skip_remaining_segment_data() noexcept;
-    void check_frame_info() const;
+    void check_height_and_width() const;
     void check_coding_parameters() const;
     void frame_info_height(uint32_t height);
     void frame_info_width(uint32_t width);
     void call_application_data_callback(jpeg_marker_code marker_code) const;
     void add_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
     void extend_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
-    void store_table_id(uint8_t component_id, uint8_t table_id);
+    void store_mapping_table_id(uint8_t component_id, uint8_t table_id);
 
+    /// <summary>
+    /// ISO/IEC 14495-1, Annex C defines 3 data formats.
+    /// Annex C.4 defines the format that only contains mapping tables.
+    /// </summary>
     [[nodiscard]]
     bool is_abbreviated_format_for_table_specification_data() const
     {
-        if (mapping_table_count() > 0)
-        {
-            if (state_ == state::frame_section)
-            {
-                impl::throw_jpegls_error(jpegls_errc::abbreviated_format_and_spiff_header);
-            }
+        if (mapping_table_count() == 0)
+            return false;
 
-            // ISO/IEC 14495-1, Annex C defines 3 data formats.
-            // Annex C.4 defines the format that only contains mapping tables.
-            return state_ == state::header_section;
-        }
+        if (UNLIKELY(state_ == state::frame_section))
+            impl::throw_jpegls_error(jpegls_errc::abbreviated_format_and_spiff_header_mismatch);
 
-        return false;
+        return state_ == state::header_section;
     }
 
     enum class state

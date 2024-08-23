@@ -56,7 +56,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_RESTART_MARKER_NOT_FOUND = 23,
     CHARLS_JPEGLS_ERRC_END_OF_IMAGE_MARKER_NOT_FOUND = 24,
     CHARLS_JPEGLS_ERRC_UNKNOWN_COMPONENT_ID = 25,
-    CHARLS_JPEGLS_ERRC_ABBREVIATED_FORMAT_AND_SPIFF_HEADER = 26,
+    CHARLS_JPEGLS_ERRC_ABBREVIATED_FORMAT_AND_SPIFF_HEADER_MISMATCH = 26,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH = 27,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_HEIGHT = 28,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE = 29,
@@ -325,7 +325,7 @@ enum class [[nodiscard]] jpegls_errc
     /// <summary>
     /// This error is returned for stream with only mapping tables and a spiff header.
     /// </summary>
-    abbreviated_format_and_spiff_header = impl::CHARLS_JPEGLS_ERRC_ABBREVIATED_FORMAT_AND_SPIFF_HEADER,
+    abbreviated_format_and_spiff_header_mismatch = impl::CHARLS_JPEGLS_ERRC_ABBREVIATED_FORMAT_AND_SPIFF_HEADER_MISMATCH,
 
     /// <summary>
     /// This error is returned when the stream contains a width parameter defined more than once or in an incompatible way.

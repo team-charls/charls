@@ -170,9 +170,9 @@ public:
 
     TEST_METHOD(read_header_with_too_small_start_of_frame_throws) // NOLINT
     {
-        constexpr array buffer{byte{0xFF}, byte{0xD8},
-                               byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
-                               byte{0x00}, byte{0x07}};
+        constexpr array buffer{
+            byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
+            byte{0x00}, byte{0x06}, byte{2},    byte{2},    byte{2}, byte{2}, byte{2}, byte{2}, byte{1}};
 
         jpeg_stream_reader reader;
         reader.source(buffer);
@@ -182,9 +182,9 @@ public:
 
     TEST_METHOD(read_header_with_too_small_start_of_frame_in_component_info_throws) // NOLINT
     {
-        constexpr array buffer{byte{0xFF}, byte{0xD8},
-                               byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
-                               byte{0x00}, byte{0x07}};
+        constexpr array buffer{
+            byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
+            byte{0x00}, byte{0x08}, byte{2},    byte{2},    byte{2}, byte{2}, byte{2}, byte{2}, byte{1}};
 
         jpeg_stream_reader reader;
         reader.source(buffer);
@@ -705,7 +705,7 @@ public:
         reader.read_header();
 
         Assert::AreEqual(size_t{1}, reader.mapping_table_count());
-        Assert::AreEqual(0, reader.get_mapping_table_index(1));
+        Assert::AreEqual(0, reader.find_mapping_table_index(1));
 
         const auto info{reader.get_mapping_table_info(0)};
         Assert::AreEqual(int32_t{1}, info.table_id);
@@ -824,7 +824,7 @@ public:
         reader.read_header();
 
         Assert::AreEqual(size_t{1}, reader.mapping_table_count());
-        Assert::AreEqual(0, reader.get_mapping_table_index(1));
+        Assert::AreEqual(0, reader.find_mapping_table_index(1));
 
         const auto info{reader.get_mapping_table_info(0)};
         Assert::AreEqual(int32_t{1}, info.table_id);

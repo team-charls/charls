@@ -91,7 +91,7 @@ struct charls_jpegls_decoder final
     }
 
     [[nodiscard]]
-    size_t destination_size(const size_t stride) const
+    size_t get_destination_size(const size_t stride) const
     {
         const auto [width, height, bits_per_sample, component_count]{frame_info_checked()};
 
@@ -138,11 +138,11 @@ struct charls_jpegls_decoder final
     }
 
     [[nodiscard]]
-    int32_t get_mapping_table_index(const int32_t table_id) const
+    int32_t find_mapping_table_index(const int32_t mapping_table_id) const
     {
         check_state_completed();
-        check_argument_range(minimum_table_id, maximum_table_id, table_id);
-        return reader_.get_mapping_table_index(static_cast<uint8_t>(table_id));
+        check_argument_range(minimum_mapping_table_id, maximum_mapping_table_id, mapping_table_id);
+        return reader_.find_mapping_table_index(static_cast<uint8_t>(mapping_table_id));
     }
 
     [[nodiscard]]
@@ -153,18 +153,18 @@ struct charls_jpegls_decoder final
     }
 
     [[nodiscard]]
-    mapping_table_info get_mapping_table_info(const int32_t index) const
+    mapping_table_info get_mapping_table_info(const int32_t mapping_table_index) const
     {
-        check_table_index(index);
-        return reader_.get_mapping_table_info(index);
+        check_mapping_table_index(mapping_table_index);
+        return reader_.get_mapping_table_info(mapping_table_index);
     }
 
-    void get_mapping_table_data(const int32_t index, const span<byte> table) const
+    void get_mapping_table_data(const int32_t mapping_table_index, const span<byte> table_data) const
     {
-        check_table_index(index);
-        check_argument(table.data() || table.empty());
+        check_mapping_table_index(mapping_table_index);
+        check_argument(table_data.data() || table_data.empty());
 
-        reader_.get_mapping_table_data(index, table);
+        reader_.get_mapping_table_data(mapping_table_index, table_data);
     }
 
     void decode(span<byte> destination, size_t stride)
@@ -239,9 +239,9 @@ private:
         check_operation(state_ == state::completed);
     }
 
-    void check_table_index(const int32_t index) const
+    void check_mapping_table_index(const int32_t mapping_table_index) const
     {
-        check_argument_range(0, mapping_table_count() - 1, index);
+        check_argument_range(0, mapping_table_count() - 1, mapping_table_index);
     }
 
     void check_parameter_coherent() const
@@ -400,7 +400,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_dec
     const charls_jpegls_decoder* decoder, const uint32_t stride, size_t* destination_size_bytes) noexcept
 try
 {
-    *check_pointer(destination_size_bytes) = check_pointer(decoder)->destination_size(stride);
+    *check_pointer(destination_size_bytes) = check_pointer(decoder)->get_destination_size(stride);
     return jpegls_errc::success;
 }
 catch (...)
@@ -462,11 +462,11 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_decoder_get_mapping_table_index(const charls_jpegls_decoder* decoder, const int32_t table_id, int32_t* index) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_find_mapping_table_index(
+    const charls_jpegls_decoder* decoder, const int32_t mapping_table_id, int32_t* index) noexcept
 try
 {
-    *check_pointer(index) = check_pointer(decoder)->get_mapping_table_index(table_id);
+    *check_pointer(index) = check_pointer(decoder)->find_mapping_table_index(mapping_table_id);
     return jpegls_errc::success;
 }
 catch (...)
@@ -488,11 +488,12 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table_info(
-    const charls_jpegls_decoder* decoder, const int32_t index, mapping_table_info* mapping_table_info) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_decoder_get_mapping_table_info(const charls_jpegls_decoder* decoder, const int32_t mapping_table_index,
+                                      charls_mapping_table_info* mapping_table_info) noexcept
 try
 {
-    *check_pointer(mapping_table_info) = check_pointer(decoder)->get_mapping_table_info(index);
+    *check_pointer(mapping_table_info) = check_pointer(decoder)->get_mapping_table_info(mapping_table_index);
     return jpegls_errc::success;
 }
 catch (...)
@@ -501,11 +502,13 @@ catch (...)
 }
 
 
-USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_mapping_table_data(
-    const charls_jpegls_decoder* decoder, const int32_t index, void* table_data, const size_t table_size_bytes) noexcept
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_decoder_get_mapping_table_data(const charls_jpegls_decoder* decoder, const int32_t mapping_table_index,
+                                      void* mapping_table_data, const size_t mapping_table_size_bytes) noexcept
 try
 {
-    check_pointer(decoder)->get_mapping_table_data(index, {static_cast<byte*>(table_data), table_size_bytes});
+    check_pointer(decoder)->get_mapping_table_data(mapping_table_index,
+                                                   {static_cast<byte*>(mapping_table_data), mapping_table_size_bytes});
     return jpegls_errc::success;
 }
 catch (...)

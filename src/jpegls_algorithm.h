@@ -119,9 +119,9 @@ constexpr int32_t compute_range_parameter(const int32_t maximum_sample_value, co
 /// Computes the parameter LIMIT. (see ISO/IEC 14495-1, A.2.1)
 /// </summary>
 [[nodiscard]]
-constexpr int32_t compute_limit_parameter(const int32_t bits_per_pixel)
+constexpr int32_t compute_limit_parameter(const int32_t bits_per_sample)
 {
-    return 2 * (bits_per_pixel + std::max(8, bits_per_pixel));
+    return 2 * (bits_per_sample + std::max(8, bits_per_sample));
 }
 
 

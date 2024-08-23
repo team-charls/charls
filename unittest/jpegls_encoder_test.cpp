@@ -461,8 +461,9 @@ public:
         encoder.write_standard_spiff_header(spiff_color_space::grayscale);
 
         constexpr int32_t spiff_end_of_directory_entry_type{1};
-        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder, spiff_end_of_directory_entry_type]
-            { encoder.write_spiff_entry(spiff_end_of_directory_entry_type, "test", 4); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder, spiff_end_of_directory_entry_type] {
+            encoder.write_spiff_entry(spiff_end_of_directory_entry_type, "test", 4);
+        });
     }
 
     TEST_METHOD(write_spiff_entry_with_invalid_size_throws) // NOLINT
@@ -1059,7 +1060,8 @@ public:
         array<byte, 12> destination;
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&encoder] { ignore = encoder.create_abbreviated_format(); });
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&encoder] { ignore = encoder.create_abbreviated_format(); });
     }
 
     TEST_METHOD(set_preset_coding_parameters) // NOLINT
@@ -1122,7 +1124,7 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
         jpegls_decoder decoder(destination, true);
-        vector<byte> destination_decoded(decoder.destination_size());
+        vector<byte> destination_decoded(decoder.get_destination_size());
         decoder.decode(destination_decoded);
         Assert::AreEqual(1, decoder.get_mapping_table_id(0));
     }
@@ -1142,7 +1144,7 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
         jpegls_decoder decoder(destination, true);
-        vector<byte> destination_decoded(decoder.destination_size());
+        vector<byte> destination_decoded(decoder.get_destination_size());
         decoder.decode(destination_decoded);
         Assert::AreEqual(0, decoder.get_mapping_table_id(0));
     }
@@ -1257,9 +1259,10 @@ public:
         const size_t bytes_written{encoder.encode(source, 10)};
         destination.resize(bytes_written);
 
-        constexpr array expected{byte{100}, byte{100}, byte{100}, byte{150}, byte{150},
-                                 byte{150}, byte{200}, byte{200}, byte{200}};
-        test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
+        constexpr array expected_destination{byte{100}, byte{100}, byte{100}, byte{150}, byte{150},
+                                             byte{150}, byte{200}, byte{200}, byte{200}};
+        test_by_decoding(destination, frame_info, expected_destination.data(), expected_destination.size(),
+                         interleave_mode::none);
     }
 
     TEST_METHOD(encode_with_stride_interleave_none_8_bit_small_image) // NOLINT
@@ -1275,8 +1278,9 @@ public:
         const size_t bytes_written{encoder.encode(source, 4)};
         destination.resize(bytes_written);
 
-        constexpr array expected{byte{100}, byte{99}, byte{101}, byte{98}};
-        test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
+        constexpr array expected_destination{byte{100}, byte{99}, byte{101}, byte{98}};
+        test_by_decoding(destination, frame_info, expected_destination.data(), expected_destination.size(),
+                         interleave_mode::none);
     }
 
     TEST_METHOD(encode_with_stride_interleave_none_16_bit) // NOLINT
@@ -1293,9 +1297,9 @@ public:
         const size_t bytes_written{encoder.encode(source, 10 * sizeof(uint16_t))};
         destination.resize(bytes_written);
 
-        constexpr array<uint16_t, 9> expected{100, 100, 100, 150, 150, 150, 200, 200, 200};
-        test_by_decoding(destination, frame_info, expected.data(), expected.size() * sizeof(uint16_t),
-                         interleave_mode::none);
+        constexpr array<uint16_t, 9> expected_destination{100, 100, 100, 150, 150, 150, 200, 200, 200};
+        test_by_decoding(destination, frame_info, expected_destination.data(),
+                         expected_destination.size() * sizeof(uint16_t), interleave_mode::none);
     }
 
     TEST_METHOD(encode_with_stride_interleave_sample_8_bit) // NOLINT
@@ -1312,9 +1316,10 @@ public:
         const size_t bytes_written{encoder.encode(source, 10)};
         destination.resize(bytes_written);
 
-        constexpr array expected{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
-                                 byte{200}, byte{100}, byte{150}, byte{200}};
-        test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::sample);
+        constexpr array expected_destination{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
+                                             byte{200}, byte{100}, byte{150}, byte{200}};
+        test_by_decoding(destination, frame_info, expected_destination.data(), expected_destination.size(),
+                         interleave_mode::sample);
     }
 
     TEST_METHOD(encode_with_stride_interleave_sample_16_bit) // NOLINT
@@ -1330,9 +1335,9 @@ public:
         const size_t bytes_written{encoder.encode(source, 10 * sizeof(uint16_t))};
         destination.resize(bytes_written);
 
-        constexpr array<uint16_t, 9> expected{100, 150, 200, 100, 150, 200, 100, 150, 200};
-        test_by_decoding(destination, frame_info, expected.data(), expected.size() * sizeof(uint16_t),
-                         interleave_mode::sample);
+        constexpr array<uint16_t, 9> expected_destination{100, 150, 200, 100, 150, 200, 100, 150, 200};
+        test_by_decoding(destination, frame_info, expected_destination.data(),
+                         expected_destination.size() * sizeof(uint16_t), interleave_mode::sample);
     }
 
     TEST_METHOD(encode_with_bad_stride_interleave_none_throws) // NOLINT
@@ -1347,7 +1352,7 @@ public:
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_argument_stride,
+        assert_expect_exception(jpegls_errc::invalid_argument_size,
                                 [&encoder, &source] { ignore = encoder.encode(source, 4); });
     }
 
@@ -1362,7 +1367,7 @@ public:
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
 
-        assert_expect_exception(jpegls_errc::invalid_argument_stride,
+        assert_expect_exception(jpegls_errc::invalid_argument_size,
                                 [&encoder, &source] { ignore = encoder.encode(source, 7); });
     }
 
@@ -1506,28 +1511,10 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::line);
     }
 
-    TEST_METHOD(encode_4_components_6_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
+    TEST_METHOD(encode_4_components_5_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
         const vector source(size_t{512} * 512 * 4, byte{0xFF});
-        constexpr frame_info frame_info{512, 512, 6, 4};
-
-        jpegls_encoder encoder;
-        encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
-
-        vector<byte> destination(encoder.estimated_destination_size());
-        encoder.destination(destination);
-
-        const size_t bytes_written{encoder.encode(source)};
-        destination.resize(bytes_written);
-
-        const vector expected(size_t{512} * 512 * 4, byte{63});
-        test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::sample);
-    }
-
-    TEST_METHOD(encode_4_components_6_bit_with_high_bits_set_interleave_mode_line) // NOLINT
-    {
-        const vector source(size_t{512} * 512 * 4, byte{0xFF});
-        constexpr frame_info frame_info{512, 512, 6, 4};
+        constexpr frame_info frame_info{512, 512, 5, 4};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::line);
@@ -1538,14 +1525,14 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector expected(size_t{512} * 512 * 4, byte{63});
+        const vector expected(size_t{512} * 512 * 4, byte{31});
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::line);
     }
 
-    TEST_METHOD(encode_4_components_10_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
+    TEST_METHOD(encode_4_components_7_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
     {
-        const vector source(size_t{512} * 512 * 2 * 4, byte{0xFF});
-        constexpr frame_info frame_info{512, 512, 10, 4};
+        const vector source(size_t{512} * 512 * 4, byte{0xFF});
+        constexpr frame_info frame_info{512, 512, 7, 4};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
@@ -1556,14 +1543,14 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(size_t{512} * 512 * 4, 1023);
-        test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::sample);
+        const vector expected(size_t{512} * 512 * 4, byte{127});
+        test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_4_components_10_bit_with_high_bits_set_interleave_mode_line) // NOLINT
+    TEST_METHOD(encode_4_components_11_bit_with_high_bits_set_interleave_mode_line) // NOLINT
     {
         const vector source(size_t{512} * 512 * 2 * 4, byte{0xFF});
-        constexpr frame_info frame_info{512, 512, 10, 4};
+        constexpr frame_info frame_info{512, 512, 11, 4};
 
         jpegls_encoder encoder;
         encoder.frame_info(frame_info).interleave_mode(interleave_mode::line);
@@ -1574,8 +1561,26 @@ public:
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
-        const vector<uint16_t> expected(size_t{512} * 512 * 4, 1023);
+        const vector<uint16_t> expected(size_t{512} * 512 * 4, 2047);
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::line);
+    }
+
+    TEST_METHOD(encode_4_components_13_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
+    {
+        const vector source(size_t{512} * 512 * 2 * 4, byte{0xFF});
+        constexpr frame_info frame_info{512, 512, 13, 4};
+
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info).interleave_mode(interleave_mode::sample);
+
+        vector<byte> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        const size_t bytes_written{encoder.encode(source)};
+        destination.resize(bytes_written);
+
+        const vector<uint16_t> expected(size_t{512} * 512 * 4, 8191);
+        test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::sample);
     }
 
     TEST_METHOD(rewind) // NOLINT
@@ -1681,8 +1686,6 @@ public:
         vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination).encoding_options(encoding_options::include_pc_parameters_jai);
 
-        // Note: encoding_options::include_pc_parameters_jai is enabled by default (until the next major version)
-
         const size_t bytes_written{encoder.encode(source)};
         destination.resize(bytes_written);
 
@@ -1718,7 +1721,7 @@ public:
         Assert::AreEqual(expected.reset, reset);
     }
 
-    TEST_METHOD(encode_image_with_disabled_include_pc_parameters_jai) // NOLINT
+    TEST_METHOD(encode_image_with_include_pc_parameters_jai_not_set) // NOLINT
     {
         constexpr frame_info frame_info{1, 1, 16, 1};
         const vector<uint16_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1892,12 +1895,12 @@ private:
         Assert::IsTrue(interleave_mode == decoder.interleave_mode());
         Assert::IsTrue(color_transformation == decoder.color_transformation());
 
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
         decoder.decode(destination);
 
         Assert::AreEqual(destination.size(), expected_destination_size);
 
-        if (decoder.near_lossless() == 0)
+        if (decoder.get_near_lossless() == 0)
         {
             const auto* expected_destination_byte{static_cast<const byte*>(expected_destination)};
 

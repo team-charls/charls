@@ -23,10 +23,10 @@ constexpr int32_t minimum_application_data_id{};
 constexpr int32_t maximum_application_data_id{15};
 
 // The following limits for mapping tables are defined in ISO/IEC 14495-1, C.2.4.1.2, table C.4.
-constexpr int32_t minimum_table_id{1};
-constexpr int32_t maximum_table_id{255};
-constexpr int32_t minimum_entry_size{1};
-constexpr int32_t maximum_entry_size{255};
+constexpr int32_t minimum_mapping_table_id{1};
+constexpr int32_t maximum_mapping_table_id{255};
+constexpr int32_t minimum_mapping_entry_size{1};
+constexpr int32_t maximum_mapping_entry_size{255};
 
 constexpr int32_t max_k_value{16}; // This is an implementation limit (theoretical limit is 32)
 

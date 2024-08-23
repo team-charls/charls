@@ -15,6 +15,7 @@
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::byte;
 using std::vector;
+using std::ignore;
 
 namespace charls::test {
 
@@ -120,7 +121,7 @@ public:
         encoder.destination(destination).frame_info(frame_info).color_transformation(color_transformation::hp3);
         const vector<byte> source(20);
         assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
-                                [&encoder, &source] { std::ignore = encoder.encode(source); });
+                                [&encoder, &source] { ignore = encoder.encode(source); });
     }
 
     TEST_METHOD(encode_non_3_components_that_is_not_supported_throws) // NOLINT
@@ -132,7 +133,7 @@ public:
         encoder.destination(destination).frame_info(frame_info).color_transformation(color_transformation::hp3);
         const vector<byte> source(20);
         assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
-                                [&encoder, &source] { std::ignore = encoder.encode(source); });
+                                [&encoder, &source] { ignore = encoder.encode(source); });
     }
 };
 

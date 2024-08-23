@@ -110,7 +110,7 @@ sense to define a good naming convention. Not all JPEG-LS names are good C++ var
 | JPEG-LS Symbol | C++ name                 | Description |
 | -------------- | ------------------------ |------------ |
 | a, b, c, d     | a, b, c, d               | positions of samples in the causal template |
-| bpp            | bits_per_pixel           | number of bits needed to represent MAXVAL (not less than 2) |
+| bpp            | bits_per_sample          | number of bits needed to represent MAXVAL (not less than 2) |
 | D1, D2, D3, Di | d1, d2, d3, di           | local gradients |
 | EMErrval       | e_mapped_error_value     | Errval mapped to non-negative integers in run interruption mode |
 | Errval         | error_value              | prediction error (quantized or unquantized, before and after modulo reduction) |

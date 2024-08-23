@@ -38,110 +38,110 @@ namespace charls::test {
 TEST_CLASS(compliance_test)
 {
 public:
-    TEST_METHOD(decompress_color_8_bit_interleave_none_lossless) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_none_lossless) // NOLINT
     {
         // ISO 14495-1: official test image 1 (T87_test-1-2-3-4-5-6.zip)
-        decompress_file("DataFiles/t8c0e0.jls", "DataFiles/test8.ppm");
+        decode_encode_file("DataFiles/t8c0e0.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decompress_color_8_bit_interleave_line_lossless) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_line_lossless) // NOLINT
     {
         // ISO 14495-1: official test image 2 (T87_test-1-2-3-4-5-6.zip)
-        decompress_file("DataFiles/t8c1e0.jls", "DataFiles/test8.ppm");
+        decode_encode_file("DataFiles/t8c1e0.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decompress_color_8_bit_interleave_sample_lossless) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_sample_lossless) // NOLINT
     {
         // ISO 14495-1: official test image 3 (T87_test-1-2-3-4-5-6.zip)
-        decompress_file("DataFiles/t8c2e0.jls", "DataFiles/test8.ppm");
+        decode_encode_file("DataFiles/t8c2e0.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decompress_color_8_bit_interleave_none_near_lossless_3) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_none_near_lossless_3) // NOLINT
     {
         // ISO 14495-1: official test image 4 (T87_test-1-2-3-4-5-6.zip)
-        decompress_file("DataFiles/t8c0e3.jls", "DataFiles/test8.ppm");
+        decode_encode_file("DataFiles/t8c0e3.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decompress_color_8_bit_interleave_line_near_lossless_3) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_line_near_lossless_3) // NOLINT
     {
         // ISO 14495-1: official test image 5 (T87_test-1-2-3-4-5-6.zip)
-        decompress_file("DataFiles/t8c1e3.jls", "DataFiles/test8.ppm");
+        decode_encode_file("DataFiles/t8c1e3.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decompress_color_8_bit_interleave_sample_near_lossless_3) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_sample_near_lossless_3) // NOLINT
     {
         // ISO 14495-1: official test image 6 (T87_test-1-2-3-4-5-6.zip)
-        decompress_file("DataFiles/t8c2e3.jls", "DataFiles/test8.ppm");
+        decode_encode_file("DataFiles/t8c2e3.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decompress_color_8_bit_interleave_line_lossless_non_default) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_line_lossless_non_default) // NOLINT
     {
         // ISO 14495-1: official test image 9 (T87_test-1-2-3-4-5-6.zip)
         // NON-DEFAULT parameters T1=T2=T3=9,RESET=31.
-        decompress_file("DataFiles/t8nde0.jls", "DataFiles/test8bs2.pgm");
+        decode_encode_file("DataFiles/t8nde0.jls", "DataFiles/test8bs2.pgm");
     }
 
-    TEST_METHOD(decompress_color_8_bit_interleave_line_near_lossless_3_non_default) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_line_near_lossless_3_non_default) // NOLINT
     {
         // ISO 14495-1: official test image 10 (T87_test-1-2-3-4-5-6.zip)
         // NON-DEFAULT parameters T1=T2=T3=9,RESET=31.
-        decompress_file("DataFiles/t8nde3.jls", "DataFiles/test8bs2.pgm");
+        decode_encode_file("DataFiles/t8nde3.jls", "DataFiles/test8bs2.pgm");
     }
 
-    TEST_METHOD(decompress_monochrome_16_bit_lossless) // NOLINT
+    TEST_METHOD(decode_encode_monochrome_16_bit_lossless) // NOLINT
     {
         // ISO 14495-1: official test image 11 (T87_test-11-12.zip)
         // Note: test image is actually 12 bit.
-        decompress_file("DataFiles/t16e0.jls", "DataFiles/test16.pgm");
+        decode_encode_file("DataFiles/t16e0.jls", "DataFiles/test16.pgm");
     }
 
-    TEST_METHOD(decompress_monochrome_16_bit_near_lossless_3) // NOLINT
+    TEST_METHOD(decode_monochrome_16_bit_near_lossless_3) // NOLINT
     {
         // ISO 14495-1: official test image 12 (T87_test-11-12.zip)
         // Note: test image is actually 12 bit.
-        decompress_file("DataFiles/t16e3.jls", "DataFiles/TEST16.pgm", false);
+        decode_encode_file("DataFiles/t16e3.jls", "DataFiles/TEST16.pgm", false);
     }
 
-    TEST_METHOD(tulips_monochrome_8_bit_lossless_hp) // NOLINT
+    TEST_METHOD(decode_encode_tulips_monochrome_8_bit_lossless_hp) // NOLINT
     {
         // Additional, Tulips encoded with HP 1.0BETA encoder.
-        decompress_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls", "DataFiles/tulips-gray-8bit-512-512.pgm");
+        decode_encode_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls", "DataFiles/tulips-gray-8bit-512-512.pgm");
     }
 
-    TEST_METHOD(decompress_color_8_bit_interleave_none_lossless_restart_7) // NOLINT
+    TEST_METHOD(decode_color_8_bit_interleave_none_lossless_restart_7) // NOLINT
     {
         // ISO 14495-1: official test image 1 but with restart markers.
-        decompress_file("DataFiles/test8_ilv_none_rm_7.jls", "DataFiles/test8.ppm", false);
+        decode_encode_file("DataFiles/test8_ilv_none_rm_7.jls", "DataFiles/test8.ppm", false);
     }
 
-    TEST_METHOD(decompress_color_8_bit_interleave_line_lossless_restart_7) // NOLINT
+    TEST_METHOD(decode_color_8_bit_interleave_line_lossless_restart_7) // NOLINT
     {
         // ISO 14495-1: official test image 2 but with restart markers.
-        decompress_file("DataFiles/test8_ilv_line_rm_7.jls", "DataFiles/test8.ppm", false);
+        decode_encode_file("DataFiles/test8_ilv_line_rm_7.jls", "DataFiles/test8.ppm", false);
     }
 
-    TEST_METHOD(decompress_color_8_bit_interleave_sample_lossless_restart_7) // NOLINT
+    TEST_METHOD(decode_color_8_bit_interleave_sample_lossless_restart_7) // NOLINT
     {
         // ISO 14495-1: official test image 3 but with restart markers.
-        decompress_file("DataFiles/test8_ilv_sample_rm_7.jls", "DataFiles/test8.ppm", false);
+        decode_encode_file("DataFiles/test8_ilv_sample_rm_7.jls", "DataFiles/test8.ppm", false);
     }
 
-    TEST_METHOD(decompress_color_8_bit_interleave_sample_lossless_restart_300) // NOLINT
+    TEST_METHOD(decode_color_8_bit_interleave_sample_lossless_restart_300) // NOLINT
     {
         // ISO 14495-1: official test image 3 but with restart markers and restart interval 300
-        decompress_file("DataFiles/test8_ilv_sample_rm_300.jls", "DataFiles/test8.ppm", false);
+        decode_encode_file("DataFiles/test8_ilv_sample_rm_300.jls", "DataFiles/test8.ppm", false);
     }
 
-    TEST_METHOD(decompress_monochrome_16_bit_restart_5) // NOLINT
+    TEST_METHOD(decode_monochrome_16_bit_restart_5) // NOLINT
     {
         // ISO 14495-1: official test image 12 but with restart markers and restart interval 5
-        decompress_file("DataFiles/test16_rm_5.jls", "DataFiles/test16.pgm", false);
+        decode_encode_file("DataFiles/test16_rm_5.jls", "DataFiles/test16.pgm", false);
     }
 
-    TEST_METHOD(decompress_mapping_table_sample_annex_h4_5) // NOLINT
+    TEST_METHOD(decode_mapping_table_sample_annex_h4_5) // NOLINT
     {
         // ISO 14495-1: Sample image from appendix H.4.5 "Example of a palletised image" / Figure H.10
-        constexpr array palettised_data{
+        constexpr array palletised_data{
             byte{0xFF}, byte{0xD8}, // Start of image (SOI) marker
             byte{0xFF}, byte{0xF7}, // Start of JPEG-LS frame (SOF 55) marker - marker segment follows
             byte{0x00}, byte{0x0B}, // Length of marker segment = 11 bytes including the length field
@@ -176,9 +176,9 @@ public:
         };
 
         jpegls_decoder decoder;
-        decoder.source(palettised_data);
+        decoder.source(palletised_data);
         decoder.read_header();
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
         decoder.decode(destination);
 
         constexpr array expected{byte{0}, byte{0}, byte{1}, byte{1}, byte{1}, byte{2},
@@ -188,7 +188,7 @@ public:
         const int32_t mapping_table_id{decoder.get_mapping_table_id(0)};
         Assert::AreEqual(5, mapping_table_id);
 
-        const auto table_index{decoder.get_mapping_table_index(mapping_table_id)};
+        const auto table_index{decoder.find_mapping_table_index(mapping_table_id)};
 
         const mapping_table_info table_info{decoder.get_mapping_table_info(table_index)};
         vector<byte> mapping_table(table_info.data_size);
@@ -202,7 +202,7 @@ public:
     }
 
 private:
-    static void decompress_file(const char* encoded_filename, const char* raw_filename, const bool check_encode = true)
+    static void decode_encode_file(const char* encoded_filename, const char* raw_filename, const bool check_encode = true)
     {
         const auto encoded_source{read_file(encoded_filename)};
         const jpegls_decoder decoder{encoded_source, true};

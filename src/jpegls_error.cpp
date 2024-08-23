@@ -63,10 +63,10 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "Invalid JPEG-LS stream: the JPEG stream is not encoded with the JPEG-LS algorithm";
 
     case jpegls_errc::parameter_value_not_supported:
-        return "The JPEG-LS stream is encoded with a parameter value that is not supported by the CharLS decoder";
+        return "The JPEG-LS stream is encoded with a parameter value that is not supported by the this decoder";
 
     case jpegls_errc::color_transform_not_supported:
-        return "The color transform is not supported";
+        return "The HP color transform is not supported";
 
     case jpegls_errc::jpegls_preset_extended_parameter_type_not_supported:
         return "Unsupported JPEG-LS stream: JPEG-LS preset parameters segment contains a JPEG-LS Extended (ISO/IEC "
@@ -120,7 +120,7 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
     case jpegls_errc::unknown_component_id:
         return "Invalid JPEG-LS stream: unknown component ID in scan segment";
 
-    case jpegls_errc::abbreviated_format_and_spiff_header:
+    case jpegls_errc::abbreviated_format_and_spiff_header_mismatch:
         return "Invalid JPEG-LS stream: mapping tables without SOF but with spiff header";
 
     case jpegls_errc::invalid_parameter_width:
@@ -145,8 +145,7 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "Invalid JPEG-LS stream: JPEG-LS preset parameters segment contains invalid values";
 
     case jpegls_errc::invalid_parameter_color_transformation:
-        return "Invalid JPEG-LS stream: Color transformation segment contains invalid values or doesn't match with frame "
-               "info";
+        return "Invalid JPEG-LS stream: Color transformation segment contains invalid values or frame info mismatch";
 
     case jpegls_errc::invalid_parameter_mapping_table_id:
         return "Invalid JPEG-LS stream: mapping table ID outside valid range or duplicate";
@@ -175,7 +174,7 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "The component count argument is outside the range [1, 255]";
 
     case jpegls_errc::invalid_argument_interleave_mode:
-        return "The interleave mode is not None, Sample, Line) or invalid in combination with component count";
+        return "The interleave mode is not None, Sample, Line or invalid in combination with component count";
 
     case jpegls_errc::invalid_argument_near_lossless:
         return "The near lossless argument is outside the range [0, min(255, MAXVAL/2)]";

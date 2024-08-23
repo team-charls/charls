@@ -82,7 +82,7 @@ public:
     {
         const jpegls_decoder decoder;
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.destination_size(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_destination_size(); });
     }
 
     TEST_METHOD(read_header_without_source_throws) // NOLINT
@@ -137,7 +137,7 @@ public:
         const vector<byte> source(2000);
         const jpegls_decoder decoder{source, false};
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.near_lossless(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_near_lossless(); });
     }
 
     TEST_METHOD(preset_coding_parameters_without_read_header_throws) // NOLINT
@@ -150,17 +150,17 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.preset_coding_parameters(); });
     }
 
-    TEST_METHOD(destination_size) // NOLINT
+    TEST_METHOD(get_destination_size) // NOLINT
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
 
         const jpegls_decoder decoder{source, true};
 
         constexpr size_t expected_destination_size{size_t{256} * 256 * 3};
-        Assert::AreEqual(expected_destination_size, decoder.destination_size());
+        Assert::AreEqual(expected_destination_size, decoder.get_destination_size());
     }
 
-    TEST_METHOD(destination_size_stride_interleave_none) // NOLINT
+    TEST_METHOD(get_destination_size_stride_interleave_none) // NOLINT
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -168,10 +168,10 @@ public:
         constexpr size_t stride{512};
         constexpr size_t minimum_stride{256};
         constexpr size_t expected_destination_size{stride * 256 * 3 - (stride - minimum_stride)};
-        Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
+        Assert::AreEqual(expected_destination_size, decoder.get_destination_size(stride));
     }
 
-    TEST_METHOD(destination_size_stride_interleave_none_16_bit) // NOLINT
+    TEST_METHOD(get_destination_size_stride_interleave_none_16_bit) // NOLINT
     {
         const auto source{read_file("DataFiles/t16e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -179,10 +179,10 @@ public:
         constexpr size_t stride{513};
         constexpr size_t minimum_stride{512};
         constexpr size_t expected_destination_size{stride * 256 - (stride - minimum_stride)};
-        Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
+        Assert::AreEqual(expected_destination_size, decoder.get_destination_size(stride));
     }
 
-    TEST_METHOD(destination_size_stride_interleave_line) // NOLINT
+    TEST_METHOD(get_destination_size_stride_interleave_line) // NOLINT
     {
         const auto source{read_file("DataFiles/t8c1e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -190,10 +190,10 @@ public:
         constexpr size_t stride{1024};
         constexpr size_t minimum_stride{size_t{3} * 256};
         constexpr size_t expected_destination_size{stride * 256 - (stride - minimum_stride)};
-        Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
+        Assert::AreEqual(expected_destination_size, decoder.get_destination_size(stride));
     }
 
-    TEST_METHOD(destination_size_stride_interleave_sample) // NOLINT
+    TEST_METHOD(get_destination_size_stride_interleave_sample) // NOLINT
     {
         const auto source{read_file("DataFiles/t8c2e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -201,46 +201,46 @@ public:
         constexpr size_t stride{1024};
         constexpr size_t minimum_stride{size_t{3} * 256};
         constexpr size_t expected_destination_size{stride * 256 - (stride - minimum_stride)};
-        Assert::AreEqual(expected_destination_size, decoder.destination_size(stride));
+        Assert::AreEqual(expected_destination_size, decoder.get_destination_size(stride));
     }
 
-    TEST_METHOD(destination_size_for_interleave_none_with_bad_stride_throws) // NOLINT
+    TEST_METHOD(get_destination_size_for_interleave_none_with_bad_stride_throws) // NOLINT
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
         const jpegls_decoder decoder{source, true};
 
         constexpr uint32_t correct_stride{256};
         assert_expect_exception(jpegls_errc::invalid_argument_stride,
-                                [&decoder, &correct_stride] { std::ignore = decoder.destination_size(correct_stride - 1); });
+                                [&decoder, &correct_stride] { ignore = decoder.get_destination_size(correct_stride - 1); });
     }
 
-    TEST_METHOD(destination_size_for_interleave_none_16_bit_with_bad_stride_throws) // NOLINT
+    TEST_METHOD(get_destination_size_for_interleave_none_16_bit_with_bad_stride_throws) // NOLINT
     {
         const auto source{read_file("DataFiles/t16e0.jls")};
         const jpegls_decoder decoder{source, true};
 
         constexpr uint32_t correct_stride{256 * 2};
         assert_expect_exception(jpegls_errc::invalid_argument_stride,
-                                [&decoder, &correct_stride] { std::ignore = decoder.destination_size(correct_stride - 1); });
+                                [&decoder, &correct_stride] { ignore = decoder.get_destination_size(correct_stride - 1); });
     }
 
-    TEST_METHOD(destination_size_for_sample_interleave_with_bad_stride_throws) // NOLINT
+    TEST_METHOD(get_destination_size_for_sample_interleave_with_bad_stride_throws) // NOLINT
     {
         const auto source{read_file("DataFiles/t8c2e0.jls")};
         const jpegls_decoder decoder{source, true};
 
         constexpr uint32_t correct_stride{3 * 256};
         assert_expect_exception(jpegls_errc::invalid_argument_stride,
-                                [&decoder, &correct_stride] { std::ignore = decoder.destination_size(correct_stride - 1); });
+                                [&decoder, &correct_stride] { ignore = decoder.get_destination_size(correct_stride - 1); });
     }
 
-    TEST_METHOD(destination_size_for_small_image_with_custom_stride) // NOLINT
+    TEST_METHOD(get_destination_size_for_small_image_with_custom_stride) // NOLINT
     {
         const auto source{read_file("8bit-monochrome-2x2.jls")};
         jpegls_decoder decoder{source, true};
 
         constexpr uint32_t stride{4};
-        const size_t destination_size{decoder.destination_size(stride)};
+        const size_t destination_size{decoder.get_destination_size(stride)};
         Assert::AreEqual(size_t{6}, destination_size);
 
         vector<byte> destination(destination_size);
@@ -252,7 +252,7 @@ public:
         const auto source{read_file("DataFiles/t8c0e0.jls")};
         jpegls_decoder decoder{source, true};
 
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
         decoder.decode(destination);
 
         portable_anymap_file reference_file{
@@ -272,7 +272,7 @@ public:
 
         jpegls_decoder decoder{source, true};
 
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
         decoder.decode(destination);
 
         portable_anymap_file reference_file{
@@ -295,7 +295,7 @@ public:
         writer.write_start_of_scan_segment(1, 2, 0, interleave_mode::sample);
 
         jpegls_decoder decoder(writer.buffer, true);
-        std::vector<byte> destination(decoder.destination_size());
+        std::vector<byte> destination(decoder.get_destination_size());
 
         assert_expect_exception(jpegls_errc::parameter_value_not_supported,
                                 [&decoder, &destination] { decoder.decode(destination); });
@@ -367,7 +367,7 @@ public:
         const auto source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder{source, true};
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
 
         constexpr uint32_t correct_stride{256};
         assert_expect_exception(jpegls_errc::invalid_argument_stride, [&decoder, &destination, &correct_stride] {
@@ -380,7 +380,7 @@ public:
         const auto source{read_file("DataFiles/t8c2e0.jls")};
 
         jpegls_decoder decoder{source, true};
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
 
         constexpr uint32_t correct_stride{256 * 3};
         assert_expect_exception(jpegls_errc::invalid_argument_stride, [&decoder, &destination, correct_stride] {
@@ -393,7 +393,7 @@ public:
         const auto source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder{source, true};
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
         const uint32_t standard_stride{decoder.frame_info().width};
         decoder.decode(destination, standard_stride);
 
@@ -406,7 +406,7 @@ public:
         const auto source{read_file("DataFiles/t8c2e0.jls")};
 
         jpegls_decoder decoder{source, true};
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
         const uint32_t standard_stride{decoder.frame_info().width * 3};
         decoder.decode(destination, standard_stride);
 
@@ -420,7 +420,7 @@ public:
         const auto source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder{source, true};
-        vector<byte> destination(decoder.destination_size(custom_stride));
+        vector<byte> destination(decoder.get_destination_size(custom_stride));
         decoder.decode(destination, custom_stride);
 
         verify_decoded_bytes(decoder.interleave_mode(), decoder.frame_info(), destination, custom_stride,
@@ -433,7 +433,7 @@ public:
         const auto source{read_file("DataFiles/t8c2e0.jls")};
 
         jpegls_decoder decoder{source, true};
-        vector<byte> destination(decoder.destination_size(custom_stride));
+        vector<byte> destination(decoder.get_destination_size(custom_stride));
         decoder.decode(destination, custom_stride);
 
         verify_decoded_bytes(decoder.interleave_mode(), decoder.frame_info(), destination, custom_stride,
@@ -544,7 +544,7 @@ public:
         const auto encoded{jpegls_encoder::encode(source_to_encode, frame_info)};
 
         jpegls_decoder decoder{encoded, true};
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
         decoder.decode(destination);
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder, &destination] { decoder.decode(destination); });
@@ -596,7 +596,7 @@ public:
         Assert::AreEqual(1216U, frame_info.height);
         Assert::AreEqual(968U, frame_info.width);
 
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
 
         assert_expect_exception(jpegls_errc::invalid_data,
                                 [&decoder, &destination] { decoder.decode(destination); });
@@ -615,7 +615,7 @@ public:
             const vector source(encoded.cbegin(), encoded.cend() - 1);
 
             jpegls_decoder decoder{source, true};
-            vector<byte> destination(decoder.destination_size());
+            vector<byte> destination(decoder.get_destination_size());
             assert_expect_exception(jpegls_errc::need_more_data,
                                     [&decoder, &destination] { decoder.decode(destination); });
         }
@@ -623,7 +623,7 @@ public:
         {
             const vector source(encoded.cbegin(), encoded.cend() - 2);
             jpegls_decoder decoder{source, true};
-            vector<byte> destination(decoder.destination_size());
+            vector<byte> destination(decoder.get_destination_size());
 
             assert_expect_exception(jpegls_errc::need_more_data,
                                     [&decoder, &destination] { decoder.decode(destination); });
@@ -633,7 +633,7 @@ public:
             auto source(encoded);
             source[source.size() - 1] = byte{0x33};
             jpegls_decoder decoder{source, true};
-            vector<byte> destination(decoder.destination_size());
+            vector<byte> destination(decoder.get_destination_size());
 
             assert_expect_exception(jpegls_errc::end_of_image_marker_not_found,
                                     [&decoder, &destination] { decoder.decode(destination); });
@@ -652,7 +652,7 @@ public:
         Assert::AreEqual(65516U, frame_info.height);
         Assert::AreEqual(1U, frame_info.width);
 
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
 
         assert_expect_exception(jpegls_errc::invalid_data,
                                 [&decoder, &destination] { decoder.decode(destination); });
@@ -670,7 +670,7 @@ public:
         Assert::AreEqual(1U, frame_info.height);
         Assert::AreEqual(1U, frame_info.width);
 
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
 
         assert_expect_exception(jpegls_errc::need_more_data,
                                 [&decoder, &destination] { decoder.decode(destination); });
@@ -687,7 +687,7 @@ public:
         source.insert(it, stream_writer.buffer.cbegin(), stream_writer.buffer.cend());
 
         jpegls_decoder decoder{source, true};
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
 
         assert_expect_exception(jpegls_errc::restart_marker_not_found,
                                 [&decoder, &destination] { decoder.decode(destination); });
@@ -704,7 +704,7 @@ public:
         *it = byte{0xD1};
 
         jpegls_decoder decoder{source, true};
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
 
         assert_expect_exception(jpegls_errc::restart_marker_not_found,
                                 [&decoder, &destination] { decoder.decode(destination); });
@@ -740,7 +740,7 @@ public:
         const vector too_small_source(source.begin(), it);
 
         jpegls_decoder decoder{too_small_source, true};
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
 
         assert_expect_exception(jpegls_errc::need_more_data,
                                 [&decoder, &destination] { decoder.decode(destination); });
@@ -790,7 +790,7 @@ public:
         Assert::IsFalse(callback_called);
     }
 
-    TEST_METHOD(at_comment_that_throws_returns_callback_error) // NOLINT
+    TEST_METHOD(at_comment_that_throws_returns_callback_failed_error) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -876,9 +876,9 @@ public:
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        constexpr uint32_t height{numeric_limits<uint16_t>::max() + 1U};
         constexpr uint32_t width{99};
-        writer.write_oversize_image_dimension(3, height, width);
+        constexpr uint32_t height{numeric_limits<uint16_t>::max() + 1U};
+        writer.write_oversize_image_dimension(3, width, height);
         writer.write_start_of_frame_segment(0, 0, 8, 3);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
@@ -894,8 +894,8 @@ public:
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        constexpr uint32_t height{numeric_limits<uint16_t>::max()};
         constexpr uint32_t width{99};
+        constexpr uint32_t height{numeric_limits<uint16_t>::max()};
         writer.write_oversize_image_dimension(2, 0, 0);
         writer.write_start_of_frame_segment(width, height, 8, 3);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
@@ -907,7 +907,6 @@ public:
         Assert::AreEqual(height, decoder.frame_info().height);
         Assert::AreEqual(width, decoder.frame_info().width);
     }
-
 
     TEST_METHOD(oversize_image_dimension_with_invalid_number_of_bytes_throws) // NOLINT
     {
@@ -929,10 +928,10 @@ public:
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        constexpr uint32_t height{numeric_limits<uint16_t>::max()};
         constexpr uint32_t width{99};
+        constexpr uint32_t height{numeric_limits<uint16_t>::max()};
         writer.write_start_of_frame_segment(width, height, 8, 3);
-        writer.write_oversize_image_dimension(2, 0, 10);
+        writer.write_oversize_image_dimension(2, 10, 0);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
         jpegls_decoder decoder;
@@ -945,9 +944,9 @@ public:
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
+        constexpr uint32_t width{};
         constexpr uint32_t height{numeric_limits<uint16_t>::max()};
-        constexpr uint32_t width{0};
-        writer.write_oversize_image_dimension(2, 10, width);
+        writer.write_oversize_image_dimension(2, width, 10);
         writer.write_start_of_frame_segment(width, height, 8, 3);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
@@ -968,9 +967,9 @@ public:
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        constexpr uint32_t height{numeric_limits<uint32_t>::max()};
         constexpr uint32_t width{numeric_limits<uint32_t>::max()};
-        writer.write_oversize_image_dimension(4, height, width);
+        constexpr uint32_t height{numeric_limits<uint32_t>::max()};
+        writer.write_oversize_image_dimension(4, width, height);
         constexpr size_t component_count{2};
         writer.write_start_of_frame_segment(0, 0, 8, component_count);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
@@ -981,10 +980,10 @@ public:
 
 #if INTPTR_MAX == INT64_MAX
         Assert::AreEqual(component_count * numeric_limits<uint32_t>::max() * numeric_limits<uint32_t>::max(),
-                         decoder.destination_size());
+                         decoder.get_destination_size());
 #elif INTPTR_MAX == INT32_MAX
         assert_expect_exception(jpegls_errc::parameter_value_not_supported,
-                                [&decoder] { ignore = decoder.destination_size(); });
+                                [&decoder] { ignore = decoder.get_destination_size(); });
 #else
 #error Unknown pointer size or missing size macros!
 #endif
@@ -1003,7 +1002,7 @@ public:
         decoder.source(encoded_source);
         decoder.read_header();
 
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
 
         void* data{destination.data()};
         const uint16_t size{static_cast<uint16_t>(destination.size())};
@@ -1050,7 +1049,7 @@ public:
         decoder.source(writer.buffer);
         decoder.read_spiff_header();
 
-        assert_expect_exception(jpegls_errc::abbreviated_format_and_spiff_header,
+        assert_expect_exception(jpegls_errc::abbreviated_format_and_spiff_header_mismatch,
                                 [&decoder] { ignore = decoder.read_header(); });
     }
 
@@ -1118,7 +1117,7 @@ public:
         decoder.source(data_h10);
         decoder.read_header();
 
-        vector<byte> destination(decoder.destination_size());
+        vector<byte> destination(decoder.get_destination_size());
         decoder.decode(destination);
 
         const int32_t count{decoder.mapping_table_count()};
@@ -1160,7 +1159,7 @@ public:
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder(encoded_source, true);
-        vector<byte> decoded_destination(decoder.destination_size());
+        vector<byte> decoded_destination(decoder.get_destination_size());
 
         decoder.decode(decoded_destination);
 
@@ -1174,7 +1173,7 @@ public:
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder(encoded_source, true);
-        vector<byte> decoded_destination(decoder.destination_size());
+        vector<byte> decoded_destination(decoder.get_destination_size());
 
         decoder.decode(decoded_destination);
 
@@ -1196,7 +1195,7 @@ public:
 
         const jpegls_decoder decoder(encoded_source, true);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_mapping_table_index(3); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.find_mapping_table_index(3); });
     }
 
     TEST_METHOD(mapping_table_index_invalid_index_throws) // NOLINT
@@ -1204,11 +1203,11 @@ public:
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder(encoded_source, true);
-        vector<byte> decoded_destination(decoder.destination_size());
+        vector<byte> decoded_destination(decoder.get_destination_size());
         decoder.decode(decoded_destination);
 
-        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.get_mapping_table_index(0); });
-        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.get_mapping_table_index(256); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.find_mapping_table_index(0); });
+        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.find_mapping_table_index(256); });
     }
 
     TEST_METHOD(mapping_table_count_before_decode_throws) // NOLINT
@@ -1245,7 +1244,7 @@ public:
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
         jpegls_decoder decoder(encoded_source, true);
-        vector<byte> decoded_destination(decoder.destination_size());
+        vector<byte> decoded_destination(decoder.get_destination_size());
         decoder.decode(decoded_destination);
         vector<byte> table(1000);
 
@@ -1325,7 +1324,7 @@ private:
         writer.write_start_of_image();
         constexpr uint32_t height{numeric_limits<uint16_t>::max()};
         constexpr uint32_t width{0};
-        writer.write_oversize_image_dimension(number_of_bytes, 10, width, true);
+        writer.write_oversize_image_dimension(number_of_bytes, width, 10, true);
         writer.write_start_of_frame_segment(width, height, 8, 3);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
@@ -1340,7 +1339,7 @@ private:
         const auto source{read_file(image_filename)};
 
         jpegls_decoder decoder{source, true};
-        vector<byte> destination(decoder.destination_size(stride) - 1);
+        vector<byte> destination(decoder.get_destination_size(stride) - 1);
 
         assert_expect_exception(jpegls_errc::destination_too_small,
                                 [&decoder, &destination, &stride] { decoder.decode(destination, stride); });

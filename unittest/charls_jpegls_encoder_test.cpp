@@ -228,7 +228,7 @@ public:
         Assert::AreEqual(jpegls_errc::success, error);
 
         error = charls_jpegls_encoder_encode_from_buffer(encoder, nullptr, 0, 0);
-        Assert::AreEqual(jpegls_errc::destination_too_small, error);
+        Assert::AreEqual(jpegls_errc::invalid_argument_size, error);
 
         charls_jpegls_encoder_destroy(encoder);
     }

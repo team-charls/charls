@@ -97,7 +97,7 @@ struct lossless_traits<uint8_t, 8> final : lossless_traits_impl<uint8_t, 8>
 {
     using pixel_type = sample_type;
 
-    FORCE_INLINE constexpr static int8_t mod_range(const int32_t error_value) noexcept
+    FORCE_INLINE constexpr static int8_t modulo_range(const int32_t error_value) noexcept
     {
         return static_cast<int8_t>(error_value);
     }
@@ -120,7 +120,7 @@ struct lossless_traits<uint16_t, 16> final : lossless_traits_impl<uint16_t, 16>
 {
     using pixel_type = sample_type;
 
-    FORCE_INLINE constexpr static int16_t mod_range(const int32_t error_value) noexcept
+    FORCE_INLINE constexpr static int16_t modulo_range(const int32_t error_value) noexcept
     {
         return static_cast<int16_t>(error_value);
     }

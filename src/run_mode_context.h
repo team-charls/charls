@@ -99,12 +99,6 @@ public:
         return false;
     }
 
-    [[nodiscard]]
-    FORCE_INLINE bool compute_map_negative_e(const int32_t k) const noexcept
-    {
-        return k != 0 || 2 * nn_ >= n_;
-    }
-
 private:
     // Initialize with the default values as defined in ISO 14495-1, A.8, step 1.d and 1.f.
     int32_t run_interruption_type_{};
