@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "charls/jpegls_error.h"
+#include "charls/jpegls_error.hpp"
 
 #include <cassert>
 #include <cstdlib>

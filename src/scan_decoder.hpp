@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "charls/jpegls_error.h"
+#include "charls/jpegls_error.hpp"
 
-#include "jpeg_marker_code.h"
-#include "process_decoded_line.h"
-#include "scan_codec.h"
-#include "util.h"
-#include "span.h"
+#include "jpeg_marker_code.hpp"
+#include "process_decoded_line.hpp"
+#include "scan_codec.hpp"
+#include "util.hpp"
+#include "span.hpp"
 
 #include <cassert>
 #include <memory>

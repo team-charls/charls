@@ -1,20 +1,21 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.h"
+#include "pch.hpp"
 
-#include "util.h"
+#include "util.hpp"
 
-#include <charls/charls.h>
+#include <charls/jpegls_decoder.hpp>
+#include <charls/jpegls_encoder.hpp>
 
 #include <array>
 #include <tuple>
 #include <vector>
 
-#include "../src/jpeg_marker_code.h"
-#include "../src/jpegls_preset_parameters_type.h"
+#include "../src/jpeg_marker_code.hpp"
+#include "../src/jpegls_preset_parameters_type.hpp"
 
-#include "jpeg_test_stream_writer.h"
+#include "jpeg_test_stream_writer.hpp"
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::array;

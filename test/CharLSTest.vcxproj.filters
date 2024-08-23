@@ -31,19 +31,19 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="util.h">
+    <ClInclude Include="util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bitstreamdamage.h">
+    <ClInclude Include="bitstreamdamage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="compliance.h">
+    <ClInclude Include="compliance.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="performance.h">
+    <ClInclude Include="performance.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="portable_anymap_file.h">
+    <ClInclude Include="portable_anymap_file.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

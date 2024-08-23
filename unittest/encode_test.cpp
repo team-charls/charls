@@ -1,13 +1,13 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.h"
+#include "pch.hpp"
 
-#include "util.h"
+#include "util.hpp"
 
-#include <charls/charls.h>
+#include <charls/charls.hpp>
 
-#include "../test/portable_anymap_file.h"
+#include "../test/portable_anymap_file.hpp"
 
 #include <array>
 

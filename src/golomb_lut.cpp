@@ -1,9 +1,9 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "golomb_lut.h"
+#include "golomb_lut.hpp"
 
-#include "jpegls_algorithm.h"
+#include "jpegls_algorithm.hpp"
 
 namespace charls {
 

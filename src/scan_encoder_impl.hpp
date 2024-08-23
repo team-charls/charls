@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "coding_parameters.h"
-#include "color_transform.h"
-#include "jpegls_algorithm.h"
-#include "process_encoded_line.h"
-#include "scan_encoder.h"
+#include "coding_parameters.hpp"
+#include "color_transform.hpp"
+#include "jpegls_algorithm.hpp"
+#include "process_encoded_line.hpp"
+#include "scan_encoder.hpp"
 
 namespace charls {
 

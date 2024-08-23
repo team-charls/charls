@@ -5,8 +5,8 @@ add_executable(convert-cpp "")
 
 target_sources(convert-cpp
   PRIVATE
-    pch.h
-    bmp_image.h
+    pch.hpp
+    bmp_image.hpp
     main.cpp
 )
 

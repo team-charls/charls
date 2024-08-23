@@ -19,3 +19,6 @@ uint
 json
 intrinsics
 palletised
+rect
+cmove
+Fuzzer

@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "charls/jpegls_error.h"
+#include "charls/jpegls_error.hpp"
 
-#include "constants.h"
-#include "jpeg_marker_code.h"
-#include "jpegls_preset_parameters_type.h"
-#include "span.h"
-#include "util.h"
+#include "constants.hpp"
+#include "jpeg_marker_code.hpp"
+#include "jpegls_preset_parameters_type.hpp"
+#include "span.hpp"
+#include "util.hpp"
 
 #include <vector>
 

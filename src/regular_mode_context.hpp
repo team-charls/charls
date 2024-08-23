@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "jpegls_algorithm.h"
+#include "jpegls_algorithm.hpp"
 
 #include <cassert>
 #include <cstdint>

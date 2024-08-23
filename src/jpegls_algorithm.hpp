@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "constants.h"
-#include "util.h"
+#include "constants.hpp"
+#include "util.hpp"
 
 namespace charls {
 

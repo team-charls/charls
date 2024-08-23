@@ -4,8 +4,8 @@
 #pragma once
 
 #include "charls/public_types.h"
-#include "jpegls_algorithm.h"
-#include "util.h"
+#include "jpegls_algorithm.hpp"
+#include "util.hpp"
 
 #include <algorithm>
 #include <cassert>

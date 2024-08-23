@@ -6,14 +6,14 @@ add_executable(charlstest "")
 target_sources(charlstest
   PRIVATE
     bitstreamdamage.cpp
-    bitstreamdamage.h
+    bitstreamdamage.hpp
     compliance.cpp
-    compliance.h
+    compliance.hpp
     main.cpp
     performance.cpp
-    performance.h
+    performance.hpp
     util.cpp
-    util.h
+    util.hpp
 )
 
 if(WIN32 AND MSVC_VERSION GREATER_EQUAL 1920)

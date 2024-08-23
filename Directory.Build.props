@@ -81,8 +81,8 @@
 
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include</AdditionalIncludeDirectories>
 
-      <!-- Use by default precompiled headers with the modern name pch.h -->
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <!-- Use by default precompiled headers with the modern name pch.hpp -->
+      <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
 
       <!-- For checked builds, enable the MS static analyzer build into the compiler. -->
       <EnablePREfast Condition="'$(Configuration)'=='Checked'">true</EnablePREfast>

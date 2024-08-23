@@ -1,9 +1,9 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <charls/charls.h>
+#include <charls/charls.hpp>
 
-#include "../src/conditional_static_cast.h"
+#include "../src/conditional_static_cast.hpp"
 
 #ifdef _MSC_VER
 #include <io.h>
