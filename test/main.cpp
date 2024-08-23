@@ -1,14 +1,13 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "../src/default_traits.h"
-#include "../src/lossless_traits.h"
+#include "../src/default_traits.hpp"
+#include "../src/lossless_traits.hpp"
 
-#include "util.h"
-
-#include "bitstreamdamage.h"
-#include "compliance.h"
-#include "performance.h"
+#include "bitstreamdamage.hpp"
+#include "compliance.hpp"
+#include "performance.hpp"
+#include "util.hpp"
 
 #include <algorithm>
 #include <array>
@@ -27,6 +26,7 @@ using std::cout;
 using std::error_code;
 using std::getline;
 using std::ifstream;
+using std::ignore;
 using std::ios;
 using std::istream;
 using std::iter_swap;
@@ -39,7 +39,6 @@ using std::string;
 using std::stringstream;
 using std::uniform_int_distribution;
 using std::vector;
-using std::ignore;
 using namespace charls;
 
 namespace {

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <charls/charls.h>
+#include <charls/charls.hpp>
 
 #include <cassert>
 #include <cstring>

@@ -1,9 +1,9 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "util.h"
+#include "util.hpp"
 
-#include "portable_anymap_file.h"
+#include "portable_anymap_file.hpp"
 
 #include <chrono>
 #include <filesystem>

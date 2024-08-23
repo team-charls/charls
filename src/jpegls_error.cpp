@@ -1,7 +1,7 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "charls/jpegls_error.h"
+#include "charls/jpegls_error.hpp"
 
 #include <string>
 

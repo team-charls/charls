@@ -1,14 +1,14 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "jpeg_stream_reader.h"
+#include "jpeg_stream_reader.hpp"
 
-#include "color_transform.h"
-#include "constants.h"
-#include "jpeg_marker_code.h"
-#include "jpegls_preset_coding_parameters.h"
-#include "jpegls_preset_parameters_type.h"
-#include "util.h"
+#include "color_transform.hpp"
+#include "constants.hpp"
+#include "jpeg_marker_code.hpp"
+#include "jpegls_preset_coding_parameters.hpp"
+#include "jpegls_preset_parameters_type.hpp"
+#include "util.hpp"
 
 #include <algorithm>
 #include <array>

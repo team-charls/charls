@@ -3,7 +3,7 @@
 
 #include "charls/version.h"
 
-#include "util.h"
+#include "util.hpp"
 
 
 using namespace charls;

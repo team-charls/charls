@@ -5,9 +5,9 @@
 
 #include "charls/public_types.h"
 
-#include "coding_parameters.h"
-#include "span.h"
-#include "util.h"
+#include "coding_parameters.hpp"
+#include "span.hpp"
+#include "util.hpp"
 
 #include <cstdint>
 #include <numeric>

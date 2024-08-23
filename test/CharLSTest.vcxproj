@@ -181,11 +181,11 @@
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bitstreamdamage.h" />
-    <ClInclude Include="compliance.h" />
-    <ClInclude Include="portable_anymap_file.h" />
-    <ClInclude Include="performance.h" />
-    <ClInclude Include="util.h" />
+    <ClInclude Include="bitstreamdamage.hpp" />
+    <ClInclude Include="compliance.hpp" />
+    <ClInclude Include="portable_anymap_file.hpp" />
+    <ClInclude Include="performance.hpp" />
+    <ClInclude Include="util.hpp" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="0015.raw">

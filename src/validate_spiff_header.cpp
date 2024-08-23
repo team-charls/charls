@@ -3,7 +3,7 @@
 
 
 #include "charls/validate_spiff_header.h"
-#include "util.h"
+#include "util.hpp"
 
 using namespace charls;
 

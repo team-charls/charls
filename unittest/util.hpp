@@ -3,9 +3,10 @@
 
 #pragma once
 
-#include <charls/charls.h>
+#include <charls/public_types.h>
+#include <charls/jpegls_error.hpp>
 
-#include "../test/portable_anymap_file.h"
+#include "../test/portable_anymap_file.hpp"
 
 #include <CppUnitTest.h>
 

@@ -1,11 +1,11 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "jpeg_stream_writer.h"
+#include "jpeg_stream_writer.hpp"
 
-#include "constants.h"
-#include "jpeg_marker_code.h"
-#include "util.h"
+#include "constants.hpp"
+#include "jpeg_marker_code.hpp"
+#include "util.hpp"
 
 #include <array>
 

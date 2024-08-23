@@ -1,10 +1,10 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "performance.h"
+#include "performance.hpp"
 
-#include "portable_anymap_file.h"
-#include "util.h"
+#include "portable_anymap_file.hpp"
+#include "util.hpp"
 
 #include <chrono>
 #include <iostream>

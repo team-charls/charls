@@ -9,28 +9,24 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Test Images">
       <UniqueIdentifier>{1153eae4-e88f-4af5-8cad-d7545b2953c6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
+    <ClInclude Include="pch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scan_encoder_tester.h">
+    <ClInclude Include="util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jpeg_test_stream_writer.h">
+    <ClInclude Include="scan_encoder_tester.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="util.h">
+    <ClInclude Include="jpegls_preset_coding_parameters_test.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jpegls_preset_coding_parameters_test.h">
+    <ClInclude Include="jpeg_test_stream_writer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,7 +6,7 @@
 #include <array>
 #include <cstddef>
 
-#include "util.h"
+#include "util.hpp"
 
 namespace charls {
 

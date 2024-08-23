@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "conditional_static_cast.h"
-#include "constants.h"
-#include "util.h"
+#include "conditional_static_cast.hpp"
+#include "constants.hpp"
+#include "util.hpp"
 
 #include <array>
 

@@ -5,12 +5,12 @@
 
 #include "charls/version.h"
 
-#include "color_transform.h"
-#include "jpeg_stream_writer.h"
-#include "jpegls_preset_coding_parameters.h"
-#include "make_scan_codec.h"
-#include "scan_encoder.h"
-#include "util.h"
+#include "color_transform.hpp"
+#include "jpeg_stream_writer.hpp"
+#include "jpegls_preset_coding_parameters.hpp"
+#include "make_scan_codec.hpp"
+#include "scan_encoder.hpp"
+#include "util.hpp"
 
 #include <new>
 
