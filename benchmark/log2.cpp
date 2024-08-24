@@ -3,18 +3,19 @@
 
 #include <benchmark/benchmark.h>
 
-#include "../src/util.h"
+#include "../src/jpegls_algorithm.hpp"
 
 #include <cmath>
 #include <limits>
 
+#pragma warning(disable : 26409) // Avoid calling new explicitly (triggered by BENCHMARK macro)
 
-uint32_t log2_floor(const uint32_t n) noexcept
+static uint32_t log2_floor(const uint32_t n) noexcept
 {
     return 31 - charls::countl_zero(n);
 }
 
-uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept
+static uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept
 {
     ASSERT(max_value > 0);
     return log2_floor(max_value) + 1;
@@ -48,9 +49,9 @@ static void bm_log2_ceil_int32(benchmark::State& state)
 {
     for (const auto _ : state)
     {
-        benchmark::DoNotOptimize(charls::log2_ceil(256));
-        benchmark::DoNotOptimize(charls::log2_ceil(1024));
-        benchmark::DoNotOptimize(charls::log2_ceil(std::numeric_limits<uint16_t>::max()));
+        benchmark::DoNotOptimize(charls::log2_ceiling(256));
+        benchmark::DoNotOptimize(charls::log2_ceiling(1024));
+        benchmark::DoNotOptimize(charls::log2_ceiling(std::numeric_limits<uint16_t>::max()));
     }
 }
 BENCHMARK(bm_log2_ceil_int32);

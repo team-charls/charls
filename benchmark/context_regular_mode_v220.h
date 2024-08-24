@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "../src/context_regular_mode.h"
+#include "../src/regular_mode_context.hpp"
+
 #include <cassert>
 #include <cstdint>
 
@@ -43,7 +44,7 @@ struct jls_context_v220 final
         int n{N};
 
         if (constexpr int limit{65536 * 256}; UNLIKELY(a >= limit || std::abs(b) >= limit))
-            impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+            impl::throw_jpegls_error(jpegls_errc::invalid_data);
 
         if (n == reset_threshold)
         {
@@ -92,7 +93,7 @@ struct jls_context_v220 final
         }
 
         if (UNLIKELY(k == max_k_value))
-            impl::throw_jpegls_error(jpegls_errc::invalid_encoded_data);
+            impl::throw_jpegls_error(jpegls_errc::invalid_data);
 
         return k;
     }

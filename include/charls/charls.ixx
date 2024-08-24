@@ -15,6 +15,6 @@ module;
 
 export module charls;
 
-#include "charls_jpegls_decoder.h"
-#include "charls_jpegls_encoder.h"
+#include "jpegls_decoder.hpp"
+#include "jpegls_encoder.hpp"
 #include "version.h"

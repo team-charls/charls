@@ -1,8 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
-    "name": "charls-benchmark",
-    "version": "1.0.0",
-    "dependencies": [
-      "benchmark"
-    ]
-  }
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "dependencies": [ { "name": "benchmark", "version>=":"1.8.5" } ],
+  "builtin-baseline": "3508985146f1b1d248c67ead13f8f54be5b4f5da"
+}

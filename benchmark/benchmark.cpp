@@ -3,7 +3,7 @@
 
 #include <benchmark/benchmark.h>
 
-#include "../src/jpegls_preset_coding_parameters.h"
+#include "../src/jpegls_preset_coding_parameters.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -12,7 +12,7 @@
 #pragma warning(disable : 26409) // Avoid calling new explicitly (triggered by BENCHMARK macro)
 
 
-int8_t quantize_gradient_org(const charls::jpegls_pc_parameters& preset, const int32_t di) noexcept
+static int8_t quantize_gradient_org(const charls::jpegls_pc_parameters& preset, const int32_t di) noexcept
 {
     constexpr int32_t near_lossless{};
 
@@ -36,7 +36,7 @@ int8_t quantize_gradient_org(const charls::jpegls_pc_parameters& preset, const i
     return 4;
 }
 
-std::vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
+static std::vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
 {
     const charls::jpegls_pc_parameters preset{charls::compute_default((1 << static_cast<uint32_t>(bit_count)) - 1, 0)};
     const int32_t range{preset.maximum_sample_value + 1};
@@ -100,7 +100,8 @@ struct lossless_traits final
 };
 
 
-__declspec(noinline) int32_t get_predicted_value_default(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
+static __declspec(noinline) int32_t
+    get_predicted_value_default(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
 {
     if (ra < rb)
     {
@@ -126,13 +127,14 @@ __declspec(noinline) int32_t get_predicted_value_default(const int32_t ra, const
 constexpr size_t int32_t_bit_count = sizeof(int32_t) * 8;
 
 
-constexpr int32_t bit_wise_sign(const int32_t i) noexcept
+static constexpr int32_t bit_wise_sign(const int32_t i) noexcept
 {
     return i >> (int32_t_bit_count - 1);
 }
 
 
-__declspec(noinline) int32_t get_predicted_value_optimized(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
+static __declspec(noinline) int32_t
+    get_predicted_value_optimized(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
 {
     // sign trick reduces the number of if statements (branches)
     const int32_t sign{bit_wise_sign(rb - ra)};
@@ -153,7 +155,7 @@ __declspec(noinline) int32_t get_predicted_value_optimized(const int32_t ra, con
 
 
 #if defined(_M_X64) || defined(_M_ARM64)
-inline int countl_zero(const uint64_t value) noexcept
+inline static int countl_zero(const uint64_t value) noexcept
 {
     if (value == 0)
         return 64;
@@ -211,7 +213,7 @@ static void bm_quantize_gradient_lut(benchmark::State& state)
 BENCHMARK(bm_quantize_gradient_lut);
 
 
-int peek_zero_bits(uint64_t val_test) noexcept
+static int peek_zero_bits(uint64_t val_test) noexcept
 {
     for (int32_t count{}; count < 16; ++count)
     {
@@ -254,7 +256,7 @@ BENCHMARK(bm_peek_zero_bits_intrinsic);
 #endif
 
 
-std::vector<uint8_t> allocate_buffer(const size_t size)
+static std::vector<uint8_t> allocate_buffer(const size_t size)
 {
     std::vector<uint8_t> buffer;
     buffer.resize(size);
@@ -306,7 +308,7 @@ private:
 };
 
 
-overwrite_buffer allocate_overwrite_buffer(const size_t size)
+static overwrite_buffer allocate_overwrite_buffer(const size_t size)
 {
     overwrite_buffer buffer;
     buffer.reset(size);
@@ -324,7 +326,7 @@ static void bm_resize_overwrite_buffer(benchmark::State& state)
 BENCHMARK(bm_resize_overwrite_buffer);
 
 
-int memset_buffer(uint8_t* data, const size_t size)
+static int memset_buffer(uint8_t* data, const size_t size) noexcept
 {
     memset(data, 0, size);
     return 0;
@@ -342,7 +344,7 @@ static void bm_memset_buffer(benchmark::State& state)
 BENCHMARK(bm_memset_buffer);
 
 
-bool has_ff_byte_classic(const unsigned int value)
+constexpr static bool has_ff_byte_classic(const unsigned int value) noexcept
 {
     // Check if any byte is equal to 0xFF
     return ((value & 0xFF) == 0xFF) || (((value >> 8) & 0xFF) == 0xFF) || (((value >> 16) & 0xFF) == 0xFF) ||
@@ -358,7 +360,7 @@ static void bm_has_ff_byte_classic(benchmark::State& state)
 }
 BENCHMARK(bm_has_ff_byte_classic);
 
-bool has_ff_byte_loop(const unsigned int value)
+static bool has_ff_byte_loop(const unsigned int value) noexcept
 {
     // Iterate over each byte and check if it is equal to 0xFF
     for (int i = 0; i < sizeof(unsigned int); ++i)
@@ -380,7 +382,8 @@ static void bm_has_ff_byte_loop(benchmark::State& state)
 }
 BENCHMARK(bm_has_ff_byte_loop);
 
-bool has_ff_byte_simd(const unsigned int value) {
+#if !defined(_M_ARM64)
+static bool has_ff_byte_simd(const unsigned int value) {
      // Use SSE instructions for parallel comparison
      const __m128i xmm_value = _mm_set1_epi32(value);
      const __m128i xmm_ff = _mm_set1_epi32(0xFF);
@@ -400,9 +403,9 @@ static void bm_has_ff_byte_simd(benchmark::State& state)
     }
 }
 BENCHMARK(bm_has_ff_byte_simd);
+#endif
 
-
-const std::byte* find_jpeg_marker_start_byte(const std::byte* position, const std::byte* end_position) noexcept
+static const std::byte* find_jpeg_marker_start_byte(const std::byte* position, const std::byte* end_position) noexcept
 {
     constexpr std::byte jpeg_marker_start_byte{0xFF};
 
@@ -484,7 +487,8 @@ T read_big_endian_unaligned(const void* buffer) noexcept
 #endif
 }
 
-uint32_t read_all_bytes_with_ff_check(const std::byte* position, const std::byte* end_position)
+#if !defined(_M_ARM64)
+static uint32_t read_all_bytes_with_ff_check(const std::byte* position, const std::byte* end_position)
 {
     uint32_t result{};
 
@@ -514,9 +518,10 @@ static void bm_read_all_bytes_with_ff_check(benchmark::State& state)
     }
 }
 BENCHMARK(bm_read_all_bytes_with_ff_check);
+#endif
 
-
-bool has_ff_byte_simd64(const uint64_t value)
+#if !defined(_M_ARM64)
+static bool has_ff_byte_simd64(const uint64_t value)
 {
     // Use SSE instructions for parallel comparison
     const __m128i xmm_value = _mm_set1_epi64x(value);
@@ -529,7 +534,7 @@ bool has_ff_byte_simd64(const uint64_t value)
     return _mm_testz_si128(comparison, comparison) == 0;
 }
 
-uint64_t read_all_bytes_with_ff_check64(const std::byte* position, const std::byte* end_position)
+static uint64_t read_all_bytes_with_ff_check64(const std::byte* position, const std::byte* end_position)
 {
     uint64_t result{};
 
@@ -557,9 +562,10 @@ static void bm_read_all_bytes_with_ff_check64(benchmark::State& state)
     }
 }
 BENCHMARK(bm_read_all_bytes_with_ff_check64);
+#endif
 
 
-uint32_t read_all_bytes_no_check(const std::byte* position, const std::byte* end_position)
+static uint32_t read_all_bytes_no_check(const std::byte* position, const std::byte* end_position) noexcept
 {
     uint32_t result{};
 
@@ -582,7 +588,7 @@ static void bm_read_all_bytes_no_check(benchmark::State& state)
 }
 BENCHMARK(bm_read_all_bytes_no_check);
 
-uint64_t read_all_bytes_no_check64(const std::byte* position, const std::byte* end_position)
+static uint64_t read_all_bytes_no_check64(const std::byte* position, const std::byte* end_position) noexcept
 {
     uint64_t result{};
 
@@ -605,7 +611,9 @@ static void bm_read_all_bytes_no_check64(benchmark::State& state)
 }
 BENCHMARK(bm_read_all_bytes_no_check64);
 
+// Tips to run the benchmark tests:
 
-
+// To run a single benchmark:
+// benchmark --benchmark_filter = bm_decode   
 
 BENCHMARK_MAIN();
