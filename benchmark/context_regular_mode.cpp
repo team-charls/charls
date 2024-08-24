@@ -6,10 +6,11 @@
 #include "context_regular_mode_v220.h"
 
 #pragma warning(disable : 26409) // Avoid calling new explicitly (triggered by BENCHMARK macro)
+#pragma warning(disable : 4746) // volatile access of 'reset_threshold' is subject to /volatile:<iso|ms> setting; (in ARM64 mode)
 
 using namespace charls;
 
-context_regular_mode g_context;
+regular_mode_context g_context;
 jls_context_v220 g_context_v220;
 
 volatile int32_t error_value;
@@ -29,7 +30,7 @@ BENCHMARK(bm_regular_mode_update_variables_220);
 
 static void bm_regular_mode_update_variables(benchmark::State& state)
 {
-    g_context = context_regular_mode();
+    g_context = regular_mode_context();
 
     for (const auto _ : state)
     {
@@ -52,12 +53,12 @@ BENCHMARK(bm_regular_mode_get_golomb_coding_parameter_v220);
 
 static void bm_regular_mode_get_golomb_coding_parameter(benchmark::State& state)
 {
-    g_context = context_regular_mode();
+    g_context = regular_mode_context();
     g_context.update_variables_and_bias(error_value, near_lossless, reset_threshold);
 
     for (const auto _ : state)
     {
-        benchmark::DoNotOptimize(g_context.get_golomb_coding_parameter());
+        benchmark::DoNotOptimize(g_context.compute_golomb_coding_parameter());
     }
 }
 BENCHMARK(bm_regular_mode_get_golomb_coding_parameter);

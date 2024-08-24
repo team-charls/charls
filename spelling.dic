@@ -22,3 +22,5 @@ palletised
 rect
 cmove
 Fuzzer
+argv'
+argc'

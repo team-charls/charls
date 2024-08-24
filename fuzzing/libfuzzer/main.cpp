@@ -1,8 +1,9 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <vector>
 #include "../include/charls/jpegls_decoder.hpp"
+
+#include <vector>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, const size_t size)
 {

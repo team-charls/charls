@@ -177,6 +177,7 @@
   <ItemGroup>
     <ClCompile Include="benchmark.cpp" />
     <ClCompile Include="context_regular_mode.cpp" />
+    <ClCompile Include="decode.cpp" />
     <ClCompile Include="log2.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +187,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="context_regular_mode_v220.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vcpkg.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
