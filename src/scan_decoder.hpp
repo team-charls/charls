@@ -8,11 +8,10 @@
 #include "jpeg_marker_code.hpp"
 #include "process_decoded_line.hpp"
 #include "scan_codec.hpp"
-#include "util.hpp"
 #include "span.hpp"
+#include "util.hpp"
 
 #include <cassert>
-#include <memory>
 
 namespace charls {
 
@@ -62,9 +61,9 @@ protected:
         read_cache_ = read_cache_ << bit_count;
     }
 
-    void on_line_end(const void* source, const size_t pixel_count, const size_t pixel_stride) const
+    void copy_line_buffer_to_destination(const void* source, void* destination, const size_t pixel_count) const noexcept
     {
-        process_line_->new_line_decoded(source, pixel_count, pixel_stride);
+        copy_from_line_buffer_(source, static_cast<std::byte*>(destination), pixel_count);
     }
 
     void end_scan()
@@ -232,7 +231,7 @@ protected:
             impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
     }
 
-    std::unique_ptr<process_decoded_line> process_line_;
+    copy_from_line_buffer_fn copy_from_line_buffer_{};
 
 private:
     using cache_t = size_t;

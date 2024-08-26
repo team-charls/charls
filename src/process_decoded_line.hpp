@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "color_transform.hpp"
 #include "util.hpp"
 
 #include <cstring>
@@ -13,150 +14,160 @@
 
 namespace charls {
 
-struct process_decoded_line
-{
-    virtual ~process_decoded_line() = default;
+using copy_from_line_buffer_fn = void (*)(const void* source, void* destination, size_t pixel_count) noexcept;
 
-    virtual void new_line_decoded(const void* source, size_t pixel_count, size_t source_stride) = 0;
-
-protected:
-    process_decoded_line() = default;
-    process_decoded_line(const process_decoded_line&) = default;
-    process_decoded_line(process_decoded_line&&) = default;
-    process_decoded_line& operator=(const process_decoded_line&) = default;
-    process_decoded_line& operator=(process_decoded_line&&) = default;
-};
-
-
-class process_decoded_single_component final : public process_decoded_line
+template<typename SampleType>
+class copy_from_line_buffer
 {
 public:
-    process_decoded_single_component(std::byte* destination, const size_t destination_stride,
-                                     const size_t bytes_per_pixel) noexcept :
-        destination_{destination}, destination_stride_{destination_stride}, bytes_per_pixel_{bytes_per_pixel}
-    {
-        ASSERT(bytes_per_pixel == sizeof(std::byte) || bytes_per_pixel == sizeof(uint16_t));
-    }
+    using sample_type = SampleType;
 
-    void new_line_decoded(const void* source, const size_t pixel_count, size_t /* source_stride */) noexcept override
+    static copy_from_line_buffer_fn get_copy_function(const interleave_mode interleave_mode, const int component_count,
+                                                      const color_transformation color_transformation) noexcept
     {
-        memcpy(destination_, source, pixel_count * bytes_per_pixel_);
-        destination_ += destination_stride_;
+        switch (interleave_mode)
+        {
+        case interleave_mode::none:
+            return copy_sample;
+
+        case interleave_mode::line:
+            switch (component_count)
+            {
+            case 3:
+                switch (color_transformation)
+                {
+                case color_transformation::none:
+                    return copy_line_3_components;
+
+                case color_transformation::hp1:
+                    return copy_line_3_components_transform<transform_hp1<sample_type>>;
+
+                case color_transformation::hp2:
+                    return copy_line_3_components_transform<transform_hp2<sample_type>>;
+
+                case color_transformation::hp3:
+                    return copy_line_3_components_transform<transform_hp3<sample_type>>;
+                }
+                break;
+            default:
+                ASSERT(component_count == 4);
+                return copy_line_4_components;
+            }
+            break;
+
+        case interleave_mode::sample:
+            switch (color_transformation)
+            {
+            case color_transformation::none:
+                switch (component_count)
+                {
+                case 3:
+                    return copy_pixels_3_components;
+                default:
+                    ASSERT(component_count == 4);
+                    return copy_pixels_4_components;
+                }
+
+            case color_transformation::hp1:
+                return copy_pixels_3_components_transform<transform_hp1<sample_type>>;
+
+            case color_transformation::hp2:
+                return copy_pixels_3_components_transform<transform_hp2<sample_type>>;
+
+            case color_transformation::hp3:
+                return copy_pixels_3_components_transform<transform_hp3<sample_type>>;
+            }
+            break;
+        }
+
+        unreachable();
     }
 
 private:
-    std::byte* destination_;
-    size_t destination_stride_;
-    size_t bytes_per_pixel_;
-};
-
-
-template<typename TransformType, typename SampleType>
-void transform_line(triplet<SampleType>* destination, const triplet<SampleType>* source, const size_t pixel_count,
-                    const TransformType& transform) noexcept
-{
-    for (size_t i{}; i < pixel_count; ++i)
+    static void copy_sample(const void* source, void* destination, const size_t pixel_count) noexcept
     {
-        destination[i] = transform(source[i].v1, source[i].v2, source[i].v3);
-    }
-}
-
-
-template<typename SampleType>
-void transform_line(quad<SampleType>* destination, const quad<SampleType>* source, const size_t pixel_count) noexcept
-{
-    for (size_t i{}; i < pixel_count; ++i)
-    {
-        destination[i] = source[i];
-    }
-}
-
-
-template<typename SampleType>
-void transform_line_to_quad(const SampleType* source, const size_t pixel_stride_in, quad<SampleType>* destination,
-                            const size_t pixel_stride) noexcept
-{
-    const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
-
-    for (size_t i{}; i < pixel_count; ++i)
-    {
-        destination[i] = {source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in],
-                          source[i + 3 * pixel_stride_in]};
-    }
-}
-
-
-template<typename TransformType, typename SampleType>
-void transform_line_to_triplet(const SampleType* source, const size_t pixel_stride_in, triplet<SampleType>* destination,
-                               const size_t pixel_stride, const TransformType& transform) noexcept
-{
-    const auto pixel_count{std::min(pixel_stride, pixel_stride_in)};
-
-    for (size_t i{}; i < pixel_count; ++i)
-    {
-        destination[i] = transform(source[i], source[i + pixel_stride_in], source[i + 2 * pixel_stride_in]);
-    }
-}
-
-
-template<typename TransformType>
-class process_decoded_transformed final : public process_decoded_line
-{
-public:
-    process_decoded_transformed(std::byte* destination, const size_t destination_stride, const int32_t component_count,
-                                const interleave_mode interleave_mode) noexcept :
-        destination_{destination},
-        destination_stride_{destination_stride},
-        component_count_{component_count},
-        interleave_mode_{interleave_mode}
-    {
+        memcpy(destination, source, pixel_count * sizeof(sample_type));
     }
 
-    void new_line_decoded(const void* source, const size_t pixel_count, const size_t source_stride) noexcept override
+    static void copy_line_3_components(const void* source, void* destination, const size_t pixel_count) noexcept
     {
-        decode_transform(source, destination_, pixel_count, source_stride);
-        destination_ += destination_stride_;
-    }
+        auto* s{static_cast<const sample_type*>(source)};
+        auto* d{static_cast<triplet<sample_type>*>(destination)};
+        const size_t pixel_stride{pixel_count_to_pixel_stride(pixel_count)};
 
-    void decode_transform(const void* source, void* destination, const size_t pixel_count,
-                          const size_t source_stride) noexcept
-    {
-        if (component_count_ == 3)
+        for (size_t i{}; i != pixel_count; ++i)
         {
-            if (interleave_mode_ == interleave_mode::sample)
-            {
-                transform_line(static_cast<triplet<sample_type>*>(destination),
-                               static_cast<const triplet<sample_type>*>(source), pixel_count, inverse_transform_);
-            }
-            else
-            {
-                transform_line_to_triplet(static_cast<const sample_type*>(source), source_stride,
-                                          static_cast<triplet<sample_type>*>(destination), pixel_count, inverse_transform_);
-            }
-        }
-        else if (component_count_ == 4)
-        {
-            if (interleave_mode_ == interleave_mode::sample)
-            {
-                transform_line(static_cast<quad<sample_type>*>(destination), static_cast<const quad<sample_type>*>(source),
-                               pixel_count);
-            }
-            else if (interleave_mode_ == interleave_mode::line)
-            {
-                transform_line_to_quad(static_cast<const sample_type*>(source), source_stride,
-                                       static_cast<quad<sample_type>*>(destination), pixel_count);
-            }
+            d[i] = {s[i], s[i + pixel_stride], s[i + 2 * pixel_stride]};
         }
     }
 
-private:
-    using sample_type = typename TransformType::sample_type;
+    template<typename Transform>
+    static void copy_line_3_components_transform(const void* source, void* destination, const size_t pixel_count) noexcept
+    {
+        copy_line_3_components_transform_impl(source, destination, pixel_count, typename Transform::inverse{});
+    }
 
-    std::byte* destination_;
-    size_t destination_stride_;
-    int32_t component_count_;
-    interleave_mode interleave_mode_;
-    typename TransformType::inverse inverse_transform_{};
+    template<typename Transform>
+    static void copy_line_3_components_transform_impl(const void* source, void* destination, const size_t pixel_count,
+                                                      Transform transform) noexcept
+    {
+        auto* s{static_cast<const sample_type*>(source)};
+        auto* d{static_cast<triplet<sample_type>*>(destination)};
+        const size_t pixel_stride{pixel_count_to_pixel_stride(pixel_count)};
+
+        for (size_t i{}; i != pixel_count; ++i)
+        {
+            d[i] = transform(s[i], s[i + pixel_stride], s[i + 2 * pixel_stride]);
+        }
+    }
+
+    static void copy_line_4_components(const void* source, void* destination, const size_t pixel_count) noexcept
+    {
+        auto* s{static_cast<const sample_type*>(source)};
+        auto* d{static_cast<quad<sample_type>*>(destination)};
+        const size_t pixel_stride{pixel_count_to_pixel_stride(pixel_count)};
+
+        for (size_t i{}; i != pixel_count; ++i)
+        {
+            d[i] = {s[i], s[i + pixel_stride], s[i + 2 * pixel_stride], s[i + 3 * pixel_stride]};
+        }
+    }
+
+    static void copy_pixels_3_components(const void* source, void* destination, const size_t pixel_count) noexcept
+    {
+        memcpy(destination, source, pixel_count * sizeof(triplet<sample_type>));
+    }
+
+    template<typename Transform>
+    static void copy_pixels_3_components_transform(const void* source, void* destination, const size_t pixel_count) noexcept
+    {
+        copy_pixels_3_components_transform_impl(source, destination, pixel_count, typename Transform::inverse{});
+    }
+
+    template<typename Transform>
+    static void copy_pixels_3_components_transform_impl(const void* source, void* destination, const size_t pixel_count,
+                                                        Transform transform) noexcept
+    {
+        auto* s{static_cast<const triplet<sample_type>*>(source)};
+        auto* d{static_cast<triplet<sample_type>*>(destination)};
+
+        for (size_t i{}; i != pixel_count; ++i)
+        {
+            const auto pixel{s[i]};
+            d[i] = transform(pixel.v1, pixel.v2, pixel.v3);
+        }
+    }
+
+    static void copy_pixels_4_components(const void* source, void* destination, const size_t pixel_count) noexcept
+    {
+        memcpy(destination, source, pixel_count * sizeof(quad<sample_type>));
+    }
+
+    static constexpr size_t pixel_count_to_pixel_stride(const size_t pixel_count) noexcept
+    {
+        // The line buffer is allocated with 2 extra pixels for the edges.
+        return pixel_count + 2;
+    }
 };
 
 } // namespace charls
