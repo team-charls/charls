@@ -111,7 +111,7 @@ struct triplet
 {
     triplet() = default;
 
-    triplet(int32_t x1, int32_t x2, int32_t x3) noexcept :
+    triplet(const int32_t x1, const int32_t x2, const int32_t x3) noexcept :
         v1(static_cast<SampleType>(x1)), v2(static_cast<SampleType>(x2)), v3(static_cast<SampleType>(x3))
     {
     }

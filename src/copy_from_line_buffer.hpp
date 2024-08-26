@@ -4,7 +4,6 @@
 #pragma once
 
 #include "color_transform.hpp"
-#include "util.hpp"
 
 #include <cstring>
 
@@ -17,12 +16,13 @@ namespace charls {
 using copy_from_line_buffer_fn = void (*)(const void* source, void* destination, size_t pixel_count) noexcept;
 
 template<typename SampleType>
-class copy_from_line_buffer
+class copy_from_line_buffer final
 {
 public:
     using sample_type = SampleType;
 
-    static copy_from_line_buffer_fn get_copy_function(const interleave_mode interleave_mode, const int component_count,
+    [[nodiscard]]
+    static copy_from_line_buffer_fn get_copy_function(const interleave_mode interleave_mode, const int32_t component_count,
                                                       const color_transformation color_transformation) noexcept
     {
         switch (interleave_mode)
@@ -31,9 +31,8 @@ public:
             return copy_sample;
 
         case interleave_mode::line:
-            switch (component_count)
+            if (component_count == 3)
             {
-            case 3:
                 switch (color_transformation)
                 {
                 case color_transformation::none:
@@ -48,36 +47,32 @@ public:
                 case color_transformation::hp3:
                     return copy_line_3_components_transform<transform_hp3<sample_type>>;
                 }
-                break;
-            default:
-                ASSERT(component_count == 4);
-                return copy_line_4_components;
             }
-            break;
+
+            ASSERT(component_count == 4);
+            return copy_line_4_components;
 
         case interleave_mode::sample:
-            switch (color_transformation)
+            if (component_count == 3)
             {
-            case color_transformation::none:
-                switch (component_count)
+                switch (color_transformation)
                 {
-                case 3:
+                case color_transformation::none:
                     return copy_pixels_3_components;
-                default:
-                    ASSERT(component_count == 4);
-                    return copy_pixels_4_components;
+
+                case color_transformation::hp1:
+                    return copy_pixels_3_components_transform<transform_hp1<sample_type>>;
+
+                case color_transformation::hp2:
+                    return copy_pixels_3_components_transform<transform_hp2<sample_type>>;
+
+                case color_transformation::hp3:
+                    return copy_pixels_3_components_transform<transform_hp3<sample_type>>;
                 }
-
-            case color_transformation::hp1:
-                return copy_pixels_3_components_transform<transform_hp1<sample_type>>;
-
-            case color_transformation::hp2:
-                return copy_pixels_3_components_transform<transform_hp2<sample_type>>;
-
-            case color_transformation::hp3:
-                return copy_pixels_3_components_transform<transform_hp3<sample_type>>;
             }
-            break;
+
+            ASSERT(component_count == 4);
+            return copy_pixels_4_components;
         }
 
         unreachable();
@@ -163,6 +158,7 @@ private:
         memcpy(destination, source, pixel_count * sizeof(quad<sample_type>));
     }
 
+    [[nodiscard]]
     static constexpr size_t pixel_count_to_pixel_stride(const size_t pixel_count) noexcept
     {
         // The line buffer is allocated with 2 extra pixels for the edges.

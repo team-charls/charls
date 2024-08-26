@@ -6,7 +6,7 @@
 #include "charls/jpegls_error.hpp"
 
 #include "jpeg_marker_code.hpp"
-#include "process_decoded_line.hpp"
+#include "copy_from_line_buffer.hpp"
 #include "scan_codec.hpp"
 #include "span.hpp"
 #include "util.hpp"
