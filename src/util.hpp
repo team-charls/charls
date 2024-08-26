@@ -106,19 +106,12 @@ inline CHARLS_NO_INLINE jpegls_errc to_jpegls_errc() noexcept
 }
 
 
-template<typename SampleType>
-struct triplet
+template<typename T>
+struct triplet final
 {
-    triplet() = default;
-
-    triplet(const int32_t x1, const int32_t x2, const int32_t x3) noexcept :
-        v1(static_cast<SampleType>(x1)), v2(static_cast<SampleType>(x2)), v3(static_cast<SampleType>(x3))
-    {
-    }
-
-    SampleType v1{};
-    SampleType v2{};
-    SampleType v3{};
+    T v1{};
+    T v2{};
+    T v3{};
 
     [[nodiscard]]
     friend constexpr bool
@@ -129,23 +122,13 @@ struct triplet
 };
 
 
-template<typename SampleType>
+template<typename T>
 struct quad final
 {
-    quad() = default;
-
-    quad(const int32_t x1, const int32_t x2, const int32_t x3, const int32_t x4) noexcept :
-        v1(static_cast<SampleType>(x1)),
-        v2(static_cast<SampleType>(x2)),
-        v3(static_cast<SampleType>(x3)),
-        v4(static_cast<SampleType>(x4))
-    {
-    }
-
-    SampleType v1{};
-    SampleType v2{};
-    SampleType v3{};
-    SampleType v4{};
+    T v1{};
+    T v2{};
+    T v3{};
+    T v4{};
 
     [[nodiscard]]
     friend constexpr bool

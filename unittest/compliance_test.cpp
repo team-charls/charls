@@ -74,14 +74,14 @@ public:
         decode_encode_file("DataFiles/t8c2e3.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_encode_color_8_bit_interleave_line_lossless_non_default) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_none_lossless_non_default) // NOLINT
     {
         // ISO 14495-1: official test image 9 (T87_test-1-2-3-4-5-6.zip)
         // NON-DEFAULT parameters T1=T2=T3=9,RESET=31.
         decode_encode_file("DataFiles/t8nde0.jls", "DataFiles/test8bs2.pgm");
     }
 
-    TEST_METHOD(decode_encode_color_8_bit_interleave_line_near_lossless_3_non_default) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_none_near_lossless_3_non_default) // NOLINT
     {
         // ISO 14495-1: official test image 10 (T87_test-1-2-3-4-5-6.zip)
         // NON-DEFAULT parameters T1=T2=T3=9,RESET=31.

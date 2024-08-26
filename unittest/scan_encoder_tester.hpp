@@ -11,7 +11,7 @@ class scan_encoder_tester final : scan_encoder
 {
 public:
     explicit scan_encoder_tester(const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :
-        scan_encoder(frame_info, {}, parameters)
+        scan_encoder(frame_info, {}, parameters, nullptr)
     {
     }
 

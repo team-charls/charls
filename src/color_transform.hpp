@@ -13,35 +13,8 @@ inline bool color_transformation_possible(const frame_info& frame) noexcept
 }
 
 // This file defines simple classes that define (lossless) color transforms.
-// They are invoked in process_line.h to convert between decoded values and the internal line buffers.
+// They are used to convert between decoded values and the internal line buffers.
 // Color transforms work best for computer generated images, but are outside the official JPEG-LS specifications.
-
-template<typename SampleType>
-struct transform_none_impl
-{
-    static_assert(std::is_integral_v<SampleType>, "Integral required.");
-
-    using sample_type = SampleType;
-
-    FORCE_INLINE triplet<SampleType> operator()(const int v1, const int v2, const int v3) const noexcept
-    {
-        return {v1, v2, v3};
-    }
-
-    FORCE_INLINE quad<SampleType> operator()(const int v1, const int v2, const int v3, const int v4) const noexcept
-    {
-        return {v1, v2, v3, v4};
-    }
-};
-
-
-template<typename SampleType>
-struct transform_none final : transform_none_impl<SampleType>
-{
-    static_assert(std::is_integral_v<SampleType>, "Integral required.");
-
-    using inverse = transform_none_impl<SampleType>;
-};
 
 
 template<typename SampleType>
@@ -60,7 +33,7 @@ struct transform_hp1 final
     {
         FORCE_INLINE triplet<SampleType> operator()(const int v1, const int v2, const int v3) const noexcept
         {
-            return {static_cast<SampleType>(v1 + v2 - range_ / 2), v2, static_cast<SampleType>(v3 + v2 - range_ / 2)};
+            return {static_cast<SampleType>(v1 + v2 - range_ / 2), static_cast<SampleType>(v2), static_cast<SampleType>(v3 + v2 - range_ / 2)};
         }
     };
 
@@ -78,7 +51,8 @@ struct transform_hp2 final
 
     FORCE_INLINE triplet<SampleType> operator()(const int red, const int green, const int blue) const noexcept
     {
-        return {static_cast<SampleType>(red - green + range_ / 2), green, static_cast<SampleType>(blue - ((red + green) >> 1) - range_ / 2)};
+        return {static_cast<SampleType>(red - green + range_ / 2), static_cast<SampleType>(green),
+                static_cast<SampleType>(blue - ((red + green) >> 1) - range_ / 2)};
     }
 
     struct inverse final

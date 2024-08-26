@@ -19,8 +19,6 @@ template<typename SampleType>
 class copy_from_line_buffer final
 {
 public:
-    using sample_type = SampleType;
-
     [[nodiscard]]
     static copy_from_line_buffer_fn get_copy_function(const interleave_mode interleave_mode, const int32_t component_count,
                                                       const color_transformation color_transformation) noexcept
@@ -28,7 +26,7 @@ public:
         switch (interleave_mode)
         {
         case interleave_mode::none:
-            return copy_sample;
+            return copy_samples;
 
         case interleave_mode::line:
             if (component_count == 3)
@@ -79,7 +77,9 @@ public:
     }
 
 private:
-    static void copy_sample(const void* source, void* destination, const size_t pixel_count) noexcept
+    using sample_type = SampleType;
+
+    static void copy_samples(const void* source, void* destination, const size_t pixel_count) noexcept
     {
         memcpy(destination, source, pixel_count * sizeof(sample_type));
     }

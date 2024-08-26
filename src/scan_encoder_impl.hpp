@@ -4,7 +4,6 @@
 #pragma once
 
 #include "coding_parameters.hpp"
-#include "color_transform.hpp"
 #include "jpegls_algorithm.hpp"
 #include "process_encoded_line.hpp"
 #include "scan_encoder.hpp"
@@ -15,12 +14,15 @@ template<typename Traits>
 class scan_encoder_impl final : public scan_encoder
 {
 public:
-    using pixel_type = typename Traits::pixel_type;
     using sample_type = typename Traits::sample_type;
+    using pixel_type = typename Traits::pixel_type;
 
     scan_encoder_impl(const charls::frame_info& frame_info, const jpegls_pc_parameters& pc_parameters,
                       const coding_parameters& parameters, const Traits& traits) :
-        scan_encoder{frame_info, pc_parameters, parameters}, traits_{traits}
+        scan_encoder{frame_info, pc_parameters, parameters,
+            copy_to_line_buffer<sample_type>::get_copy_function(parameters.interleave_mode, frame_info.component_count,
+                                                                frame_info.bits_per_sample, parameters.transformation)
+        }, traits_{traits}
     {
         ASSERT(traits_.is_valid());
 
@@ -30,52 +32,14 @@ public:
 
     size_t encode_scan(const std::byte* source, const size_t stride, const span<std::byte> destination) override
     {
-        process_line_ = create_process_line(source, stride);
-
         initialize(destination);
-        encode_lines();
+        encode_lines(source, stride);
         end_scan();
 
         return get_length();
     }
 
 private:
-    // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
-    std::unique_ptr<process_encoded_line> create_process_line(const std::byte* source, const size_t stride)
-    {
-        if (parameters().interleave_mode == interleave_mode::none)
-        {
-            if (frame_info().bits_per_sample == sizeof(sample_type) * 8)
-            {
-                return std::make_unique<process_encoded_single_component>(source, stride, sizeof(pixel_type));
-            }
-
-            return std::make_unique<process_encoded_single_component_masked>(source, stride, sizeof(pixel_type),
-                                                                             frame_info().bits_per_sample);
-        }
-
-        switch (parameters().transformation)
-        {
-        case color_transformation::none:
-            return std::make_unique<process_encoded_transformed<transform_none<sample_type>>>(source, stride, frame_info(),
-                                                                                              parameters().interleave_mode);
-        case color_transformation::hp1:
-            ASSERT(color_transformation_possible(frame_info()));
-            return std::make_unique<process_encoded_transformed<transform_hp1<sample_type>>>(source, stride, frame_info(),
-                                                                                             parameters().interleave_mode);
-        case color_transformation::hp2:
-            ASSERT(color_transformation_possible(frame_info()));
-            return std::make_unique<process_encoded_transformed<transform_hp2<sample_type>>>(source, stride, frame_info(),
-                                                                                             parameters().interleave_mode);
-        case color_transformation::hp3:
-            ASSERT(color_transformation_possible(frame_info()));
-            return std::make_unique<process_encoded_transformed<transform_hp3<sample_type>>>(source, stride, frame_info(),
-                                                                                             parameters().interleave_mode);
-        }
-
-        unreachable();
-    }
-
     [[nodiscard]]
     FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
     {
@@ -86,7 +50,7 @@ private:
     // In ILV_SAMPLE mode, multiple components are handled in do_line
     // In ILV_LINE mode, a call to do_line is made for every component
     // In ILV_NONE mode, do_scan is called for each component
-    void encode_lines()
+    void encode_lines(const std::byte* source, const size_t stride)
     {
         const uint32_t pixel_stride{width_ + 2U};
         const size_t component_count{
@@ -104,7 +68,8 @@ private:
                 std::swap(previous_line_, current_line_);
             }
 
-            on_line_begin(current_line_ + 1, width_, pixel_stride);
+            copy_source_to_line_buffer(source, current_line_ + 1, width_, pixel_stride);
+            source = source + stride;
 
             for (size_t component{}; component < component_count; ++component)
             {
