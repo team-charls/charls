@@ -4,11 +4,9 @@
 #pragma once
 
 #include "jpeg_marker_code.hpp"
-#include "process_encoded_line.hpp"
+#include "copy_to_line_buffer.hpp"
 #include "scan_codec.hpp"
 #include "span.hpp"
-
-#include <memory>
 
 namespace charls {
 
@@ -30,11 +28,17 @@ public:
     virtual size_t encode_scan(const std::byte* source, size_t stride, span<std::byte> destination) = 0;
 
 protected:
-    using scan_codec::scan_codec;
-
-    void on_line_begin(void* destination, const size_t pixel_count, const size_t pixel_stride) const
+    scan_encoder(const charls::frame_info& frame_info, const jpegls_pc_parameters& pc_parameters,
+                 const coding_parameters& parameters, const copy_to_line_buffer_fn copy_to_line_buffer) noexcept :
+        scan_codec(frame_info, pc_parameters, parameters),
+        copy_to_line_buffer_{copy_to_line_buffer},
+        mask_{(1U << frame_info.bits_per_sample) - 1}
     {
-        process_line_->new_line_requested(destination, pixel_count, pixel_stride);
+    }
+
+    void copy_source_to_line_buffer(const std::byte* source, void* destination, const size_t pixel_count) const noexcept
+    {
+        copy_to_line_buffer_(source, destination, pixel_count, mask_);
     }
 
     void initialize(const span<std::byte> destination) noexcept
@@ -155,12 +159,13 @@ protected:
         append_to_bit_stream((1U << bit_count) - 1U, bit_count);
     }
 
-    std::unique_ptr<process_encoded_line> process_line_;
+    copy_to_line_buffer_fn copy_to_line_buffer_{};
 
 private:
     unsigned int bit_buffer_{};
     int32_t free_bit_count_{sizeof bit_buffer_ * 8};
     size_t compressed_length_{};
+    uint32_t mask_;
 
     // encoding
     std::byte* position_{};

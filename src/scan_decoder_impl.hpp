@@ -24,11 +24,12 @@ public:
 
         quantization_ = initialize_quantization_lut(traits_, t1_, t2_, t3_, quantization_lut_);
         reset_parameters(traits_.range);
+        copy_from_line_buffer_ = copy_from_line_buffer<sample_type>::get_copy_function(
+            parameters.interleave_mode, frame_info.component_count, parameters.transformation);
     }
 
     size_t decode_scan(const span<const std::byte> source, std::byte* destination, const size_t stride) override
     {
-        process_line_ = create_process_line(destination, stride);
 
         const auto* scan_begin{to_address(source.begin())};
 
@@ -40,43 +41,13 @@ public:
             parameters_.restart_interval = frame_info().height;
         }
 
-        decode_lines();
+        decode_lines(destination, stride);
         end_scan();
 
         return get_actual_position() - scan_begin;
     }
 
 private:
-    // Factory function for ProcessLine objects to copy/transform un encoded pixels to/from our scan line buffers.
-    std::unique_ptr<process_decoded_line> create_process_line(std::byte* destination, const size_t stride)
-    {
-        if (parameters().interleave_mode == interleave_mode::none)
-        {
-            return std::make_unique<process_decoded_single_component>(destination, stride, sizeof(pixel_type));
-        }
-
-        switch (parameters().transformation)
-        {
-        case color_transformation::none:
-            return std::make_unique<process_decoded_transformed<transform_none<sample_type>>>(
-                destination, stride, frame_info().component_count, parameters().interleave_mode);
-        case color_transformation::hp1:
-            ASSERT(color_transformation_possible(frame_info()));
-            return std::make_unique<process_decoded_transformed<transform_hp1<sample_type>>>(
-                destination, stride, frame_info().component_count, parameters().interleave_mode);
-        case color_transformation::hp2:
-            ASSERT(color_transformation_possible(frame_info()));
-            return std::make_unique<process_decoded_transformed<transform_hp2<sample_type>>>(
-                destination, stride, frame_info().component_count, parameters().interleave_mode);
-        case color_transformation::hp3:
-            ASSERT(color_transformation_possible(frame_info()));
-            return std::make_unique<process_decoded_transformed<transform_hp3<sample_type>>>(
-                destination, stride, frame_info().component_count, parameters().interleave_mode);
-        }
-
-        unreachable();
-    }
-
     [[nodiscard]]
     FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
     {
@@ -87,7 +58,7 @@ private:
     // In ILV_SAMPLE mode, multiple components are handled in do_line
     // In ILV_LINE mode, a call to do_line is made for every component
     // In ILV_NONE mode, do_scan is called for each component
-    void decode_lines()
+    void decode_lines(std::byte* destination, const size_t stride)
     {
         const uint32_t pixel_stride{width_ + 2U};
         const size_t component_count{
@@ -135,7 +106,8 @@ private:
                     previous_line_ += pixel_stride;
                 }
 
-                on_line_end(current_line_ + 1 - (component_count * pixel_stride), width_, pixel_stride);
+                copy_line_buffer_to_destination(current_line_ + 1 - (component_count * pixel_stride), destination, width_);
+                destination += stride;
             }
 
             if (line == frame_info().height)

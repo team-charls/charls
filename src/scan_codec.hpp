@@ -86,6 +86,14 @@ const int8_t* initialize_quantization_lut(const Traits& traits, const int32_t th
 }
 
 
+[[nodiscard]]
+constexpr size_t pixel_count_to_pixel_stride(const size_t pixel_count) noexcept
+{
+    // The line buffer is allocated with 2 extra pixels for the edges.
+    return pixel_count + 2;
+}
+
+
 /// <summary>
 /// Base class for scan_encoder and scan_decoder
 /// Contains the variables and methods that are identical for the encoding/decoding process and can be shared.
