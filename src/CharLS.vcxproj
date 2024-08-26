@@ -243,7 +243,7 @@
     <ClInclude Include="constants.hpp" />
     <ClInclude Include="regular_mode_context.hpp" />
     <ClInclude Include="run_mode_context.hpp" />
-    <ClInclude Include="process_encoded_line.hpp" />
+    <ClInclude Include="copy_to_line_buffer.hpp" />
     <ClInclude Include="scan_decoder.hpp" />
     <ClInclude Include="default_traits.hpp" />
     <ClInclude Include="scan_encoder.hpp" />

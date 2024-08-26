@@ -105,7 +105,7 @@
     <ClInclude Include="copy_from_line_buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="process_encoded_line.hpp">
+    <ClInclude Include="copy_to_line_buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="quantization_lut.hpp">

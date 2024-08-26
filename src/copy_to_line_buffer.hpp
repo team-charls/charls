@@ -4,6 +4,7 @@
 #pragma once
 
 #include "color_transform.hpp"
+#include "scan_codec.hpp"
 
 #include <cstring>
 
@@ -15,8 +16,7 @@
 
 namespace charls {
 
-using copy_to_line_buffer_fn = void (*)(const void* source, void* destination, size_t pixel_count, size_t pixel_stride,
-                                        uint32_t mask) noexcept;
+using copy_to_line_buffer_fn = void (*)(const void* source, void* destination, size_t pixel_count, uint32_t mask) noexcept;
 
 template<typename SampleType>
 class copy_to_line_buffer final
@@ -31,7 +31,7 @@ public:
         {
         case interleave_mode::none: {
             const bool mask_needed{bits_per_sample != sizeof(sample_type) * 8};
-            return mask_needed ? copy_samples_masked : copy_samples;
+            return mask_needed ? &copy_samples_masked : &copy_samples;
         }
 
         case interleave_mode::line:
@@ -40,21 +40,21 @@ public:
                 switch (color_transformation)
                 {
                 case color_transformation::none:
-                    return copy_line_3_components;
+                    return &copy_line_3_components;
 
                 case color_transformation::hp1:
-                    return copy_line_3_components_transform<transform_hp1<sample_type>>;
+                    return &copy_line_3_components_transform<transform_hp1<sample_type>>;
 
                 case color_transformation::hp2:
-                    return copy_line_3_components_transform<transform_hp2<sample_type>>;
+                    return &copy_line_3_components_transform<transform_hp2<sample_type>>;
 
                 case color_transformation::hp3:
-                    return copy_line_3_components_transform<transform_hp3<sample_type>>;
+                    return &copy_line_3_components_transform<transform_hp3<sample_type>>;
                 }
             }
 
             ASSERT(component_count == 4);
-            return copy_line_4_components;
+            return &copy_line_4_components;
 
         case interleave_mode::sample:
             if (component_count == 3)
@@ -62,78 +62,78 @@ public:
                 switch (color_transformation)
                 {
                 case color_transformation::none:
-                    return copy_pixels_3_components;
+                    return &copy_pixels_3_components;
 
                 case color_transformation::hp1:
-                    return copy_pixels_3_components_transform<transform_hp1<sample_type>>;
+                    return &copy_pixels_3_components_transform<transform_hp1<sample_type>>;
 
                 case color_transformation::hp2:
-                    return copy_pixels_3_components_transform<transform_hp2<sample_type>>;
+                    return &copy_pixels_3_components_transform<transform_hp2<sample_type>>;
 
                 case color_transformation::hp3:
-                    return copy_pixels_3_components_transform<transform_hp3<sample_type>>;
+                    return &copy_pixels_3_components_transform<transform_hp3<sample_type>>;
                 }
             }
 
             ASSERT(component_count == 4);
-            return copy_pixels_4_components;
+            return &copy_pixels_4_components;
         }
 
-        return nullptr;
+        unreachable();
     }
 
 private:
     using sample_type = SampleType;
 
-    static void copy_samples(const void* source, void* destination, const size_t pixel_count, size_t /*pixel_stride*/,
-                             uint32_t /*mask*/) noexcept
+    static void copy_samples(const void* source, void* destination, const size_t pixel_count, uint32_t /*mask*/) noexcept
     {
         memcpy(destination, source, pixel_count * sizeof(sample_type));
     }
 
-    static void copy_samples_masked(const void* source, void* destination, const size_t pixel_count, size_t /*pixel_stride*/,
-                                    uint32_t mask) noexcept
+    static void copy_samples_masked(const void* source, void* destination, const size_t pixel_count, uint32_t mask) noexcept
     {
         auto* s{static_cast<const sample_type*>(source)};
         auto* d{static_cast<sample_type*>(destination)};
+        const auto m{static_cast<sample_type>(mask)};
 
         for (size_t i{}; i != pixel_count; ++i)
         {
-            d[i] = (s[i] & mask);
+            d[i] = (s[i] & m);
         }
     }
 
     static void copy_line_3_components(const void* source, void* destination, const size_t pixel_count,
-                                       const size_t pixel_stride, uint32_t mask) noexcept
+                                       uint32_t mask) noexcept
     {
         auto* s{static_cast<const triplet<sample_type>*>(source)};
         auto* d{static_cast<sample_type*>(destination)};
-        // const size_t pixel_stride{pixel_count_to_pixel_stride(pixel_count)};
+        const size_t pixel_stride{pixel_count_to_pixel_stride(pixel_count)};
+        const auto m{static_cast<sample_type>(mask)};
 
         for (size_t i{}; i != pixel_count; ++i)
         {
             const auto pixel{s[i]};
 
-            d[i] = pixel.v1 & mask;
-            d[i + pixel_stride] = pixel.v2 & mask;
-            d[i + (2 * pixel_stride)] = pixel.v3 & mask;
+            d[i] = pixel.v1 & m;
+            d[i + pixel_stride] = pixel.v2 & m;
+            d[i + (2 * pixel_stride)] = pixel.v3 & m;
         }
     }
 
     template<typename Transform>
     static void copy_line_3_components_transform(const void* source, void* destination, const size_t pixel_count,
-                                                 size_t pixel_stride, uint32_t /*mask*/) noexcept
+                                                 uint32_t /*mask*/) noexcept
     {
-        copy_line_3_components_transform_impl(source, destination, pixel_count, pixel_stride, Transform{});
+        copy_line_3_components_transform_impl(source, destination, pixel_count, Transform{});
     }
 
     template<typename Transform>
     static void copy_line_3_components_transform_impl(const void* source, void* destination, const size_t pixel_count,
-                                                      const size_t pixel_stride, Transform transform) noexcept
+                                                      Transform transform) noexcept
     {
         auto* s{static_cast<const triplet<sample_type>*>(source)};
         auto* d{static_cast<sample_type*>(destination)};
-        // const size_t pixel_stride{pixel_count_to_pixel_stride(pixel_count)};
+        const size_t pixel_stride{pixel_count_to_pixel_stride(pixel_count)};
 
         for (size_t i{}; i != pixel_count; ++i)
         {
@@ -147,47 +147,49 @@ private:
     }
 
     static void copy_line_4_components(const void* source, void* destination, const size_t pixel_count,
-                                       const size_t pixel_stride, uint32_t mask) noexcept
+                                       uint32_t mask) noexcept
     {
         auto* s{static_cast<const quad<sample_type>*>(source)};
         auto* d{static_cast<sample_type*>(destination)};
-        // const size_t pixel_stride{pixel_count_to_pixel_stride(pixel_count)};
+        const auto m{static_cast<sample_type>(mask)};
+        const size_t pixel_stride{pixel_count_to_pixel_stride(pixel_count)};
 
         for (size_t i{}; i != pixel_count; ++i)
         {
             const auto pixel{s[i]};
 
-            d[i] = pixel.v1 & mask;
-            d[i + pixel_stride] = pixel.v2 & mask;
-            d[i + (2 * pixel_stride)] = pixel.v3 & mask;
-            d[i + (3 * pixel_stride)] = pixel.v4 & mask;
+            d[i] = pixel.v1 & m;
+            d[i + pixel_stride] = pixel.v2 & m;
+            d[i + (2 * pixel_stride)] = pixel.v3 & m;
+            d[i + (3 * pixel_stride)] = pixel.v4 & m;
         }
     }
 
     static void copy_pixels_3_components(const void* source, void* destination, const size_t pixel_count,
-                                         size_t /*pixel_stride*/, uint32_t mask) noexcept
+                                         uint32_t mask) noexcept
     {
         auto* s{static_cast<const triplet<sample_type>*>(source)};
         auto* d{static_cast<triplet<sample_type>*>(destination)};
+        const auto m{static_cast<sample_type>(mask)};
 
         for (size_t i{}; i != pixel_count; ++i)
         {
             const auto pixel{s[i]};
-            d[i] = {static_cast<sample_type>(pixel.v1 & mask), static_cast<sample_type>(pixel.v2 & mask),
-                    static_cast<sample_type>(pixel.v3 & mask)};
+            d[i] = {static_cast<sample_type>(pixel.v1 & m), static_cast<sample_type>(pixel.v2 & m),
+                    static_cast<sample_type>(pixel.v3 & m)};
         }
     }
 
     template<typename Transform>
     static void copy_pixels_3_components_transform(const void* source, void* destination, const size_t pixel_count,
-                                                   size_t pixel_stride, uint32_t /*mask*/) noexcept
+                                                   uint32_t /*mask*/) noexcept
     {
-        copy_pixels_3_components_transform_impl(source, destination, pixel_count, pixel_stride, Transform{});
+        copy_pixels_3_components_transform_impl(source, destination, pixel_count, Transform{});
     }
 
     template<typename Transform>
     static void copy_pixels_3_components_transform_impl(const void* source, void* destination, const size_t pixel_count,
-                                                        size_t /*pixel_stride*/, Transform transform) noexcept
+                                                        Transform transform) noexcept
     {
         auto* s{static_cast<const triplet<sample_type>*>(source)};
         auto* d{static_cast<triplet<sample_type>*>(destination)};
@@ -200,16 +202,17 @@ private:
     }
 
     static void copy_pixels_4_components(const void* source, void* destination, const size_t pixel_count,
-                                         size_t /*pixel_stride*/, uint32_t mask) noexcept
+                                         uint32_t mask) noexcept
     {
         auto* s{static_cast<const quad<sample_type>*>(source)};
         auto* d{static_cast<quad<sample_type>*>(destination)};
+        const auto m{static_cast<sample_type>(mask)};
 
         for (size_t i{}; i != pixel_count; ++i)
         {
             const auto pixel{s[i]};
-            d[i] = {static_cast<sample_type>(pixel.v1 & mask), static_cast<sample_type>(pixel.v2 & mask),
-                    static_cast<sample_type>(pixel.v3 & mask), static_cast<sample_type>(pixel.v4 & mask)};
+            d[i] = {static_cast<sample_type>(pixel.v1 & m), static_cast<sample_type>(pixel.v2 & m),
+                    static_cast<sample_type>(pixel.v3 & m), static_cast<sample_type>(pixel.v4 & m)};
         }
     }
 };

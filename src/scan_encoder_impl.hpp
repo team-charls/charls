@@ -5,7 +5,6 @@
 
 #include "coding_parameters.hpp"
 #include "jpegls_algorithm.hpp"
-#include "process_encoded_line.hpp"
 #include "scan_encoder.hpp"
 
 namespace charls {
@@ -68,7 +67,7 @@ private:
                 std::swap(previous_line_, current_line_);
             }
 
-            copy_source_to_line_buffer(source, current_line_ + 1, width_, pixel_stride);
+            copy_source_to_line_buffer(source, current_line_ + 1, width_);
             source = source + stride;
 
             for (size_t component{}; component < component_count; ++component)

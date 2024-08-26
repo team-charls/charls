@@ -4,6 +4,7 @@
 #pragma once
 
 #include "color_transform.hpp"
+#include "scan_codec.hpp"
 
 #include <cstring>
 
@@ -26,7 +27,7 @@ public:
         switch (interleave_mode)
         {
         case interleave_mode::none:
-            return copy_samples;
+            return &copy_samples;
 
         case interleave_mode::line:
             if (component_count == 3)
@@ -34,21 +35,21 @@ public:
                 switch (color_transformation)
                 {
                 case color_transformation::none:
-                    return copy_line_3_components;
+                    return &copy_line_3_components;
 
                 case color_transformation::hp1:
-                    return copy_line_3_components_transform<transform_hp1<sample_type>>;
+                    return &copy_line_3_components_transform<transform_hp1<sample_type>>;
 
                 case color_transformation::hp2:
-                    return copy_line_3_components_transform<transform_hp2<sample_type>>;
+                    return &copy_line_3_components_transform<transform_hp2<sample_type>>;
 
                 case color_transformation::hp3:
-                    return copy_line_3_components_transform<transform_hp3<sample_type>>;
+                    return &copy_line_3_components_transform<transform_hp3<sample_type>>;
                 }
             }
 
             ASSERT(component_count == 4);
-            return copy_line_4_components;
+            return &copy_line_4_components;
 
         case interleave_mode::sample:
             if (component_count == 3)
@@ -56,21 +57,21 @@ public:
                 switch (color_transformation)
                 {
                 case color_transformation::none:
-                    return copy_pixels_3_components;
+                    return &copy_pixels_3_components;
 
                 case color_transformation::hp1:
-                    return copy_pixels_3_components_transform<transform_hp1<sample_type>>;
+                    return &copy_pixels_3_components_transform<transform_hp1<sample_type>>;
 
                 case color_transformation::hp2:
-                    return copy_pixels_3_components_transform<transform_hp2<sample_type>>;
+                    return &copy_pixels_3_components_transform<transform_hp2<sample_type>>;
 
                 case color_transformation::hp3:
-                    return copy_pixels_3_components_transform<transform_hp3<sample_type>>;
+                    return &copy_pixels_3_components_transform<transform_hp3<sample_type>>;
                 }
             }
 
             ASSERT(component_count == 4);
-            return copy_pixels_4_components;
+            return &copy_pixels_4_components;
         }
 
         unreachable();
@@ -156,13 +157,6 @@ private:
     static void copy_pixels_4_components(const void* source, void* destination, const size_t pixel_count) noexcept
     {
         memcpy(destination, source, pixel_count * sizeof(quad<sample_type>));
-    }
-
-    [[nodiscard]]
-    static constexpr size_t pixel_count_to_pixel_stride(const size_t pixel_count) noexcept
-    {
-        // The line buffer is allocated with 2 extra pixels for the edges.
-        return pixel_count + 2;
     }
 };
 

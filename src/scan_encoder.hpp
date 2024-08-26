@@ -4,11 +4,9 @@
 #pragma once
 
 #include "jpeg_marker_code.hpp"
-#include "process_encoded_line.hpp"
+#include "copy_to_line_buffer.hpp"
 #include "scan_codec.hpp"
 #include "span.hpp"
-
-#include <memory>
 
 namespace charls {
 
@@ -34,14 +32,13 @@ protected:
                  const coding_parameters& parameters, const copy_to_line_buffer_fn copy_to_line_buffer) noexcept :
         scan_codec(frame_info, pc_parameters, parameters),
         copy_to_line_buffer_{copy_to_line_buffer},
-        mask_{(1UL << frame_info.bits_per_sample) - 1}
+        mask_{(1U << frame_info.bits_per_sample) - 1}
     {
     }
 
-    void copy_source_to_line_buffer(const std::byte* source, void* destination, const size_t pixel_count,
-                                    const size_t pixel_stride) const noexcept
+    void copy_source_to_line_buffer(const std::byte* source, void* destination, const size_t pixel_count) const noexcept
     {
-        copy_to_line_buffer_(source, destination, pixel_count, pixel_stride, mask_);
+        copy_to_line_buffer_(source, destination, pixel_count, mask_);
     }
 
     void initialize(const span<std::byte> destination) noexcept
