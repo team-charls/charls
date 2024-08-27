@@ -208,22 +208,22 @@ jobs:
         CXX: g++-12
         Shared: 'ON'
 
-      Clang-12 Debug:
+      Clang-13 Debug:
         buildType: Debug
-        CC: clang-12
-        CXX: clang++-12
-        Shared: 'OFF'
-
-      Clang-13 Release:
-        buildType: Release
         CC: clang-13
         CXX: clang++-13
         Shared: 'OFF'
 
-      Clang-14 Release Shared:
+      Clang-14 Release:
         buildType: Release
         CC: clang-14
         CXX: clang++-14
+        Shared: 'OFF'
+
+      Clang-15 Release Shared:
+        buildType: Release
+        CC: clang-15
+        CXX: clang++-15
         Shared: 'ON'
 
   steps:

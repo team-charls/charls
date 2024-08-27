@@ -276,6 +276,7 @@
   <ItemGroup>
     <ClCompile Include="benchmark.cpp" />
     <ClCompile Include="context_regular_mode.cpp" />
+    <ClCompile Include="decode.cpp" />
     <ClCompile Include="log2.cpp" />
   </ItemGroup>
   <ItemGroup>
