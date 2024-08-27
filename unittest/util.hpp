@@ -91,6 +91,13 @@ Microsoft::VisualStudio::CppUnitTestFramework::ToString<charls::interleave_mode>
 }
 
 template<>
+inline std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<charls::compressed_data_format>(
+    const charls::compressed_data_format& q)
+{
+    RETURN_WIDE_STRING(static_cast<int>(q));
+}
+
+template<>
 inline std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<std::byte>(const std::byte& q)
 {
     RETURN_WIDE_STRING(static_cast<int>(q));

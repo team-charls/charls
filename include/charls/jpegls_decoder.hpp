@@ -392,6 +392,22 @@ public:
     }
 
     /// <summary>
+    /// Returns the compressed data format of the JPEG-LS data stream.
+    /// </summary>
+    /// <remarks>
+    /// Function can be called after reading the header or after processing the complete JPEG-LS stream.
+    /// After reading the header the method may report unknown or abbreviated_table_specification.
+    /// </remarks>
+    /// <returns>The compressed data format.</returns>
+    [[nodiscard]]
+    charls::compressed_data_format compressed_data_format() const
+    {
+        charls::compressed_data_format format;
+        check_jpegls_errc(charls_decoder_get_compressed_data_format(decoder(), &format));
+        return format;
+    }
+
+    /// <summary>
     /// Returns the mapping table ID referenced by the component or 0 when no mapping table is used.
     /// </summary>
     /// <remarks>
