@@ -12,6 +12,7 @@
     <Rule Id="C26485" Action="None" />
     <Rule Id="C26490" Action="None" />
     <Rule Id="C26492" Action="None" />
+    <Rule Id="C26493" Action="None" />
     <Rule Id="C26494" Action="None" />
   </Rules>
 </RuleSet>

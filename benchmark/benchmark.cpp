@@ -324,7 +324,9 @@ static void bm_resize_overwrite_buffer(benchmark::State& state)
 }
 BENCHMARK(bm_resize_overwrite_buffer);
 
+// Tips to run the benchmark tests:
 
-
+// To run a single benchmark:
+// benchmark --benchmark_filter=bm_decode
 
 BENCHMARK_MAIN();

@@ -24,6 +24,9 @@
     <ClCompile Include="log2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="decode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="context_regular_mode_v220.h">

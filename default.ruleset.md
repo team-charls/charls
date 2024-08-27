@@ -27,5 +27,8 @@ C26490: Don't use reinterpret_cast
 C26492: Don't use const_cast to cast away const (type.3).
 -> Rationale: required for some special cases.
 
+C26493: Don't use C-style casts (type.4).
+-> Rationale: False positives in Visual Studio 2022 17.11.0 Preview 3.0
+
 C26494: Variable 'x' is uninitialized. Always initialize an object
 -> Rationale: many false warnings, other analyzers are better.
