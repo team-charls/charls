@@ -1022,10 +1022,61 @@ public:
 
         jpegls_decoder decoder;
         decoder.source(writer.buffer);
+        Assert::AreEqual(compressed_data_format::unknown, decoder.compressed_data_format());
+
         decoder.read_header();
         const int32_t count{decoder.mapping_table_count()};
-
         Assert::AreEqual(1, count);
+        Assert::AreEqual(compressed_data_format::abbreviated_table_specification, decoder.compressed_data_format());
+    }
+
+    TEST_METHOD(compressed_data_format_interchange) // NOLINT
+    {
+        constexpr frame_info frame_info{100, 100, 8, 1};
+        const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+
+        const vector encoded_source{
+            jpegls_encoder::encode(source, frame_info, interleave_mode::none, encoding_options::even_destination_size)};
+
+        jpegls_decoder decoder;
+        decoder.source(encoded_source);
+        decoder.read_header();
+
+        vector<byte> destination(decoder.get_destination_size());
+
+        void* data{destination.data()};
+        const uint16_t size{static_cast<uint16_t>(destination.size())};
+
+        decoder.decode(data, size);
+
+        Assert::AreEqual(compressed_data_format::interchange, decoder.compressed_data_format());
+    }
+
+    TEST_METHOD(compressed_data_format_abbreviated_image_data) // NOLINT
+    {
+        constexpr frame_info frame_info{100, 100, 8, 1};
+        const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
+        
+        jpegls_encoder encoder;
+        encoder.frame_info(frame_info);
+        encoder.set_mapping_table_id(0, 1);
+
+        vector<byte> encoded_source(encoder.estimated_destination_size());
+        encoder.destination(encoded_source);
+        encoder.encode(source);
+
+        jpegls_decoder decoder;
+        decoder.source(encoded_source);
+        decoder.read_header();
+
+        vector<byte> destination(decoder.get_destination_size());
+
+        void* data{destination.data()};
+        const uint16_t size{static_cast<uint16_t>(destination.size())};
+
+        decoder.decode(data, size);
+
+        Assert::AreEqual(compressed_data_format::abbreviated_image_data, decoder.compressed_data_format());
     }
 
     TEST_METHOD(abbreviated_format_with_spiff_header_throws) // NOLINT

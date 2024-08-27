@@ -86,6 +86,12 @@ public:
     }
 
     [[nodiscard]]
+    charls::compressed_data_format compressed_data_format() const noexcept
+    {
+        return compressed_data_format_;
+    }
+
+    [[nodiscard]]
     int32_t get_mapping_table_id(size_t component_index) const noexcept;
 
     [[nodiscard]]
@@ -176,6 +182,9 @@ private:
     void add_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
     void extend_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
     void store_mapping_table_id(uint8_t component_id, uint8_t table_id);
+
+    [[nodiscard]]
+    bool has_external_mapping_table_ids() const noexcept;
 
     /// <summary>
     /// ISO/IEC 14495-1, Annex C defines 3 data formats.
@@ -275,6 +284,7 @@ private:
     std::vector<scan_info> scan_infos_;
     std::vector<mapping_table_entry> mapping_tables_;
     state state_{};
+    charls::compressed_data_format compressed_data_format_{};
     callback_function<at_comment_handler> at_comment_callback_{};
     callback_function<at_application_data_handler> at_application_data_callback_{};
 };

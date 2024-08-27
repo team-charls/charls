@@ -102,6 +102,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
             if (is_abbreviated_format_for_table_specification_data())
             {
                 state_ = state::after_end_of_image;
+                compressed_data_format_ = compressed_data_format::abbreviated_table_specification;
                 return;
             }
 
@@ -145,6 +146,10 @@ void jpeg_stream_reader::read_end_of_image()
 
     if (const jpeg_marker_code marker_code{read_next_marker_code()}; UNLIKELY(marker_code != jpeg_marker_code::end_of_image))
         throw_jpegls_error(jpegls_errc::end_of_image_marker_not_found);
+
+    ASSERT(compressed_data_format_ == compressed_data_format::unknown);
+    compressed_data_format_ = has_external_mapping_table_ids() ? compressed_data_format::abbreviated_image_data
+                                                               : compressed_data_format::interchange;
 
     state_ = state::after_end_of_image;
 }
@@ -876,6 +881,16 @@ void jpeg_stream_reader::store_mapping_table_id(const uint8_t component_id, cons
         throw_jpegls_error(jpegls_errc::unknown_component_id);
 
     it->table_id = table_id;
+}
+
+
+bool jpeg_stream_reader::has_external_mapping_table_ids() const noexcept
+{
+    const auto it{find_if(scan_infos_.cbegin(), scan_infos_.cend(), [this](const scan_info& info) noexcept {
+        return info.table_id != 0 && find_mapping_table_entry(info.table_id) == mapping_tables_.cend();
+    })};
+
+    return it != scan_infos_.cend();
 }
 
 

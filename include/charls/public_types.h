@@ -92,6 +92,14 @@ enum charls_interleave_mode
     CHARLS_INTERLEAVE_MODE_SAMPLE = 2
 };
 
+enum charls_compressed_data_format
+{
+    CHARLS_COMPRESSED_DATA_FORMAT_UNKNOWN = 0,
+    CHARLS_COMPRESSED_DATA_FORMAT_INTERCHANGE = 1,
+    CHARLS_COMPRESSED_DATA_FORMAT_ABBREVIATED_IMAGE_DATA = 2,
+    CHARLS_COMPRESSED_DATA_FORMAT_ABBREVIATED_TABLE_SPECIFICATION = 3
+};
+
 enum charls_encoding_options
 {
     CHARLS_ENCODING_OPTIONS_NONE = 0,
@@ -472,6 +480,34 @@ enum class interleave_mode
 };
 
 
+/// <summary>
+/// JPEG-LS defines 3 compressed data formats. (see Annex C).
+/// </summary>
+enum class compressed_data_format
+{
+    /// <summary>
+    /// Not enough information has been decoded to determine the data format.
+    /// </summary>
+    unknown = impl::CHARLS_COMPRESSED_DATA_FORMAT_UNKNOWN,
+
+    /// <summary>
+    /// All data to decode the image is contained in the file. This is the typical format.
+    /// </summary>
+    interchange = impl::CHARLS_COMPRESSED_DATA_FORMAT_INTERCHANGE,
+
+    /// <summary>
+    /// The file has references to mapping tables that need to be provided by
+    /// the application environment.
+    /// </summary>
+    abbreviated_image_data = impl::CHARLS_COMPRESSED_DATA_FORMAT_ABBREVIATED_IMAGE_DATA,
+
+    /// <summary>
+    /// The file only contains mapping tables, no image is present.
+    /// </summary>
+    abbreviated_table_specification = impl::CHARLS_COMPRESSED_DATA_FORMAT_ABBREVIATED_TABLE_SPECIFICATION
+};
+
+
 namespace encoding_options_private {
 
 /// <summary>
@@ -841,6 +877,7 @@ struct std::is_error_code_enum<charls::jpegls_errc> final : std::true_type
 
 using charls_jpegls_errc = charls::jpegls_errc;
 using charls_interleave_mode = charls::interleave_mode;
+using charls_compressed_data_format = charls::compressed_data_format;
 using charls_encoding_options = charls::encoding_options;
 using charls_color_transformation = charls::color_transformation;
 
@@ -854,6 +891,7 @@ using charls_spiff_entry_tag = charls::spiff_entry_tag;
 
 typedef enum charls_jpegls_errc charls_jpegls_errc;
 typedef enum charls_interleave_mode charls_interleave_mode;
+typedef enum charls_compressed_data_format charls_compressed_data_format;
 typedef enum charls_encoding_options charls_encoding_options;
 typedef enum charls_color_transformation charls_color_transformation;
 
@@ -895,8 +933,8 @@ struct charls_spiff_header CHARLS_FINAL
 /// Defines the information that can be stored in a JPEG-LS Frame marker segment that applies to all scans.
 /// </summary>
 /// <remark>
-/// The JPEG-LS also allow to store sub-sampling information in a JPEG-LS Frame marker segment.
-/// CharLS does not support JPEG-LS images that contain sub-sampled scans.
+/// The JPEG-LS also allow to store subsampling information in a JPEG-LS Frame marker segment.
+/// CharLS does not support JPEG-LS images that contain subsampled scans.
 /// </remark>
 struct charls_frame_info CHARLS_FINAL
 {

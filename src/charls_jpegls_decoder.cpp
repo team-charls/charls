@@ -130,6 +130,12 @@ struct charls_jpegls_decoder final
     }
 
     [[nodiscard]]
+    charls::compressed_data_format compressed_data_format() const noexcept
+    {
+        return reader_.compressed_data_format();
+    }
+
+    [[nodiscard]]
     int32_t get_mapping_table_id(const size_t component_index) const
     {
         check_state_completed();
@@ -441,6 +447,19 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_dec
 try
 {
     check_pointer(decoder)->at_application_data({handler, user_context});
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_get_compressed_data_format(
+    const charls_jpegls_decoder* decoder, charls_compressed_data_format* compressed_data_format) noexcept
+try
+{
+    *check_pointer(compressed_data_format) = check_pointer(decoder)->compressed_data_format();
     return jpegls_errc::success;
 }
 catch (...)

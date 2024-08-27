@@ -210,6 +210,22 @@ charls_jpegls_decoder_at_application_data(CHARLS_IN charls_jpegls_decoder* decod
                                           charls_at_application_data_handler handler, void* user_context) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull(1)));
 
+
+/// <summary>
+/// Returns the compressed data format of the JPEG-LS data stream.
+/// </summary>
+/// <remarks>
+/// Function can be called after reading the header or after processing the complete JPEG-LS stream.
+/// After reading the header the method may report unknown or abbreviated_table_specification.
+/// </remarks>
+/// <param name="decoder">Reference to the decoder instance.</param>
+/// <param name="compressed_data_format">Current .</param>
+/// <returns>The result of the operation: success or a failure code.</returns>
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_decoder_get_compressed_data_format(CHARLS_IN const charls_jpegls_decoder* decoder,
+                                          CHARLS_OUT charls_compressed_data_format* compressed_data_format) CHARLS_NOEXCEPT
+    CHARLS_ATTRIBUTE((nonnull));
+
 /// <summary>
 /// Returns the mapping table ID referenced by the component or 0 when no mapping table is used.
 /// </summary>
@@ -237,7 +253,7 @@ charls_decoder_get_mapping_table_id(CHARLS_IN const charls_jpegls_decoder* decod
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_find_mapping_table_index(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t mapping_table_id,
-                                       CHARLS_OUT int32_t* index) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+                                        CHARLS_OUT int32_t* index) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
 /// Returns the count of mapping tables present in the JPEG-LS stream.
@@ -277,7 +293,9 @@ charls_decoder_get_mapping_table_info(CHARLS_IN const charls_jpegls_decoder* dec
 /// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
 /// <param name="mapping_table_index">Index of the requested mapping table.</param>
-/// <param name="mapping_table_data">Output argument, will hold the data of the mapping table when the function returns.</param>
+/// <param name="mapping_table_data">
+/// Output argument, will hold the data of the mapping table when the function returns.
+/// </param>
 /// <param name="mapping_table_size_bytes">Length of the mapping table buffer in bytes.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_ATTRIBUTE_ACCESS((access(write_only, 3, 4)))
