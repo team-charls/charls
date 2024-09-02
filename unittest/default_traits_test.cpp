@@ -22,7 +22,6 @@ public:
         Assert::AreEqual(8, traits.quantized_bits_per_sample);
         Assert::AreEqual(8, traits.bits_per_sample);
         Assert::AreEqual(32, traits.limit);
-        Assert::AreEqual(64, traits.reset_threshold);
     }
 
     TEST_METHOD(modulo_range) // NOLINT

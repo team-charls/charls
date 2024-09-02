@@ -15,7 +15,7 @@ TEST_CLASS(run_mode_context_test)
 public:
     TEST_METHOD(update_variable) // NOLINT
     {
-        run_mode_context context;
+        run_mode_context context{0, 4};
 
         context.update_variables(3, 27, 0);
 

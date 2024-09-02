@@ -39,9 +39,6 @@ struct lossless_traits_impl
     // ISO 14495-1 LIMIT symbol: the value of glimit for a sample encoded in regular mode.
     static constexpr int32_t limit{compute_limit_parameter(BitsPerSample)};
 
-    // ISO 14495-1 RESET symbol: threshold value at which A, B, and N are halved.
-    static constexpr int32_t reset_threshold{default_reset_threshold};
-
     static constexpr int32_t quantization_range{1 << BitsPerSample};
 
     static_assert(sizeof(SampleType) * 8 >= BitsPerSample);

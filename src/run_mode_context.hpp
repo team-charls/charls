@@ -48,7 +48,7 @@ public:
 
     /// <summary>Code segment A.23 – Update of variables for run interruption sample.</summary>
     void update_variables(const int32_t error_value, const int32_t e_mapped_error_value,
-                          const uint8_t reset_threshold) noexcept
+                          const int32_t reset_threshold) noexcept
     {
         if (error_value < 0)
         {
@@ -60,8 +60,8 @@ public:
         if (n_ == reset_threshold)
         {
             a_ >>= 1;
-            n_ = static_cast<uint8_t>(n_ >> 1);
-            nn_ = static_cast<uint8_t>(nn_ >> 1);
+            n_ >>= 1;
+            nn_ >>= 1;
         }
 
         ++n_;
@@ -103,8 +103,8 @@ private:
     // Initialize with the default values as defined in ISO 14495-1, A.8, step 1.d and 1.f.
     int32_t run_interruption_type_{};
     int32_t a_{};
-    uint8_t n_{1};
-    uint8_t nn_{};
+    int32_t n_{1};
+    int32_t nn_{};
 };
 
 } // namespace charls

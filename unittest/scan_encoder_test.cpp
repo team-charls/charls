@@ -22,14 +22,15 @@ public:
         constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
 
-        scan_encoder_tester strategy(frame_info, parameters);
+        scan_encoder_tester scan_encoder(frame_info, parameters);
 
         array<byte, 1024> data{};
 
-        strategy.initialize_forward({data.data(), data.size()});
+        scan_encoder.initialize_forward({data.data(), data.size()});
 
-        strategy.append_to_bit_stream_forward(0, 0);
-        strategy.flush_forward();
+        scan_encoder.append_to_bit_stream_forward(0, 0);
+        scan_encoder.flush_forward();
+        Assert::AreEqual({}, data[0]);
     }
 
     TEST_METHOD(append_to_bit_stream_ff_pattern) // NOLINT
@@ -37,28 +38,28 @@ public:
         constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
 
-        scan_encoder_tester strategy(frame_info, parameters);
+        scan_encoder_tester scan_encoder(frame_info, parameters);
 
         array<byte, 1024> destination{};
         destination[13] = byte{0x77}; // marker byte to detect overruns.
 
-        strategy.initialize_forward({destination.data(), destination.size()});
+        scan_encoder.initialize_forward({destination.data(), destination.size()});
 
         // We want _isFFWritten == true.
-        strategy.append_to_bit_stream_forward(0, 24);
-        strategy.append_to_bit_stream_forward(0xff, 8);
+        scan_encoder.append_to_bit_stream_forward(0, 24);
+        scan_encoder.append_to_bit_stream_forward(0xff, 8);
 
         // We need the buffer filled with set bits.
-        strategy.append_to_bit_stream_forward(0xffff, 16);
-        strategy.append_to_bit_stream_forward(0xffff, 16);
+        scan_encoder.append_to_bit_stream_forward(0xffff, 16);
+        scan_encoder.append_to_bit_stream_forward(0xffff, 16);
 
         // Buffer is full of FFs and _isFFWritten = true: Flush can only write 30 date bits.
-        strategy.append_to_bit_stream_forward(0x3, 31);
+        scan_encoder.append_to_bit_stream_forward(0x3, 31);
 
-        strategy.flush_forward();
+        scan_encoder.flush_forward();
 
         // Verify output.
-        Assert::AreEqual(size_t{13}, strategy.get_length_forward());
+        Assert::AreEqual(size_t{13}, scan_encoder.get_length_forward());
         Assert::AreEqual({}, destination[0]);
         Assert::AreEqual({}, destination[1]);
         Assert::AreEqual({}, destination[2]);
