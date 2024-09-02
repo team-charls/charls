@@ -26,7 +26,7 @@ public:
         ASSERT(traits_.is_valid());
 
         quantization_ = initialize_quantization_lut(traits_, t1_, t2_, t3_, quantization_lut_);
-        reset_parameters(traits_.range);
+        initialize_parameters(traits_.range);
     }
 
     size_t encode_scan(const std::byte* source, const size_t stride, const span<std::byte> destination) override
@@ -238,7 +238,7 @@ private:
 
         encode_mapped_value(k, map_error_value(context.get_error_correction(k | traits_.near_lossless) ^ error_value),
                             traits_.limit);
-        context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
+        context.update_variables_and_bias(error_value, traits_.near_lossless, reset_threshold_);
         ASSERT(traits_.is_near(traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)), x));
         return static_cast<sample_type>(
             traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)));
@@ -280,7 +280,7 @@ private:
 
         ASSERT(error_value == context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k));
         encode_mapped_value(k, e_mapped_error_value, traits_.limit - J[run_index_] - 1);
-        context.update_variables(error_value, e_mapped_error_value, reset_value_);
+        context.update_variables(error_value, e_mapped_error_value, reset_threshold_);
     }
 
     [[nodiscard]]

@@ -118,7 +118,7 @@ protected:
         t2_{pc_parameters.threshold2},
         t3_{pc_parameters.threshold3},
         width_{frame_info.width},
-        reset_value_{static_cast<uint8_t>(pc_parameters.reset_value)}
+        reset_threshold_{static_cast<uint8_t>(pc_parameters.reset_value)}
     {
         ASSERT((parameters.interleave_mode == interleave_mode::none && this->frame_info().component_count == 1) ||
                parameters.interleave_mode != interleave_mode::none);
@@ -144,7 +144,7 @@ protected:
         return frame_info_;
     }
 
-    void reset_parameters(const int32_t range) noexcept
+    void initialize_parameters(const int32_t range) noexcept
     {
         const regular_mode_context context_initial_value(range);
         for (auto& context : regular_mode_contexts_)
@@ -184,7 +184,9 @@ protected:
     std::array<regular_mode_context, 365> regular_mode_contexts_;
     std::array<run_mode_context, 2> run_mode_contexts_;
     uint32_t width_;
-    uint8_t reset_value_{};
+
+    // ISO 14495-1 RESET symbol: threshold value at which A, B, and N are halved.
+    int32_t reset_threshold_{};
 
     // Quantization lookup table
     const int8_t* quantization_{};

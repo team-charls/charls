@@ -139,30 +139,25 @@ unique_ptr<ScanProcess> try_make_optimized_codec(const frame_info& frame, const 
 
 template<typename ScanProcess>
 unique_ptr<ScanProcess> make_scan_codec(const frame_info& frame, const jpegls_pc_parameters& pc_parameters,
-                                        const coding_parameters& parameters)
+                                        const coding_parameters& c_parameters)
 {
-    unique_ptr<ScanProcess> codec;
-
-    if (pc_parameters.reset_value == default_reset_threshold)
-    {
-        codec = try_make_optimized_codec<ScanProcess>(frame, pc_parameters, parameters);
-    }
+    unique_ptr<ScanProcess> codec{try_make_optimized_codec<ScanProcess>(frame, pc_parameters, c_parameters)};
 
     if (!codec)
     {
         if (frame.bits_per_sample <= 8)
         {
             default_traits<uint8_t, uint8_t> traits(calculate_maximum_sample_value(frame.bits_per_sample),
-                                                    parameters.near_lossless, pc_parameters.reset_value);
+                                                    c_parameters.near_lossless);
             traits.maximum_sample_value = pc_parameters.maximum_sample_value;
-            codec = make_codec<ScanProcess, default_traits<uint8_t, uint8_t>>(frame, pc_parameters, parameters, traits);
+            codec = make_codec<ScanProcess, default_traits<uint8_t, uint8_t>>(frame, pc_parameters, c_parameters, traits);
         }
         else
         {
             default_traits<uint16_t, uint16_t> traits(calculate_maximum_sample_value(frame.bits_per_sample),
-                                                      parameters.near_lossless, pc_parameters.reset_value);
+                                                      c_parameters.near_lossless);
             traits.maximum_sample_value = pc_parameters.maximum_sample_value;
-            codec = make_codec<ScanProcess, default_traits<uint16_t, uint16_t>>(frame, pc_parameters, parameters, traits);
+            codec = make_codec<ScanProcess, default_traits<uint16_t, uint16_t>>(frame, pc_parameters, c_parameters, traits);
         }
     }
 

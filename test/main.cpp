@@ -132,7 +132,6 @@ void test_traits16_bit()
 
     assert::is_true(traits1.limit == lossless_traits::limit);
     assert::is_true(traits1.maximum_sample_value == lossless_traits::maximum_sample_value);
-    assert::is_true(traits1.reset_threshold == lossless_traits::reset_threshold);
     assert::is_true(traits1.bits_per_sample == lossless_traits::bits_per_sample);
     assert::is_true(traits1.quantized_bits_per_sample == lossless_traits::quantized_bits_per_sample);
 
@@ -157,7 +156,6 @@ void test_traits8_bit()
 
     assert::is_true(traits1.limit == lossless_traits::limit);
     assert::is_true(traits1.maximum_sample_value == lossless_traits::maximum_sample_value);
-    assert::is_true(traits1.reset_threshold == lossless_traits::reset_threshold);
     assert::is_true(traits1.bits_per_sample == lossless_traits::bits_per_sample);
     assert::is_true(traits1.quantized_bits_per_sample == lossless_traits::quantized_bits_per_sample);
 

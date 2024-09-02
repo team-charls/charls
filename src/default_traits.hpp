@@ -46,20 +46,15 @@ struct default_traits final
     // ISO 14495-1 LIMIT symbol: the value of glimit for a sample encoded in regular mode.
     int32_t limit;
 
-    // ISO 14495-1 RESET symbol: threshold value at which A, B, and N are halved.
-    int32_t reset_threshold;
-
     int32_t quantization_range;
 
-    default_traits(const int32_t arg_maximum_sample_value, const int32_t arg_near_lossless,
-                   const int32_t reset = default_reset_threshold) noexcept :
+    default_traits(const int32_t arg_maximum_sample_value, const int32_t arg_near_lossless) noexcept :
         maximum_sample_value{arg_maximum_sample_value},
         near_lossless{arg_near_lossless},
         range{compute_range_parameter(maximum_sample_value, near_lossless)},
         quantized_bits_per_sample{log2_ceiling(range)},
         bits_per_sample{log2_ceiling(maximum_sample_value)},
         limit{compute_limit_parameter(bits_per_sample)},
-        reset_threshold{reset},
         quantization_range{1 << bits_per_sample}
     {
         ASSERT(sizeof(SampleType) * 8 >= static_cast<size_t>(bits_per_sample));

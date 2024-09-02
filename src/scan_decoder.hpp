@@ -44,7 +44,7 @@ protected:
         fill_read_cache();
     }
 
-    void reset()
+    void re_initialize_read_cache()
     {
         valid_bits_ = 0;
         read_cache_ = 0;
@@ -231,20 +231,12 @@ protected:
         return value;
     }
 
-    void read_restart_marker(const uint32_t expected_restart_marker_id)
+    void process_restart_marker()
     {
-        auto value{read_byte()};
-        if (UNLIKELY(value != jpeg_marker_start_byte))
-            impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
+        read_restart_marker(jpeg_restart_marker_base + restart_interval_counter_);
+        restart_interval_counter_ = (restart_interval_counter_ + 1) % jpeg_restart_marker_range;
 
-        // Read all preceding 0xFF fill bytes until a non 0xFF byte has been found. (see T.81, B.1.1.2)
-        do
-        {
-            value = read_byte();
-        } while (value == jpeg_marker_start_byte);
-
-        if (UNLIKELY(std::to_integer<uint32_t>(value) != jpeg_restart_marker_base + expected_restart_marker_id))
-            impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
+        re_initialize_read_cache();
     }
 
     copy_from_line_buffer_fn copy_from_line_buffer_{};
@@ -328,12 +320,29 @@ private:
         }
     }
 
+    void read_restart_marker(const uint32_t expected_restart_marker_id)
+    {
+        auto value{read_byte()};
+        if (UNLIKELY(value != jpeg_marker_start_byte))
+            impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
+
+        // Read all preceding 0xFF fill bytes until a non 0xFF byte has been found. (see T.81, B.1.1.2)
+        do
+        {
+            value = read_byte();
+        } while (value == jpeg_marker_start_byte);
+
+        if (UNLIKELY(std::to_integer<uint32_t>(value) != expected_restart_marker_id))
+            impl::throw_jpegls_error(jpegls_errc::restart_marker_not_found);
+    }
+
     static constexpr auto cache_t_bit_count{static_cast<int32_t>(sizeof(cache_t) * 8)};
     static constexpr int32_t max_readable_cache_bits{cache_t_bit_count - 8};
 
     // decoding
     cache_t read_cache_{};
     int32_t valid_bits_{};
+    uint32_t restart_interval_counter_{};
     const std::byte* position_{};
     const std::byte* end_position_{};
     const std::byte* position_ff_{};

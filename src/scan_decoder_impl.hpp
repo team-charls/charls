@@ -23,14 +23,13 @@ public:
         ASSERT(traits_.is_valid());
 
         quantization_ = initialize_quantization_lut(traits_, t1_, t2_, t3_, quantization_lut_);
-        reset_parameters(traits_.range);
+        initialize_parameters(traits_.range);
         copy_from_line_buffer_ = copy_from_line_buffer<sample_type>::get_copy_function(
             parameters.interleave_mode, frame_info.component_count, parameters.transformation);
     }
 
     size_t decode_scan(const span<const std::byte> source, std::byte* destination, const size_t stride) override
     {
-
         const auto* scan_begin{to_address(source.begin())};
 
         initialize(source);
@@ -63,7 +62,6 @@ private:
         const uint32_t pixel_stride{width_ + 2U};
         const size_t component_count{
             parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
-        uint32_t restart_interval_counter{};
 
         std::array<int32_t, maximum_component_count_in_scan> run_index{};
         std::vector<pixel_type> line_buffer(component_count * pixel_stride * 2);
@@ -113,15 +111,12 @@ private:
             if (line == frame_info().height)
                 break;
 
-            // At this point in the byte stream a restart marker should be present: process it.
-            read_restart_marker(restart_interval_counter);
-            restart_interval_counter = (restart_interval_counter + 1) % jpeg_restart_marker_range;
+            process_restart_marker();
 
             // After a restart marker it is required to reset the decoder.
-            reset();
             std::fill(run_index.begin(), run_index.end(), 0);
             std::fill(line_buffer.begin(), line_buffer.end(), pixel_type{});
-            reset_parameters(traits_.range);
+            initialize_parameters(traits_.range);
         }
     }
 
@@ -272,7 +267,7 @@ private:
         }
 
         const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
-        context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
+        context.update_variables_and_bias(error_value, traits_.near_lossless, reset_threshold_);
         error_value = apply_sign(error_value, sign);
         return traits_.compute_reconstructed_sample(predicted_value, error_value);
     }
@@ -284,7 +279,7 @@ private:
         const int32_t e_mapped_error_value{
             decode_mapped_error_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_sample)};
         const int32_t error_value{context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k)};
-        context.update_variables(error_value, e_mapped_error_value, reset_value_);
+        context.update_variables(error_value, e_mapped_error_value, reset_threshold_);
         return error_value;
     }
 
