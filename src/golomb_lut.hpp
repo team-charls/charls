@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "conditional_static_cast.hpp"
 #include "constants.hpp"
 #include "util.hpp"
 
@@ -11,60 +10,39 @@
 
 namespace charls {
 
-struct golomb_code final
+/// <summary>
+/// Maps a possible golomb code to an error value and a bit-count.
+/// If the bit-count is zero, there was no match and full decoding is required.
+/// </summary>
+struct golomb_code_match final
 {
-    golomb_code() = default;
-
-    constexpr golomb_code(const int32_t value, const uint32_t length) noexcept : value_{value}, length_{length}
-    {
-    }
-
-    [[nodiscard]]
-    constexpr int32_t value() const noexcept
-    {
-        return value_;
-    }
-
-    [[nodiscard]]
-    constexpr uint32_t length() const noexcept
-    {
-        return length_;
-    }
-
-private:
-    int32_t value_{};
-    uint32_t length_{};
+    int32_t error_value;
+    uint32_t bit_count;
 };
 
 
-class golomb_code_table final
+/// <summary>
+/// Lookup up table with possible golomb code matches.
+/// </summary>
+class golomb_code_match_table final
 {
 public:
-    static constexpr size_t byte_bit_count{8};
+    explicit golomb_code_match_table(int32_t k);
 
-    constexpr void add_entry(const uint8_t value, const golomb_code code) noexcept
-    {
-        const uint32_t length{code.length()};
-        ASSERT(static_cast<size_t>(length) <= byte_bit_count);
-
-        for (size_t i{}; i < conditional_static_cast<size_t>(1U) << (byte_bit_count - length); ++i)
-        {
-            ASSERT(types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i].length() == 0);
-            types_[(static_cast<size_t>(value) << (byte_bit_count - length)) + i] = code;
-        }
-    }
+    constexpr void add_entry(uint8_t value, golomb_code_match code) noexcept;
 
     [[nodiscard]]
-    FORCE_INLINE const golomb_code& get(const uint32_t value) const noexcept
+    FORCE_INLINE golomb_code_match get(const size_t value) const noexcept
     {
-        return types_[value];
+        return matches_[value];
     }
 
 private:
-    std::array<golomb_code, 1 << byte_bit_count> types_;
+    static constexpr size_t byte_bit_count{8};
+    std::array<golomb_code_match, 1 << byte_bit_count> matches_{};
 };
 
 
-extern const std::array<golomb_code_table, max_k_value> golomb_lut;
+extern const std::array<golomb_code_match_table, max_k_value> golomb_lut;
 
 } // namespace charls

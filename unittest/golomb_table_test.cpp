@@ -17,18 +17,18 @@ TEST_CLASS(golomb_table_test)
 public:
     TEST_METHOD(golomb_table_create) // NOLINT
     {
-#if _MSC_VER >= 1920 // VS 2019
-        constexpr golomb_code_table golomb_table;
-#else
-        const golomb_code_table golomb_table;
-#endif
+        const golomb_code_match_table golomb_table(0);
 
-        for (uint32_t i{}; i != 256U; ++i)
-        {
-            Assert::AreEqual(0U, golomb_table.get(i).length());
-            Assert::AreEqual(0, golomb_table.get(i).value());
-        }
+        Assert::AreEqual(0U, golomb_table.get(0).bit_count);
+        Assert::AreEqual(0, golomb_table.get(0).error_value);
+        Assert::AreEqual(1U, golomb_table.get(255).bit_count);
+        Assert::AreEqual(0, golomb_table.get(255).error_value);
     }
 };
+
+// The Windows x64 ABI has strict requirements when it is allowed to return a struct in a register.
+static_assert(std::is_standard_layout_v<golomb_code_match>);
+static_assert(std::is_trivial_v<golomb_code_match>);
+
 
 } // namespace charls::test

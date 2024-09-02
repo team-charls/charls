@@ -1304,6 +1304,15 @@ public:
                                 [&decoder, &table] { decoder.get_mapping_table_data(0, table); });
     }
 
+    TEST_METHOD(read_header_non_8_or_16_bit_with_color_transformation_throws) // NOLINT
+    {
+        const auto jpegls_data{read_file("land10-10bit-rgb-hp3-invalid.jls")};
+
+        jpegls_decoder decoder{jpegls_data, false};
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_color_transformation, [&decoder] { decoder.read_header(); });
+    }
+
 private:
     // ReSharper disable CppPassValueParameterByConstReference
     [[nodiscard]]

@@ -39,13 +39,13 @@ public:
     }
 
     [[nodiscard]]
-    int32_t peek_byte_forward()
+    size_t peek_byte_forward()
     {
         return peek_byte();
     }
 
     [[nodiscard]]
-    bool read_bit_forward()
+    uintptr_t read_bit_forward()
     {
         return read_bit();
     }
@@ -107,7 +107,7 @@ public:
 
         scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), buffer.size());
 
-        Assert::AreEqual(7, scan_decoder.peek_byte_forward());
+        Assert::AreEqual(size_t{7}, scan_decoder.peek_byte_forward());
     }
 
     TEST_METHOD(read_bit) // NOLINT
@@ -119,14 +119,14 @@ public:
 
         scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), buffer.size());
 
-        Assert::IsTrue(scan_decoder.read_bit_forward());
-        Assert::IsFalse(scan_decoder.read_bit_forward());
-        Assert::IsTrue(scan_decoder.read_bit_forward());
-        Assert::IsFalse(scan_decoder.read_bit_forward());
-        Assert::IsTrue(scan_decoder.read_bit_forward());
-        Assert::IsFalse(scan_decoder.read_bit_forward());
-        Assert::IsTrue(scan_decoder.read_bit_forward());
-        Assert::IsFalse(scan_decoder.read_bit_forward());
+        Assert::AreEqual(static_cast<uintptr_t>(1), scan_decoder.read_bit_forward());
+        Assert::AreEqual(static_cast<uintptr_t>(0), scan_decoder.read_bit_forward());
+        Assert::AreEqual(static_cast<uintptr_t>(1), scan_decoder.read_bit_forward());
+        Assert::AreEqual(static_cast<uintptr_t>(0), scan_decoder.read_bit_forward());
+        Assert::AreEqual(static_cast<uintptr_t>(1), scan_decoder.read_bit_forward());
+        Assert::AreEqual(static_cast<uintptr_t>(0), scan_decoder.read_bit_forward());
+        Assert::AreEqual(static_cast<uintptr_t>(1), scan_decoder.read_bit_forward());
+        Assert::AreEqual(static_cast<uintptr_t>(0), scan_decoder.read_bit_forward());
     }
 
     TEST_METHOD(peek_0_bits) // NOLINT

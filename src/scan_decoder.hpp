@@ -5,8 +5,8 @@
 
 #include "charls/jpegls_error.hpp"
 
-#include "jpeg_marker_code.hpp"
 #include "copy_from_line_buffer.hpp"
+#include "jpeg_marker_code.hpp"
 #include "scan_codec.hpp"
 #include "span.hpp"
 #include "util.hpp"
@@ -104,18 +104,21 @@ protected:
         }
     }
 
+    /// <summary>
+    /// Step F.1, 9: decode the mapped error value MErrval from the limited golomb code stored in the bitstream.
+    /// </summary>
     [[nodiscard]]
-    int32_t decode_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
+    int32_t decode_mapped_error_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
     {
-        const int32_t high_bits{read_high_bits()};
+        if (const int32_t unary_code{read_unary_code()}; unary_code < limit - quantized_bits_per_pixel - 1)
+        {
+            // Option a: mapped error value is stored as golomb code.
+            return k == 0 ? unary_code : (unary_code << k) + read_value(k);
+        }
 
-        if (high_bits >= limit - (quantized_bits_per_pixel + 1))
-            return read_value(quantized_bits_per_pixel) + 1;
-
-        if (k == 0)
-            return high_bits;
-
-        return (high_bits << k) + read_value(k);
+        // Option b: unary code was escape code as mapped error value was too large,
+        // read mapped error value - 1 from bitstream.
+        return read_value(quantized_bits_per_pixel) + 1;
     }
 
     FORCE_INLINE int32_t read_value(const int32_t bit_count)
@@ -135,28 +138,38 @@ protected:
         return result;
     }
 
-    FORCE_INLINE int32_t peek_byte()
+    /// <summary>
+    /// Reads a byte from the bitstream without removing it.
+    /// This byte is used to check if there is a pre-computed Golomb code available.
+    /// </summary>
+    FORCE_INLINE size_t peek_byte()
     {
         if (valid_bits_ < 8)
         {
             fill_read_cache();
         }
 
-        return static_cast<int32_t>(read_cache_ >> max_readable_cache_bits);
+        return read_cache_ >> max_readable_cache_bits;
     }
 
-    FORCE_INLINE bool read_bit()
+    FORCE_INLINE uintptr_t read_bit()
     {
         if (valid_bits_ <= 0)
         {
             fill_read_cache();
         }
 
-        const bool set{(read_cache_ & (static_cast<cache_t>(1) << (cache_t_bit_count - 1))) != 0};
+        const uintptr_t bit{read_cache_ >> (cache_t_bit_count - 1)};
         skip_bits(1);
-        return set;
+        return bit;
     }
 
+    /// <summary>
+    /// Peek how many leading zero bits are present.
+    /// </summary>
+    /// <returns>
+    /// The number of leading zero bits or -1 when there are more than 16 leading zero bits.
+    /// </returns>
     FORCE_INLINE int32_t peek_0_bits()
     {
         if (valid_bits_ < 16)
@@ -181,19 +194,22 @@ protected:
 #endif
     }
 
-    FORCE_INLINE int32_t read_high_bits()
+    /// <summary>
+    /// Read zero bits until the first high bit.
+    /// </summary>
+    FORCE_INLINE int32_t read_unary_code()
     {
         if (const int32_t count{peek_0_bits()}; count >= 0)
         {
             skip_bits(count + 1);
             return count;
         }
-        skip_bits(15);
 
-        for (int32_t high_bits_count{15};; ++high_bits_count)
+        skip_bits(15);
+        for (int32_t zero_bit_count{15};; ++zero_bit_count)
         {
             if (read_bit())
-                return high_bits_count;
+                return zero_bit_count;
         }
     }
 
