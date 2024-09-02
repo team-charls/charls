@@ -153,7 +153,7 @@ constexpr int32_t compute_context_id(const int32_t q1, const int32_t q2, const i
 }
 
 
-// See JPEG-LS standard ISO/IEC 14495-1, A.3.3, golomb_code Segment A.4
+// See JPEG-LS standard ISO/IEC 14495-1, A.3.3, golomb code Segment A.4
 [[nodiscard]]
 constexpr int8_t quantize_gradient_org(const int32_t di, const int32_t threshold1, const int32_t threshold2,
                                        const int32_t threshold3, const int32_t near_lossless = 0) noexcept

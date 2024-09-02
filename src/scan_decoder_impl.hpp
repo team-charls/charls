@@ -250,18 +250,18 @@ private:
         const int32_t sign{bit_wise_sign(qs)};
         regular_mode_context& context{regular_mode_contexts_[apply_sign(qs, sign)]};
         const int32_t k{context.compute_golomb_coding_parameter()};
-        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
 
         int32_t error_value;
-        if (const golomb_code& code = golomb_lut[k].get(peek_byte()); code.length() != 0)
+        if (const golomb_code_match code = golomb_lut[k].get(peek_byte()); code.bit_count != 0)
         {
-            skip_bits(code.length());
-            error_value = code.value();
+            // There is a pre-computed match.
+            skip_bits(code.bit_count);
+            error_value = code.error_value;
             ASSERT(std::abs(error_value) < 65535);
         }
         else
         {
-            error_value = unmap_error_value(decode_value(k, traits_.limit, traits_.quantized_bits_per_sample));
+            error_value = unmap_error_value(decode_mapped_error_value(k, traits_.limit, traits_.quantized_bits_per_sample));
             if (UNLIKELY(std::abs(error_value) > 65535))
                 impl::throw_jpegls_error(jpegls_errc::invalid_data);
         }
@@ -271,6 +271,7 @@ private:
             error_value = error_value ^ context.get_error_correction(traits_.near_lossless);
         }
 
+        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
         context.update_variables_and_bias(error_value, traits_.near_lossless, traits_.reset_threshold);
         error_value = apply_sign(error_value, sign);
         return traits_.compute_reconstructed_sample(predicted_value, error_value);
@@ -279,9 +280,9 @@ private:
     [[nodiscard]]
     int32_t decode_run_interruption_error(run_mode_context& context)
     {
-        const int32_t k{context.get_golomb_code()};
+        const int32_t k{context.compute_golomb_coding_parameter()};
         const int32_t e_mapped_error_value{
-            decode_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_sample)};
+            decode_mapped_error_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_sample)};
         const int32_t error_value{context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k)};
         context.update_variables(error_value, e_mapped_error_value, reset_value_);
         return error_value;

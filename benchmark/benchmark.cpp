@@ -614,6 +614,6 @@ BENCHMARK(bm_read_all_bytes_no_check64);
 // Tips to run the benchmark tests:
 
 // To run a single benchmark:
-// benchmark --benchmark_filter = bm_decode   
+// benchmark --benchmark_filter=bm_decode   
 
 BENCHMARK_MAIN();

@@ -33,7 +33,7 @@ public:
     }
 
     [[nodiscard]]
-    FORCE_INLINE int32_t get_golomb_code() const noexcept
+    FORCE_INLINE int32_t compute_golomb_coding_parameter() const noexcept
     {
         const int32_t temp{a_ + (n_ >> 1) * run_interruption_type_};
         int32_t n_test{n_};

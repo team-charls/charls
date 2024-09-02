@@ -1,23 +1,18 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "golomb_lut.hpp"
+#include <benchmark/benchmark.h>
 
-#include "conditional_static_cast.hpp"
-#include "jpegls_algorithm.hpp"
+#include "../src/golomb_lut.hpp"
+#include "../src/jpegls_algorithm.hpp"
 
-namespace charls {
+using namespace charls;
 
-namespace {
-
-// Functions to build tables used to decode short Golomb codes.
-constexpr std::pair<int32_t, int32_t> create_encoded_value(const int32_t k, const int32_t mapped_error) noexcept
+std::pair<int32_t, int32_t> create_encoded_value(const int32_t k, const int32_t mapped_error) noexcept
 {
     const int32_t high_bits{mapped_error >> k};
     return std::make_pair(high_bits + k + 1, (1 << k) | (mapped_error & ((1 << k) - 1)));
 }
-
-} // namespace
 
 golomb_code_match_table::golomb_code_match_table(const int32_t k)
 {
@@ -58,12 +53,25 @@ constexpr void golomb_code_match_table::add_entry(const uint8_t value, const gol
     }
 }
 
-
-// Lookup table: decode symbols that are smaller or equal to 8 bit (16 tables for each value of k)
-const std::array<golomb_code_match_table, max_k_value> golomb_lut{
+std::array<golomb_code_match_table, max_k_value> golomb_lut2{
     golomb_code_match_table(0),  golomb_code_match_table(1),  golomb_code_match_table(2),  golomb_code_match_table(3),
     golomb_code_match_table(4),  golomb_code_match_table(5),  golomb_code_match_table(6),  golomb_code_match_table(7),
     golomb_code_match_table(8),  golomb_code_match_table(9),  golomb_code_match_table(10), golomb_code_match_table(11),
     golomb_code_match_table(12), golomb_code_match_table(13), golomb_code_match_table(14), golomb_code_match_table(15)};
 
-} // namespace charls
+
+/// <summary>
+/// Benchmark to measure how long it takes to initialize the golomb_code_match table at startup.
+/// Information is useful to decide if initialization should be done at startup or at compile time (constexpr)
+/// </summary>
+static void bm_initialize_golomb_lut(benchmark::State& state)
+{
+    for (const auto _ : state)
+    {
+        for (int i = 0; i < max_k_value; ++i)
+        {
+            golomb_lut2[i] = golomb_code_match_table(i);
+        }
+    }
+}
+BENCHMARK(bm_initialize_golomb_lut);

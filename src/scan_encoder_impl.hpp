@@ -273,7 +273,7 @@ private:
 
     void encode_run_interruption_error(run_mode_context& context, const int32_t error_value)
     {
-        const int32_t k{context.get_golomb_code()};
+        const int32_t k{context.compute_golomb_coding_parameter()};
         const bool map{context.compute_map(error_value, k)};
         const int32_t e_mapped_error_value{2 * std::abs(error_value) - context.run_interruption_type() -
                                            static_cast<int32_t>(map)};
