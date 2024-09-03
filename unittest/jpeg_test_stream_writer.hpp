@@ -217,6 +217,13 @@ public:
         write_segment(jpeg_marker_code::define_restart_interval, segment.data(), segment.size());
     }
 
+    void write_define_number_of_lines(const int height)
+    {
+        std::vector<std::byte> segment;
+        push_back(segment, static_cast<uint16_t>(height));
+        write_segment(jpeg_marker_code::define_number_of_lines, segment.data(), segment.size());
+    }
+
     void write_restart_marker(const uint8_t interval_index)
     {
         write_marker(static_cast<jpeg_marker_code>(jpeg_restart_marker_base + interval_index));

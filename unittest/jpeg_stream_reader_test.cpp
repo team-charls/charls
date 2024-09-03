@@ -215,7 +215,7 @@ public:
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
 
-        assert_expect_exception(jpegls_errc::unexpected_marker_found, [&reader] { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::unexpected_start_of_scan_marker, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_extra_sof_throws) // NOLINT
@@ -868,6 +868,85 @@ public:
 
         assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_continuation,
                                 [&reader] { reader.read_header(); });
+    }
+
+    TEST_METHOD(read_define_number_of_lines)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 0, 2, 3);
+        writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
+        constexpr array scan{byte{}, byte{1}, byte{0xFF}, byte{5}};
+        writer.write_bytes(scan.data(), scan.size());
+        writer.write_define_number_of_lines(1);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        reader.read_header();
+
+        Assert::AreEqual(1U, reader.frame_info().height);
+    }
+
+    TEST_METHOD(read_invalid_height_in_define_number_of_lines_throws)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 0, 2, 3);
+        writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
+        writer.write_define_number_of_lines(0);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_height,
+                                [&reader] { reader.read_header(); });
+    }
+
+    TEST_METHOD(read_define_number_of_lines_is_missing_throws)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 0, 2, 3);
+        writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::define_number_of_lines_marker_not_found, [&reader] { reader.read_header(); });
+    }
+
+    TEST_METHOD(read_define_number_of_lines_before_scan_throws)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 0, 2, 3);
+        writer.write_define_number_of_lines(1);
+        writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::unexpected_define_number_of_lines_marker, [&reader] { reader.read_header(); });
+    }
+
+    TEST_METHOD(read_define_number_of_lines_twice_throws)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 0, 2, 3);
+        writer.write_define_number_of_lines(1);
+        writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
+        writer.write_define_number_of_lines(1);
+        writer.write_define_number_of_lines(1);
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::unexpected_define_number_of_lines_marker, [&reader] { reader.read_header(); });
     }
 
 private:

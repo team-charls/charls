@@ -133,6 +133,12 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
 
         if (state_ == state::bit_stream_section)
         {
+            if (frame_info_.height == 0)
+            {
+                find_and_read_define_number_of_lines_segment();
+            }
+
+            check_width();
             check_coding_parameters();
             return;
         }
@@ -197,7 +203,7 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
     {
     case jpeg_marker_code::start_of_scan:
         if (UNLIKELY(state_ != state::scan_section))
-            throw_jpegls_error(jpegls_errc::unexpected_marker_found);
+            throw_jpegls_error(jpegls_errc::unexpected_start_of_scan_marker);
 
         return;
 
@@ -228,8 +234,11 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
     case jpeg_marker_code::application_data15:
         return;
 
-    case jpeg_marker_code::define_number_of_lines: // DLN is a JPEG-LS valid marker, but not supported: handle as unknown.
-        throw_jpegls_error(jpegls_errc::unknown_jpeg_marker_found);
+    case jpeg_marker_code::define_number_of_lines:
+        if (!dnl_marker_expected_)
+            throw_jpegls_error(jpegls_errc::unexpected_define_number_of_lines_marker);
+
+        break;
 
     case jpeg_marker_code::start_of_image:
         throw_jpegls_error(jpegls_errc::duplicate_start_of_image_marker);
@@ -301,7 +310,6 @@ void jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code,
         break;
 
     case jpeg_marker_code::start_of_scan:
-        check_height_and_width();
         read_start_of_scan_segment();
         break;
 
@@ -311,6 +319,11 @@ void jpeg_stream_reader::read_marker_segment(const jpeg_marker_code marker_code,
 
     case jpeg_marker_code::define_restart_interval:
         read_define_restart_interval_segment();
+        break;
+
+    case jpeg_marker_code::define_number_of_lines:
+        read_define_number_of_lines_segment();
+        dnl_marker_expected_ = false;
         break;
 
     case jpeg_marker_code::application_data8:
@@ -372,7 +385,7 @@ void jpeg_stream_reader::read_start_of_frame_segment()
                  frame_info_.bits_per_sample > maximum_bits_per_sample))
         throw_jpegls_error(jpegls_errc::invalid_parameter_bits_per_sample);
 
-    frame_info_height(read_uint16());
+    frame_info_height(read_uint16(), false);
     frame_info_width(read_uint16());
 
     frame_info_.component_count = read_uint8();
@@ -411,6 +424,13 @@ void jpeg_stream_reader::read_application_data_segment(const jpeg_marker_code ma
 {
     call_application_data_callback(marker_code);
     skip_remaining_segment_data();
+}
+
+
+void jpeg_stream_reader::read_define_number_of_lines_segment()
+{
+    check_segment_size(2);
+    frame_info_height(read_uint16(), true);
 }
 
 
@@ -490,7 +510,7 @@ void jpeg_stream_reader::read_oversize_image_dimension()
         throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_preset_parameters);
     }
 
-    frame_info_height(height);
+    frame_info_height(height, false);
     frame_info_width(width);
 }
 
@@ -798,11 +818,8 @@ void jpeg_stream_reader::skip_remaining_segment_data() noexcept
 }
 
 
-void jpeg_stream_reader::check_height_and_width() const
+void jpeg_stream_reader::check_width() const
 {
-    if (UNLIKELY(frame_info_.height < 1))
-        throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
-
     if (UNLIKELY(frame_info_.width < 1))
         throw_jpegls_error(jpegls_errc::invalid_parameter_width);
 }
@@ -815,12 +832,12 @@ void jpeg_stream_reader::check_coding_parameters() const
 }
 
 
-void jpeg_stream_reader::frame_info_height(const uint32_t height)
+void jpeg_stream_reader::frame_info_height(const uint32_t height, const bool final_update)
 {
-    if (height == 0)
+    if (height == 0 && !final_update)
         return;
 
-    if (UNLIKELY(frame_info_.height != 0))
+    if (UNLIKELY(frame_info_.height != 0 || height == 0))
         throw_jpegls_error(jpegls_errc::invalid_parameter_height);
 
     frame_info_.height = height;
@@ -846,6 +863,34 @@ void jpeg_stream_reader::call_application_data_callback(const jpeg_marker_code m
             to_application_data_id(marker_code), segment_data_.empty() ? nullptr : to_address(position_),
             segment_data_.size(), at_application_data_callback_.user_context))))
         throw_jpegls_error(jpegls_errc::callback_failed);
+}
+
+
+void jpeg_stream_reader::find_and_read_define_number_of_lines_segment()
+{
+    for (auto position{position_}; position < end_position_ - 1; ++position)
+    {
+        if (*position != jpeg_marker_start_byte)
+            continue;
+
+        const byte optional_marker_code{*(position + 1)};
+        if (optional_marker_code < byte{128} || optional_marker_code == jpeg_marker_start_byte)
+            continue;
+
+        // Found a marker, ISO / IEC 10918 - 1 B .2.5 requires that if DNL is used it must be at the end of the first scan.
+        if (static_cast<jpeg_marker_code>(optional_marker_code) != jpeg_marker_code::define_number_of_lines)
+            break;
+
+        const auto current_position{position_};
+        position_ = position + 2;
+        read_segment_size();
+        read_define_number_of_lines_segment();
+        dnl_marker_expected_ = true;
+        position_ = current_position;
+        return;
+    }
+
+    throw_jpegls_error(jpegls_errc::define_number_of_lines_marker_not_found);
 }
 
 

@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Added
 
 - Support to encode and decode mapping tables.
+- Support to retrieve the height from a DNL marker segment.
 
 ### Changed
 
@@ -16,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - BREAKING: encoding_options::include_pc_parameters_jai is not enabled by default anymore.
 - BREAKING: charls::jpegls_decoder and charls::jpegls_encoder follow the same const pattern as the C API.
 - BREAKING: the failure values of the enum charls::jpegls_errc are now divided in 2 groups: runtime failures and logic.
-- BREAKING: The public charls.h header has been split into charls.h (C users) and charls.hpp (C++ users).
+- BREAKING: The public charls.h header has been split into charls.h (C applications) and charls.hpp (C++ applications).
 
 ### Removed
 

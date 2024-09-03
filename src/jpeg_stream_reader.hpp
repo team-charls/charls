@@ -158,6 +158,7 @@ private:
     void read_start_of_scan_segment();
     void read_comment_segment();
     void read_application_data_segment(jpeg_marker_code marker_code);
+    void read_define_number_of_lines_segment();
     void read_preset_parameters_segment();
     void read_preset_coding_parameters();
     void read_oversize_image_dimension();
@@ -173,10 +174,11 @@ private:
     [[nodiscard]]
     uint32_t maximum_sample_value() const noexcept;
 
+    void find_and_read_define_number_of_lines_segment();
     void skip_remaining_segment_data() noexcept;
-    void check_height_and_width() const;
+    void check_width() const;
     void check_coding_parameters() const;
-    void frame_info_height(uint32_t height);
+    void frame_info_height(uint32_t height, bool final_update);
     void frame_info_width(uint32_t width);
     void call_application_data_callback(jpeg_marker_code marker_code) const;
     void add_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
@@ -284,6 +286,7 @@ private:
     std::vector<scan_info> scan_infos_;
     std::vector<mapping_table_entry> mapping_tables_;
     state state_{};
+    bool dnl_marker_expected_{};
     charls::compressed_data_format compressed_data_format_{};
     callback_function<at_comment_handler> at_comment_callback_{};
     callback_function<at_application_data_handler> at_application_data_callback_{};
