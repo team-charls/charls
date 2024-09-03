@@ -84,8 +84,8 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
     case jpegls_errc::unknown_jpeg_marker_found:
         return "Invalid JPEG-LS stream: an unknown JPEG marker code was found";
 
-    case jpegls_errc::unexpected_marker_found:
-        return "Invalid JPEG-LS stream: unexpected marker found";
+    case jpegls_errc::unexpected_start_of_scan_marker:
+        return "Invalid JPEG-LS stream: unexpected Start Of Scan (SOS) marker found";
 
     case jpegls_errc::invalid_marker_segment_size:
         return "Invalid JPEG-LS stream: segment size of a marker segment is invalid";
@@ -116,6 +116,12 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
 
     case jpegls_errc::end_of_image_marker_not_found:
         return "Invalid JPEG-LS stream: missing End Of Image (EOI) marker";
+
+    case jpegls_errc::unexpected_define_number_of_lines_marker:
+        return "Invalid JPEG-LS stream: unexpected Define Number of Lines (DNL) marker";
+
+    case jpegls_errc::define_number_of_lines_marker_not_found:
+        return "Invalid JPEG-LS stream: missing expected Define Number of Lines (DNL) marker";
 
     case jpegls_errc::unknown_component_id:
         return "Invalid JPEG-LS stream: unknown component ID in scan segment";
