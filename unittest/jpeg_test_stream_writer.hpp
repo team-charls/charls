@@ -192,8 +192,9 @@ public:
         write_segment(jpeg_marker_code::start_of_scan, segment.data(), segment.size());
     }
 
-    void write_define_restart_interval(const uint32_t restart_interval, const int size)
+    void write_define_restart_interval(const uint32_t restart_interval, const int32_t size)
     {
+        // Segment is documented in ISO/IEC 14495-1, C.2.5
         std::vector<std::byte> segment;
         switch (size)
         {
@@ -217,10 +218,35 @@ public:
         write_segment(jpeg_marker_code::define_restart_interval, segment.data(), segment.size());
     }
 
-    void write_define_number_of_lines(const int height)
+    void write_define_number_of_lines(const uint32_t height, const int32_t size)
     {
+        // Segment is documented in ISO/IEC 14495-1, C.2.6
         std::vector<std::byte> segment;
-        push_back(segment, static_cast<uint16_t>(height));
+        switch (size)
+        {
+        case 2:
+            push_back(segment, static_cast<uint16_t>(height));
+            break;
+
+        case 3:
+            push_back_uint24(segment, height);
+            break;
+
+        case 4:
+            push_back(segment, height);
+            break;
+
+        case 5:
+            push_back(segment, height);
+            // This will make the segment non-conforming.
+            segment.push_back({});
+            break;
+
+        default:
+            assert(false);
+            break;
+        }
+
         write_segment(jpeg_marker_code::define_number_of_lines, segment.data(), segment.size());
     }
 

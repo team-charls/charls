@@ -463,7 +463,7 @@ public:
         Assert::AreEqual(1024U, header.horizontal_resolution);
     }
 
-    TEST_METHOD(read_spiff_header_from_temporary_object) // NOLINT
+    TEST_METHOD(read_spiff_header_from_temporary_decoder) // NOLINT
     {
         const spiff_header header{create_decoder(create_test_spiff_header()).spiff_header()};
 

@@ -158,7 +158,7 @@ private:
     void read_start_of_scan_segment();
     void read_comment_segment();
     void read_application_data_segment(jpeg_marker_code marker_code);
-    void read_define_number_of_lines_segment();
+    uint32_t read_define_number_of_lines_segment();
     void read_preset_parameters_segment();
     void read_preset_coding_parameters();
     void read_oversize_image_dimension();
