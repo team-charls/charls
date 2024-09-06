@@ -238,7 +238,7 @@ void jpeg_stream_reader::validate_marker_code(const jpeg_marker_code marker_code
         if (!dnl_marker_expected_)
             throw_jpegls_error(jpegls_errc::unexpected_define_number_of_lines_marker);
 
-        break;
+        return;
 
     case jpeg_marker_code::start_of_image:
         throw_jpegls_error(jpegls_errc::duplicate_start_of_image_marker);
@@ -427,10 +427,24 @@ void jpeg_stream_reader::read_application_data_segment(const jpeg_marker_code ma
 }
 
 
-void jpeg_stream_reader::read_define_number_of_lines_segment()
+uint32_t jpeg_stream_reader::read_define_number_of_lines_segment()
 {
-    check_segment_size(2);
-    frame_info_height(read_uint16(), true);
+    // Note: The JPEG-LS standard supports a 2,3 or 4 byte DNL segments (see ISO/IEC 14495-1, C.2.6)
+    //       The original JPEG standard only supports 2 bytes (16 bit big endian).
+    switch (segment_data_.size())
+    {
+    case 2:
+        return read_uint16();
+
+    case 3:
+        return read_uint24();
+
+    case 4:
+        return read_uint32();
+
+    default:
+        throw_jpegls_error(jpegls_errc::invalid_marker_segment_size);
+    }
 }
 
 
@@ -884,7 +898,7 @@ void jpeg_stream_reader::find_and_read_define_number_of_lines_segment()
         const auto current_position{position_};
         position_ = position + 2;
         read_segment_size();
-        read_define_number_of_lines_segment();
+        frame_info_height(read_define_number_of_lines_segment(), true);
         dnl_marker_expected_ = true;
         position_ = current_position;
         return;

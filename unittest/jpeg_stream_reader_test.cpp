@@ -290,7 +290,7 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 1);
-        writer.write_start_of_scan_segment(0, 2, 0, interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 2, 0, interleave_mode::sample);
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
@@ -316,7 +316,7 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 5);
-        writer.write_start_of_scan_segment(0, 5, 0, interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 5, 0, interleave_mode::sample);
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
@@ -870,22 +870,58 @@ public:
                                 [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_define_number_of_lines)
+    TEST_METHOD(read_define_number_of_lines_16_bit)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(1, 0, 2, 3);
-        writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
-        constexpr array scan{byte{}, byte{1}, byte{0xFF}, byte{5}};
-        writer.write_bytes(scan.data(), scan.size());
-        writer.write_define_number_of_lines(1);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+        writer.write_define_number_of_lines(1, 2);
+        writer.write_start_of_scan_segment(1, 1, 0, interleave_mode::none);
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
 
         reader.read_header();
+        reader.read_next_start_of_scan();
 
         Assert::AreEqual(1U, reader.frame_info().height);
+    }
+
+    TEST_METHOD(read_define_number_of_lines_24_bit)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 0, 2, 3);
+        writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::none);
+        writer.write_define_number_of_lines(1, 3);
+        writer.write_start_of_scan_segment(1, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        reader.read_header();
+        reader.read_next_start_of_scan();
+
+        Assert::AreEqual(1U, reader.frame_info().height);
+    }
+
+    TEST_METHOD(read_define_number_of_lines_32_bit)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 0, 2, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+        writer.write_define_number_of_lines(numeric_limits<uint32_t>::max(), 4);
+        writer.write_start_of_scan_segment(1, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        reader.read_header();
+        reader.read_next_start_of_scan();
+
+        Assert::AreEqual(numeric_limits<uint32_t>::max(), reader.frame_info().height);
     }
 
     TEST_METHOD(read_invalid_height_in_define_number_of_lines_throws)
@@ -894,7 +930,7 @@ public:
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(1, 0, 2, 3);
         writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
-        writer.write_define_number_of_lines(0);
+        writer.write_define_number_of_lines(0, 2);
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
@@ -922,7 +958,7 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(1, 0, 2, 3);
-        writer.write_define_number_of_lines(1);
+        writer.write_define_number_of_lines(1, 2);
         writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
         writer.write_marker(jpeg_marker_code::end_of_image);
 
@@ -937,16 +973,33 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(1, 0, 2, 3);
-        writer.write_define_number_of_lines(1);
         writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
-        writer.write_define_number_of_lines(1);
-        writer.write_define_number_of_lines(1);
+        writer.write_define_number_of_lines(1, 2);
+        writer.write_define_number_of_lines(1, 2);
         writer.write_marker(jpeg_marker_code::end_of_image);
 
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
 
-        assert_expect_exception(jpegls_errc::unexpected_define_number_of_lines_marker, [&reader] { reader.read_header(); });
+        reader.read_header();
+
+        assert_expect_exception(jpegls_errc::unexpected_define_number_of_lines_marker,
+                                [&reader] { reader.read_next_start_of_scan(); });
+    }
+
+    TEST_METHOD(read_define_number_of_lines_invalid_size_throws)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 0, 2, 3);
+        writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
+        writer.write_define_number_of_lines(1, 5);
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
 private:
