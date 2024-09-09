@@ -89,13 +89,16 @@ private:
                     {
                         decode_sample_line();
                     }
+                    if constexpr (std::is_same_v<pixel_type, pair<sample_type>>)
+                    {
+                        decode_pair_line();
+                    }
                     else if constexpr (std::is_same_v<pixel_type, triplet<sample_type>>)
                     {
                         decode_triplet_line();
                     }
-                    else
+                    else if constexpr (std::is_same_v<pixel_type, quad<sample_type>>)
                     {
-                        static_assert(std::is_same_v<pixel_type, quad<sample_type>>);
                         decode_quad_line();
                     }
 
@@ -146,6 +149,37 @@ private:
                 index += decode_run_mode(index);
                 rb = previous_line_[index - 1];
                 rd = previous_line_[index];
+            }
+        }
+    }
+
+    /// <summary>Decodes a scan line of triplets in ILV_SAMPLE mode</summary>
+    void decode_pair_line()
+    {
+        int32_t index{1};
+        while (static_cast<uint32_t>(index) <= width_)
+        {
+            const pair<sample_type> ra{current_line_[index - 1]};
+            const pair<sample_type> rc{previous_line_[index - 1]};
+            const pair<sample_type> rb{previous_line_[index]};
+            const pair<sample_type> rd{previous_line_[index + 1]};
+
+            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
+                                                 quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
+                                                 quantize_gradient(rc.v2 - ra.v2))};
+
+            if (qs1 == 0 && qs2 == 0)
+            {
+                index += decode_run_mode(index);
+            }
+            else
+            {
+                pair<sample_type> rx;
+                rx.v1 = decode_regular(qs1, compute_predicted_value(ra.v1, rb.v1, rc.v1));
+                rx.v2 = decode_regular(qs2, compute_predicted_value(ra.v2, rb.v2, rc.v2));
+                current_line_[index] = rx;
+                ++index;
             }
         }
     }
@@ -294,6 +328,16 @@ private:
 
         const int32_t error_value{decode_run_interruption_error(run_mode_contexts_[0])};
         return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
+    }
+
+    [[nodiscard]]
+    pair<sample_type> decode_run_interruption_pixel(pair<sample_type> ra, pair<sample_type> rb)
+    {
+        const int32_t error_value1{decode_run_interruption_error(run_mode_contexts_[0])};
+        const int32_t error_value2{decode_run_interruption_error(run_mode_contexts_[0])};
+
+        return {traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
+                traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2))};
     }
 
     [[nodiscard]]

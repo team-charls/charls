@@ -30,8 +30,12 @@ public:
             return &copy_samples;
 
         case interleave_mode::line:
-            if (component_count == 3)
+            switch (component_count)
             {
+            case 2:
+                return &copy_line_2_components;
+
+            case 3:
                 switch (color_transformation)
                 {
                 case color_transformation::none:
@@ -46,14 +50,21 @@ public:
                 case color_transformation::hp3:
                     return &copy_line_3_components_transform<transform_hp3<sample_type>>;
                 }
-            }
+                break;
 
-            ASSERT(component_count == 4);
-            return &copy_line_4_components;
+            default:
+                ASSERT(component_count == 4);
+                return &copy_line_4_components;
+            }
+            break;
 
         case interleave_mode::sample:
-            if (component_count == 3)
+            switch (component_count)
             {
+            case 2:
+                return &copy_pixels_2_components;
+
+            case 3:
                 switch (color_transformation)
                 {
                 case color_transformation::none:
@@ -68,10 +79,12 @@ public:
                 case color_transformation::hp3:
                     return &copy_pixels_3_components_transform<transform_hp3<sample_type>>;
                 }
-            }
+                break;
 
-            ASSERT(component_count == 4);
-            return &copy_pixels_4_components;
+            default:
+                ASSERT(component_count == 4);
+                return &copy_pixels_4_components;
+            }
         }
 
         unreachable();
@@ -83,6 +96,18 @@ private:
     static void copy_samples(const void* source, void* destination, const size_t pixel_count) noexcept
     {
         memcpy(destination, source, pixel_count * sizeof(sample_type));
+    }
+
+    static void copy_line_2_components(const void* source, void* destination, const size_t pixel_count) noexcept
+    {
+        auto* s{static_cast<const sample_type*>(source)};
+        auto* d{static_cast<pair<sample_type>*>(destination)};
+        const size_t pixel_stride{pixel_count_to_pixel_stride(pixel_count)};
+
+        for (size_t i{}; i != pixel_count; ++i)
+        {
+            d[i] = {s[i], s[i + pixel_stride]};
+        }
     }
 
     static void copy_line_3_components(const void* source, void* destination, const size_t pixel_count) noexcept
@@ -127,6 +152,11 @@ private:
         {
             d[i] = {s[i], s[i + pixel_stride], s[i + 2 * pixel_stride], s[i + 3 * pixel_stride]};
         }
+    }
+
+    static void copy_pixels_2_components(const void* source, void* destination, const size_t pixel_count) noexcept
+    {
+        memcpy(destination, source, pixel_count * sizeof(pair<sample_type>));
     }
 
     static void copy_pixels_3_components(const void* source, void* destination, const size_t pixel_count) noexcept

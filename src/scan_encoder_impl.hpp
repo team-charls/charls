@@ -18,10 +18,11 @@ public:
 
     scan_encoder_impl(const charls::frame_info& frame_info, const jpegls_pc_parameters& pc_parameters,
                       const coding_parameters& parameters, const Traits& traits) :
-        scan_encoder{frame_info, pc_parameters, parameters,
+        scan_encoder{
+            frame_info, pc_parameters, parameters,
             copy_to_line_buffer<sample_type>::get_copy_function(parameters.interleave_mode, frame_info.component_count,
-                                                                frame_info.bits_per_sample, parameters.transformation)
-        }, traits_{traits}
+                                                                frame_info.bits_per_sample, parameters.transformation)},
+        traits_{traits}
     {
         ASSERT(traits_.is_valid());
 
@@ -80,6 +81,10 @@ private:
                 {
                     encode_sample_line();
                 }
+                else if constexpr (std::is_same_v<pixel_type, pair<sample_type>>)
+                {
+                    encode_pair_line();
+                }
                 else if constexpr (std::is_same_v<pixel_type, triplet<sample_type>>)
                 {
                     encode_triplet_line();
@@ -123,6 +128,37 @@ private:
                 index += encode_run_mode(index);
                 rb = previous_line_[index - 1];
                 rd = previous_line_[index];
+            }
+        }
+    }
+
+    /// <summary>Encodes a scan line of pairs in ILV_SAMPLE mode</summary>
+    void encode_pair_line()
+    {
+        int32_t index{1};
+        while (static_cast<uint32_t>(index) <= width_)
+        {
+            const pair<sample_type> ra{current_line_[index - 1]};
+            const pair<sample_type> rc{previous_line_[index - 1]};
+            const pair<sample_type> rb{previous_line_[index]};
+            const pair<sample_type> rd{previous_line_[index + 1]};
+
+            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
+                                                 quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
+                                                 quantize_gradient(rc.v2 - ra.v2))};
+
+            if (qs1 == 0 && qs2 == 0)
+            {
+                index += encode_run_mode(index);
+            }
+            else
+            {
+                pair<sample_type> rx;
+                rx.v1 = encode_regular(qs1, current_line_[index].v1, compute_predicted_value(ra.v1, rb.v1, rc.v1));
+                rx.v2 = encode_regular(qs2, current_line_[index].v2, compute_predicted_value(ra.v2, rb.v2, rc.v2));
+                current_line_[index] = rx;
+                ++index;
             }
         }
     }
@@ -296,6 +332,20 @@ private:
         const int32_t error_value{traits_.compute_error_value((x - rb) * sign(rb - ra))};
         encode_run_interruption_error(run_mode_contexts_[0], error_value);
         return static_cast<sample_type>(traits_.compute_reconstructed_sample(rb, error_value * sign(rb - ra)));
+    }
+
+    [[nodiscard]]
+    pair<sample_type> encode_run_interruption_pixel(const pair<sample_type> x, const pair<sample_type> ra,
+                                                    const pair<sample_type> rb)
+    {
+        const int32_t error_value1{traits_.compute_error_value(sign(rb.v1 - ra.v1) * (x.v1 - rb.v1))};
+        encode_run_interruption_error(run_mode_contexts_[0], error_value1);
+
+        const int32_t error_value2{traits_.compute_error_value(sign(rb.v2 - ra.v2) * (x.v2 - rb.v2))};
+        encode_run_interruption_error(run_mode_contexts_[0], error_value2);
+
+        return {traits_.compute_reconstructed_sample(rb.v1, error_value1 * sign(rb.v1 - ra.v1)),
+                traits_.compute_reconstructed_sample(rb.v2, error_value2 * sign(rb.v2 - ra.v2))};
     }
 
     [[nodiscard]]

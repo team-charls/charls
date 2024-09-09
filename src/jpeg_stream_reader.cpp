@@ -882,7 +882,7 @@ void jpeg_stream_reader::call_application_data_callback(const jpeg_marker_code m
 
 void jpeg_stream_reader::find_and_read_define_number_of_lines_segment()
 {
-    for (auto position{position_}; position < end_position_ - 1; ++position)
+    for (const byte* position{position_}; position < end_position_ - 1; ++position)
     {
         if (*position != jpeg_marker_start_byte)
             continue;
@@ -895,7 +895,7 @@ void jpeg_stream_reader::find_and_read_define_number_of_lines_segment()
         if (static_cast<jpeg_marker_code>(optional_marker_code) != jpeg_marker_code::define_number_of_lines)
             break;
 
-        const auto current_position{position_};
+        const byte* current_position{position_};
         position_ = position + 2;
         read_segment_size();
         frame_info_height(read_define_number_of_lines_segment(), true);

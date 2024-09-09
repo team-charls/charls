@@ -87,6 +87,12 @@ struct default_traits final
     }
 
     [[nodiscard]]
+    bool is_near(const pair<SampleType> lhs, const pair<SampleType> rhs) const noexcept
+    {
+        return std::abs(lhs.v1 - rhs.v1) <= near_lossless && std::abs(lhs.v2 - rhs.v2) <= near_lossless;
+    }
+
+    [[nodiscard]]
     bool is_near(const triplet<SampleType> lhs, const triplet<SampleType> rhs) const noexcept
     {
         return std::abs(lhs.v1 - rhs.v1) <= near_lossless && std::abs(lhs.v2 - rhs.v2) <= near_lossless &&
