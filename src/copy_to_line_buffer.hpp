@@ -35,8 +35,12 @@ public:
         }
 
         case interleave_mode::line:
-            if (component_count == 3)
+            switch (component_count)
             {
+            case 2:
+                return &copy_line_2_components;
+
+            case 3:
                 switch (color_transformation)
                 {
                 case color_transformation::none:
@@ -51,14 +55,21 @@ public:
                 case color_transformation::hp3:
                     return &copy_line_3_components_transform<transform_hp3<sample_type>>;
                 }
-            }
+                break;
 
-            ASSERT(component_count == 4);
-            return &copy_line_4_components;
+            default:
+                ASSERT(component_count == 4);
+                return &copy_line_4_components;
+            }
+            break;
 
         case interleave_mode::sample:
-            if (component_count == 3)
+            switch (component_count)
             {
+            case 2:
+                return &copy_pixels_2_components;
+
+            case 3:
                 switch (color_transformation)
                 {
                 case color_transformation::none:
@@ -73,10 +84,12 @@ public:
                 case color_transformation::hp3:
                     return &copy_pixels_3_components_transform<transform_hp3<sample_type>>;
                 }
-            }
+                break;
 
-            ASSERT(component_count == 4);
-            return &copy_pixels_4_components;
+            default:
+                ASSERT(component_count == 4);
+                return &copy_pixels_4_components;
+            }
         }
 
         unreachable();
@@ -99,6 +112,23 @@ private:
         for (size_t i{}; i != pixel_count; ++i)
         {
             d[i] = (s[i] & m);
+        }
+    }
+
+    static void copy_line_2_components(const void* source, void* destination, const size_t pixel_count,
+                                       uint32_t mask) noexcept
+    {
+        auto* s{static_cast<const pair<sample_type>*>(source)};
+        auto* d{static_cast<sample_type*>(destination)};
+        const size_t pixel_stride{pixel_count_to_pixel_stride(pixel_count)};
+        const auto m{static_cast<sample_type>(mask)};
+
+        for (size_t i{}; i != pixel_count; ++i)
+        {
+            const auto pixel{s[i]};
+
+            d[i] = pixel.v1 & m;
+            d[i + pixel_stride] = pixel.v2 & m;
         }
     }
 
@@ -162,6 +192,20 @@ private:
             d[i + pixel_stride] = pixel.v2 & m;
             d[i + (2 * pixel_stride)] = pixel.v3 & m;
             d[i + (3 * pixel_stride)] = pixel.v4 & m;
+        }
+    }
+
+    static void copy_pixels_2_components(const void* source, void* destination, const size_t pixel_count,
+                                         uint32_t mask) noexcept
+    {
+        auto* s{static_cast<const pair<sample_type>*>(source)};
+        auto* d{static_cast<pair<sample_type>*>(destination)};
+        const auto m{static_cast<sample_type>(mask)};
+
+        for (size_t i{}; i != pixel_count; ++i)
+        {
+            const auto pixel{s[i]};
+            d[i] = {static_cast<sample_type>(pixel.v1 & m), static_cast<sample_type>(pixel.v2 & m)};
         }
     }
 

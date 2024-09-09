@@ -42,6 +42,45 @@ public:
         encode("DataFiles/16-bit-640-480-many-dots.pgm", 4138);
     }
 
+    TEST_METHOD(encode_2_components_8_bit_interleave_none)
+    {
+        constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}, byte{70}, byte{80}};
+        encode({2, 2, 8, 2}, {data.cbegin(), data.cend()}, 53, interleave_mode::none);
+    }
+
+    TEST_METHOD(encode_2_components_8_bit_interleave_line)
+    {
+        constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}, byte{70}, byte{80}};
+        encode({2, 2, 8, 2}, {data.cbegin(), data.cend()}, 43, interleave_mode::line);
+    }
+
+    TEST_METHOD(encode_2_components_8_bit_interleave_sample)
+    {
+        constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}, byte{70}, byte{80}};
+        encode({2, 2, 8, 2}, {data.cbegin(), data.cend()}, 43, interleave_mode::sample);
+    }
+
+    TEST_METHOD(encode_2_components_16_bit_interleave_none)
+    {
+        constexpr array data{byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40}, byte{1},
+                             byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}, byte{1}};
+        encode({2, 2, 16, 2}, {data.cbegin(), data.cend()}, 52, interleave_mode::none);
+    }
+
+    TEST_METHOD(encode_2_components_16_bit_interleave_line)
+    {
+        constexpr array data{byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40}, byte{1},
+                             byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}, byte{1}};
+        encode({2, 2, 16, 2}, {data.cbegin(), data.cend()}, 44, interleave_mode::line);
+    }
+
+    TEST_METHOD(encode_2_components_16_bit_interleave_sample)
+    {
+        constexpr array data{byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40}, byte{1},
+                             byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}, byte{1}};
+        encode({2, 2, 16, 2}, {data.cbegin(), data.cend()}, 44, interleave_mode::sample);
+    }
+
     TEST_METHOD(encode_color_8_bit_interleave_none_lossless) // NOLINT
     {
         encode("DataFiles/test8.ppm", 102248);

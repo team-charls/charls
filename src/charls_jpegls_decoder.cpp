@@ -177,7 +177,6 @@ struct charls_jpegls_decoder final
     {
         check_argument(destination.data() || destination.empty());
         check_operation(state_ == state::header_read);
-        check_parameter_coherent();
 
         // Compute the stride for the uncompressed destination buffer.
         const size_t minimum_stride{calculate_minimum_stride()};
@@ -248,21 +247,6 @@ private:
     void check_mapping_table_index(const int32_t mapping_table_index) const
     {
         check_argument_range(0, mapping_table_count() - 1, mapping_table_index);
-    }
-
-    void check_parameter_coherent() const
-    {
-        switch (frame_info().component_count)
-        {
-        case 4:
-        case 3:
-            break;
-        default:
-            if (UNLIKELY(reader_.parameters().interleave_mode != interleave_mode::none))
-                throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
-
-            break;
-        }
     }
 
     enum class state

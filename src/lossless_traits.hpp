@@ -136,6 +136,29 @@ struct lossless_traits<uint16_t, 16> final : lossless_traits_impl<uint16_t, 16>
 
 
 template<typename SampleType, int32_t BitsPerSample>
+struct lossless_traits<pair<SampleType>, BitsPerSample> final : lossless_traits_impl<SampleType, BitsPerSample>
+{
+    using pixel_type = pair<SampleType>;
+
+    FORCE_INLINE constexpr static bool is_near(const int32_t lhs, const int32_t rhs) noexcept
+    {
+        return lhs == rhs;
+    }
+
+    FORCE_INLINE constexpr static bool is_near(const pixel_type lhs, const pixel_type rhs) noexcept
+    {
+        return lhs == rhs;
+    }
+
+    FORCE_INLINE static SampleType compute_reconstructed_sample(const int32_t predicted_value,
+                                                                const int32_t error_value) noexcept
+    {
+        return static_cast<SampleType>(predicted_value + error_value);
+    }
+};
+
+
+template<typename SampleType, int32_t BitsPerSample>
 struct lossless_traits<triplet<SampleType>, BitsPerSample> final : lossless_traits_impl<SampleType, BitsPerSample>
 {
     using pixel_type = triplet<SampleType>;

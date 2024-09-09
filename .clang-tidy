@@ -20,6 +20,7 @@
 # -clang-diagnostic-unused-macros => Rationale: Macros defined in header are reported as problem
 # -clang-diagnostic-sign-conversion => Rationale: warning will be enabled in additional steps
 # -clang-diagnostic-switch-enum => Rationale: options are handled by default case
+# -clang-diagnostic-global-constructors => Rationale: Acceptable construction
 # -clang-diagnostic-exit-time-destructors => Rationale: Acceptable construction
 # -clang-diagnostic-pragma-once-outside-header => Rationale: Generates false warnings for usage in header files
 # -clang-diagnostic-unused-const-variable => Rationale: false warnings for constexpr in .h files
@@ -74,6 +75,7 @@ Checks:          '*,
                   -clang-diagnostic-unused-macros,
                   -clang-diagnostic-sign-conversion,
                   -clang-diagnostic-switch-enum,
+                  -clang-diagnostic-global-constructors,
                   -clang-diagnostic-exit-time-destructors,
                   -clang-diagnostic-pragma-once-outside-header,
                   -clang-diagnostic-unused-const-variable,

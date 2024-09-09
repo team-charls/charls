@@ -51,9 +51,6 @@ template<typename ScanProcess>
 unique_ptr<ScanProcess> try_make_optimized_codec(const frame_info& frame, const jpegls_pc_parameters& pc_parameters,
                                                  const coding_parameters& parameters)
 {
-    if (parameters.interleave_mode == interleave_mode::sample && frame.component_count != 3 && frame.component_count != 4)
-        return nullptr;
-
 #ifndef DISABLE_SPECIALIZATIONS
 
     // optimized lossless versions common formats
@@ -61,10 +58,33 @@ unique_ptr<ScanProcess> try_make_optimized_codec(const frame_info& frame, const 
     {
         if (parameters.interleave_mode == interleave_mode::sample)
         {
-            if (frame.component_count == 3 && frame.bits_per_sample == 8)
-                return make_codec<ScanProcess>(frame, pc_parameters, parameters, lossless_traits<triplet<uint8_t>, 8>());
-            if (frame.component_count == 4 && frame.bits_per_sample == 8)
-                return make_codec<ScanProcess>(frame, pc_parameters, parameters, lossless_traits<quad<uint8_t>, 8>());
+            if (frame.bits_per_sample == 8)
+            {
+                switch (frame.component_count)
+                {
+                case 2:
+                    return make_codec<ScanProcess>(frame, pc_parameters, parameters, lossless_traits<pair<uint8_t>, 8>());
+                case 3:
+                    return make_codec<ScanProcess>(frame, pc_parameters, parameters, lossless_traits<triplet<uint8_t>, 8>());
+                default:
+                    ASSERT(frame.component_count == 4);
+                    return make_codec<ScanProcess>(frame, pc_parameters, parameters, lossless_traits<quad<uint8_t>, 8>());
+                }
+            }
+
+            if (frame.bits_per_sample == 16)
+            {
+                switch (frame.component_count)
+                {
+                case 2:
+                    return make_codec<ScanProcess>(frame, pc_parameters, parameters, lossless_traits<pair<uint16_t>, 16>());
+                case 3:
+                    return make_codec<ScanProcess>(frame, pc_parameters, parameters, lossless_traits<triplet<uint16_t>, 16>());
+                default:
+                    ASSERT(frame.component_count == 4);
+                    return make_codec<ScanProcess>(frame, pc_parameters, parameters, lossless_traits<quad<uint16_t>, 16>());
+                }
+            }
         }
         else
         {
@@ -90,6 +110,13 @@ unique_ptr<ScanProcess> try_make_optimized_codec(const frame_info& frame, const 
     {
         if (parameters.interleave_mode == interleave_mode::sample)
         {
+            if (frame.component_count == 2)
+            {
+                return make_codec<ScanProcess>(
+                    frame, pc_parameters, parameters,
+                    default_traits<uint8_t, pair<uint8_t>>(maximum_sample_value, parameters.near_lossless));
+            }
+
             if (frame.component_count == 3)
             {
                 return make_codec<ScanProcess>(
@@ -108,10 +135,18 @@ unique_ptr<ScanProcess> try_make_optimized_codec(const frame_info& frame, const 
         return make_codec<ScanProcess>(frame, pc_parameters, parameters,
                                        default_traits<uint8_t, uint8_t>(maximum_sample_value, parameters.near_lossless));
     }
+
     if (frame.bits_per_sample <= 16)
     {
         if (parameters.interleave_mode == interleave_mode::sample)
         {
+            if (frame.component_count == 2)
+            {
+                return make_codec<ScanProcess>(
+                    frame, pc_parameters, parameters,
+                    default_traits<uint16_t, pair<uint16_t>>(maximum_sample_value, parameters.near_lossless));
+            }
+
             if (frame.component_count == 3)
             {
                 return make_codec<ScanProcess>(
@@ -130,6 +165,7 @@ unique_ptr<ScanProcess> try_make_optimized_codec(const frame_info& frame, const 
         return make_codec<ScanProcess>(frame, pc_parameters, parameters,
                                        default_traits<uint16_t, uint16_t>(maximum_sample_value, parameters.near_lossless));
     }
+
     return nullptr;
 }
 

@@ -107,6 +107,21 @@ inline CHARLS_NO_INLINE jpegls_errc to_jpegls_errc() noexcept
 
 
 template<typename T>
+struct pair final
+{
+    T v1{};
+    T v2{};
+
+    [[nodiscard]]
+    friend constexpr bool
+    operator==(const pair& lhs, const pair& rhs) noexcept
+    {
+        return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2;
+    }
+};
+
+
+template<typename T>
 struct triplet final
 {
     T v1{};
