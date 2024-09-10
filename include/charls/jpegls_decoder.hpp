@@ -48,7 +48,7 @@ public:
         destination.resize(destination_size / sizeof(DestinationContainerValueType));
         decoder.decode(destination);
 
-        return std::make_pair(decoder.frame_info(), decoder.interleave_mode());
+        return std::make_pair(decoder.frame_info(), decoder.get_interleave_mode());
     }
 
     jpegls_decoder() = default;
@@ -258,13 +258,14 @@ public:
     /// <summary>
     /// Returns the interleave mode that was used to encode the scan.
     /// </summary>
+    /// <param name="component_index">The component index for which the interleave mode should be retrieved.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The value of the interleave mode.</returns>
     [[nodiscard]]
-    charls::interleave_mode interleave_mode() const
+    interleave_mode get_interleave_mode(const int32_t component_index = 0) const
     {
-        charls::interleave_mode interleave_mode;
-        check_jpegls_errc(charls_jpegls_decoder_get_interleave_mode(decoder(), &interleave_mode));
+        interleave_mode interleave_mode;
+        check_jpegls_errc(charls_jpegls_decoder_get_interleave_mode(decoder(), component_index, &interleave_mode));
         return interleave_mode;
     }
 

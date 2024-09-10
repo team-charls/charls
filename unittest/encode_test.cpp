@@ -231,7 +231,162 @@ public:
         encode({2, 2, 16, 4}, {data.cbegin(), data.cend()}, 61, interleave_mode::sample);
     }
 
+    TEST_METHOD(encode_with_different_lossless_values) // NOLINT
+    {
+        jpegls_encoder encoder;
+        encoder.frame_info({2, 2, 8, 3});
+
+        constexpr array data{byte{24}, byte{23}, byte{22}, byte{21}};
+
+        vector<byte> encoded_data(encoder.estimated_destination_size());
+        encoder.destination(encoded_data);
+
+        encoder.near_lossless(0);
+        encoder.encode_components(data, 1);
+        encoder.near_lossless(2);
+        encoder.encode_components(data, 1);
+        encoder.near_lossless(10);
+        encoder.encode_components(data, 1);
+
+        jpegls_decoder decoder(encoded_data, true);
+
+        vector<byte> destination(decoder.get_destination_size());
+        decoder.decode(destination);
+
+        check_output(data.data(), data.size(), destination.data(), decoder, 3,
+                     static_cast<size_t>(decoder.frame_info().height) * decoder.frame_info().width);
+
+        Assert::AreEqual(0, decoder.get_near_lossless(0));
+        Assert::AreEqual(2, decoder.get_near_lossless(1));
+        Assert::AreEqual(10, decoder.get_near_lossless(2));
+    }
+
+    TEST_METHOD(encode_with_different_preset_coding_parameters) // NOLINT
+    {
+        jpegls_encoder encoder;
+        encoder.frame_info({2, 2, 8, 3});
+
+        constexpr array data{byte{24}, byte{23}, byte{22}, byte{21}};
+
+        vector<byte> encoded_data(encoder.estimated_destination_size());
+        encoder.destination(encoded_data);
+
+        encoder.preset_coding_parameters({});
+        encoder.encode_components(data, 1);
+        encoder.preset_coding_parameters({25, 10, 20, 22, 64});
+        encoder.encode_components(data, 1);
+        encoder.preset_coding_parameters({25, 0, 0, 0, 3});
+        encoder.encode_components(data, 1);
+
+        jpegls_decoder decoder(encoded_data, true);
+
+        vector<byte> destination(decoder.get_destination_size());
+        decoder.decode(destination);
+
+        check_output(data.data(), data.size(), destination.data(), decoder, 3,
+                     static_cast<size_t>(decoder.frame_info().height) * decoder.frame_info().width);
+    }
+
+    TEST_METHOD(encode_with_different_interleave_modes_none_first) // NOLINT
+    {
+        jpegls_encoder encoder;
+        encoder.frame_info({8, 2, 8, 4});
+
+        constexpr array component0{byte{24}, byte{23}, byte{22}, byte{21}, byte{20}, byte{19}, byte{18}, byte{17},
+                                   byte{16}, byte{15}, byte{14}, byte{13}, byte{12}, byte{11}, byte{10}, byte{9}};
+
+        constexpr array component_1_and_2_and_3{
+            byte{24}, byte{16}, byte{23}, byte{15}, byte{22}, byte{14}, byte{21}, byte{13}, byte{20}, byte{12},
+            byte{19}, byte{11}, byte{18}, byte{10}, byte{17}, byte{9},  byte{24}, byte{16}, byte{23}, byte{15},
+            byte{22}, byte{14}, byte{21}, byte{13}, byte{20}, byte{12}, byte{19}, byte{11}, byte{18}, byte{10},
+            byte{17}, byte{9},  byte{24}, byte{16}, byte{23}, byte{15}, byte{22}, byte{14}, byte{21}, byte{13},
+            byte{20}, byte{12}, byte{19}, byte{11}, byte{18}, byte{10}, byte{17}, byte{9}};
+
+        vector<byte> encoded_data(encoder.estimated_destination_size());
+        encoder.destination(encoded_data);
+
+        encoder.interleave_mode(interleave_mode::none);
+        encoder.encode_components(component0, 1);
+        encoder.interleave_mode(interleave_mode::sample);
+        encoder.encode_components(component_1_and_2_and_3, 3);
+
+        jpegls_decoder decoder(encoded_data, true);
+
+        vector<byte> destination(decoder.get_destination_size());
+        decoder.decode(destination);
+
+        check_output(component0.data(), component0.size(), destination.data(), decoder, 1, 8 * 2);
+        check_output(component_1_and_2_and_3.data(), component_1_and_2_and_3.size(), destination.data() + 8 * 2, decoder, 1,
+                     8 * 2 * 3);
+        Assert::AreEqual(interleave_mode::none, decoder.get_interleave_mode(0));
+        Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(1));
+        Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(2));
+        Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(3));
+    }
+
+    TEST_METHOD(encode_with_different_interleave_modes_sample_first) // NOLINT
+    {
+        jpegls_encoder encoder;
+        encoder.frame_info({8, 2, 8, 4});
+
+        constexpr array component_0_and_1_and_2{
+            byte{24}, byte{16}, byte{23}, byte{15}, byte{22}, byte{14}, byte{21}, byte{13}, byte{20}, byte{12},
+            byte{19}, byte{11}, byte{18}, byte{10}, byte{17}, byte{9},  byte{24}, byte{16}, byte{23}, byte{15},
+            byte{22}, byte{14}, byte{21}, byte{13}, byte{20}, byte{12}, byte{19}, byte{11}, byte{18}, byte{10},
+            byte{17}, byte{9},  byte{24}, byte{16}, byte{23}, byte{15}, byte{22}, byte{14}, byte{21}, byte{13},
+            byte{20}, byte{12}, byte{19}, byte{11}, byte{18}, byte{10}, byte{17}, byte{9}};
+
+        constexpr array component3{byte{24}, byte{23}, byte{22}, byte{21}, byte{20}, byte{19}, byte{18}, byte{17},
+                                   byte{16}, byte{15}, byte{14}, byte{13}, byte{12}, byte{11}, byte{10}, byte{9}};
+
+        vector<byte> encoded_data(encoder.estimated_destination_size());
+        encoder.destination(encoded_data);
+
+        encoder.interleave_mode(interleave_mode::sample);
+        encoder.encode_components(component_0_and_1_and_2, 3);
+        encoder.interleave_mode(interleave_mode::none);
+        encoder.encode_components(component3, 1);
+
+        jpegls_decoder decoder(encoded_data, true);
+
+        vector<byte> destination(decoder.get_destination_size());
+        decoder.decode(destination);
+
+        check_output(component_0_and_1_and_2.data(), component_0_and_1_and_2.size(), destination.data(), decoder, 1,
+                     8 * 2 * 3);
+        check_output(component3.data(), component3.size(), destination.data() + 8 * 2 * 3, decoder, 1, 8 * 2);
+        Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(0));
+        Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(1));
+        Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(2));
+        Assert::AreEqual(interleave_mode::none, decoder.get_interleave_mode(3));
+    }
+
 private:
+    static void check_output(const byte* source, const size_t source_size, const byte* destination,
+                             const jpegls_decoder& decoder, const int component_count, const size_t component_size)
+    {
+        for (int component = 0; component < component_count; ++component)
+        {
+            const byte* component_destination = destination + component_size * component;
+
+            if (const int near_lossless = decoder.get_near_lossless(component); near_lossless == 0)
+            {
+                for (size_t i{}; i != source_size; ++i)
+                {
+                    Assert::AreEqual(source[i], component_destination[i]);
+                }
+            }
+            else
+            {
+                for (size_t i{}; i != source_size; ++i)
+                {
+                    Assert::IsTrue(abs(static_cast<uint8_t>(source[i]) - static_cast<uint8_t>(component_destination[i])) <=
+                                   near_lossless);
+                }
+            }
+        }
+    }
+
     static void encode(const char* filename, const size_t expected_size,
                        const interleave_mode interleave_mode = interleave_mode::none,
                        const color_transformation color_transformation = color_transformation::none)
@@ -273,7 +428,7 @@ private:
         Assert::AreEqual(reference_frame_info.height, frame_info.height);
         Assert::AreEqual(reference_frame_info.bits_per_sample, frame_info.bits_per_sample);
         Assert::AreEqual(reference_frame_info.component_count, frame_info.component_count);
-        Assert::IsTrue(interleave_mode == decoder.interleave_mode());
+        Assert::IsTrue(interleave_mode == decoder.get_interleave_mode());
         Assert::IsTrue(color_transformation == decoder.color_transformation());
 
         vector<byte> destination(decoder.get_destination_size());

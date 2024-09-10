@@ -182,7 +182,7 @@ bool verify_encoded_bytes(const vector<byte>& uncompressed_source, const vector<
 
     jpegls_encoder encoder;
     encoder.frame_info(decoder.frame_info())
-        .interleave_mode(decoder.interleave_mode())
+        .interleave_mode(decoder.get_interleave_mode())
         .near_lossless(decoder.get_near_lossless())
         .preset_coding_parameters(decoder.preset_coding_parameters());
 

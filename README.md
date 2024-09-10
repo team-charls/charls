@@ -38,9 +38,6 @@ The following JPEG-LS options are not supported by the CharLS implementation. Mo
   Decoding is supported, but no recovery mechanism is implemented for corrupted JPEG-LS files.
 * No support for sub-sampled scans.
   Sub-sampling is a lossly encoding mechanism and not used in lossless scenarios.
-* No support for multi component frames with mixed component counts in a single scan.
-  While technical possible all known JPEG-LS codecs put multi-component (color) images in a single scan
-  or in multiple scans, but not use a mix of these in one file.
 * No support for point transform.
   Point transform is a lossly encoding mechanism and not used in lossless scenarios.
 

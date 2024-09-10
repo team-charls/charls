@@ -110,11 +110,11 @@ public:
     TEST_METHOD(get_interleave_mode_nullptr) // NOLINT
     {
         interleave_mode interleave_mode;
-        auto error{charls_jpegls_decoder_get_interleave_mode(nullptr, &interleave_mode)};
+        auto error{charls_jpegls_decoder_get_interleave_mode(nullptr, 0, &interleave_mode)};
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
 
         const auto decoder{get_initialized_decoder()};
-        error = charls_jpegls_decoder_get_interleave_mode(decoder.get(), nullptr);
+        error = charls_jpegls_decoder_get_interleave_mode(decoder.get(), 0, nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
@@ -167,10 +167,10 @@ public:
 
     TEST_METHOD(decode_to_zero_size_buffer) // NOLINT
     {
-        auto decoder{get_initialized_decoder()};
+        const auto decoder{get_initialized_decoder()};
 
         const auto error{charls_jpegls_decoder_decode_to_buffer(decoder.get(), nullptr, 0, 0)};
-        Assert::AreEqual(jpegls_errc::destination_too_small, error);
+        Assert::AreEqual(jpegls_errc::invalid_argument_size, error);
     }
 
     TEST_METHOD(at_comment_nullptr) // NOLINT

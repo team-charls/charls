@@ -280,6 +280,26 @@ charls_jpegls_encoder_encode_from_buffer(CHARLS_IN charls_jpegls_encoder* encode
                                          size_t source_size_bytes, uint32_t stride) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull));
 
+/// <summary>
+/// Encodes the passed buffer with the source image data to the destination.
+/// This is an advanced method that provides more control how image data is encoded in JPEG-LS scans.
+/// It should be called until all components are encoded.
+/// </summary>
+/// <param name="encoder">Reference to the encoder instance.</param>
+/// <param name="source_buffer">Byte array that holds the image data that needs to be encoded.</param>
+/// <param name="source_size_bytes">Length of the array in bytes.</param>
+/// <param name="source_component_count">The number of components present in the input source.</param>
+/// <param name="stride">
+/// The number of bytes from one row of pixels in memory to the next row of pixels in memory.
+/// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
+/// </param>
+/// <returns>The result of the operation: success or a failure code.</returns>
+CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
+CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
+charls_jpegls_encoder_encode_components_from_buffer(CHARLS_IN charls_jpegls_encoder* encoder,
+                                                    CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
+                                                    size_t source_size_bytes, int32_t source_component_count,
+                                                    uint32_t stride) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
 /// Creates a JPEG-LS stream in the abbreviated format that only contain mapping tables (See JPEG-LS standard, C.4).

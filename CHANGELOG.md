@@ -10,18 +10,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 - Support to encode and decode mapping tables.
 - Support to retrieve the height from a DNL marker segment.
+- Support to encode and decode mixed interleaved mode scans.
 
 ### Changed
 
 - BREAKING: Updated the minimal required C++ language version to C++17.
 - BREAKING: encoding_options::include_pc_parameters_jai is not enabled by default anymore.
 - BREAKING: charls::jpegls_decoder and charls::jpegls_encoder follow the same const pattern as the C API.
-- BREAKING: the failure values of the enum charls::jpegls_errc are now divided in 2 groups: runtime failures and logic.
+- BREAKING: the failure values of the enum charls::jpegls_errc are now divided in 2 groups: runtime errors and logic errors.
 - BREAKING: The public charls.h header has been split into charls.h (C applications) and charls.hpp (C++ applications).
+- BREAKING: Method charls_jpegls_decoder_get_interleave_mode has an additional extra parameter: component_index.
 
 ### Removed
 
-- BREAKING: Legacy 1.x API methods have been removed.
+- BREAKING: Deprecated legacy 1.x API methods have been removed.
 
 ## [2.4.2] - 2023-5-16
 

@@ -90,7 +90,7 @@ void jpeg_stream_reader::read_header(spiff_header* header, bool* spiff_header_fo
         if (UNLIKELY(read_next_marker_code() != jpeg_marker_code::start_of_image))
             throw_jpegls_error(jpegls_errc::start_of_image_marker_not_found);
 
-        scan_infos_.reserve(4); // expect 4 components or fewer.
+        component_infos_.reserve(4); // expect 4 components or fewer.
         state_ = state::header_section;
     }
 
@@ -270,9 +270,21 @@ jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters(
 }
 
 
+int32_t jpeg_stream_reader::get_near_lossless(const size_t component_index) const noexcept
+{
+    return component_infos_[component_index].near_lossless;
+}
+
+
+interleave_mode jpeg_stream_reader::get_interleave_mode(const size_t component_index) const noexcept
+{
+    return component_infos_[component_index].interleave_mode;
+}
+
+
 int32_t jpeg_stream_reader::get_mapping_table_id(const size_t component_index) const noexcept
 {
-    return scan_infos_[component_index].table_id;
+    return component_infos_[component_index].table_id;
 }
 
 
@@ -580,33 +592,40 @@ void jpeg_stream_reader::read_define_restart_interval_segment()
 void jpeg_stream_reader::read_start_of_scan_segment()
 {
     check_minimal_segment_size(1);
-    const size_t component_count_in_scan{read_uint8()};
 
     // ISO 10918-1, B2.3. defines the limits for the number of image components parameter in an SOS.
-    if (UNLIKELY(component_count_in_scan == 0U || component_count_in_scan > maximum_component_count_in_scan ||
-                 component_count_in_scan > static_cast<size_t>(frame_info_.component_count)))
+    const int32_t scan_component_count{read_uint8()};
+    if (UNLIKELY(scan_component_count < 1 || scan_component_count > maximum_component_count_in_scan ||
+                 scan_component_count > frame_info_.component_count - read_component_count_))
         throw_jpegls_error(jpegls_errc::invalid_parameter_component_count);
 
-    if (UNLIKELY(component_count_in_scan != 1 &&
-                 component_count_in_scan != static_cast<size_t>(frame_info_.component_count)))
-        throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+    scan_component_count_ = scan_component_count;
+    read_component_count_ += scan_component_count;
 
-    check_segment_size((component_count_in_scan * 2) + 4);
+    array<uint8_t, maximum_component_count_in_scan> component_ids{};
+    array<uint8_t, maximum_component_count_in_scan> mapping_table_ids{};
 
-    for (size_t i{}; i != component_count_in_scan; ++i)
+    check_segment_size((scan_component_count * size_t{2}) + 4);
+
+    for (int32_t i{}; i != scan_component_count; ++i)
     {
-        const uint8_t component_id{read_uint8()};
-        const uint8_t mapping_table_id{read_uint8()};
-        store_mapping_table_id(component_id, mapping_table_id);
+        component_ids[i] = read_uint8();
+        mapping_table_ids[i] = read_uint8();
     }
 
     parameters_.near_lossless = read_uint8(); // Read NEAR parameter
     if (UNLIKELY(parameters_.near_lossless > compute_maximum_near_lossless(static_cast<int>(maximum_sample_value()))))
         throw_jpegls_error(jpegls_errc::invalid_parameter_near_lossless);
 
-    const auto mode{static_cast<interleave_mode>(read_byte())}; // Read ILV parameter
-    check_interleave_mode(mode);
-    parameters_.interleave_mode = mode;
+    scan_interleave_mode_ = static_cast<interleave_mode>(read_byte()); // Read ILV parameter
+    check_interleave_mode(scan_interleave_mode_, scan_component_count);
+    parameters_.interleave_mode = scan_interleave_mode_;
+
+    for (int32_t i{}; i != scan_component_count; ++i)
+    {
+        store_component_info(component_ids[i], mapping_table_ids[i], static_cast<uint8_t>(parameters_.near_lossless),
+                             scan_interleave_mode_);
+    }
 
     if (UNLIKELY((read_byte() & byte{0xFU}) != byte{})) // Read Ah (no meaning) and Al (point transform).
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
@@ -798,20 +817,20 @@ USE_DECL_ANNOTATIONS void jpeg_stream_reader::try_read_spiff_header_segment(spif
 
 void jpeg_stream_reader::add_component(const uint8_t component_id)
 {
-    if (UNLIKELY(find_if(scan_infos_.cbegin(), scan_infos_.cend(), [component_id](const scan_info& info) noexcept {
-                     return info.component_id == component_id;
-                 }) != scan_infos_.cend()))
+    if (UNLIKELY(find_if(component_infos_.cbegin(), component_infos_.cend(),
+                         [component_id](const component_info& info) noexcept { return info.id == component_id; }) !=
+                 component_infos_.cend()))
         throw_jpegls_error(jpegls_errc::duplicate_component_id_in_sof_segment);
 
-    scan_infos_.push_back({component_id, 0});
+    component_infos_.push_back({component_id, 0, 0, interleave_mode::none});
 }
 
 
-void jpeg_stream_reader::check_interleave_mode(const interleave_mode mode) const
+void jpeg_stream_reader::check_interleave_mode(const interleave_mode mode, const int32_t scan_component_count)
 {
     constexpr auto errc{jpegls_errc::invalid_parameter_interleave_mode};
     charls::check_interleave_mode(mode, errc);
-    if (UNLIKELY(frame_info_.component_count == 1 && mode != interleave_mode::none))
+    if (UNLIKELY(scan_component_count == 1 && mode != interleave_mode::none))
         throw_jpegls_error(errc);
 }
 
@@ -929,27 +948,31 @@ void jpeg_stream_reader::extend_mapping_table(const uint8_t table_id, const uint
 }
 
 
-void jpeg_stream_reader::store_mapping_table_id(const uint8_t component_id, const uint8_t table_id)
+void jpeg_stream_reader::store_component_info(const uint8_t component_id, const uint8_t table_id,
+                                              const uint8_t near_lossless, const interleave_mode interleave_mode)
 {
-    if (table_id == 0)
+    // Ignore when info is default, prevent search and ID mismatch issues.
+    if (table_id == 0 && near_lossless == 0 && interleave_mode == interleave_mode::none)
         return; // default is already 0, no need to search and update.
 
-    const auto it{find_if(scan_infos_.begin(), scan_infos_.end(),
-                          [component_id](const scan_info& info) noexcept { return info.component_id == component_id; })};
-    if (it == scan_infos_.end())
+    const auto it{find_if(component_infos_.begin(), component_infos_.end(),
+                          [component_id](const component_info& info) noexcept { return info.id == component_id; })};
+    if (it == component_infos_.end())
         throw_jpegls_error(jpegls_errc::unknown_component_id);
 
+    it->near_lossless = near_lossless;
     it->table_id = table_id;
+    it->interleave_mode = interleave_mode;
 }
 
 
 bool jpeg_stream_reader::has_external_mapping_table_ids() const noexcept
 {
-    const auto it{find_if(scan_infos_.cbegin(), scan_infos_.cend(), [this](const scan_info& info) noexcept {
+    const auto it{find_if(component_infos_.cbegin(), component_infos_.cend(), [this](const component_info& info) noexcept {
         return info.table_id != 0 && find_mapping_table_entry(info.table_id) == mapping_tables_.cend();
     })};
 
-    return it != scan_infos_.cend();
+    return it != component_infos_.cend();
 }
 
 

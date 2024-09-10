@@ -92,11 +92,11 @@ charls_jpegls_decoder_get_frame_info(CHARLS_IN const charls_jpegls_decoder* deco
 /// Function should be called after calling the function charls_jpegls_decoder_read_header.
 /// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
-/// <param name="component">The component index for which the NEAR parameter should be retrieved.</param>
+/// <param name="component_index">The component index for which the NEAR parameter should be retrieved.</param>
 /// <param name="near_lossless">Reference that will hold the value of the NEAR parameter.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_near_lossless(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t component,
+charls_jpegls_decoder_get_near_lossless(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t component_index,
                                         CHARLS_OUT int32_t* near_lossless) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
 
 /// <summary>
@@ -106,10 +106,11 @@ charls_jpegls_decoder_get_near_lossless(CHARLS_IN const charls_jpegls_decoder* d
 /// Function should be called after calling the function charls_jpegls_decoder_read_header.
 /// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
+/// <param name="component_index">The component index for which the interleave mode should be retrieved.</param>
 /// <param name="interleave_mode">Reference that will hold the value of the interleave mode.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_interleave_mode(CHARLS_IN const charls_jpegls_decoder* decoder,
+charls_jpegls_decoder_get_interleave_mode(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t component_index, 
                                           CHARLS_OUT charls_interleave_mode* interleave_mode) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull));
 

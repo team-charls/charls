@@ -328,6 +328,14 @@ public:
         return bytes_written();
     }
 
+    size_t encode_components(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const size_t source_size_bytes,
+                  const int32_t source_component_count, const uint32_t stride = 0)
+    {
+        check_jpegls_errc(charls_jpegls_encoder_encode_components_from_buffer(encoder(), source_buffer, source_size_bytes,
+                                                                              source_component_count, stride));
+        return bytes_written();
+    }
+
     /// <summary>
     /// Encodes the passed STL like container with the source image data to the destination.
     /// </summary>
@@ -341,6 +349,26 @@ public:
     size_t encode(const Container& source_container, const uint32_t stride = 0)
     {
         return encode(source_container.data(), source_container.size() * sizeof(ContainerValueType), stride);
+    }
+
+    /// <summary>
+    /// Encodes the passed STL like container with the source image data to the destination.
+    /// This is an advanced method that provides more control how image data is encoded in JPEG-LS scans.
+    /// It should be called until all components are encoded.
+    /// </summary>
+    /// <param name="source_container">Container that holds the image data that needs to be encoded.</param>
+    /// <param name="source_component_count">The number of components present in the input source.</param>
+    /// <param name="stride">
+    /// The number of bytes from one row of pixels in memory to the next row of pixels in memory.
+    /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
+    /// </param>
+    /// <returns>The number of bytes written to the destination.</returns>
+    template<typename Container, typename ContainerValueType = typename Container::value_type>
+    size_t encode_components(const Container& source_container, const int32_t source_component_count,
+                             const uint32_t stride = 0)
+    {
+        return encode_components(source_container.data(), source_container.size() * sizeof(ContainerValueType),
+                                 source_component_count, stride);
     }
 
     /// <summary>

@@ -144,7 +144,7 @@ struct charls_jpegls_encoder final
     {
         check_argument(comment.data() || comment.empty());
         check_argument(comment.size() <= segment_max_data_size, jpegls_errc::invalid_argument_size);
-        check_operation(state_ >= state::destination_set && state_ < state::completed);
+        check_state_can_write();
 
         transition_to_tables_and_miscellaneous_state();
         writer_.write_comment_segment(comment);
@@ -155,7 +155,7 @@ struct charls_jpegls_encoder final
         check_argument_range(minimum_application_data_id, maximum_application_data_id, application_data_id);
         check_argument(application_data.data() || application_data.empty());
         check_argument(application_data.size() <= segment_max_data_size, jpegls_errc::invalid_argument_size);
-        check_operation(state_ >= state::destination_set && state_ < state::completed);
+        check_state_can_write();
 
         transition_to_tables_and_miscellaneous_state();
         writer_.write_application_data_segment(application_data_id, application_data);
@@ -167,52 +167,65 @@ struct charls_jpegls_encoder final
         check_argument_range(minimum_mapping_entry_size, maximum_mapping_entry_size, entry_size);
         check_argument(table_data.data() || table_data.empty());
         check_argument(table_data.size() >= static_cast<size_t>(entry_size), jpegls_errc::invalid_argument_size);
-        check_operation(state_ >= state::destination_set && state_ < state::completed);
+        check_state_can_write();
 
         transition_to_tables_and_miscellaneous_state();
         writer_.write_jpegls_preset_parameters_segment(table_id, entry_size, table_data);
     }
 
-    void encode(span<const byte> source, size_t stride)
+    void encode(const span<const byte> source, const size_t stride)
+    {
+        encode_components(source, frame_info_.component_count, stride);
+    }
+
+    void encode_components(span<const byte> source, const int32_t source_component_count, const size_t stride)
     {
         check_argument(source.data() || source.empty());
-        check_operation(is_frame_info_configured() && state_ != state::initial);
+        check_state_can_write();
+        check_operation(is_frame_info_configured());
         check_interleave_mode_against_component_count();
-        stride = check_stride_and_source(source.size(), stride);
+        const size_t scan_stride{check_stride_and_source_size(source.size(), stride, source_component_count)};
 
         const int32_t maximum_sample_value{calculate_maximum_sample_value(frame_info_.bits_per_sample)};
         if (UNLIKELY(
                 !is_valid(user_preset_coding_parameters_, maximum_sample_value, near_lossless_, &preset_coding_parameters_)))
             throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
 
-        transition_to_tables_and_miscellaneous_state();
-        write_color_transform_segment();
-        write_start_of_frame_segment();
-        write_jpegls_preset_parameters_segment(maximum_sample_value);
+        if (encoded_component_count_ == 0)
+        {
+            transition_to_tables_and_miscellaneous_state();
+            write_color_transform_segment();
+            write_start_of_frame_segment();
+            write_jpegls_preset_parameters_segment(maximum_sample_value);
+        }
 
         if (interleave_mode_ == interleave_mode::none)
         {
-            const size_t byte_count_component{stride * frame_info_.height};
-            const int32_t last_component{frame_info_.component_count - 1};
-            for (int32_t component{}; component != frame_info_.component_count; ++component)
+            const size_t byte_count_component{scan_stride * frame_info_.height};
+            for (int32_t component{};;)
             {
                 writer_.write_start_of_scan_segment(1, near_lossless_, interleave_mode_);
-                encode_scan(source.data(), stride, 1);
+                encode_scan(source.data(), scan_stride, 1);
+
+                ++component;
+                if (component == source_component_count)
+                    break;
 
                 // Synchronize the source stream (encode_scan works on a local copy)
-                if (component != last_component)
-                {
-                    source = source.subspan(byte_count_component);
-                }
+                source = source.subspan(byte_count_component);
             }
         }
         else
         {
-            writer_.write_start_of_scan_segment(frame_info_.component_count, near_lossless_, interleave_mode_);
-            encode_scan(source.data(), stride, frame_info_.component_count);
+            writer_.write_start_of_scan_segment(source_component_count, near_lossless_, interleave_mode_);
+            encode_scan(source.data(), scan_stride, source_component_count);
         }
 
-        write_end_of_image();
+        encoded_component_count_ += source_component_count;
+        if (encoded_component_count_ == frame_info_.component_count)
+        {
+            write_end_of_image();
+        }
     }
 
     void create_abbreviated_format()
@@ -234,6 +247,7 @@ struct charls_jpegls_encoder final
 
         writer_.rewind();
         state_ = state::destination_set;
+        encoded_component_count_ = 0;
     }
 
 private:
@@ -275,9 +289,9 @@ private:
     }
 
     [[nodiscard]]
-    size_t check_stride_and_source(const size_t source_size, size_t stride) const
+    size_t check_stride_and_source_size(const size_t source_size, size_t stride, const int32_t source_component_count) const
     {
-        const size_t minimum_stride{calculate_minimum_stride()};
+        const size_t minimum_stride{calculate_minimum_stride(source_component_count)};
         if (stride == auto_calculate_stride)
         {
             stride = minimum_stride;
@@ -290,7 +304,7 @@ private:
 
         const size_t not_used_bytes_at_end{stride - minimum_stride};
         const size_t minimum_source_size{interleave_mode_ == interleave_mode::none
-                                             ? (stride * frame_info_.component_count * frame_info_.height) -
+                                             ? (stride * source_component_count * frame_info_.height) -
                                                    not_used_bytes_at_end
                                              : (stride * frame_info_.height) - not_used_bytes_at_end};
 
@@ -301,13 +315,18 @@ private:
     }
 
     [[nodiscard]]
-    size_t calculate_minimum_stride() const noexcept
+    size_t calculate_minimum_stride(const int32_t source_component_count) const noexcept
     {
         const auto stride{static_cast<size_t>(frame_info_.width) * bit_to_byte_count(frame_info_.bits_per_sample)};
         if (interleave_mode_ == interleave_mode::none)
             return stride;
 
-        return stride * frame_info_.component_count;
+        return stride * source_component_count;
+    }
+
+    void check_state_can_write() const
+    {
+        check_operation(state_ >= state::destination_set && state_ < state::completed);
     }
 
     void check_interleave_mode_against_component_count() const
@@ -385,6 +404,7 @@ private:
 
     charls_frame_info frame_info_{};
     int32_t near_lossless_{};
+    int32_t encoded_component_count_{};
     charls::interleave_mode interleave_mode_{};
     charls::color_transformation color_transformation_{};
     charls::encoding_options encoding_options_{};
@@ -633,6 +653,21 @@ charls_jpegls_encoder_encode_from_buffer(charls_jpegls_encoder* encoder, const v
 try
 {
     check_pointer(encoder)->encode({static_cast<const byte*>(source_buffer), source_size_bytes}, stride);
+    return jpegls_errc::success;
+}
+catch (...)
+{
+    return to_jpegls_errc();
+}
+
+
+USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_encoder_encode_components_from_buffer(
+    charls_jpegls_encoder* encoder, const void* source_buffer, const size_t source_size_bytes,
+    const int32_t source_component_count, const uint32_t stride) noexcept
+try
+{
+    check_pointer(encoder)->encode_components({static_cast<const byte*>(source_buffer), source_size_bytes},
+                                              source_component_count, stride);
     return jpegls_errc::success;
 }
 catch (...)
