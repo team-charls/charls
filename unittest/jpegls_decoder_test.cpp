@@ -130,7 +130,7 @@ public:
         const vector<byte> source(2000);
         const jpegls_decoder decoder{source, false};
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.interleave_mode(); });
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_interleave_mode(); });
     }
 
     TEST_METHOD(near_lossless_without_read_header_throws) // NOLINT
@@ -257,7 +257,7 @@ public:
         decoder.decode(destination);
 
         portable_anymap_file reference_file{
-            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
+            read_anymap_reference_file("DataFiles/test8.ppm", decoder.get_interleave_mode(), decoder.frame_info())};
 
         const auto& reference_image_data{reference_file.image_data()};
         for (size_t i{}; i != destination.size(); ++i)
@@ -277,29 +277,13 @@ public:
         decoder.decode(destination);
 
         portable_anymap_file reference_file{
-            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
+            read_anymap_reference_file("DataFiles/test8.ppm", decoder.get_interleave_mode(), decoder.frame_info())};
 
         const auto& reference_image_data{reference_file.image_data()};
         for (size_t i{}; i != destination.size(); ++i)
         {
             Assert::AreEqual(reference_image_data[i], destination[i]);
         }
-    }
-
-    TEST_METHOD(start_of_scan_with_mixed_interleave_mode_throws) // NOLINT
-    {
-        jpeg_test_stream_writer writer;
-        writer.write_start_of_image();
-        writer.write_start_of_frame_segment(1, 1, 8, 3);
-        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
-        writer.write_byte(byte{0x80});
-        writer.write_start_of_scan_segment(1, 2, 0, interleave_mode::sample);
-
-        jpegls_decoder decoder(writer.buffer, true);
-        std::vector<byte> destination(decoder.get_destination_size());
-
-        assert_expect_exception(jpegls_errc::parameter_value_not_supported,
-                                [&decoder, &destination] { decoder.decode(destination); });
     }
 
     TEST_METHOD(decode_with_destination_as_return) // NOLINT
@@ -309,7 +293,7 @@ public:
         const auto destination{decoder.decode<vector<byte>>()};
 
         portable_anymap_file reference_file{
-            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
+            read_anymap_reference_file("DataFiles/test8.ppm", decoder.get_interleave_mode(), decoder.frame_info())};
 
         const auto& reference_image_data{reference_file.image_data()};
         for (size_t i{}; i != destination.size(); ++i)
@@ -325,7 +309,7 @@ public:
         const auto destination{decoder.decode<vector<uint16_t>>()};
 
         portable_anymap_file reference_file{
-            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
+            read_anymap_reference_file("DataFiles/test8.ppm", decoder.get_interleave_mode(), decoder.frame_info())};
 
         const auto& reference_image_data{reference_file.image_data()};
         const auto* destination_as_bytes{reinterpret_cast<const byte*>(destination.data())};
@@ -355,12 +339,12 @@ public:
 
     TEST_METHOD(decode_color_interleave_none_custom_stride_with_too_small_buffer_throws) // NOLINT
     {
-        decode_image_with_too_small_buffer_throws("DataFiles/t8c0e0.jls", 256 + 1);
+        decode_image_with_too_small_buffer_throws("DataFiles/t8c0e0.jls", 256 + 1, 1 + 1);
     }
 
     TEST_METHOD(decode_color_interleave_sample_custom_stride_with_too_small_buffer_throws) // NOLINT
     {
-        decode_image_with_too_small_buffer_throws("DataFiles/t8c2e0.jls", 256 * 3 + 1);
+        decode_image_with_too_small_buffer_throws("DataFiles/t8c2e0.jls", 256 * 3 + 1, 1 + 1);
     }
 
     TEST_METHOD(decode_color_interleave_none_with_too_small_stride_throws) // NOLINT
@@ -398,7 +382,7 @@ public:
         const uint32_t standard_stride{decoder.frame_info().width};
         decoder.decode(destination, standard_stride);
 
-        verify_decoded_bytes(decoder.interleave_mode(), decoder.frame_info(), destination, standard_stride,
+        verify_decoded_bytes(decoder.get_interleave_mode(), decoder.frame_info(), destination, standard_stride,
                              "DataFiles/test8.ppm");
     }
 
@@ -411,7 +395,7 @@ public:
         const uint32_t standard_stride{decoder.frame_info().width * 3};
         decoder.decode(destination, standard_stride);
 
-        verify_decoded_bytes(decoder.interleave_mode(), decoder.frame_info(), destination, standard_stride,
+        verify_decoded_bytes(decoder.get_interleave_mode(), decoder.frame_info(), destination, standard_stride,
                              "DataFiles/test8.ppm");
     }
 
@@ -424,7 +408,7 @@ public:
         vector<byte> destination(decoder.get_destination_size(custom_stride));
         decoder.decode(destination, custom_stride);
 
-        verify_decoded_bytes(decoder.interleave_mode(), decoder.frame_info(), destination, custom_stride,
+        verify_decoded_bytes(decoder.get_interleave_mode(), decoder.frame_info(), destination, custom_stride,
                              "DataFiles/test8.ppm");
     }
 
@@ -437,7 +421,7 @@ public:
         vector<byte> destination(decoder.get_destination_size(custom_stride));
         decoder.decode(destination, custom_stride);
 
-        verify_decoded_bytes(decoder.interleave_mode(), decoder.frame_info(), destination, custom_stride,
+        verify_decoded_bytes(decoder.get_interleave_mode(), decoder.frame_info(), destination, custom_stride,
                              "DataFiles/test8.ppm");
     }
 
@@ -724,7 +708,7 @@ public:
 
         const jpegls_decoder decoder{source, true};
         portable_anymap_file reference_file{
-            read_anymap_reference_file("DataFiles/test8.ppm", decoder.interleave_mode(), decoder.frame_info())};
+            read_anymap_reference_file("DataFiles/test8.ppm", decoder.get_interleave_mode(), decoder.frame_info())};
 
         test_compliance(source, reference_file.image_data(), false);
     }
@@ -1395,14 +1379,14 @@ private:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&decoder] { decoder.read_header(); });
     }
 
-    static void decode_image_with_too_small_buffer_throws(const char* image_filename, const uint32_t stride = 0)
+    static void decode_image_with_too_small_buffer_throws(const char* image_filename, const uint32_t stride = 0, const uint32_t too_small_byte_count = 1)
     {
         const auto source{read_file(image_filename)};
 
         jpegls_decoder decoder{source, true};
-        vector<byte> destination(decoder.get_destination_size(stride) - 1);
+        vector<byte> destination(decoder.get_destination_size(stride) - too_small_byte_count);
 
-        assert_expect_exception(jpegls_errc::destination_too_small,
+        assert_expect_exception(jpegls_errc::invalid_argument_size,
                                 [&decoder, &destination, &stride] { decoder.decode(destination, stride); });
     }
 };

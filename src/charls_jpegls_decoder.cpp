@@ -58,22 +58,19 @@ struct charls_jpegls_decoder final
     }
 
     [[nodiscard]]
-    int32_t near_lossless(int32_t /*component*/ = 0) const
+    int32_t get_near_lossless(const size_t component_index) const
     {
         check_state_header_read();
-
-        // Note: The JPEG-LS standard allows to define different NEAR parameter for every scan.
-        return reader_.parameters().near_lossless;
+        check_argument(component_index < reader_.component_count());
+        return reader_.get_near_lossless(component_index);
     }
 
     [[nodiscard]]
-    charls::interleave_mode interleave_mode() const
+    interleave_mode get_interleave_mode(const size_t component_index) const
     {
         check_state_header_read();
-
-        // Note: The JPEG-LS standard allows to define different interleave modes for every scan.
-        //       CharLS doesn't support mixed interleave modes, first scan determines the mode.
-        return reader_.parameters().interleave_mode;
+        check_argument(component_index < reader_.component_count());
+        return reader_.get_interleave_mode(component_index);
     }
 
     [[nodiscard]]
@@ -100,7 +97,7 @@ struct charls_jpegls_decoder final
             return checked_mul(checked_mul(checked_mul(component_count, height), width), bit_to_byte_count(bits_per_sample));
         }
 
-        switch (interleave_mode())
+        switch (get_interleave_mode(0))
         {
         case interleave_mode::none: {
             const size_t minimum_stride{static_cast<size_t>(width) * bit_to_byte_count(bits_per_sample)};
@@ -173,48 +170,29 @@ struct charls_jpegls_decoder final
         reader_.get_mapping_table_data(mapping_table_index, table_data);
     }
 
-    void decode(span<byte> destination, size_t stride)
+    void decode(span<byte> destination, const size_t stride)
     {
         check_argument(destination.data() || destination.empty());
         check_operation(state_ == state::header_read);
 
-        // Compute the stride for the uncompressed destination buffer.
-        const size_t minimum_stride{calculate_minimum_stride()};
-        if (stride == auto_calculate_stride)
+        for (size_t component{};;)
         {
-            stride = minimum_stride;
-        }
-        else
-        {
-            if (UNLIKELY(stride < minimum_stride))
-                throw_jpegls_error(jpegls_errc::invalid_argument_stride);
-        }
+            const size_t scan_stride{check_stride_and_destination_size(destination.size(), stride)};
 
-        // Compute the layout of the destination buffer.
-        const size_t bytes_per_plane{stride * frame_info().height};
-        const size_t plane_count{reader_.parameters().interleave_mode == interleave_mode::none ? frame_info().component_count
-                                                                                               : 1U};
-        if (const size_t minimum_destination_size = bytes_per_plane * plane_count - (stride - minimum_stride);
-            UNLIKELY(destination.size() < minimum_destination_size))
-            throw_jpegls_error(jpegls_errc::destination_too_small);
-
-        for (size_t plane{};;)
-        {
-            const auto decoder{make_scan_codec<scan_decoder>(frame_info(), reader_.get_validated_preset_coding_parameters(),
-                                                             reader_.parameters())};
-            const size_t bytes_read{decoder->decode_scan(reader_.remaining_source(), destination.data(), stride)};
+            const auto decoder{make_scan_codec<scan_decoder>(
+                reader_.scan_frame_info(), reader_.get_validated_preset_coding_parameters(), reader_.parameters())};
+            const size_t bytes_read{decoder->decode_scan(reader_.remaining_source(), destination.data(), scan_stride)};
             reader_.advance_position(bytes_read);
 
-            ++plane;
-            if (plane == plane_count)
+            component += reader_.scan_component_count();
+            if (component == reader_.component_count())
                 break;
 
+            destination = destination.subspan(scan_stride * frame_info().height);
             reader_.read_next_start_of_scan();
-            destination = destination.subspan(bytes_per_plane);
         }
 
         reader_.read_end_of_image();
-
         state_ = state::completed;
     }
 
@@ -226,11 +204,39 @@ private:
     }
 
     [[nodiscard]]
+    size_t check_stride_and_destination_size(const size_t destination_length, size_t stride) const
+    {
+        const size_t minimum_stride{calculate_minimum_stride()};
+
+        if (stride == auto_calculate_stride)
+        {
+            stride = minimum_stride;
+        }
+        else
+        {
+            if (UNLIKELY(stride < minimum_stride))
+                throw_jpegls_error(jpegls_errc::invalid_argument_stride);
+        }
+
+        const size_t not_used_bytes_at_end{stride - minimum_stride};
+        const uint32_t height{reader_.frame_info().height};
+        const size_t minimum_destination_scan_length{reader_.scan_interleave_mode() == interleave_mode::none
+                                                         ? (stride * reader_.scan_component_count() * height) -
+                                                               not_used_bytes_at_end
+                                                         : (stride * height) - not_used_bytes_at_end};
+
+        if (UNLIKELY(destination_length < minimum_destination_scan_length))
+            throw_jpegls_error(jpegls_errc::invalid_argument_size);
+
+        return stride;
+    }
+
+    [[nodiscard]]
     size_t calculate_minimum_stride() const noexcept
     {
-        const size_t components_in_plane_count{reader_.parameters().interleave_mode == interleave_mode::none
+        const size_t components_in_plane_count{reader_.scan_interleave_mode() == interleave_mode::none
                                                    ? 1U
-                                                   : static_cast<size_t>(frame_info().component_count)};
+                                                   : static_cast<size_t>(reader_.scan_component_count())};
         return components_in_plane_count * frame_info().width * bit_to_byte_count(frame_info().bits_per_sample);
     }
 
@@ -334,10 +340,10 @@ catch (...)
 
 
 USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_near_lossless(
-    const charls_jpegls_decoder* decoder, const int32_t component, int32_t* near_lossless) noexcept
+    const charls_jpegls_decoder* decoder, const int32_t component_index, int32_t* near_lossless) noexcept
 try
 {
-    *check_pointer(near_lossless) = check_pointer(decoder)->near_lossless(component);
+    *check_pointer(near_lossless) = check_pointer(decoder)->get_near_lossless(component_index);
     return jpegls_errc::success;
 }
 catch (...)
@@ -347,10 +353,10 @@ catch (...)
 
 
 USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_decoder_get_interleave_mode(
-    const charls_jpegls_decoder* decoder, charls_interleave_mode* interleave_mode) noexcept
+    const charls_jpegls_decoder* decoder, const int32_t component_index, charls_interleave_mode* interleave_mode) noexcept
 try
 {
-    *check_pointer(interleave_mode) = check_pointer(decoder)->interleave_mode();
+    *check_pointer(interleave_mode) = check_pointer(decoder)->get_interleave_mode(component_index);
     return jpegls_errc::success;
 }
 catch (...)

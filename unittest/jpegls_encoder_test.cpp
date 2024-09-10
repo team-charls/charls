@@ -1892,7 +1892,7 @@ private:
         Assert::AreEqual(source_frame_info.height, frame_info.height);
         Assert::AreEqual(source_frame_info.bits_per_sample, frame_info.bits_per_sample);
         Assert::AreEqual(source_frame_info.component_count, frame_info.component_count);
-        Assert::IsTrue(interleave_mode == decoder.interleave_mode());
+        Assert::IsTrue(interleave_mode == decoder.get_interleave_mode());
         Assert::IsTrue(color_transformation == decoder.color_transformation());
 
         vector<byte> destination(decoder.get_destination_size());

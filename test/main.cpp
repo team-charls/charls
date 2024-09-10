@@ -290,7 +290,7 @@ void test_too_small_output_buffer()
         error = e.code();
     }
 
-    assert::is_true(error == jpegls_errc::destination_too_small);
+    assert::is_true(error == jpegls_errc::invalid_argument_size);
 }
 
 

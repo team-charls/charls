@@ -38,6 +38,12 @@ public:
     }
 
     [[nodiscard]]
+    charls::frame_info scan_frame_info() const noexcept
+    {
+        return {frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, scan_component_count()};
+    }
+
+    [[nodiscard]]
     const coding_parameters& parameters() const noexcept
     {
         return parameters_;
@@ -92,6 +98,12 @@ public:
     }
 
     [[nodiscard]]
+    int32_t get_near_lossless(size_t component_index) const noexcept;
+
+    [[nodiscard]]
+    interleave_mode get_interleave_mode(size_t component_index) const noexcept;
+
+    [[nodiscard]]
     int32_t get_mapping_table_id(size_t component_index) const noexcept;
 
     [[nodiscard]]
@@ -103,7 +115,19 @@ public:
     [[nodiscard]]
     size_t component_count() const noexcept
     {
-        return scan_infos_.size();
+        return component_infos_.size();
+    }
+
+    [[nodiscard]]
+    int32_t scan_component_count() const noexcept
+    {
+        return scan_component_count_;
+    }
+
+    [[nodiscard]]
+    interleave_mode scan_interleave_mode() const noexcept
+    {
+        return scan_interleave_mode_;
     }
 
     [[nodiscard]]
@@ -169,7 +193,7 @@ private:
     void try_read_spiff_header_segment(CHARLS_OUT spiff_header& header, CHARLS_OUT bool& spiff_header_found);
     void try_read_hp_color_transform_segment();
     void add_component(uint8_t component_id);
-    void check_interleave_mode(interleave_mode mode) const;
+    static void check_interleave_mode(interleave_mode mode, int32_t scan_component_count);
 
     [[nodiscard]]
     uint32_t maximum_sample_value() const noexcept;
@@ -183,7 +207,8 @@ private:
     void call_application_data_callback(jpeg_marker_code marker_code) const;
     void add_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
     void extend_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
-    void store_mapping_table_id(uint8_t component_id, uint8_t table_id);
+    void store_component_info(uint8_t component_id, uint8_t table_id, uint8_t near_lossless,
+                                interleave_mode interleave_mode);
 
     [[nodiscard]]
     bool has_external_mapping_table_ids() const noexcept;
@@ -215,10 +240,12 @@ private:
         after_end_of_image
     };
 
-    struct scan_info final
+    struct component_info final
     {
-        uint8_t component_id;
+        uint8_t id;
+        uint8_t near_lossless;
         uint8_t table_id;
+        charls::interleave_mode interleave_mode;
     };
 
     class mapping_table_entry final
@@ -283,9 +310,12 @@ private:
     charls::frame_info frame_info_{};
     coding_parameters parameters_{};
     jpegls_pc_parameters preset_coding_parameters_{};
-    std::vector<scan_info> scan_infos_;
+    std::vector<component_info> component_infos_;
     std::vector<mapping_table_entry> mapping_tables_;
     state state_{};
+    int32_t read_component_count_{};
+    int32_t scan_component_count_{};
+    interleave_mode scan_interleave_mode_{};
     bool dnl_marker_expected_{};
     charls::compressed_data_format compressed_data_format_{};
     callback_function<at_comment_handler> at_comment_callback_{};

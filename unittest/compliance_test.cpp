@@ -208,7 +208,7 @@ private:
         const jpegls_decoder decoder{encoded_source, true};
 
         portable_anymap_file reference_file{
-            read_anymap_reference_file(raw_filename, decoder.interleave_mode(), decoder.frame_info())};
+            read_anymap_reference_file(raw_filename, decoder.get_interleave_mode(), decoder.frame_info())};
 
         test_compliance(encoded_source, reference_file.image_data(), check_encode);
     }

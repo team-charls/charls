@@ -893,7 +893,7 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(1, 0, 2, 3);
-        writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::none);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
         writer.write_define_number_of_lines(1, 3);
         writer.write_start_of_scan_segment(1, 1, 0, interleave_mode::none);
 

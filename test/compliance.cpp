@@ -62,7 +62,7 @@ bool verify_encoded_bytes(const void* uncompressed_data, const size_t uncompress
         jpegls_encoder encoder;
         encoder.destination(our_encoded_bytes);
         encoder.frame_info(decoder.frame_info());
-        encoder.interleave_mode(decoder.interleave_mode());
+        encoder.interleave_mode(decoder.get_interleave_mode());
         encoder.near_lossless(decoder.get_near_lossless());
         encoder.preset_coding_parameters(decoder.preset_coding_parameters());
         std::ignore = encoder.encode(uncompressed_data, uncompressed_length);
@@ -143,7 +143,7 @@ void decompress_file(const char* name_encoded, const char* name_raw, const int o
         fix_endian(&raw_buffer, false);
     }
 
-    if (decoder.interleave_mode() == interleave_mode::none && component_count == 3)
+    if (decoder.get_interleave_mode() == interleave_mode::none && component_count == 3)
     {
         triplet2_planar(raw_buffer, {width, height});
     }

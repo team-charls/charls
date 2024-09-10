@@ -147,7 +147,7 @@ private:
         Assert::AreEqual(static_cast<uint32_t>(reference_file.height()), frame_info.height);
         Assert::AreEqual(reference_file.component_count(), frame_info.component_count);
         Assert::AreEqual(reference_file.bits_per_sample(), frame_info.bits_per_sample);
-        Assert::AreEqual(interleave_mode, decoder.interleave_mode());
+        Assert::AreEqual(interleave_mode, decoder.get_interleave_mode());
 
         vector<std::byte> destination(decoder.get_destination_size());
         decoder.decode(destination);
