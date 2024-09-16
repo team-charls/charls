@@ -89,7 +89,7 @@ private:
                     {
                         decode_sample_line();
                     }
-                    if constexpr (std::is_same_v<pixel_type, pair<sample_type>>)
+                    else if constexpr (std::is_same_v<pixel_type, pair<sample_type>>)
                     {
                         decode_pair_line();
                     }
@@ -97,8 +97,9 @@ private:
                     {
                         decode_triplet_line();
                     }
-                    else if constexpr (std::is_same_v<pixel_type, quad<sample_type>>)
+                    else
                     {
+                        static_assert(std::is_same_v<pixel_type, quad<sample_type>>);
                         decode_quad_line();
                     }
 

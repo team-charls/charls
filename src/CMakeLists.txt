@@ -70,8 +70,8 @@ target_compile_definitions(charls PRIVATE CHARLS_LIBRARY_BUILD)
 target_compile_features(charls PUBLIC cxx_std_17)
 
 set(HEADERS
-    "include/charls/api_abi.h"
     "include/charls/annotations.h"
+    "include/charls/api_abi.h"
     "include/charls/charls.h"
     "include/charls/charls.hpp"
     "include/charls/charls_jpegls_decoder.h"
@@ -81,6 +81,7 @@ set(HEADERS
     "include/charls/jpegls_error.h"
     "include/charls/jpegls_error.hpp"
     "include/charls/public_types.h"
+    "include/charls/undef_macros.h"
     "include/charls/validate_spiff_header.h"
     "include/charls/version.h"
 )

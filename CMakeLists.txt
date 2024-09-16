@@ -15,19 +15,19 @@ message(STATUS "CharLS version: ${version_major}.${version_minor}.${version_patc
 
 project(charls VERSION ${version_major}.${version_minor}.${version_patch} LANGUAGES C CXX)
 
-# Determine if project is built as a subproject (using add_subdirectory) or if it is the master project.
-set(MASTER_PROJECT OFF)
+# Determine if project is built as a subproject (using add_subdirectory) or if it is the main project.
+set(MAIN_PROJECT OFF)
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-  set(MASTER_PROJECT ON)
-  message(STATUS "Building as master project, CMake version: ${CMAKE_VERSION}")
+  set(MAIN_PROJECT ON)
+  message(STATUS "Building as main project, CMake version: ${CMAKE_VERSION}")
 endif ()
 
 # The basic options to control what is build extra.
-option(CHARLS_BUILD_TESTS "Build test application" ${MASTER_PROJECT})
-option(CHARLS_BUILD_AFL_FUZZ_TEST "Build AFL test fuzzer application" ${MASTER_PROJECT})
-option(CHARLS_BUILD_LIBFUZZER_FUZZ_TEST "Build LibFuzzer test fuzzer application" ${MASTER_PROJECT})
-option(CHARLS_BUILD_SAMPLES "Build sample applications" ${MASTER_PROJECT})
-option(CHARLS_INSTALL "Generate the install target." ${MASTER_PROJECT})
+option(CHARLS_BUILD_TESTS "Build test application" ${MAIN_PROJECT})
+option(CHARLS_BUILD_AFL_FUZZ_TEST "Build AFL test fuzzer application" ${MAIN_PROJECT})
+option(CHARLS_BUILD_LIBFUZZER_FUZZ_TEST "Build LibFuzzer test fuzzer application" ${MAIN_PROJECT})
+option(CHARLS_BUILD_SAMPLES "Build sample applications" ${MAIN_PROJECT})
+option(CHARLS_INSTALL "Generate the install target." ${MAIN_PROJECT})
 
 # Provide BUILD_SHARED_LIBS as an option for GUI tools
 option(BUILD_SHARED_LIBS "Will control if charls lib is build as shared lib/DLL or static library")

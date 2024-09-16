@@ -13,7 +13,7 @@ namespace charls {
 template<typename ScanProcess>
 [[nodiscard]]
 std::unique_ptr<ScanProcess> make_scan_codec(const frame_info& frame,
-                                             const jpegls_pc_parameters& pc_parameters, const coding_parameters& c_parameters);
+                                             const jpegls_pc_parameters& pc_parameters, const coding_parameters& parameters);
 
 
 extern template std::unique_ptr<class scan_decoder>
