@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Support to retrieve the height from a DNL marker segment.
 - Support to encode and decode mixed interleaved mode scans.
 
+### Fixed
+
+- Endless loop when decoding invalid JPEG-LS input data.
+
 ### Changed
 
 - BREAKING: Updated the minimal required C++ language version to C++17.

@@ -279,6 +279,7 @@ private:
     {
         const int32_t sign{bit_wise_sign(qs)};
         regular_mode_context& context{regular_mode_contexts_[apply_sign(qs, sign)]};
+        const int32_t corrected_prediction{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
         const int32_t k{context.compute_golomb_coding_parameter()};
 
         int32_t error_value;
@@ -301,16 +302,15 @@ private:
             error_value = error_value ^ context.get_error_correction(traits_.near_lossless);
         }
 
-        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
         context.update_variables_and_bias(error_value, traits_.near_lossless, reset_threshold_);
         error_value = apply_sign(error_value, sign);
-        return traits_.compute_reconstructed_sample(predicted_value, error_value);
+        return traits_.compute_reconstructed_sample(corrected_prediction, error_value);
     }
 
     [[nodiscard]]
     int32_t decode_run_interruption_error(run_mode_context& context)
     {
-        const int32_t k{context.compute_golomb_coding_parameter()};
+        const int32_t k{context.compute_golomb_coding_parameter_checked()};
         const int32_t e_mapped_error_value{
             decode_mapped_error_value(k, traits_.limit - J[run_index_] - 1, traits_.quantized_bits_per_sample)};
         const int32_t error_value{context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k)};

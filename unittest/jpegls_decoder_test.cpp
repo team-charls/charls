@@ -237,7 +237,7 @@ public:
 
     TEST_METHOD(get_destination_size_for_small_image_with_custom_stride) // NOLINT
     {
-        const auto source{read_file("8bit-monochrome-2x2.jls")};
+        const auto source{read_file("DataFiles/8bit-monochrome-2x2.jls")};
         jpegls_decoder decoder{source, true};
 
         constexpr uint32_t stride{4};
@@ -264,6 +264,41 @@ public:
         {
             Assert::AreEqual(reference_image_data[i], destination[i]);
         }
+    }
+
+    TEST_METHOD(decode_fuzzy_input_no_valid_bits_at_the_end_throws) // NOLINT
+    {
+        // Remark: exception is thrown from different location when lossless_traits becomes more generic.
+        const auto source{read_file("DataFiles/fuzzy-input-no-valid-bits-at-the-end.jls")};
+        jpegls_decoder decoder{source, true};
+
+        vector<byte> destination(decoder.get_destination_size());
+
+        assert_expect_exception(jpegls_errc::invalid_data, [&decoder, &destination] { decoder.decode(destination); });
+    }
+
+    TEST_METHOD(decode_fuzzy_input_bad_run_mode_golomb_code_throws) // NOLINT
+    {
+        const auto source{read_file("DataFiles/fuzzy-input-bad-run-mode-golomb-code.jls")};
+        jpegls_decoder decoder{source, true};
+
+        vector<byte> destination(decoder.get_destination_size());
+
+        assert_expect_exception(jpegls_errc::invalid_data, [&decoder, &destination] { decoder.decode(destination); });
+    }
+
+    TEST_METHOD(get_destination_size_returns_zero_for_abbreviated_table_specification) // NOLINT
+    {
+        const vector<byte> table_data(4);
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_jpegls_preset_parameters_segment(1, 1, table_data, false);
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        const jpegls_decoder decoder{writer.buffer, true};
+        const auto size = decoder.get_destination_size();
+
+        Assert::AreEqual(size_t{0}, size);
     }
 
     TEST_METHOD(decode_with_default_pc_parameters_before_each_sos) // NOLINT
@@ -1040,7 +1075,7 @@ public:
     {
         constexpr frame_info frame_info{100, 100, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
-        
+
         jpegls_encoder encoder;
         encoder.frame_info(frame_info);
         encoder.set_mapping_table_id(0, 1);

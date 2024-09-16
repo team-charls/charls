@@ -193,4 +193,12 @@
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="fuzzy-input-no-valid-bits-at-the-end.jls">
+      <Filter>Test Images</Filter>
+    </None>
+    <None Include="fuzzy-input-bad-run-mode-golomb-code.jls">
+      <Filter>Test Images</Filter>
+    </None>
+  </ItemGroup>
 </Project>

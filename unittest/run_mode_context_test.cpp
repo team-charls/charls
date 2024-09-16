@@ -20,6 +20,7 @@ public:
         context.update_variables(3, 27, 0);
 
         Assert::AreEqual(3, context.compute_golomb_coding_parameter());
+        Assert::AreEqual(3, context.compute_golomb_coding_parameter_checked());
     }
 };
 
