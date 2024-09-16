@@ -221,6 +221,15 @@
     </CopyFileToFolders>
     <CopyFileToFolders Include="8bit-monochrome-2x2.jls">
       <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="fuzzy-input-bad-run-mode-golomb-code.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="fuzzy-input-no-valid-bits-at-the-end.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)DataFiles</DestinationFolders>
     </CopyFileToFolders>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

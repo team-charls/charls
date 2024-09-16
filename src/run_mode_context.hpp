@@ -33,6 +33,21 @@ public:
     }
 
     [[nodiscard]]
+    FORCE_INLINE int32_t compute_golomb_coding_parameter_checked() const
+    {
+        const int32_t temp{a_ + (n_ >> 1) * run_interruption_type_};
+        int32_t n_test{n_};
+        int32_t k{};
+        for (; n_test < temp; ++k)
+        {
+            n_test <<= 1;
+            if (k > 32)
+                impl::throw_jpegls_error(jpegls_errc::invalid_data);
+        }
+        return k;
+    }
+
+    [[nodiscard]]
     FORCE_INLINE int32_t compute_golomb_coding_parameter() const noexcept
     {
         const int32_t temp{a_ + (n_ >> 1) * run_interruption_type_};
