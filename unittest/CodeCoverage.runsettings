@@ -7,7 +7,7 @@
           <CodeCoverage>
 
             <!-- The CharLS source code is linked into the unit test DLL using .obj files. The DLL to cover is the unit test DLL -->
-            <!-- Only do code coverage on debug bulds. Release builds are optimized and provide poor code coverage results (inlining is a major factor)-->
+            <!-- Only do code coverage on debug builds. Release builds are optimized and provide poor code coverage results (inlining is a major factor)-->
             <ModulePaths>
               <Include>
                 <ModulePath>.*debug.*CharLSUnitTest\.dll$</ModulePath>

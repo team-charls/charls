@@ -32,7 +32,7 @@ if(NOT BUILD_SHARED_LIBS)
   target_compile_definitions(charls PUBLIC CHARLS_STATIC)
 endif()
 
-# Use different DLL filenames on Windows. It allows platform neutral adapters to load dynamicly the correct version.
+# Use different DLL filenames on Windows. It allows platform neutral adapters to load dynamically the correct version.
 if(WIN32 AND BUILD_SHARED_LIBS)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID MATCHES "ARM64")

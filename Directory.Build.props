@@ -73,7 +73,7 @@
       <!-- Use all cores to speed up the compilation (MS recommended best practice). -->
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
 
-      <!-- Explicit define that all projects are compiled according the latest offical C++17 standard -->
+      <!-- Explicit define that all projects are compiled according the latest official C++17 standard -->
       <LanguageStandard>stdcpp17</LanguageStandard>
 
       <!-- Explicit disable non conforming MSVC compiler options that are not compatible with the C++ standard -->
@@ -164,7 +164,7 @@
       <!-- Mark executable image compatible with the Control-flow Enforcement Technology (CET) Shadow Stack. -->
       <CETCompat Condition="'$(Platform)'!='ARM64'">true</CETCompat>
 
-      <!-- On the ARM64 plaftorm enable Pointer Authentication for return addresses. -->
+      <!-- On the ARM64 platform enable Pointer Authentication for return addresses. -->
       <GuardSignedReturns Condition="'$(Platform)'=='ARM64'">true</GuardSignedReturns>
     </Link>
 
@@ -172,4 +172,4 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
-</Project>
+</Project
