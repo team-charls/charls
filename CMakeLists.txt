@@ -119,7 +119,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
       -Wthread-safety-beta
       -Wcomma
       -Wconversion
-      # -Weverything provides the option to discover usefull Clang warnings.
+      # -Weverything provides the option to discover useful Clang warnings.
       # The list below ignores not useful Weverything warnings.
       -Wno-weak-vtables                       # Ignore, linker will remove the couple of extra vtables.
       -Wno-padded                             # Ignore, padding optimization is not needed.

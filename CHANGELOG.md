@@ -97,7 +97,7 @@ Typically CMake will select the latest C++ standard version that the used C++ co
 
 ### Added
 
-- The encoder API has been extended with a rewind method that can be used to re-use a configured encoder to encode multiple images in a loop.
+- The encoder API has been extended with a rewind method that can be used to reuse a configured encoder to encode multiple images in a loop.
 - Added support to decode JPEG-LS images that use restart markers [#92](https://github.com/team-charls/charls/issues/92).
 - Added support to write and read comment (COM) segments [#113](https://github.com/team-charls/charls/issues/113).
 - Added support to encode/decode oversized images (width or height larger then 65535).

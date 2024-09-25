@@ -72,7 +72,7 @@ Java : by default integers are signed
 Javascript: only signed integers
 Python: only signed integers
 
-Having unsigned integers in the C and C++ application and signed integers in wrapping libaries should
+Having unsigned integers in the C and C++ application and signed integers in wrapping libraries should
 not be a practical problem. Most real world images can be expressed in signed integers,  8K Images = (7680×4320).
 
 ### ABI
