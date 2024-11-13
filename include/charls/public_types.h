@@ -563,6 +563,8 @@ enum class encoding_options : unsigned
 constexpr encoding_options operator|(const encoding_options lhs, const encoding_options rhs) noexcept
 {
     using T = std::underlying_type_t<encoding_options>;
+
+    // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange) - warning cannot handle flags (known limitation).
     return static_cast<encoding_options>(static_cast<T>(lhs) | static_cast<T>(rhs));
 }
 
