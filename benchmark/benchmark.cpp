@@ -363,7 +363,7 @@ BENCHMARK(bm_has_ff_byte_classic);
 static bool has_ff_byte_loop(const unsigned int value) noexcept
 {
     // Iterate over each byte and check if it is equal to 0xFF
-    for (int i = 0; i < sizeof(unsigned int); ++i)
+    for (size_t i = 0; i < sizeof(unsigned int); ++i)
     {
         if ((value & (0xFF << (8 * i))) == (0xFFU << (8 * i)))
         {
@@ -383,7 +383,7 @@ static void bm_has_ff_byte_loop(benchmark::State& state)
 BENCHMARK(bm_has_ff_byte_loop);
 
 #if !defined(_M_ARM64)
-static bool has_ff_byte_simd(const unsigned int value) {
+static bool has_ff_byte_simd(const unsigned int value) noexcept {
      // Use SSE instructions for parallel comparison
      const __m128i xmm_value = _mm_set1_epi32(value);
      const __m128i xmm_ff = _mm_set1_epi32(0xFF);
@@ -488,7 +488,7 @@ T read_big_endian_unaligned(const void* buffer) noexcept
 }
 
 #if !defined(_M_ARM64)
-static uint32_t read_all_bytes_with_ff_check(const std::byte* position, const std::byte* end_position)
+static uint32_t read_all_bytes_with_ff_check(const std::byte* position, const std::byte* end_position) noexcept
 {
     uint32_t result{};
 
@@ -521,7 +521,7 @@ BENCHMARK(bm_read_all_bytes_with_ff_check);
 #endif
 
 #if !defined(_M_ARM64)
-static bool has_ff_byte_simd64(const uint64_t value)
+static bool has_ff_byte_simd64(const uint64_t value) noexcept
 {
     // Use SSE instructions for parallel comparison
     const __m128i xmm_value = _mm_set1_epi64x(value);
@@ -534,7 +534,7 @@ static bool has_ff_byte_simd64(const uint64_t value)
     return _mm_testz_si128(comparison, comparison) == 0;
 }
 
-static uint64_t read_all_bytes_with_ff_check64(const std::byte* position, const std::byte* end_position)
+static uint64_t read_all_bytes_with_ff_check64(const std::byte* position, const std::byte* end_position) noexcept
 {
     uint64_t result{};
 

@@ -5,10 +5,13 @@
 
 #include "../src/golomb_lut.hpp"
 #include "../src/jpegls_algorithm.hpp"
+#include "../src/conditional_static_cast.hpp"
+
+#pragma warning(disable : 26409) // Avoid calling new explicitly (triggered by BENCHMARK macro)
 
 using namespace charls;
 
-std::pair<int32_t, int32_t> create_encoded_value(const int32_t k, const int32_t mapped_error) noexcept
+static std::pair<int32_t, int32_t> create_encoded_value(const int32_t k, const int32_t mapped_error) noexcept
 {
     const int32_t high_bits{mapped_error >> k};
     return std::make_pair(high_bits + k + 1, (1 << k) | (mapped_error & ((1 << k) - 1)));
