@@ -20,6 +20,7 @@
 # -clang-diagnostic-unused-macros => Rationale: Macros defined in header are reported as problem
 # -clang-diagnostic-sign-conversion => Rationale: warning will be enabled in additional steps
 # -clang-diagnostic-switch-enum => Rationale: options are handled by default case
+# -clang-diagnostic-switch-default => Rationale: conflicts with warning that all enum cases must be handled
 # -clang-diagnostic-global-constructors => Rationale: Acceptable construction
 # -clang-diagnostic-exit-time-destructors => Rationale: Acceptable construction
 # -clang-diagnostic-pragma-once-outside-header => Rationale: Generates false warnings for usage in header files
@@ -55,6 +56,7 @@
 # -altera-unroll-loops => Does not apply (is for openCL)
 # -altera-id-dependent-backward-branch => Does not apply (is for openCL)
 # -bugprone-easily-swappable-parameters => To many do not fix warnings
+# -performance-enum-size => No performance gain, enums are not used in arrays.
 
 ---
 Checks:          '*,
@@ -75,6 +77,7 @@ Checks:          '*,
                   -clang-diagnostic-unused-macros,
                   -clang-diagnostic-sign-conversion,
                   -clang-diagnostic-switch-enum,
+                  -clang-diagnostic-switch-default,
                   -clang-diagnostic-global-constructors,
                   -clang-diagnostic-exit-time-destructors,
                   -clang-diagnostic-pragma-once-outside-header,
@@ -108,7 +111,8 @@ Checks:          '*,
                   -altera-id-dependent-backward-branch,
                   -readability-function-cognitive-complexity,
                   -bugprone-easily-swappable-parameters,
-                  -concurrency-mt-unsafe'
+                  -concurrency-mt-unsafe,
+                  -performance-enum-size'
 WarningsAsErrors: false
 HeaderFilterRegex: ''
 FormatStyle:     none

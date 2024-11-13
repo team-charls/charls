@@ -22,10 +22,7 @@ C26482: Only index into arrays using constant expressions.
 -> Rationale: static analysis can verify access, std::array during runtime (debug)
 
 C26490: Don't use reinterpret_cast
--> Rationale: required to cast unsigned char* to char*.
-
-C26493: Don't use C-style casts (type.4).
--> Rationale: False positives in Visual Studio 2022 17.11.0 Preview 3.0
+-> Rationale: required to cast unsigned char\* to char\*.
 
 C26494: Variable 'x' is uninitialized. Always initialize an object
 -> Rationale: many false warnings, other analyzers are better.
