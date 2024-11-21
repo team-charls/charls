@@ -35,3 +35,4 @@
 #define USE_DECL_ANNOTATIONS
 #define ASSERT(x)
 #define UNLIKELY(x)
+#define BENCHMARK_MAIN()
