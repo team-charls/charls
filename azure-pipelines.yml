@@ -95,11 +95,6 @@ jobs:
         Architecture: x86
         Shared: 'OFF'
 
-      ARM Release:
-        BuildType: Release
-        Architecture: x64_arm
-        Shared: 'OFF'
-
       ARM64 Release:
         BuildType: Release
         Architecture: x64_arm64

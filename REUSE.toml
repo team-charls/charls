@@ -1,0 +1,43 @@
+# SPDX-FileCopyrightText: © 2024 Team CharLS
+# SPDX-License-Identifier: BSD-3-Clause
+
+# This is a configuration file for the reuse lint tool. It allows specifing license info
+# for files that cannot be extended with such info.
+
+version = 1
+
+[[annotations]]
+path = [
+    "**.jls",
+    "**.bmp",
+    "**.png",
+    "**.pgm",
+    "**.ppm",
+    "**.raw",
+    "**.vcxproj",
+    "**.filters",
+    "**.cd",
+    "**.json",
+    "**app.manifest",
+    "spelling.dic",
+    "default.ruleset",
+    "src/charls.version",
+    "CharLS.sln",
+    "CharLS.sln.DotSettings",
+    "test/MR2_UNC"
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "© 2024 Team CharLS"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = [
+    "test/conformance/README.md",
+    "test/conformance/*.jls",
+    "test/conformance/*.pgm",
+    "test/conformance/*.ppm",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright (c) Hewlett-Packard Company 1995-1999"
+SPDX-License-Identifier = "BSD-3-Clause"
+

@@ -1,3 +1,8 @@
+<!--
+  SPDX-FileCopyrightText: © 2020 Team CharLS
+  SPDX-License-Identifier: BSD-3-Clause
+-->
+
 # Style and Design
 
 ## Introduction

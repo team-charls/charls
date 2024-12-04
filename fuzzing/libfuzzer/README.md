@@ -1,3 +1,8 @@
+<!--
+  SPDX-FileCopyrightText: © 2023 Team CharLS
+  SPDX-License-Identifier: BSD-3-Clause
+-->
+
 # Instructions to fuzz CharLS with LibFuzzer
 
 - It is in general recommended to fuzz the release builds.

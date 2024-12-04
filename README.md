@@ -1,9 +1,14 @@
+<!--
+  SPDX-FileCopyrightText: © 2014 Team CharLS
+  SPDX-License-Identifier: BSD-3-Clause
+-->
 
 <img src="https://raw.githubusercontent.com/team-charls/charls/main/doc/jpeg_ls_logo.png" alt="JPEG-LS Logo" width="100"/>
 
 # CharLS
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://raw.githubusercontent.com/team-charls/charls/main/LICENSE.md)
+[![REUSE status](https://api.reuse.software/badge/github.com/team-charls/charls)](https://api.reuse.software/info/github.com/team-charls/charls)
 [![Build status](https://ci.appveyor.com/api/projects/status/yq0naf3v2m8nfa8r/branch/main?svg=true)](https://ci.appveyor.com/project/vbaderks/charls/branch/main)
 [![Build Status](https://dev.azure.com/team-charls/charls/_apis/build/status/team-charls.charls?branchName=main)](https://dev.azure.com/team-charls/charls/_build/latest?definitionId=2&branchName=main)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=team-charls_charls&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=team-charls_charls)
@@ -43,7 +48,7 @@ The following JPEG-LS options are not supported by the CharLS implementation. Mo
 
 #### Note about JPEG-LS part 2
 
-After releasing the original baseline JPEG-LS standard ISO 14495-1:1999, ISO released an extension to the JPEG-LS standard called ISO/IEC 14495-2:2003: "Lossless and near-lossless compression of continuous-tone still images: Extensions". Currently CharLS doesn't support these extensions.
+After releasing the original baseline JPEG-LS standard ISO 14495-1:1999, ISO released an extension to the JPEG-LS standard called ISO/IEC 14495-2:2003: "Lossless and near-lossless compression of continuous-tone still images: Extensions". CharLS doesn't support this extension.
 
 ## Supported platforms
 
@@ -60,7 +65,6 @@ The code is regularly compiled/tested on Windows and 64 bit Linux. Additionally,
 | Clang         | >= 7.0.0               |
 | MSVC          | >= 2019                |
 | Apple Clang   | >= 12                  |
-
 
 ## Getting Started
 

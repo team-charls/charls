@@ -1,4 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SPDX-FileCopyrightText: © 2023 Team CharLS
+  SPDX-License-Identifier: BSD-3-Clause
+-->
+
 <RunSettings>
   <DataCollectionRunSettings>
     <DataCollectors>
