@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2020 Team CharLS
+# SPDX-License-Identifier: BSD-3-Clause
+
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
 libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@

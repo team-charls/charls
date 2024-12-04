@@ -1,3 +1,8 @@
+<!--
+  SPDX-FileCopyrightText: © 2019 Team CharLS
+  SPDX-License-Identifier: BSD-3-Clause
+-->
+
 # Security Policy
 
 ## Supported Versions
