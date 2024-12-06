@@ -1,12 +1,14 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2020 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
 
 #include "charls_jpegls_encoder.h"
 
+#ifndef CHARLS_BUILD_AS_CPP_MODULE
 #include <cstring>
 #include <memory>
+#endif
 
 CHARLS_EXPORT
 namespace charls {

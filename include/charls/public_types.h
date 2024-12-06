@@ -386,7 +386,8 @@ enum class [[nodiscard]] jpegls_errc
     invalid_parameter_jpegls_preset_parameters = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS,
 
     /// <summary>
-    /// This error is returned when the stream contains an invalid color transformation segment or one that doesn't match with frame info.
+    /// This error is returned when the stream contains an invalid color transformation segment or one that doesn't match
+    /// with frame info.
     /// </summary>
     invalid_parameter_color_transformation = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION,
 
@@ -622,7 +623,7 @@ enum class color_transformation
 /// Defines the Application profile identifier options that can be used in a SPIFF header v2, as defined in ISO/IEC 10918-3,
 /// F.1.2
 /// </summary>
-enum class spiff_profile_id : int32_t
+enum class spiff_profile_id : std::int32_t
 {
     /// <summary>
     /// No profile identified.
@@ -655,7 +656,7 @@ enum class spiff_profile_id : int32_t
 /// <summary>
 /// Defines the color space options that can be used in a SPIFF header v2, as defined in ISO/IEC 10918-3, F.2.1.1
 /// </summary>
-enum class spiff_color_space : int32_t
+enum class spiff_color_space : std::int32_t
 {
     /// <summary>
     /// Bi-level image. Each image sample is one bit: 0 = white and 1 = black.
@@ -730,7 +731,7 @@ enum class spiff_color_space : int32_t
 /// <summary>
 /// Defines the compression options that can be used in a SPIFF header v2, as defined in ISO/IEC 10918-3, F.2.1
 /// </summary>
-enum class spiff_compression_type : int32_t
+enum class spiff_compression_type : std::int32_t
 {
     /// <summary>
     /// Picture data is stored in component interleaved format, encoded at BPS per sample.
@@ -773,7 +774,7 @@ enum class spiff_compression_type : int32_t
 /// <summary>
 /// Defines the resolution units for the VRES and HRES parameters, as defined in ISO/IEC 10918-3, F.2.1
 /// </summary>
-enum class spiff_resolution_units : int32_t
+enum class spiff_resolution_units : std::int32_t
 {
     /// <summary>
     /// VRES and HRES are to be interpreted as aspect ratio.
@@ -799,7 +800,7 @@ enum class spiff_resolution_units : int32_t
 /// <summary>
 /// Official defined SPIFF tags defined in Table F.5 (ISO/IEC 10918-3)
 /// </summary>
-enum class spiff_entry_tag : uint32_t
+enum class spiff_entry_tag : std::uint32_t
 {
     /// <summary>
     /// This entry describes the opto-electronic transfer characteristics of the source image.
@@ -931,15 +932,15 @@ typedef int32_t charls_spiff_resolution_units;
 struct charls_spiff_header CHARLS_FINAL
 {
     charls_spiff_profile_id profile_id;   // P: Application profile, type I.8
-    int32_t component_count;              // NC: Number of color components, range [1, 255], type I.8
-    uint32_t height;                      // HEIGHT: Number of lines in image, range [1, 4294967295], type I.32
-    uint32_t width;                       // WIDTH: Number of samples per line, range [1, 4294967295], type I.32
+    CHARLS_STD int32_t component_count;   // NC: Number of color components, range [1, 255], type I.8
+    CHARLS_STD uint32_t height;           // HEIGHT: Number of lines in image, range [1, 4294967295], type I.32
+    CHARLS_STD uint32_t width;            // WIDTH: Number of samples per line, range [1, 4294967295], type I.32
     charls_spiff_color_space color_space; // S: Color space used by image data, type is I.8
-    int32_t bits_per_sample;              // BPS: Number of bits per sample, range (1, 2, 4, 8, 12, 16), type is I.8
+    CHARLS_STD int32_t bits_per_sample;   // BPS: Number of bits per sample, range (1, 2, 4, 8, 12, 16), type is I.8
     charls_spiff_compression_type compression_type; // C: Type of data compression used, type is I.8
     charls_spiff_resolution_units resolution_units; // R: Type of resolution units, type is I.8
-    uint32_t vertical_resolution;   // VRES: Vertical resolution, range [1, 4294967295], type can be F or I.32
-    uint32_t horizontal_resolution; // HRES: Horizontal resolution, range [1, 4294967295], type can be F or I.32
+    CHARLS_STD uint32_t vertical_resolution;   // VRES: Vertical resolution, range [1, 4294967295], type can be F or I.32
+    CHARLS_STD uint32_t horizontal_resolution; // HRES: Horizontal resolution, range [1, 4294967295], type can be F or I.32
 };
 
 
@@ -955,22 +956,22 @@ struct charls_frame_info CHARLS_FINAL
     /// <summary>
     /// Width of the image, range [1, 4294967295].
     /// </summary>
-    uint32_t width;
+    CHARLS_STD uint32_t width;
 
     /// <summary>
     /// Height of the image, range [1, 4294967295].
     /// </summary>
-    uint32_t height;
+    CHARLS_STD uint32_t height;
 
     /// <summary>
     /// Number of bits per sample, range [2, 16]
     /// </summary>
-    int32_t bits_per_sample;
+    CHARLS_STD int32_t bits_per_sample;
 
     /// <summary>
     /// Number of components contained in the frame, range [1, 255]
     /// </summary>
-    int32_t component_count;
+    CHARLS_STD int32_t component_count;
 };
 
 
@@ -985,27 +986,27 @@ struct charls_jpegls_pc_parameters CHARLS_FINAL
     /// Maximum possible value for any image sample in a scan.
     /// This must be greater than or equal to the actual maximum value for the components in a scan.
     /// </summary>
-    int32_t maximum_sample_value;
+    CHARLS_STD int32_t maximum_sample_value;
 
     /// <summary>
     /// First quantization threshold value for the local gradients.
     /// </summary>
-    int32_t threshold1;
+    CHARLS_STD int32_t threshold1;
 
     /// <summary>
     /// Second quantization threshold value for the local gradients.
     /// </summary>
-    int32_t threshold2;
+    CHARLS_STD int32_t threshold2;
 
     /// <summary>
     /// Third quantization threshold value for the local gradients.
     /// </summary>
-    int32_t threshold3;
+    CHARLS_STD int32_t threshold3;
 
     /// <summary>
     /// Value at which the counters A, B, and N are halved.
     /// </summary>
-    int32_t reset_value;
+    CHARLS_STD int32_t reset_value;
 };
 
 
@@ -1017,17 +1018,17 @@ struct charls_mapping_table_info CHARLS_FINAL
     /// <summary>
     /// Identifier of the mapping table, range [1, 255].
     /// </summary>
-    int32_t table_id;
+    CHARLS_STD int32_t table_id;
 
     /// <summary>
     /// Width of a table entry in bytes, range [1, 255].
     /// </summary>
-    int32_t entry_size;
+    CHARLS_STD int32_t entry_size;
 
     /// <summary>
     /// Size of the table in bytes, range [1, 16711680]
     /// </summary>
-    uint32_t data_size;
+    CHARLS_STD uint32_t data_size;
 };
 
 
@@ -1042,7 +1043,8 @@ struct charls_mapping_table_info CHARLS_FINAL
 /// <param name="size">Size in bytes of the data of the COM segment.</param>
 /// <param name="user_context">Free to use context information that can be set during the installation of the
 /// handler.</param>
-using charls_at_comment_handler = int32_t(CHARLS_API_CALLING_CONVENTION*)(const void* data, size_t size, void* user_context);
+using charls_at_comment_handler = std::int32_t(CHARLS_API_CALLING_CONVENTION*)(const void* data, std::size_t size,
+                                                                               void* user_context);
 
 /// <summary>
 /// Function definition for a callback handler that will be called when an application data (APPn) segment is found.
@@ -1054,9 +1056,9 @@ using charls_at_comment_handler = int32_t(CHARLS_API_CALLING_CONVENTION*)(const 
 /// <param name="size">Size in bytes of the data of the APPn segment.</param>
 /// <param name="user_context">Free to use context information that can be set during the installation of the
 /// handler.</param>
-using charls_at_application_data_handler = int32_t(CHARLS_API_CALLING_CONVENTION*)(int32_t application_data_id,
-                                                                                   const void* data, size_t size,
-                                                                                   void* user_context);
+using charls_at_application_data_handler = std::int32_t(CHARLS_API_CALLING_CONVENTION*)(std::int32_t application_data_id,
+                                                                                        const void* data, std::size_t size,
+                                                                                        void* user_context);
 
 CHARLS_EXPORT
 namespace charls {
