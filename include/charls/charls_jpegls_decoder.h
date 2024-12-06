@@ -1,19 +1,15 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2020 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
 
 #include "jpegls_error.h"
-#include "validate_spiff_header.h"
-
-#ifndef __cplusplus
-#include <stddef.h>
-#endif
 
 #ifdef __cplusplus
 struct charls_jpegls_decoder;
 extern "C" {
 #else
+#include <stddef.h>
 typedef struct charls_jpegls_decoder charls_jpegls_decoder;
 #endif
 
@@ -110,7 +106,7 @@ charls_jpegls_decoder_get_near_lossless(CHARLS_IN const charls_jpegls_decoder* d
 /// <param name="interleave_mode">Reference that will hold the value of the interleave mode.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_get_interleave_mode(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t component_index, 
+charls_jpegls_decoder_get_interleave_mode(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t component_index,
                                           CHARLS_OUT charls_interleave_mode* interleave_mode) CHARLS_NOEXCEPT
     CHARLS_ATTRIBUTE((nonnull));
 

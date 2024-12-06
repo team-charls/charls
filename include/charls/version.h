@@ -7,7 +7,11 @@
 #include "api_abi.h"
 
 #ifdef __cplusplus
+
+#ifndef CHARLS_BUILD_AS_CPP_MODULE
 #include <cstdint>
+#endif
+
 extern "C" {
 #else
 #include <stdint.h>

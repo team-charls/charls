@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2020 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -6,16 +6,10 @@
 #include "jpegls_error.h"
 
 #ifdef __cplusplus
-#include <cstring>
-#include <memory>
-#else
-#include <stddef.h>
-#endif
-
-#ifdef __cplusplus
 struct charls_jpegls_encoder;
 extern "C" {
 #else
+#include <stddef.h>
 typedef struct charls_jpegls_encoder charls_jpegls_encoder;
 #endif
 

@@ -49,6 +49,7 @@
 #define CHARLS_FINAL final
 #define CHARLS_NOEXCEPT noexcept
 #define CHARLS_C_VOID
+#define CHARLS_STD ::std::
 
 #ifdef CHARLS_BUILD_AS_CPP_MODULE
 #define CHARLS_EXPORT export
@@ -61,5 +62,6 @@
 #define CHARLS_FINAL
 #define CHARLS_NOEXCEPT
 #define CHARLS_C_VOID void
+#define CHARLS_STD
 
 #endif

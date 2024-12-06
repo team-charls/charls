@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2018 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 //
@@ -29,6 +29,7 @@
 #define CHARLS_ATTRIBUTE(a)
 #define CHARLS_ATTRIBUTE_ACCESS(a)
 #define CHARLS_C_VOID
+#define CHARLS_STD ::std::
 #define CHARLS_EXPORT
 #define CHARLS_CHECK_RETURN
 #define CHARLS_RET_MAY_BE_NULL
