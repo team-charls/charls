@@ -1,4 +1,4 @@
-# Copyright (c) Team CharLS.
+# SPDX-FileCopyrightText: © 2018 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
 # Define the library "charls" target
@@ -31,6 +31,8 @@ target_include_directories(charls PUBLIC
 if(NOT BUILD_SHARED_LIBS)
   target_compile_definitions(charls PUBLIC CHARLS_STATIC)
 endif()
+
+target_precompile_headers(charls PRIVATE ${CMAKE_CURRENT_LIST_DIR}/pch.hpp)
 
 # Use different DLL filenames on Windows. It allows platform neutral adapters to load dynamically the correct version.
 if(WIN32 AND BUILD_SHARED_LIBS)
@@ -128,6 +130,7 @@ target_sources(charls
     "${CMAKE_CURRENT_LIST_DIR}/lossless_traits.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/make_scan_codec.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/make_scan_codec.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/pch.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/quantization_lut.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/quantization_lut.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/regular_mode_context.hpp"

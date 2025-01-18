@@ -1,8 +1,10 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2022 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include "pch.hpp"
 
-#include "charls/validate_spiff_header.h"
+#include <charls/validate_spiff_header.h>
+
 #include "util.hpp"
 
 using namespace charls;

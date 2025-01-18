@@ -1,9 +1,9 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2020 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
 
-#include "charls/public_types.h"
+#include <charls/public_types.h>
 
 namespace charls {
 

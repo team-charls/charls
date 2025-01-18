@@ -1,9 +1,9 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2014 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
 
-#include "charls/jpegls_error.hpp"
+#include <charls/jpegls_error.hpp>
 
 #include "constants.hpp"
 #include "jpeg_marker_code.hpp"

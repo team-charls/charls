@@ -1,5 +1,7 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2009 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
+
+#include "pch.hpp"
 
 #include "make_scan_codec.hpp"
 
