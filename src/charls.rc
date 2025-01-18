@@ -1,9 +1,9 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2011 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma code_page(65001)
 
-#include "charls/version.h"
+#include <charls/version.h>
 
 #include <winresrc.h>
 
@@ -41,7 +41,7 @@ BEGIN
             VALUE "FileVersion", VERSION_STR
             VALUE "InternalName", "CharLS.dll"
             VALUE "LegalCopyright", "Copyright (c) Team CharLS"
-            VALUE "OriginalFilename", "charls-2-x86/x64.dll"
+            VALUE "OriginalFilename", "charls-3-x86/x64.dll"
             VALUE "ProductName", "CharLS JPEG-LS codec"
             VALUE "ProductVersion", VERSION_STR
         END

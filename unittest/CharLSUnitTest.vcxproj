@@ -65,7 +65,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)build\intermediate\CharLS\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories Condition="'$(Platform)'=='Win32'">$(SolutionDir)build\intermediate\CharLS\x86\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>make_scan_codec.obj;jpegls_error.obj;jpeg_stream_writer.obj;jpeg_stream_reader.obj;charls_jpegls_decoder.obj;charls_jpegls_encoder.obj;version.obj;validate_spiff_header.obj;golomb_lut.obj;quantization_lut.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>pch.obj;make_scan_codec.obj;jpegls_error.obj;jpeg_stream_writer.obj;jpeg_stream_reader.obj;charls_jpegls_decoder.obj;charls_jpegls_encoder.obj;version.obj;validate_spiff_header.obj;golomb_lut.obj;quantization_lut.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

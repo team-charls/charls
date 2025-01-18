@@ -1,9 +1,9 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2018 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "charls/jpegls_error.hpp"
+#include "pch.hpp"
 
-#include <string>
+#include <charls/jpegls_error.hpp>
 
 namespace charls {
 

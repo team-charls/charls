@@ -1,7 +1,9 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "charls/charls_jpegls_decoder.h"
+#include "pch.hpp"
+
+#include <charls/charls_jpegls_decoder.h>
 
 #include "constants.hpp"
 #include "jpeg_stream_reader.hpp"

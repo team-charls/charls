@@ -1,4 +1,4 @@
-# Copyright (c) Team CharLS.
+# SPDX-FileCopyrightText: © 2016 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
 root = true
@@ -22,4 +22,7 @@ insert_final_newline = true
 indent_size = 2
 
 [*.manifest]
+indent_size = 2
+
+[*.props, .runsettings]
 indent_size = 2

@@ -114,8 +114,7 @@
     <ClCompile>
       <PreprocessorDefinitions>CHARLS_LIBRARY_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
     </Link>
@@ -213,6 +212,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="golomb_lut.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="quantization_lut.cpp" />
     <ClCompile Include="validate_spiff_header.cpp" />
     <ClCompile Include="version.cpp" />
@@ -242,6 +244,7 @@
     <ClInclude Include="color_transform.hpp" />
     <ClInclude Include="conditional_static_cast.hpp" />
     <ClInclude Include="constants.hpp" />
+    <ClInclude Include="pch.hpp" />
     <ClInclude Include="regular_mode_context.hpp" />
     <ClInclude Include="run_mode_context.hpp" />
     <ClInclude Include="copy_to_line_buffer.hpp" />

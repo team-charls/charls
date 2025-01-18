@@ -1,10 +1,11 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "charls/version.h"
+#include "pch.hpp"
+
+#include <charls/version.h>
 
 #include "util.hpp"
-
 
 using namespace charls;
 
