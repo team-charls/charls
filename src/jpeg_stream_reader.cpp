@@ -517,19 +517,19 @@ void jpeg_stream_reader::read_oversize_image_dimension()
     switch (dimension_size)
     {
     case 2:
-        check_segment_size(pc_and_dimension_bytes + sizeof(uint16_t) * 2);
+        check_segment_size(pc_and_dimension_bytes + (sizeof(uint16_t) * 2));
         height = read_uint16();
         width = read_uint16();
         break;
 
     case 3:
-        check_segment_size(pc_and_dimension_bytes + (sizeof(uint16_t) + 1) * 2);
+        check_segment_size(pc_and_dimension_bytes + ((sizeof(uint16_t) + 1) * 2));
         height = read_uint24();
         width = read_uint24();
         break;
 
     case 4:
-        check_segment_size(pc_and_dimension_bytes + sizeof(uint32_t) * 2);
+        check_segment_size(pc_and_dimension_bytes + (sizeof(uint32_t) * 2));
         height = read_uint32();
         width = read_uint32();
         break;

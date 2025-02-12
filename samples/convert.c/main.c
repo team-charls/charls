@@ -149,11 +149,11 @@ static void triplet_to_planar(const uint8_t* triplet_buffer, uint8_t* planar_buf
         const size_t line_start = line * stride;
         for (size_t pixel = 0; pixel < width; ++pixel)
         {
-            const size_t column = line_start + pixel * bytes_per_rgb_pixel;
+            const size_t column = line_start + (pixel * bytes_per_rgb_pixel);
 
             planar_buffer[plane_column] = triplet_buffer[column];
-            planar_buffer[plane_column + 1 * byte_count_plane] = triplet_buffer[column + 1];
-            planar_buffer[plane_column + 2 * byte_count_plane] = triplet_buffer[column + 2];
+            planar_buffer[plane_column + (1 * byte_count_plane)] = triplet_buffer[column + 1];
+            planar_buffer[plane_column + (2 * byte_count_plane)] = triplet_buffer[column + 2];
             ++plane_column;
         }
     }
@@ -428,6 +428,7 @@ int main(const int argc, char* argv[])
         if (!convert_bottom_up_to_top_down(pixel_data, dib_header.width, (size_t)dib_header.height, stride))
         {
             printf("Failed to convert the pixels from bottom up to top down\n");
+            free(pixel_data);
             return EXIT_FAILURE;
         }
     }

@@ -42,10 +42,10 @@ std::vector<uint8_t> triplet_to_planar(const std::vector<uint8_t>& buffer, const
         const auto line_start{line * stride};
         for (size_t pixel{}; pixel != width; ++pixel)
         {
-            const auto column{line_start + pixel * bytes_per_rgb_pixel};
+            const auto column{line_start + (pixel * bytes_per_rgb_pixel)};
             result[plane_column] = buffer[column];
-            result[plane_column + 1 * byte_count_plane] = buffer[column + 1];
-            result[plane_column + 2 * byte_count_plane] = buffer[column + 2];
+            result[plane_column + (1 * byte_count_plane)] = buffer[column + 1];
+            result[plane_column + (2 * byte_count_plane)] = buffer[column + 2];
             ++plane_column;
         }
     }

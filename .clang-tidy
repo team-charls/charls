@@ -1,4 +1,4 @@
-# Copyright (c) Team CharLS.
+# SPDX-FileCopyrightText: © 2020 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
 # The approach for using clang tidy is to enable all warnings unless it adds no practical value to the CharLS projects
@@ -57,6 +57,7 @@
 # -altera-id-dependent-backward-branch => Does not apply (is for openCL)
 # -bugprone-easily-swappable-parameters => To many do not fix warnings
 # -performance-enum-size => No performance gain, enums are not used in arrays.
+# -boost-use-ranges => CharLS has by design not a dependency on Boost.
 
 ---
 Checks:          '*,
@@ -112,7 +113,8 @@ Checks:          '*,
                   -readability-function-cognitive-complexity,
                   -bugprone-easily-swappable-parameters,
                   -concurrency-mt-unsafe,
-                  -performance-enum-size'
+                  -performance-enum-size,
+                  -boost-use-ranges'
 WarningsAsErrors: false
 HeaderFilterRegex: ''
 FormatStyle:     none

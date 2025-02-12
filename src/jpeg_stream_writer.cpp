@@ -139,7 +139,7 @@ void jpeg_stream_writer::write_application_data_segment(const int32_t applicatio
 
 void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const jpegls_pc_parameters& preset_coding_parameters)
 {
-    write_segment_header(jpeg_marker_code::jpegls_preset_parameters, 1 + 5 * sizeof(uint16_t));
+    write_segment_header(jpeg_marker_code::jpegls_preset_parameters, 1 + (5 * sizeof(uint16_t)));
     write_uint8(to_underlying_type(jpegls_preset_parameters_type::preset_coding_parameters));
     write_uint16(preset_coding_parameters.maximum_sample_value);
     write_uint16(preset_coding_parameters.threshold1);
@@ -152,7 +152,7 @@ void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const jpegls_pc_
 void jpeg_stream_writer::write_jpegls_preset_parameters_segment(const uint32_t height, const uint32_t width)
 {
     // Format is defined in ISO/IEC 14495-1, C.2.4.1.4
-    write_segment_header(jpeg_marker_code::jpegls_preset_parameters, size_t{1} + 1 + 2 * sizeof(uint32_t));
+    write_segment_header(jpeg_marker_code::jpegls_preset_parameters, size_t{1} + 1 + (2 * sizeof(uint32_t)));
     write_uint8(to_underlying_type(jpegls_preset_parameters_type::oversize_image_dimension));
     write_uint8(sizeof(uint32_t)); // Wxy: number of bytes used to represent Ye and Xe [2..4]. Always 4 for simplicity.
     write_uint32(height);          // Ye: number of lines in the image.
