@@ -6,6 +6,7 @@
 #include "quantization_lut.hpp"
 
 #include <charls/public_types.h>
+
 #include "jpegls_algorithm.hpp"
 #include "jpegls_preset_coding_parameters.hpp"
 

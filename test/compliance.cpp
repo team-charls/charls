@@ -41,9 +41,9 @@ void triplet2_planar(vector<byte>& buffer, const rect_size size)
     const size_t byte_count{size.cx * size.cy};
     for (size_t i{}; i != byte_count; ++i)
     {
-        work_buffer[i] = buffer[i * 3 + 0];
-        work_buffer[i + 1 * byte_count] = buffer[i * 3 + 1];
-        work_buffer[i + 2 * byte_count] = buffer[i * 3 + 2];
+        work_buffer[i] = buffer[i * 3];
+        work_buffer[i + (1 * byte_count)] = buffer[(i * 3) + 1];
+        work_buffer[i + (2 * byte_count)] = buffer[(i * 3) + 2];
     }
     swap(buffer, work_buffer);
 }
