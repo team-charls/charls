@@ -1,11 +1,11 @@
-# Copyright (c) Team CharLS.
+# SPDX-FileCopyrightText: © 2014 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
 .vscode/
 .vs/
 .idea
 build*/
-bazel-*/
+bazel-*
 MODULE.bazel.lock
 cmake-build-debug/
 TestResults/
