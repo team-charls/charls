@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: © 2025 Team CharLS
+# SPDX-License-Identifier: BSD-3-Clause
+
+cc_library(
+    name = "charls",
+    srcs = ["jpeg_stream_reader.cpp"],
+    hdrs = ["jpeg_stream_reader.hpp"]
+)

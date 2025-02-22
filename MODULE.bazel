@@ -1,0 +1,16 @@
+
+# SPDX-FileCopyrightText: © 2025 Team CharLS
+# SPDX-License-Identifier: BSD-3-Clause
+
+"""
+This MODULE.bazel file defines the module and its dependencies for the CharLS project.
+"""
+
+module(
+    name = "charls",
+    version = "3.0.0",
+    compatibility_level = 3,
+    bazel_compatibility = [">=7.5.0"]
+)
+
+bazel_dep(name = "rules_cc", version = "0.1.1")
