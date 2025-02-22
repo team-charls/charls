@@ -151,7 +151,7 @@ This has been done to make it possible to have different release cycles.
 ### Removed
 
 - The legacy methods JpegLsEncodeStream, JpegLsDecodeStream and JpegLsReadHeaderStream have been removed as exported methods.
-  These methods were not part of the public API and only used by by the charlstest application
+  These methods were not part of the public API and only used by by the charls-test application
 
 ### Fixed
 
@@ -218,7 +218,7 @@ This has been done to make it possible to have different release cycles.
 
 - Fixes [#10](https://github.com/team-charls/charls/issues/10), Fixed the problem that "output buffer to small" was not
   detected when writing encoded bytes to a fixed output buffer. This could cause memory corruption problems
-- Fixes [11](https://github.com/team-charls/charls/issues/11), Update charlstest to return EXIT_SUCCESS/FAILURE
+- Fixes [11](https://github.com/team-charls/charls/issues/11), Update charls-test to return EXIT_SUCCESS/FAILURE
 - Fixed the issue that DecodeToPnm would set params.colorTransform = ColorTransformation::BigEndian but the library didn’t support this option during decoding
 
 ## [1.1.0] - 2016-5-15
