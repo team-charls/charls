@@ -5,6 +5,8 @@
 .vs/
 .idea
 build*/
+bazel-*/
+MODULE.bazel.lock
 cmake-build-debug/
 TestResults/
 vcpkg_installed/
