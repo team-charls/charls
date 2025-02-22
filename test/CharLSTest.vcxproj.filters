@@ -14,7 +14,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="bitstreamdamage.cpp">
+    <ClCompile Include="bit_stream_damage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="compliance.cpp">
@@ -34,7 +34,7 @@
     <ClInclude Include="util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bitstreamdamage.hpp">
+    <ClInclude Include="bit_stream_damage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="compliance.hpp">

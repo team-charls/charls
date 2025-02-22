@@ -1,10 +1,10 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2016 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "../src/default_traits.hpp"
 #include "../src/lossless_traits.hpp"
 
-#include "bitstreamdamage.hpp"
+#include "bit_stream_damage.hpp"
 #include "compliance.hpp"
 #include "performance.hpp"
 #include "util.hpp"

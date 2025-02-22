@@ -1,4 +1,4 @@
-# Copyright (c) Team CharLS.
+# SPDX-FileCopyrightText: © 2009 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
 cmake_minimum_required(VERSION 3.16...3.31)
@@ -228,10 +228,10 @@ if(CHARLS_BUILD_TESTS)
   enable_testing()
   add_subdirectory(test)
 
-  # The unit tests project depends on the VS C++ unit test framework. Use the -unittest option of the charlstest tool for other platforms.
+  # The unit tests project depends on the VS C++ unit test framework. Use the -unittest option of the charls-test tool for other platforms.
   add_test(
     NAME basic-test
-    COMMAND charlstest -unittest
+    COMMAND charls-test -unittest
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
   )
 endif()
