@@ -5,9 +5,8 @@
 
 #include "constants.hpp"
 #include "jpegls_algorithm.hpp"
+#include "util.hpp"
 
-#include <cassert>
-#include <cmath>
 #include <cstdlib>
 
 // Default traits that support all JPEG LS parameters: custom limit, near, maxval (not power of 2)

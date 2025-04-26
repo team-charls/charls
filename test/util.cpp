@@ -34,7 +34,7 @@ MSVC_WARNING_SUPPRESS(26497) // cannot be marked constexpr, check must be execut
 bool is_machine_little_endian() noexcept
 {
     constexpr int a = 0xFF000001; // NOLINT(bugprone-narrowing-conversions, cppcoreguidelines-narrowing-conversions)
-    const auto* chars{reinterpret_cast<const char*>(&a)};
+    const auto* chars{reinterpret_cast<const char*>(&a)}; //NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     return chars[0] == 0x01;
 }
 

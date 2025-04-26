@@ -33,7 +33,7 @@ struct charls_jpegls_encoder final
 {
     void destination(const span<byte> destination)
     {
-        check_argument(destination.data() || destination.empty());
+        check_argument(destination);
         check_operation(state_ == state::initial);
 
         writer_.destination(destination);
@@ -127,9 +127,9 @@ struct charls_jpegls_encoder final
 
     void write_spiff_entry(const uint32_t entry_tag, const span<const byte> entry_data)
     {
-        check_argument(entry_data.data() || entry_data.empty());
+        check_argument(entry_data);
         check_argument(entry_tag != spiff_end_of_directory_entry_type);
-        check_argument(entry_data.size() <= 65528, jpegls_errc::invalid_argument_size);
+        check_argument(entry_data.size() <= spiff_entry_max_data_size, jpegls_errc::invalid_argument_size);
         check_operation(state_ == state::spiff_header);
 
         writer_.write_spiff_directory_entry(entry_tag, entry_data);
@@ -143,7 +143,7 @@ struct charls_jpegls_encoder final
 
     void write_comment(const span<const byte> comment)
     {
-        check_argument(comment.data() || comment.empty());
+        check_argument(comment);
         check_argument(comment.size() <= segment_max_data_size, jpegls_errc::invalid_argument_size);
         check_state_can_write();
 
@@ -154,7 +154,7 @@ struct charls_jpegls_encoder final
     void write_application_data(const int32_t application_data_id, const span<const byte> application_data)
     {
         check_argument_range(minimum_application_data_id, maximum_application_data_id, application_data_id);
-        check_argument(application_data.data() || application_data.empty());
+        check_argument(application_data);
         check_argument(application_data.size() <= segment_max_data_size, jpegls_errc::invalid_argument_size);
         check_state_can_write();
 
@@ -166,7 +166,7 @@ struct charls_jpegls_encoder final
     {
         check_argument_range(minimum_mapping_table_id, maximum_mapping_table_id, table_id);
         check_argument_range(minimum_mapping_entry_size, maximum_mapping_entry_size, entry_size);
-        check_argument(table_data.data() || table_data.empty());
+        check_argument(table_data);
         check_argument(table_data.size() >= static_cast<size_t>(entry_size), jpegls_errc::invalid_argument_size);
         check_state_can_write();
 
@@ -181,7 +181,7 @@ struct charls_jpegls_encoder final
 
     void encode_components(span<const byte> source, const int32_t source_component_count, const size_t stride)
     {
-        check_argument(source.data() || source.empty());
+        check_argument(source);
         check_state_can_write();
         check_operation(is_frame_info_configured());
         check_interleave_mode_against_component_count();
@@ -354,7 +354,7 @@ private:
         {
             constexpr std::string_view version_number{"charls " TO_STRING(CHARLS_VERSION_MAJOR) "." TO_STRING(
                 CHARLS_VERSION_MINOR) "." TO_STRING(CHARLS_VERSION_PATCH)};
-            writer_.write_comment_segment({reinterpret_cast<const byte*>(version_number.data()), version_number.size() + 1});
+            writer_.write_comment_segment(as_bytes(span{version_number.data(), version_number.size() + 1}));
         }
 
         state_ = state::tables_and_miscellaneous;

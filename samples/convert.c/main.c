@@ -94,6 +94,9 @@ static void* bmp_read_pixel_data(FILE* fp, const uint32_t offset, const bmp_dib_
     *stride = ((dib_header->width * bytes_per_rgb_pixel) + 3) / 4 * 4;
 
     const size_t buffer_size = (size_t)dib_header->height * *stride;
+    if (buffer_size > (size_t)1024 * 1024)
+        return NULL; // image data is untrusted, limit to 1MB in this example.
+
     void* buffer = malloc(buffer_size);
     if (!buffer)
         return NULL;
@@ -164,6 +167,9 @@ static bool convert_bottom_up_to_top_down(uint8_t* triplet_buffer, const size_t 
                                           const size_t stride)
 {
     const size_t row_length = width * bytes_per_rgb_pixel;
+    if (row_length > (size_t)3 * 1024)
+        return false; // image data is untrusted, limit to 3KB in this example.
+
     void* temp_row = malloc(row_length);
     if (!temp_row)
         return false;
@@ -261,6 +267,11 @@ static void* encode_bmp_to_jpegls(const void* pixel_data, const size_t stride, c
     if (interleave_mode == CHARLS_INTERLEAVE_MODE_NONE)
     {
         const size_t pixel_data_size = (size_t)header->height * header->width * bytes_per_rgb_pixel;
+        if (pixel_data_size > (size_t)3 * 1024 * 1024)
+        {
+            return handle_encoder_failure(CHARLS_JPEGLS_ERRC_NOT_ENOUGH_MEMORY, "malloc size check", encoder, encoded_buffer);
+        }
+
         void* planar_pixel_data = malloc(pixel_data_size);
         if (!planar_pixel_data)
         {

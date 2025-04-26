@@ -4,7 +4,9 @@
 #pragma once
 
 #include "constants.hpp"
-#include "util.hpp"
+#include "assert.hpp"
+
+#include <algorithm>
 
 namespace charls {
 

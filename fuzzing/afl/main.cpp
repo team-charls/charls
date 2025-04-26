@@ -36,7 +36,7 @@ using std::vector;
 
 #ifndef __AFL_LOOP
 // ReSharper disable once CppInconsistentNaming
-#define __AFL_LOOP(a) true // NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
+#define __AFL_LOOP(a) true // NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,cppcoreguidelines-macro-usage)
 #define AFL_LOOP_FOREVER
 #endif
 

@@ -40,6 +40,9 @@ constexpr uint8_t spiff_end_of_directory_entry_type{1};
 // The size of a SPIFF header when serialized to a JPEG byte stream.
 constexpr size_t spiff_header_size_in_bytes{34};
 
+// The maximum size of the data bytes that fit in a spiff entry.
+constexpr size_t spiff_entry_max_data_size{65528};
+
 // The special value to indicate that the stride should be calculated.
 constexpr size_t auto_calculate_stride{};
 
