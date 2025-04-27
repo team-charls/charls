@@ -3,14 +3,14 @@
 
 #pragma once
 
+#include "assert.hpp"
+
 #include <array>
 #include <cstddef>
 
-#include "util.hpp"
-
 namespace charls {
 
-// Replacement for std::to_address, which is not available in C++17.
+// Replacement for C++20 std::to_address, which is not available in C++17.
 template<typename Ptr>
 constexpr auto to_address(const Ptr& it)
 {
@@ -18,7 +18,7 @@ constexpr auto to_address(const Ptr& it)
 }
 
 
-// Replacement for std::span, which is not available in C++17.
+// Replacement for C++20 type std::span, which is not available in C++17.
 template<typename T>
 class span final
 {
@@ -47,6 +47,12 @@ public:
     constexpr size_t size() const noexcept
     {
         return size_;
+    }
+
+    [[nodiscard]]
+    constexpr size_t size_bytes() const noexcept
+    {
+        return sizeof(T) * size_;
     }
 
     [[nodiscard]]
@@ -87,5 +93,13 @@ private:
 
 template<typename T>
 span(T) -> span<T>;
+
+
+template<typename T>
+[[nodiscard]]
+span<const std::byte> as_bytes(span<T> source) noexcept
+{
+    return {reinterpret_cast<const std::byte*>(source.data()), source.size_bytes()};
+}
 
 } // namespace charls

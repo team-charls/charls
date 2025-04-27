@@ -1,129 +1,61 @@
 # SPDX-FileCopyrightText: © 2020 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
-# The approach for using clang tidy is to enable all warnings unless it adds no practical value to the CharLS projects
-# Having all warnings enables helps to find problems when new code is added to the project. Some warnings are however
-# to noisy and adding NO_LINT suppressions make the code less readable.
-#
-# -fuchsia-* => Rationale: Rules only apply to Fuchsia projects are out of scope for CharLS
-# -google-* => Rationale: Rules only apply to Google projects are out of scope for CharLS
-# -android-* => Rationale: Rules only apply to Android projects are out of scope for CharLS
-# -llvmlibc-* => Rationale: Rules only apply to LLVM Libc and are out of scope for CharLS
-# -llvm-header-guard => Rationale: #pragma once is used
-# -hicpp-no-array-decay => Rationale: alias for cppcoreguidelines-pro-bounds-constant-array-index
-# -hicpp-signed-bitwise => Rationale: Bad test, types are checked, not values.
-# -clang-diagnostic-c++98-compat* => Rationale: CharLS targets C++17
-# -clang-diagnostic-c++98-c++11-compat => Rationale: CharLS targets C++17
-# -clang-diagnostic-c++98-c++11-c++14-compat => Rationale: CharLS targets C++17
-# -clang-diagnostic-pre-c++14-compat => Rationale: CharLS targets C++17
-# -clang-diagnostic-pre-c++17-compat => Rationale: CharLS targets C++17
-# -clang-diagnostic-unused-macros => Rationale: Macros defined in header are reported as problem
-# -clang-diagnostic-sign-conversion => Rationale: warning will be enabled in additional steps
-# -clang-diagnostic-switch-enum => Rationale: options are handled by default case
-# -clang-diagnostic-switch-default => Rationale: conflicts with warning that all enum cases must be handled
-# -clang-diagnostic-global-constructors => Rationale: Acceptable construction
-# -clang-diagnostic-exit-time-destructors => Rationale: Acceptable construction
-# -clang-diagnostic-pragma-once-outside-header => Rationale: Generates false warnings for usage in header files
-# -clang-diagnostic-unused-const-variable => Rationale: false warnings for constexpr in .h files
-# -clang-diagnostic-unused-command-line-argument => Rationale: false warning about option passed to MSVC
-# -clang-diagnostic-declaration-after-statement => Rationale: Target is C17 and higher
-# -clang-diagnostic-unsafe-buffer-usage => Rationale: Too many false warnings, access is verified with other tools.
-# -clang-analyzer-core.NonNullParamChecker => Rationale: cannot be effective disabled, already checked by other checkers.
-# -misc-non-private-member-variables-in-classes => Rationale: design can be ok, manual review is better
-# -misc-include-cleaner => complains about no direct includes
-# -modernize-use-trailing-return-type => Rationale: A style recommendation, this style is selected for CharLS
-# -readability-magic-numbers => Rationale: To critical rule, used numbers are logical
-# -readability-named-parameter => Rationale: to many non problematic warnings
-# -readability-implicit-bool-conversion => Rationale: style issue
-# -readability-identifier-length => Rationale: style
-# -cppcoreguidelines-avoid-magic-numbers => Rationale: Alias
-# -cppcoreguidelines-pro-bounds-pointer-arithmetic => Rationale: usage is required in codec implementation
-# -cppcoreguidelines-pro-type-reinterpret-cast => Rationale: To strict for conditions that require its usage
-# -cppcoreguidelines-macro-usage => Rationale: Many false warnings
-# -cppcoreguidelines-pro-bounds-array-to-pointer-decay => Span is not available
-# -cppcoreguidelines-pro-type-union-access => Rationale: usage of union is more efficient is used scenarios
-# -cppcoreguidelines-non-private-member-variables-in-classes => Warning is too strict, manual review code review is preferred
-# -cppcoreguidelines-pro-bounds-constant-array-index => gsl:at is not used by design
-# -cppcoreguidelines-init-variables => reports false warnings for out parameters (other checkers are better to detect these problems)
-# -cert-msc32-c => Rationale: predictable seed is by design (random used for testing, not crypto)
-# -cert-msc51-cpp => Rationale: alias for cert-msc32-c
-# -cert-err58-cpp => Rationale: Only exception that could be thrown is out of memory
-# -altera-struct-pack-align => Rationale: Not applicable (Altera is for openCL)
-# -readability-function-cognitive-complexity => Warning is too strict, manual review code review is preferred
-# -concurrency-mt-unsafe => Reports a false warning for strerror in main (not useful for CharLS)
-# -llvm-namespace-comment => complains about namespace issues in system header files
-# -hicpp-named-parameter => complains about issues in system header files
-# -altera-unroll-loops => Does not apply (is for openCL)
-# -altera-id-dependent-backward-branch => Does not apply (is for openCL)
-# -bugprone-easily-swappable-parameters => To many do not fix warnings
-# -performance-enum-size => No performance gain, enums are not used in arrays.
-# -boost-use-ranges => CharLS has by design not a dependency on Boost.
+# The approach for using clang tidy is to enable warnings that add practical value to the CharLS projects
+# Some warnings are however to noisy and adding NO_LINT suppressions make the code less readable.
 
----
-Checks:          '*,
-                  -fuchsia-*,
-                  -google-*,
-                  -android-*,
-                  -llvmlibc-*,
-                  -llvm-header-guard,
-                  -llvm-namespace-comment,
-                  -hicpp-no-array-decay,
-                  -hicpp-signed-bitwise,
-                  -hicpp-named-parameter,
-                  -clang-diagnostic-c++98-compat*,
-                  -clang-diagnostic-c++98-c++11-compat,
-                  -clang-diagnostic-c++98-c++11-c++14-compat,
-                  -clang-diagnostic-pre-c++14-compat,
-                  -clang-diagnostic-pre-c++17-compat,
-                  -clang-diagnostic-unused-macros,
-                  -clang-diagnostic-sign-conversion,
-                  -clang-diagnostic-switch-enum,
-                  -clang-diagnostic-switch-default,
-                  -clang-diagnostic-global-constructors,
-                  -clang-diagnostic-exit-time-destructors,
-                  -clang-diagnostic-pragma-once-outside-header,
-                  -clang-diagnostic-unused-const-variable,
-                  -clang-diagnostic-unused-command-line-argument,
-                  -clang-diagnostic-declaration-after-statement,
-                  -clang-diagnostic-unsafe-buffer-usage,
-                  -clang-analyzer-core.NonNullParamChecker,
-                  -misc-non-private-member-variables-in-classes,
-                  -misc-include-cleaner,
-                  -modernize-use-trailing-return-type,
-                  -readability-magic-numbers,
-                  -readability-named-parameter,
-                  -readability-implicit-bool-conversion,
-                  -readability-identifier-length,
-                  -cppcoreguidelines-avoid-magic-numbers,
-                  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
-                  -cppcoreguidelines-pro-type-reinterpret-cast,
-                  -cppcoreguidelines-macro-usage,
-                  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
-                  -cppcoreguidelines-pro-type-union-access,
-                  -cppcoreguidelines-non-private-member-variables-in-classes,
-                  -cppcoreguidelines-pro-bounds-constant-array-index,
-                  -cppcoreguidelines-init-variables,
-                  -cert-msc32-c,
-                  -cert-msc51-cpp,
-                  -cert-err58-cpp,
-                  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
-                  -altera-struct-pack-align,
-                  -altera-unroll-loops,
-                  -altera-id-dependent-backward-branch,
-                  -readability-function-cognitive-complexity,
-                  -bugprone-easily-swappable-parameters,
-                  -concurrency-mt-unsafe,
-                  -performance-enum-size,
-                  -boost-use-ranges'
+Checks:
+  - 'bugprone-*' # Checks that target bug-prone code constructs.
+  - '-bugprone-easily-swappable-parameters' # Rationale: too many do not fix warnings, more an advice.
+
+  - 'readability-*' # Checks that target readability-related issues that don’t relate to any particular coding style.
+  - '-readability-magic-numbers' # Rationale: Too many false positives, most used numbers are logical in context.
+  - '-readability-identifier-length' # Rationale: Too many false positives, single characters names are used in formulas.
+  - '-readability-function-cognitive-complexity' # Rationale: manual review is preferred.
+
+  - 'portability-*' # Checks that target portability-related issues that don’t relate to any particular coding style.
+
+  - 'performance-*' # Checks that target performance-related issues.
+  - '-performance-enum-size' # Rationale: no real performance gain, enums are not used in arrays.
+
+  - 'concurrency-*' # Checks related to concurrent programming (including threads, fibers, coroutines, etc.).
+
+  - 'misc-*' # Checks that we didn’t have a better category for.
+  - '-misc-include-cleaner' # Rationale: also generates warnings when a direct include file is not used. Other tools are more practical.
+
+  - 'modernize-*' # Checks that advocate usage of modern (currently “modern” means “C++11”) language constructs.
+  - '-modernize-use-trailing-return-type' # Rationale: A style recommendation, this style is not selected for CharLS.
+
+  - 'clang-analyzer-*' # Clang Static Analyzer checks.
+  - '-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling' # Rationale: safe alternatives of memcpy are not always available.
+
+  - 'cppcoreguidelines-*' # Checks related to C++ Core Guidelines.
+  - '-cppcoreguidelines-avoid-magic-numbers' # Rationale: Alias for readability-magic-numbers.
+  - '-cppcoreguidelines-pro-bounds-pointer-arithmetic' # Rationale: usage is required in codec implementation.
+  - '-cppcoreguidelines-init-variables' # Rationale reports false warnings for out parameters (other checkers are better to detect these problems)
+  - '-cppcoreguidelines-pro-bounds-constant-array-index' # Rationale gsl:at is not used by design, memory access verified with other tools.
+
+  - 'cert-*' # Checks related to CERT Secure Coding Guidelines.
+  - '-cert-err58-cpp' # Rationale: Only exception that can be thrown is out of memory
+  - '-cert-msc32-c' # Rationale: predictable seed is by design (random is used only for testing)
+  - '-cert-msc51-cpp'# Rationale: alias for cert-msc32-c
+
+  - 'hicpp-*' # Checks related to High Integrity C++ Coding Standard.
+  - '-hicpp-signed-bitwise' # Rationale: Bad test, types are checked, not values.
+
+  - '-clang-diagnostic-ignored-gch' # Rationale: Ignore, triggered by compiling with GCC and running clang-tidy.
+
 WarningsAsErrors: false
 HeaderFilterRegex: ''
 FormatStyle:     none
 CheckOptions:
   - key:             readability-braces-around-statements.ShortStatementLines
     value:           '2'
-  - key:             google-readability-braces-around-statements.ShortStatementLines
-    value:           '2'
+  - key:             readability-implicit-bool-conversion.AllowPointerConditions
+    value:           '1'
+  - key:             misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value:           '1'
   - key:             hicpp-braces-around-statements.ShortStatementLines
     value:           '2'
-  - key:             readability-implicit-bool-conversion.AllowPointerConditions
+  - key:             readability-simplify-boolean-expr.IgnoreMacros
     value:           '1'

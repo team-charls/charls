@@ -36,7 +36,7 @@ using std::vector;
 
 #ifndef __AFL_LOOP
 // ReSharper disable once CppInconsistentNaming
-#define __AFL_LOOP(a) true // NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
+#define __AFL_LOOP(a) true // NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,cppcoreguidelines-macro-usage)
 #define AFL_LOOP_FOREVER
 #endif
 
@@ -92,7 +92,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
             return EXIT_FAILURE;
         }
 
-        fd = _open(argv[1], O_RDONLY);
+        fd = _open(argv[1], O_RDONLY); // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
         if (fd < 0)
         {
             std::cerr << "Failed to open: " << argv[1] << strerror(errno) << '\n';  // NOLINT(concurrency-mt-unsafe)

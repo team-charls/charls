@@ -5,20 +5,11 @@
 
 #include <charls/jpegls_error.hpp>
 
-#include <cassert>
+#include "span.hpp"
+
 #include <cstdlib>
 #include <cstring>
 #include <type_traits>
-
-
-// Use an uppercase alias for assert to make it clear that ASSERT is a pre-processor macro.
-#ifdef _MSC_VER
-// C26493 = Don't use C-style casts
-#define ASSERT(expression) \
-    __pragma(warning(push)) __pragma(warning(disable : 26493)) assert(expression) __pragma(warning(pop))
-#else
-#define ASSERT(expression) assert(expression)
-#endif
 
 // Use forced inline for supported C++ compilers in release builds.
 // Note: usage of FORCE_INLINE may be reduced in the future as the latest generation of C++ compilers
@@ -289,6 +280,13 @@ inline void check_argument(const bool expression, const jpegls_errc error_value 
 {
     if (UNLIKELY(!expression))
         impl::throw_jpegls_error(error_value);
+}
+
+
+template<typename T>
+void check_argument(span<T> argument, const jpegls_errc error_value = jpegls_errc::invalid_argument)
+{
+    check_argument(argument.data() != nullptr || argument.empty(), error_value);
 }
 
 

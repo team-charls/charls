@@ -3,6 +3,7 @@
 
 #include "pch.hpp"
 
+#include "../src/assert.hpp"
 #include "../src/util.hpp"
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;

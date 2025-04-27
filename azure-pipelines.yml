@@ -197,46 +197,46 @@ jobs:
 
   strategy:
     matrix:
-      GCC-9 Debug:
+      GCC-12 Debug:
         buildType: Debug
-        CC: gcc-9
-        CXX: g++-9
-        Shared: 'OFF'
-
-      GCC-10 Release:
-        buildType: Release
-        CC: gcc-10
-        CXX: g++-10
-        Shared: 'OFF'
-
-      GCC-11 Debug Shared:
-        buildType: Debug
-        CC: gcc-11
-        CXX: g++-11
-        Shared: 'ON'
-
-      GCC-12 Release Shared:
-        buildType: Release
         CC: gcc-12
         CXX: g++-12
+        Shared: 'OFF'
+
+      GCC-13 Release:
+        buildType: Release
+        CC: gcc-13
+        CXX: g++-13
+        Shared: 'OFF'
+
+      GCC-14 Debug Shared:
+        buildType: Debug
+        CC: gcc-14
+        CXX: g++-14
         Shared: 'ON'
 
-      Clang-13 Debug:
+      GCC-14 Release Shared:
+        buildType: Release
+        CC: gcc-14
+        CXX: g++-14
+        Shared: 'ON'
+
+      Clang-16 Debug:
         buildType: Debug
-        CC: clang-13
-        CXX: clang++-13
+        CC: clang-16
+        CXX: clang++-16
         Shared: 'OFF'
 
-      Clang-13 Release:
+      Clang-17 Release:
         buildType: Release
-        CC: clang-13
-        CXX: clang++-13
+        CC: clang-17
+        CXX: clang++-17
         Shared: 'OFF'
 
-      Clang-14 Release Shared:
+      Clang-18 Release Shared:
         buildType: Release
-        CC: clang-14
-        CXX: clang++-14
+        CC: clang-18
+        CXX: clang++-18
         Shared: 'ON'
 
   steps:

@@ -81,10 +81,16 @@ uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept
 }
 
 
+void read(istream& input, void* buffer, const size_t size)
+{
+    input.read(static_cast<char*>(buffer), static_cast<std::streamsize>(size));
+}
+
+
 template<typename Container>
 void read(istream& input, Container& destination_container)
 {
-    input.read(reinterpret_cast<char*>(destination_container.data()), destination_container.size());
+    read(input, destination_container.data(), destination_container.size());
 }
 
 
@@ -297,13 +303,14 @@ void test_too_small_output_buffer()
 void test_decode_bit_stream_with_no_marker_start()
 {
     constexpr array encoded_data{byte{0x33}, byte{0x33}};
-    array<byte, 1000> output{};
 
     error_code error;
     try
     {
         jpegls_decoder decoder;
         decoder.source(encoded_data).read_header();
+
+        array<byte, 1000> output{};
         decoder.decode(output);
     }
     catch (const jpegls_error& e)
@@ -322,13 +329,14 @@ void test_decode_bit_stream_with_unsupported_encoding()
         byte{0xFF}, byte{0xC3}, // Start Of Frame (lossless, Huffman) (JPEG_SOF_3)
         byte{0x00}, byte{0x00}  // Length of data of the marker
     };
-    array<byte, 1000> output{};
 
     error_code error;
     try
     {
         jpegls_decoder decoder;
         decoder.source(encoded_data).read_header();
+
+        array<byte, 1000> output{};
         decoder.decode(output);
     }
     catch (const jpegls_error& e)
@@ -347,13 +355,14 @@ void test_decode_bit_stream_with_unknown_jpeg_marker()
         byte{0xFF}, byte{0x01}, // Undefined marker
         byte{0x00}, byte{0x00}  // Length of data of the marker
     };
-    array<byte, 1000> output{};
 
     error_code error;
     try
     {
         jpegls_decoder decoder;
         decoder.source(encoded_data).read_header();
+
+        array<byte, 1000> output{};
         decoder.decode(output);
     }
     catch (const jpegls_error& e)

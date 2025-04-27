@@ -1,7 +1,7 @@
-# Copyright (c) Team CharLS.
+# SPDX-FileCopyrightText: © 2009 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
-cmake_minimum_required(VERSION 3.16...3.31)
+cmake_minimum_required(VERSION 3.16...4.01)
 
 # Extract the version info from version.h
 file(READ "include/charls/version.h" version)
@@ -15,12 +15,12 @@ message(STATUS "CharLS version: ${version_major}.${version_minor}.${version_patc
 
 project(charls VERSION ${version_major}.${version_minor}.${version_patch} LANGUAGES C CXX)
 
-# Determine if project is built as a subproject (using add_subdirectory) or if it is the main project.
+# Determine if project is built as a sub-project (using add_subdirectory) or if it is the main project.
 set(MAIN_PROJECT OFF)
-if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   set(MAIN_PROJECT ON)
   message(STATUS "Building as main project, CMake version: ${CMAKE_VERSION}")
-endif ()
+endif()
 
 # The basic options to control what is build extra.
 option(CHARLS_BUILD_TESTS "Build test application" ${MAIN_PROJECT})
@@ -34,6 +34,9 @@ option(BUILD_SHARED_LIBS "Will control if charls lib is build as shared lib/DLL 
 
 # Provide option to build CharLS with address sanitizer
 option(CHARLS_ENABLE_ASAN "Build with address sanitizer enabled." OFF)
+
+# Provide option to build CharLS with clang-tidy
+option(CHARLS_ENABLE_CLANG_TIDY "Enable clang-tidy static analysis." OFF)
 
 # These options are used by the CI pipeline to ensure new warnings are detected quickly.
 # Not enabled by default to ensure the CharLS package is end-user friendly.
@@ -187,7 +190,7 @@ if(MSVC)
     add_compile_options("/permissive-")
   endif()
 
-  # /ZH:SHA_256: Wiill use SHA 256 for checksums between source code and debug symbols (more secure)
+  # /ZH:SHA_256: Will use SHA 256 for checksums between source code and debug symbols (more secure)
   add_compile_options("/ZH:SHA_256")
 
   # /guard:cf: Will enable Control Flow Guard, which provides addition compile time and runtime checks.
@@ -205,6 +208,16 @@ if(MSVC)
     set(LIBFUZZER_SUPPORTED 1)
   endif()
 
+endif()
+
+if(CHARLS_ENABLE_CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE NAMES clang-tidy)
+    if(CLANG_TIDY_EXE)
+        message(STATUS "Clang-tidy enabled and found at: ${CLANG_TIDY_EXE}")
+        set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
+    else()
+        message(WARNING "Clang-tidy enabled, but not found!")
+    endif()
 endif()
 
 # When enabled apply the pedantic warnings options and warnings as errors to globally.

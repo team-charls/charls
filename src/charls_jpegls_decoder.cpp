@@ -22,7 +22,7 @@ struct charls_jpegls_decoder final
 {
     void source(const span<const byte> source)
     {
-        check_argument(source.data() || source.empty());
+        check_argument(source);
         check_operation(state_ == state::initial);
 
         reader_.source(source);
@@ -167,14 +167,14 @@ struct charls_jpegls_decoder final
     void get_mapping_table_data(const int32_t mapping_table_index, const span<byte> table_data) const
     {
         check_mapping_table_index(mapping_table_index);
-        check_argument(table_data.data() || table_data.empty());
+        check_argument(table_data);
 
         reader_.get_mapping_table_data(mapping_table_index, table_data);
     }
 
     void decode(span<byte> destination, const size_t stride)
     {
-        check_argument(destination.data() || destination.empty());
+        check_argument(destination);
         check_operation(state_ == state::header_read);
 
         for (size_t component{};;)

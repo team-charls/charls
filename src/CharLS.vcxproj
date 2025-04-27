@@ -240,6 +240,7 @@
     <ClInclude Include="..\include\charls\undef_macros.h" />
     <ClInclude Include="..\include\charls\validate_spiff_header.h" />
     <ClInclude Include="..\include\charls\version.h" />
+    <ClInclude Include="assert.hpp" />
     <ClInclude Include="coding_parameters.hpp" />
     <ClInclude Include="color_transform.hpp" />
     <ClInclude Include="conditional_static_cast.hpp" />

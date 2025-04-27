@@ -107,6 +107,7 @@ target_sources(charls
   PUBLIC
     ${CHARLS_PUBLIC_HEADERS}
   PRIVATE
+    "${CMAKE_CURRENT_LIST_DIR}/assert.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_decoder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/charls_jpegls_encoder.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/coding_parameters.hpp"

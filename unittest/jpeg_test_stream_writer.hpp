@@ -6,6 +6,7 @@
 #include "../src/jpeg_marker_code.hpp"
 #include "../src/jpegls_preset_parameters_type.hpp"
 #include "../src/util.hpp"
+#include "../src/assert.hpp"
 
 #include <vector>
 #include <array>
