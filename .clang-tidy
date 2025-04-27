@@ -27,6 +27,7 @@ Checks:
   - '-modernize-use-trailing-return-type' # Rationale: A style recommendation, this style is not selected for CharLS.
 
   - 'clang-analyzer-*' # Clang Static Analyzer checks.
+  - '-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling' # Rationale: safe alternatives of memcpy are not always available.
 
   - 'cppcoreguidelines-*' # Checks related to C++ Core Guidelines.
   - '-cppcoreguidelines-avoid-magic-numbers' # Rationale: Alias for readability-magic-numbers.
@@ -42,7 +43,7 @@ Checks:
   - 'hicpp-*' # Checks related to High Integrity C++ Coding Standard.
   - '-hicpp-signed-bitwise' # Rationale: Bad test, types are checked, not values.
 
-  - '-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling' # Rationale: safe alternatives of memcpy are not always available.
+  - '-clang-diagnostic-ignored-gch' # Rationale: Ignore, triggered by compiling with GCC and running clang-tidy.
 
 WarningsAsErrors: false
 HeaderFilterRegex: ''
@@ -56,3 +57,5 @@ CheckOptions:
     value:           '1'
   - key:             hicpp-braces-around-statements.ShortStatementLines
     value:           '2'
+  - key:             readability-simplify-boolean-expr.IgnoreMacros
+    value:           '1'

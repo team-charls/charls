@@ -92,7 +92,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
             return EXIT_FAILURE;
         }
 
-        fd = _open(argv[1], O_RDONLY);
+        fd = _open(argv[1], O_RDONLY); // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
         if (fd < 0)
         {
             std::cerr << "Failed to open: " << argv[1] << strerror(errno) << '\n';  // NOLINT(concurrency-mt-unsafe)
