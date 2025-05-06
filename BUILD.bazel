@@ -4,6 +4,7 @@
 cc_library(
     name = "charls",
     srcs = [
+        "src/assert.hpp",
         "src/charls_jpegls_decoder.cpp",
         "src/charls_jpegls_encoder.cpp",
         "src/coding_parameters.hpp",
