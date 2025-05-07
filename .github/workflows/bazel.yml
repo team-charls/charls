@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2025 Team CharLS
+# SPDX-License-Identifier: BSD-3-Clause
+
 name: Bazel CI
 
 on:
