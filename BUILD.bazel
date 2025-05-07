@@ -61,8 +61,11 @@ cc_library(
     ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
-    copts = ["/std:c++17", "/permissive-"],
     defines = ["CHARLS_LIBRARY_BUILD"],
+    copts = select({
+        "@bazel_tools//src/conditions:windows": ["/std:c++17","/permissive-"],  # Apply on Windows (MSVC)
+        "//conditions:default": ["-std=c++17"],  # Apply for Linux/macOS (GCC/Clang)
+    }),
 )
 
 cc_binary(
