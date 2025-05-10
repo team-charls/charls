@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
 
     steps:
       - name: Checkout code
@@ -20,15 +23,25 @@ jobs:
       - name: Set up Bazel
         uses: bazelbuild/setup-bazelisk@v3
 
+      - name: Set CC and CXX
+        run: |
+          if [ "${{ matrix.compiler }}" = "clang" ]; then
+            echo "CC=clang" >> $GITHUB_ENV
+            echo "CXX=clang++" >> $GITHUB_ENV
+          else
+            echo "CC=gcc" >> $GITHUB_ENV
+            echo "CXX=g++" >> $GITHUB_ENV
+          fi
+
       - name: Restore Bazel cache
         uses: actions/cache@v4
         with:
           path: |
             ~/.cache/bazel
             ~/.cache/bazel-repo
-          key: bazel-cache-${{ runner.os }}-${{ hashFiles('**/*.bazel', '**/BUILD', '**/WORKSPACE') }}
+          key: bazel-cache-${{ runner.os }}-${{ matrix.compiler }}-${{ hashFiles('**/*.bazel', '**/BUILD', '**/WORKSPACE') }}
           restore-keys: |
-            bazel-cache-${{ runner.os }}-
+            bazel-cache-${{ runner.os }}-${{ matrix.compiler }}-
 
       - name: Build
         run: bazel build //...
