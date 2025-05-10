@@ -1,6 +1,10 @@
 # SPDX-FileCopyrightText: © 2025 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
+package(default_visibility = ["//visibility:public"])
+
+load("//:bazel/configure_copts.bzl", "CHARLS_DEFAULT_COPTS")
+
 cc_library(
     name = "charls",
     srcs = [
@@ -59,13 +63,10 @@ cc_library(
         "include/charls/validate_spiff_header.h",
         "include/charls/version.h",
     ],
+    copts = CHARLS_DEFAULT_COPTS,
+    defines = ["CHARLS_LIBRARY_BUILD"],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
-    defines = ["CHARLS_LIBRARY_BUILD"],
-    copts = select({
-        "@bazel_tools//src/conditions:windows": ["/std:c++17","/permissive-"],  # Apply on Windows (MSVC)
-        "//conditions:default": ["-std=c++17"],  # Apply for Linux/macOS (GCC/Clang)
-    }),
 )
 
 cc_binary(
@@ -84,11 +85,8 @@ cc_binary(
         "test/util.cpp",
         "test/util.hpp",
     ],
+    copts = CHARLS_DEFAULT_COPTS,
     deps = [
         "//:charls",
     ],
-    copts = select({
-        "@bazel_tools//src/conditions:windows": ["/std:c++17","/permissive-"],  # Apply on Windows (MSVC)
-        "//conditions:default": ["-std=c++17"],  # Apply for Linux/macOS (GCC/Clang)
-    }),
 )
