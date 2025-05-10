@@ -1,7 +1,7 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "bitstreamdamage.hpp"
+#include "bit_stream_damage.hpp"
 #include "util.hpp"
 
 #include <iostream>
