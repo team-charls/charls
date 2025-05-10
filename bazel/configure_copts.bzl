@@ -1,6 +1,10 @@
 # SPDX-FileCopyrightText: © 2025 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
+"""
+Defines the copts flags for the supported compilers and select the matching options
+"""
+
 CHARLS_MSVC_FLAGS = [
     "/W3",
     "/wd4005",
@@ -18,7 +22,7 @@ CHARLS_MSVC_FLAGS = [
 CHARLS_GCC_FLAGS = [
     "-Wall",
     "-Wextra",
-    "-Wcast-qual", # Warn whenever a pointer is cast so as to remove a type qualifier from the target type.  (no part of all or extra)
+    "-Wcast-qual",
     "-Wformat=2",
     "-Wmissing-declarations",
     "-Wnon-virtual-dtor",
