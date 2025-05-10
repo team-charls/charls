@@ -1,9 +1,9 @@
 # SPDX-FileCopyrightText: © 2025 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
-package(default_visibility = ["//visibility:public"])
-
 load("//:bazel/configure_copts.bzl", "CHARLS_DEFAULT_COPTS")
+
+package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "charls",
