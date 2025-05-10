@@ -25,7 +25,6 @@ CHARLS_GCC_FLAGS = [
     "-Wcast-qual",
     "-Wformat=2",
     "-Wmissing-declarations",
-    "-Wnon-virtual-dtor",
     "-Woverlength-strings",
     "-Wpointer-arith",
     "-Wundef",
