@@ -6,15 +6,7 @@ Defines the copts flags for the supported compilers and select the matching opti
 """
 
 CHARLS_MSVC_FLAGS = [
-    "/W3",
-    "/wd4005",
-    "/wd4068",
-    "/wd4180",
-    "/wd4503",
-    "/wd4800",
-    "/D_CRT_SECURE_NO_WARNINGS",
-    "/D_SCL_SECURE_NO_WARNINGS",
-    "/D_ENABLE_EXTENDED_ALIGNED_STORAGE",
+    "/W4",
     "/std:c++17",
     "/permissive-",
 ]
