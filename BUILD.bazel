@@ -3,6 +3,7 @@
 
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_shared_library.bzl", "cc_shared_library")
 load("//:bazel/configure_copts.bzl", "CHARLS_DEFAULT_COPTS")
 
 package(
@@ -70,7 +71,19 @@ cc_library(
     copts = CHARLS_DEFAULT_COPTS,
     defines = ["CHARLS_LIBRARY_BUILD"],
     strip_include_prefix = "include",
-    visibility = ["//visibility:public"],
+)
+
+cc_shared_library(
+    name = "charls_shared",
+    deps = [
+        ":charls",
+    ],
+    shared_lib_name = select({
+        "@bazel_tools//src/conditions:windows_arm64": "charls-3-arm64",
+        "@bazel_tools//src/conditions:windows_x64": "charls-3-x64",
+        "@bazel_tools//src/conditions:windows": "charls-3-x86",
+        "//conditions:default": "charls"
+    }),
 )
 
 cc_binary(
@@ -93,4 +106,5 @@ cc_binary(
     deps = [
         "//:charls",
     ],
+    visibility = ["//visibility:private"],
 )
