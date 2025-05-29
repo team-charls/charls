@@ -79,9 +79,9 @@ cc_shared_library(
         ":charls",
     ],
     shared_lib_name = select({
-        "@bazel_tools//src/conditions:windows_arm64": "charls-3-arm64",
-        "@bazel_tools//src/conditions:windows_x64": "charls-3-x64",
-        "@bazel_tools//src/conditions:windows": "charls-3-x86",
+        "@bazel_tools//src/conditions:windows_arm64": "charls-3-arm64.dll",
+        "@bazel_tools//src/conditions:windows_x64": "charls-3-x64.dll",
+        "@bazel_tools//src/conditions:windows": "charls-3-x86.dll",
         "//conditions:default": "charls"
     }),
 )
