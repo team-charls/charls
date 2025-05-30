@@ -25,6 +25,7 @@ class span final
 public:
     using iterator = T*;
     using pointer = T*;
+    using size_type = size_t;
 
     span() = default;
 
@@ -33,7 +34,7 @@ public:
     }
 
     template<typename It>
-    constexpr span(It first, It last) noexcept : span(first, last - first)
+    constexpr span(It first, It last) noexcept : span(first, static_cast<size_type>(last - first))
     {
     }
 

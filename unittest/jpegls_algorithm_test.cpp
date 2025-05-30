@@ -89,7 +89,7 @@ public:
         call_and_compare_log2_ceil(33);
         call_and_compare_log2_ceil(numeric_limits<uint16_t>::max());
         call_and_compare_log2_ceil(numeric_limits<uint16_t>::max() + 1);
-        call_and_compare_log2_ceil(numeric_limits<uint32_t>::max() >> 2);
+        call_and_compare_log2_ceil(static_cast<int32_t>(numeric_limits<uint32_t>::max() >> 2));
     }
 
     TEST_METHOD(test_initialization_value_for_a) // NOLINT

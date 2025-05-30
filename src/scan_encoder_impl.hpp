@@ -56,7 +56,7 @@ private:
         const size_t component_count{
             parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
 
-        std::array<int32_t, maximum_component_count_in_scan> run_index{};
+        std::array<uint32_t, maximum_component_count_in_scan> run_index{};
         std::vector<pixel_type> line_buffer(component_count * pixel_stride * 2);
 
         for (uint32_t line{}; line < frame_info().height; ++line)
@@ -105,11 +105,11 @@ private:
     /// <summary>Encodes a scan line of samples</summary>
     FORCE_INLINE void encode_sample_line()
     {
-        int32_t index{1};
+        size_t index{1};
         int32_t rb{previous_line_[index - 1]};
         int32_t rd{previous_line_[index]};
 
-        while (static_cast<uint32_t>(index) <= width_)
+        while (index <= width_)
         {
             const int32_t ra{current_line_[index - 1]};
             const int32_t rc{rb};
@@ -135,8 +135,8 @@ private:
     /// <summary>Encodes a scan line of pairs in ILV_SAMPLE mode</summary>
     void encode_pair_line()
     {
-        int32_t index{1};
-        while (static_cast<uint32_t>(index) <= width_)
+        size_t index{1};
+        while (index <= width_)
         {
             const pair<sample_type> ra{current_line_[index - 1]};
             const pair<sample_type> rc{previous_line_[index - 1]};
@@ -166,8 +166,8 @@ private:
     /// <summary>Encodes a scan line of triplets in ILV_SAMPLE mode</summary>
     void encode_triplet_line()
     {
-        int32_t index{1};
-        while (static_cast<uint32_t>(index) <= width_)
+        size_t index{1};
+        while (index <= width_)
         {
             const triplet<sample_type> ra{current_line_[index - 1]};
             const triplet<sample_type> rc{previous_line_[index - 1]};
@@ -200,8 +200,8 @@ private:
     /// <summary>Encodes a scan line of quads in ILV_SAMPLE mode</summary>
     void encode_quad_line()
     {
-        int32_t index{1};
-        while (static_cast<uint32_t>(index) <= width_)
+        size_t index{1};
+        while (index <= width_)
         {
             const quad<sample_type> ra{current_line_[index - 1]};
             const quad<sample_type> rc{previous_line_[index - 1]};
@@ -235,15 +235,15 @@ private:
     }
 
     [[nodiscard]]
-    int32_t encode_run_mode(const int32_t start_index)
+    size_t encode_run_mode(const size_t start_index)
     {
-        const int32_t count_type_remain = width_ - (start_index - 1);
+        const size_t count_type_remain = width_ - (start_index - 1);
         pixel_type* type_cur_x{current_line_ + start_index};
         const pixel_type* type_prev_x{previous_line_ + start_index};
 
         const pixel_type ra{type_cur_x[-1]};
 
-        int32_t run_length{};
+        size_t run_length{};
         while (traits_.is_near(type_cur_x[run_length], ra))
         {
             type_cur_x[run_length] = ra;
@@ -267,7 +267,7 @@ private:
     FORCE_INLINE sample_type encode_regular(const int32_t qs, const int32_t x, const int32_t predicted)
     {
         const int32_t sign{bit_wise_sign(qs)};
-        regular_mode_context& context{regular_mode_contexts_[apply_sign(qs, sign)]};
+        regular_mode_context& context{regular_mode_contexts_[apply_sign_for_index(qs, sign)]};
         const int32_t k{context.compute_golomb_coding_parameter()};
         const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
         const int32_t error_value{traits_.compute_error_value(apply_sign(x - predicted_value, sign))};
@@ -290,7 +290,7 @@ private:
                 high_bits = high_bits - high_bits / 2;
             }
             append_to_bit_stream(1, high_bits + 1);
-            append_to_bit_stream((mapped_error & ((1 << k) - 1)), k);
+            append_to_bit_stream(static_cast<uint32_t>(mapped_error & ((1 << k) - 1)), k);
             return;
         }
 
@@ -303,7 +303,7 @@ private:
         {
             append_to_bit_stream(1, limit - traits_.quantized_bits_per_sample);
         }
-        append_to_bit_stream((mapped_error - 1) & ((1 << traits_.quantized_bits_per_sample) - 1),
+        append_to_bit_stream(static_cast<uint32_t>((mapped_error - 1) & ((1 << traits_.quantized_bits_per_sample) - 1)),
                              traits_.quantized_bits_per_sample);
     }
 

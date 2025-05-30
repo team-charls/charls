@@ -111,7 +111,7 @@ private:
 
         for (size_t i{}; i != pixel_count; ++i)
         {
-            d[i] = (s[i] & m);
+            d[i] = static_cast<sample_type>(s[i] & m);
         }
     }
 
@@ -127,8 +127,8 @@ private:
         {
             const auto pixel{s[i]};
 
-            d[i] = pixel.v1 & m;
-            d[i + pixel_stride] = pixel.v2 & m;
+            d[i] = static_cast<sample_type>(pixel.v1 & m);
+            d[i + pixel_stride] = static_cast<sample_type>(pixel.v2 & m);
         }
     }
 
@@ -144,9 +144,9 @@ private:
         {
             const auto pixel{s[i]};
 
-            d[i] = pixel.v1 & m;
-            d[i + pixel_stride] = pixel.v2 & m;
-            d[i + (2 * pixel_stride)] = pixel.v3 & m;
+            d[i] = static_cast<sample_type>(pixel.v1 & m);
+            d[i + pixel_stride] = static_cast<sample_type>(pixel.v2 & m);
+            d[i + (2 * pixel_stride)] = static_cast<sample_type>(pixel.v3 & m);
         }
     }
 
@@ -188,10 +188,10 @@ private:
         {
             const auto pixel{s[i]};
 
-            d[i] = pixel.v1 & m;
-            d[i + pixel_stride] = pixel.v2 & m;
-            d[i + (2 * pixel_stride)] = pixel.v3 & m;
-            d[i + (3 * pixel_stride)] = pixel.v4 & m;
+            d[i] = static_cast<sample_type>(pixel.v1 & m);
+            d[i + pixel_stride] = static_cast<sample_type>(pixel.v2 & m);
+            d[i + (2 * pixel_stride)] = static_cast<sample_type>(pixel.v3 & m);
+            d[i + (3 * pixel_stride)] = static_cast<sample_type>(pixel.v4 & m);
         }
     }
 

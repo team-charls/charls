@@ -39,7 +39,7 @@ struct lossless_traits_impl
     // ISO 14495-1 LIMIT symbol: the value of glimit for a sample encoded in regular mode.
     static constexpr int32_t limit{compute_limit_parameter(BitsPerSample)};
 
-    static constexpr int32_t quantization_range{1 << BitsPerSample};
+    static constexpr uint32_t quantization_range{1U << BitsPerSample};
 
     static_assert(sizeof(SampleType) * 8 >= BitsPerSample);
 

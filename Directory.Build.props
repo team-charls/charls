@@ -1,4 +1,4 @@
-﻿<!--
+<!--
   SPDX-FileCopyrightText: © 2017 Team CharLS
   SPDX-License-Identifier: BSD-3-Clause
 -->
@@ -41,7 +41,6 @@
       <!--
         Disable level All warnings that are not useful:
         C4061 = enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label [Handled by default case]
-        C4365 = action' : conversion from 'type_1' to 'type_2', signed/unsigned mismatch
         C4464 = A #include directive has a path that includes a '..' parent directory specifier. [Just informational]
         C4514 = function' : unreferenced inline function has been removed [Just informational]
         C4571 = Informational: catch(...) semantics changed since Visual C++ 7.1; structured exceptions (SEH) are no longer caught [Just informational]
@@ -59,7 +58,7 @@
         C5264 = 'const' variable is not used [reported for const in header files]
         C5258 = explicit capture of '' is not required for this use [VS 2019 requires capture of constexpr]
       -->
-      <DisableSpecificWarnings Condition="'$(CHARLS_ALL_WARNINGS)'!=''">4061;4365;4464;4514;4571;4623;4625;4626;4710;4711;4738;4820;5026;5027;5045;5246;5264;5258</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(CHARLS_ALL_WARNINGS)'!=''">4061;4464;4514;4571;4623;4625;4626;4710;4711;4738;4820;5026;5027;5045;5246;5264;5258</DisableSpecificWarnings>
 
       <!--
         C6393 = A lookup table of size 365 is not sufficient to handle leap years [CharLS doesn't handle leap years]
@@ -80,7 +79,7 @@
       <!-- Explicit define that all projects are compiled according the latest official C++17 standard -->
       <LanguageStandard>stdcpp17</LanguageStandard>
 
-      <!-- Explicit disable non conforming MSVC compiler options that are not compatible with the C++ standard -->
+      <!-- Explicit disable non-conforming MSVC compiler options that are not compatible with the C++ standard -->
       <ConformanceMode>true</ConformanceMode>
 
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include</AdditionalIncludeDirectories>

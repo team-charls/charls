@@ -114,7 +114,7 @@ void test_round_trip(const char* name, const vector<byte>& original_buffer, cons
     const auto height = static_cast<int>(size.cy);
     const auto width = static_cast<int>(size.cx);
 
-    vector<byte> encoded_buffer(height * width * component_count * bits_per_sample / 4);
+    vector<byte> encoded_buffer(height * width * component_count * bits_per_sample / 4U);
 
     vector<byte> decoded_buffer(static_cast<size_t>(height) * width * bit_to_byte_count(bits_per_sample) *
                                      component_count);
@@ -213,6 +213,6 @@ void test_portable_anymap_file(const char* filename, const int loop_count)
 {
     portable_anymap_file anymap_file(filename);
 
-    test_round_trip(filename, anymap_file.image_data(), rect_size(anymap_file.width(), anymap_file.height()),
+    test_round_trip(filename, anymap_file.image_data(), rect_size(static_cast<size_t>(anymap_file.width()), static_cast<size_t>(anymap_file.height())),
                     anymap_file.bits_per_sample(), anymap_file.component_count(), loop_count);
 }

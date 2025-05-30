@@ -241,7 +241,7 @@ private:
     [[nodiscard]]
     uint8_t mapping_table_selector() const noexcept
     {
-        return mapping_table_ids_.empty() ? 0 : mapping_table_ids_[component_index_];
+        return mapping_table_ids_.empty() ? 0U : mapping_table_ids_[component_index_];
     }
 
     span<std::byte> destination_{};

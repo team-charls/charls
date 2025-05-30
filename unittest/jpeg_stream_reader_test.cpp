@@ -424,7 +424,7 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
-        writer.write_define_restart_interval(numeric_limits<uint16_t>::max() - 5, 2);
+        writer.write_define_restart_interval(numeric_limits<uint16_t>::max() - 5U, 2);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
         jpeg_stream_reader reader;
@@ -439,7 +439,7 @@ public:
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
-        writer.write_define_restart_interval(numeric_limits<uint16_t>::max() + 5, 3);
+        writer.write_define_restart_interval(numeric_limits<uint16_t>::max() + 5U, 3);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
         jpeg_stream_reader reader;

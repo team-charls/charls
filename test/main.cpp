@@ -64,7 +64,7 @@ catch (const std::ifstream::failure&)
 uint32_t log2_floor(const uint32_t n) noexcept
 {
     ASSERT(n != 0 && "log2 is not defined for 0");
-    return 31 - countl_zero(n);
+    return 31U - countl_zero(n);
 }
 
 
@@ -179,7 +179,7 @@ void test_traits8_bit()
 }
 
 
-vector<byte> make_some_noise(const size_t length, const size_t bit_count, const int seed)
+vector<byte> make_some_noise(const size_t length, const size_t bit_count, const unsigned int seed)
 {
     const auto max_value{(1U << bit_count) - 1U};
     mt19937 generator(seed);
@@ -197,7 +197,7 @@ vector<byte> make_some_noise(const size_t length, const size_t bit_count, const 
 }
 
 
-vector<byte> make_some_noise16_bit(const size_t length, const int bit_count, const int seed)
+vector<byte> make_some_noise16_bit(const size_t length, const int bit_count, const unsigned int seed)
 {
     const auto max_value{static_cast<uint16_t>((1U << bit_count) - 1U)};
     mt19937 generator(seed);
@@ -504,7 +504,7 @@ try
         return false;
 
     const frame_info frame_info{static_cast<uint32_t>(read_values[1]), static_cast<uint32_t>(read_values[2]),
-                                static_cast<int32_t>(max_value_to_bits_per_sample(read_values[3])),
+                                static_cast<int32_t>(max_value_to_bits_per_sample(static_cast<uint32_t>(read_values[3]))),
                                 read_values[0] == 6 ? 3 : 1};
 
     const auto bytes_per_sample{static_cast<int32_t>(::bit_to_byte_count(frame_info.bits_per_sample))};
@@ -585,7 +585,7 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
         cout << "max-value " << header1[3] << " is not equal with max-value " << header2[3] << "\n";
         return false;
     }
-    const auto bytes_per_sample{header1[3] > 255 ? 2 : 1};
+    const size_t bytes_per_sample{header1[3] > 255 ? 2U : 1U};
 
     const size_t byte_count{width * height * bytes_per_sample};
     vector<byte> bytes1(byte_count);

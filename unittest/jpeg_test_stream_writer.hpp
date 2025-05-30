@@ -274,6 +274,11 @@ public:
         write_byte(static_cast<std::byte>(value));
     }
 
+    void write_uint8(const int32_t value)
+    {
+        write_byte(static_cast<std::byte>(value));
+    }
+
     void write_uint16(const uint16_t value)
     {
         write_byte(static_cast<std::byte>(value / 0x100));

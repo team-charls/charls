@@ -75,10 +75,11 @@ const int8_t* initialize_quantization_lut(const Traits& traits, const int32_t th
     }
 
     // Initialize the quantization lookup table dynamic.
-    quantization_lut.resize(static_cast<size_t>(traits.quantization_range) * 2);
+    quantization_lut.resize(size_t{2} * traits.quantization_range);
     for (size_t i{}; i < quantization_lut.size(); ++i)
     {
-        quantization_lut[i] = quantize_gradient_org(-traits.quantization_range + static_cast<int32_t>(i), threshold1,
+        quantization_lut[i] =
+            quantize_gradient_org(-static_cast<int32_t>(traits.quantization_range) + static_cast<int32_t>(i), threshold1,
                                                     threshold2, threshold3, traits.near_lossless);
     }
 
@@ -159,12 +160,18 @@ protected:
 
     void increment_run_index() noexcept
     {
-        run_index_ = std::min(31, run_index_ + 1);
+        if (run_index_ < 31U)
+        {
+            ++run_index_;
+        }
     }
 
     void decrement_run_index() noexcept
     {
-        run_index_ = std::max(0, run_index_ - 1);
+        if (run_index_ > 0)
+        {
+            --run_index_;
+        }
     }
 
     template<typename PixelType>
@@ -180,7 +187,7 @@ protected:
     int32_t t1_{};
     int32_t t2_{};
     int32_t t3_{};
-    int32_t run_index_{};
+    uint32_t run_index_{};
     std::array<regular_mode_context, 365> regular_mode_contexts_;
     std::array<run_mode_context, 2> run_mode_contexts_;
     uint32_t width_;

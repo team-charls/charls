@@ -16,7 +16,7 @@ namespace {
 uint32_t log2_floor(const uint32_t n) noexcept
 {
     ASSERT(n != 0 && "log2 is not defined for 0");
-    return 31 - countl_zero(n);
+    return 31U - countl_zero(n);
 }
 
 uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept
@@ -46,7 +46,7 @@ public:
         call_and_compare_log2_floor(32);
         call_and_compare_log2_floor(33);
         call_and_compare_log2_floor(numeric_limits<uint16_t>::max());
-        call_and_compare_log2_floor(numeric_limits<uint16_t>::max() + 1);
+        call_and_compare_log2_floor(numeric_limits<uint16_t>::max() + 1U);
         call_and_compare_log2_floor(numeric_limits<uint32_t>::max() >> 2);
     }
 

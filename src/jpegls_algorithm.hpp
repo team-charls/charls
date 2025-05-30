@@ -107,6 +107,15 @@ constexpr int32_t apply_sign(const int32_t i, const int32_t sign) noexcept
 }
 
 
+[[nodiscard]]
+constexpr size_t apply_sign_for_index(const int32_t i, const int32_t sign) noexcept
+{
+    const int32_t result{(sign ^ i) - sign};
+    ASSERT(result >= 0);
+    return static_cast<size_t>(result);
+}
+
+
 /// <summary>
 /// Computes the parameter RANGE. When NEAR = 0, RANGE = MAXVAL + 1. (see ISO/IEC 14495-1, A.2.1)
 /// </summary>

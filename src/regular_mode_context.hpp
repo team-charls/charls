@@ -4,8 +4,8 @@
 #pragma once
 
 #include "jpegls_algorithm.hpp"
+#include "assert.hpp"
 
-#include <cassert>
 #include <cstdint>
 
 namespace charls {

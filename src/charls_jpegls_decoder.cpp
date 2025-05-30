@@ -96,7 +96,8 @@ struct charls_jpegls_decoder final
 
         if (stride == auto_calculate_stride)
         {
-            return checked_mul(checked_mul(checked_mul(component_count, height), width), bit_to_byte_count(bits_per_sample));
+            return checked_mul(checked_mul(checked_mul(static_cast<size_t>(component_count), height), width),
+                               bit_to_byte_count(bits_per_sample));
         }
 
         switch (get_interleave_mode(0))
@@ -104,7 +105,8 @@ struct charls_jpegls_decoder final
         case interleave_mode::none: {
             const size_t minimum_stride{static_cast<size_t>(width) * bit_to_byte_count(bits_per_sample)};
             check_argument(stride >= minimum_stride, jpegls_errc::invalid_argument_stride);
-            return checked_mul(checked_mul(stride, component_count), height) - (stride - minimum_stride);
+            return checked_mul(checked_mul(stride, static_cast<size_t>(component_count)), height) -
+                   (stride - minimum_stride);
         }
 
         case interleave_mode::line:
@@ -151,20 +153,20 @@ struct charls_jpegls_decoder final
     }
 
     [[nodiscard]]
-    int32_t mapping_table_count() const
+    size_t mapping_table_count() const
     {
         check_state_completed();
-        return static_cast<int32_t>(reader_.mapping_table_count());
+        return reader_.mapping_table_count();
     }
 
     [[nodiscard]]
-    mapping_table_info get_mapping_table_info(const int32_t mapping_table_index) const
+    mapping_table_info get_mapping_table_info(const size_t mapping_table_index) const
     {
         check_mapping_table_index(mapping_table_index);
         return reader_.get_mapping_table_info(mapping_table_index);
     }
 
-    void get_mapping_table_data(const int32_t mapping_table_index, const span<byte> table_data) const
+    void get_mapping_table_data(const size_t mapping_table_index, const span<byte> table_data) const
     {
         check_mapping_table_index(mapping_table_index);
         check_argument(table_data);
@@ -252,9 +254,9 @@ private:
         check_operation(state_ == state::completed);
     }
 
-    void check_mapping_table_index(const int32_t mapping_table_index) const
+    void check_mapping_table_index(const size_t mapping_table_index) const
     {
-        check_argument_range(0, mapping_table_count() - 1, mapping_table_index);
+        check_argument(mapping_table_index < mapping_table_count());
     }
 
     enum class state
@@ -345,7 +347,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_dec
     const charls_jpegls_decoder* decoder, const int32_t component_index, int32_t* near_lossless) noexcept
 try
 {
-    *check_pointer(near_lossless) = check_pointer(decoder)->get_near_lossless(component_index);
+    *check_pointer(near_lossless) = check_pointer(decoder)->get_near_lossless(static_cast<size_t>(component_index));
     return jpegls_errc::success;
 }
 catch (...)
@@ -358,7 +360,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_jpegls_dec
     const charls_jpegls_decoder* decoder, const int32_t component_index, charls_interleave_mode* interleave_mode) noexcept
 try
 {
-    *check_pointer(interleave_mode) = check_pointer(decoder)->get_interleave_mode(component_index);
+    *check_pointer(interleave_mode) = check_pointer(decoder)->get_interleave_mode(static_cast<size_t>(component_index));
     return jpegls_errc::success;
 }
 catch (...)
@@ -464,7 +466,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION charls_decoder_ge
     const charls_jpegls_decoder* decoder, const int32_t component_index, int32_t* table_id) noexcept
 try
 {
-    *check_pointer(table_id) = check_pointer(decoder)->get_mapping_table_id(component_index);
+    *check_pointer(table_id) = check_pointer(decoder)->get_mapping_table_id(static_cast<size_t>(component_index));
     return jpegls_errc::success;
 }
 catch (...)
@@ -490,7 +492,7 @@ USE_DECL_ANNOTATIONS jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_count(const charls_jpegls_decoder* decoder, int32_t* count) noexcept
 try
 {
-    *check_pointer(count) = check_pointer(decoder)->mapping_table_count();
+    *check_pointer(count) = static_cast<int32_t>(check_pointer(decoder)->mapping_table_count());
     return jpegls_errc::success;
 }
 catch (...)
@@ -504,7 +506,8 @@ charls_decoder_get_mapping_table_info(const charls_jpegls_decoder* decoder, cons
                                       charls_mapping_table_info* mapping_table_info) noexcept
 try
 {
-    *check_pointer(mapping_table_info) = check_pointer(decoder)->get_mapping_table_info(mapping_table_index);
+    *check_pointer(mapping_table_info) =
+        check_pointer(decoder)->get_mapping_table_info(static_cast<size_t>(mapping_table_index));
     return jpegls_errc::success;
 }
 catch (...)
@@ -518,7 +521,7 @@ charls_decoder_get_mapping_table_data(const charls_jpegls_decoder* decoder, cons
                                       void* mapping_table_data, const size_t mapping_table_size_bytes) noexcept
 try
 {
-    check_pointer(decoder)->get_mapping_table_data(mapping_table_index,
+    check_pointer(decoder)->get_mapping_table_data(static_cast<size_t>(mapping_table_index),
                                                    {static_cast<byte*>(mapping_table_data), mapping_table_size_bytes});
     return jpegls_errc::success;
 }

@@ -596,7 +596,7 @@ void jpeg_stream_reader::read_start_of_scan_segment()
     check_minimal_segment_size(1);
 
     // ISO 10918-1, B2.3. defines the limits for the number of image components parameter in an SOS.
-    const int32_t scan_component_count{read_uint8()};
+    const uint32_t scan_component_count{read_uint8()};
     if (UNLIKELY(scan_component_count < 1 || scan_component_count > maximum_component_count_in_scan ||
                  scan_component_count > frame_info_.component_count - read_component_count_))
         throw_jpegls_error(jpegls_errc::invalid_parameter_component_count);
@@ -609,7 +609,7 @@ void jpeg_stream_reader::read_start_of_scan_segment()
 
     check_segment_size((scan_component_count * size_t{2}) + 4);
 
-    for (int32_t i{}; i != scan_component_count; ++i)
+    for (size_t i{}; i != scan_component_count; ++i)
     {
         component_ids[i] = read_uint8();
         mapping_table_ids[i] = read_uint8();
@@ -623,7 +623,7 @@ void jpeg_stream_reader::read_start_of_scan_segment()
     check_interleave_mode(scan_interleave_mode_, scan_component_count);
     parameters_.interleave_mode = scan_interleave_mode_;
 
-    for (int32_t i{}; i != scan_component_count; ++i)
+    for (size_t i{}; i != scan_component_count; ++i)
     {
         store_component_info(component_ids[i], mapping_table_ids[i], static_cast<uint8_t>(parameters_.near_lossless),
                              scan_interleave_mode_);
@@ -828,11 +828,11 @@ void jpeg_stream_reader::add_component(const uint8_t component_id)
 }
 
 
-void jpeg_stream_reader::check_interleave_mode(const interleave_mode mode, const int32_t scan_component_count)
+void jpeg_stream_reader::check_interleave_mode(const interleave_mode mode, const uint32_t scan_component_count)
 {
     constexpr auto errc{jpegls_errc::invalid_parameter_interleave_mode};
     charls::check_interleave_mode(mode, errc);
-    if (UNLIKELY(scan_component_count == 1 && mode != interleave_mode::none))
+    if (UNLIKELY(scan_component_count == 1U && mode != interleave_mode::none))
         throw_jpegls_error(errc);
 }
 
@@ -848,7 +848,7 @@ uint32_t jpeg_stream_reader::maximum_sample_value() const noexcept
 
 void jpeg_stream_reader::skip_remaining_segment_data() noexcept
 {
-    const auto bytes_still_to_read{segment_data_.end() - position_};
+    const auto bytes_still_to_read{static_cast<size_t>(segment_data_.end() - position_)};
     advance_position(bytes_still_to_read);
 }
 
