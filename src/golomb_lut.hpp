@@ -17,7 +17,7 @@ namespace charls {
 struct golomb_code_match final
 {
     int32_t error_value;
-    uint32_t bit_count;
+    int32_t bit_count;
 };
 
 

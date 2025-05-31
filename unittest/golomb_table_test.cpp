@@ -19,9 +19,9 @@ public:
     {
         const golomb_code_match_table golomb_table(0);
 
-        Assert::AreEqual(0U, golomb_table.get(0).bit_count);
+        Assert::AreEqual(0, golomb_table.get(0).bit_count);
         Assert::AreEqual(0, golomb_table.get(0).error_value);
-        Assert::AreEqual(1U, golomb_table.get(255).bit_count);
+        Assert::AreEqual(1, golomb_table.get(255).bit_count);
         Assert::AreEqual(0, golomb_table.get(255).error_value);
     }
 };

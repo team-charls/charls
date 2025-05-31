@@ -640,7 +640,7 @@ public:
         jpeg_stream_writer writer;
         writer.destination({buffer.data(), buffer.size()});
 
-        vector<byte> table_data(std::numeric_limits<uint16_t>::max() - 5);
+        vector<byte> table_data(std::numeric_limits<uint16_t>::max() - 5U);
         writer.write_jpegls_preset_parameters_segment(255, 1, {table_data.data(), table_data.size()});
 
         Assert::AreEqual(buffer.size(), writer.bytes_written());

@@ -45,7 +45,7 @@ struct default_traits final
     // ISO 14495-1 LIMIT symbol: the value of glimit for a sample encoded in regular mode.
     int32_t limit;
 
-    int32_t quantization_range;
+    uint32_t quantization_range;
 
     default_traits(const int32_t arg_maximum_sample_value, const int32_t arg_near_lossless) noexcept :
         maximum_sample_value{arg_maximum_sample_value},
@@ -54,7 +54,7 @@ struct default_traits final
         quantized_bits_per_sample{log2_ceiling(range)},
         bits_per_sample{log2_ceiling(maximum_sample_value)},
         limit{compute_limit_parameter(bits_per_sample)},
-        quantization_range{1 << bits_per_sample}
+        quantization_range{1U << bits_per_sample}
     {
         ASSERT(sizeof(SampleType) * 8 >= static_cast<size_t>(bits_per_sample));
     }

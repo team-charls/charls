@@ -28,6 +28,7 @@ public:
             parameters.interleave_mode, frame_info.component_count, parameters.transformation);
     }
 
+    [[nodiscard]]
     size_t decode_scan(const span<const std::byte> source, std::byte* destination, const size_t stride) override
     {
         const auto* scan_begin{to_address(source.begin())};
@@ -43,7 +44,7 @@ public:
         decode_lines(destination, stride);
         end_scan();
 
-        return get_actual_position() - scan_begin;
+        return static_cast<size_t>(get_actual_position() - scan_begin);
     }
 
 private:
@@ -63,7 +64,7 @@ private:
         const size_t component_count{
             parameters().interleave_mode == interleave_mode::line ? static_cast<size_t>(frame_info().component_count) : 1U};
 
-        std::array<int32_t, maximum_component_count_in_scan> run_index{};
+        std::array<uint32_t, maximum_component_count_in_scan> run_index{};
         std::vector<pixel_type> line_buffer(component_count * pixel_stride * 2);
 
         for (uint32_t line{};;)
@@ -127,11 +128,11 @@ private:
     /// <summary>Decodes a scan line of samples</summary>
     FORCE_INLINE void decode_sample_line()
     {
-        int32_t index{1};
+        size_t index{1};
         int32_t rb{*previous_line_};       // initial start value is rc, will be copied and overwritten in loop.
         int32_t rd{previous_line_[index]}; // initial start value is rb, will be copied and overwritten in loop.
 
-        while (static_cast<uint32_t>(index) <= width_)
+        while (index <= width_)
         {
             const int32_t ra{current_line_[index - 1]};
             const int32_t rc{rb};
@@ -157,8 +158,8 @@ private:
     /// <summary>Decodes a scan line of triplets in ILV_SAMPLE mode</summary>
     void decode_pair_line()
     {
-        int32_t index{1};
-        while (static_cast<uint32_t>(index) <= width_)
+        size_t index{1};
+        while (index <= width_)
         {
             const pair<sample_type> ra{current_line_[index - 1]};
             const pair<sample_type> rc{previous_line_[index - 1]};
@@ -188,8 +189,8 @@ private:
     /// <summary>Decodes a scan line of triplets in ILV_SAMPLE mode</summary>
     void decode_triplet_line()
     {
-        int32_t index{1};
-        while (static_cast<uint32_t>(index) <= width_)
+        size_t index{1};
+        while (index <= width_)
         {
             const triplet<sample_type> ra{current_line_[index - 1]};
             const triplet<sample_type> rc{previous_line_[index - 1]};
@@ -222,8 +223,8 @@ private:
     /// <summary>Decodes a scan line of quads in ILV_SAMPLE mode</summary>
     void decode_quad_line()
     {
-        int32_t index{1};
-        while (static_cast<uint32_t>(index) <= width_)
+        size_t index{1};
+        while (index <= width_)
         {
             const quad<sample_type> ra{current_line_[index - 1]};
             const quad<sample_type> rc{previous_line_[index - 1]};
@@ -257,11 +258,11 @@ private:
     }
 
     [[nodiscard]]
-    int32_t decode_run_mode(const int32_t start_index)
+    size_t decode_run_mode(const size_t start_index)
     {
         const pixel_type ra{current_line_[start_index - 1]};
 
-        const int32_t run_length{decode_run_pixels(ra, current_line_ + start_index, width_ - (start_index - 1))};
+        const size_t run_length{decode_run_pixels(ra, current_line_ + start_index, width_ - (start_index - 1))};
         const auto end_index{static_cast<uint32_t>(start_index + run_length)};
 
         if (end_index - 1 == width_)
@@ -278,12 +279,12 @@ private:
     FORCE_INLINE sample_type decode_regular(const int32_t qs, const int32_t predicted)
     {
         const int32_t sign{bit_wise_sign(qs)};
-        regular_mode_context& context{regular_mode_contexts_[apply_sign(qs, sign)]};
+        regular_mode_context& context{regular_mode_contexts_[apply_sign_for_index(qs, sign)]};
         const int32_t corrected_prediction{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
         const int32_t k{context.compute_golomb_coding_parameter()};
 
         int32_t error_value;
-        if (const golomb_code_match code = golomb_lut[k].get(peek_byte()); code.bit_count != 0)
+        if (const golomb_code_match code = golomb_lut[static_cast<size_t>(k)].get(peek_byte()); code.bit_count != 0)
         {
             // There is a pre-computed match.
             skip_bits(code.bit_count);
@@ -368,16 +369,16 @@ private:
     }
 
     [[nodiscard]]
-    int32_t decode_run_pixels(pixel_type ra, pixel_type* start_pos, const int32_t pixel_count)
+    size_t decode_run_pixels(pixel_type ra, pixel_type* start_pos, const size_t pixel_count)
     {
-        int32_t index{};
+        size_t index{};
         while (read_bit())
         {
-            const int count{std::min(1 << J[run_index_], pixel_count - index)};
+            const size_t count{std::min(size_t{1} << J[run_index_], pixel_count - index)};
             index += count;
             ASSERT(index <= pixel_count);
 
-            if (count == (1 << J[run_index_]))
+            if (count == (size_t{1} << J[run_index_]))
             {
                 increment_run_index();
             }
@@ -395,7 +396,7 @@ private:
         if (UNLIKELY(index > pixel_count))
             impl::throw_jpegls_error(jpegls_errc::invalid_data);
 
-        for (int32_t i{}; i < index; ++i)
+        for (size_t i{}; i < index; ++i)
         {
             start_pos[i] = ra;
         }

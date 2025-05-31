@@ -79,7 +79,7 @@ portable_anymap_file read_anymap_reference_file(const char* filename, const inte
 
     if (interleave_mode == interleave_mode::none && reference_file.component_count() == 3)
     {
-        triplet_to_planar(reference_file.image_data(), reference_file.width(), reference_file.height());
+        triplet_to_planar(reference_file.image_data(), static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()));
     }
 
     return reference_file;

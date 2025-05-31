@@ -67,7 +67,7 @@ public:
     {
         struct data_t final
         {
-            int32_t value;
+            uint32_t value;
             int bits;
         };
 
@@ -93,7 +93,7 @@ public:
         scan_decoder_tester decoder(frame_info, parameters, enc_buf.data(), length);
         for (const auto& [value, bits] : in_data)
         {
-            const auto actual{decoder.read(bits)};
+            const auto actual{static_cast<uint32_t>(decoder.read(bits))};
             Assert::AreEqual(value, actual);
         }
     }

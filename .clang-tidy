@@ -44,6 +44,17 @@ Checks:
   - '-hicpp-signed-bitwise' # Rationale: Bad test, types are checked, not values.
 
   - '-clang-diagnostic-ignored-gch' # Rationale: Ignore, triggered by compiling with GCC and running clang-tidy.
+  - '-clang-diagnostic-c++98-compat' # Rationale: Minimum C++ standard is C++17, so this check is not relevant.
+  - '-clang-diagnostic-c++98-compat-local-type-template-args' # Rationale: Minimum C++ standard is C++17, so this check is not relevant.
+  - '-clang-diagnostic-pre-c++14-compat' # Rationale: Minimum C++ standard is C++17, so this check is not relevant.
+  - '-clang-diagnostic-pre-c++17-compat' # Rationale: Minimum C++ standard is C++17, so this check is not relevant.
+  - '-clang-diagnostic-unsafe-buffer-usage' # Rationale: Many false positives.
+  - '-clang-diagnostic-exit-time-destructors' # Rationale: CharLS can be used a shared library/DLL: exit time destructors are required.
+  - '-clang-diagnostic-sign-conversion' # Rationale: warning is too noisy.
+  - '-clang-diagnostic-switch-enum' # Rationale: options are handled by default case.
+  - '-clang-diagnostic-switch-default' # Rationale: Al options ared handled.
+  - '-clang-diagnostic-declaration-after-statement' # Rationale: Minimum C standard is C17.
+  - '-clang-diagnostic-global-constructors' # Rationale: Just an informational message.
 
 WarningsAsErrors: false
 HeaderFilterRegex: ''

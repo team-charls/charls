@@ -6,10 +6,9 @@
 #include <charls/public_types.h>
 
 #include "jpegls_algorithm.hpp"
-#include "util.hpp"
+#include "assert.hpp"
 
 #include <algorithm>
-#include <cassert>
 
 namespace charls {
 

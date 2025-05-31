@@ -1748,7 +1748,7 @@ public:
 
     TEST_METHOD(large_image_contains_lse_for_oversize_image_dimension) // NOLINT
     {
-        constexpr frame_info frame_info{numeric_limits<uint16_t>::max() + 1, 1, 16, 1};
+        constexpr frame_info frame_info{numeric_limits<uint16_t>::max() + 1U, 1, 16, 1};
         const vector<uint16_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
 
         jpegls_encoder encoder;
@@ -1767,7 +1767,7 @@ public:
 
     TEST_METHOD(encode_oversized_image) // NOLINT
     {
-        constexpr frame_info frame_info{numeric_limits<uint16_t>::max() + 1, 1, 8, 1};
+        constexpr frame_info frame_info{numeric_limits<uint16_t>::max() + 1U, 1, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
 
         const auto encoded_source{jpegls_encoder::encode(source, frame_info)};

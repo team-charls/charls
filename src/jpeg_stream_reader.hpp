@@ -40,7 +40,7 @@ public:
     [[nodiscard]]
     charls::frame_info scan_frame_info() const noexcept
     {
-        return {frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, scan_component_count()};
+        return {frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, static_cast<int32_t>(scan_component_count())};
     }
 
     [[nodiscard]]
@@ -119,7 +119,7 @@ public:
     }
 
     [[nodiscard]]
-    int32_t scan_component_count() const noexcept
+    uint32_t scan_component_count() const noexcept
     {
         return scan_component_count_;
     }
@@ -193,7 +193,7 @@ private:
     void try_read_spiff_header_segment(CHARLS_OUT spiff_header& header, CHARLS_OUT bool& spiff_header_found);
     void try_read_hp_color_transform_segment();
     void add_component(uint8_t component_id);
-    static void check_interleave_mode(interleave_mode mode, int32_t scan_component_count);
+    static void check_interleave_mode(interleave_mode mode, uint32_t scan_component_count);
 
     [[nodiscard]]
     uint32_t maximum_sample_value() const noexcept;
@@ -313,8 +313,8 @@ private:
     std::vector<component_info> component_infos_;
     std::vector<mapping_table_entry> mapping_tables_;
     state state_{};
-    int32_t read_component_count_{};
-    int32_t scan_component_count_{};
+    uint32_t read_component_count_{};
+    uint32_t scan_component_count_{};
     interleave_mode scan_interleave_mode_{};
     bool dnl_marker_expected_{};
     charls::compressed_data_format compressed_data_format_{};

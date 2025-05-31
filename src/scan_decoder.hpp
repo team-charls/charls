@@ -10,8 +10,7 @@
 #include "scan_codec.hpp"
 #include "span.hpp"
 #include "util.hpp"
-
-#include <cassert>
+#include "assert.hpp"
 
 namespace charls {
 
@@ -30,6 +29,7 @@ public:
     scan_decoder& operator=(const scan_decoder&) = delete;
     scan_decoder& operator=(scan_decoder&&) = delete;
 
+    [[nodiscard]]
     virtual size_t decode_scan(span<const std::byte> source, std::byte* destination, size_t stride) = 0;
 
 protected:
@@ -313,7 +313,7 @@ private:
     {
         // Use memchr to find next start byte (0xFF). memchr is optimized on some platforms to search faster.
         position_ff_ = static_cast<const std::byte*>(
-            memchr(position_, std::to_integer<int>(jpeg_marker_start_byte), end_position_ - position_));
+            memchr(position_, std::to_integer<int>(jpeg_marker_start_byte), static_cast<size_t>(end_position_ - position_)));
         if (!position_ff_)
         {
             position_ff_ = end_position_;

@@ -5,8 +5,8 @@
 
 #include "jpegls_algorithm.hpp"
 #include "util.hpp"
+#include "assert.hpp"
 
-#include <cassert>
 #include <cstdint>
 
 namespace charls {
