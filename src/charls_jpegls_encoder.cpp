@@ -19,6 +19,8 @@ using namespace charls;
 using impl::throw_jpegls_error;
 using std::byte;
 
+const void* b;
+
 namespace charls { namespace {
 
 constexpr bool has_option(encoding_options options, encoding_options option_to_test)
@@ -50,6 +52,8 @@ struct charls_jpegls_encoder final
                              jpegls_errc::invalid_argument_component_count);
 
         frame_info_ = frame_info;
+
+        b = &minimum_bits_per_sample;
     }
 
     void interleave_mode(const interleave_mode interleave_mode)

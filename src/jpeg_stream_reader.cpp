@@ -15,6 +15,8 @@
 #include <algorithm>
 #include <array>
 
+const void* a;
+
 namespace charls {
 
 using impl::throw_jpegls_error;
@@ -401,6 +403,8 @@ void jpeg_stream_reader::read_start_of_frame_segment()
 
     frame_info_height(read_uint16(), false);
     frame_info_width(read_uint16());
+
+            a = &minimum_bits_per_sample;
 
     frame_info_.component_count = read_uint8();
     if (UNLIKELY(frame_info_.component_count == 0))

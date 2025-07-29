@@ -9,11 +9,11 @@
 
 namespace charls {
 
-constexpr int32_t default_reset_threshold{64}; // Default RESET value as defined in ISO/IEC 14495-1, table C.2
+inline constexpr int32_t default_reset_threshold{64}; // Default RESET value as defined in ISO/IEC 14495-1, table C.2
 
-constexpr int32_t minimum_component_count{1};
-constexpr int32_t maximum_component_count{255};
-constexpr int32_t maximum_component_count_in_scan{4};
+inline constexpr int32_t minimum_component_count{1};
+inline constexpr int32_t maximum_component_count{255};
+inline constexpr int32_t maximum_component_count_in_scan{4};
 constexpr int32_t minimum_component_index{};
 constexpr int32_t maximum_component_index{maximum_component_count - 1};
 constexpr int32_t minimum_bits_per_sample{2};
