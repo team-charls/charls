@@ -177,9 +177,6 @@
       <Filter>Design</Filter>
     </None>
     <None Include="packages.config" />
-    <None Include="..\include\charls\charls.ixx">
-      <Filter>Header Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

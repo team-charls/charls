@@ -16,9 +16,9 @@ namespace charls {
 // 0xF9         is defined in ISO/IEC 14495-2 | ITU T.870: JPEG LS extensions
 // 0x4F - 0x6F, 0x90 - 0x93 are defined in ISO/IEC 15444-1: JPEG 2000
 
-constexpr std::byte jpeg_marker_start_byte{0xFF};
-constexpr uint8_t jpeg_restart_marker_base{0xD0}; // RSTm: Marks the next restart interval (range is D0 to D7)
-constexpr uint32_t jpeg_restart_marker_range{8};
+inline constexpr std::byte jpeg_marker_start_byte{0xFF};
+inline constexpr uint8_t jpeg_restart_marker_base{0xD0}; // RSTm: Marks the next restart interval (range is D0 to D7)
+inline constexpr uint32_t jpeg_restart_marker_range{8};
 
 enum class jpeg_marker_code : uint8_t
 {

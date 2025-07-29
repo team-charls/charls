@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "regular_mode_context.hpp"
-#include "run_mode_context.hpp"
+#include "coding_parameters.hpp"
 #include "jpegls_algorithm.hpp"
 #include "quantization_lut.hpp"
-#include "coding_parameters.hpp"
+#include "regular_mode_context.hpp"
+#include "run_mode_context.hpp"
 
 #include <array>
 
@@ -15,7 +15,7 @@ namespace charls {
 
 // Used to determine how large runs should be encoded at a time. Defined by the JPEG-LS standard, A.2.1., Initialization
 // step 3.
-constexpr std::array<int, 32> J{
+inline constexpr std::array<int, 32> J{
     {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 10, 11, 12, 13, 14, 15}};
 
 
@@ -80,7 +80,7 @@ const int8_t* initialize_quantization_lut(const Traits& traits, const int32_t th
     {
         quantization_lut[i] =
             quantize_gradient_org(-static_cast<int32_t>(traits.quantization_range) + static_cast<int32_t>(i), threshold1,
-                                                    threshold2, threshold3, traits.near_lossless);
+                                  threshold2, threshold3, traits.near_lossless);
     }
 
     return &quantization_lut[traits.quantization_range];
