@@ -208,7 +208,6 @@
     <None Include="design\JpegStream.cd" />
     <None Include="design\Strategy.cd" />
     <None Include="packages.config" />
-    <None Include="..\include\charls\charls.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="golomb_lut.cpp" />
