@@ -86,6 +86,7 @@ set(HEADERS
     "include/charls/undef_macros.h"
     "include/charls/validate_spiff_header.h"
     "include/charls/version.h"
+    "include/charls/version.hpp"
 )
 foreach(header HEADERS)
   list(APPEND CHARLS_PUBLIC_HEADER $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${header}>)

@@ -4,7 +4,7 @@
 #include "pch.hpp"
 
 #include <charls/charls_jpegls_encoder.h>
-#include <charls/version.h>
+#include <charls/version.hpp>
 
 #include "color_transform.hpp"
 #include "jpeg_stream_writer.hpp"
@@ -103,7 +103,8 @@ struct charls_jpegls_encoder final
     size_t estimated_destination_size() const
     {
         check_operation(is_frame_info_configured());
-        return checked_mul(checked_mul(checked_mul(frame_info_.width, frame_info_.height), static_cast<size_t>(frame_info_.component_count)),
+        return checked_mul(checked_mul(checked_mul(frame_info_.width, frame_info_.height),
+                                       static_cast<size_t>(frame_info_.component_count)),
                            bit_to_byte_count(frame_info_.bits_per_sample)) +
                1024 + spiff_header_size_in_bytes;
     }
@@ -305,8 +306,7 @@ private:
 
         const size_t not_used_bytes_at_end{stride - minimum_stride};
         const size_t minimum_source_size{interleave_mode_ == interleave_mode::none
-                                             ? (stride * source_component_count * frame_info_.height) -
-                                                   not_used_bytes_at_end
+                                             ? (stride * source_component_count * frame_info_.height) - not_used_bytes_at_end
                                              : (stride * frame_info_.height) - not_used_bytes_at_end};
 
         if (UNLIKELY(source_size < minimum_source_size))

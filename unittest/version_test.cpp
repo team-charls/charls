@@ -5,7 +5,7 @@
 
 #include "util.hpp"
 
-#include <charls/version.h>
+#include <charls/version.hpp>
 
 #include <sstream>
 
@@ -20,6 +20,21 @@ public:
     TEST_METHOD(charls_get_version_string_test) // NOLINT
     {
         const char* version{charls_get_version_string()};
+
+        ostringstream expected_stream;
+        expected_stream << CHARLS_VERSION_MAJOR << "." << CHARLS_VERSION_MINOR << "." << CHARLS_VERSION_PATCH;
+        const auto expected{expected_stream.str()};
+
+        Assert::IsTrue(strncmp(expected.c_str(), version, expected.length()) == 0);
+        if (expected.length() != strlen(version))
+        {
+            Assert::AreEqual('-', version[expected.length()]);
+        }
+    }
+
+    TEST_METHOD(version_string_test) // NOLINT
+    {
+        const char* version{version_string()};
 
         ostringstream expected_stream;
         expected_stream << CHARLS_VERSION_MAJOR << "." << CHARLS_VERSION_MINOR << "." << CHARLS_VERSION_PATCH;
@@ -51,6 +66,15 @@ public:
 
         // No explicit test possible, code should not throw and remain stable.
         Assert::IsTrue(true);
+    }
+
+    TEST_METHOD(version_number_test) // NOLINT
+    {
+        const auto [major, minor, patch] = version_number();
+
+        Assert::AreEqual(CHARLS_VERSION_MAJOR, major);
+        Assert::AreEqual(CHARLS_VERSION_MINOR, minor);
+        Assert::AreEqual(CHARLS_VERSION_PATCH, patch);
     }
 };
 

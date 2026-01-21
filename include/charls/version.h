@@ -17,7 +17,6 @@ extern "C" {
 #include <stdint.h>
 #endif
 
-
 #define CHARLS_VERSION_MAJOR 3
 #define CHARLS_VERSION_MINOR 0
 #define CHARLS_VERSION_PATCH 0
@@ -40,13 +39,4 @@ CHARLS_API_IMPORT_EXPORT void CHARLS_API_CALLING_CONVENTION charls_get_version_n
 
 #ifdef __cplusplus
 }
-
-namespace charls {
-
-inline constexpr int32_t version_major{CHARLS_VERSION_MAJOR};
-inline constexpr int32_t version_minor{CHARLS_VERSION_MINOR};
-inline constexpr int32_t version_patch{CHARLS_VERSION_PATCH};
-
-} // namespace charls
-
 #endif
