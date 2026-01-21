@@ -162,6 +162,9 @@
     <ClInclude Include="assert.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\charls\version.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />

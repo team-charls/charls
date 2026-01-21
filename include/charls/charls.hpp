@@ -5,6 +5,6 @@
 
 #include "jpegls_decoder.hpp"
 #include "jpegls_encoder.hpp"
-#include "version.h"
+#include "version.hpp"
 
 #include "undef_macros.h"

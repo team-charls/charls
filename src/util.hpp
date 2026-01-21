@@ -77,6 +77,7 @@
 
 namespace charls {
 
+[[nodiscard]]
 inline CHARLS_NO_INLINE jpegls_errc to_jpegls_errc() noexcept
 {
     try
@@ -212,9 +213,11 @@ T read_unaligned(const void* buffer) noexcept
 // Note: WebAssembly (emcc 3.1.1) will fail with the default read_unaligned.
 
 template<typename T>
+[[nodiscard]]
 T read_big_endian_unaligned(const void* /*buffer*/) noexcept;
 
 template<>
+[[nodiscard]]
 inline uint16_t read_big_endian_unaligned<uint16_t>(const void* buffer) noexcept
 {
     const uint8_t* p{static_cast<const uint8_t*>(buffer)};
@@ -222,6 +225,7 @@ inline uint16_t read_big_endian_unaligned<uint16_t>(const void* buffer) noexcept
 }
 
 template<>
+[[nodiscard]]
 inline uint32_t read_big_endian_unaligned<uint32_t>(const void* buffer) noexcept
 {
     const uint8_t* p{static_cast<const uint8_t*>(buffer)};
@@ -230,6 +234,7 @@ inline uint32_t read_big_endian_unaligned<uint32_t>(const void* buffer) noexcept
 }
 
 template<>
+[[nodiscard]]
 inline size_t read_big_endian_unaligned<size_t>(const void* buffer) noexcept
 {
     static_assert(sizeof(size_t) == sizeof(uint32_t), "wasm32 only");
@@ -239,6 +244,7 @@ inline size_t read_big_endian_unaligned<size_t>(const void* buffer) noexcept
 #else
 
 template<typename T>
+[[nodiscard]]
 T read_big_endian_unaligned(const void* buffer) noexcept
 {
 #ifdef LITTLE_ENDIAN_ARCHITECTURE
@@ -252,6 +258,7 @@ T read_big_endian_unaligned(const void* buffer) noexcept
 
 
 template<typename T>
+[[nodiscard]]
 T* check_pointer(T* pointer)
 {
     if (UNLIKELY(!pointer))
@@ -310,6 +317,7 @@ inline void check_interleave_mode(const interleave_mode mode, const jpegls_errc 
 /// Converts an enumeration to its underlying type. Equivalent to C++23 std::to_underlying
 /// </summary>
 template<typename Enum>
+[[nodiscard]]
 constexpr auto to_underlying_type(Enum e) noexcept
 {
     return static_cast<std::underlying_type_t<Enum>>(e);
@@ -320,6 +328,7 @@ constexpr auto to_underlying_type(Enum e) noexcept
 /// <summary>
 /// Custom implementation of C++20 std::countl_zero (for uint64_t)
 /// </summary>
+[[nodiscard]]
 inline int countl_zero(const uint64_t value) noexcept
 {
     if (value == 0)
@@ -334,6 +343,7 @@ inline int countl_zero(const uint64_t value) noexcept
 /// <summary>
 /// Custom implementation of C++20 std::countl_zero (for uint32_t)
 /// </summary>
+[[nodiscard]]
 inline int countl_zero(const uint32_t value) noexcept
 {
     if (value == 0)
@@ -354,6 +364,7 @@ inline int countl_zero(const uint32_t value) noexcept
 /// Custom implementation of C++20 std::countl_zero (for uint64_t)
 /// </summary>
 template<typename T>
+[[nodiscard]]
 auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, int>
 {
     if (value == 0)
@@ -366,6 +377,7 @@ auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<64, T>, i
 /// Custom implementation of C++20 std::countl_zero (for uint32_t)
 /// </summary>
 template<typename T>
+[[nodiscard]]
 auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, int>
 {
     if (value == 0)
@@ -378,11 +390,13 @@ auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, i
 
 
 #if INTPTR_MAX == INT64_MAX
+[[nodiscard]]
 constexpr size_t checked_mul(const size_t a, const size_t b) noexcept
 {
     return a * b;
 }
 #elif INTPTR_MAX == INT32_MAX
+[[nodiscard]]
 inline size_t checked_mul(const size_t a, const size_t b)
 {
     const size_t result{a * b};
