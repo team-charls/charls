@@ -1,4 +1,4 @@
-# Copyright (c) Team CharLS.
+# SPDX-FileCopyrightText: © 2023 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
 name: MSYS2
@@ -28,6 +28,10 @@ jobs:
         run: >-
           cmake
           -Bbuild
+          -DCHARLS_BUILD_TESTS=On
+          -DCHARLS_BUILD_AFL_FUZZ_TEST=On
+          -DCHARLS_BUILD_LIB_FUZZER_FUZZ_TEST=On
+          -DCHARLS_BUILD_SAMPLES=On
           -DCMAKE_BUILD_TYPE=Release
           -DBUILD_SHARED_LIBS=Off
           -DCHARLS_PEDANTIC_WARNINGS=On

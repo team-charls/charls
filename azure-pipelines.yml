@@ -1,4 +1,4 @@
-# Copyright (c) Team CharLS.
+# SPDX-FileCopyrightText: © 2020 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
 # Branches that trigger a build on commit
@@ -119,6 +119,10 @@ jobs:
         -G Ninja
         -DCMAKE_C_COMPILER="cl.exe"
         -DCMAKE_CXX_COMPILER="cl.exe"
+        -DCHARLS_BUILD_TESTS=On
+        -DCHARLS_BUILD_AFL_FUZZ_TEST=On
+        -DCHARLS_BUILD_LIB_FUZZER_FUZZ_TEST=On
+        -DCHARLS_BUILD_SAMPLES=On
         -DCMAKE_BUILD_TYPE=$(buildType)
         -DBUILD_SHARED_LIBS=$(Shared)
         -DCHARLS_PEDANTIC_WARNINGS=On
@@ -174,6 +178,10 @@ jobs:
         -G Ninja
         -DCMAKE_C_COMPILER="cl.exe"
         -DCMAKE_CXX_COMPILER="cl.exe"
+        -DCHARLS_BUILD_TESTS=On
+        -DCHARLS_BUILD_AFL_FUZZ_TEST=On
+        -DCHARLS_BUILD_LIB_FUZZER_FUZZ_TEST=On
+        -DCHARLS_BUILD_SAMPLES=On
         -DCMAKE_BUILD_TYPE=$(buildType)
         -DCHARLS_PEDANTIC_WARNINGS=On
         -DCHARLS_TREAT_WARNING_AS_ERROR=On
@@ -249,6 +257,10 @@ jobs:
       workingDirectory: $(Build.BinariesDirectory)/build
       cmakeArgs:
         -DCMAKE_BUILD_TYPE=$(buildType)
+        -DCHARLS_BUILD_TESTS=On
+        -DCHARLS_BUILD_AFL_FUZZ_TEST=On
+        -DCHARLS_BUILD_LIB_FUZZER_FUZZ_TEST=On
+        -DCHARLS_BUILD_SAMPLES=On
         -DBUILD_SHARED_LIBS=$(Shared)
         -DCHARLS_PEDANTIC_WARNINGS=On
         -DCHARLS_TREAT_WARNING_AS_ERROR=On
@@ -290,6 +302,10 @@ jobs:
       workingDirectory: $(Build.BinariesDirectory)/build
       cmakeArgs:
         -DCMAKE_BUILD_TYPE=$(buildType
+        -DCHARLS_BUILD_TESTS=On
+        -DCHARLS_BUILD_AFL_FUZZ_TEST=On
+        -DCHARLS_BUILD_LIB_FUZZER_FUZZ_TEST=On
+        -DCHARLS_BUILD_SAMPLES=On
         -DBUILD_SHARED_LIBS=$(Shared)
         -DCHARLS_PEDANTIC_WARNINGS=On
         -DCHARLS_TREAT_WARNING_AS_ERROR=On
