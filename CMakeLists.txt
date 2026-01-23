@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2009 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
-cmake_minimum_required(VERSION 3.16...4.01)
+cmake_minimum_required(VERSION 3.22...4.2)
 
 # Extract the version info from version.h
 file(READ "include/charls/version.h" version)
@@ -22,11 +22,11 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   message(STATUS "Building as main project, CMake version: ${CMAKE_VERSION}")
 endif()
 
-# The basic options to control what is build extra.
-option(CHARLS_BUILD_TESTS "Build test application" ${MAIN_PROJECT})
-option(CHARLS_BUILD_AFL_FUZZ_TEST "Build AFL test fuzzer application" ${MAIN_PROJECT})
-option(CHARLS_BUILD_LIBFUZZER_FUZZ_TEST "Build LibFuzzer test fuzzer application" ${MAIN_PROJECT})
-option(CHARLS_BUILD_SAMPLES "Build sample applications" ${MAIN_PROJECT})
+# The basic options to control what will be built besides the library.
+option(CHARLS_BUILD_TESTS "Build test application" OFF)
+option(CHARLS_BUILD_AFL_FUZZ_TEST "Build AFL test fuzzer application" OFF)
+option(CHARLS_BUILD_LIB_FUZZER_FUZZ_TEST "Build LibFuzzer test fuzzer application" OFF)
+option(CHARLS_BUILD_SAMPLES "Build sample applications" OFF)
 option(CHARLS_INSTALL "Generate the install target." ${MAIN_PROJECT})
 
 # Provide BUILD_SHARED_LIBS as an option for GUI tools
@@ -152,7 +152,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
 
   if(NOT APPLE)
-    set(LIBFUZZER_SUPPORTED 1)
+    set(LIB_FUZZER_SUPPORTED 1)
   endif()
 endif()
 
@@ -205,7 +205,7 @@ if(MSVC)
 
   # Enable LibFuzzer support for MSVC
   if(${ARM_DETECTED} EQUAL 0 AND MSVC_VERSION GREATER_EQUAL 1930)
-    set(LIBFUZZER_SUPPORTED 1)
+    set(LIB_FUZZER_SUPPORTED 1)
   endif()
 
 endif()
@@ -253,7 +253,7 @@ if(CHARLS_BUILD_AFL_FUZZ_TEST)
   add_subdirectory(fuzzing/afl)
 endif()
 
-if(CHARLS_BUILD_LIBFUZZER_FUZZ_TEST AND LIBFUZZER_SUPPORTED)
+if(CHARLS_BUILD_LIB_FUZZER_FUZZ_TEST AND LIB_FUZZER_SUPPORTED)
   add_subdirectory(fuzzing/libfuzzer)
 endif()
 

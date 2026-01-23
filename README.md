@@ -60,7 +60,7 @@ The code is regularly compiled/tested on Windows and 64 bit Linux. Additionally,
 |---------------|------------------------|
 | C Version     | >= 17                  |
 | C++ Version   | >= 17                  |
-| CMake         | >= 3.16                |
+| CMake         | >= 3.22                |
 | GCC           | >= 9.1                 |
 | Clang         | >= 7.0.0               |
 | MSVC          | >= 2019                |
