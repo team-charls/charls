@@ -22,6 +22,14 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   message(STATUS "Building as main project, CMake version: ${CMAKE_VERSION}")
 endif()
 
+if(EMSCRIPTEN)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    message(STATUS "Building for 64-bit WASM target")
+  else()
+    message(STATUS "Building for 32-bit WASM target")
+  endif()
+endif()
+
 # The basic options to control what will be built besides the library.
 option(CHARLS_BUILD_TESTS "Build test application" OFF)
 option(CHARLS_BUILD_AFL_FUZZ_TEST "Build AFL test fuzzer application" OFF)
