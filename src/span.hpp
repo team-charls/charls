@@ -11,8 +11,9 @@
 namespace charls {
 
 // Replacement for C++20 std::to_address, which is not available in C++17.
-template<typename Ptr>
-constexpr auto to_address(const Ptr& it)
+template<typename T>
+[[nodiscard]]
+constexpr auto to_address(const T& it)
 {
     return &*it;
 }

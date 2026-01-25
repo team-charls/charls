@@ -210,34 +210,44 @@ T read_unaligned(const void* buffer) noexcept
 
 #ifdef __EMSCRIPTEN__
 
-// Note: WebAssembly (emcc 3.1.1) will fail with the default read_unaligned.
+// Note: WebAssembly (emcc 3.1.1) will fail with the default read_unaligned. emcc 4.0.23 needs tests to verify if this is still needed.
 
 template<typename T>
 [[nodiscard]]
-T read_big_endian_unaligned(const void* /*buffer*/) noexcept;
+T read_big_endian_unaligned(const std::byte* /*buffer*/) noexcept;
 
 template<>
 [[nodiscard]]
-inline uint16_t read_big_endian_unaligned<uint16_t>(const void* buffer) noexcept
+inline uint16_t read_big_endian_unaligned<uint16_t>(const std::byte* buffer) noexcept
 {
-    const uint8_t* p{static_cast<const uint8_t*>(buffer)};
-    return (static_cast<uint32_t>(p[0]) << 8U) + static_cast<uint32_t>(p[1]);
+    return static_cast<uint16_t>((static_cast<uint32_t>(buffer[0]) << 8U) + static_cast<uint32_t>(buffer[1]));
 }
 
 template<>
 [[nodiscard]]
-inline uint32_t read_big_endian_unaligned<uint32_t>(const void* buffer) noexcept
+inline uint32_t read_big_endian_unaligned<uint32_t>(const std::byte* buffer) noexcept
 {
-    const uint8_t* p{static_cast<const uint8_t*>(buffer)};
-    return (static_cast<uint32_t>(p[0]) << 24U) + (static_cast<uint32_t>(p[1]) << 16U) +
-           (static_cast<uint32_t>(p[2]) << 8U) + static_cast<uint32_t>(p[3]);
+    return (static_cast<uint32_t>(buffer[0]) << 24U) + (static_cast<uint32_t>(buffer[1]) << 16U) +
+           (static_cast<uint32_t>(buffer[2]) << 8U) + static_cast<uint32_t>(buffer[3]);
 }
 
 template<>
 [[nodiscard]]
-inline size_t read_big_endian_unaligned<size_t>(const void* buffer) noexcept
+inline uint64_t read_big_endian_unaligned<uint64_t>(const std::byte* buffer) noexcept
 {
-    static_assert(sizeof(size_t) == sizeof(uint32_t), "wasm32 only");
+    return (static_cast<uint64_t>(buffer[0]) << 56U) + (static_cast<uint64_t>(buffer[1]) << 48U) +
+           (static_cast<uint64_t>(buffer[2]) << 40U) + (static_cast<uint64_t>(buffer[3]) << 32U) +
+           (static_cast<uint64_t>(buffer[4]) << 24U) + (static_cast<uint64_t>(buffer[5]) << 16U) +
+           (static_cast<uint64_t>(buffer[6]) << 8U) + static_cast<uint64_t>(buffer[7]);
+}
+
+template<>
+[[nodiscard]]
+inline size_t read_big_endian_unaligned<size_t>(const std::byte* buffer) noexcept
+{
+    if constexpr (sizeof(size_t) == sizeof(uint64_t))
+        return read_big_endian_unaligned<uint64_t>(buffer);
+
     return read_big_endian_unaligned<uint32_t>(buffer);
 }
 
@@ -245,7 +255,7 @@ inline size_t read_big_endian_unaligned<size_t>(const void* buffer) noexcept
 
 template<typename T>
 [[nodiscard]]
-T read_big_endian_unaligned(const void* buffer) noexcept
+T read_big_endian_unaligned(const std::byte* buffer) noexcept
 {
 #ifdef LITTLE_ENDIAN_ARCHITECTURE
     return byte_swap(read_unaligned<T>(buffer));
