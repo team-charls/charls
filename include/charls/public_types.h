@@ -561,6 +561,7 @@ enum class encoding_options : std::uint32_t
     include_pc_parameters_jai = impl::CHARLS_ENCODING_OPTIONS_INCLUDE_PC_PARAMETERS_JAI
 };
 
+[[nodiscard]]
 constexpr encoding_options operator|(const encoding_options lhs, const encoding_options rhs) noexcept
 {
     using underlying_type = std::underlying_type_t<encoding_options>;

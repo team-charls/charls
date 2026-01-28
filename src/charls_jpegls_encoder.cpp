@@ -21,10 +21,10 @@ using std::byte;
 
 namespace charls { namespace {
 
-constexpr bool has_option(encoding_options options, encoding_options option_to_test)
+[[nodiscard]]
+constexpr bool has_option(const encoding_options options, const encoding_options option_to_test) noexcept
 {
-    using T = std::underlying_type_t<encoding_options>;
-    return (static_cast<encoding_options>(static_cast<T>(options) & static_cast<T>(option_to_test))) == option_to_test;
+    return (to_underlying_type(options) & to_underlying_type(option_to_test)) == to_underlying_type(option_to_test);
 }
 
 }} // namespace charls
