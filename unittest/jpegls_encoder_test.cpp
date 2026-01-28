@@ -231,7 +231,7 @@ public:
         encoder.destination(destination);
     }
 
-    TEST_METHOD(destination_can_be_set_multiple_time_before_writing) // NOLINT
+    TEST_METHOD(destination_can_be_set_multiple_times_before_writing) // NOLINT
     {
         jpegls_encoder encoder;
 
