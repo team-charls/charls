@@ -231,12 +231,32 @@ public:
         encoder.destination(destination);
     }
 
-    TEST_METHOD(destination_can_only_be_set_once_throws) // NOLINT
+    TEST_METHOD(destination_can_be_set_multiple_time_before_writing) // NOLINT
+    {
+        jpegls_encoder encoder;
+
+        vector<byte> destination0(1);
+        encoder.destination(destination0);
+
+        vector<byte> destination1(serialized_spiff_header_size + 2);
+        encoder.destination(destination1);
+
+        // Write a SPIFF header to verify that destination was updated.
+        encoder.frame_info({1, 1, 2, 4}); // Must be set to use write_standard_spiff_header
+        encoder.write_standard_spiff_header(spiff_color_space::grayscale);
+        Assert::AreEqual(serialized_spiff_header_size + 2, encoder.bytes_written());
+    }
+
+    TEST_METHOD(destination_can_not_be_set_after_writing_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
         vector<byte> destination(200);
         encoder.destination(destination);
+
+        // Write a SPIFF header to use the set destination
+        encoder.frame_info({1, 1, 2, 4}); // Must be set to use write_standard_spiff_header
+        encoder.write_standard_spiff_header(spiff_color_space::cie_lab);
 
         assert_expect_exception(jpegls_errc::invalid_operation,
                                 [&encoder, &destination] { encoder.destination(destination); });
@@ -460,8 +480,8 @@ public:
         encoder.destination(destination);
         encoder.write_standard_spiff_header(spiff_color_space::grayscale);
 
-        constexpr int32_t spiff_end_of_directory_entry_type{1};
-        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder, spiff_end_of_directory_entry_type] {
+        assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] {
+            constexpr int32_t spiff_end_of_directory_entry_type{1};
             encoder.write_spiff_entry(spiff_end_of_directory_entry_type, "test", 4);
         });
     }

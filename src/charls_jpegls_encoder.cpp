@@ -34,7 +34,7 @@ struct charls_jpegls_encoder final
     void destination(const span<byte> destination)
     {
         check_argument(destination);
-        check_operation(state_ == state::initial);
+        check_operation(state_ <= state::destination_set);
 
         writer_.destination(destination);
         state_ = state::destination_set;

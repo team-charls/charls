@@ -277,7 +277,7 @@ charls_jpegls_encoder_encode_from_buffer(CHARLS_IN charls_jpegls_encoder* encode
 /// <summary>
 /// Encodes the passed buffer with the source image data to the destination.
 /// This is an advanced method that provides more control how image data is encoded in JPEG-LS scans.
-/// It should be called until all components are encoded.
+/// It should be called until all components are encoded. It is allowed to change encoding parameters between calls.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="source_buffer">Byte array that holds the image data that needs to be encoded.</param>

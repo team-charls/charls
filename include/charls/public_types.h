@@ -196,7 +196,7 @@ namespace charls {
 /// Defines the result values that are returned by the CharLS API functions.
 /// </summary>
 CHARLS_RETURN_TYPE_SUCCESS(return == 0)
-enum class [[nodiscard]] jpegls_errc
+enum class [[nodiscard]] jpegls_errc : std::int32_t
 {
     /// <summary>
     /// The operation completed without errors.
@@ -474,7 +474,7 @@ enum class [[nodiscard]] jpegls_errc
 /// <summary>
 /// Defines the interleave modes for multi-component (color) pixel data.
 /// </summary>
-enum class interleave_mode
+enum class interleave_mode : std::int32_t
 {
     /// <summary>
     /// The data is encoded and stored as component for component: RRRGGGBBB.
@@ -496,7 +496,7 @@ enum class interleave_mode
 /// <summary>
 /// JPEG-LS defines 3 compressed data formats. (see Annex C).
 /// </summary>
-enum class compressed_data_format
+enum class compressed_data_format : std::int32_t
 {
     /// <summary>
     /// Not enough information has been decoded to determine the data format.
@@ -527,7 +527,7 @@ namespace encoding_options_private {
 /// Defines options that can be enabled during the encoding process.
 /// These options can be combined.
 /// </summary>
-enum class encoding_options : unsigned
+enum class encoding_options : std::uint32_t
 {
     /// <summary>
     /// No special encoding option is defined.
@@ -563,10 +563,10 @@ enum class encoding_options : unsigned
 
 constexpr encoding_options operator|(const encoding_options lhs, const encoding_options rhs) noexcept
 {
-    using T = std::underlying_type_t<encoding_options>;
+    using underlying_type = std::underlying_type_t<encoding_options>;
 
     // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange) - warning cannot handle flags (known limitation).
-    return static_cast<encoding_options>(static_cast<T>(lhs) | static_cast<T>(rhs));
+    return static_cast<encoding_options>(static_cast<underlying_type>(lhs) | static_cast<underlying_type>(rhs));
 }
 
 constexpr encoding_options& operator|=(encoding_options& lhs, const encoding_options rhs) noexcept
@@ -586,7 +586,7 @@ using encoding_options = encoding_options_private::encoding_options;
 /// ratio. These options are only implemented for backwards compatibility and NOT part of the JPEG-LS standard. The JPEG-LS
 /// ISO/IEC 14495-1:1999 standard provides no capabilities to transport which color space transformation was used.
 /// </summary>
-enum class color_transformation
+enum class color_transformation : std::int32_t
 {
     /// <summary>
     /// No color space transformation has been applied.
