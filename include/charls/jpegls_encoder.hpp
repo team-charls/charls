@@ -330,8 +330,21 @@ public:
         return bytes_written();
     }
 
-    size_t encode_components(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const size_t source_size_bytes,
-                  const int32_t source_component_count, const uint32_t stride = 0)
+    /// <summary>
+    /// Encodes the passed buffer with the source image data to the destination.
+    /// This is an advanced method that provides more control how image data is encoded in JPEG-LS scans.
+    /// It should be called until all components are encoded. It is allowed to change encoding parameters between calls.
+    /// </summary>
+    /// <param name="source_buffer">Byte array that holds the image data that needs to be encoded.</param>
+    /// <param name="source_size_bytes">Length of the array in bytes.</param>
+    /// <param name="source_component_count">Number of components in the buffer.</param>
+    /// <param name="stride">
+    /// The number of bytes from one row of pixels in memory to the next row of pixels in memory.
+    /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
+    /// </param>
+    /// <returns>The number of bytes written to the destination.</returns>
+    size_t encode_components(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
+                             const size_t source_size_bytes, const int32_t source_component_count, const uint32_t stride = 0)
     {
         check_jpegls_errc(charls_jpegls_encoder_encode_components_from_buffer(encoder(), source_buffer, source_size_bytes,
                                                                               source_component_count, stride));
