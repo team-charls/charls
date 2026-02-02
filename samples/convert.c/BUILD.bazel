@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: © 2025 Team CharLS
+# SPDX-License-Identifier: BSD-3-Clause
+
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("//:bazel/configure_copts.bzl", "CHARLS_DEFAULT_COPTS")
+
+cc_binary(
+    name = "convert-c",
+    srcs = [
+        "main.c",
+    ],
+    copts = CHARLS_DEFAULT_COPTS,
+    deps = [
+        "//:charls",
+    ],
+)
