@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -38,107 +38,107 @@ namespace charls::test {
 TEST_CLASS(compliance_test)
 {
 public:
-    TEST_METHOD(decode_encode_color_8_bit_interleave_none_lossless) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_none_lossless)
     {
         // ISO 14495-1: official test image 1 (T87_test-1-2-3-4-5-6.zip)
         decode_encode_file("DataFiles/t8c0e0.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_encode_color_8_bit_interleave_line_lossless) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_line_lossless)
     {
         // ISO 14495-1: official test image 2 (T87_test-1-2-3-4-5-6.zip)
         decode_encode_file("DataFiles/t8c1e0.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_encode_color_8_bit_interleave_sample_lossless) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_sample_lossless)
     {
         // ISO 14495-1: official test image 3 (T87_test-1-2-3-4-5-6.zip)
         decode_encode_file("DataFiles/t8c2e0.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_encode_color_8_bit_interleave_none_near_lossless_3) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_none_near_lossless_3)
     {
         // ISO 14495-1: official test image 4 (T87_test-1-2-3-4-5-6.zip)
         decode_encode_file("DataFiles/t8c0e3.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_encode_color_8_bit_interleave_line_near_lossless_3) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_line_near_lossless_3)
     {
         // ISO 14495-1: official test image 5 (T87_test-1-2-3-4-5-6.zip)
         decode_encode_file("DataFiles/t8c1e3.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_encode_color_8_bit_interleave_sample_near_lossless_3) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_sample_near_lossless_3)
     {
         // ISO 14495-1: official test image 6 (T87_test-1-2-3-4-5-6.zip)
         decode_encode_file("DataFiles/t8c2e3.jls", "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_encode_color_8_bit_interleave_none_lossless_non_default) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_none_lossless_non_default)
     {
         // ISO 14495-1: official test image 9 (T87_test-1-2-3-4-5-6.zip)
         // NON-DEFAULT parameters T1=T2=T3=9,RESET=31.
         decode_encode_file("DataFiles/t8nde0.jls", "DataFiles/test8bs2.pgm");
     }
 
-    TEST_METHOD(decode_encode_color_8_bit_interleave_none_near_lossless_3_non_default) // NOLINT
+    TEST_METHOD(decode_encode_color_8_bit_interleave_none_near_lossless_3_non_default)
     {
         // ISO 14495-1: official test image 10 (T87_test-1-2-3-4-5-6.zip)
         // NON-DEFAULT parameters T1=T2=T3=9,RESET=31.
         decode_encode_file("DataFiles/t8nde3.jls", "DataFiles/test8bs2.pgm");
     }
 
-    TEST_METHOD(decode_encode_monochrome_16_bit_lossless) // NOLINT
+    TEST_METHOD(decode_encode_monochrome_16_bit_lossless)
     {
         // ISO 14495-1: official test image 11 (T87_test-11-12.zip)
         // Note: test image is actually 12 bit.
         decode_encode_file("DataFiles/t16e0.jls", "DataFiles/test16.pgm");
     }
 
-    TEST_METHOD(decode_monochrome_16_bit_near_lossless_3) // NOLINT
+    TEST_METHOD(decode_monochrome_16_bit_near_lossless_3)
     {
         // ISO 14495-1: official test image 12 (T87_test-11-12.zip)
         // Note: test image is actually 12 bit.
         decode_encode_file("DataFiles/t16e3.jls", "DataFiles/TEST16.pgm", false);
     }
 
-    TEST_METHOD(decode_encode_tulips_monochrome_8_bit_lossless_hp) // NOLINT
+    TEST_METHOD(decode_encode_tulips_monochrome_8_bit_lossless_hp)
     {
         // Additional, Tulips encoded with HP 1.0BETA encoder.
         decode_encode_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls", "DataFiles/tulips-gray-8bit-512-512.pgm");
     }
 
-    TEST_METHOD(decode_color_8_bit_interleave_none_lossless_restart_7) // NOLINT
+    TEST_METHOD(decode_color_8_bit_interleave_none_lossless_restart_7)
     {
         // ISO 14495-1: official test image 1 but with restart markers.
         decode_encode_file("DataFiles/test8_ilv_none_rm_7.jls", "DataFiles/test8.ppm", false);
     }
 
-    TEST_METHOD(decode_color_8_bit_interleave_line_lossless_restart_7) // NOLINT
+    TEST_METHOD(decode_color_8_bit_interleave_line_lossless_restart_7)
     {
         // ISO 14495-1: official test image 2 but with restart markers.
         decode_encode_file("DataFiles/test8_ilv_line_rm_7.jls", "DataFiles/test8.ppm", false);
     }
 
-    TEST_METHOD(decode_color_8_bit_interleave_sample_lossless_restart_7) // NOLINT
+    TEST_METHOD(decode_color_8_bit_interleave_sample_lossless_restart_7)
     {
         // ISO 14495-1: official test image 3 but with restart markers.
         decode_encode_file("DataFiles/test8_ilv_sample_rm_7.jls", "DataFiles/test8.ppm", false);
     }
 
-    TEST_METHOD(decode_color_8_bit_interleave_sample_lossless_restart_300) // NOLINT
+    TEST_METHOD(decode_color_8_bit_interleave_sample_lossless_restart_300)
     {
         // ISO 14495-1: official test image 3 but with restart markers and restart interval 300
         decode_encode_file("DataFiles/test8_ilv_sample_rm_300.jls", "DataFiles/test8.ppm", false);
     }
 
-    TEST_METHOD(decode_monochrome_16_bit_restart_5) // NOLINT
+    TEST_METHOD(decode_monochrome_16_bit_restart_5)
     {
         // ISO 14495-1: official test image 12 but with restart markers and restart interval 5
         decode_encode_file("DataFiles/test16_rm_5.jls", "DataFiles/test16.pgm", false);
     }
 
-    TEST_METHOD(decode_mapping_table_sample_annex_h4_5) // NOLINT
+    TEST_METHOD(decode_mapping_table_sample_annex_h4_5)
     {
         // ISO 14495-1: Sample image from appendix H.4.5 "Example of a palletised image" / Figure H.10
         constexpr array palletised_data{

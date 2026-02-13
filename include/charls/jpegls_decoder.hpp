@@ -572,8 +572,8 @@ private:
     bool spiff_header_has_value_{};
     charls::spiff_header spiff_header_{};
     charls::frame_info frame_info_{};
-    std::function<void(const void*, size_t)> comment_handler_{};
-    std::function<void(int32_t, const void*, size_t)> application_data_handler_{};
+    std::function<void(const void*, size_t)> comment_handler_;
+    std::function<void(int32_t, const void*, size_t)> application_data_handler_;
 };
 
 } // namespace charls

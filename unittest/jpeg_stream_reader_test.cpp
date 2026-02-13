@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2015 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -24,7 +24,7 @@ namespace charls::test {
 TEST_CLASS(jpeg_stream_reader_test)
 {
 public:
-    TEST_METHOD(read_header_from_to_small_input_buffer_throws) // NOLINT
+    TEST_METHOD(read_header_from_to_small_input_buffer_throws)
     {
         array<byte, 1> buffer{};
         jpeg_stream_reader reader;
@@ -33,7 +33,7 @@ public:
         assert_expect_exception(jpegls_errc::need_more_data, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_from_buffer_preceded_with_fill_bytes) // NOLINT
+    TEST_METHOD(read_header_from_buffer_preceded_with_fill_bytes)
     {
         constexpr byte extra_start_byte{0xFF};
         jpeg_test_stream_writer writer;
@@ -53,7 +53,7 @@ public:
         reader.read_header(); // if it doesn't throw test is passed.
     }
 
-    TEST_METHOD(read_header_from_buffer_not_starting_with_ff_throws) // NOLINT
+    TEST_METHOD(read_header_from_buffer_not_starting_with_ff_throws)
     {
         constexpr array buffer{byte{0x0F}, byte{0xFF}, byte{0xD8},
                                byte{0xFF}, byte{0xFF}, byte{0xDA}}; // 0xDA = SOS: Marks the start of scan.
@@ -64,7 +64,7 @@ public:
         assert_expect_exception(jpegls_errc::jpeg_marker_start_byte_not_found, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_application_data) // NOLINT
+    TEST_METHOD(read_header_with_application_data)
     {
         for (uint8_t i{}; i != 16; ++i)
         {
@@ -72,7 +72,7 @@ public:
         }
     }
 
-    TEST_METHOD(read_header_with_jpegls_extended_frame_throws) // NOLINT
+    TEST_METHOD(read_header_with_jpegls_extended_frame_throws)
     {
         constexpr array<byte, 6> buffer{
             byte{0xFF}, byte{0xD8}, byte{0xFF},
@@ -84,7 +84,7 @@ public:
         assert_expect_exception(jpegls_errc::encoding_not_supported, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_jpegls_preset_parameter_segment) // NOLINT
+    TEST_METHOD(read_header_jpegls_preset_parameter_segment)
     {
         vector<byte> source(100);
         jpeg_stream_writer writer;
@@ -110,7 +110,7 @@ public:
         Assert::AreEqual(presets.threshold3, threshold3);
     }
 
-    TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_throws) // NOLINT
+    TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_throws)
     {
         constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
                                byte{0xF8}, // LSE: Marks the start of a JPEG-LS preset parameters segment.
@@ -122,7 +122,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_with_coding_parameters_throws) // NOLINT
+    TEST_METHOD(read_header_with_too_small_jpegls_preset_parameter_segment_with_coding_parameters_throws)
     {
         constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
                                byte{0xF8}, // LSE: Marks the start of a JPEG-LS preset parameters segment.
@@ -134,7 +134,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_large_jpegls_preset_parameter_segment_with_coding_parameters_throws) // NOLINT
+    TEST_METHOD(read_header_with_too_large_jpegls_preset_parameter_segment_with_coding_parameters_throws)
     {
         constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
                                byte{0xF8}, // LSE: Marks the start of a JPEG-LS preset parameters segment.
@@ -146,7 +146,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_jpegls_preset_parameter_with_extended_id_throws) // NOLINT
+    TEST_METHOD(read_header_with_jpegls_preset_parameter_with_extended_id_throws)
     {
         constexpr array ids{byte{0x5}, byte{0x6}, byte{0x7}, byte{0x8}, byte{0x9}, byte{0xA}, byte{0xC}, byte{0xD}};
 
@@ -156,7 +156,7 @@ public:
         }
     }
 
-    TEST_METHOD(read_header_with_too_small_segment_size_throws) // NOLINT
+    TEST_METHOD(read_header_with_too_small_segment_size_throws)
     {
         constexpr array buffer{
             byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xF7},  // SOF_55: Marks the start of JPEG-LS extended scan.
@@ -168,7 +168,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_small_start_of_frame_throws) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_frame_throws)
     {
         constexpr array buffer{
             byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
@@ -180,7 +180,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_small_start_of_frame_in_component_info_throws) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_frame_in_component_info_throws)
     {
         constexpr array buffer{
             byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
@@ -192,7 +192,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_large_start_of_frame_throws) // NOLINT
+    TEST_METHOD(read_header_with_too_large_start_of_frame_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -206,7 +206,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_sos_before_sof_throws) // NOLINT
+    TEST_METHOD(read_header_sos_before_sof_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -218,7 +218,7 @@ public:
         assert_expect_exception(jpegls_errc::unexpected_start_of_scan_marker, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_extra_sof_throws) // NOLINT
+    TEST_METHOD(read_header_extra_sof_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -231,7 +231,7 @@ public:
         assert_expect_exception(jpegls_errc::duplicate_start_of_frame_marker, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_too_large_near_lossless_in_sos_throws) // NOLINT
+    TEST_METHOD(read_header_too_large_near_lossless_in_sos_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -244,7 +244,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_too_large_near_lossless_in_sos_throws2) // NOLINT
+    TEST_METHOD(read_header_too_large_near_lossless_in_sos_throws2)
     {
         constexpr jpegls_pc_parameters preset_coding_parameters{200, 0, 0, 0, 0};
 
@@ -262,20 +262,20 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_near_lossless, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_line_interleave_in_sos_for_single_component_throws) // NOLINT
+    TEST_METHOD(read_header_line_interleave_in_sos_for_single_component_throws)
     {
         read_header_incorrect_interleave_in_sos_for_single_component_throws(interleave_mode::line);
     }
 
-    TEST_METHOD(read_header_sample_interleave_in_sos_for_single_component_throws) // NOLINT
+    TEST_METHOD(read_header_sample_interleave_in_sos_for_single_component_throws)
     {
         read_header_incorrect_interleave_in_sos_for_single_component_throws(interleave_mode::sample);
     }
 
-    TEST_METHOD(read_header_with_duplicate_component_id_in_start_of_frame_segment_throws) // NOLINT
+    TEST_METHOD(read_header_with_duplicate_component_id_in_start_of_frame_segment_throws)
     {
         jpeg_test_stream_writer writer;
-        writer.componentIdOverride = 7;
+        writer.component_id_override = 7;
         writer.write_start_of_image();
         writer.write_start_of_frame_segment(512, 512, 8, 3);
 
@@ -285,7 +285,7 @@ public:
         assert_expect_exception(jpegls_errc::duplicate_component_id_in_sof_segment, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_to_many_components_in_start_of_frame_segment_throws) // NOLINT
+    TEST_METHOD(read_header_with_to_many_components_in_start_of_frame_segment_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -298,7 +298,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_no_components_in_start_of_frame_segment_throws) // NOLINT
+    TEST_METHOD(read_header_with_no_components_in_start_of_frame_segment_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -311,7 +311,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_more_then_max_components_in_start_of_frame_segment_throws) // NOLINT
+    TEST_METHOD(read_header_with_more_then_max_components_in_start_of_frame_segment_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -324,7 +324,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_small_start_of_scan_throws) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_scan_throws)
     {
         constexpr array buffer{byte{0xFF}, byte{0xD8},
                                byte{0xFF}, byte{0xF7}, // SOF_55: Marks the start of JPEG-LS extended scan.
@@ -342,7 +342,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_too_small_start_of_scan_component_count_throws) // NOLINT
+    TEST_METHOD(read_header_with_too_small_start_of_scan_component_count_throws)
     {
         constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
                                byte{0xF7},             // SOF_55: Marks the start of JPEG-LS extended scan.
@@ -360,7 +360,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_directly_end_of_image_throws) // NOLINT
+    TEST_METHOD(read_header_with_directly_end_of_image_throws)
     {
         constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xD9}}; // 0xD9 = EOI
 
@@ -370,7 +370,7 @@ public:
         assert_expect_exception(jpegls_errc::unexpected_end_of_image_marker, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_duplicate_start_of_image_throws) // NOLINT
+    TEST_METHOD(read_header_with_duplicate_start_of_image_throws)
     {
         constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF}, byte{0xD8}}; // 0xD8 = SOI.
 
@@ -380,17 +380,17 @@ public:
         assert_expect_exception(jpegls_errc::duplicate_start_of_image_marker, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_spiff_header) // NOLINT
+    TEST_METHOD(read_spiff_header)
     {
         read_spiff_header(0);
     }
 
-    TEST_METHOD(read_spiff_header_low_version_newer) // NOLINT
+    TEST_METHOD(read_spiff_header_low_version_newer)
     {
         read_spiff_header(1);
     }
 
-    TEST_METHOD(read_spiff_header_high_version_to_new) // NOLINT
+    TEST_METHOD(read_spiff_header_high_version_to_new)
     {
         const auto buffer{create_test_spiff_header(3)};
         jpeg_stream_reader reader;
@@ -404,7 +404,7 @@ public:
         Assert::IsFalse(spiff_header_found);
     }
 
-    TEST_METHOD(read_spiff_header_without_end_of_directory) // NOLINT
+    TEST_METHOD(read_spiff_header_without_end_of_directory)
     {
         const auto buffer{create_test_spiff_header(2, 0, false)};
         jpeg_stream_reader reader;
@@ -419,7 +419,7 @@ public:
         assert_expect_exception(jpegls_errc::missing_end_of_spiff_directory, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_define_restart_interval_16_bit) // NOLINT
+    TEST_METHOD(read_header_with_define_restart_interval_16_bit)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -434,7 +434,7 @@ public:
         Assert::AreEqual(static_cast<uint32_t>(numeric_limits<uint16_t>::max() - 5), reader.parameters().restart_interval);
     }
 
-    TEST_METHOD(read_header_with_define_restart_interval_24_bit) // NOLINT
+    TEST_METHOD(read_header_with_define_restart_interval_24_bit)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -449,7 +449,7 @@ public:
         Assert::AreEqual(static_cast<uint32_t>(numeric_limits<uint16_t>::max() + 5), reader.parameters().restart_interval);
     }
 
-    TEST_METHOD(read_header_with_define_restart_interval_32_bit) // NOLINT
+    TEST_METHOD(read_header_with_define_restart_interval_32_bit)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -464,7 +464,7 @@ public:
         Assert::AreEqual(numeric_limits<uint32_t>::max() - 7, reader.parameters().restart_interval);
     }
 
-    TEST_METHOD(read_header_with_2_define_restart_intervals) // NOLINT
+    TEST_METHOD(read_header_with_2_define_restart_intervals)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -480,7 +480,7 @@ public:
         Assert::AreEqual(0U, reader.parameters().restart_interval);
     }
 
-    TEST_METHOD(read_header_with_bad_define_restart_interval) // NOLINT
+    TEST_METHOD(read_header_with_bad_define_restart_interval)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -496,7 +496,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_jpegls_stream_with_restart_marker_outside_entropy_data) // NOLINT
+    TEST_METHOD(read_jpegls_stream_with_restart_marker_outside_entropy_data)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -508,7 +508,7 @@ public:
         assert_expect_exception(jpegls_errc::unexpected_restart_marker, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_comment) // NOLINT
+    TEST_METHOD(read_comment)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -540,7 +540,7 @@ public:
         Assert::IsTrue(memcmp("hello", actual.data, actual.size) == 0);
     }
 
-    TEST_METHOD(read_empty_comment) // NOLINT
+    TEST_METHOD(read_empty_comment)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -572,7 +572,7 @@ public:
         Assert::IsNull(actual.data);
     }
 
-    TEST_METHOD(read_comment_from_too_small_buffer_throws) // NOLINT
+    TEST_METHOD(read_comment_from_too_small_buffer_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -593,7 +593,7 @@ public:
         Assert::IsFalse(called);
     }
 
-    TEST_METHOD(read_application_data) // NOLINT
+    TEST_METHOD(read_application_data)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -629,7 +629,7 @@ public:
         Assert::IsTrue(memcmp("hello", actual.data, actual.size) == 0);
     }
 
-    TEST_METHOD(read_empty_application_data) // NOLINT
+    TEST_METHOD(read_empty_application_data)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -665,7 +665,7 @@ public:
         Assert::IsNull(actual.data);
     }
 
-    TEST_METHOD(read_application_data_from_too_small_buffer_throws) // NOLINT
+    TEST_METHOD(read_application_data_from_too_small_buffer_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -686,7 +686,7 @@ public:
         Assert::IsFalse(called);
     }
 
-    TEST_METHOD(read_mapping_table) // NOLINT
+    TEST_METHOD(read_mapping_table)
     {
         vector<byte> source(100);
         jpeg_stream_writer writer;
@@ -717,7 +717,7 @@ public:
         Assert::AreEqual(byte{2}, table_data[0]);
     }
 
-    TEST_METHOD(read_mapping_table_too_small_buffer_throws) // NOLINT
+    TEST_METHOD(read_mapping_table_too_small_buffer_throws)
     {
         vector<byte> source(100);
         jpeg_stream_writer writer;
@@ -740,7 +740,7 @@ public:
         });
     }
 
-    TEST_METHOD(mapping_table_count_is_zero_at_start) // NOLINT
+    TEST_METHOD(mapping_table_count_is_zero_at_start)
     {
         const jpeg_stream_reader reader;
 
@@ -749,7 +749,7 @@ public:
         Assert::AreEqual(size_t{}, count);
     }
 
-    TEST_METHOD(mapping_table_count_after_read_header) // NOLINT
+    TEST_METHOD(mapping_table_count_after_read_header)
     {
         const std::vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
@@ -768,7 +768,7 @@ public:
         Assert::AreEqual(size_t{2}, count);
     }
 
-    TEST_METHOD(mapping_table_count_after_read_header_after_frame) // NOLINT
+    TEST_METHOD(mapping_table_count_after_read_header_after_frame)
     {
         const vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
@@ -785,7 +785,7 @@ public:
         Assert::AreEqual(size_t{1}, count);
     }
 
-    TEST_METHOD(mapping_table_count_after_read_header_before_frame) // NOLINT
+    TEST_METHOD(mapping_table_count_after_read_header_before_frame)
     {
         const vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
@@ -802,7 +802,7 @@ public:
         Assert::AreEqual(size_t{1}, count);
     }
 
-    TEST_METHOD(read_mapping_table_continuation) // NOLINT
+    TEST_METHOD(read_mapping_table_continuation)
     {
         constexpr size_t table_size{100000};
         vector<byte> source(table_size + 100);
@@ -837,7 +837,7 @@ public:
         Assert::AreEqual(byte{8}, table_data[table_size - 1]);
     }
 
-    TEST_METHOD(read_mapping_table_continuation_without_mapping_table_throws) // NOLINT
+    TEST_METHOD(read_mapping_table_continuation_without_mapping_table_throws)
     {
         const vector<byte> table_data(255);
         jpeg_test_stream_writer writer;
@@ -853,7 +853,7 @@ public:
                                 [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_invalid_mapping_table_continuation_throws) // NOLINT
+    TEST_METHOD(read_invalid_mapping_table_continuation_throws)
     {
         const vector<byte> table_data(255);
         jpeg_test_stream_writer writer;

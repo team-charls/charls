@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2016 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -63,7 +63,7 @@ public:
 TEST_CLASS(scan_decoder_test)
 {
 public:
-    TEST_METHOD(decode_encoded_ff_pattern) // NOLINT
+    TEST_METHOD(decode_encoded_ff_pattern)
     {
         struct data_t final
         {
@@ -98,7 +98,7 @@ public:
         }
     }
 
-    TEST_METHOD(peek_byte) // NOLINT
+    TEST_METHOD(peek_byte)
     {
         constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
@@ -110,7 +110,7 @@ public:
         Assert::AreEqual(size_t{7}, scan_decoder.peek_byte_forward());
     }
 
-    TEST_METHOD(read_bit) // NOLINT
+    TEST_METHOD(read_bit)
     {
         constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
@@ -129,7 +129,7 @@ public:
         Assert::AreEqual(static_cast<uintptr_t>(0), scan_decoder.read_bit_forward());
     }
 
-    TEST_METHOD(peek_0_bits) // NOLINT
+    TEST_METHOD(peek_0_bits)
     {
         constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
@@ -149,7 +149,7 @@ public:
         }
     }
 
-    TEST_METHOD(peek_0_bits_empty_buffer) // NOLINT
+    TEST_METHOD(peek_0_bits_empty_buffer)
     {
         constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};

@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2016 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -12,7 +12,7 @@ namespace charls::test {
 TEST_CLASS(default_traits_test)
 {
 public:
-    TEST_METHOD(create) // NOLINT
+    TEST_METHOD(create)
     {
         const default_traits<uint8_t, uint8_t> traits((1 << 8) - 1, 0);
 
@@ -24,7 +24,7 @@ public:
         Assert::AreEqual(32, traits.limit);
     }
 
-    TEST_METHOD(modulo_range) // NOLINT
+    TEST_METHOD(modulo_range)
     {
         const default_traits<uint8_t, uint8_t> traits(24, 0);
 

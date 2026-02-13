@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -22,22 +22,22 @@ namespace charls::test {
 TEST_CLASS(encode_test)
 {
 public:
-    TEST_METHOD(encode_monochrome_2_bit_lossless) // NOLINT
+    TEST_METHOD(encode_monochrome_2_bit_lossless)
     {
         encode("DataFiles/2bit_parrot_150x200.pgm", 2866);
     }
 
-    TEST_METHOD(encode_monochrome_4_bit_lossless) // NOLINT
+    TEST_METHOD(encode_monochrome_4_bit_lossless)
     {
         encode("DataFiles/4bit-monochrome.pgm", 1596);
     }
 
-    TEST_METHOD(encode_monochrome_12_bit_lossless) // NOLINT
+    TEST_METHOD(encode_monochrome_12_bit_lossless)
     {
         encode("DataFiles/test16.pgm", 60077);
     }
 
-    TEST_METHOD(encode_monochrome_16_bit_lossless) // NOLINT
+    TEST_METHOD(encode_monochrome_16_bit_lossless)
     {
         encode("DataFiles/16-bit-640-480-many-dots.pgm", 4138);
     }
@@ -81,70 +81,70 @@ public:
         encode({2, 2, 16, 2}, {data.cbegin(), data.cend()}, 44, interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_color_8_bit_interleave_none_lossless) // NOLINT
+    TEST_METHOD(encode_color_8_bit_interleave_none_lossless)
     {
         encode("DataFiles/test8.ppm", 102248);
     }
 
-    TEST_METHOD(encode_color_8_bit_interleave_line_lossless) // NOLINT
+    TEST_METHOD(encode_color_8_bit_interleave_line_lossless)
     {
         encode("DataFiles/test8.ppm", 100615, interleave_mode::line);
     }
 
-    TEST_METHOD(encode_color_8_bit_interleave_sample_lossless) // NOLINT
+    TEST_METHOD(encode_color_8_bit_interleave_sample_lossless)
     {
         encode("DataFiles/test8.ppm", 99734, interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_color_8_bit_interleave_line_hp1) // NOLINT
+    TEST_METHOD(encode_color_8_bit_interleave_line_hp1)
     {
         encode("DataFiles/test8.ppm", 91617, interleave_mode::line, color_transformation::hp1);
     }
 
-    TEST_METHOD(encode_color_8_bit_interleave_sample_hp1) // NOLINT
+    TEST_METHOD(encode_color_8_bit_interleave_sample_hp1)
     {
         encode("DataFiles/test8.ppm", 91463, interleave_mode::sample, color_transformation::hp1);
     }
 
-    TEST_METHOD(encode_color_8_bit_interleave_line_hp2) // NOLINT
+    TEST_METHOD(encode_color_8_bit_interleave_line_hp2)
     {
         encode("DataFiles/test8.ppm", 91693, interleave_mode::line, color_transformation::hp2);
     }
 
-    TEST_METHOD(encode_color_8_bit_interleave_sample_hp2) // NOLINT
+    TEST_METHOD(encode_color_8_bit_interleave_sample_hp2)
     {
         encode("DataFiles/test8.ppm", 91457, interleave_mode::sample, color_transformation::hp2);
     }
 
-    TEST_METHOD(encode_color_8_bit_interleave_line_hp3) // NOLINT
+    TEST_METHOD(encode_color_8_bit_interleave_line_hp3)
     {
         encode("DataFiles/test8.ppm", 91993, interleave_mode::line, color_transformation::hp3);
     }
 
-    TEST_METHOD(encode_color_8_bit_interleave_sample_hp3) // NOLINT
+    TEST_METHOD(encode_color_8_bit_interleave_sample_hp3)
     {
         encode("DataFiles/test8.ppm", 91862, interleave_mode::sample, color_transformation::hp3);
     }
 
-    TEST_METHOD(encode_monchrome_16_bit_interleave_none) // NOLINT
+    TEST_METHOD(encode_monchrome_16_bit_interleave_none)
     {
         constexpr array data{byte{}, byte{10}, byte{}, byte{20}, byte{}, byte{30}, byte{}, byte{40}};
         encode({2, 2, 16, 1}, {data.cbegin(), data.cend()}, 36, interleave_mode::none);
     }
 
-    TEST_METHOD(encode_color_16_bit_interleave_none) // NOLINT
+    TEST_METHOD(encode_color_16_bit_interleave_none)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
         encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 66, interleave_mode::none);
     }
 
-    TEST_METHOD(encode_color_16_bit_interleave_line) // NOLINT
+    TEST_METHOD(encode_color_16_bit_interleave_line)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
         encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 45, interleave_mode::line);
     }
 
-    TEST_METHOD(encode_color_16_bit_interleave_sample) // NOLINT
+    TEST_METHOD(encode_color_16_bit_interleave_sample)
     {
         constexpr array data{byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 0
                              byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 1
@@ -153,73 +153,73 @@ public:
         encode({2, 2, 16, 3}, {data.cbegin(), data.cend()}, 51, interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_color_16_bit_interleave_line_hp1) // NOLINT
+    TEST_METHOD(encode_color_16_bit_interleave_line_hp1)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
         encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 59, interleave_mode::line, color_transformation::hp1);
     }
 
-    TEST_METHOD(encode_color_16_bit_interleave_sample_hp1) // NOLINT
+    TEST_METHOD(encode_color_16_bit_interleave_sample_hp1)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
         encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 59, interleave_mode::sample, color_transformation::hp1);
     }
 
-    TEST_METHOD(encode_color_16_bit_interleave_line_hp2) // NOLINT
+    TEST_METHOD(encode_color_16_bit_interleave_line_hp2)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
         encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 59, interleave_mode::line, color_transformation::hp2);
     }
 
-    TEST_METHOD(encode_color_16_bit_interleave_sample_hp2) // NOLINT
+    TEST_METHOD(encode_color_16_bit_interleave_sample_hp2)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
         encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 59, interleave_mode::sample, color_transformation::hp2);
     }
 
-    TEST_METHOD(encode_color_16_bit_interleave_line_hp3) // NOLINT
+    TEST_METHOD(encode_color_16_bit_interleave_line_hp3)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
         encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 55, interleave_mode::line, color_transformation::hp3);
     }
 
-    TEST_METHOD(encode_color_16_bit_interleave_sample_hp3) // NOLINT
+    TEST_METHOD(encode_color_16_bit_interleave_sample_hp3)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
         encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 55, interleave_mode::sample, color_transformation::hp3);
     }
 
-    TEST_METHOD(encode_4_components_8_bit_interleave_none) // NOLINT
+    TEST_METHOD(encode_4_components_8_bit_interleave_none)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}};
         encode({1, 1, 8, 4}, {data.cbegin(), data.cend()}, 75, interleave_mode::none);
     }
 
-    TEST_METHOD(encode_4_components_8_bit_interleave_line) // NOLINT
+    TEST_METHOD(encode_4_components_8_bit_interleave_line)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}};
         encode({1, 1, 8, 4}, {data.cbegin(), data.cend()}, 47, interleave_mode::line);
     }
 
-    TEST_METHOD(encode_4_components_8_bit_interleave_sample) // NOLINT
+    TEST_METHOD(encode_4_components_8_bit_interleave_sample)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}};
         encode({1, 1, 8, 4}, {data.cbegin(), data.cend()}, 47, interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_4_components_16_bit_interleave_none) // NOLINT
+    TEST_METHOD(encode_4_components_16_bit_interleave_none)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}, byte{70}, byte{80}};
         encode({1, 1, 16, 4}, {data.cbegin(), data.cend()}, 86, interleave_mode::none);
     }
 
-    TEST_METHOD(encode_4_components_16_bit_interleave_line) // NOLINT
+    TEST_METHOD(encode_4_components_16_bit_interleave_line)
     {
         constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}, byte{70}, byte{80}};
         encode({1, 1, 16, 4}, {data.cbegin(), data.cend()}, 52, interleave_mode::line);
     }
 
-    TEST_METHOD(encode_4_components_16_bit_interleave_sample) // NOLINT
+    TEST_METHOD(encode_4_components_16_bit_interleave_sample)
     {
         constexpr array data{byte{},  byte{},   byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 0
                              byte{},  byte{},   byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 1
@@ -231,7 +231,7 @@ public:
         encode({2, 2, 16, 4}, {data.cbegin(), data.cend()}, 61, interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_with_different_lossless_values) // NOLINT
+    TEST_METHOD(encode_with_different_lossless_values)
     {
         jpegls_encoder encoder;
         encoder.frame_info({2, 2, 8, 3});
@@ -261,7 +261,7 @@ public:
         Assert::AreEqual(10, decoder.get_near_lossless(2));
     }
 
-    TEST_METHOD(encode_with_different_preset_coding_parameters) // NOLINT
+    TEST_METHOD(encode_with_different_preset_coding_parameters)
     {
         jpegls_encoder encoder;
         encoder.frame_info({2, 2, 8, 3});
@@ -287,7 +287,7 @@ public:
                      static_cast<size_t>(decoder.frame_info().height) * decoder.frame_info().width);
     }
 
-    TEST_METHOD(encode_with_different_interleave_modes_none_first) // NOLINT
+    TEST_METHOD(encode_with_different_interleave_modes_none_first)
     {
         jpegls_encoder encoder;
         encoder.frame_info({8, 2, 8, 4});
@@ -315,16 +315,16 @@ public:
         vector<byte> destination(decoder.get_destination_size());
         decoder.decode(destination);
 
-        check_output(component0.data(), component0.size(), destination.data(), decoder, 1, 8 * 2);
-        check_output(component_1_and_2_and_3.data(), component_1_and_2_and_3.size(), destination.data() + 8 * 2, decoder, 1,
-                     8 * 2 * 3);
+        check_output(component0.data(), component0.size(), destination.data(), decoder, 1, size_t{8} * 2);
+        check_output(component_1_and_2_and_3.data(), component_1_and_2_and_3.size(), destination.data() + size_t{8} * 2,
+                     decoder, 1, size_t{8} * 2 * 3);
         Assert::AreEqual(interleave_mode::none, decoder.get_interleave_mode(0));
         Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(1));
         Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(2));
         Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(3));
     }
 
-    TEST_METHOD(encode_with_different_interleave_modes_sample_first) // NOLINT
+    TEST_METHOD(encode_with_different_interleave_modes_sample_first)
     {
         jpegls_encoder encoder;
         encoder.frame_info({8, 2, 8, 4});
@@ -353,8 +353,9 @@ public:
         decoder.decode(destination);
 
         check_output(component_0_and_1_and_2.data(), component_0_and_1_and_2.size(), destination.data(), decoder, 1,
-                     8 * 2 * 3);
-        check_output(component3.data(), component3.size(), destination.data() + 8 * 2 * 3, decoder, 1, 8 * 2);
+                     size_t{8} * 2 * 3);
+        check_output(component3.data(), component3.size(), destination.data() + size_t{8} * 2 * 3, decoder, 1,
+                     size_t{8} * 2);
         Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(0));
         Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(1));
         Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(2));
@@ -446,12 +447,6 @@ private:
                 }
             }
         }
-    }
-
-    constexpr static size_t estimated_destination_size(const int width, const int height, const int component_count,
-                                                       const int bits_per_sample) noexcept
-    {
-        return static_cast<size_t>(width) * height * component_count * (bits_per_sample < 9 ? 1 : 2) + 1024;
     }
 };
 

@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2022 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -12,7 +12,7 @@ using Microsoft::VisualStudio::CppUnitTestFramework::TestClass;
 
 MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
-#if defined(__clang__)
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wnonnull"
 #endif
@@ -47,7 +47,7 @@ constexpr frame_info create_valid_frame_info()
 TEST_CLASS(charls_validate_spiff_header_test)
 {
 public:
-    TEST_METHOD(valid) // NOLINT
+    TEST_METHOD(valid)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
@@ -60,7 +60,7 @@ public:
         Assert::AreEqual(jpegls_errc::success, result);
     }
 
-    TEST_METHOD(invalid_compression_type) // NOLINT
+    TEST_METHOD(invalid_compression_type)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
@@ -70,7 +70,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
-    TEST_METHOD(invalid_profile_id) // NOLINT
+    TEST_METHOD(invalid_profile_id)
     {
         spiff_header spiff_header{};
         constexpr frame_info frame_info{};
@@ -81,7 +81,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
-    TEST_METHOD(invalid_component_count) // NOLINT
+    TEST_METHOD(invalid_component_count)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
@@ -91,7 +91,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
-    TEST_METHOD(all_jpegls_bits_per_sample_are_valid) // NOLINT
+    TEST_METHOD(all_jpegls_bits_per_sample_are_valid)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         frame_info frame_info{create_valid_frame_info()};
@@ -106,7 +106,7 @@ public:
         }
     }
 
-    TEST_METHOD(invalid_bits_per_sample) // NOLINT
+    TEST_METHOD(invalid_bits_per_sample)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
@@ -116,7 +116,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
-    TEST_METHOD(invalid_height) // NOLINT
+    TEST_METHOD(invalid_height)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
@@ -126,7 +126,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
-    TEST_METHOD(invalid_width) // NOLINT
+    TEST_METHOD(invalid_width)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
@@ -136,7 +136,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
-    TEST_METHOD(invalid_color_space) // NOLINT
+    TEST_METHOD(invalid_color_space)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
@@ -150,7 +150,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
-    TEST_METHOD(invalid_color_space_component_count) // NOLINT
+    TEST_METHOD(invalid_color_space_component_count)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
@@ -164,7 +164,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
-    TEST_METHOD(invalid_resolution_units) // NOLINT
+    TEST_METHOD(invalid_resolution_units)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
@@ -174,7 +174,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
-    TEST_METHOD(invalid_vertical_resolution) // NOLINT
+    TEST_METHOD(invalid_vertical_resolution)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
@@ -184,7 +184,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
-    TEST_METHOD(invalid_horizontal_resolution) // NOLINT
+    TEST_METHOD(invalid_horizontal_resolution)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
         constexpr frame_info frame_info{create_valid_frame_info()};
@@ -194,7 +194,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
-    TEST_METHOD(spiff_header_nullptr) // NOLINT
+    TEST_METHOD(spiff_header_nullptr)
     {
         constexpr frame_info frame_info{create_valid_frame_info()};
 
@@ -202,7 +202,7 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, result);
     }
 
-    TEST_METHOD(frame_info_nullptr) // NOLINT
+    TEST_METHOD(frame_info_nullptr)
     {
         constexpr spiff_header spiff_header{create_valid_spiff_header()};
 

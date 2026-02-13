@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -42,13 +42,13 @@ jpegls_decoder create_decoder(const vector<byte>& source)
 TEST_CLASS(jpegls_decoder_test)
 {
 public:
-    TEST_METHOD(create_destroy) // NOLINT
+    TEST_METHOD(create_destroy)
     {
         // ReSharper disable once CppLocalVariableWithNonTrivialDtorIsNeverUsed
         jpegls_decoder decoder;
     }
 
-    TEST_METHOD(create_and_move) // NOLINT
+    TEST_METHOD(create_and_move)
     {
         jpegls_decoder decoder1;
 
@@ -63,7 +63,7 @@ public:
         Assert::AreEqual(decoder4.frame_info().bits_per_sample, 0);
     }
 
-    TEST_METHOD(set_source_twice_throws) // NOLINT
+    TEST_METHOD(set_source_twice_throws)
     {
         jpegls_decoder decoder;
 
@@ -72,28 +72,28 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder, &source] { decoder.source(source); });
     }
 
-    TEST_METHOD(read_spiff_header_without_source_throws) // NOLINT
+    TEST_METHOD(read_spiff_header_without_source_throws)
     {
         jpegls_decoder decoder;
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { decoder.read_spiff_header(); });
     }
 
-    TEST_METHOD(destination_size_without_reading_header_throws) // NOLINT
+    TEST_METHOD(destination_size_without_reading_header_throws)
     {
         const jpegls_decoder decoder;
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_destination_size(); });
     }
 
-    TEST_METHOD(read_header_without_source_throws) // NOLINT
+    TEST_METHOD(read_header_without_source_throws)
     {
         jpegls_decoder decoder;
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { decoder.read_header(); });
     }
 
-    TEST_METHOD(read_header_from_non_jpegls_data) // NOLINT
+    TEST_METHOD(read_header_from_non_jpegls_data)
     {
         const vector<byte> source(100);
         jpegls_decoder decoder{source, false};
@@ -104,7 +104,7 @@ public:
         Assert::IsTrue(ec == jpegls_errc::jpeg_marker_start_byte_not_found);
     }
 
-    TEST_METHOD(frame_info_without_read_header) // NOLINT
+    TEST_METHOD(frame_info_without_read_header)
     {
         const vector<byte> source(2000);
         const jpegls_decoder decoder{source, false};
@@ -115,7 +115,7 @@ public:
         Assert::AreEqual(0U, decoder.frame_info().width);
     }
 
-    TEST_METHOD(frame_info_from_temporary_object) // NOLINT
+    TEST_METHOD(frame_info_from_temporary_object)
     {
         const frame_info info{create_decoder(read_file("DataFiles/t8c0e0.jls")).frame_info()};
 
@@ -125,7 +125,7 @@ public:
         Assert::AreEqual(256U, info.width);
     }
 
-    TEST_METHOD(interleave_mode_without_read_header_throws) // NOLINT
+    TEST_METHOD(interleave_mode_without_read_header_throws)
     {
         const vector<byte> source(2000);
         const jpegls_decoder decoder{source, false};
@@ -133,7 +133,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_interleave_mode(); });
     }
 
-    TEST_METHOD(near_lossless_without_read_header_throws) // NOLINT
+    TEST_METHOD(near_lossless_without_read_header_throws)
     {
         const vector<byte> source(2000);
         const jpegls_decoder decoder{source, false};
@@ -141,7 +141,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_near_lossless(); });
     }
 
-    TEST_METHOD(preset_coding_parameters_without_read_header_throws) // NOLINT
+    TEST_METHOD(preset_coding_parameters_without_read_header_throws)
     {
         jpegls_decoder decoder;
 
@@ -151,7 +151,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.preset_coding_parameters(); });
     }
 
-    TEST_METHOD(get_destination_size) // NOLINT
+    TEST_METHOD(get_destination_size)
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -161,7 +161,7 @@ public:
         Assert::AreEqual(expected_destination_size, decoder.get_destination_size());
     }
 
-    TEST_METHOD(get_destination_size_stride_interleave_none) // NOLINT
+    TEST_METHOD(get_destination_size_stride_interleave_none)
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -172,7 +172,7 @@ public:
         Assert::AreEqual(expected_destination_size, decoder.get_destination_size(stride));
     }
 
-    TEST_METHOD(get_destination_size_stride_interleave_none_16_bit) // NOLINT
+    TEST_METHOD(get_destination_size_stride_interleave_none_16_bit)
     {
         const auto source{read_file("DataFiles/t16e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -183,7 +183,7 @@ public:
         Assert::AreEqual(expected_destination_size, decoder.get_destination_size(stride));
     }
 
-    TEST_METHOD(get_destination_size_stride_interleave_line) // NOLINT
+    TEST_METHOD(get_destination_size_stride_interleave_line)
     {
         const auto source{read_file("DataFiles/t8c1e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -194,7 +194,7 @@ public:
         Assert::AreEqual(expected_destination_size, decoder.get_destination_size(stride));
     }
 
-    TEST_METHOD(get_destination_size_stride_interleave_sample) // NOLINT
+    TEST_METHOD(get_destination_size_stride_interleave_sample)
     {
         const auto source{read_file("DataFiles/t8c2e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -205,7 +205,7 @@ public:
         Assert::AreEqual(expected_destination_size, decoder.get_destination_size(stride));
     }
 
-    TEST_METHOD(get_destination_size_for_interleave_none_with_bad_stride_throws) // NOLINT
+    TEST_METHOD(get_destination_size_for_interleave_none_with_bad_stride_throws)
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -215,7 +215,7 @@ public:
                                 [&decoder, &correct_stride] { ignore = decoder.get_destination_size(correct_stride - 1); });
     }
 
-    TEST_METHOD(get_destination_size_for_interleave_none_16_bit_with_bad_stride_throws) // NOLINT
+    TEST_METHOD(get_destination_size_for_interleave_none_16_bit_with_bad_stride_throws)
     {
         const auto source{read_file("DataFiles/t16e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -225,7 +225,7 @@ public:
                                 [&decoder, &correct_stride] { ignore = decoder.get_destination_size(correct_stride - 1); });
     }
 
-    TEST_METHOD(get_destination_size_for_sample_interleave_with_bad_stride_throws) // NOLINT
+    TEST_METHOD(get_destination_size_for_sample_interleave_with_bad_stride_throws)
     {
         const auto source{read_file("DataFiles/t8c2e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -235,7 +235,7 @@ public:
                                 [&decoder, &correct_stride] { ignore = decoder.get_destination_size(correct_stride - 1); });
     }
 
-    TEST_METHOD(get_destination_size_for_small_image_with_custom_stride) // NOLINT
+    TEST_METHOD(get_destination_size_for_small_image_with_custom_stride)
     {
         const auto source{read_file("DataFiles/8bit-monochrome-2x2.jls")};
         jpegls_decoder decoder{source, true};
@@ -248,7 +248,7 @@ public:
         decoder.decode(destination, stride);
     }
 
-    TEST_METHOD(decode_reference_file_from_buffer) // NOLINT
+    TEST_METHOD(decode_reference_file_from_buffer)
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
         jpegls_decoder decoder{source, true};
@@ -266,7 +266,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_fuzzy_input_no_valid_bits_at_the_end_throws) // NOLINT
+    TEST_METHOD(decode_fuzzy_input_no_valid_bits_at_the_end_throws)
     {
         // Remark: exception is thrown from different location when lossless_traits becomes more generic.
         const auto source{read_file("DataFiles/fuzzy-input-no-valid-bits-at-the-end.jls")};
@@ -277,7 +277,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_data, [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(decode_fuzzy_input_bad_run_mode_golomb_code_throws) // NOLINT
+    TEST_METHOD(decode_fuzzy_input_bad_run_mode_golomb_code_throws)
     {
         const auto source{read_file("DataFiles/fuzzy-input-bad-run-mode-golomb-code.jls")};
         jpegls_decoder decoder{source, true};
@@ -287,7 +287,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_data, [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(get_destination_size_returns_zero_for_abbreviated_table_specification) // NOLINT
+    TEST_METHOD(get_destination_size_returns_zero_for_abbreviated_table_specification)
     {
         const vector<byte> table_data(4);
         jpeg_test_stream_writer writer;
@@ -301,7 +301,7 @@ public:
         Assert::AreEqual(size_t{0}, size);
     }
 
-    TEST_METHOD(decode_with_default_pc_parameters_before_each_sos) // NOLINT
+    TEST_METHOD(decode_with_default_pc_parameters_before_each_sos)
     {
         auto source{read_file("DataFiles/t8c0e0.jls")};
         insert_pc_parameters_segments(source, 3);
@@ -321,7 +321,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_with_destination_as_return) // NOLINT
+    TEST_METHOD(decode_with_destination_as_return)
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
         jpegls_decoder decoder{source, true};
@@ -337,7 +337,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_with_16_bit_destination_as_return) // NOLINT
+    TEST_METHOD(decode_with_16_bit_destination_as_return)
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
         jpegls_decoder decoder{source, true};
@@ -354,7 +354,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_without_reading_header_throws) // NOLINT
+    TEST_METHOD(decode_without_reading_header_throws)
     {
         jpegls_decoder decoder;
 
@@ -362,27 +362,27 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder, &buffer] { decoder.decode(buffer); });
     }
 
-    TEST_METHOD(decode_color_interleave_none_with_too_small_buffer_throws) // NOLINT
+    TEST_METHOD(decode_color_interleave_none_with_too_small_buffer_throws)
     {
         decode_image_with_too_small_buffer_throws("DataFiles/t8c0e0.jls");
     }
 
-    TEST_METHOD(decode_color_interleave_sample_with_too_small_buffer_throws) // NOLINT
+    TEST_METHOD(decode_color_interleave_sample_with_too_small_buffer_throws)
     {
         decode_image_with_too_small_buffer_throws("DataFiles/t8c2e0.jls");
     }
 
-    TEST_METHOD(decode_color_interleave_none_custom_stride_with_too_small_buffer_throws) // NOLINT
+    TEST_METHOD(decode_color_interleave_none_custom_stride_with_too_small_buffer_throws)
     {
         decode_image_with_too_small_buffer_throws("DataFiles/t8c0e0.jls", 256 + 1, 1 + 1);
     }
 
-    TEST_METHOD(decode_color_interleave_sample_custom_stride_with_too_small_buffer_throws) // NOLINT
+    TEST_METHOD(decode_color_interleave_sample_custom_stride_with_too_small_buffer_throws)
     {
         decode_image_with_too_small_buffer_throws("DataFiles/t8c2e0.jls", 256 * 3 + 1, 1 + 1);
     }
 
-    TEST_METHOD(decode_color_interleave_none_with_too_small_stride_throws) // NOLINT
+    TEST_METHOD(decode_color_interleave_none_with_too_small_stride_throws)
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -395,7 +395,7 @@ public:
         });
     }
 
-    TEST_METHOD(decode_color_interleave_sample_with_too_small_stride_throws) // NOLINT
+    TEST_METHOD(decode_color_interleave_sample_with_too_small_stride_throws)
     {
         const auto source{read_file("DataFiles/t8c2e0.jls")};
 
@@ -408,7 +408,7 @@ public:
         });
     }
 
-    TEST_METHOD(decode_color_interleave_none_with_standard_stride_works) // NOLINT
+    TEST_METHOD(decode_color_interleave_none_with_standard_stride_works)
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -421,7 +421,7 @@ public:
                              "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_color_interleave_sample_with_standard_stride_works) // NOLINT
+    TEST_METHOD(decode_color_interleave_sample_with_standard_stride_works)
     {
         const auto source{read_file("DataFiles/t8c2e0.jls")};
 
@@ -434,7 +434,7 @@ public:
                              "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_color_interleave_none_with_custom_stride_works) // NOLINT
+    TEST_METHOD(decode_color_interleave_none_with_custom_stride_works)
     {
         constexpr uint32_t custom_stride{256 + 1};
         const auto source{read_file("DataFiles/t8c0e0.jls")};
@@ -447,7 +447,7 @@ public:
                              "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(decode_color_interleave_sample_with_custom_stride_works) // NOLINT
+    TEST_METHOD(decode_color_interleave_sample_with_custom_stride_works)
     {
         constexpr uint32_t custom_stride{256 * 3 + 1};
         const auto source{read_file("DataFiles/t8c2e0.jls")};
@@ -460,7 +460,7 @@ public:
                              "DataFiles/test8.ppm");
     }
 
-    TEST_METHOD(read_spiff_header) // NOLINT
+    TEST_METHOD(read_spiff_header)
     {
         const auto source{create_test_spiff_header()};
         const jpegls_decoder decoder{source, true};
@@ -482,7 +482,7 @@ public:
         Assert::AreEqual(1024U, header.horizontal_resolution);
     }
 
-    TEST_METHOD(read_spiff_header_from_temporary_decoder) // NOLINT
+    TEST_METHOD(read_spiff_header_from_temporary_decoder)
     {
         const spiff_header header{create_decoder(create_test_spiff_header()).spiff_header()};
 
@@ -500,7 +500,7 @@ public:
         Assert::AreEqual(1024U, header.horizontal_resolution);
     }
 
-    TEST_METHOD(read_spiff_header_from_non_jpegls_data) // NOLINT
+    TEST_METHOD(read_spiff_header_from_non_jpegls_data)
     {
         const vector<byte> source(100);
         jpegls_decoder decoder{source, false};
@@ -511,7 +511,7 @@ public:
         Assert::IsTrue(ec == jpegls_errc::jpeg_marker_start_byte_not_found);
     }
 
-    TEST_METHOD(read_spiff_header_from_jpegls_without_spiff) // NOLINT
+    TEST_METHOD(read_spiff_header_from_jpegls_without_spiff)
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
         const jpegls_decoder decoder{source, true};
@@ -526,7 +526,7 @@ public:
         Assert::AreEqual(256U, frame_info.width);
     }
 
-    TEST_METHOD(read_invalid_spiff_header_with_read_header) // NOLINT
+    TEST_METHOD(read_invalid_spiff_header_with_read_header)
     {
         const auto source{create_test_spiff_header(2, 0, true, 1)};
         jpegls_decoder decoder{source, false};
@@ -538,7 +538,7 @@ public:
         Assert::AreEqual(static_cast<int>(jpegls_errc::invalid_spiff_header), ec.value());
     }
 
-    TEST_METHOD(read_invalid_spiff_header_throws) // NOLINT
+    TEST_METHOD(read_invalid_spiff_header_throws)
     {
         const auto source{create_test_spiff_header(2, 0, true, 1)};
 
@@ -548,7 +548,7 @@ public:
         });
     }
 
-    TEST_METHOD(read_header_twice_throws) // NOLINT
+    TEST_METHOD(read_header_twice_throws)
     {
         const auto source{read_file("DataFiles/t8c0e0.jls")};
         jpegls_decoder decoder{source, true};
@@ -556,7 +556,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.read_header(); });
     }
 
-    TEST_METHOD(decode_twice_throws) // NOLINT
+    TEST_METHOD(decode_twice_throws)
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<byte> source_to_encode(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -570,7 +570,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(simple_decode) // NOLINT
+    TEST_METHOD(simple_decode)
     {
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -587,7 +587,7 @@ public:
         Assert::AreEqual(expected_size, decoded_destination.size());
     }
 
-    TEST_METHOD(simple_decode_to_uint16_buffer) // NOLINT
+    TEST_METHOD(simple_decode_to_uint16_buffer)
     {
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -604,7 +604,7 @@ public:
         Assert::AreEqual(expected_size, decoded_destination.size() * sizeof(uint16_t));
     }
 
-    TEST_METHOD(decode_file_with_ff_in_entropy_data_throws) // NOLINT
+    TEST_METHOD(decode_file_with_ff_in_entropy_data_throws)
     {
         const auto source{read_file("ff_in_entropy_data.jls")};
 
@@ -618,11 +618,10 @@ public:
 
         vector<byte> destination(decoder.get_destination_size());
 
-        assert_expect_exception(jpegls_errc::invalid_data,
-                                [&decoder, &destination] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::invalid_data, [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(decode_with_missing_end_of_image_marker_throws) // NOLINT
+    TEST_METHOD(decode_with_missing_end_of_image_marker_throws)
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<byte> source_to_encode(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -636,8 +635,7 @@ public:
 
             jpegls_decoder decoder{source, true};
             vector<byte> destination(decoder.get_destination_size());
-            assert_expect_exception(jpegls_errc::need_more_data,
-                                    [&decoder, &destination] { decoder.decode(destination); });
+            assert_expect_exception(jpegls_errc::need_more_data, [&decoder, &destination] { decoder.decode(destination); });
         }
 
         {
@@ -645,8 +643,7 @@ public:
             jpegls_decoder decoder{source, true};
             vector<byte> destination(decoder.get_destination_size());
 
-            assert_expect_exception(jpegls_errc::need_more_data,
-                                    [&decoder, &destination] { decoder.decode(destination); });
+            assert_expect_exception(jpegls_errc::need_more_data, [&decoder, &destination] { decoder.decode(destination); });
         }
 
         {
@@ -660,7 +657,7 @@ public:
         }
     }
 
-    TEST_METHOD(decode_file_with_golomb_large_then_k_max_throws) // NOLINT
+    TEST_METHOD(decode_file_with_golomb_large_then_k_max_throws)
     {
         const auto source{read_file("fuzzy_input_golomb_16.jls")};
 
@@ -674,11 +671,10 @@ public:
 
         vector<byte> destination(decoder.get_destination_size());
 
-        assert_expect_exception(jpegls_errc::invalid_data,
-                                [&decoder, &destination] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::invalid_data, [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(decode_file_with_no_start_byte_after_encoded_scan_throws) // NOLINT
+    TEST_METHOD(decode_file_with_no_start_byte_after_encoded_scan_throws)
     {
         const auto source{read_file("DataFiles/no_start_byte_after_encoded_scan.jls")};
 
@@ -692,11 +688,10 @@ public:
 
         vector<byte> destination(decoder.get_destination_size());
 
-        assert_expect_exception(jpegls_errc::need_more_data,
-                                [&decoder, &destination] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::need_more_data, [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(decode_file_with_missing_restart_marker_throws) // NOLINT
+    TEST_METHOD(decode_file_with_missing_restart_marker_throws)
     {
         auto source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -713,7 +708,7 @@ public:
                                 [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(decode_file_with_incorrect_restart_marker_throws) // NOLINT
+    TEST_METHOD(decode_file_with_incorrect_restart_marker_throws)
     {
         auto source{read_file("DataFiles/test8_ilv_none_rm_7.jls")};
 
@@ -730,7 +725,7 @@ public:
                                 [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(decode_file_with_extra_begin_bytes_for_restart_marker_code) // NOLINT
+    TEST_METHOD(decode_file_with_extra_begin_bytes_for_restart_marker_code)
     {
         auto source{read_file("DataFiles/test8_ilv_none_rm_7.jls")};
 
@@ -748,7 +743,7 @@ public:
         test_compliance(source, reference_file.image_data(), false);
     }
 
-    TEST_METHOD(decode_file_that_ends_after_restart_marker_throws) // NOLINT
+    TEST_METHOD(decode_file_that_ends_after_restart_marker_throws)
     {
         auto source{read_file("DataFiles/test8_ilv_none_rm_7.jls")};
 
@@ -762,11 +757,10 @@ public:
         jpegls_decoder decoder{too_small_source, true};
         vector<byte> destination(decoder.get_destination_size());
 
-        assert_expect_exception(jpegls_errc::need_more_data,
-                                [&decoder, &destination] { decoder.decode(destination); });
+        assert_expect_exception(jpegls_errc::need_more_data, [&decoder, &destination] { decoder.decode(destination); });
     }
 
-    TEST_METHOD(read_comment) // NOLINT
+    TEST_METHOD(read_comment)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -790,7 +784,7 @@ public:
         Assert::IsTrue(memcmp("hello", actual_data, actual_size) == 0);
     }
 
-    TEST_METHOD(read_comment_while_already_unregisted) // NOLINT
+    TEST_METHOD(read_comment_while_already_unregisted)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -810,7 +804,7 @@ public:
         Assert::IsFalse(callback_called);
     }
 
-    TEST_METHOD(at_comment_that_throws_returns_callback_failed_error) // NOLINT
+    TEST_METHOD(at_comment_that_throws_returns_callback_failed_error)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -826,7 +820,7 @@ public:
         assert_expect_exception(jpegls_errc::callback_failed, [&decoder] { decoder.read_header(); });
     }
 
-    TEST_METHOD(read_application_data) // NOLINT
+    TEST_METHOD(read_application_data)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -854,7 +848,7 @@ public:
         Assert::IsTrue(memcmp("hello", actual_data, actual_size) == 0);
     }
 
-    TEST_METHOD(read_application_data_while_already_unregisted) // NOLINT
+    TEST_METHOD(read_application_data_while_already_unregisted)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -875,7 +869,7 @@ public:
         Assert::IsFalse(callback_called);
     }
 
-    TEST_METHOD(at_application_data_that_throws_returns_callback_error) // NOLINT
+    TEST_METHOD(at_application_data_that_throws_returns_callback_error)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -892,7 +886,7 @@ public:
         assert_expect_exception(jpegls_errc::callback_failed, [&decoder] { decoder.read_header(); });
     }
 
-    TEST_METHOD(oversize_image_dimension_before_start_of_frame) // NOLINT
+    TEST_METHOD(oversize_image_dimension_before_start_of_frame)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -910,7 +904,7 @@ public:
         Assert::AreEqual(width, decoder.frame_info().width);
     }
 
-    TEST_METHOD(oversize_image_dimension_zero_before_start_of_frame) // NOLINT
+    TEST_METHOD(oversize_image_dimension_zero_before_start_of_frame)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -928,7 +922,7 @@ public:
         Assert::AreEqual(width, decoder.frame_info().width);
     }
 
-    TEST_METHOD(oversize_image_dimension_with_invalid_number_of_bytes_throws) // NOLINT
+    TEST_METHOD(oversize_image_dimension_with_invalid_number_of_bytes_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -944,7 +938,7 @@ public:
                                 [&decoder] { decoder.read_header(); });
     }
 
-    TEST_METHOD(oversize_image_dimension_change_width_after_start_of_frame_throws) // NOLINT
+    TEST_METHOD(oversize_image_dimension_change_width_after_start_of_frame_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -960,7 +954,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_width, [&decoder] { decoder.read_header(); });
     }
 
-    TEST_METHOD(start_of_frame_changes_height_throws) // NOLINT
+    TEST_METHOD(start_of_frame_changes_height_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -976,14 +970,14 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_height, [&decoder] { decoder.read_header(); });
     }
 
-    TEST_METHOD(oversize_image_dimension_bad_segment_size_throws) // NOLINT
+    TEST_METHOD(oversize_image_dimension_bad_segment_size_throws)
     {
         oversize_image_dimension_bad_segment_size_throws(2);
         oversize_image_dimension_bad_segment_size_throws(3);
         oversize_image_dimension_bad_segment_size_throws(4);
     }
 
-    TEST_METHOD(oversize_image_dimension_that_causes_overflow_throws) // NOLINT
+    TEST_METHOD(oversize_image_dimension_that_causes_overflow_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -1009,7 +1003,7 @@ public:
 #endif
     }
 
-    TEST_METHOD(decode_to_buffer_with_uint16_size_works) // NOLINT
+    TEST_METHOD(decode_to_buffer_with_uint16_size_works)
     {
         // These are compile time checks to detect issues with overloads that have similar conversions.
         constexpr frame_info frame_info{100, 100, 8, 1};
@@ -1031,7 +1025,7 @@ public:
         decoder.decode(data, size);
     }
 
-    TEST_METHOD(abbreviated_format_mapping_table_count_after_read_header) // NOLINT
+    TEST_METHOD(abbreviated_format_mapping_table_count_after_read_header)
     {
         const vector<byte> table_data(255);
         jpeg_test_stream_writer writer;
@@ -1049,7 +1043,7 @@ public:
         Assert::AreEqual(compressed_data_format::abbreviated_table_specification, decoder.compressed_data_format());
     }
 
-    TEST_METHOD(compressed_data_format_interchange) // NOLINT
+    TEST_METHOD(compressed_data_format_interchange)
     {
         constexpr frame_info frame_info{100, 100, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1071,7 +1065,7 @@ public:
         Assert::AreEqual(compressed_data_format::interchange, decoder.compressed_data_format());
     }
 
-    TEST_METHOD(compressed_data_format_abbreviated_image_data) // NOLINT
+    TEST_METHOD(compressed_data_format_abbreviated_image_data)
     {
         constexpr frame_info frame_info{100, 100, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1098,7 +1092,7 @@ public:
         Assert::AreEqual(compressed_data_format::abbreviated_image_data, decoder.compressed_data_format());
     }
 
-    TEST_METHOD(abbreviated_format_with_spiff_header_throws) // NOLINT
+    TEST_METHOD(abbreviated_format_with_spiff_header_throws)
     {
         const vector<byte> table_data(255);
         jpeg_test_stream_writer writer;
@@ -1124,7 +1118,7 @@ public:
                                 [&decoder] { ignore = decoder.read_header(); });
     }
 
-    TEST_METHOD(mapping_table_count_after_decode_table_after_first_scan) // NOLINT
+    TEST_METHOD(mapping_table_count_after_decode_table_after_first_scan)
     {
         constexpr array data_h10{
             byte{0xFF}, byte{0xD8}, // Start of image (SOI) marker
@@ -1198,7 +1192,7 @@ public:
         Assert::AreEqual(6, decoder.get_mapping_table_id(1));
     }
 
-    TEST_METHOD(invalid_table_id_throws) // NOLINT
+    TEST_METHOD(invalid_table_id_throws)
     {
         const std::vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
@@ -1210,7 +1204,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_id, [&decoder] { decoder.read_header(); });
     }
 
-    TEST_METHOD(duplicate_table_id_throws) // NOLINT
+    TEST_METHOD(duplicate_table_id_throws)
     {
         const std::vector<std::byte> table_data(255);
         jpeg_test_stream_writer writer;
@@ -1225,7 +1219,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_id, [&decoder] { decoder.read_header(); });
     }
 
-    TEST_METHOD(mapping_table_id_returns_zero) // NOLINT
+    TEST_METHOD(mapping_table_id_returns_zero)
     {
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -1239,7 +1233,7 @@ public:
         Assert::AreEqual(0, decoder.get_mapping_table_id(2));
     }
 
-    TEST_METHOD(mapping_table_id_for_invalid_component_throws) // NOLINT
+    TEST_METHOD(mapping_table_id_for_invalid_component_throws)
     {
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -1251,7 +1245,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.get_mapping_table_id(3); });
     }
 
-    TEST_METHOD(mapping_table_id_before_decode_throws) // NOLINT
+    TEST_METHOD(mapping_table_id_before_decode_throws)
     {
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -1260,16 +1254,17 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_mapping_table_id(0); });
     }
 
-    TEST_METHOD(mapping_table_index_before_decode_throws) // NOLINT
+    TEST_METHOD(mapping_table_index_before_decode_throws)
     {
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
         const jpegls_decoder decoder(encoded_source, true);
 
-        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.find_mapping_table_index(3); });
+        assert_expect_exception(jpegls_errc::invalid_operation,
+                                [&decoder] { ignore = decoder.find_mapping_table_index(3); });
     }
 
-    TEST_METHOD(mapping_table_index_invalid_index_throws) // NOLINT
+    TEST_METHOD(mapping_table_index_invalid_index_throws)
     {
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -1278,10 +1273,11 @@ public:
         decoder.decode(decoded_destination);
 
         assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.find_mapping_table_index(0); });
-        assert_expect_exception(jpegls_errc::invalid_argument, [&decoder] { ignore = decoder.find_mapping_table_index(256); });
+        assert_expect_exception(jpegls_errc::invalid_argument,
+                                [&decoder] { ignore = decoder.find_mapping_table_index(256); });
     }
 
-    TEST_METHOD(mapping_table_count_before_decode_throws) // NOLINT
+    TEST_METHOD(mapping_table_count_before_decode_throws)
     {
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -1290,7 +1286,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.mapping_table_count(); });
     }
 
-    TEST_METHOD(mapping_table_info_before_decode_throws) // NOLINT
+    TEST_METHOD(mapping_table_info_before_decode_throws)
     {
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -1299,7 +1295,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_mapping_table_info(0); });
     }
 
-    TEST_METHOD(mapping_table_before_decode_throws) // NOLINT
+    TEST_METHOD(mapping_table_before_decode_throws)
     {
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -1310,7 +1306,7 @@ public:
                                 [&decoder, &table] { decoder.get_mapping_table_data(0, table); });
     }
 
-    TEST_METHOD(mapping_table_invalid_index_throws) // NOLINT
+    TEST_METHOD(mapping_table_invalid_index_throws)
     {
         const auto encoded_source{read_file("DataFiles/t8c0e0.jls")};
 
@@ -1323,7 +1319,7 @@ public:
                                 [&decoder, &table] { decoder.get_mapping_table_data(0, table); });
     }
 
-    TEST_METHOD(read_header_non_8_or_16_bit_with_color_transformation_throws) // NOLINT
+    TEST_METHOD(read_header_non_8_or_16_bit_with_color_transformation_throws)
     {
         const auto jpegls_data{read_file("land10-10bit-rgb-hp3-invalid.jls")};
 
@@ -1339,11 +1335,9 @@ private:
                                                    const vector<byte>::iterator end) noexcept
     // ReSharper restore CppPassValueParameterByConstReference
     {
-        constexpr byte start_of_scan{0xDA};
-
-        for (auto it{begin}; it < end  - 1; ++it)
+        for (auto it{begin}; it < end - 1; ++it)
         {
-            if (*it == byte{0xFF} && *(it + 1) == start_of_scan)
+            if (constexpr byte start_of_scan{0xDA}; *it == byte{0xFF} && *(it + 1) == start_of_scan)
                 return it;
         }
 
@@ -1356,11 +1350,10 @@ private:
                                                             const vector<byte>::iterator end) noexcept
     // ReSharper restore CppPassValueParameterByConstReference
     {
-        constexpr byte first_restart_marker{0xD0};
-
         for (auto it{begin}; it != end; ++it)
         {
-            if (*it == byte{0xFF} && it + 1 != end && *(it + 1) == first_restart_marker)
+            if (constexpr byte first_restart_marker{0xD0};
+                *it == byte{0xFF} && it + 1 != end && *(it + 1) == first_restart_marker)
                 return it;
         }
 
@@ -1414,7 +1407,8 @@ private:
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&decoder] { decoder.read_header(); });
     }
 
-    static void decode_image_with_too_small_buffer_throws(const char* image_filename, const uint32_t stride = 0, const uint32_t too_small_byte_count = 1)
+    static void decode_image_with_too_small_buffer_throws(const char* image_filename, const uint32_t stride = 0,
+                                                          const uint32_t too_small_byte_count = 1)
     {
         const auto source{read_file(image_filename)};
 

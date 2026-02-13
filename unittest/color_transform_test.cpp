@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2017 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -14,7 +14,7 @@ namespace charls::test {
 TEST_CLASS(color_transform_test)
 {
 public:
-    TEST_METHOD(transform_hp1_round_trip) // NOLINT
+    TEST_METHOD(transform_hp1_round_trip)
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.
@@ -42,7 +42,7 @@ public:
         }
     }
 
-    TEST_METHOD(transform_hp2_round_trip) // NOLINT
+    TEST_METHOD(transform_hp2_round_trip)
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.
@@ -70,7 +70,7 @@ public:
         }
     }
 
-    TEST_METHOD(transform_hp3_round_trip) // NOLINT
+    TEST_METHOD(transform_hp3_round_trip)
     {
         // For the normal unit test keep the range small for a quick test.
         // For a complete test which will take a while set the start and end to 0 and 255.

@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2014 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -22,14 +22,14 @@ namespace charls::test {
 TEST_CLASS(jpeg_stream_writer_test)
 {
 public:
-    TEST_METHOD(remaining_destination_will_be_zero_after_create_with_default) // NOLINT
+    TEST_METHOD(remaining_destination_will_be_zero_after_create_with_default)
     {
         const jpeg_stream_writer writer;
         Assert::AreEqual(size_t{}, writer.remaining_destination().size());
         Assert::IsNull(writer.remaining_destination().data());
     }
 
-    TEST_METHOD(write_start_of_image) // NOLINT
+    TEST_METHOD(write_start_of_image)
     {
         array<byte, 2> buffer{};
         jpeg_stream_writer writer;
@@ -42,7 +42,7 @@ public:
         Assert::AreEqual(static_cast<byte>(jpeg_marker_code::start_of_image), buffer[1]);
     }
 
-    TEST_METHOD(write_start_of_image_in_too_small_buffer_throws) // NOLINT
+    TEST_METHOD(write_start_of_image_in_too_small_buffer_throws)
     {
         array<byte, 1> buffer{};
         jpeg_stream_writer writer;
@@ -52,7 +52,7 @@ public:
         Assert::AreEqual(size_t{}, writer.bytes_written());
     }
 
-    TEST_METHOD(write_end_of_image) // NOLINT
+    TEST_METHOD(write_end_of_image)
     {
         array<byte, 2> buffer{};
         jpeg_stream_writer writer;
@@ -65,7 +65,7 @@ public:
         Assert::AreEqual(static_cast<byte>(jpeg_marker_code::end_of_image), buffer[1]);
     }
 
-    TEST_METHOD(write_end_of_image_even_no_extra_byte_needed) // NOLINT
+    TEST_METHOD(write_end_of_image_even_no_extra_byte_needed)
     {
         array<byte, 2> buffer{};
         jpeg_stream_writer writer;
@@ -78,7 +78,7 @@ public:
         Assert::AreEqual(static_cast<byte>(jpeg_marker_code::end_of_image), buffer[1]);
     }
 
-    TEST_METHOD(write_end_of_image_even_extra_byte_needed) // NOLINT
+    TEST_METHOD(write_end_of_image_even_extra_byte_needed)
     {
         array<byte, 5 + 3> buffer{};
         jpeg_stream_writer writer;
@@ -100,7 +100,7 @@ public:
         Assert::AreEqual(static_cast<byte>(jpeg_marker_code::end_of_image), buffer[7]);
     }
 
-    TEST_METHOD(write_end_of_image_even_extra_byte_needed_not_enabled) // NOLINT
+    TEST_METHOD(write_end_of_image_even_extra_byte_needed_not_enabled)
     {
         array<byte, 5 + 2> buffer{};
         jpeg_stream_writer writer;
@@ -121,7 +121,7 @@ public:
         Assert::AreEqual(static_cast<byte>(jpeg_marker_code::end_of_image), buffer[6]);
     }
 
-    TEST_METHOD(write_end_of_image_in_too_small_buffer_throws) // NOLINT
+    TEST_METHOD(write_end_of_image_in_too_small_buffer_throws)
     {
         array<byte, 1> buffer{};
         jpeg_stream_writer writer;
@@ -131,7 +131,7 @@ public:
         Assert::AreEqual(size_t{}, writer.bytes_written());
     }
 
-    TEST_METHOD(write_spiff_segment) // NOLINT
+    TEST_METHOD(write_spiff_segment)
     {
         array<byte, 34> buffer{};
         jpeg_stream_writer writer;
@@ -203,7 +203,7 @@ public:
         Assert::AreEqual(byte{}, buffer[33]);
     }
 
-    TEST_METHOD(write_spiff_segment_in_too_small_buffer_throws) // NOLINT
+    TEST_METHOD(write_spiff_segment_in_too_small_buffer_throws)
     {
         array<byte, 33> buffer{};
         jpeg_stream_writer writer;
@@ -225,7 +225,7 @@ public:
         Assert::AreEqual(size_t{}, writer.bytes_written());
     }
 
-    TEST_METHOD(write_spiff_end_of_directory_segment) // NOLINT
+    TEST_METHOD(write_spiff_end_of_directory_segment)
     {
         array<byte, 10> buffer{};
         jpeg_stream_writer writer;
@@ -254,7 +254,7 @@ public:
         Assert::AreEqual(static_cast<byte>(jpeg_marker_code::start_of_image), buffer[9]);
     }
 
-    TEST_METHOD(write_spiff_directory_entry) // NOLINT
+    TEST_METHOD(write_spiff_directory_entry)
     {
         array<byte, 10> buffer{};
         jpeg_stream_writer writer;
@@ -283,7 +283,7 @@ public:
         Assert::AreEqual(data[1], buffer[9]);
     }
 
-    TEST_METHOD(write_start_of_frame_segment) // NOLINT
+    TEST_METHOD(write_start_of_frame_segment)
     {
         constexpr int32_t bits_per_sample{8};
         constexpr int32_t component_count{3};
@@ -322,7 +322,7 @@ public:
         Assert::AreEqual(byte{}, buffer[18]);
     }
 
-    TEST_METHOD(write_start_of_frame_segment_large_image_width) // NOLINT
+    TEST_METHOD(write_start_of_frame_segment_large_image_width)
     {
         constexpr int32_t bits_per_sample{8};
         constexpr int32_t component_count{3};
@@ -361,7 +361,7 @@ public:
         Assert::AreEqual(byte{}, buffer[18]);
     }
 
-    TEST_METHOD(write_start_of_frame_segment_large_image_height) // NOLINT
+    TEST_METHOD(write_start_of_frame_segment_large_image_height)
     {
         constexpr int32_t bits_per_sample{8};
         constexpr int32_t component_count{3};
@@ -400,7 +400,7 @@ public:
         Assert::AreEqual(byte{}, buffer[18]);
     }
 
-    TEST_METHOD(write_start_of_frame_marker_segment_with_low_boundary_values) // NOLINT
+    TEST_METHOD(write_start_of_frame_marker_segment_with_low_boundary_values)
     {
         constexpr int32_t bits_per_sample{2};
         constexpr int32_t component_count{1};
@@ -416,7 +416,7 @@ public:
         Assert::AreEqual(static_cast<byte>(component_count), buffer[9]);
     }
 
-    TEST_METHOD(write_start_of_frame_marker_segment_with_high_boundary_values_and_serialize) // NOLINT
+    TEST_METHOD(write_start_of_frame_marker_segment_with_high_boundary_values_and_serialize)
     {
         array<byte, 775> buffer{};
         jpeg_stream_writer writer;
@@ -432,7 +432,7 @@ public:
                          to_integer<uint8_t>(buffer[buffer.size() - 3])); // Last component index.
     }
 
-    TEST_METHOD(write_color_transform_segment) // NOLINT
+    TEST_METHOD(write_color_transform_segment)
     {
         constexpr color_transformation transformation = color_transformation::hp1;
         array<byte, 9> buffer{};
@@ -452,7 +452,7 @@ public:
         Assert::AreEqual(static_cast<byte>(transformation), buffer[8]);
     }
 
-    TEST_METHOD(write_jpegls_extended_parameters_marker_and_serialize) // NOLINT
+    TEST_METHOD(write_jpegls_extended_parameters_marker_and_serialize)
     {
         constexpr jpegls_pc_parameters presets{2, 1, 2, 3, 7};
 
@@ -487,7 +487,7 @@ public:
         Assert::AreEqual(byte{7}, buffer[14]);
     }
 
-    TEST_METHOD(write_jpegls_preset_parameters_segment_for_oversized_image_dimensions) // NOLINT
+    TEST_METHOD(write_jpegls_preset_parameters_segment_for_oversized_image_dimensions)
     {
         array<byte, 14> buffer{};
         jpeg_stream_writer writer;
@@ -515,7 +515,7 @@ public:
         Assert::AreEqual(byte{255}, buffer[13]);
     }
 
-    TEST_METHOD(write_start_of_scan_segment) // NOLINT
+    TEST_METHOD(write_start_of_scan_segment)
     {
         array<byte, 10> buffer{};
         jpeg_stream_writer writer;
@@ -532,7 +532,7 @@ public:
         Assert::AreEqual(byte{}, buffer[9]);  // transformation.
     }
 
-    TEST_METHOD(write_start_of_scan_segment_with_table_id) // NOLINT
+    TEST_METHOD(write_start_of_scan_segment_with_table_id)
     {
         array<byte, 10> buffer{};
         jpeg_stream_writer writer;
@@ -550,7 +550,7 @@ public:
         Assert::AreEqual(byte{}, buffer[9]);   // transformation.
     }
 
-    TEST_METHOD(write_start_of_scan_segment_with_table_id_after_rewind) // NOLINT
+    TEST_METHOD(write_start_of_scan_segment_with_table_id_after_rewind)
     {
         array<byte, 10> buffer{};
         jpeg_stream_writer writer;
@@ -569,7 +569,7 @@ public:
         Assert::AreEqual(byte{}, buffer[9]);   // transformation.
     }
 
-    TEST_METHOD(advance_position) // NOLINT
+    TEST_METHOD(advance_position)
     {
         array<byte, 2> buffer{};
         jpeg_stream_writer writer;
@@ -579,7 +579,7 @@ public:
         Assert::AreEqual(buffer.size(), writer.bytes_written());
     }
 
-    TEST_METHOD(rewind) // NOLINT
+    TEST_METHOD(rewind)
     {
         array<byte, 10> buffer{};
         jpeg_stream_writer writer;
@@ -594,7 +594,7 @@ public:
         Assert::AreEqual(byte{1}, buffer[4]); // component count.
     }
 
-    TEST_METHOD(write_minimal_table) // NOLINT
+    TEST_METHOD(write_minimal_table)
     {
         array<byte, 8> buffer{};
         jpeg_stream_writer writer;
@@ -614,7 +614,7 @@ public:
         Assert::AreEqual(byte{77}, buffer[7]);  // table content
     }
 
-    TEST_METHOD(write_table_max_entry_size) // NOLINT
+    TEST_METHOD(write_table_max_entry_size)
     {
         array<byte, 7 + 255> buffer{};
         jpeg_stream_writer writer;
@@ -634,7 +634,7 @@ public:
         Assert::AreEqual(byte{}, buffer[7]);    // table content
     }
 
-    TEST_METHOD(write_table_fits_in_single_segment) // NOLINT
+    TEST_METHOD(write_table_fits_in_single_segment)
     {
         vector<byte> buffer(size_t{2} + std::numeric_limits<uint16_t>::max());
         jpeg_stream_writer writer;
@@ -654,7 +654,7 @@ public:
         Assert::AreEqual(byte{}, buffer[7]);    // table content (first entry)
     }
 
-    TEST_METHOD(write_table_that_requires_two_segment) // NOLINT
+    TEST_METHOD(write_table_that_requires_two_segment)
     {
         vector<byte> buffer(size_t{2} + std::numeric_limits<uint16_t>::max() + 8);
         jpeg_stream_writer writer;

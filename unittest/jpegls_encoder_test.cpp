@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -30,13 +30,13 @@ namespace charls::test {
 TEST_CLASS(jpegls_encoder_test)
 {
 public:
-    TEST_METHOD(create_destroy) // NOLINT
+    TEST_METHOD(create_destroy)
     {
         // ReSharper disable once CppLocalVariableWithNonTrivialDtorIsNeverUsed
         jpegls_encoder encoder;
     }
 
-    TEST_METHOD(create_and_move) // NOLINT
+    TEST_METHOD(create_and_move)
     {
         jpegls_encoder encoder1;
 
@@ -48,7 +48,7 @@ public:
         encoder3 = std::move(encoder2);
     }
 
-    TEST_METHOD(frame_info_max_and_min) // NOLINT
+    TEST_METHOD(frame_info_max_and_min)
     {
         jpegls_encoder encoder;
 
@@ -56,45 +56,41 @@ public:
         encoder.frame_info({std::numeric_limits<uint32_t>::max(), numeric_limits<uint32_t>::max(), 16, 255}); // maximum.
     }
 
-    TEST_METHOD(frame_info_bad_width_throws) // NOLINT
+    TEST_METHOD(frame_info_bad_width_throws)
     {
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] { encoder.frame_info({0, 1, 2, 1}); });
     }
 
-    TEST_METHOD(frame_info_bad_height_throws) // NOLINT
+    TEST_METHOD(frame_info_bad_height_throws)
     {
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] { encoder.frame_info({1, 0, 2, 1}); });
     }
 
-    TEST_METHOD(frame_info_bad_bits_per_sample_throws) // NOLINT
+    TEST_METHOD(frame_info_bad_bits_per_sample_throws)
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample, [&encoder] {
-            encoder.frame_info({1, 1, 1, 1});
-        });
-        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample, [&encoder] {
-            encoder.frame_info({1, 1, 17, 1});
-        });
+        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample,
+                                [&encoder] { encoder.frame_info({1, 1, 1, 1}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample,
+                                [&encoder] { encoder.frame_info({1, 1, 17, 1}); });
     }
 
-    TEST_METHOD(frame_info_bad_component_count_throws) // NOLINT
+    TEST_METHOD(frame_info_bad_component_count_throws)
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument_component_count, [&encoder] {
-            encoder.frame_info({1, 1, 2, 0});
-        });
-        assert_expect_exception(jpegls_errc::invalid_argument_component_count, [&encoder] {
-            encoder.frame_info({1, 1, 2, 256});
-        });
+        assert_expect_exception(jpegls_errc::invalid_argument_component_count,
+                                [&encoder] { encoder.frame_info({1, 1, 2, 0}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_component_count,
+                                [&encoder] { encoder.frame_info({1, 1, 2, 256}); });
     }
 
-    TEST_METHOD(interleave_mode) // NOLINT
+    TEST_METHOD(interleave_mode)
     {
         jpegls_encoder encoder;
 
@@ -103,7 +99,7 @@ public:
         encoder.interleave_mode(interleave_mode::sample);
     }
 
-    TEST_METHOD(interleave_mode_bad_throws) // NOLINT
+    TEST_METHOD(interleave_mode_bad_throws)
     {
         jpegls_encoder encoder;
 
@@ -113,7 +109,7 @@ public:
                                 [&encoder] { encoder.interleave_mode(static_cast<charls::interleave_mode>(3)); });
     }
 
-    TEST_METHOD(interleave_mode_does_not_match_component_count_throws) // NOLINT
+    TEST_METHOD(interleave_mode_does_not_match_component_count_throws)
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -126,7 +122,7 @@ public:
         });
     }
 
-    TEST_METHOD(near_lossless) // NOLINT
+    TEST_METHOD(near_lossless)
     {
         jpegls_encoder encoder;
 
@@ -134,7 +130,7 @@ public:
         encoder.near_lossless(255); // set highest value.
     }
 
-    TEST_METHOD(near_lossless_bad_throws) // NOLINT
+    TEST_METHOD(near_lossless_bad_throws)
     {
         jpegls_encoder encoder;
 
@@ -142,7 +138,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_argument_near_lossless, [&encoder] { encoder.near_lossless(256); });
     }
 
-    TEST_METHOD(estimated_destination_size_minimal_frame_info) // NOLINT
+    TEST_METHOD(estimated_destination_size_minimal_frame_info)
     {
         jpegls_encoder encoder;
 
@@ -151,7 +147,7 @@ public:
         Assert::IsTrue(size >= 1024);
     }
 
-    TEST_METHOD(estimated_destination_size_maximal_frame_info) // NOLINT
+    TEST_METHOD(estimated_destination_size_maximal_frame_info)
     {
         jpegls_encoder encoder;
 
@@ -162,7 +158,7 @@ public:
         Assert::IsTrue(size >= expected);
     }
 
-    TEST_METHOD(estimated_destination_size_monochrome_16_bit) // NOLINT
+    TEST_METHOD(estimated_destination_size_monochrome_16_bit)
     {
         jpegls_encoder encoder;
 
@@ -171,7 +167,7 @@ public:
         Assert::IsTrue(size >= size_t{100} * 100 * 2);
     }
 
-    TEST_METHOD(estimated_destination_size_color_8_bit) // NOLINT
+    TEST_METHOD(estimated_destination_size_color_8_bit)
     {
         jpegls_encoder encoder;
 
@@ -180,7 +176,7 @@ public:
         Assert::IsTrue(size >= size_t{2000} * 2000 * 3);
     }
 
-    TEST_METHOD(estimated_destination_size_very_wide) // NOLINT
+    TEST_METHOD(estimated_destination_size_very_wide)
     {
         jpegls_encoder encoder;
 
@@ -189,7 +185,7 @@ public:
         Assert::IsTrue(size >= static_cast<size_t>(numeric_limits<uint16_t>::max()) + 1024U);
     }
 
-    TEST_METHOD(estimated_destination_size_very_high) // NOLINT
+    TEST_METHOD(estimated_destination_size_very_high)
     {
         jpegls_encoder encoder;
 
@@ -198,7 +194,7 @@ public:
         Assert::IsTrue(size >= static_cast<size_t>(numeric_limits<uint16_t>::max()) + 1024U);
     }
 
-    TEST_METHOD(estimated_destination_size_too_soon_throws) // NOLINT
+    TEST_METHOD(estimated_destination_size_too_soon_throws)
     {
         const jpegls_encoder encoder;
 
@@ -206,7 +202,7 @@ public:
                                 [&encoder] { ignore = encoder.estimated_destination_size(); });
     }
 
-    TEST_METHOD(estimated_destination_size_thath_causes_overflow_throws) // NOLINT
+    TEST_METHOD(estimated_destination_size_thath_causes_overflow_throws)
     {
         jpegls_encoder encoder;
 
@@ -223,7 +219,7 @@ public:
 #endif
     }
 
-    TEST_METHOD(destination) // NOLINT
+    TEST_METHOD(destination)
     {
         jpegls_encoder encoder;
 
@@ -231,7 +227,7 @@ public:
         encoder.destination(destination);
     }
 
-    TEST_METHOD(destination_can_be_set_multiple_times_before_writing) // NOLINT
+    TEST_METHOD(destination_can_be_set_multiple_times_before_writing)
     {
         jpegls_encoder encoder;
 
@@ -247,7 +243,7 @@ public:
         Assert::AreEqual(serialized_spiff_header_size + 2, encoder.bytes_written());
     }
 
-    TEST_METHOD(destination_can_not_be_set_after_writing_throws) // NOLINT
+    TEST_METHOD(destination_can_not_be_set_after_writing_throws)
     {
         jpegls_encoder encoder;
 
@@ -262,7 +258,7 @@ public:
                                 [&encoder, &destination] { encoder.destination(destination); });
     }
 
-    TEST_METHOD(write_standard_spiff_header) // NOLINT
+    TEST_METHOD(write_standard_spiff_header)
     {
         jpegls_encoder encoder;
 
@@ -292,7 +288,7 @@ public:
         Assert::AreEqual({}, destination[11]);
     }
 
-    TEST_METHOD(write_standard_spiff_header_with_non_matching_color_space) // NOLINT
+    TEST_METHOD(write_standard_spiff_header_with_non_matching_color_space)
     {
         jpegls_encoder encoder;
 
@@ -322,7 +318,7 @@ public:
         Assert::AreEqual({}, destination[11]);
     }
 
-    TEST_METHOD(write_standard_spiff_header_without_destination_throws) // NOLINT
+    TEST_METHOD(write_standard_spiff_header_without_destination_throws)
     {
         jpegls_encoder encoder;
 
@@ -332,7 +328,7 @@ public:
                                 [&encoder] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
 
-    TEST_METHOD(write_standard_spiff_header_without_frame_info_throws) // NOLINT
+    TEST_METHOD(write_standard_spiff_header_without_frame_info_throws)
     {
         jpegls_encoder encoder;
 
@@ -343,7 +339,7 @@ public:
                                 [&encoder] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
 
-    TEST_METHOD(write_standard_spiff_header_twice_throws) // NOLINT
+    TEST_METHOD(write_standard_spiff_header_twice_throws)
     {
         jpegls_encoder encoder;
 
@@ -357,7 +353,7 @@ public:
                                 [&encoder] { encoder.write_standard_spiff_header(spiff_color_space::cmyk); });
     }
 
-    TEST_METHOD(write_spiff_header) // NOLINT
+    TEST_METHOD(write_spiff_header)
     {
         jpegls_encoder encoder;
 
@@ -390,7 +386,7 @@ public:
         Assert::AreEqual(byte{}, destination[11]);
     }
 
-    TEST_METHOD(write_spiff_header_invalid_height_throws) // NOLINT
+    TEST_METHOD(write_spiff_header_invalid_height_throws)
     {
         jpegls_encoder encoder;
 
@@ -407,7 +403,7 @@ public:
         Assert::AreEqual(size_t{}, encoder.bytes_written());
     }
 
-    TEST_METHOD(write_spiff_header_invalid_width_throws) // NOLINT
+    TEST_METHOD(write_spiff_header_invalid_width_throws)
     {
         jpegls_encoder encoder;
 
@@ -424,7 +420,7 @@ public:
         Assert::AreEqual(size_t{}, encoder.bytes_written());
     }
 
-    TEST_METHOD(write_spiff_entry) // NOLINT
+    TEST_METHOD(write_spiff_entry)
     {
         jpegls_encoder encoder;
 
@@ -439,7 +435,7 @@ public:
         Assert::AreEqual(size_t{48}, encoder.bytes_written());
     }
 
-    TEST_METHOD(write_spiff_entry_twice) // NOLINT
+    TEST_METHOD(write_spiff_entry_twice)
     {
         jpegls_encoder encoder;
 
@@ -455,7 +451,7 @@ public:
         Assert::AreEqual(size_t{60}, encoder.bytes_written());
     }
 
-    TEST_METHOD(write_empty_spiff_entry) // NOLINT
+    TEST_METHOD(write_empty_spiff_entry)
     {
         jpegls_encoder encoder;
 
@@ -470,7 +466,7 @@ public:
         Assert::AreEqual(size_t{44}, encoder.bytes_written());
     }
 
-    TEST_METHOD(write_spiff_entry_with_invalid_tag_throws) // NOLINT
+    TEST_METHOD(write_spiff_entry_with_invalid_tag_throws)
     {
         jpegls_encoder encoder;
 
@@ -486,7 +482,7 @@ public:
         });
     }
 
-    TEST_METHOD(write_spiff_entry_with_invalid_size_throws) // NOLINT
+    TEST_METHOD(write_spiff_entry_with_invalid_size_throws)
     {
         jpegls_encoder encoder;
 
@@ -502,7 +498,7 @@ public:
         });
     }
 
-    TEST_METHOD(write_spiff_entry_without_spiff_header_throws) // NOLINT
+    TEST_METHOD(write_spiff_entry_without_spiff_header_throws)
     {
         jpegls_encoder encoder;
 
@@ -517,7 +513,7 @@ public:
         });
     }
 
-    TEST_METHOD(write_spiff_end_of_directory_entry) // NOLINT
+    TEST_METHOD(write_spiff_end_of_directory_entry)
     {
         jpegls_encoder encoder;
 
@@ -533,7 +529,7 @@ public:
         Assert::AreEqual(byte{0xD8}, destination[45]); // 0xD8 = SOI: Marks the start of an image.
     }
 
-    TEST_METHOD(write_spiff_end_of_directory_entry_before_header_throws) // NOLINT
+    TEST_METHOD(write_spiff_end_of_directory_entry_before_header_throws)
     {
         jpegls_encoder encoder;
 
@@ -544,7 +540,7 @@ public:
                                 [&encoder] { encoder.write_spiff_end_of_directory_entry(); });
     }
 
-    TEST_METHOD(write_spiff_end_of_directory_entry_twice_throws) // NOLINT
+    TEST_METHOD(write_spiff_end_of_directory_entry_twice_throws)
     {
         jpegls_encoder encoder;
 
@@ -560,7 +556,7 @@ public:
                                 [&encoder] { encoder.write_spiff_end_of_directory_entry(); });
     }
 
-    TEST_METHOD(write_comment) // NOLINT
+    TEST_METHOD(write_comment)
     {
         jpegls_encoder encoder;
 
@@ -586,7 +582,7 @@ public:
         Assert::AreEqual(byte{}, destination[9]);
     }
 
-    TEST_METHOD(write_empty_comment) // NOLINT
+    TEST_METHOD(write_empty_comment)
     {
         jpegls_encoder encoder;
 
@@ -608,7 +604,7 @@ public:
         Assert::AreEqual(byte{2}, destination[5]);
     }
 
-    TEST_METHOD(write_empty_comment_buffer) // NOLINT
+    TEST_METHOD(write_empty_comment_buffer)
     {
         jpegls_encoder encoder;
 
@@ -630,7 +626,7 @@ public:
         Assert::AreEqual(byte{2}, destination[5]);
     }
 
-    TEST_METHOD(write_max_comment) // NOLINT
+    TEST_METHOD(write_max_comment)
     {
         jpegls_encoder encoder;
 
@@ -654,7 +650,7 @@ public:
         Assert::AreEqual(byte{255}, destination[5]);
     }
 
-    TEST_METHOD(write_two_comment) // NOLINT
+    TEST_METHOD(write_two_comment)
     {
         jpegls_encoder encoder;
 
@@ -686,7 +682,7 @@ public:
         Assert::AreEqual(byte{2}, destination[13]);
     }
 
-    TEST_METHOD(write_too_large_comment_throws) // NOLINT
+    TEST_METHOD(write_too_large_comment_throws)
     {
         jpegls_encoder encoder;
 
@@ -700,7 +696,7 @@ public:
                                 [&encoder, &data] { ignore = encoder.write_comment(data.data(), data.size()); });
     }
 
-    TEST_METHOD(write_comment_null_pointer_with_size_throws) // NOLINT
+    TEST_METHOD(write_comment_null_pointer_with_size_throws)
     {
         jpegls_encoder encoder;
 
@@ -713,7 +709,7 @@ public:
         });
     }
 
-    TEST_METHOD(write_comment_after_encode_throws) // NOLINT
+    TEST_METHOD(write_comment_after_encode_throws)
     {
         const vector source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
 
@@ -728,7 +724,7 @@ public:
                                 [&encoder] { ignore = encoder.write_comment("after-encoding"); });
     }
 
-    TEST_METHOD(write_comment_before_encode) // NOLINT
+    TEST_METHOD(write_comment_before_encode)
     {
         const vector source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{3, 1, 16, 1};
@@ -744,7 +740,7 @@ public:
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(write_application_data) // NOLINT
+    TEST_METHOD(write_application_data)
     {
         jpegls_encoder encoder;
 
@@ -771,7 +767,7 @@ public:
         Assert::AreEqual(byte{4}, destination[9]);
     }
 
-    TEST_METHOD(write_empty_application_data) // NOLINT
+    TEST_METHOD(write_empty_application_data)
     {
         jpegls_encoder encoder;
 
@@ -793,7 +789,7 @@ public:
         Assert::AreEqual(byte{2}, destination[5]);
     }
 
-    TEST_METHOD(write_max_application_data) // NOLINT
+    TEST_METHOD(write_max_application_data)
     {
         jpegls_encoder encoder;
 
@@ -817,7 +813,7 @@ public:
         Assert::AreEqual(byte{255}, destination[5]);
     }
 
-    TEST_METHOD(write_two_application_data) // NOLINT
+    TEST_METHOD(write_two_application_data)
     {
         jpegls_encoder encoder;
 
@@ -850,7 +846,7 @@ public:
         Assert::AreEqual(byte{2}, destination[13]);
     }
 
-    TEST_METHOD(write_too_large_application_data_throws) // NOLINT
+    TEST_METHOD(write_too_large_application_data_throws)
     {
         jpegls_encoder encoder;
 
@@ -864,7 +860,7 @@ public:
                                 [&encoder, &data] { ignore = encoder.write_application_data(0, data.data(), data.size()); });
     }
 
-    TEST_METHOD(write_application_data_null_pointer_with_size_throws) // NOLINT
+    TEST_METHOD(write_application_data_null_pointer_with_size_throws)
     {
         jpegls_encoder encoder;
 
@@ -877,7 +873,7 @@ public:
         });
     }
 
-    TEST_METHOD(write_application_data_after_encode_throws) // NOLINT
+    TEST_METHOD(write_application_data_after_encode_throws)
     {
         const vector source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
 
@@ -892,7 +888,7 @@ public:
                                 [&encoder] { ignore = encoder.write_application_data(0, nullptr, 0); });
     }
 
-    TEST_METHOD(write_application_data_with_bad_id_throws) // NOLINT
+    TEST_METHOD(write_application_data_with_bad_id_throws)
     {
         jpegls_encoder encoder;
 
@@ -910,7 +906,7 @@ public:
         });
     }
 
-    TEST_METHOD(write_application_data_before_encode) // NOLINT
+    TEST_METHOD(write_application_data_before_encode)
     {
         constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{3, 1, 16, 1};
@@ -926,7 +922,7 @@ public:
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(write_mapping_table) // NOLINT
+    TEST_METHOD(write_mapping_table)
     {
         jpegls_encoder encoder;
 
@@ -953,7 +949,7 @@ public:
         Assert::AreEqual(byte{}, destination[9]);
     }
 
-    TEST_METHOD(write_mapping_table_before_encode) // NOLINT
+    TEST_METHOD(write_mapping_table_before_encode)
     {
         constexpr array table_data{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
@@ -970,7 +966,7 @@ public:
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(write_mapping_table_with_bad_table_id_throws) // NOLINT
+    TEST_METHOD(write_mapping_table_with_bad_table_id_throws)
     {
         constexpr array table_data{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         jpegls_encoder encoder;
@@ -985,7 +981,7 @@ public:
                                 [&encoder, &table_data] { ignore = encoder.write_mapping_table(256, 1, table_data); });
     }
 
-    TEST_METHOD(write_mapping_table_with_bad_entry_size_throws) // NOLINT
+    TEST_METHOD(write_mapping_table_with_bad_entry_size_throws)
     {
         constexpr array table_data{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         jpegls_encoder encoder;
@@ -1000,7 +996,7 @@ public:
                                 [&encoder, &table_data] { ignore = encoder.write_mapping_table(1, 256, table_data); });
     }
 
-    TEST_METHOD(write_mapping_table_with_too_small_table_throws) // NOLINT
+    TEST_METHOD(write_mapping_table_with_too_small_table_throws)
     {
         constexpr array table_data{byte{0}};
         jpegls_encoder encoder;
@@ -1012,7 +1008,7 @@ public:
                                 [&encoder, &table_data] { ignore = encoder.write_mapping_table(1, 2, table_data); });
     }
 
-    TEST_METHOD(write_mapping_table_null_pointer_with_size_throws) // NOLINT
+    TEST_METHOD(write_mapping_table_null_pointer_with_size_throws)
     {
         jpegls_encoder encoder;
 
@@ -1025,7 +1021,7 @@ public:
         });
     }
 
-    TEST_METHOD(write_mapping_table_after_encode_throws) // NOLINT
+    TEST_METHOD(write_mapping_table_after_encode_throws)
     {
         constexpr array table_data{byte{0}};
         const vector source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
@@ -1041,7 +1037,7 @@ public:
                                 [&encoder, &table_data] { ignore = encoder.write_mapping_table(1, 1, table_data); });
     }
 
-    TEST_METHOD(create_abbreviated_format) // NOLINT
+    TEST_METHOD(create_abbreviated_format)
     {
         jpegls_encoder encoder;
 
@@ -1073,7 +1069,7 @@ public:
         Assert::AreEqual(static_cast<byte>(jpeg_marker_code::end_of_image), destination[11]);
     }
 
-    TEST_METHOD(create_abbreviated_format_with_no_tables_throws) // NOLINT
+    TEST_METHOD(create_abbreviated_format_with_no_tables_throws)
     {
         jpegls_encoder encoder;
 
@@ -1084,7 +1080,7 @@ public:
                                 [&encoder] { ignore = encoder.create_abbreviated_format(); });
     }
 
-    TEST_METHOD(set_preset_coding_parameters) // NOLINT
+    TEST_METHOD(set_preset_coding_parameters)
     {
         jpegls_encoder encoder;
 
@@ -1095,7 +1091,7 @@ public:
         Assert::IsTrue(true);
     }
 
-    TEST_METHOD(set_preset_coding_parameters_bad_values_throws) // NOLINT
+    TEST_METHOD(set_preset_coding_parameters_bad_values_throws)
     {
         constexpr array source{byte{0}, byte{1}, byte{1}, byte{1}, byte{0}};
         constexpr frame_info frame_info{5, 1, 8, 1};
@@ -1112,7 +1108,7 @@ public:
                                 [&encoder, &source] { ignore = encoder.encode(source); });
     }
 
-    TEST_METHOD(encode_with_preset_coding_parameters_non_default_values) // NOLINT
+    TEST_METHOD(encode_with_preset_coding_parameters_non_default_values)
     {
         encode_with_custom_preset_coding_parameters({1, 0, 0, 0, 0});
         encode_with_custom_preset_coding_parameters({0, 1, 0, 0, 0});
@@ -1122,7 +1118,7 @@ public:
         encode_with_custom_preset_coding_parameters({0, 0, 0, 0, 63});
     }
 
-    TEST_METHOD(set_color_transformation_bad_value_throws) // NOLINT
+    TEST_METHOD(set_color_transformation_bad_value_throws)
     {
         jpegls_encoder encoder;
 
@@ -1130,7 +1126,7 @@ public:
                                 [&encoder] { encoder.color_transformation(static_cast<color_transformation>(100)); });
     }
 
-    TEST_METHOD(set_table_id) // NOLINT
+    TEST_METHOD(set_table_id)
     {
         constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{3, 1, 16, 1};
@@ -1149,7 +1145,7 @@ public:
         Assert::AreEqual(1, decoder.get_mapping_table_id(0));
     }
 
-    TEST_METHOD(set_table_id_clear_id) // NOLINT
+    TEST_METHOD(set_table_id_clear_id)
     {
         constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{3, 1, 16, 1};
@@ -1169,21 +1165,21 @@ public:
         Assert::AreEqual(0, decoder.get_mapping_table_id(0));
     }
 
-    TEST_METHOD(set_table_id_bad_component_index_throws) // NOLINT
+    TEST_METHOD(set_table_id_bad_component_index_throws)
     {
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] { encoder.set_mapping_table_id(-1, 0); });
     }
 
-    TEST_METHOD(set_table_id_bad_id_throws) // NOLINT
+    TEST_METHOD(set_table_id_bad_id_throws)
     {
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument, [&encoder] { encoder.set_mapping_table_id(0, -1); });
     }
 
-    TEST_METHOD(encode_without_destination_throws) // NOLINT
+    TEST_METHOD(encode_without_destination_throws)
     {
         jpegls_encoder encoder;
 
@@ -1192,7 +1188,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&encoder, &source] { ignore = encoder.encode(source); });
     }
 
-    TEST_METHOD(encode_without_frame_info_throws) // NOLINT
+    TEST_METHOD(encode_without_frame_info_throws)
     {
         jpegls_encoder encoder;
 
@@ -1202,7 +1198,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&encoder, &source] { ignore = encoder.encode(source); });
     }
 
-    TEST_METHOD(encode_with_spiff_header) // NOLINT
+    TEST_METHOD(encode_with_spiff_header)
     {
         constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}};
         constexpr frame_info frame_info{5, 1, 8, 1};
@@ -1220,7 +1216,7 @@ public:
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_with_color_transformation) // NOLINT
+    TEST_METHOD(encode_with_color_transformation)
     {
         constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{2, 1, 8, 3};
@@ -1237,7 +1233,7 @@ public:
                          color_transformation::hp1);
     }
 
-    TEST_METHOD(encode_16_bit) // NOLINT
+    TEST_METHOD(encode_16_bit)
     {
         constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{3, 1, 16, 1};
@@ -1254,7 +1250,7 @@ public:
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(simple_encode) // NOLINT
+    TEST_METHOD(simple_encode)
     {
         const vector source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
 
@@ -1264,7 +1260,7 @@ public:
         test_by_decoding(encoded, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_with_stride_interleave_none_8_bit) // NOLINT
+    TEST_METHOD(encode_with_stride_interleave_none_8_bit)
     {
         constexpr array<byte, 30> source{byte{100}, byte{100}, byte{100}, byte{0},   byte{0},   byte{0},   byte{0},  byte{0},
                                          byte{0},   byte{0},   byte{150}, byte{150}, byte{150}, byte{0},   byte{0},  byte{0},
@@ -1285,7 +1281,7 @@ public:
                          interleave_mode::none);
     }
 
-    TEST_METHOD(encode_with_stride_interleave_none_8_bit_small_image) // NOLINT
+    TEST_METHOD(encode_with_stride_interleave_none_8_bit_small_image)
     {
         constexpr array source{byte{100}, byte{99}, byte{0}, byte{0}, byte{101}, byte{98}};
         constexpr frame_info frame_info{2, 2, 8, 1};
@@ -1303,7 +1299,7 @@ public:
                          interleave_mode::none);
     }
 
-    TEST_METHOD(encode_with_stride_interleave_none_16_bit) // NOLINT
+    TEST_METHOD(encode_with_stride_interleave_none_16_bit)
     {
         constexpr array<uint16_t, 30> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
                                              150, 0,   0,   0, 0, 0, 0, 0, 200, 200, 200};
@@ -1322,7 +1318,7 @@ public:
                          expected_destination.size() * sizeof(uint16_t), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_with_stride_interleave_sample_8_bit) // NOLINT
+    TEST_METHOD(encode_with_stride_interleave_sample_8_bit)
     {
         constexpr array source{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
                                byte{200}, byte{100}, byte{150}, byte{200}, byte{0}};
@@ -1342,7 +1338,7 @@ public:
                          interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_with_stride_interleave_sample_16_bit) // NOLINT
+    TEST_METHOD(encode_with_stride_interleave_sample_16_bit)
     {
         constexpr array<uint16_t, 10> source{100, 150, 200, 100, 150, 200, 100, 150, 200, 0};
         constexpr frame_info frame_info{3, 1, 16, 3};
@@ -1360,7 +1356,7 @@ public:
                          expected_destination.size() * sizeof(uint16_t), interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_with_bad_stride_interleave_none_throws) // NOLINT
+    TEST_METHOD(encode_with_bad_stride_interleave_none_throws)
     {
         constexpr array<byte, 21> source{byte{100}, byte{100}, byte{100}, byte{0},   byte{0},   byte{0},   byte{0},
                                          byte{0},   byte{0},   byte{0},   byte{150}, byte{150}, byte{150}, byte{0},
@@ -1376,7 +1372,7 @@ public:
                                 [&encoder, &source] { ignore = encoder.encode(source, 4); });
     }
 
-    TEST_METHOD(encode_with_bad_stride_interleave_sample_throws) // NOLINT
+    TEST_METHOD(encode_with_bad_stride_interleave_sample_throws)
     {
         constexpr array<byte, 12> source{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
                                          byte{200}, byte{100}, byte{150}, byte{200}};
@@ -1391,7 +1387,7 @@ public:
                                 [&encoder, &source] { ignore = encoder.encode(source, 7); });
     }
 
-    TEST_METHOD(encode_with_too_small_stride_interleave_none_throws) // NOLINT
+    TEST_METHOD(encode_with_too_small_stride_interleave_none_throws)
     {
         constexpr array source{byte{100}, byte{100}, byte{100}, byte{},    byte{},    byte{},    byte{},
                                byte{},    byte{},    byte{},    byte{150}, byte{150}, byte{150}, byte{},
@@ -1407,7 +1403,7 @@ public:
                                 [&encoder, &source] { ignore = encoder.encode(source, 1); });
     }
 
-    TEST_METHOD(encode_with_too_small_stride_interleave_sample_throws) // NOLINT
+    TEST_METHOD(encode_with_too_small_stride_interleave_sample_throws)
     {
         constexpr array<byte, 12> source{byte{100}, byte{150}, byte{200}, byte{100}, byte{150},
                                          byte{200}, byte{100}, byte{150}, byte{200}};
@@ -1422,7 +1418,7 @@ public:
                                 [&encoder, &source] { ignore = encoder.encode(source, 5); });
     }
 
-    TEST_METHOD(encode_1_component_4_bit_with_high_bits_set) // NOLINT
+    TEST_METHOD(encode_1_component_4_bit_with_high_bits_set)
     {
         const vector source(size_t{512} * 512, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 4, 1};
@@ -1440,7 +1436,7 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_1_component_12_bit_with_high_bits_set) // NOLINT
+    TEST_METHOD(encode_1_component_12_bit_with_high_bits_set)
     {
         const vector source(size_t{512} * 512 * 2, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 12, 1};
@@ -1459,7 +1455,7 @@ public:
                          interleave_mode::none);
     }
 
-    TEST_METHOD(encode_3_components_6_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
+    TEST_METHOD(encode_3_components_6_bit_with_high_bits_set_interleave_mode_sample)
     {
         const vector source(size_t{512} * 512 * 3, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 6, 3};
@@ -1477,7 +1473,7 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_3_components_6_bit_with_high_bits_set_interleave_mode_line) // NOLINT
+    TEST_METHOD(encode_3_components_6_bit_with_high_bits_set_interleave_mode_line)
     {
         const vector source(size_t{512} * 512 * 3, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 6, 3};
@@ -1495,7 +1491,7 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::line);
     }
 
-    TEST_METHOD(encode_3_components_10_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
+    TEST_METHOD(encode_3_components_10_bit_with_high_bits_set_interleave_mode_sample)
     {
         const vector source(size_t{512} * 512 * 2 * 3, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 10, 3};
@@ -1513,7 +1509,7 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_3_components_10_bit_with_high_bits_set_interleave_mode_line) // NOLINT
+    TEST_METHOD(encode_3_components_10_bit_with_high_bits_set_interleave_mode_line)
     {
         const vector source(size_t{512} * 512 * 2 * 3, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 10, 3};
@@ -1531,7 +1527,7 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::line);
     }
 
-    TEST_METHOD(encode_4_components_5_bit_with_high_bits_set_interleave_mode_line) // NOLINT
+    TEST_METHOD(encode_4_components_5_bit_with_high_bits_set_interleave_mode_line)
     {
         const vector source(size_t{512} * 512 * 4, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 5, 4};
@@ -1549,7 +1545,7 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::line);
     }
 
-    TEST_METHOD(encode_4_components_7_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
+    TEST_METHOD(encode_4_components_7_bit_with_high_bits_set_interleave_mode_sample)
     {
         const vector source(size_t{512} * 512 * 4, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 7, 4};
@@ -1567,7 +1563,7 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size(), interleave_mode::sample);
     }
 
-    TEST_METHOD(encode_4_components_11_bit_with_high_bits_set_interleave_mode_line) // NOLINT
+    TEST_METHOD(encode_4_components_11_bit_with_high_bits_set_interleave_mode_line)
     {
         const vector source(size_t{512} * 512 * 2 * 4, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 11, 4};
@@ -1585,7 +1581,7 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::line);
     }
 
-    TEST_METHOD(encode_4_components_13_bit_with_high_bits_set_interleave_mode_sample) // NOLINT
+    TEST_METHOD(encode_4_components_13_bit_with_high_bits_set_interleave_mode_sample)
     {
         const vector source(size_t{512} * 512 * 2 * 4, byte{0xFF});
         constexpr frame_info frame_info{512, 512, 13, 4};
@@ -1603,7 +1599,7 @@ public:
         test_by_decoding(destination, frame_info, expected.data(), expected.size() * 2, interleave_mode::sample);
     }
 
-    TEST_METHOD(rewind) // NOLINT
+    TEST_METHOD(rewind)
     {
         constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{3, 1, 16, 1};
@@ -1628,7 +1624,7 @@ public:
         Assert::IsTrue(destination_backup == destination);
     }
 
-    TEST_METHOD(rewind_before_destination) // NOLINT
+    TEST_METHOD(rewind_before_destination)
     {
         constexpr array source{byte{0}, byte{1}, byte{2}, byte{3}, byte{4}, byte{5}};
         constexpr frame_info frame_info{3, 1, 16, 1};
@@ -1646,7 +1642,7 @@ public:
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_image_odd_size) // NOLINT
+    TEST_METHOD(encode_image_odd_size)
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1657,7 +1653,7 @@ public:
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_image_odd_size_forced_even) // NOLINT
+    TEST_METHOD(encode_image_odd_size_forced_even)
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1669,7 +1665,7 @@ public:
         test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(encode_image_forced_version_comment) // NOLINT
+    TEST_METHOD(encode_image_forced_version_comment)
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1695,7 +1691,7 @@ public:
         Assert::IsTrue(memcmp(expected.data(), actual_data, actual_size) == 0);
     }
 
-    TEST_METHOD(encode_image_include_pc_parameters_jai) // NOLINT
+    TEST_METHOD(encode_image_include_pc_parameters_jai)
     {
         constexpr frame_info frame_info{1, 1, 16, 1};
         const vector<uint16_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1741,7 +1737,7 @@ public:
         Assert::AreEqual(expected.reset, reset);
     }
 
-    TEST_METHOD(encode_image_with_include_pc_parameters_jai_not_set) // NOLINT
+    TEST_METHOD(encode_image_with_include_pc_parameters_jai_not_set)
     {
         constexpr frame_info frame_info{1, 1, 16, 1};
         const vector<uint16_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1758,7 +1754,7 @@ public:
         Assert::AreEqual(size_t{28}, bytes_written);
     }
 
-    TEST_METHOD(set_invalid_encode_options_throws) // NOLINT
+    TEST_METHOD(set_invalid_encode_options_throws)
     {
         jpegls_encoder encoder;
 
@@ -1766,7 +1762,7 @@ public:
                                 [&encoder] { encoder.encoding_options(static_cast<encoding_options>(8)); });
     }
 
-    TEST_METHOD(large_image_contains_lse_for_oversize_image_dimension) // NOLINT
+    TEST_METHOD(large_image_contains_lse_for_oversize_image_dimension)
     {
         constexpr frame_info frame_info{numeric_limits<uint16_t>::max() + 1U, 1, 16, 1};
         const vector<uint16_t> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1785,7 +1781,7 @@ public:
         Assert::IsTrue(it != destination.cend());
     }
 
-    TEST_METHOD(encode_oversized_image) // NOLINT
+    TEST_METHOD(encode_oversized_image)
     {
         constexpr frame_info frame_info{numeric_limits<uint16_t>::max() + 1U, 1, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1795,7 +1791,7 @@ public:
         test_by_decoding(encoded_source, frame_info, source.data(), source.size(), interleave_mode::none);
     }
 
-    TEST_METHOD(image_contains_no_preset_coding_parameters_by_default) // NOLINT
+    TEST_METHOD(image_contains_no_preset_coding_parameters_by_default)
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1814,7 +1810,7 @@ public:
         Assert::IsTrue(it == destination.cend());
     }
 
-    TEST_METHOD(image_contains_no_preset_coding_parameters_if_configured_pc_is_default) // NOLINT
+    TEST_METHOD(image_contains_no_preset_coding_parameters_if_configured_pc_is_default)
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1833,7 +1829,7 @@ public:
         Assert::IsTrue(it == destination.cend());
     }
 
-    TEST_METHOD(image_contains_preset_coding_parameters_if_configured_pc_is_non_default) // NOLINT
+    TEST_METHOD(image_contains_preset_coding_parameters_if_configured_pc_is_non_default)
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1852,7 +1848,7 @@ public:
         Assert::IsFalse(it == destination.cend());
     }
 
-    TEST_METHOD(image_contains_preset_coding_parameters_if_configured_pc_has_diff_max_value) // NOLINT
+    TEST_METHOD(image_contains_preset_coding_parameters_if_configured_pc_has_diff_max_value)
     {
         constexpr frame_info frame_info{512, 512, 8, 1};
         const vector<byte> source(static_cast<size_t>(frame_info.width) * frame_info.height);
@@ -1871,7 +1867,7 @@ public:
         Assert::IsFalse(it == destination.cend());
     }
 
-    TEST_METHOD(encode_to_buffer_with_uint16_size_works) // NOLINT
+    TEST_METHOD(encode_to_buffer_with_uint16_size_works)
     {
         // These are compile time checks to detect issues with overloads that have similar conversions.
         constexpr frame_info frame_info{100, 100, 8, 1};
@@ -1953,15 +1949,14 @@ private:
     }
 
     // ReSharper disable CppPassValueParameterByConstReference (iterators are not simple pointers in debug builds)
+    [[nodiscard]]
     static vector<byte>::const_iterator find_first_lse_segment(const vector<byte>::const_iterator begin,
                                                                const vector<byte>::const_iterator end) noexcept
     // ReSharper restore CppPassValueParameterByConstReference
     {
-        constexpr byte lse_marker{0xF8};
-
         for (auto it{begin}; it != end; ++it)
         {
-            if (*it == byte{0xFF} && it + 1 != end && *(it + 1) == lse_marker)
+            if (constexpr byte lse_marker{0xF8}; *it == byte{0xFF} && it + 1 != end && *(it + 1) == lse_marker)
                 return it;
         }
 

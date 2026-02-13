@@ -70,3 +70,5 @@ CheckOptions:
     value:           '2'
   - key:             readability-simplify-boolean-expr.IgnoreMacros
     value:           '1'
+ExtraArgs:
+  - -Wno-unused-command-line-argument # Rationale: Ignore, triggered by Visual Studio when running clang-tidy.
