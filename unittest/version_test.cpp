@@ -55,7 +55,7 @@ public:
 
         charls_get_version_number(&major, &minor, &patch);
 
-        // Use explicit the C macros.
+        // Explicitly use the C macros.
         Assert::AreEqual(CHARLS_VERSION_MAJOR, major);
         Assert::AreEqual(CHARLS_VERSION_MINOR, minor);
         Assert::AreEqual(CHARLS_VERSION_PATCH, patch);
