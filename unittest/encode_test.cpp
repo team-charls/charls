@@ -353,8 +353,8 @@ public:
         decoder.decode(destination);
 
         check_output(component_0_and_1_and_2.data(), component_0_and_1_and_2.size(), destination.data(), decoder, 1,
-                     intptr_t{8} * 2 * 3);
-        check_output(component3.data(), component3.size(), destination.data() + intptr_t{8} * 2 * 3, decoder, 1,
+                     size_t{8} * 2 * 3);
+        check_output(component3.data(), component3.size(), destination.data() + size_t{8} * 2 * 3, decoder, 1,
                      size_t{8} * 2);
         Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(0));
         Assert::AreEqual(interleave_mode::sample, decoder.get_interleave_mode(1));
