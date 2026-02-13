@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2010 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "util.hpp"
@@ -111,8 +111,8 @@ void write_file(const char* filename, const void* data, const size_t size)
 void test_round_trip(const char* name, const vector<byte>& original_buffer, const rect_size size,
                      const int bits_per_sample, const int component_count, const int loop_count)
 {
-    const auto height = static_cast<int>(size.cy);
-    const auto width = static_cast<int>(size.cx);
+    const auto height{static_cast<int>(size.cy)};
+    const auto width{static_cast<int>(size.cx)};
 
     vector<byte> encoded_buffer(height * width * component_count * bits_per_sample / 4U);
 
@@ -122,14 +122,18 @@ void test_round_trip(const char* name, const vector<byte>& original_buffer, cons
     interleave_mode interleave_mode{};
     color_transformation color_transformation{};
 
-    if (component_count == 4)
+    switch (component_count)
     {
-        interleave_mode = charls::interleave_mode::line;
-    }
-    else if (component_count == 3)
-    {
-        interleave_mode = charls::interleave_mode::line;
+    case 3:
         color_transformation = charls::color_transformation::hp1;
+        [[fallthrough]];
+
+    case 4:
+        interleave_mode = charls::interleave_mode::line;
+        break;
+
+    default:
+        break;
     }
 
     size_t encoded_actual_size{};

@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -13,7 +13,7 @@ namespace charls::test {
 TEST_CLASS(lossless_traits_test)
 {
 public:
-    TEST_METHOD(test_traits_16_bit) // NOLINT
+    TEST_METHOD(test_traits_16_bit)
     {
         using lossless_traits = lossless_traits<uint16_t, 12>;
         const auto traits1{default_traits<uint16_t, uint16_t>(4095, 0)};
@@ -36,7 +36,7 @@ public:
         }
     }
 
-    TEST_METHOD(test_traits_8_bit) // NOLINT
+    TEST_METHOD(test_traits_8_bit)
     {
         using lossless_traits = lossless_traits<uint8_t, 8>;
         const auto traits1{default_traits<uint8_t, uint8_t>(255, 0)};

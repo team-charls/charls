@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2022 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -13,7 +13,7 @@ namespace charls::test {
 TEST_CLASS(run_mode_context_test)
 {
 public:
-    TEST_METHOD(update_variable) // NOLINT
+    TEST_METHOD(update_variable)
     {
         run_mode_context context{0, 4};
 

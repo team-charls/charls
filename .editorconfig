@@ -9,14 +9,13 @@ charset = utf-8
 indent_style = space
 trim_trailing_whitespace = true
 spelling_exclusion_path = spelling.dic
+insert_final_newline = true
 
 [*.md]
 trim_trailing_whitespace = false
-insert_final_newline = true
 
 [*.{h,cpp,c}]
 indent_size = 4
-insert_final_newline = true
 
 [CMakeLists.txt]
 indent_size = 2

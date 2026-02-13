@@ -5,6 +5,7 @@
 
 #include "jpegls_algorithm.hpp"
 #include "assert.hpp"
+#include "util.hpp"
 
 #include <cstdint>
 

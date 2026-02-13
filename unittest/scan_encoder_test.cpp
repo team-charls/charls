@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2015 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -17,7 +17,7 @@ namespace charls::test {
 TEST_CLASS(scan_encoder_test)
 {
 public:
-    TEST_METHOD(append_to_bit_stream_zero_length) // NOLINT
+    TEST_METHOD(append_to_bit_stream_zero_length)
     {
         constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};
@@ -33,7 +33,7 @@ public:
         Assert::AreEqual({}, data[0]);
     }
 
-    TEST_METHOD(append_to_bit_stream_ff_pattern) // NOLINT
+    TEST_METHOD(append_to_bit_stream_ff_pattern)
     {
         constexpr frame_info frame_info{1, 1, 8, 1};
         constexpr coding_parameters parameters{};

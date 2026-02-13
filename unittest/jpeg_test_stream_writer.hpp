@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #pragma once
@@ -90,13 +90,13 @@ public:
         for (int component_id{}; component_id < component_count; ++component_id)
         {
             // Component Specification parameters
-            if (componentIdOverride == 0)
+            if (component_id_override == 0)
             {
                 segment.push_back(static_cast<std::byte>(component_id)); // Ci = Component identifier
             }
             else
             {
-                segment.push_back(static_cast<std::byte>(componentIdOverride)); // Ci = Component identifier
+                segment.push_back(static_cast<std::byte>(component_id_override)); // Ci = Component identifier
             }
             segment.push_back(std::byte{0x11}); // Hi + Vi = Horizontal sampling factor + Vertical sampling factor
             segment.push_back(
@@ -306,7 +306,7 @@ public:
         }
     }
 
-    int componentIdOverride{};
+    int component_id_override{};
     uint8_t mapping_table_selector{};
     std::vector<std::byte> buffer;
 

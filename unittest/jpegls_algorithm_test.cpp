@@ -1,10 +1,11 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2021 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
 
 #include "util.hpp"
 
+#include "../src/conditional_static_cast.hpp"
 #include "../src/jpegls_algorithm.hpp"
 
 
@@ -25,6 +26,7 @@ void call_and_compare_log2_ceil(const int32_t value)
 /// This is the original algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
 /// It will map signed values to unsigned values.
 /// </summary>
+[[nodiscard]]
 int32_t map_error_value_original(const int32_t error_value) noexcept
 {
     if (error_value >= 0)
@@ -36,6 +38,7 @@ int32_t map_error_value_original(const int32_t error_value) noexcept
 /// <remarks>
 /// This version will be auto optimized by GCC(trunk, not 10.2) and clang(11.0). MSVC will create branches.
 /// </remarks>
+[[nodiscard]]
 int32_t map_error_value_alternative1(const int32_t error_value) noexcept
 {
     const int32_t mapped_value{error_value * 2};
@@ -51,6 +54,7 @@ int32_t map_error_value_alternative1(const int32_t error_value) noexcept
 /// This is the original inverse algorithm of ISO/IEC 14495-1, A.5.2, Code Segment A.11 (second else branch)
 /// It will map unsigned values back to unsigned values.
 /// </summary>
+[[nodiscard]]
 int32_t unmap_error_value_original(const int32_t mapped_error_value) noexcept
 {
     if (mapped_error_value % 2 == 0)
@@ -64,6 +68,7 @@ int32_t unmap_error_value_original(const int32_t mapped_error_value) noexcept
 /// and clang(11.0) 8 instructions, MSVC will create branches.
 /// Optimized version uses 6 to 5 instructions.
 /// </remarks>
+[[nodiscard]]
 int32_t unmap_error_value_alternative1(const int32_t mapped_error_value) noexcept
 {
     const int32_t error_value{mapped_error_value / 2};
@@ -74,13 +79,13 @@ int32_t unmap_error_value_alternative1(const int32_t mapped_error_value) noexcep
     return (-1 * error_value) - 1;
 }
 
-}
+} // namespace
 
 
 TEST_CLASS(jpegls_algorithm_test)
 {
 public:
-    TEST_METHOD(log2_ceil) // NOLINT
+    TEST_METHOD(log2_ceil)
     {
         call_and_compare_log2_ceil(1);
         call_and_compare_log2_ceil(2);
@@ -89,10 +94,10 @@ public:
         call_and_compare_log2_ceil(33);
         call_and_compare_log2_ceil(numeric_limits<uint16_t>::max());
         call_and_compare_log2_ceil(numeric_limits<uint16_t>::max() + 1);
-        call_and_compare_log2_ceil(static_cast<int32_t>(numeric_limits<uint32_t>::max() >> 2));
+        call_and_compare_log2_ceil(conditional_static_cast<int32_t>(numeric_limits<uint32_t>::max() >> 2));
     }
 
-    TEST_METHOD(test_initialization_value_for_a) // NOLINT
+    TEST_METHOD(test_initialization_value_for_a)
     {
         constexpr int32_t min_value{initialization_value_for_a(4)};
         constexpr int32_t max_value{initialization_value_for_a(std::numeric_limits<uint16_t>::max() + 1)};
@@ -101,7 +106,7 @@ public:
         Assert::AreEqual(1024, max_value);
     }
 
-    TEST_METHOD(map_error_value_algorithm) // NOLINT
+    TEST_METHOD(map_error_value_algorithm)
     {
         map_error_value_algorithm(0);
         map_error_value_algorithm(1);
@@ -112,7 +117,7 @@ public:
         map_error_value_algorithm(numeric_limits<int32_t>::min() / 2);
     }
 
-    TEST_METHOD(unmap_error_value_algorithm) // NOLINT
+    TEST_METHOD(unmap_error_value_algorithm)
     {
         unmap_error_value_algorithm(0);
         unmap_error_value_algorithm(1);
@@ -123,7 +128,7 @@ public:
         unmap_error_value_algorithm(numeric_limits<int32_t>::max());
     }
 
-    TEST_METHOD(map_unmap_error_value_algorithm) // NOLINT
+    TEST_METHOD(map_unmap_error_value_algorithm)
     {
         map_unmap_error_value_algorithm(0);
         map_unmap_error_value_algorithm(1);

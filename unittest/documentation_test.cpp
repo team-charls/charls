@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -82,7 +82,7 @@ std::vector<std::byte> encode_advanced_8_bit_monochrome(const std::vector<std::b
 TEST_CLASS(documentation_test)
 {
 public:
-    TEST_METHOD(call_decode_simple_8_bit_monochrome) // NOLINT
+    TEST_METHOD(call_decode_simple_8_bit_monochrome)
     {
         const auto source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
         const auto charls_decoded{decode_simple_8_bit_monochrome(source)};
@@ -90,7 +90,7 @@ public:
         test_decoded_data(charls_decoded, "DataFiles/tulips-gray-8bit-512-512.pgm");
     }
 
-    TEST_METHOD(call_decode_advanced) // NOLINT
+    TEST_METHOD(call_decode_advanced)
     {
         const auto source{read_file("DataFiles/tulips-gray-8bit-512-512-hp-encoder.jls")};
         const auto charls_decoded{decode_advanced(source)};
@@ -98,7 +98,7 @@ public:
         test_decoded_data(charls_decoded, "DataFiles/tulips-gray-8bit-512-512.pgm");
     }
 
-    TEST_METHOD(call_encode_simple_8_bit_monochrome) // NOLINT
+    TEST_METHOD(call_encode_simple_8_bit_monochrome)
     {
         portable_anymap_file reference_file("DataFiles/tulips-gray-8bit-512-512.pgm");
         const auto charls_encoded{encode_simple_8_bit_monochrome(reference_file.image_data(),
@@ -108,7 +108,7 @@ public:
         test_by_decoding(charls_encoded, reference_file, interleave_mode::none);
     }
 
-    TEST_METHOD(call_encode_advanced_8_bit_monochrome) // NOLINT
+    TEST_METHOD(call_encode_advanced_8_bit_monochrome)
     {
         portable_anymap_file reference_file("DataFiles/tulips-gray-8bit-512-512.pgm");
         const auto charls_encoded{encode_advanced_8_bit_monochrome(reference_file.image_data(),

@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -18,7 +18,7 @@ namespace charls::test {
 TEST_CLASS(jpegls_preset_coding_parameters_test)
 {
 public:
-    TEST_METHOD(table_c3) // NOLINT
+    TEST_METHOD(table_c3)
     {
         const auto parameters{compute_default(255, 0)};
 
@@ -29,7 +29,7 @@ public:
         Assert::AreEqual(64, parameters.reset_value);
     }
 
-    TEST_METHOD(max_value_lossless) // NOLINT
+    TEST_METHOD(max_value_lossless)
     {
         constexpr auto expected{compute_defaults_using_reference_implementation(std::numeric_limits<uint16_t>::max(), 0)};
         const auto parameters{compute_default(65535, 0)};
@@ -41,7 +41,7 @@ public:
         Assert::AreEqual(expected.reset, parameters.reset_value);
     }
 
-    TEST_METHOD(min_value_lossless) // NOLINT
+    TEST_METHOD(min_value_lossless)
     {
         constexpr auto expected{compute_defaults_using_reference_implementation(3, 0)};
         const auto parameters{compute_default(3, 0)};
@@ -53,7 +53,7 @@ public:
         Assert::AreEqual(expected.reset, parameters.reset_value);
     }
 
-    TEST_METHOD(min_high_value_lossless) // NOLINT
+    TEST_METHOD(min_high_value_lossless)
     {
         constexpr auto expected{compute_defaults_using_reference_implementation(128, 0)};
         const auto parameters{compute_default(128, 0)};
@@ -65,7 +65,7 @@ public:
         Assert::AreEqual(expected.reset, parameters.reset_value);
     }
 
-    TEST_METHOD(max_low_value_lossless) // NOLINT
+    TEST_METHOD(max_low_value_lossless)
     {
         constexpr auto expected{compute_defaults_using_reference_implementation(127, 0)};
         const auto parameters{compute_default(127, 0)};
@@ -77,7 +77,7 @@ public:
         Assert::AreEqual(expected.reset, parameters.reset_value);
     }
 
-    TEST_METHOD(max_value_max_lossy) // NOLINT
+    TEST_METHOD(max_value_max_lossy)
     {
         constexpr auto expected{compute_defaults_using_reference_implementation(std::numeric_limits<uint16_t>::max(), 255)};
         const auto parameters{compute_default(65535, 255)};
@@ -89,7 +89,7 @@ public:
         Assert::AreEqual(expected.reset, parameters.reset_value);
     }
 
-    TEST_METHOD(min_value_max_lossy) // NOLINT
+    TEST_METHOD(min_value_max_lossy)
     {
         constexpr auto expected{compute_defaults_using_reference_implementation(3, 1)};
         const auto parameters{compute_default(3, 1)};
@@ -101,7 +101,7 @@ public:
         Assert::AreEqual(expected.reset, parameters.reset_value);
     }
 
-    TEST_METHOD(is_valid_default) // NOLINT
+    TEST_METHOD(is_valid_default)
     {
         constexpr auto bits_per_sample{16};
         constexpr auto maximum_component_value{(1 << bits_per_sample) - 1};
@@ -110,7 +110,7 @@ public:
         Assert::IsTrue(is_valid(pc_parameters, maximum_component_value, 0));
     }
 
-    TEST_METHOD(is_valid_thresholds_zero) // NOLINT
+    TEST_METHOD(is_valid_thresholds_zero)
     {
         constexpr auto bits_per_sample{16};
         constexpr auto maximum_component_value{(1 << bits_per_sample) - 1};
@@ -119,7 +119,7 @@ public:
         Assert::IsTrue(is_valid(pc_parameters, maximum_component_value, 0));
     }
 
-    TEST_METHOD(is_default_nothing_set) // NOLINT
+    TEST_METHOD(is_default_nothing_set)
     {
         const auto default_parameters{compute_default(255, 0)};
 
@@ -128,7 +128,7 @@ public:
         Assert::IsTrue(is_default(pc_parameters, default_parameters));
     }
 
-    TEST_METHOD(is_default_same_as_default) // NOLINT
+    TEST_METHOD(is_default_same_as_default)
     {
         const auto default_parameters{compute_default(255, 0)};
 
@@ -137,7 +137,7 @@ public:
         Assert::IsTrue(is_default(pc_parameters, default_parameters));
     }
 
-    TEST_METHOD(is_default_same_as_default_except_reset) // NOLINT
+    TEST_METHOD(is_default_same_as_default_except_reset)
     {
         const auto default_parameters{compute_default(255, 0)};
 

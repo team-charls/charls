@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -15,7 +15,7 @@ namespace charls::test {
 TEST_CLASS(golomb_table_test)
 {
 public:
-    TEST_METHOD(golomb_table_create) // NOLINT
+    TEST_METHOD(golomb_table_create)
     {
         const golomb_code_match_table golomb_table(0);
 

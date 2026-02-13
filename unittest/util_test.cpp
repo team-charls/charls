@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2022 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "pch.hpp"
@@ -38,7 +38,7 @@ void call_and_compare_log2_floor(const uint32_t arg)
 TEST_CLASS(util_test)
 {
 public:
-    TEST_METHOD(log2_floor) // NOLINT
+    TEST_METHOD(log2_floor)
     {
         call_and_compare_log2_floor(1);
         call_and_compare_log2_floor(2);
@@ -50,7 +50,7 @@ public:
         call_and_compare_log2_floor(numeric_limits<uint32_t>::max() >> 2);
     }
 
-    TEST_METHOD(max_value_to_bits_per_sample_test) // NOLINT
+    TEST_METHOD(max_value_to_bits_per_sample_test)
     {
         Assert::AreEqual(1U, max_value_to_bits_per_sample(1));
         Assert::AreEqual(2U, max_value_to_bits_per_sample(2));
