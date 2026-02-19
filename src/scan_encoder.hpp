@@ -119,6 +119,37 @@ protected:
         if (UNLIKELY(compressed_length_ < 4))
             impl::throw_jpegls_error(jpegls_errc::destination_too_small);
 
+        // Fast path: when the previous byte was not 0xFF and none of the 4 output bytes is 0xFF,
+        // write all 4 bytes directly. This avoids the per-byte loop and FF-state tracking.
+        // This is the common case: ~98.4% of flushes have no 0xFF bytes (1 - (255/256)^4).
+        if (!is_ff_written_)
+        {
+            const auto b0{static_cast<std::byte>(bit_buffer_ >> 24)};
+            const auto b1{static_cast<std::byte>(bit_buffer_ >> 16)};
+            const auto b2{static_cast<std::byte>(bit_buffer_ >> 8)};
+            const auto b3{static_cast<std::byte>(bit_buffer_)};
+
+            if (b0 != jpeg_marker_start_byte && b1 != jpeg_marker_start_byte &&
+                b2 != jpeg_marker_start_byte && b3 != jpeg_marker_start_byte)
+            {
+                position_[0] = b0;
+                position_[1] = b1;
+                position_[2] = b2;
+                position_[3] = b3;
+                position_ += 4;
+                compressed_length_ -= 4;
+                bytes_written_ += 4;
+                bit_buffer_ = 0;
+                free_bit_count_ += 32;
+                return;
+            }
+        }
+
+        flush_with_ff_handling();
+    }
+
+    void flush_with_ff_handling()
+    {
         for (int i{}; i < 4; ++i)
         {
             if (free_bit_count_ >= 32)
