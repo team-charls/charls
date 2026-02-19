@@ -289,8 +289,16 @@ private:
                 append_to_bit_stream(0, high_bits / 2);
                 high_bits = high_bits - high_bits / 2;
             }
-            append_to_bit_stream(1, high_bits + 1);
-            append_to_bit_stream(static_cast<uint32_t>(mapped_error & ((1 << k) - 1)), k);
+            if (const int32_t total_bits{high_bits + 1 + k}; total_bits < 32)
+            {
+                // Merge unary prefix (high_bits zeros + 1) and k-bit remainder into a single call.
+                append_to_bit_stream((1U << k) | static_cast<uint32_t>(mapped_error & ((1 << k) - 1)), total_bits);
+            }
+            else
+            {
+                append_to_bit_stream(1, high_bits + 1);
+                append_to_bit_stream(static_cast<uint32_t>(mapped_error & ((1 << k) - 1)), k);
+            }
             return;
         }
 
