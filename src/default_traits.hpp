@@ -24,6 +24,7 @@ struct default_traits final
     using sample_type = SampleType;
     using pixel_type = PixelType;
 
+    static constexpr bool always_lossless{};
     static constexpr bool always_lossless_and_default_parameters{};
     static constexpr bool fixed_bits_per_pixel{};
 
