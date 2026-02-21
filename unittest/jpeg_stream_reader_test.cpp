@@ -753,7 +753,7 @@ public:
         writer.write_start_of_frame_segment(1, 1, 8, 1);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
         writer.write_byte(0x80);
-        writer.write_byte(0x1); // non zero byte padding after the entropy coded data, before the EOI marker.
+        writer.write_byte(0x1); // nonzero byte padding after the entropy coded data, before the EOI marker.
         writer.write_marker(jpeg_marker_code::end_of_image);
 
         jpeg_stream_reader reader;
@@ -782,6 +782,26 @@ public:
         reader.decode({decoded.data(), decoded.size()}, 0);
 
         assert_expect_exception(jpegls_errc::end_of_image_marker_not_found, [&reader] { reader.read_end_of_image(); });
+    }
+
+    TEST_METHOD(read_end_of_image_00d9_throws) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 1, 8, 1);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+        writer.write_byte(0x0);
+        writer.write_byte(0xD9); // Write instead of 0xFFD9 the value 0x00D9
+        writer.write_byte(0xFF);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+        std::array<uint8_t, 1> decoded{};
+
+        // Remark: in the current design the reader will throw during decode.
+        assert_expect_exception(jpegls_errc::too_much_encoded_data,
+                                [&reader, &decoded] { reader.decode({decoded.data(), decoded.size()}, 0); });
     }
 
 private:
