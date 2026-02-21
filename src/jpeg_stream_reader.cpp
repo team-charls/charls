@@ -153,8 +153,19 @@ void jpeg_stream_reader::read_end_of_image()
 {
     ASSERT(state_ == state::scan_section);
 
-    const jpeg_marker_code marker_code{read_next_marker_code()};
-    if (UNLIKELY(marker_code != jpeg_marker_code::end_of_image))
+    auto value{read_byte_checked()};
+
+    // Note: some legacy JPEG encoders write a padding zero byte after the pixel data, which is not compliant but supported. 
+    if (UNLIKELY(value != jpeg_marker_start_byte && value != 0))
+        throw_jpegls_error(jpegls_errc::end_of_image_marker_not_found);
+
+    // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see ISO/IEC 10918-1, B.1.1.2)
+    do
+    {
+        value = read_byte_checked();
+    } while (value == jpeg_marker_start_byte);
+
+    if (UNLIKELY(value != to_underlying_type(jpeg_marker_code::end_of_image)))
         throw_jpegls_error(jpegls_errc::end_of_image_marker_not_found);
 
 #ifndef NDEBUG
