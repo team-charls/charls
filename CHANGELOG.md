@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 
-- Fixed [#365](https://github.com/team-charls/charls/issues/365), Non conforming padding before EOI prevents decoding in CharLS v2.3.0 and newer
+- Fixed [#365](https://github.com/team-charls/charls/issues/365), Non-conforming padding before EOI prevents decoding in CharLS v2.3.0 and newer
 
 ## [2.4.2] - 2023-5-16
 
