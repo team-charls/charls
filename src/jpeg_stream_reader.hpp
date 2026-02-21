@@ -174,6 +174,9 @@ private:
     [[nodiscard]]
     jpeg_marker_code read_next_marker_code();
 
+    [[nodiscard]]
+    jpeg_marker_code read_marker_code();
+
     void validate_marker_code(jpeg_marker_code marker_code) const;
     void read_marker_segment(jpeg_marker_code marker_code, spiff_header* header = nullptr,
                              bool* spiff_header_found = nullptr);

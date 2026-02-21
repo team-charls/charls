@@ -152,7 +152,14 @@ void jpeg_stream_reader::read_end_of_image()
 {
     ASSERT(state_ == state::bit_stream_section);
 
-    if (const jpeg_marker_code marker_code{read_next_marker_code()}; UNLIKELY(marker_code != jpeg_marker_code::end_of_image))
+    auto start_byte{read_byte_checked()};
+
+    // Some legacy JPEG encoders write a padding zero byte after the pixel data, which is not compliant but supported.
+    if (UNLIKELY(start_byte == byte{0}))
+    {
+        start_byte = read_byte_checked();
+    }
+    if (UNLIKELY(start_byte != jpeg_marker_start_byte || read_marker_code() != jpeg_marker_code::end_of_image))
         throw_jpegls_error(jpegls_errc::end_of_image_marker_not_found);
 
     ASSERT(compressed_data_format_ == compressed_data_format::unknown);
@@ -182,17 +189,24 @@ void jpeg_stream_reader::read_next_start_of_scan()
 
 jpeg_marker_code jpeg_stream_reader::read_next_marker_code()
 {
-    auto value{read_byte_checked()};
-    if (UNLIKELY(value != jpeg_marker_start_byte))
+    if (const auto value{read_byte_checked()}; UNLIKELY(value != jpeg_marker_start_byte))
         throw_jpegls_error(jpegls_errc::jpeg_marker_start_byte_not_found);
 
-    // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see ISO/IEC 10918-1, B.1.1.2)
-    do // NOLINT(cppcoreguidelines-avoid-do-while): the loop must be executed at least once.
-    {
-        value = read_byte_checked();
-    } while (value == jpeg_marker_start_byte);
+    return read_marker_code();
+}
 
-    return static_cast<jpeg_marker_code>(value);
+
+jpeg_marker_code jpeg_stream_reader::read_marker_code()
+{
+    auto marker_code{read_byte_checked()};
+
+    // Read all preceding 0xFF fill values until a non 0xFF value has been found. (see ISO/IEC 10918-1, B.1.1.2)
+    while (marker_code == jpeg_marker_start_byte)
+    {
+        marker_code = read_byte_checked();
+    }
+
+    return static_cast<jpeg_marker_code>(marker_code);
 }
 
 
