@@ -38,8 +38,6 @@ struct extract_sample<quad<T>>
 
 /// <summary>
 /// Type mapping from full Traits (which include pixel_type) to sample-level Traits.
-/// This allows heavy codec functions to be instantiated only once per unique sample-level Traits,
-/// rather than once per pixel type (pair/triplet/quad variants share the same sample-level code).
 /// </summary>
 
 // Primary: identity mapping (covers scalar lossless_traits and default_traits<S, S>)

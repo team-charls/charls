@@ -11,9 +11,7 @@ namespace charls {
 
 /// <summary>
 /// Intermediate template class parameterized on sample-level traits only.
-/// Contains the heavy encoder functions (encode_regular, encode_mapped_value, etc.)
-/// that depend only on sample-level properties, not on pixel type.
-/// This reduces template instantiations from 17 to 7 per encoder.
+/// Contains the encoder functions that depend only on sample-level properties, not on pixel type.
 /// </summary>
 template<typename SampleTraits>
 class scan_encoder_core : public scan_encoder

@@ -10,9 +10,7 @@ namespace charls {
 
 /// <summary>
 /// Intermediate template class parameterized on sample-level traits only.
-/// Contains the heavy decoder functions (decode_regular, decode_run_interruption_error, etc.)
-/// that depend only on sample-level properties, not on pixel type.
-/// This reduces template instantiations from 17 to 7 per decoder.
+/// Contains the decoder functions that depend only on sample-level properties, not on pixel type.
 /// </summary>
 template<typename SampleTraits>
 class scan_decoder_core : public scan_decoder

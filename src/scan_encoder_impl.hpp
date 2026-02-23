@@ -292,7 +292,6 @@ private:
                 this->encode_run_interruption_component(x.v4, ra.v4, rb.v4)};
     }
 
-    // For scalar pixel types, delegate to the base class scalar version
     using base::encode_run_interruption_pixel;
 
     Traits traits_;

@@ -294,7 +294,6 @@ private:
                 this->decode_run_interruption_component(ra.v4, rb.v4)};
     }
 
-    // For scalar pixel types, delegate to the base class scalar version
     using base::decode_run_interruption_pixel;
 
     [[nodiscard]]
