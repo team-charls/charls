@@ -155,7 +155,7 @@ private:
         }
     }
 
-    /// <summary>Decodes a scan line of triplets in ILV_SAMPLE mode</summary>
+    /// <summary>Decodes a scan line of pairs in ILV_SAMPLE mode</summary>
     void decode_pair_line()
     {
         size_t index{1};
