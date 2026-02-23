@@ -103,6 +103,9 @@
     <ClCompile Include="validate_spiff_header_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="regular_mode_context_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="tulips-gray-8bit-512-512.pgm">
@@ -192,13 +195,11 @@
     <CopyFileToFolders Include="no_start_byte_after_encoded_scan.jls">
       <Filter>Test Images</Filter>
     </CopyFileToFolders>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="fuzzy-input-no-valid-bits-at-the-end.jls">
+    <CopyFileToFolders Include="fuzzy-input-bad-run-mode-golomb-code.jls">
       <Filter>Test Images</Filter>
-    </None>
-    <None Include="fuzzy-input-bad-run-mode-golomb-code.jls">
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="fuzzy-input-no-valid-bits-at-the-end.jls">
       <Filter>Test Images</Filter>
-    </None>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

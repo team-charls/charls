@@ -31,6 +31,7 @@ jobs:
           build-wrapper-win-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} msbuild CharLS.sln /t:charls:rebuild /p:Configuration="Release" /p:Platform="x64" /nodeReuse:false
 
       - name: SonarQube Scan
+        if: github.event.pull_request.head.repo.fork == false || github.event_name == 'push'
         uses: SonarSource/sonarqube-scan-action@v7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

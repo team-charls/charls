@@ -79,6 +79,7 @@
     <ClCompile Include="charls_jpegls_decoder_test.cpp" />
     <ClCompile Include="charls_jpegls_encoder_test.cpp" />
     <ClCompile Include="compliance_test.cpp" />
+    <ClCompile Include="regular_mode_context_test.cpp" />
     <ClCompile Include="run_mode_context_test.cpp" />
     <ClCompile Include="golomb_table_test.cpp" />
     <ClCompile Include="scan_decoder_test.cpp" />
