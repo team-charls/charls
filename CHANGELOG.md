@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - BREAKING: the failure values of the enum charls::jpegls_errc are now divided in 2 groups: runtime errors and logic errors.
 - BREAKING: The public charls.h header has been split into charls.h (C applications) and charls.hpp (C++ applications).
 - BREAKING: Method charls_jpegls_decoder_get_interleave_mode has an additional extra parameter: component_index.
+- Performance optimizations for the encoder by @cl445
 
 ### Removed
 
@@ -85,7 +86,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 - Updates to the CMakeLists.txt for Unix builds (except macOS) to hide more symbols from the shared library.
 - C\++14 is now the minimum version instead of explicitly required. This allows consuming applications more flexibility.
-Typically CMake will select the latest C++ standard version that the used C++ compiler supports.
+Typically, CMake will select the latest C++ standard version that the used C++ compiler supports.
 
 ### Fixed
 
@@ -105,12 +106,12 @@ Typically CMake will select the latest C++ standard version that the used C++ co
 - The encoder API has been extended with a rewind method that can be used to reuse a configured encoder to encode multiple images in a loop.
 - Added support to decode JPEG-LS images that use restart markers [#92](https://github.com/team-charls/charls/issues/92).
 - Added support to write and read comment (COM) segments [#113](https://github.com/team-charls/charls/issues/113).
-- Added support to encode/decode oversized images (width or height larger then 65535).
+- Added support to encode/decode oversized images (width or height larger than 65535).
 - Extended the validation of the encoded JPEG-LS byte stream during decoding.
 - Added support to encode JPEG-LS images with:
   - The option to ensure the output stream has an even size.
   - The option to write the CharLS version number as a comment (COM segment) to the output stream.
-  - The option to write the coding parameters to the output stream if the bits per pixel are larger then 12 (enabled by default).
+  - The option to write the coding parameters to the output stream if the bits per pixel are larger than 12 (enabled by default).
 - Usage of compiler specific attributes on the public API as replacement for ``[[nodiscard]]`` (which is a C++17 feature).
 
 ### Changed
@@ -151,7 +152,7 @@ This has been done to make it possible to have different release cycles.
 ### Removed
 
 - The legacy methods JpegLsEncodeStream, JpegLsDecodeStream and JpegLsReadHeaderStream have been removed as exported methods.
-  These methods were not part of the public API and only used by by the charlstest application
+  These methods were not part of the public API and only used by the charlstest application
 
 ### Fixed
 

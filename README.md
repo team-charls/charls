@@ -41,10 +41,10 @@ The following JPEG-LS options are not supported by the CharLS implementation. Mo
 
 * No support to encode JPEG restart markers  
   Decoding is supported, but no recovery mechanism is implemented for corrupted JPEG-LS files.
-* No support for sub-sampled scans.
-  Sub-sampling is a lossly encoding mechanism and not used in lossless scenarios.
+* No support for subsampled scans.
+  Subsampling is a lossy encoding mechanism and not used in lossless scenarios.
 * No support for point transform.
-  Point transform is a lossly encoding mechanism and not used in lossless scenarios.
+  Point transform is a lossy encoding mechanism and not used in lossless scenarios.
 
 #### Note about JPEG-LS part 2
 
@@ -52,7 +52,7 @@ After releasing the original baseline JPEG-LS standard ISO 14495-1:1999, ISO rel
 
 ## Supported platforms
 
-The code is regularly compiled/tested on Windows and 64 bit Linux. Additionally, the code has been successfully tested on Linux Intel/AMD 32/64 bit (slackware, debian, gentoo), Solaris SPARC systems, Intel based Macs and Windows CE (ARM CPU, emulated), where the less common compilers may require minor code edits. It leverages C++ language features (templates, traits) to create optimized code, which generally perform best with recent compilers.
+The code is regularly compiled/tested on Windows and 64-bit Linux. Additionally, the code has been successfully tested on Linux Intel/AMD 32/64 bit (slackware, debian, gentoo), Solaris SPARC systems, Intel based Macs and Windows CE (ARM CPU, emulated), where the less common compilers may require minor code edits. It leverages C++ language features (templates, traits) to create optimized code, which generally perform best with recent compilers.
 
 ### Support Matrix
 
