@@ -270,6 +270,7 @@ private:
         return run_length + 1;
     }
 
+    [[nodiscard]]
     FORCE_INLINE sample_type encode_regular(const int32_t qs, const int32_t x, const int32_t predicted)
     {
         const int32_t sign{bit_wise_sign(qs)};
