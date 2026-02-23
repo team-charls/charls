@@ -1,0 +1,110 @@
+# SPDX-FileCopyrightText: © 2025 Team CharLS
+# SPDX-License-Identifier: BSD-3-Clause
+
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_shared_library.bzl", "cc_shared_library")
+load("//:bazel/configure_copts.bzl", "CHARLS_DEFAULT_COPTS")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "charls",
+    srcs = [
+        "src/assert.hpp",
+        "src/charls_jpegls_decoder.cpp",
+        "src/charls_jpegls_encoder.cpp",
+        "src/coding_parameters.hpp",
+        "src/color_transform.hpp",
+        "src/conditional_static_cast.hpp",
+        "src/constants.hpp",
+        "src/copy_from_line_buffer.hpp",
+        "src/copy_to_line_buffer.hpp",
+        "src/default_traits.hpp",
+        "src/golomb_lut.cpp",
+        "src/golomb_lut.hpp",
+        "src/jpeg_marker_code.hpp",
+        "src/jpeg_stream_reader.cpp",
+        "src/jpeg_stream_reader.hpp",
+        "src/jpeg_stream_writer.cpp",
+        "src/jpeg_stream_writer.hpp",
+        "src/jpegls_algorithm.hpp",
+        "src/jpegls_error.cpp",
+        "src/jpegls_preset_coding_parameters.hpp",
+        "src/jpegls_preset_parameters_type.hpp",
+        "src/lossless_traits.hpp",
+        "src/make_scan_codec.cpp",
+        "src/make_scan_codec.hpp",
+        "src/pch.hpp",
+        "src/quantization_lut.cpp",
+        "src/quantization_lut.hpp",
+        "src/regular_mode_context.hpp",
+        "src/run_mode_context.hpp",
+        "src/scan_codec.hpp",
+        "src/scan_decoder.hpp",
+        "src/scan_decoder_impl.hpp",
+        "src/scan_encoder.hpp",
+        "src/scan_encoder_impl.hpp",
+        "src/span.hpp",
+        "src/util.hpp",
+        "src/validate_spiff_header.cpp",
+        "src/version.cpp",
+    ],
+    hdrs = [
+        "include/charls/annotations.h",
+        "include/charls/api_abi.h",
+        "include/charls/charls.h",
+        "include/charls/charls.hpp",
+        "include/charls/charls_jpegls_decoder.h",
+        "include/charls/charls_jpegls_encoder.h",
+        "include/charls/jpegls_decoder.hpp",
+        "include/charls/jpegls_encoder.hpp",
+        "include/charls/jpegls_error.h",
+        "include/charls/jpegls_error.hpp",
+        "include/charls/public_types.h",
+        "include/charls/undef_macros.h",
+        "include/charls/validate_spiff_header.h",
+        "include/charls/version.h",
+    ],
+    copts = CHARLS_DEFAULT_COPTS,
+    defines = ["CHARLS_LIBRARY_BUILD"],
+    strip_include_prefix = "include",
+)
+
+cc_shared_library(
+    name = "charls_shared",
+    deps = [
+        ":charls",
+    ],
+    shared_lib_name = select({
+        "@bazel_tools//src/conditions:windows_arm64": "charls-3-arm64.dll",
+        "@bazel_tools//src/conditions:windows_x64": "charls-3-x64.dll",
+        "@bazel_tools//src/conditions:windows": "charls-3-x86.dll",
+        "//conditions:default": "charls"
+    }),
+)
+
+cc_binary(
+    name = "charls-test",
+    srcs = [
+        "src/default_traits.hpp",
+        "src/lossless_traits.hpp",
+        "test/bit_stream_damage.cpp",
+        "test/bit_stream_damage.hpp",
+        "test/compliance.cpp",
+        "test/compliance.hpp",
+        "test/main.cpp",
+        "test/performance.cpp",
+        "test/performance.hpp",
+        "test/portable_anymap_file.hpp",
+        "test/util.cpp",
+        "test/util.hpp",
+    ],
+    copts = CHARLS_DEFAULT_COPTS,
+    deps = [
+        "//:charls",
+    ],
+    visibility = ["//visibility:private"],
+)

@@ -174,14 +174,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="bitstreamdamage.cpp" />
+    <ClCompile Include="bit_stream_damage.cpp" />
     <ClCompile Include="compliance.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="performance.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bitstreamdamage.hpp" />
+    <ClInclude Include="bit_stream_damage.hpp" />
     <ClInclude Include="compliance.hpp" />
     <ClInclude Include="portable_anymap_file.hpp" />
     <ClInclude Include="performance.hpp" />

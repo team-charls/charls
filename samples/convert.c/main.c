@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-const static size_t bytes_per_rgb_pixel = 3;
+static const size_t bytes_per_rgb_pixel = 3;
 
 typedef struct
 {

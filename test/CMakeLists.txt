@@ -1,12 +1,12 @@
-# Copyright (c) Team CharLS.
+# SPDX-FileCopyrightText: © 2009 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
-add_executable(charlstest "")
+add_executable(charls-test "")
 
-target_sources(charlstest
+target_sources(charls-test
   PRIVATE
-    bitstreamdamage.cpp
-    bitstreamdamage.hpp
+    bit_stream_damage.cpp
+    bit_stream_damage.hpp
     compliance.cpp
     compliance.hpp
     main.cpp
@@ -14,13 +14,14 @@ target_sources(charlstest
     performance.hpp
     util.cpp
     util.hpp
+    portable_anymap_file.hpp
 )
 
 if(WIN32 AND MSVC_VERSION GREATER_EQUAL 1920)
   # Only add the manifest file when building a Windows app
-  target_sources(charlstest PRIVATE app.manifest)
+  target_sources(charls-test PRIVATE app.manifest)
 endif()
 
-set_target_properties(charlstest PROPERTIES CXX_VISIBILITY_PRESET hidden)
+set_target_properties(charls-test PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
-target_link_libraries(charlstest PRIVATE charls)
+target_link_libraries(charls-test PRIVATE charls)
