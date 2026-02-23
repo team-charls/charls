@@ -3,6 +3,7 @@
 
 #include "../src/default_traits.hpp"
 #include "../src/lossless_traits.hpp"
+#include "../src/quantization_lut.hpp"
 
 #include "bitstreamdamage.hpp"
 #include "compliance.hpp"
@@ -128,6 +129,43 @@ void convert_planar_to_pixel(const size_t width, const size_t height, const void
         plane2 += width;
         pixels += stride_in_pixels;
     }
+}
+
+
+void test_quantization_luts()
+{
+    // Compile-time verification: constexpr LUTs have the expected sizes.
+    static_assert(charls::quantization_lut_lossless_8.size() == 512);
+    static_assert(charls::quantization_lut_lossless_10.size() == 2048);
+    static_assert(charls::quantization_lut_lossless_12.size() == 8192);
+
+    // Compile-time verification: gradient 0 maps to context bin 0.
+    static_assert(charls::quantization_lut_lossless_8[256] == 0);
+    static_assert(charls::quantization_lut_lossless_10[1024] == 0);
+    static_assert(charls::quantization_lut_lossless_12[4096] == 0);
+
+    // Compile-time verification: create_quantization_lut_lossless can be evaluated at compile time.
+    constexpr auto lut_8{charls::create_quantization_lut_lossless<8>()};
+    static_assert(lut_8.size() == 512);
+    static_assert(lut_8[256] == 0);
+
+    // Runtime verification: every LUT entry matches the on-the-fly computation.
+    const auto verify{[](const auto& lut, const int32_t bit_count) {
+        const auto preset{charls::compute_default(charls::calculate_maximum_sample_value(bit_count), 0)};
+        const int32_t range{preset.maximum_sample_value + 1};
+
+        assert::is_true(lut.size() == static_cast<size_t>(range) * 2);
+        for (size_t i{}; i != lut.size(); ++i)
+        {
+            assert::is_true(lut[i] == charls::quantize_gradient_org(static_cast<int32_t>(i) - range, preset.threshold1,
+                                                                     preset.threshold2, preset.threshold3));
+        }
+    }};
+
+    verify(charls::quantization_lut_lossless_8, 8);
+    verify(charls::quantization_lut_lossless_10, 10);
+    verify(charls::quantization_lut_lossless_12, 12);
+    verify(charls::quantization_lut_lossless_16(), 16);
 }
 
 
@@ -654,6 +692,9 @@ bool unit_test()
         cout << "Test Conformance\n";
         test_encode_from_stream();
         test_conformance();
+
+        cout << "Test Quantization LUTs\n";
+        test_quantization_luts();
 
         cout << "Test Traits\n";
         test_traits16_bit();

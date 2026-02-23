@@ -19,7 +19,7 @@ constexpr int32_t clamp(const int32_t i, const int32_t j, const int32_t maximum_
 }
 
 /// <summary>Default coding threshold values as defined by ISO/IEC 14495-1, C.2.4.1.1.1</summary>
-inline jpegls_pc_parameters compute_default(const int32_t maximum_sample_value, const int32_t near_lossless) noexcept
+constexpr jpegls_pc_parameters compute_default(const int32_t maximum_sample_value, const int32_t near_lossless) noexcept
 {
     ASSERT(maximum_sample_value <= std::numeric_limits<uint16_t>::max());
     ASSERT(near_lossless >= 0 && near_lossless <= compute_maximum_near_lossless(maximum_sample_value));
