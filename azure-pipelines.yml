@@ -301,7 +301,7 @@ jobs:
     inputs:
       workingDirectory: $(Build.BinariesDirectory)/build
       cmakeArgs:
-        -DCMAKE_BUILD_TYPE=$(buildType
+        -DCMAKE_BUILD_TYPE=$(buildType)
         -DCHARLS_BUILD_TESTS=On
         -DCHARLS_BUILD_AFL_FUZZ_TEST=On
         -DCHARLS_BUILD_LIB_FUZZER_FUZZ_TEST=On
