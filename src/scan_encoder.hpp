@@ -148,7 +148,7 @@ protected:
         flush_with_ff_handling();
     }
 
-    void flush_with_ff_handling()
+    void flush_with_ff_handling() noexcept
     {
         for (int i{}; i < 4; ++i)
         {
