@@ -216,7 +216,7 @@ charls_jpegls_decoder_at_application_data(CHARLS_IN charls_jpegls_decoder* decod
 /// After reading the header the method may report unknown or abbreviated_table_specification.
 /// </remarks>
 /// <param name="decoder">Reference to the decoder instance.</param>
-/// <param name="compressed_data_format">Current .</param>
+/// <param name="compressed_data_format">Reference that will hold the compressed data format.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_compressed_data_format(CHARLS_IN const charls_jpegls_decoder* decoder,
