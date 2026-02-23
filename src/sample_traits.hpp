@@ -9,6 +9,34 @@
 namespace charls {
 
 /// <summary>
+/// Extracts the sample type from a pixel type.
+/// For scalar types this is the identity; for compound types (pair/triplet/quad) it extracts the element type.
+/// </summary>
+template<typename T>
+struct extract_sample
+{
+    using type = T;
+};
+
+template<typename T>
+struct extract_sample<pair<T>>
+{
+    using type = T;
+};
+
+template<typename T>
+struct extract_sample<triplet<T>>
+{
+    using type = T;
+};
+
+template<typename T>
+struct extract_sample<quad<T>>
+{
+    using type = T;
+};
+
+/// <summary>
 /// Type mapping from full Traits (which include pixel_type) to sample-level Traits.
 /// This allows heavy codec functions to be instantiated only once per unique sample-level Traits,
 /// rather than once per pixel type (pair/triplet/quad variants share the same sample-level code).
@@ -28,25 +56,12 @@ struct sample_traits_of<default_traits<SampleType, PixelType>>
     using type = default_traits<SampleType, SampleType>;
 };
 
-// lossless_traits<pair<S>, B> -> lossless_traits<S, B>
-template<typename SampleType, int32_t BitsPerSample>
-struct sample_traits_of<lossless_traits<pair<SampleType>, BitsPerSample>>
+// lossless_traits<PixelType, B> -> lossless_traits<SampleType, B>
+// For scalar PixelType this is identity; for compound types it extracts the sample type.
+template<typename PixelType, int32_t BitsPerSample>
+struct sample_traits_of<lossless_traits<PixelType, BitsPerSample>>
 {
-    using type = lossless_traits<SampleType, BitsPerSample>;
-};
-
-// lossless_traits<triplet<S>, B> -> lossless_traits<S, B>
-template<typename SampleType, int32_t BitsPerSample>
-struct sample_traits_of<lossless_traits<triplet<SampleType>, BitsPerSample>>
-{
-    using type = lossless_traits<SampleType, BitsPerSample>;
-};
-
-// lossless_traits<quad<S>, B> -> lossless_traits<S, B>
-template<typename SampleType, int32_t BitsPerSample>
-struct sample_traits_of<lossless_traits<quad<SampleType>, BitsPerSample>>
-{
-    using type = lossless_traits<SampleType, BitsPerSample>;
+    using type = lossless_traits<typename extract_sample<PixelType>::type, BitsPerSample>;
 };
 
 template<typename Traits>
@@ -59,6 +74,7 @@ using sample_traits_t = typename sample_traits_of<Traits>::type;
 /// For default_traits, constructs with the same parameters (sample_type as pixel_type).
 /// </summary>
 template<typename Traits>
+[[nodiscard]]
 auto make_sample_traits(const Traits& traits)
 {
     using sample_traits_type = sample_traits_t<Traits>;

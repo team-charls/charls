@@ -30,6 +30,13 @@ protected:
     }
 
     [[nodiscard]]
+    FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
+    {
+        ASSERT(this->quantize_gradient_org(di, sample_traits_.near_lossless) == *(quantization_ + di));
+        return *(quantization_ + di);
+    }
+
+    [[nodiscard]]
     sample_type decode_regular(const int32_t qs, const int32_t predicted)
     {
         const int32_t sign{bit_wise_sign(qs)};

@@ -48,13 +48,6 @@ public:
     }
 
 private:
-    [[nodiscard]]
-    FORCE_INLINE int32_t quantize_gradient(const int32_t di) const noexcept
-    {
-        ASSERT(this->quantize_gradient_org(di, traits_.near_lossless) == *(this->quantization_ + di));
-        return *(this->quantization_ + di);
-    }
-
     // In ILV_SAMPLE mode, multiple components are handled in do_line
     // In ILV_LINE mode, a call to do_line is made for every component
     // In ILV_NONE mode, do_scan is called for each component
@@ -142,7 +135,7 @@ private:
             rd = previous_line_[index + 1];
 
             if (const int32_t qs{
-                    compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
+                    compute_context_id(this->quantize_gradient(rd - rb), this->quantize_gradient(rb - rc), this->quantize_gradient(rc - ra))};
                 qs != 0)
             {
                 current_line_[index] = this->decode_regular(qs, compute_predicted_value(ra, rb, rc));
@@ -168,10 +161,10 @@ private:
             const pair<sample_type> rb{previous_line_[index]};
             const pair<sample_type> rd{previous_line_[index + 1]};
 
-            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
-                                                 quantize_gradient(rc.v1 - ra.v1))};
-            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
-                                                 quantize_gradient(rc.v2 - ra.v2))};
+            const int32_t qs1{compute_context_id(this->quantize_gradient(rd.v1 - rb.v1), this->quantize_gradient(rb.v1 - rc.v1),
+                                                 this->quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(this->quantize_gradient(rd.v2 - rb.v2), this->quantize_gradient(rb.v2 - rc.v2),
+                                                 this->quantize_gradient(rc.v2 - ra.v2))};
 
             if (qs1 == 0 && qs2 == 0)
             {
@@ -199,13 +192,13 @@ private:
             const triplet<sample_type> rb{previous_line_[index]};
             const triplet<sample_type> rd{previous_line_[index + 1]};
 
-            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
-                                                 quantize_gradient(rc.v1 - ra.v1))};
-            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
-                                                 quantize_gradient(rc.v2 - ra.v2))};
+            const int32_t qs1{compute_context_id(this->quantize_gradient(rd.v1 - rb.v1), this->quantize_gradient(rb.v1 - rc.v1),
+                                                 this->quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(this->quantize_gradient(rd.v2 - rb.v2), this->quantize_gradient(rb.v2 - rc.v2),
+                                                 this->quantize_gradient(rc.v2 - ra.v2))};
 
-            if (const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
-                                                     quantize_gradient(rc.v3 - ra.v3))};
+            if (const int32_t qs3{compute_context_id(this->quantize_gradient(rd.v3 - rb.v3), this->quantize_gradient(rb.v3 - rc.v3),
+                                                     this->quantize_gradient(rc.v3 - ra.v3))};
                 qs1 == 0 && qs2 == 0 && qs3 == 0)
             {
                 index += decode_run_mode(index);
@@ -233,15 +226,15 @@ private:
             const quad<sample_type> rb{previous_line_[index]};
             const quad<sample_type> rd{previous_line_[index + 1]};
 
-            const int32_t qs1{compute_context_id(quantize_gradient(rd.v1 - rb.v1), quantize_gradient(rb.v1 - rc.v1),
-                                                 quantize_gradient(rc.v1 - ra.v1))};
-            const int32_t qs2{compute_context_id(quantize_gradient(rd.v2 - rb.v2), quantize_gradient(rb.v2 - rc.v2),
-                                                 quantize_gradient(rc.v2 - ra.v2))};
-            const int32_t qs3{compute_context_id(quantize_gradient(rd.v3 - rb.v3), quantize_gradient(rb.v3 - rc.v3),
-                                                 quantize_gradient(rc.v3 - ra.v3))};
+            const int32_t qs1{compute_context_id(this->quantize_gradient(rd.v1 - rb.v1), this->quantize_gradient(rb.v1 - rc.v1),
+                                                 this->quantize_gradient(rc.v1 - ra.v1))};
+            const int32_t qs2{compute_context_id(this->quantize_gradient(rd.v2 - rb.v2), this->quantize_gradient(rb.v2 - rc.v2),
+                                                 this->quantize_gradient(rc.v2 - ra.v2))};
+            const int32_t qs3{compute_context_id(this->quantize_gradient(rd.v3 - rb.v3), this->quantize_gradient(rb.v3 - rc.v3),
+                                                 this->quantize_gradient(rc.v3 - ra.v3))};
 
-            if (const int32_t qs4{compute_context_id(quantize_gradient(rd.v4 - rb.v4), quantize_gradient(rb.v4 - rc.v4),
-                                                     quantize_gradient(rc.v4 - ra.v4))};
+            if (const int32_t qs4{compute_context_id(this->quantize_gradient(rd.v4 - rb.v4), this->quantize_gradient(rb.v4 - rc.v4),
+                                                     this->quantize_gradient(rc.v4 - ra.v4))};
                 qs1 == 0 && qs2 == 0 && qs3 == 0 && qs4 == 0)
             {
                 index += decode_run_mode(index);
