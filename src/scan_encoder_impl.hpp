@@ -19,11 +19,13 @@ public:
     using sample_type = typename Traits::sample_type;
     using pixel_type = typename Traits::pixel_type;
 
-    scan_encoder_impl(const charls::frame_info& frame_info, const jpegls_pc_parameters& pc_parameters,
+    scan_encoder_impl(const charls::frame_info& source_frame_info, const jpegls_pc_parameters& pc_parameters,
                       const coding_parameters& parameters, const Traits& traits) :
-        base{frame_info, pc_parameters, parameters,
-             copy_to_line_buffer<sample_type>::get_copy_function(parameters.interleave_mode, frame_info.component_count,
-                                                                 frame_info.bits_per_sample, parameters.transformation),
+        base{source_frame_info, pc_parameters, parameters,
+             copy_to_line_buffer<sample_type>::get_copy_function(parameters.interleave_mode,
+                                                                 source_frame_info.component_count,
+                                                                 source_frame_info.bits_per_sample,
+                                                                 parameters.transformation),
              make_sample_traits(traits)},
         traits_{traits}
     {

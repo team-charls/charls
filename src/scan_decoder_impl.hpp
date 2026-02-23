@@ -18,14 +18,14 @@ public:
     using pixel_type = typename Traits::pixel_type;
     using sample_type = typename Traits::sample_type;
 
-    scan_decoder_impl(const charls::frame_info& frame_info, const jpegls_pc_parameters& pc_parameters,
+    scan_decoder_impl(const charls::frame_info& source_frame_info, const jpegls_pc_parameters& pc_parameters,
                       const coding_parameters& parameters, const Traits& traits) :
-        base{frame_info, pc_parameters, parameters, make_sample_traits(traits)}, traits_{traits}
+        base{source_frame_info, pc_parameters, parameters, make_sample_traits(traits)}, traits_{traits}
     {
         ASSERT(traits_.is_valid());
 
         this->copy_from_line_buffer_ = copy_from_line_buffer<sample_type>::get_copy_function(
-            parameters.interleave_mode, frame_info.component_count, parameters.transformation);
+            parameters.interleave_mode, source_frame_info.component_count, parameters.transformation);
     }
 
     [[nodiscard]]

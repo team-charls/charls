@@ -20,10 +20,10 @@ public:
     using sample_type = typename SampleTraits::sample_type;
 
 protected:
-    scan_encoder_core(const charls::frame_info& frame_info, const jpegls_pc_parameters& pc_parameters,
+    scan_encoder_core(const charls::frame_info& source_frame_info, const jpegls_pc_parameters& pc_parameters,
                       const coding_parameters& parameters, const copy_to_line_buffer_fn copy_to_line_buffer,
                       const SampleTraits& sample_traits) :
-        scan_encoder{frame_info, pc_parameters, parameters, copy_to_line_buffer}, sample_traits_{sample_traits}
+        scan_encoder{source_frame_info, pc_parameters, parameters, copy_to_line_buffer}, sample_traits_{sample_traits}
     {
         quantization_ = initialize_quantization_lut(sample_traits_, t1_, t2_, t3_, quantization_lut_);
         initialize_parameters(sample_traits_.range);
