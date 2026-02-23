@@ -18,6 +18,7 @@ struct lossless_traits_impl
 {
     using sample_type = SampleType;
 
+    static constexpr bool always_lossless{true};
     static constexpr bool always_lossless_and_default_parameters{true};
     static constexpr bool fixed_bits_per_pixel{true};
 

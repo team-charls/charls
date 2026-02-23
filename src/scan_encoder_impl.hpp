@@ -120,7 +120,14 @@ private:
                     compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
                 qs != 0)
             {
-                current_line_[index] = encode_regular(qs, current_line_[index], compute_predicted_value(ra, rb, rc));
+                if constexpr (Traits::always_lossless)
+                {
+                    encode_regular_lossless(qs, current_line_[index], compute_predicted_value(ra, rb, rc));
+                }
+                else
+                {
+                    current_line_[index] = encode_regular(qs, current_line_[index], compute_predicted_value(ra, rb, rc));
+                }
                 ++index;
             }
             else
@@ -278,6 +285,18 @@ private:
         ASSERT(traits_.is_near(traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)), x));
         return static_cast<sample_type>(
             traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)));
+    }
+
+    FORCE_INLINE void encode_regular_lossless(const int32_t qs, const int32_t x, const int32_t predicted)
+    {
+        const int32_t sign{bit_wise_sign(qs)};
+        regular_mode_context& context{regular_mode_contexts_[apply_sign_for_index(qs, sign)]};
+        const int32_t k{context.compute_golomb_coding_parameter()};
+        const int32_t predicted_value{traits_.correct_prediction(predicted + apply_sign(context.c(), sign))};
+        const int32_t error_value{traits_.compute_error_value(apply_sign(x - predicted_value, sign))};
+
+        encode_mapped_value(k, map_error_value(context.get_error_correction(k) ^ error_value), traits_.limit);
+        context.update_variables_and_bias(error_value, 0, reset_threshold_);
     }
 
     FORCE_INLINE void encode_mapped_value(const int32_t k, const int32_t mapped_error, const int32_t limit)
