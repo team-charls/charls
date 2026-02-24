@@ -27,7 +27,7 @@ golomb_code_match_table::golomb_code_match_table(const int32_t k)
         if (static_cast<size_t>(code_length) > byte_bit_count)
             break;
 
-        const golomb_code_match code{error_value, conditional_static_cast<uint32_t>(code_length)};
+        const golomb_code_match code{error_value, code_length};
         add_entry(static_cast<uint8_t>(table_value), code);
     }
 
@@ -39,7 +39,7 @@ golomb_code_match_table::golomb_code_match_table(const int32_t k)
         if (static_cast<size_t>(code_length) > byte_bit_count)
             break;
 
-        const golomb_code_match code{error_value, static_cast<uint32_t>(code_length)};
+        const golomb_code_match code{error_value, code_length};
         add_entry(static_cast<uint8_t>(table_value), code);
     }
 }
@@ -73,7 +73,7 @@ static void bm_initialize_golomb_lut(benchmark::State& state)
     {
         for (int i = 0; i < max_k_value; ++i)
         {
-            golomb_lut2[i] = golomb_code_match_table(i);
+            golomb_lut2[static_cast<size_t>(i)] = golomb_code_match_table(i);
         }
     }
 }

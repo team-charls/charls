@@ -100,8 +100,8 @@ struct lossless_traits final
 };
 
 
-static __declspec(noinline) int32_t
-    get_predicted_value_default(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
+static __declspec(noinline) int32_t get_predicted_value_default(const int32_t ra, const int32_t rb,
+                                                                const int32_t rc) noexcept
 {
     if (ra < rb)
     {
@@ -133,8 +133,8 @@ static constexpr int32_t bit_wise_sign(const int32_t i) noexcept
 }
 
 
-static __declspec(noinline) int32_t
-    get_predicted_value_optimized(const int32_t ra, const int32_t rb, const int32_t rc) noexcept
+static __declspec(noinline) int32_t get_predicted_value_optimized(const int32_t ra, const int32_t rb,
+                                                                  const int32_t rc) noexcept
 {
     // sign trick reduces the number of if statements (branches)
     const int32_t sign{bit_wise_sign(rb - ra)};
@@ -205,9 +205,12 @@ static void bm_quantize_gradient_lut(benchmark::State& state)
 {
     for (const auto _ : state)
     {
-        benchmark::DoNotOptimize(quantization_lut_lossless_8[0]);
-        benchmark::DoNotOptimize(quantization_lut_lossless_8[127]);
-        benchmark::DoNotOptimize(quantization_lut_lossless_8[255]);
+        auto v0 = quantization_lut_lossless_8[0];
+        benchmark::DoNotOptimize(v0);
+        auto v1 = quantization_lut_lossless_8[127];
+        benchmark::DoNotOptimize(v1);
+        auto v2 = quantization_lut_lossless_8[255];
+        benchmark::DoNotOptimize(v2);
     }
 }
 BENCHMARK(bm_quantize_gradient_lut);
@@ -383,17 +386,18 @@ static void bm_has_ff_byte_loop(benchmark::State& state)
 BENCHMARK(bm_has_ff_byte_loop);
 
 #if !defined(_M_ARM64)
-static bool has_ff_byte_simd(const unsigned int value) noexcept {
-     // Use SSE instructions for parallel comparison
-     const __m128i xmm_value = _mm_set1_epi32(value);
-     const __m128i xmm_ff = _mm_set1_epi32(0xFF);
+static bool has_ff_byte_simd(const unsigned int value) noexcept
+{
+    // Use SSE instructions for parallel comparison
+    const __m128i xmm_value = _mm_set1_epi32(static_cast<int>(value));
+    const __m128i xmm_ff = _mm_set1_epi32(0xFF);
 
-     // Compare each byte for equality with 0xFF
-     const __m128i comparison = _mm_cmpeq_epi8(xmm_value, xmm_ff);
+    // Compare each byte for equality with 0xFF
+    const __m128i comparison = _mm_cmpeq_epi8(xmm_value, xmm_ff);
 
-     // Check if any comparison result is true
-     return _mm_testz_si128(comparison, comparison) == 0;
- }
+    // Check if any comparison result is true
+    return _mm_testz_si128(comparison, comparison) == 0;
+}
 static void bm_has_ff_byte_simd(benchmark::State& state)
 {
     for (const auto _ : state)
@@ -411,7 +415,7 @@ static const std::byte* find_jpeg_marker_start_byte(const std::byte* position, c
 
     // Use memchr to find next start byte (0xFF). memchr is optimized on some platforms to search faster.
     return static_cast<const std::byte*>(
-        memchr(position, std::to_integer<int>(jpeg_marker_start_byte), end_position - position));
+        memchr(position, std::to_integer<int>(jpeg_marker_start_byte), static_cast<size_t>(end_position - position)));
 }
 static void bm_find_jpeg_marker_start_byte(benchmark::State& state)
 {
@@ -465,7 +469,6 @@ auto byte_swap(const T value) noexcept
 }
 
 
-
 template<typename T>
 [[nodiscard]]
 T read_unaligned(const void* buffer) noexcept
@@ -494,8 +497,7 @@ static uint32_t read_all_bytes_with_ff_check(const std::byte* position, const st
 
     for (; position < end_position; position += sizeof(uint32_t))
     {
-        if (const uint32_t value{read_big_endian_unaligned<uint32_t>(position)};
-            has_ff_byte_simd(value))
+        if (const uint32_t value{read_big_endian_unaligned<uint32_t>(position)}; has_ff_byte_simd(value))
         {
             result++;
         }
@@ -503,7 +505,6 @@ static uint32_t read_all_bytes_with_ff_check(const std::byte* position, const st
         {
             result |= value;
         }
-
     }
 
     return result;
@@ -524,7 +525,7 @@ BENCHMARK(bm_read_all_bytes_with_ff_check);
 static bool has_ff_byte_simd64(const uint64_t value) noexcept
 {
     // Use SSE instructions for parallel comparison
-    const __m128i xmm_value = _mm_set1_epi64x(value);
+    const __m128i xmm_value = _mm_set1_epi64x(static_cast<int64_t>(value));
     const __m128i xmm_ff = _mm_set1_epi32(0xFF);
 
     // Compare each byte for equality with 0xFF
@@ -614,6 +615,6 @@ BENCHMARK(bm_read_all_bytes_no_check64);
 // Tips to run the benchmark tests:
 
 // To run a single benchmark:
-// benchmark --benchmark_filter=bm_decode   
+// benchmark --benchmark_filter=bm_decode
 
 BENCHMARK_MAIN();
