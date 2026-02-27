@@ -133,6 +133,7 @@ void convert_planar_to_pixel(const size_t width, const size_t height, const void
 }
 
 
+#ifdef CHARLS_STATIC
 void test_quantization_luts()
 {
     // Runtime verification: every LUT entry matches the on-the-fly computation.
@@ -143,16 +144,17 @@ void test_quantization_luts()
         assert::is_true(lut.size() == static_cast<size_t>(range) * 2);
         for (size_t i{}; i != lut.size(); ++i)
         {
-            assert::is_true(lut[i] == charls::quantize_gradient_org(static_cast<int32_t>(i) - range, preset.threshold1,
-                                                                     preset.threshold2, preset.threshold3));
+            assert::is_true(lut[i] == quantize_gradient_org(static_cast<int32_t>(i) - range, preset.threshold1,
+                                                            preset.threshold2, preset.threshold3));
         }
     }};
 
-    verify(charls::quantization_lut_lossless_8(), 8);
-    verify(charls::quantization_lut_lossless_10(), 10);
-    verify(charls::quantization_lut_lossless_12(), 12);
-    verify(charls::quantization_lut_lossless_16(), 16);
+    verify(quantization_lut_lossless_8(), 8);
+    verify(quantization_lut_lossless_10(), 10);
+    verify(quantization_lut_lossless_12(), 12);
+    verify(quantization_lut_lossless_16(), 16);
 }
+#endif
 
 
 void test_traits16_bit()
@@ -679,8 +681,10 @@ bool unit_test()
         test_encode_from_stream();
         test_conformance();
 
+#ifdef CHARLS_STATIC
         cout << "Test Quantization LUTs\n";
         test_quantization_luts();
+#endif
 
         cout << "Test Traits\n";
         test_traits16_bit();
