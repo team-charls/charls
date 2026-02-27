@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "../src/default_traits.hpp"
+#include "../src/jpegls_preset_coding_parameters.hpp"
 #include "../src/lossless_traits.hpp"
 #include "../src/quantization_lut.hpp"
 
@@ -134,21 +135,6 @@ void convert_planar_to_pixel(const size_t width, const size_t height, const void
 
 void test_quantization_luts()
 {
-    // Compile-time verification: constexpr LUTs have the expected sizes.
-    static_assert(charls::quantization_lut_lossless_8.size() == 512);
-    static_assert(charls::quantization_lut_lossless_10.size() == 2048);
-    static_assert(charls::quantization_lut_lossless_12.size() == 8192);
-
-    // Compile-time verification: gradient 0 maps to context bin 0.
-    static_assert(charls::quantization_lut_lossless_8[256] == 0);
-    static_assert(charls::quantization_lut_lossless_10[1024] == 0);
-    static_assert(charls::quantization_lut_lossless_12[4096] == 0);
-
-    // Compile-time verification: create_quantization_lut_lossless can be evaluated at compile time.
-    constexpr auto lut_8{charls::create_quantization_lut_lossless<8>()};
-    static_assert(lut_8.size() == 512);
-    static_assert(lut_8[256] == 0);
-
     // Runtime verification: every LUT entry matches the on-the-fly computation.
     const auto verify{[](const auto& lut, const int32_t bit_count) {
         const auto preset{charls::compute_default(charls::calculate_maximum_sample_value(bit_count), 0)};
@@ -162,13 +148,10 @@ void test_quantization_luts()
         }
     }};
 
-    verify(charls::quantization_lut_lossless_8, 8);
-    verify(charls::quantization_lut_lossless_10, 10);
-    verify(charls::quantization_lut_lossless_12, 12);
-
-    // Note: quantization_lut_lossless_16() is not verified here as it is an internal function
-    // not exported in shared library builds. It uses the same generation logic as the 8/10/12-bit tables
-    // and is indirectly verified through 16-bit encode/decode round-trip tests.
+    verify(charls::quantization_lut_lossless_8(), 8);
+    verify(charls::quantization_lut_lossless_10(), 10);
+    verify(charls::quantization_lut_lossless_12(), 12);
+    verify(charls::quantization_lut_lossless_16(), 16);
 }
 
 

@@ -5,26 +5,59 @@
 
 #include "quantization_lut.hpp"
 
+#include <charls/public_types.h>
+
+#include "jpegls_algorithm.hpp"
+#include "jpegls_preset_coding_parameters.hpp"
+
 namespace charls {
 
 using std::vector;
 
+namespace {
+
+vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
+{
+    const jpegls_pc_parameters preset{compute_default(calculate_maximum_sample_value(bit_count), 0)};
+    const int32_t range{preset.maximum_sample_value + 1};
+
+    vector<int8_t> lut(static_cast<size_t>(range) * 2);
+    for (size_t i{}; i != lut.size(); ++i)
+    {
+        lut[i] =
+            quantize_gradient_org(static_cast<int32_t>(i) - range, preset.threshold1, preset.threshold2, preset.threshold3);
+    }
+
+    return lut;
+}
+
+} // namespace
+
+// Lookup tables: sample differences to bin indexes.
+// Use lazy initialization via function-local statics to avoid global constructors
+// and defer allocation until first use.
+
+const vector<int8_t>& quantization_lut_lossless_8()
+{
+    static const vector<int8_t> lut{create_quantize_lut_lossless(8)};
+    return lut;
+}
+
+const vector<int8_t>& quantization_lut_lossless_10()
+{
+    static const vector<int8_t> lut{create_quantize_lut_lossless(10)};
+    return lut;
+}
+
+const vector<int8_t>& quantization_lut_lossless_12()
+{
+    static const vector<int8_t> lut{create_quantize_lut_lossless(12)};
+    return lut;
+}
+
 const vector<int8_t>& quantization_lut_lossless_16()
 {
-    static const vector<int8_t> lut{[] {
-        constexpr int32_t max_val{calculate_maximum_sample_value(16)};
-        constexpr auto preset{compute_default(max_val, 0)};
-        constexpr int32_t range{preset.maximum_sample_value + 1};
-
-        vector<int8_t> table(static_cast<size_t>(range) * 2);
-        for (size_t i{}; i != table.size(); ++i)
-        {
-            table[i] = quantize_gradient_org(static_cast<int32_t>(i) - range, preset.threshold1, preset.threshold2,
-                                             preset.threshold3);
-        }
-        return table;
-    }()};
-
+    static const vector<int8_t> lut{create_quantize_lut_lossless(16)};
     return lut;
 }
 
