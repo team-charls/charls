@@ -1,0 +1,52 @@
+# Temporary workflow to compare MSVC DLL sizes across branches
+name: DLL Size Comparison
+
+on:
+  workflow_dispatch:
+
+jobs:
+  compare:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Build v2.4.2 DLL
+        run: |
+          git checkout 2.4.2
+          cmake -B build-v2 -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON
+          cmake --build build-v2 --config Release --target charls
+          git checkout -
+
+      - name: Build main DLL
+        run: |
+          git checkout origin/main
+          cmake -B build-main -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON
+          cmake --build build-main --config Release --target charls
+          git checkout -
+
+      - name: Build PR 373 DLL
+        run: |
+          cmake -B build-pr373 -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON
+          cmake --build build-pr373 --config Release --target charls
+
+      - name: Compare DLL sizes
+        run: |
+          echo "========================================="
+          echo "  MSVC x64 Release DLL Size Comparison"
+          echo "========================================="
+          echo ""
+
+          $v2 = Get-ChildItem -Recurse build-v2 -Filter "*.dll" | Where-Object { $_.Name -match "charls" } | Select-Object -First 1
+          $main = Get-ChildItem -Recurse build-main -Filter "*.dll" | Where-Object { $_.Name -match "charls" } | Select-Object -First 1
+          $pr373 = Get-ChildItem -Recurse build-pr373 -Filter "*.dll" | Where-Object { $_.Name -match "charls" } | Select-Object -First 1
+
+          echo "v2.4.2:  $($v2.Name) = $($v2.Length) bytes"
+          echo "main:    $($main.Name) = $($main.Length) bytes"
+          echo "PR #373: $($pr373.Name) = $($pr373.Length) bytes"
+          echo ""
+          echo "v2 -> v3:       $($main.Length - $v2.Length) bytes"
+          echo "v3 -> PR #373:  $($pr373.Length - $main.Length) bytes"
+          echo "PR #373 vs v2:  $($pr373.Length - $v2.Length) bytes"
+        shell: pwsh
