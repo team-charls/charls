@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "../src/default_traits.hpp"
+#include "../src/jpegls_preset_coding_parameters.hpp"
 #include "../src/lossless_traits.hpp"
+#include "../src/quantization_lut.hpp"
 
 #include "bitstreamdamage.hpp"
 #include "compliance.hpp"
@@ -129,6 +131,30 @@ void convert_planar_to_pixel(const size_t width, const size_t height, const void
         pixels += stride_in_pixels;
     }
 }
+
+
+#ifdef CHARLS_STATIC
+void test_quantization_luts()
+{
+    // Runtime verification: every LUT entry matches the on-the-fly computation.
+    const auto verify{[](const auto& lut, const int32_t bit_count) {
+        const auto preset{charls::compute_default(charls::calculate_maximum_sample_value(bit_count), 0)};
+        const int32_t range{preset.maximum_sample_value + 1};
+
+        assert::is_true(lut.size() == static_cast<size_t>(range) * 2);
+        for (size_t i{}; i != lut.size(); ++i)
+        {
+            assert::is_true(lut[i] == quantize_gradient_org(static_cast<int32_t>(i) - range, preset.threshold1,
+                                                            preset.threshold2, preset.threshold3));
+        }
+    }};
+
+    verify(quantization_lut_lossless_8(), 8);
+    verify(quantization_lut_lossless_10(), 10);
+    verify(quantization_lut_lossless_12(), 12);
+    verify(quantization_lut_lossless_16(), 16);
+}
+#endif
 
 
 void test_traits16_bit()
@@ -654,6 +680,11 @@ bool unit_test()
         cout << "Test Conformance\n";
         test_encode_from_stream();
         test_conformance();
+
+#ifdef CHARLS_STATIC
+        cout << "Test Quantization LUTs\n";
+        test_quantization_luts();
+#endif
 
         cout << "Test Traits\n";
         test_traits16_bit();
