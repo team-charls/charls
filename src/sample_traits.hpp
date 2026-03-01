@@ -73,7 +73,7 @@ using sample_traits_t = typename sample_traits_of<Traits>::type;
 /// </summary>
 template<typename Traits>
 [[nodiscard]]
-auto make_sample_traits(const Traits& traits)
+auto make_sample_traits(const Traits& traits) noexcept
 {
     using sample_traits_type = sample_traits_t<Traits>;
 
