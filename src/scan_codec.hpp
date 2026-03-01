@@ -44,30 +44,42 @@ const int8_t* initialize_quantization_lut(const Traits& traits, const int32_t th
         if constexpr (Traits::fixed_bits_per_pixel)
         {
             if constexpr (Traits::bits_per_sample == 8)
-                return &quantization_lut_lossless_8[quantization_lut_lossless_8.size() / 2];
+            {
+                const auto& lut{quantization_lut_lossless_8()};
+                return &lut[lut.size() / 2];
+            }
+            else if constexpr (Traits::bits_per_sample == 12)
+            {
+                const auto& lut{quantization_lut_lossless_12()};
+                return &lut[lut.size() / 2];
+            }
             else
             {
-                if constexpr (Traits::bits_per_sample == 12)
-                    return &quantization_lut_lossless_12[quantization_lut_lossless_12.size() / 2];
-                else
-                {
-                    static_assert(Traits::bits_per_sample == 16);
-                    return &quantization_lut_lossless_16[quantization_lut_lossless_16.size() / 2];
-                }
+                static_assert(Traits::bits_per_sample == 16);
+                const auto& lut{quantization_lut_lossless_16()};
+                return &lut[lut.size() / 2];
             }
         }
         else
         {
             switch (traits.bits_per_sample)
             {
-            case 8:
-                return &quantization_lut_lossless_8[quantization_lut_lossless_8.size() / 2];
-            case 10:
-                return &quantization_lut_lossless_10[quantization_lut_lossless_10.size() / 2];
-            case 12:
-                return &quantization_lut_lossless_12[quantization_lut_lossless_12.size() / 2];
-            case 16:
-                return &quantization_lut_lossless_16[quantization_lut_lossless_16.size() / 2];
+            case 8: {
+                const auto& lut{quantization_lut_lossless_8()};
+                return &lut[lut.size() / 2];
+            }
+            case 10: {
+                const auto& lut{quantization_lut_lossless_10()};
+                return &lut[lut.size() / 2];
+            }
+            case 12: {
+                const auto& lut{quantization_lut_lossless_12()};
+                return &lut[lut.size() / 2];
+            }
+            case 16: {
+                const auto& lut{quantization_lut_lossless_16()};
+                return &lut[lut.size() / 2];
+            }
             default:
                 break;
             }

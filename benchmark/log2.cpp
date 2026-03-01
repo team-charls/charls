@@ -4,6 +4,7 @@
 #include <benchmark/benchmark.h>
 
 #include "../src/jpegls_algorithm.hpp"
+#include "../src/util.hpp"
 
 #include <cmath>
 #include <limits>
@@ -12,7 +13,7 @@
 
 static uint32_t log2_floor(const uint32_t n) noexcept
 {
-    return 31 - charls::countl_zero(n);
+    return 31U - charls::countl_zero(n);
 }
 
 static uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept

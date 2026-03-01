@@ -34,18 +34,31 @@ vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
 } // namespace
 
 // Lookup tables: sample differences to bin indexes.
-// ReSharper disable CppTemplateArgumentsCanBeDeduced
-// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
-const vector<int8_t> quantization_lut_lossless_8{create_quantize_lut_lossless(8)};
+// Use lazy initialization via function-local statics to avoid global constructors
+// and defer allocation until first use.
 
-// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
-const vector<int8_t> quantization_lut_lossless_10{create_quantize_lut_lossless(10)};
+const vector<int8_t>& quantization_lut_lossless_8()
+{
+    static const vector<int8_t> lut{create_quantize_lut_lossless(8)};
+    return lut;
+}
 
-// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
-const vector<int8_t> quantization_lut_lossless_12{create_quantize_lut_lossless(12)};
+const vector<int8_t>& quantization_lut_lossless_10()
+{
+    static const vector<int8_t> lut{create_quantize_lut_lossless(10)};
+    return lut;
+}
 
-// NOLINTNEXTLINE(clang-diagnostic-global-constructors)
-const vector<int8_t> quantization_lut_lossless_16{create_quantize_lut_lossless(16)};
-// ReSharper restore CppTemplateArgumentsCanBeDeduced
+const vector<int8_t>& quantization_lut_lossless_12()
+{
+    static const vector<int8_t> lut{create_quantize_lut_lossless(12)};
+    return lut;
+}
+
+const vector<int8_t>& quantization_lut_lossless_16()
+{
+    static const vector<int8_t> lut{create_quantize_lut_lossless(16)};
+    return lut;
+}
 
 } // namespace charls
