@@ -249,8 +249,10 @@
     <ClInclude Include="regular_mode_context.hpp" />
     <ClInclude Include="run_mode_context.hpp" />
     <ClInclude Include="copy_to_line_buffer.hpp" />
+    <ClInclude Include="sample_traits.hpp" />
     <ClInclude Include="scan_decoder.hpp" />
     <ClInclude Include="default_traits.hpp" />
+    <ClInclude Include="scan_decoder_core.hpp" />
     <ClInclude Include="scan_encoder.hpp" />
     <ClInclude Include="golomb_lut.hpp" />
     <ClInclude Include="make_scan_codec.hpp" />
@@ -264,6 +266,7 @@
     <ClInclude Include="copy_from_line_buffer.hpp" />
     <ClInclude Include="quantization_lut.hpp" />
     <ClInclude Include="scan_decoder_impl.hpp" />
+    <ClInclude Include="scan_encoder_core.hpp" />
     <ClInclude Include="scan_encoder_impl.hpp" />
     <ClInclude Include="span.hpp" />
     <ClInclude Include="scan_codec.hpp" />
