@@ -1,8 +1,8 @@
 {
-  "version": 2,
+  "version": 3,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 20,
+    "minor": 22,
     "patch": 0
   },
   "configurePresets": [
@@ -10,21 +10,34 @@
       "name": "base",
       "description": "Sets generator, build and install directory",
       "hidden": true,
-      "generator": "Ninja",
+      "generator": "Ninja Multi-Config",
       "binaryDir": "${sourceDir}/bin/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_INSTALL_PREFIX": "${sourceDir}/bin/install/${presetName}"
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/bin/install/${presetName}",
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo"
       }
     },
     {
-      "name": "windows-base",
+      "name": "static-lib",
+      "description": "Build as static library",
+      "hidden": true,
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": "OFF"
+      }
+    },
+    {
+      "name": "shared-lib",
+      "description": "Build as shared library/DLL",
+      "hidden": true,
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": "ON"
+      }
+    },
+    {
+      "name": "windows-msvc-base",
       "description": "Sets C++ compiler and hostOS",
       "hidden": true,
       "inherits": [ "base" ],
-      "architecture": {
-        "value": "x86",
-        "strategy": "external"
-      },
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "cl"
       },
@@ -35,80 +48,92 @@
       }
     },
     {
-      "name": "x86-windows-debug",
-      "description": "Sets x86 arch, build type",
-      "inherits": [ "windows-base" ],
+      "name": "x86-windows-static",
+      "description": "x86 Windows static library",
+      "inherits": [ "windows-msvc-base", "static-lib" ],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
       "architecture": {
         "value": "x86",
         "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "x86-windows-release",
-      "description": "Sets x86 arch, build type",
-      "inherits": [ "windows-base" ],
+      "name": "x86-windows-shared",
+      "description": "x86 Windows DLL",
+      "inherits": [ "windows-msvc-base", "shared-lib" ],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
       "architecture": {
         "value": "x86",
         "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
       }
     },
     {
-      "name": "x64-windows-debug",
-      "description": "Sets x64 arch, build type",
-      "inherits": [ "windows-base" ],
+      "name": "x64-windows-static",
+      "description": "x64 Windows static library",
+      "inherits": [ "windows-msvc-base", "static-lib" ],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
       "architecture": {
         "value": "x64",
         "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "x64-windows-release",
-      "description": "Sets x64 arch, build type",
-      "inherits": [ "windows-base" ],
+      "name": "x64-windows-shared",
+      "description": "x64 Windows DLL",
+      "inherits": [ "windows-msvc-base", "shared-lib" ],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
       "architecture": {
         "value": "x64",
         "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
       }
     },
     {
-      "name": "arm64-windows-debug",
-      "description": "Sets arm64 arch",
-      "inherits": "windows-base",
+      "name": "arm64-windows-static",
+      "description": "ARM64 Windows static library",
+      "inherits": [ "windows-msvc-base", "static-lib" ],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
       "architecture": {
         "value": "arm64",
         "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "arm64-windows-release",
-      "description": "Sets arm64 arch",
-      "inherits": "windows-base",
+      "name": "arm64-windows-shared",
+      "description": "ARM64 Windows DLL",
+      "inherits": [ "windows-msvc-base", "shared-lib" ],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
       "architecture": {
         "value": "arm64",
         "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
       }
     },
     {
       "name": "linux-base",
-      "description": "Sets compilers, build type",
+      "description": "Linux configuration",
       "inherits": "base",
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
@@ -117,23 +142,207 @@
       }
     },
     {
-      "name": "linux-debug",
-      "inherits": "linux-base",
+      "name": "linux-static",
+      "description": "Linux static library",
+      "inherits": [ "linux-base", "static-lib" ],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
       "architecture": {
         "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "linux-release",
-      "inherits": "linux-base",
+      "name": "linux-shared",
+      "description": "Linux shared library",
+      "inherits": [ "linux-base", "shared-lib" ],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
       "architecture": {
         "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x86-windows-static-debug",
+      "configurePreset": "x86-windows-static",
+      "description": "Build x86 Windows static library Debug",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "x86-windows-static-release",
+      "configurePreset": "x86-windows-static",
+      "description": "Build x86 Windows static library RelWithDebInfo",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "x86-windows-shared-debug",
+      "configurePreset": "x86-windows-shared",
+      "description": "Build x86 Windows DLL Debug",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "x86-windows-shared-release",
+      "configurePreset": "x86-windows-shared",
+      "description": "Build x86 Windows DLL RelWithDebInfo",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "x64-windows-static-debug",
+      "configurePreset": "x64-windows-static",
+      "description": "Build x64 Windows static library Debug",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "x64-windows-static-release",
+      "configurePreset": "x64-windows-static",
+      "description": "Build x64 Windows static library RelWithDebInfo",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "x64-windows-shared-debug",
+      "configurePreset": "x64-windows-shared",
+      "description": "Build x64 Windows DLL Debug",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "x64-windows-shared-release",
+      "configurePreset": "x64-windows-shared",
+      "description": "Build x64 Windows DLL RelWithDebInfo",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "arm64-windows-static-debug",
+      "configurePreset": "arm64-windows-static",
+      "description": "Build ARM64 Windows static library Debug",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "arm64-windows-static-release",
+      "configurePreset": "arm64-windows-static",
+      "description": "Build ARM64 Windows static library RelWithDebInfo",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "arm64-windows-shared-debug",
+      "configurePreset": "arm64-windows-shared",
+      "description": "Build ARM64 Windows DLL Debug",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "arm64-windows-shared-release",
+      "configurePreset": "arm64-windows-shared",
+      "description": "Build ARM64 Windows DLL RelWithDebInfo",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "linux-static-debug",
+      "configurePreset": "linux-static",
+      "description": "Build Linux static library Debug",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-static-release",
+      "configurePreset": "linux-static",
+      "description": "Build Linux static library Release",
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-shared-debug",
+      "configurePreset": "linux-shared",
+      "description": "Build Linux shared library Debug",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-shared-release",
+      "configurePreset": "linux-shared",
+      "description": "Build Linux shared library Release",
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
       }
     }
   ]
