@@ -13,7 +13,7 @@
       "generator": "Ninja Multi-Config",
       "binaryDir": "${sourceDir}/bin/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_INSTALL_PREFIX": "${sourceDir}/bin/install/${presetName}",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/bin/install/${presetName}/$<CONFIG>",
         "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo"
       }
     },
