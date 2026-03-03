@@ -118,7 +118,7 @@ private:
 
             if (const int32_t qs{
                     compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
-                qs != 0)
+                LIKELY(qs != 0))
             {
                 if constexpr (Traits::always_lossless)
                 {
