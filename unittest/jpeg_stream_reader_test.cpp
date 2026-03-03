@@ -788,7 +788,6 @@ public:
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
         reader.read_header();
-        std::array<byte, 1> decoded{};
         reader.advance_position(1);
 
         assert_expect_exception(jpegls_errc::end_of_image_marker_not_found, [&reader] { reader.read_end_of_image(); });
