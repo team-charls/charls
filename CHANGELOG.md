@@ -35,6 +35,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 - BREAKING: Deprecated legacy 1.x API methods have been removed.
 
+## [2.4.3] - 2026-3-3
+
+### Fixed
+
+- Fixed [#365](https://github.com/team-charls/charls/issues/365), Non-conforming padding before EOI prevents decoding in CharLS v2.3.0 and newer
+
 ## [2.4.2] - 2023-5-16
 
 ### Fixed
