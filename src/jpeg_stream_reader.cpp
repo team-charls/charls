@@ -154,7 +154,8 @@ void jpeg_stream_reader::read_end_of_image()
 
     auto start_byte{read_byte_checked()};
 
-    // Some legacy JPEG encoders write a padding zero byte after the pixel data, which is not compliant but supported.
+    // Some legacy JPEG encoders insert a padding zero byte after the entropy-coded scan data (before the EOI marker),
+    // which is not compliant but is tolerated.
     if (UNLIKELY(start_byte == byte{0}))
     {
         start_byte = read_byte_checked();
