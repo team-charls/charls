@@ -37,7 +37,7 @@ protected:
     }
 
     [[nodiscard]]
-    sample_type encode_regular(const int32_t qs, const int32_t x, const int32_t predicted)
+    FORCE_INLINE sample_type encode_regular(const int32_t qs, const int32_t x, const int32_t predicted)
     {
         const int32_t sign{bit_wise_sign(qs)};
         regular_mode_context& context{regular_mode_contexts_[apply_sign_for_index(qs, sign)]};
@@ -54,7 +54,7 @@ protected:
             sample_traits_.compute_reconstructed_sample(predicted_value, apply_sign(error_value, sign)));
     }
 
-    void encode_regular_lossless(const int32_t qs, const int32_t x, const int32_t predicted)
+    FORCE_INLINE void encode_regular_lossless(const int32_t qs, const int32_t x, const int32_t predicted)
     {
         const int32_t sign{bit_wise_sign(qs)};
         regular_mode_context& context{regular_mode_contexts_[apply_sign_for_index(qs, sign)]};
@@ -66,7 +66,7 @@ protected:
         context.update_variables_and_bias(error_value, 0, reset_threshold_);
     }
 
-    void encode_mapped_value(const int32_t k, const int32_t mapped_error, const int32_t limit)
+    FORCE_INLINE void encode_mapped_value(const int32_t k, const int32_t mapped_error, const int32_t limit)
     {
         if (int32_t high_bits{mapped_error >> k}; high_bits < limit - sample_traits_.quantized_bits_per_sample - 1)
         {

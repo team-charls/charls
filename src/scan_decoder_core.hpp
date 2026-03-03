@@ -35,7 +35,7 @@ protected:
     }
 
     [[nodiscard]]
-    sample_type decode_regular(const int32_t qs, const int32_t predicted)
+    FORCE_INLINE sample_type decode_regular(const int32_t qs, const int32_t predicted)
     {
         const int32_t sign{bit_wise_sign(qs)};
         regular_mode_context& context{regular_mode_contexts_[apply_sign_for_index(qs, sign)]};
