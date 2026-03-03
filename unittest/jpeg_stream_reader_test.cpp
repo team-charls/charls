@@ -747,7 +747,7 @@ public:
         writer.write_start_of_frame_segment(1, 1, 8, 1);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
         writer.write_byte(byte{0x80});
-        writer.write_byte(byte{0x1}); // nonzero byte padding after the entropy coded data, before the EOI marker.
+        writer.write_byte(byte{0x01}); // nonzero byte padding after the entropy coded data, before the EOI marker.
         writer.write_marker(jpeg_marker_code::end_of_image);
 
         jpeg_stream_reader reader;
