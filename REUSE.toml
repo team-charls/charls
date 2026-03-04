@@ -41,3 +41,12 @@ precedence = "aggregate"
 SPDX-FileCopyrightText = "Copyright (c) Hewlett-Packard Company 1995-1999"
 SPDX-License-Identifier = "BSD-3-Clause"
 
+[[annotations]]
+path = [
+    "fuzzing/libfuzzer-encoder/fuzzer/FuzzedDataProvider.h",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright (c) LLVM Project"
+
+
+
