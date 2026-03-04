@@ -4,6 +4,7 @@
 #pragma once
 
 #include "charls_jpegls_encoder.h"
+#include "jpegls_error.hpp"
 
 #ifndef CHARLS_BUILD_AS_CPP_MODULE
 #include <cstring>
