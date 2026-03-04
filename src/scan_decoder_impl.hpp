@@ -258,7 +258,7 @@ private:
     }
 
     [[nodiscard]]
-    size_t decode_run_mode(const size_t start_index)
+    CHARLS_NO_INLINE size_t decode_run_mode(const size_t start_index)
     {
         const pixel_type ra{current_line_[start_index - 1]};
 

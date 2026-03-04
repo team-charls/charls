@@ -109,7 +109,7 @@ struct default_traits final
     [[nodiscard]]
     FORCE_INLINE int32_t correct_prediction(const int32_t predicted) const noexcept
     {
-        if ((predicted & maximum_sample_value) == predicted)
+        if (LIKELY((predicted & maximum_sample_value) == predicted))
             return predicted;
 
         return (~(predicted >> (int32_t_bit_count - 1))) & maximum_sample_value;
