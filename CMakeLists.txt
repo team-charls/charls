@@ -160,11 +160,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
 
   if(NOT APPLE)
-    set(LIB_FUZZER_SUPPORTED 1)
+    set(LIB_FUZZER_SUPPORTED TRUE)
   endif()
 endif()
 
 if(MSVC)
+  message(STATUS "MSVC architecture: ${MSVC_CXX_ARCHITECTURE_ID}")
   set(PEDANTIC_CXX_COMPILE_FLAGS /W4)
   set(WARNINGS_AS_ERRORS_FLAG_COMPILER /WX)
   set(WARNINGS_AS_ERRORS_FLAG_LINKER /WX)
@@ -180,7 +181,7 @@ if(MSVC)
   # and this makes it possible to use /GR- without warnings.
   string(REGEX REPLACE " /GR" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-  # All C and C++ source files are in utf-8 without signature (bom), MSVC requires utf-8 switch to read files correctly.
+  # All C and C++ source files are encoded in UTF-8 without signature (BOM), MSVC requires the utf-8 switch to read files correctly.
   add_compile_options("/utf-8")
 
   # Zc:__cplusplus: Will configure the MSVC compiler to use the correct value for the __cplusplus macro
@@ -206,14 +207,15 @@ if(MSVC)
   add_link_options("/guard:cf")
 
   # /CETCOMPAT: Mark executable image compatible with the Control-flow Enforcement Technology (CET) Shadow Stack.
-  # CET is only supported by x64 and x86 CPUs (11th generation Intel and AMD Zen3 and newer)
-  if(${ARM_DETECTED} EQUAL 0)
+  # Marking an image CET compatible is only supported for x64 and x86 CPUs.
+  # Depening on the hardware, 11th generation Intel and AMD Zen3 and newer CPUs, shadow staks are enabled at runtime.
+  if(${ARM_DETECTED} EQUAL -1)
     add_link_options("/CETCOMPAT")
   endif()
 
   # Enable LibFuzzer support for MSVC
-  if(${ARM_DETECTED} EQUAL 0 AND MSVC_VERSION GREATER_EQUAL 1930)
-    set(LIB_FUZZER_SUPPORTED 1)
+  if(${ARM_DETECTED} EQUAL -1 AND MSVC_VERSION GREATER_EQUAL 1930)
+    set(LIB_FUZZER_SUPPORTED TRUE)
   endif()
 
 endif()
@@ -262,7 +264,9 @@ if(CHARLS_BUILD_AFL_FUZZ_TEST)
 endif()
 
 if(CHARLS_BUILD_LIB_FUZZER_FUZZ_TEST AND LIB_FUZZER_SUPPORTED)
+  message(STATUS "LibFuzzer test applications are requested and will be build")
   add_subdirectory(fuzzing/libfuzzer)
+  add_subdirectory(fuzzing/libfuzzer-encoder)
 endif()
 
 if(CHARLS_BUILD_SAMPLES)
