@@ -219,6 +219,16 @@ public:
 #endif
     }
 
+    TEST_METHOD(estimated_destination_size_that_causes_overflow_on_64bit_throws)
+    {
+        jpegls_encoder encoder;
+
+        encoder.frame_info({numeric_limits<uint32_t>::max(), numeric_limits<uint32_t>::max(), 8, 2});
+
+        assert_expect_exception(jpegls_errc::parameter_value_not_supported,
+                                [&encoder] { ignore = encoder.estimated_destination_size(); });
+    }
+
     TEST_METHOD(destination)
     {
         jpegls_encoder encoder;

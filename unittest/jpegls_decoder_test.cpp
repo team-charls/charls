@@ -992,15 +992,8 @@ public:
         decoder.source(writer.buffer.data(), writer.buffer.size());
         decoder.read_header();
 
-#if INTPTR_MAX == INT64_MAX
-        Assert::AreEqual(component_count * numeric_limits<uint32_t>::max() * numeric_limits<uint32_t>::max(),
-                         decoder.get_destination_size());
-#elif INTPTR_MAX == INT32_MAX
         assert_expect_exception(jpegls_errc::parameter_value_not_supported,
                                 [&decoder] { ignore = decoder.get_destination_size(); });
-#else
-#error Unknown pointer size or missing size macros!
-#endif
     }
 
     TEST_METHOD(decode_to_buffer_with_uint16_size_works)
