@@ -33,7 +33,7 @@ class FuzzedDataProvider {
  public:
   // |data| is an array of length |size| that the FuzzedDataProvider wraps to
   // provide more granular access. |data| must outlive the FuzzedDataProvider.
-  FuzzedDataProvider(const uint8_t *data, size_t size) 
+  FuzzedDataProvider(const uint8_t *data, size_t size)
       : data_ptr_(data), remaining_bytes_(size) {}
   ~FuzzedDataProvider() = default;
 
