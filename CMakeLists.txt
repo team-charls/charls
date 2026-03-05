@@ -160,7 +160,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
 
   if(NOT APPLE)
-    set(LIB_FUZZER_SUPPORTED TRUE)
+    set(LIB_FUZZER_SUPPORTED OFF)
   endif()
 endif()
 
@@ -208,14 +208,16 @@ if(MSVC)
 
   # /CETCOMPAT: Mark executable image compatible with the Control-flow Enforcement Technology (CET) Shadow Stack.
   # Marking an image CET compatible is only supported for x64 and x86 CPUs.
-  # Depening on the hardware, 11th generation Intel and AMD Zen3 and newer CPUs, shadow staks are enabled at runtime.
+  # Depending on the hardware, 11th generation Intel and AMD Zen3 and newer CPUs, shadow stacks are enabled at runtime.
   if(${ARM_DETECTED} EQUAL -1)
     add_link_options("/CETCOMPAT")
   endif()
 
   # Enable LibFuzzer support for MSVC
   if(${ARM_DETECTED} EQUAL -1 AND MSVC_VERSION GREATER_EQUAL 1930)
-    set(LIB_FUZZER_SUPPORTED TRUE)
+    # Libfuzzer support in MSVC is experimental. The CMake script with Ninja gives a linker error (main not defined).
+    # Use the vcxproj file to build the fuzzing targets with MSVC.
+    set(LIB_FUZZER_SUPPORTED OFF)
   endif()
 
 endif()

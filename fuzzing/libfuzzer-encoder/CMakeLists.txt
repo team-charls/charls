@@ -13,7 +13,6 @@ target_link_libraries(libfuzzer-encoder PRIVATE charls)
 
 
 if(MSVC)
-  # CMake for Ninja gives linker errors. Use the vcxproj file to build the fuzzing targets with MSVC.
   target_compile_options(libfuzzer-encoder PRIVATE "/fsanitize=fuzzer /fsanitize=address")
 else()
   target_compile_options(libfuzzer-encoder PRIVATE "-fsanitize=fuzzer,address")
