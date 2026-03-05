@@ -31,6 +31,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup>
     <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <TargetName>libfuzzer-encoder</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <WholeProgramOptimization>true</WholeProgramOptimization>

@@ -13,7 +13,7 @@ target_link_libraries(libfuzzer-encoder PRIVATE charls)
 
 
 if(MSVC)
-  target_compile_options(libfuzzer-encoder PRIVATE "/fsanitize=fuzzer /fsanitize=address")
+  target_compile_options(libfuzzer-encoder PRIVATE "/fsanitize=fuzzer")
 else()
   target_compile_options(libfuzzer-encoder PRIVATE "-fsanitize=fuzzer,address")
   target_link_options(libfuzzer-encoder PRIVATE "-fsanitize=fuzzer,address")

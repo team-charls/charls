@@ -14,15 +14,16 @@
   It is excluded by default as Visual Studio 2019 cannot build this project.
 - Update the release configuration of the CharLS MSbuild project and enable address sanitizer.
 - Build the solution with Visual Studio 2022 17.8 or newer.
-- Run the LibFuzzerEncoder application from the command line (-help=1) will show the options.
+- Run the libfuzzer-encoder application from the command line (-help=1) will show the options.
 
 ## Linux\Windows (CMake)
 
 Remark: Using LibFuzzer requires Clang or Visual Studio 2022
 
 - Enable the address sanitizer CMake option (CHARLS_ENABLE_ASAN)
+- Enable the CMake option to build the fuzzer tests (CHARLS_BUILD_LIB_FUZZER_FUZZ_TEST)
 - Build the targets (RelWithDebInfo)
-- Run the LibFuzzerTest from the command line (-help=1) will show the options.
+- Run the libfuzzer-encoder from the command line (-help=1) will show the options.
 
 ## Running the Fuzzer
 
@@ -30,13 +31,13 @@ Remark: Using LibFuzzer requires Clang or Visual Studio 2022
 
 ```bash
 # Run with default settings
-./fuzzer-encoder
+./libfuzzer-encoder
 
 # Run with a specific max input size
-./fuzzer-encoder -max_len=100000
+./libfuzzer-encoder -max_len=100000
 
 # Run with existing corpus
-./fuzzer-encoder corpus/
+./libfuzzer-encoder corpus/
 ```
 
 ## Corpus Management
@@ -45,7 +46,7 @@ A corpus directory can be created to store interesting inputs:
 
 ```bash
 mkdir corpus
-./fuzzer-encoder corpus/ -max_len=100000
+./libfuzzer-encoder corpus/ -max_len=100000
 ```
 
 Over time, libfuzzer will expand the corpus with new inputs that increase code coverage.
@@ -57,5 +58,5 @@ The procedure is:
 
 - Run the application with the fuzzer with the command line option to indicate the corpus directory
 - Rename main_coverage into main()
-- Rebuild the application and run Microsoft.CodeCoverage.Console collect LibFuzzerEncoder.exe
-- Open the generated coverage file into visual studio.
+- Rebuild the application and run: Microsoft.CodeCoverage.Console collect LibFuzzerEncoder.exe
+- Open the generated coverage file in Visual Studio.

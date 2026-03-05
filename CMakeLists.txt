@@ -160,7 +160,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
 
   if(NOT APPLE)
-    set(LIB_FUZZER_SUPPORTED OFF)
+    set(LIB_FUZZER_SUPPORTED ON)
   endif()
 endif()
 
@@ -215,9 +215,7 @@ if(MSVC)
 
   # Enable LibFuzzer support for MSVC
   if(${ARM_DETECTED} EQUAL -1 AND MSVC_VERSION GREATER_EQUAL 1930)
-    # Libfuzzer support in MSVC is experimental. The CMake script with Ninja gives a linker error (main not defined).
-    # Use the vcxproj file to build the fuzzing targets with MSVC.
-    set(LIB_FUZZER_SUPPORTED OFF)
+    set(LIB_FUZZER_SUPPORTED ON)
   endif()
 
 endif()
@@ -266,7 +264,7 @@ if(CHARLS_BUILD_AFL_FUZZ_TEST)
 endif()
 
 if(CHARLS_BUILD_LIB_FUZZER_FUZZ_TEST AND LIB_FUZZER_SUPPORTED)
-  message(STATUS "LibFuzzer test applications are requested and will be build")
+  message(STATUS "LibFuzzer test applications are requested and supported and will be build")
   add_subdirectory(fuzzing/libfuzzer)
   add_subdirectory(fuzzing/libfuzzer-encoder)
 endif()

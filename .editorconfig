@@ -14,7 +14,7 @@ insert_final_newline = true
 [*.md]
 trim_trailing_whitespace = false
 
-[*.{h,cpp,c}]
+[*.{h,hpp,cpp,c}]
 indent_size = 4
 
 [CMakeLists.txt]
@@ -23,5 +23,10 @@ indent_size = 2
 [*.manifest]
 indent_size = 2
 
-[*.props, .runsettings]
+[*.props,.runsettings]
 indent_size = 2
+
+[*.vcxproj]
+indent_size = 2
+# Visual Studio generates .vcxproj files with no final newline: avoid unnecessary diffs.
+insert_final_newline = false

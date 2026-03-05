@@ -9,8 +9,9 @@ set_target_properties(libfuzzer-fuzztest PROPERTIES CXX_VISIBILITY_PRESET hidden
 
 target_link_libraries(libfuzzer-fuzztest PRIVATE charls)
 
-target_compile_options(libfuzzer-fuzztest PRIVATE "-fsanitize=fuzzer,address")
-
-if(NOT MSVC)
-  target_link_options(libfuzzer-fuzztest PRIVATE "-fsanitize=fuzzer,address")
+if(MSVC)
+  target_compile_options(libfuzzer-encoder PRIVATE "/fsanitize=fuzzer")
+else()
+  target_compile_options(libfuzzer-encoder PRIVATE "-fsanitize=fuzzer,address")
+  target_link_options(libfuzzer-encoder PRIVATE "-fsanitize=fuzzer,address")
 endif()
