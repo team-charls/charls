@@ -265,7 +265,7 @@ endif()
 
 if(CHARLS_BUILD_LIB_FUZZER_FUZZ_TEST AND LIB_FUZZER_SUPPORTED)
   message(STATUS "LibFuzzer test applications are requested and supported and will be build")
-  add_subdirectory(fuzzing/libfuzzer)
+  add_subdirectory(fuzzing/libfuzzer-decoder)
   add_subdirectory(fuzzing/libfuzzer-encoder)
 endif()
 

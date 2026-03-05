@@ -22,7 +22,6 @@
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{cd0f242c-eb44-4845-985a-7bacc568ede6}</ProjectGuid>
-    <RootNamespace>LibFuzzerEncoder</RootNamespace>
     <ConfigurationType>Application</ConfigurationType>
     <EnableASAN>true</EnableASAN>
     <EnableFuzzer>true</EnableFuzzer>

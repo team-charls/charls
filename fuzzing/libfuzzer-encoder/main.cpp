@@ -20,7 +20,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, const size_t size)
     const auto component_count{fdp.ConsumeIntegralInRange<int32_t>(1, 4)};
     const auto near_lossless{fdp.ConsumeIntegralInRange<int32_t>(0, 9)};
     const auto interleave_mode{fdp.ConsumeIntegralInRange<int32_t>(0, 2)};
-    
+
     const auto pixels{fdp.ConsumeRemainingBytes<byte>()};
 
     try
@@ -42,7 +42,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, const size_t size)
     return 0;
 }
 
-// Rename the function to main to retrieve code coverage from the collected corpus files.
+// Rename the function to main to retrieve code coverage from the created corpus files.
 void main_coverage()
 {
     for (auto& entry : std::filesystem::directory_iterator("corpus"))

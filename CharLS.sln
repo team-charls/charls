@@ -36,7 +36,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "benchmark", "benchmark\benc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AflFuzzTest", "fuzzing\afl\AflFuzzTest.vcxproj", "{5637C116-ABF5-4274-A71F-34433713A538}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibFuzzerTest", "fuzzing\libfuzzer\LibFuzzerTest.vcxproj", "{0F21D958-FE76-469A-8562-5D05F9EFE8D1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibFuzzerDecoder", "fuzzing\libfuzzer-decoder\LibFuzzerDecoder.vcxproj", "{0F21D958-FE76-469A-8562-5D05F9EFE8D1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibFuzzerEncoder", "fuzzing\libfuzzer-encoder\LibFuzzerEncoder.vcxproj", "{CD0F242C-EB44-4845-985A-7BACC568EDE6}"
 EndProject
