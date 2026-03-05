@@ -354,6 +354,7 @@ auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, i
 #endif
 
 
+// Replacement for std::ckd_mul (will be introduced in C++26)
 [[nodiscard]]
 inline size_t checked_mul(const size_t a, const size_t b)
 {
