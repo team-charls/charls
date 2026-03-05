@@ -53,7 +53,7 @@ public:
         if (constexpr int limit{65536 * 256}; UNLIKELY(a_ >= limit || std::abs(b_) >= limit))
             impl::throw_jpegls_error(jpegls_errc::invalid_data);
 
-        if (n_ == reset_threshold)
+        if (UNLIKELY(n_ == reset_threshold))
         {
             a_ >>= 1;
             b_ >>= 1;
@@ -66,10 +66,10 @@ public:
         // This part is from: Code segment A.13 – Update of bias-related variables B[Q] and C[Q]
         constexpr int32_t max_c{127};  // MAX_C: maximum allowed value of C[0..364]. ISO 14495-1, section 3.3
         constexpr int32_t min_c{-128}; // MIN_C: Minimum allowed value of C[0..364]. ISO 14495-1, section 3.3
-        if (b_ + n_ <= 0)
+        if (UNLIKELY(b_ + n_ <= 0))
         {
             b_ += n_;
-            if (b_ <= -n_)
+            if (UNLIKELY(b_ <= -n_))
             {
                 b_ = -n_ + 1;
             }
@@ -78,10 +78,10 @@ public:
                 --c_;
             }
         }
-        else if (b_ > 0)
+        else if (UNLIKELY(b_ > 0))
         {
             b_ -= n_;
-            if (b_ > 0)
+            if (UNLIKELY(b_ > 0))
             {
                 b_ = 0;
             }

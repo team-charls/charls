@@ -108,7 +108,7 @@ protected:
     /// Step F.1, 9: decode the mapped error value MErrval from the limited golomb code stored in the bitstream.
     /// </summary>
     [[nodiscard]]
-    int32_t decode_mapped_error_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
+    CHARLS_NO_INLINE int32_t decode_mapped_error_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
     {
         if (const int32_t unary_code{read_unary_code()}; unary_code < limit - quantized_bits_per_pixel - 1)
         {
@@ -144,7 +144,7 @@ protected:
     /// </summary>
     FORCE_INLINE size_t peek_byte()
     {
-        if (valid_bits_ < 8)
+        if (UNLIKELY(valid_bits_ < 8))
         {
             fill_read_cache();
         }

@@ -141,7 +141,7 @@ private:
 
             if (const int32_t qs{
                     compute_context_id(quantize_gradient(rd - rb), quantize_gradient(rb - rc), quantize_gradient(rc - ra))};
-                qs != 0)
+                LIKELY(qs != 0))
             {
                 current_line_[index] = decode_regular(qs, compute_predicted_value(ra, rb, rc));
                 ++index;
@@ -258,7 +258,7 @@ private:
     }
 
     [[nodiscard]]
-    size_t decode_run_mode(const size_t start_index)
+    CHARLS_NO_INLINE size_t decode_run_mode(const size_t start_index)
     {
         const pixel_type ra{current_line_[start_index - 1]};
 
@@ -284,7 +284,7 @@ private:
         const int32_t k{context.compute_golomb_coding_parameter()};
 
         int32_t error_value;
-        if (const golomb_code_match code = golomb_lut[static_cast<size_t>(k)].get(peek_byte()); code.bit_count != 0)
+        if (const golomb_code_match code = golomb_lut[static_cast<size_t>(k)].get(peek_byte()); LIKELY(code.bit_count != 0))
         {
             // There is a pre-computed match.
             skip_bits(code.bit_count);
