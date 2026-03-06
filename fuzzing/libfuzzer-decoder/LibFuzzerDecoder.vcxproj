@@ -27,10 +27,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
+    <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{0f21d958-fe76-469a-8562-5d05f9efe8d1}</ProjectGuid>
-    <RootNamespace>LibFuzzerTest</RootNamespace>
     <ConfigurationType>Application</ConfigurationType>
     <EnableASAN>true</EnableASAN>
     <EnableFuzzer>true</EnableFuzzer>
@@ -38,6 +37,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup>
     <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <TargetName>libfuzzer-decoder</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <WholeProgramOptimization>true</WholeProgramOptimization>
