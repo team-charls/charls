@@ -36,7 +36,7 @@ constexpr uint32_t bit_to_byte_count(const int32_t bit_count) noexcept
 
 
 [[nodiscard]]
-constexpr int32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
+constexpr int32_t calculate_maximum_bit_sample_value(const int32_t bits_per_sample)
 {
     ASSERT(bits_per_sample > 0 && bits_per_sample <= 16);
     return static_cast<int32_t>((1U << bits_per_sample) - 1);
@@ -44,8 +44,9 @@ constexpr int32_t calculate_maximum_sample_value(const int32_t bits_per_sample)
 
 
 [[nodiscard]]
-constexpr int compute_maximum_near_lossless(const int maximum_sample_value) noexcept
+constexpr int32_t compute_maximum_near_lossless(const int32_t maximum_sample_value) noexcept
 {
+    ASSERT(maximum_sample_value >= 0);
     return std::min(maximum_near_lossless, maximum_sample_value / 2); // As defined by ISO/IEC 14495-1, C.2.3
 }
 
@@ -54,7 +55,7 @@ constexpr int compute_maximum_near_lossless(const int maximum_sample_value) noex
 [[nodiscard]]
 constexpr int32_t initialization_value_for_a(const int32_t range) noexcept
 {
-    ASSERT(4 <= range && range <= std::numeric_limits<uint16_t>::max() + 1);
+    ASSERT(2 <= range && range <= std::numeric_limits<uint16_t>::max() + 1);
     return std::max(2, (range + 32) / 64);
 }
 
@@ -122,6 +123,9 @@ constexpr size_t apply_sign_for_index(const int32_t i, const int32_t sign) noexc
 [[nodiscard]]
 constexpr int32_t compute_range_parameter(const int32_t maximum_sample_value, const int32_t near_lossless) noexcept
 {
+    ASSERT(maximum_sample_value >= 1);
+    ASSERT(near_lossless >= 0);
+
     return (maximum_sample_value + 2 * near_lossless) / (2 * near_lossless + 1) + 1;
 }
 

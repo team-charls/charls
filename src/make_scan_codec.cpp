@@ -95,7 +95,7 @@ unique_ptr<ScanProcess> make_scan_codec(const frame_info& frame, const jpegls_pc
 
 #endif
 
-    const auto maximum_sample_value{calculate_maximum_sample_value(frame.bits_per_sample)};
+    const auto maximum_sample_value{calculate_maximum_bit_sample_value(frame.bits_per_sample)};
 
     if (frame.bits_per_sample <= 8)
     {

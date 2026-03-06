@@ -128,14 +128,75 @@ public:
 
         encoder.near_lossless(0);   // set lowest value.
         encoder.near_lossless(255); // set highest value.
+
+        Assert::IsTrue(true); // No exception should be thrown.
     }
 
-    TEST_METHOD(near_lossless_bad_throws)
+    TEST_METHOD(near_lossless_out_of_range_throws)
     {
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_near_lossless, [&encoder] { encoder.near_lossless(-1); });
         assert_expect_exception(jpegls_errc::invalid_argument_near_lossless, [&encoder] { encoder.near_lossless(256); });
+    }
+
+    TEST_METHOD(near_lossless_just_in_range_compared_to_max_bit_sample_value)
+    {
+        jpegls_encoder encoder;
+        encoder.frame_info({1, 1, 2, 1});
+        std::vector<byte> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+        const std::vector<byte> pixels(1);
+
+        encoder.near_lossless(1);
+
+        encoder.encode(pixels);
+        Assert::AreEqual(destination[0x19], byte{0x80});
+    }
+
+    TEST_METHOD(near_lossless_out_of_range_compared_to_max_bit_sample_value_throws)
+    {
+        jpegls_encoder encoder;
+        encoder.frame_info({1, 1, 2, 1});
+        std::vector<byte> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        encoder.near_lossless(2);
+
+        const std::vector<byte> pixels(1);
+        assert_expect_exception(jpegls_errc::invalid_argument_near_lossless,
+                                [&encoder, &pixels] { encoder.encode(pixels); });
+    }
+
+    TEST_METHOD(near_lossless_just_in_range_compared_to_max_sample_value)
+    {
+        jpegls_encoder encoder;
+        encoder.frame_info({1, 1, 8, 1});
+        std::vector<byte> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+        encoder.preset_coding_parameters({3, 0, 0, 0, 0});
+
+        encoder.near_lossless(1);
+
+        const std::vector<byte> pixels(1);
+        encoder.encode(pixels);
+
+        Assert::AreEqual(destination[0x28], byte{0x80});
+    }
+
+    TEST_METHOD(near_lossless_out_of_range_compared_to_max_sample_value_throws)
+    {
+        jpegls_encoder encoder;
+        encoder.frame_info({1, 1, 2, 1});
+        std::vector<byte> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+        encoder.preset_coding_parameters({3, 0, 0, 0, 0});
+
+        encoder.near_lossless(2);
+
+        const std::vector<byte> pixels(1);
+        assert_expect_exception(jpegls_errc::invalid_argument_near_lossless,
+                                [&encoder, &pixels] { encoder.encode(pixels); });
     }
 
     TEST_METHOD(estimated_destination_size_minimal_frame_info)
