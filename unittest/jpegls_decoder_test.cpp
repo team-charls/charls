@@ -993,9 +993,8 @@ public:
         decoder.read_header();
 
 #if INTPTR_MAX == INT64_MAX
-        // auto compare = numeric_limits<uint64_t>::max();
         constexpr auto expected_size = static_cast<size_t>(component_count) * width * height;
-        Assert::IsTrue(expected_size * 2 < expected_size);
+        static_assert(expected_size * 2 < expected_size);
         Assert::AreEqual(expected_size, decoder.get_destination_size());
 #elif INTPTR_MAX == INT32_MAX
         assert_expect_exception(jpegls_errc::parameter_value_not_supported,
