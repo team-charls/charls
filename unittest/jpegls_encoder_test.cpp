@@ -187,7 +187,7 @@ public:
     TEST_METHOD(near_lossless_out_of_range_compared_to_max_sample_value_throws)
     {
         jpegls_encoder encoder;
-        encoder.frame_info({1, 1, 2, 1});
+        encoder.frame_info({1, 1, 8, 1});
         std::vector<byte> destination(encoder.estimated_destination_size());
         encoder.destination(destination);
         encoder.preset_coding_parameters({3, 0, 0, 0, 0});

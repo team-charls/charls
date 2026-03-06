@@ -187,10 +187,10 @@ struct charls_jpegls_encoder final
         check_state_can_write();
         check_operation(is_frame_info_configured());
         check_interleave_mode_against_component_count();
-        check_near_lossless_maximum();
+        const int32_t maximum_bit_sample_value{calculate_maximum_bit_sample_value(frame_info_.bits_per_sample)};
+        check_near_lossless_maximum(maximum_bit_sample_value);
         const size_t scan_stride{check_stride_and_source_size(source.size(), stride, source_component_count)};
 
-        const int32_t maximum_bit_sample_value{calculate_maximum_bit_sample_value(frame_info_.bits_per_sample)};
         if (UNLIKELY(!is_valid(user_preset_coding_parameters_, maximum_bit_sample_value, near_lossless_,
                                &preset_coding_parameters_)))
             throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
@@ -338,14 +338,25 @@ private:
             throw_jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
     }
 
-    void check_near_lossless_maximum() const
+    void check_near_lossless_maximum(const int32_t maximum_bit_sample_value) const
     {
-        const int32_t maximum_sample_value{user_preset_coding_parameters_.maximum_sample_value != 0
-                                               ? user_preset_coding_parameters_.maximum_sample_value
-                                               : calculate_maximum_bit_sample_value(frame_info_.bits_per_sample)};
-
-        if (UNLIKELY(near_lossless_ > compute_maximum_near_lossless(maximum_sample_value)))
+        if (UNLIKELY(near_lossless_ > compute_maximum_near_lossless(get_maximum_sample_value(maximum_bit_sample_value))))
             throw_jpegls_error(jpegls_errc::invalid_argument_near_lossless);
+    }
+
+    [[nodiscard]]
+    int32_t get_maximum_sample_value(const int32_t maximum_bit_sample_value) const
+    {
+        if (user_preset_coding_parameters_.maximum_sample_value != 0)
+        {
+            if (user_preset_coding_parameters_.maximum_sample_value < 1 ||
+                user_preset_coding_parameters_.maximum_sample_value > maximum_bit_sample_value)
+                throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
+
+            return user_preset_coding_parameters_.maximum_sample_value;
+        }
+
+        return maximum_bit_sample_value;
     }
 
     void transition_to_tables_and_miscellaneous_state()
@@ -392,9 +403,9 @@ private:
         }
     }
 
-    void write_jpegls_preset_parameters_segment(const int32_t maximum_sample_value)
+    void write_jpegls_preset_parameters_segment(const int32_t maximum_bit_sample_value)
     {
-        if (!is_default(user_preset_coding_parameters_, compute_default(maximum_sample_value, near_lossless_)) ||
+        if (!is_default(user_preset_coding_parameters_, compute_default(maximum_bit_sample_value, near_lossless_)) ||
             (has_option(encoding_options::include_pc_parameters_jai) && frame_info_.bits_per_sample > 12))
         {
             // Write the actual used values to the stream, not zero's.
