@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 #include <type_traits>
 
 // Use forced inline for supported C++ compilers in release builds.
@@ -51,8 +52,10 @@
 // C++20 has support for [[likely]] and [[unlikely]]. Use for now the GCC\Clang extension.
 // MSVC has in C++17 mode no alternative for it.
 #ifdef __GNUC__
+#define LIKELY(x) __builtin_expect(!!(x), 1)
 #define UNLIKELY(x) __builtin_expect(!!(x), 0)
 #else
+#define LIKELY(x) (x)
 #define UNLIKELY(x) (x)
 #endif
 
@@ -353,22 +356,14 @@ auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, i
 #endif
 
 
-#if INTPTR_MAX == INT64_MAX
-[[nodiscard]]
-constexpr size_t checked_mul(const size_t a, const size_t b) noexcept
-{
-    return a * b;
-}
-#elif INTPTR_MAX == INT32_MAX
+// Replacement for std::ckd_mul (will be introduced in C++26)
 [[nodiscard]]
 inline size_t checked_mul(const size_t a, const size_t b)
 {
-    const size_t result{a * b};
-    if (UNLIKELY(result < a || result < b)) // check for unsigned integer overflow.
+    if (UNLIKELY(b != 0 && a > std::numeric_limits<size_t>::max() / b))
         impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
-    return result;
+    return a * b;
 }
-#endif
 
 // Replacement for std::unreachable (introduced in C++23).
 MSVC_WARNING_SUPPRESS_NEXT_LINE(26497) // method cannot be constexpr

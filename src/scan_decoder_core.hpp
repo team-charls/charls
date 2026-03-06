@@ -43,7 +43,7 @@ protected:
         const int32_t k{context.compute_golomb_coding_parameter()};
 
         int32_t error_value;
-        if (const golomb_code_match code = golomb_lut[static_cast<size_t>(k)].get(peek_byte()); code.bit_count != 0)
+        if (const golomb_code_match code = golomb_lut[static_cast<size_t>(k)].get(peek_byte()); LIKELY(code.bit_count != 0))
         {
             // There is a pre-computed match.
             skip_bits(code.bit_count);

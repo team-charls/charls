@@ -686,6 +686,113 @@ public:
         Assert::IsFalse(called);
     }
 
+    TEST_METHOD(read_end_of_image) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 1, 8, 1);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+        writer.write_byte(byte{0x80});
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+        reader.advance_position(1);
+
+        reader.read_end_of_image(); // if it doesn't throw test is passed.
+    }
+
+    TEST_METHOD(read_end_of_image_with_zero_byte_padding) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 1, 8, 1);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+        writer.write_byte(byte{0x80});
+        writer.write_byte(byte{0x00}); // zero byte padding after the entropy coded data, before the EOI marker.
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+        reader.advance_position(1);
+
+        reader.read_end_of_image(); // if it doesn't throw test is passed.
+    }
+
+    TEST_METHOD(read_end_of_image_with_ffff_byte_padding) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 1, 8, 1);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+        writer.write_byte(byte{0x80});
+        writer.write_byte(byte{0xFF});
+        writer.write_byte(byte{0xFF});
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+        reader.advance_position(1);
+
+        reader.read_end_of_image(); // if it doesn't throw test is passed.
+    }
+
+    TEST_METHOD(read_end_of_image_with_non_zero_byte_padding_throws) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 1, 8, 1);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+        writer.write_byte(byte{0x80});
+        writer.write_byte(byte{0x01}); // nonzero byte padding after the entropy coded data, before the EOI marker.
+        writer.write_marker(jpeg_marker_code::end_of_image);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+        reader.advance_position(1);
+
+        assert_expect_exception(jpegls_errc::end_of_image_marker_not_found, [&reader] { reader.read_end_of_image(); });
+    }
+
+    TEST_METHOD(read_end_of_image_bad_marker_throws) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 1, 8, 1);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+        writer.write_byte(byte{0x80});
+        writer.write_marker(jpeg_marker_code::start_of_image);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+        reader.advance_position(1);
+
+        assert_expect_exception(jpegls_errc::end_of_image_marker_not_found, [&reader] { reader.read_end_of_image(); });
+    }
+
+    TEST_METHOD(read_end_of_image_00d9_throws) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(1, 1, 8, 1);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+        writer.write_byte(byte{0x0});
+        writer.write_byte(byte{0x00}); // Write instead of 0xFFD9 the value 0x00D9
+        writer.write_byte(byte{0xD9});
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+        reader.advance_position(1);
+
+        assert_expect_exception(jpegls_errc::end_of_image_marker_not_found, [&reader] { reader.read_end_of_image(); });
+    }
+
     TEST_METHOD(read_mapping_table)
     {
         vector<byte> source(100);
