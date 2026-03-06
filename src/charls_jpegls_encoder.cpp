@@ -61,6 +61,7 @@ struct charls_jpegls_encoder final
 
     void near_lossless(const int32_t near_lossless)
     {
+        // note: final validation will be done just before encoding, as more info is needed.
         check_argument_range(0, maximum_near_lossless, near_lossless, jpegls_errc::invalid_argument_near_lossless);
 
         near_lossless_ = near_lossless;
@@ -186,11 +187,12 @@ struct charls_jpegls_encoder final
         check_state_can_write();
         check_operation(is_frame_info_configured());
         check_interleave_mode_against_component_count();
+        const int32_t maximum_bit_sample_value{calculate_maximum_bit_sample_value(frame_info_.bits_per_sample)};
+        check_near_lossless_maximum(maximum_bit_sample_value);
         const size_t scan_stride{check_stride_and_source_size(source.size(), stride, source_component_count)};
 
-        const int32_t maximum_sample_value{calculate_maximum_sample_value(frame_info_.bits_per_sample)};
-        if (UNLIKELY(
-                !is_valid(user_preset_coding_parameters_, maximum_sample_value, near_lossless_, &preset_coding_parameters_)))
+        if (UNLIKELY(!is_valid(user_preset_coding_parameters_, maximum_bit_sample_value, near_lossless_,
+                               &preset_coding_parameters_)))
             throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
 
         if (encoded_component_count_ == 0)
@@ -198,7 +200,7 @@ struct charls_jpegls_encoder final
             transition_to_tables_and_miscellaneous_state();
             write_color_transform_segment();
             write_start_of_frame_segment();
-            write_jpegls_preset_parameters_segment(maximum_sample_value);
+            write_jpegls_preset_parameters_segment(maximum_bit_sample_value);
         }
 
         if (interleave_mode_ == interleave_mode::none)
@@ -336,6 +338,27 @@ private:
             throw_jpegls_error(jpegls_errc::invalid_argument_interleave_mode);
     }
 
+    void check_near_lossless_maximum(const int32_t maximum_bit_sample_value) const
+    {
+        if (UNLIKELY(near_lossless_ > compute_maximum_near_lossless(get_maximum_sample_value(maximum_bit_sample_value))))
+            throw_jpegls_error(jpegls_errc::invalid_argument_near_lossless);
+    }
+
+    [[nodiscard]]
+    int32_t get_maximum_sample_value(const int32_t maximum_bit_sample_value) const
+    {
+        if (user_preset_coding_parameters_.maximum_sample_value != 0)
+        {
+            if (user_preset_coding_parameters_.maximum_sample_value < 1 ||
+                user_preset_coding_parameters_.maximum_sample_value > maximum_bit_sample_value)
+                throw_jpegls_error(jpegls_errc::invalid_argument_jpegls_pc_parameters);
+
+            return user_preset_coding_parameters_.maximum_sample_value;
+        }
+
+        return maximum_bit_sample_value;
+    }
+
     void transition_to_tables_and_miscellaneous_state()
     {
         if (state_ == state::tables_and_miscellaneous)
@@ -380,9 +403,9 @@ private:
         }
     }
 
-    void write_jpegls_preset_parameters_segment(const int32_t maximum_sample_value)
+    void write_jpegls_preset_parameters_segment(const int32_t maximum_bit_sample_value)
     {
-        if (!is_default(user_preset_coding_parameters_, compute_default(maximum_sample_value, near_lossless_)) ||
+        if (!is_default(user_preset_coding_parameters_, compute_default(maximum_bit_sample_value, near_lossless_)) ||
             (has_option(encoding_options::include_pc_parameters_jai) && frame_info_.bits_per_sample > 12))
         {
             // Write the actual used values to the stream, not zero's.

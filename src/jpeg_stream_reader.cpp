@@ -279,7 +279,7 @@ jpegls_pc_parameters jpeg_stream_reader::get_validated_preset_coding_parameters(
 {
     jpegls_pc_parameters preset_coding_parameters;
 
-    if (UNLIKELY(!is_valid(preset_coding_parameters_, calculate_maximum_sample_value(frame_info_.bits_per_sample),
+    if (UNLIKELY(!is_valid(preset_coding_parameters_, calculate_maximum_bit_sample_value(frame_info_.bits_per_sample),
                            parameters_.near_lossless, &preset_coding_parameters)))
         throw_jpegls_error(jpegls_errc::invalid_parameter_jpegls_preset_parameters);
 
@@ -857,7 +857,7 @@ uint32_t jpeg_stream_reader::maximum_sample_value() const noexcept
     if (preset_coding_parameters_.maximum_sample_value != 0)
         return static_cast<uint32_t>(preset_coding_parameters_.maximum_sample_value);
 
-    return static_cast<uint32_t>(calculate_maximum_sample_value(frame_info_.bits_per_sample));
+    return static_cast<uint32_t>(calculate_maximum_bit_sample_value(frame_info_.bits_per_sample));
 }
 
 

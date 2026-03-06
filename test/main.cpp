@@ -139,7 +139,7 @@ void test_quantization_luts()
 {
     // Runtime verification: every LUT entry matches the on-the-fly computation.
     const auto verify{[](const auto& lut, const int32_t bit_count) {
-        const auto preset{charls::compute_default(charls::calculate_maximum_sample_value(bit_count), 0)};
+        const auto preset{charls::compute_default(charls::calculate_maximum_bit_sample_value(bit_count), 0)};
         const int32_t range{preset.maximum_sample_value + 1};
 
         assert::is_true(lut.size() == static_cast<size_t>(range) * 2);
