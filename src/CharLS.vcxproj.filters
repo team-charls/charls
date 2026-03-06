@@ -165,6 +165,15 @@
     <ClInclude Include="..\include\charls\version.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sample_traits.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scan_decoder_core.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scan_encoder_core.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="charls.rc" />

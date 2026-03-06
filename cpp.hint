@@ -34,6 +34,7 @@
 #define CHARLS_CHECK_RETURN
 #define CHARLS_RET_MAY_BE_NULL
 #define USE_DECL_ANNOTATIONS
-#define ASSERT(x)
-#define UNLIKELY(x)
+#define ASSERT(x) x
+#define LIKELY(x) x
+#define UNLIKELY(x) x
 #define BENCHMARK_MAIN()
