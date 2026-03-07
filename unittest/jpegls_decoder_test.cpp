@@ -125,7 +125,7 @@ public:
         Assert::AreEqual(256U, info.width);
     }
 
-    TEST_METHOD(interleave_mode_without_read_header_throws)
+    TEST_METHOD(get_interleave_mode_without_read_header_throws)
     {
         const vector<byte> source(2000);
         const jpegls_decoder decoder{source, false};
@@ -133,12 +133,28 @@ public:
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_interleave_mode(); });
     }
 
-    TEST_METHOD(near_lossless_without_read_header_throws)
+    TEST_METHOD(get_interleave_mode_component_index_out_of_range_throws)
+    {
+        const auto source{read_file("DataFiles/t8c0e0.jls")};
+        const jpegls_decoder decoder{source, true};
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_interleave_mode(4); });
+    }
+
+    TEST_METHOD(get_near_lossless_without_read_header_throws)
     {
         const vector<byte> source(2000);
         const jpegls_decoder decoder{source, false};
 
         assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_near_lossless(); });
+    }
+
+    TEST_METHOD(get_near_lossless_index_out_of_range_throws)
+    {
+        const auto source{read_file("DataFiles/t8c0e0.jls")};
+        const jpegls_decoder decoder{source, true};
+
+        assert_expect_exception(jpegls_errc::invalid_operation, [&decoder] { ignore = decoder.get_near_lossless(4); });
     }
 
     TEST_METHOD(preset_coding_parameters_without_read_header_throws)
