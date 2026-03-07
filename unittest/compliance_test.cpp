@@ -10,10 +10,12 @@
 #include "../test/portable_anymap_file.hpp"
 
 using namespace charls_test;
-using std::byte;
-using std::array;
-using std::vector;
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
+using std::array;
+using std::byte;
+using std::vector;
+
+namespace charls::test {
 
 namespace {
 
@@ -33,7 +35,6 @@ void compare_buffers(const byte* buffer1, const size_t size1, const byte* buffer
 
 } // namespace
 
-namespace charls::test {
 
 TEST_CLASS(compliance_test)
 {
