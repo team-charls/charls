@@ -21,6 +21,8 @@ MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere t
 #pragma clang diagnostic ignored "-Wnonnull"
 #endif
 
+namespace charls::test {
+
 namespace {
 
 void destroy_decoder(const charls_jpegls_decoder* decoder) noexcept
@@ -30,7 +32,6 @@ void destroy_decoder(const charls_jpegls_decoder* decoder) noexcept
 
 } // namespace
 
-namespace charls::test {
 
 TEST_CLASS(charls_jpegls_decoder_test)
 {
@@ -129,6 +130,17 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
+    TEST_METHOD(get_color_transformation_nullptr)
+    {
+        charls_color_transformation color_transformation;
+        auto error{charls_jpegls_decoder_get_color_transformation(nullptr, &color_transformation)};
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+
+        const auto decoder{get_initialized_decoder()};
+        error = charls_jpegls_decoder_get_color_transformation(decoder.get(), nullptr);
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+    }
+
     TEST_METHOD(get_destination_size_nullptr)
     {
         size_t destination_size_bytes;
@@ -182,6 +194,17 @@ public:
     TEST_METHOD(at_application_data_nullptr)
     {
         const auto error{charls_jpegls_decoder_at_application_data(nullptr, nullptr, nullptr)};
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+    }
+
+    TEST_METHOD(get_compressed_data_format_nullptr)
+    {
+        charls_compressed_data_format compressed_data_format;
+        auto error{charls_decoder_get_compressed_data_format(nullptr, &compressed_data_format)};
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+
+        const auto decoder{get_initialized_decoder()};
+        error = charls_decoder_get_compressed_data_format(decoder.get(), nullptr);
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
