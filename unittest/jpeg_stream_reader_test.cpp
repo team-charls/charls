@@ -345,7 +345,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_more_then_max_components_in_start_of_scan_segment_throws)
+    TEST_METHOD(read_header_with_more_than_max_components_in_start_of_scan_segment_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
