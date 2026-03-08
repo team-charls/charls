@@ -66,7 +66,7 @@ public:
 
     TEST_METHOD(read_header_from_buffer_not_starting_with_soi_throws)
     {
-        constexpr array buffer{byte{0xFF}, byte{0xD7}}; // 0xDA = SOS: Marks the start of scan.
+        constexpr array buffer{byte{0xFF}, byte{0xD7}}; // 0xD7 = RST7: Restart marker (not a SOI marker).
 
         jpeg_stream_reader reader;
         reader.source(buffer);
