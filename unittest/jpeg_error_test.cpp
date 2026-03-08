@@ -28,6 +28,13 @@ public:
         Assert::IsTrue(strlen(result) > 0);
     }
 
+    TEST_METHOD(get_error_message_not_enough_memory)
+    {
+        const auto* const result{charls_get_error_message(jpegls_errc::not_enough_memory)};
+        Assert::IsNotNull(result);
+        Assert::IsTrue(strlen(result) > 0);
+    }
+
     TEST_METHOD(jpegls_category_name_is_not_an_empty_string)
     {
         Assert::IsTrue(strlen(jpegls_category().name()) > 0);

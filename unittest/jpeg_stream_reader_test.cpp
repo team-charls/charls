@@ -295,7 +295,7 @@ public:
         assert_expect_exception(jpegls_errc::duplicate_component_id_in_sof_segment, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_to_many_components_in_start_of_frame_segment_throws)
+    TEST_METHOD(read_header_with_too_many_components_in_start_of_frame_segment_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -319,7 +319,7 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
     }
 
-    TEST_METHOD(read_header_with_to_many_components_in_start_of_scan_segment_throws)
+    TEST_METHOD(read_header_with_too_many_components_in_start_of_scan_segment_throws)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -720,6 +720,54 @@ public:
         Assert::IsFalse(called);
     }
 
+    TEST_METHOD(read_hp_color_transform)
+    {
+        read_hp_color_transform(color_transformation::none);
+        read_hp_color_transform(color_transformation::hp1);
+        read_hp_color_transform(color_transformation::hp2);
+        read_hp_color_transform(color_transformation::hp3);
+    }
+
+    TEST_METHOD(read_hp_color_transform_unsupported_throws)
+    {
+        read_hp_color_transform_unsupported_throws(static_cast<color_transformation>(4),
+                                            jpegls_errc::color_transform_not_supported);
+        read_hp_color_transform_unsupported_throws(static_cast<color_transformation>(5),
+                                            jpegls_errc::color_transform_not_supported);
+        read_hp_color_transform_unsupported_throws(static_cast<color_transformation>(6),
+                                            jpegls_errc::invalid_parameter_color_transformation);
+    }
+
+    TEST_METHOD(read_hp_color_transform_no_color_segment_present)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+
+        Assert::AreEqual(color_transformation::none, reader.parameters().transformation);
+    }
+
+    TEST_METHOD(read_hp_color_transform_two_color_segments_present)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_hp_color_transform_segment(color_transformation::hp1);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_hp_color_transform_segment(color_transformation::hp2);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+
+        Assert::AreEqual(color_transformation::hp2, reader.parameters().transformation);
+    }
+
     TEST_METHOD(read_end_of_image) // NOLINT
     {
         jpeg_test_stream_writer writer;
@@ -1076,8 +1124,7 @@ public:
         jpeg_stream_reader reader;
         reader.source({writer.buffer.data(), writer.buffer.size()});
 
-        assert_expect_exception(jpegls_errc::invalid_parameter_height,
-                                [&reader] { reader.read_header(); });
+        assert_expect_exception(jpegls_errc::invalid_parameter_height, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_define_number_of_lines_is_missing_throws)
@@ -1187,6 +1234,35 @@ private:
         reader.source({writer.buffer.data(), writer.buffer.size()});
 
         reader.read_header(); // if it doesn't throw test is passed.
+    }
+
+    static void read_hp_color_transform(const color_transformation transformation)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_hp_color_transform_segment(transformation);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+        reader.read_header();
+
+        Assert::AreEqual(transformation, reader.parameters().transformation);
+    }
+
+    static void read_hp_color_transform_unsupported_throws(const color_transformation transformation, const jpegls_errc error)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_hp_color_transform_segment(transformation);
+        writer.write_start_of_frame_segment(512, 512, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(error, [&reader] { reader.read_header(); });
     }
 
     static void read_header_incorrect_interleave_in_sos_for_single_component_throws(const interleave_mode mode)
