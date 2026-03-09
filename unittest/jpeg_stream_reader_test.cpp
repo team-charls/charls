@@ -358,6 +358,34 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
     }
 
+    TEST_METHOD(read_header_with_unknown_component_id_throws)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(512, 512, 8, 1);
+        writer.write_start_of_scan_segment(4, 1, 1, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::unknown_component_id, [&reader] { reader.read_header(); });
+    }
+
+    TEST_METHOD(read_header_with_unknown_component_id_but_all_defaults_is_ignored)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(512, 512, 8, 1);
+        writer.write_start_of_scan_segment(4, 1, 0, interleave_mode::none);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        reader.read_header();
+
+        Assert::AreEqual(size_t{1}, reader.component_count());
+    }
+
     TEST_METHOD(read_header_with_too_small_start_of_scan_throws)
     {
         constexpr array buffer{byte{0xFF}, byte{0xD8},

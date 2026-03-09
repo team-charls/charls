@@ -137,6 +137,26 @@ public:
         Assert::IsTrue(is_default(pc_parameters, default_parameters));
     }
 
+    TEST_METHOD(is_default_same_as_default_except_threshold2)
+    {
+        const auto default_parameters{compute_default(255, 0)};
+
+        jpegls_pc_parameters pc_parameters{compute_default(255, 0)};
+        ++pc_parameters.threshold2;
+
+        Assert::IsFalse(is_default(pc_parameters, default_parameters));
+    }
+
+    TEST_METHOD(is_default_same_as_default_except_threshold3)
+    {
+        const auto default_parameters{compute_default(255, 0)};
+
+        jpegls_pc_parameters pc_parameters{compute_default(255, 0)};
+        ++pc_parameters.threshold3;
+
+        Assert::IsFalse(is_default(pc_parameters, default_parameters));
+    }
+
     TEST_METHOD(is_default_same_as_default_except_reset)
     {
         const auto default_parameters{compute_default(255, 0)};
