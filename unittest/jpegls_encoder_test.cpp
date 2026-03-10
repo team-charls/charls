@@ -1179,6 +1179,23 @@ public:
                                 [&encoder, &source] { ignore = encoder.encode(source); });
     }
 
+    TEST_METHOD(set_preset_coding_parameters_bad_maximum_sample_value_throws)
+    {
+        constexpr array source{byte{0}, byte{1}, byte{1}, byte{1}, byte{0}};
+        constexpr frame_info frame_info{5, 1, 8, 1};
+        jpegls_encoder encoder;
+
+        encoder.frame_info(frame_info);
+        vector<byte> destination(encoder.estimated_destination_size());
+        encoder.destination(destination);
+
+        constexpr jpegls_pc_parameters bad_pc_parameters{256, 0, 0, 0, 0};
+        encoder.preset_coding_parameters(bad_pc_parameters);
+
+        assert_expect_exception(jpegls_errc::invalid_argument_jpegls_pc_parameters,
+                                [&encoder, &source] { ignore = encoder.encode(source); });
+    }
+
     TEST_METHOD(encode_with_preset_coding_parameters_non_default_values)
     {
         encode_with_custom_preset_coding_parameters({1, 0, 0, 0, 0});

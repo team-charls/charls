@@ -91,6 +91,13 @@ Microsoft::VisualStudio::CppUnitTestFramework::ToString<charls::interleave_mode>
 }
 
 template<>
+inline std::wstring
+Microsoft::VisualStudio::CppUnitTestFramework::ToString<charls::color_transformation>(const charls::color_transformation& q)
+{
+    RETURN_WIDE_STRING(static_cast<int>(q));
+}
+
+template<>
 inline std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<charls::compressed_data_format>(
     const charls::compressed_data_format& q)
 {

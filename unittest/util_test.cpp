@@ -5,6 +5,7 @@
 
 #include "../src/assert.hpp"
 #include "../src/util.hpp"
+#include "util.hpp"
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using std::numeric_limits;
@@ -60,6 +61,27 @@ public:
         Assert::AreEqual(8U, max_value_to_bits_per_sample(255));
         Assert::AreEqual(10U, max_value_to_bits_per_sample(1023));
         Assert::AreEqual(16U, max_value_to_bits_per_sample(numeric_limits<uint16_t>::max()));
+    }
+
+    TEST_METHOD(to_jpegls_errc_test)
+    {
+        try
+        {
+            throw jpegls_error(jpegls_errc::invalid_argument);
+        }
+        catch (...)
+        {
+            Assert::AreEqual(jpegls_errc::invalid_argument, to_jpegls_errc());
+        }
+
+        try
+        {
+            throw std::bad_alloc();
+        }
+        catch (...)
+        {
+            Assert::AreEqual(jpegls_errc::not_enough_memory, to_jpegls_errc());
+        }
     }
 };
 

@@ -136,6 +136,19 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
+    TEST_METHOD(encode_components_from_buffer_nullptr)
+    {
+        constexpr array<byte, 10> source_buffer{};
+        auto error{
+            charls_jpegls_encoder_encode_components_from_buffer(nullptr, source_buffer.data(), source_buffer.size(), 1, 0)};
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+
+        auto* const encoder{charls_jpegls_encoder_create()};
+        error = charls_jpegls_encoder_encode_components_from_buffer(encoder, nullptr, source_buffer.size(), 1, 0);
+        charls_jpegls_encoder_destroy(encoder);
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+    }
+
     TEST_METHOD(write_spiff_header_nullptr)
     {
         constexpr charls_spiff_header spiff_header{};

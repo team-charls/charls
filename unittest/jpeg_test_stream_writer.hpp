@@ -251,6 +251,12 @@ public:
         write_segment(jpeg_marker_code::define_number_of_lines, segment.data(), segment.size());
     }
 
+    void write_hp_color_transform_segment(const color_transformation transformation)
+    {
+        const std::array segment{std::byte{'m'}, std::byte{'r'}, std::byte{'f'}, std::byte{'x'}, static_cast<std::byte>(transformation)};
+        write_segment(jpeg_marker_code::application_data8, segment.data(), segment.size());
+    }
+
     void write_restart_marker(const uint8_t interval_index)
     {
         write_marker(static_cast<jpeg_marker_code>(jpeg_restart_marker_base + interval_index));

@@ -9,6 +9,8 @@ namespace charls {
 
 using std::error_category;
 
+namespace {
+
 class jpegls_category final : public error_category
 {
 public:
@@ -24,6 +26,8 @@ public:
         return charls_get_error_message(static_cast<jpegls_errc>(error_value));
     }
 };
+
+} // namespace
 
 } // namespace charls
 

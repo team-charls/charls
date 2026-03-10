@@ -143,23 +143,53 @@ public:
         spiff_header.color_space = static_cast<spiff_color_space>(27);
 
         auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
-        Assert::IsTrue(result == jpegls_errc::invalid_spiff_header);
+        Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
 
         spiff_header.color_space = spiff_color_space::bi_level_black;
         result = charls_validate_spiff_header(&spiff_header, &frame_info);
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
 
+    TEST_METHOD(valid_color_space_component_count)
+    {
+        spiff_header spiff_header{create_valid_spiff_header()};
+        frame_info frame_info{create_valid_frame_info()};
+
+        frame_info.component_count = 1;
+        spiff_header.component_count = 1;
+        spiff_header.color_space = spiff_color_space::grayscale;
+        auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
+        Assert::AreEqual(jpegls_errc::success, result);
+
+        frame_info.component_count = 3;
+        spiff_header.component_count = 3;
+        spiff_header.color_space = spiff_color_space::ycbcr_itu_bt_601_1_video;
+        result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        Assert::AreEqual(jpegls_errc::success, result);
+
+        frame_info.component_count = 4;
+        spiff_header.component_count = 4;
+        spiff_header.color_space = spiff_color_space::cmyk;
+        result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        Assert::AreEqual(jpegls_errc::success, result);
+    }
+
     TEST_METHOD(invalid_color_space_component_count)
     {
         spiff_header spiff_header{create_valid_spiff_header()};
-        constexpr frame_info frame_info{create_valid_frame_info()};
+        frame_info frame_info{create_valid_frame_info()};
         spiff_header.color_space = spiff_color_space::grayscale;
 
         auto result{charls_validate_spiff_header(&spiff_header, &frame_info)};
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
 
         spiff_header.color_space = spiff_color_space::cmyk;
+        result = charls_validate_spiff_header(&spiff_header, &frame_info);
+        Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
+
+        frame_info.component_count = 1;
+        spiff_header.component_count = 1;
+        spiff_header.color_space = spiff_color_space::rgb;
         result = charls_validate_spiff_header(&spiff_header, &frame_info);
         Assert::AreEqual(jpegls_errc::invalid_spiff_header, result);
     }
