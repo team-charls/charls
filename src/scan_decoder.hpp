@@ -37,6 +37,8 @@ protected:
 
     void initialize(const span<const std::byte> source)
     {
+        ASSERT(source.data() != nullptr);
+
         position_ = source.data();
         end_position_ = to_address(source.end());
 

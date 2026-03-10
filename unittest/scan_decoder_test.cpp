@@ -3,6 +3,8 @@
 
 #include "pch.hpp"
 
+#include "util.hpp"
+
 #include "../src/scan_decoder.hpp"
 
 #include "scan_encoder_tester.hpp"
@@ -158,6 +160,18 @@ public:
 
         scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), buffer.size());
         Assert::AreEqual(-1, scan_decoder.peek_0_bits_forward());
+    }
+
+    TEST_METHOD(initialize_with_empty_buffer_throws_invalid_data)
+    {
+        constexpr frame_info frame_info{1, 1, 8, 1};
+        constexpr coding_parameters parameters{};
+
+        array<byte, 1> buffer{};
+
+        assert_expect_exception(jpegls_errc::invalid_data, [&frame_info, &parameters, &buffer] {
+            const scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), 0);
+        });
     }
 };
 

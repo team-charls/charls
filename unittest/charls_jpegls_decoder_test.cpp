@@ -229,6 +229,24 @@ public:
         Assert::AreEqual(jpegls_errc::invalid_argument, error);
     }
 
+    TEST_METHOD(charls_decoder_get_mapping_table_info_nullptr)
+    {
+        charls_mapping_table_info mapping_table_info{};
+        auto error{charls_decoder_get_mapping_table_info(nullptr, 0, &mapping_table_info)};
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+
+        const auto decoder{get_initialized_decoder()};
+        size_t destination_size_bytes;
+        error = charls_jpegls_decoder_get_destination_size(decoder.get(), 0, &destination_size_bytes);
+        Assert::AreEqual(jpegls_errc::success, error);
+        std::vector<byte> destination(destination_size_bytes);
+        error = charls_jpegls_decoder_decode_to_buffer(decoder.get(), destination.data(), destination.size(), 0);
+        Assert::AreEqual(jpegls_errc::success, error);
+
+        error = charls_decoder_get_mapping_table_info(decoder.get(), 0, nullptr);
+        Assert::AreEqual(jpegls_errc::invalid_argument, error);
+    }
+
 private:
     static std::unique_ptr<charls_jpegls_decoder, void (*)(const charls_jpegls_decoder*)> get_initialized_decoder()
     {

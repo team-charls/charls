@@ -166,6 +166,18 @@ public:
         }
     }
 
+    TEST_METHOD(read_header_with_jpegls_preset_parameter_with_invalid_id_throws)
+    {
+        constexpr array buffer{byte{0xFF}, byte{0xD8}, byte{0xFF},
+                               byte{0xF8}, // LSE: Marks the start of a JPEG-LS preset parameters segment.
+                               byte{0x00}, byte{0x03}, byte{0xE}};
+
+        jpeg_stream_reader reader;
+        reader.source({buffer.data(), buffer.size()});
+
+        assert_expect_exception(jpegls_errc::invalid_jpegls_preset_parameter_type, [&reader] { reader.read_header(); });
+    }
+
     TEST_METHOD(read_header_with_too_small_segment_size_throws)
     {
         constexpr array buffer{
@@ -214,6 +226,42 @@ public:
         reader.source({writer.buffer.data(), writer.buffer.size()});
 
         assert_expect_exception(jpegls_errc::invalid_marker_segment_size, [&reader] { reader.read_header(); });
+    }
+
+    TEST_METHOD(read_header_with_invalid_bits_per_sample_in_min_sof_throws)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(512, 512, 1, 3);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_bits_per_sample, [&reader] { reader.read_header(); });
+    }
+
+    TEST_METHOD(read_header_with_invalid_bits_per_sample_in_max_sof_throws)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_start_of_frame_segment(512, 512, 17, 3);
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_bits_per_sample, [&reader] { reader.read_header(); });
+    }
+
+    TEST_METHOD(read_header_unknown_marker_code_throws)
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        writer.write_marker(static_cast<jpeg_marker_code>(0xFA));
+
+        jpeg_stream_reader reader;
+        reader.source({writer.buffer.data(), writer.buffer.size()});
+
+        assert_expect_exception(jpegls_errc::unknown_jpeg_marker_found, [&reader] { reader.read_header(); });
     }
 
     TEST_METHOD(read_header_sos_before_sof_throws)
@@ -759,11 +807,11 @@ public:
     TEST_METHOD(read_hp_color_transform_unsupported_throws)
     {
         read_hp_color_transform_unsupported_throws(static_cast<color_transformation>(4),
-                                            jpegls_errc::color_transform_not_supported);
+                                                   jpegls_errc::color_transform_not_supported);
         read_hp_color_transform_unsupported_throws(static_cast<color_transformation>(5),
-                                            jpegls_errc::color_transform_not_supported);
+                                                   jpegls_errc::color_transform_not_supported);
         read_hp_color_transform_unsupported_throws(static_cast<color_transformation>(6),
-                                            jpegls_errc::invalid_parameter_color_transformation);
+                                                   jpegls_errc::invalid_parameter_color_transformation);
     }
 
     TEST_METHOD(read_hp_color_transform_no_color_segment_present)
@@ -1279,7 +1327,8 @@ private:
         Assert::AreEqual(transformation, reader.parameters().transformation);
     }
 
-    static void read_hp_color_transform_unsupported_throws(const color_transformation transformation, const jpegls_errc error)
+    static void read_hp_color_transform_unsupported_throws(const color_transformation transformation,
+                                                           const jpegls_errc error)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
