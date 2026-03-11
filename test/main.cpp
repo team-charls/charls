@@ -10,6 +10,7 @@
 #include "bitstreamdamage.hpp"
 #include "compliance.hpp"
 #include "performance.hpp"
+#include "portable_arbitrary_map.hpp"
 #include "util.hpp"
 
 #include <algorithm>
@@ -190,30 +191,30 @@ void test_sample_traits()
     static_assert(std::is_same_v<sample_traits_t<default_traits<uint16_t, uint16_t>>, default_traits<uint16_t, uint16_t>>);
 
     // sample_traits_t: default_traits<S, PixelType> maps to default_traits<S, S>.
-    static_assert(
-        std::is_same_v<sample_traits_t<default_traits<uint8_t, pair<uint8_t>>>, default_traits<uint8_t, uint8_t>>);
+    static_assert(std::is_same_v<sample_traits_t<default_traits<uint8_t, pair<uint8_t>>>, default_traits<uint8_t, uint8_t>>);
     static_assert(
         std::is_same_v<sample_traits_t<default_traits<uint8_t, triplet<uint8_t>>>, default_traits<uint8_t, uint8_t>>);
-    static_assert(
-        std::is_same_v<sample_traits_t<default_traits<uint8_t, quad<uint8_t>>>, default_traits<uint8_t, uint8_t>>);
+    static_assert(std::is_same_v<sample_traits_t<default_traits<uint8_t, quad<uint8_t>>>, default_traits<uint8_t, uint8_t>>);
     static_assert(
         std::is_same_v<sample_traits_t<default_traits<uint16_t, pair<uint16_t>>>, default_traits<uint16_t, uint16_t>>);
-    static_assert(std::is_same_v<sample_traits_t<default_traits<uint16_t, triplet<uint16_t>>>,
-                                 default_traits<uint16_t, uint16_t>>);
+    static_assert(
+        std::is_same_v<sample_traits_t<default_traits<uint16_t, triplet<uint16_t>>>, default_traits<uint16_t, uint16_t>>);
     static_assert(
         std::is_same_v<sample_traits_t<default_traits<uint16_t, quad<uint16_t>>>, default_traits<uint16_t, uint16_t>>);
 
     // make_sample_traits: scalar lossless_traits returns the same instance (identity).
     {
         constexpr lossless_traits<uint8_t, 8> traits;
-        [[maybe_unused]] const auto sample_traits{make_sample_traits(traits)};
+        [[maybe_unused]]
+        const auto sample_traits{make_sample_traits(traits)};
         static_assert(std::is_same_v<decltype(sample_traits), const lossless_traits<uint8_t, 8>>);
     }
 
     // make_sample_traits: compound lossless_traits returns default-constructed scalar instance.
     {
         constexpr lossless_traits<triplet<uint8_t>, 8> traits;
-        [[maybe_unused]] const auto sample_traits{make_sample_traits(traits)};
+        [[maybe_unused]]
+        const auto sample_traits{make_sample_traits(traits)};
         static_assert(std::is_same_v<decltype(sample_traits), const lossless_traits<uint8_t, 8>>);
     }
 
@@ -600,14 +601,13 @@ vector<int> read_pnm_header(istream& pnm_file)
 //          into the JPEG-LS format. The 2 binary formats P5 and P6 are supported:
 //          Portable GrayMap: P5 = binary, extension = .pgm, 0-2^16 (gray scale)
 //          Portable PixMap: P6 = binary, extension.ppm, range 0-2^16 (RGB)
-bool encode_pnm(const char* filename_input, const char* filename_output)
-try
+void encode_pnm(const char* filename_input, const char* filename_output)
 {
     ifstream pnm_file(open_input_stream(filename_input));
 
     const auto read_values{read_pnm_header(pnm_file)};
     if (read_values.size() != 4)
-        return false;
+        throw std::runtime_error("Bad PNM header");
 
     const frame_info frame_info{static_cast<uint32_t>(read_values[1]), static_cast<uint32_t>(read_values[2]),
                                 static_cast<int32_t>(max_value_to_bits_per_sample(static_cast<uint32_t>(read_values[3]))),
@@ -618,7 +618,7 @@ try
                                  frame_info.component_count);
     read(pnm_file, input_buffer);
     if (!pnm_file.good())
-        return false;
+        throw std::runtime_error("Failed to read from file");
 
     // PNM format is stored with most significant byte first (big endian).
     if (bytes_per_sample == 2)
@@ -640,6 +640,40 @@ try
     ofstream jls_file_stream(open_output_stream(filename_output));
     write(jls_file_stream, destination, bytes_encoded);
     jls_file_stream.close();
+}
+
+
+void encode_pam(const char* filename_input, const char* filename_output)
+{
+    charls_test::portable_arbitrary_map pam_file(filename_input);
+
+    const frame_info frame_info{pam_file.width(), pam_file.height(), pam_file.bits_per_sample(), pam_file.component_count()};
+
+    jpegls_encoder encoder;
+    encoder.frame_info(frame_info)
+        .interleave_mode(frame_info.component_count > 1 ? interleave_mode::line : interleave_mode::none);
+
+    vector<uint8_t> destination(encoder.estimated_destination_size());
+    encoder.destination(destination);
+    const size_t bytes_encoded{encoder.encode(pam_file.image_data())};
+
+    ofstream jls_file_stream(open_output_stream(filename_output));
+    write(jls_file_stream, destination, bytes_encoded);
+    jls_file_stream.close();
+}
+
+
+bool encode_netpbm(const char* filename_input, const char* filename_output)
+try
+{
+    if (std::filesystem::path(filename_input).extension() == ".pam")
+    {
+        encode_pam(filename_input, filename_output);
+    }
+    else
+    {
+        encode_pnm(filename_input, filename_output);
+    }
 
     return true;
 }
@@ -814,7 +848,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
     if (argc == 1)
     {
         cout << "CharLS test runner.\nOptions: -unittest, -bitstreamdamage, -performance[:loop-count], "
-                "-decodeperformance[:loop-count], -decoderaw -encodepnm -decodetopnm -comparepnm\n";
+                "-decodeperformance[:loop-count], -decoderaw -encode -decodetopnm -comparepnm\n";
         return EXIT_FAILURE;
     }
 
@@ -847,15 +881,15 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
             return result_to_exit_code(decode_to_pnm(argv[2], argv[3]));
         }
 
-        if (str == "-encodepnm")
+        if (str == "-encode")
         {
             if (i != 1 || argc != 4)
             {
-                cout << "Syntax: -encodepnm input-file output-file\n";
+                cout << "Syntax: -encode input-file output-file\n";
                 return EXIT_FAILURE;
             }
 
-            return result_to_exit_code(encode_pnm(argv[2], argv[3]));
+            return result_to_exit_code(encode_netpbm(argv[2], argv[3]));
         }
 
         if (str == "-comparepnm")
