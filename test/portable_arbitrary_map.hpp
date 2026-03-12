@@ -3,10 +3,12 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <fstream>
 #include <ios>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
