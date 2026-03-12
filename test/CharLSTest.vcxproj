@@ -185,6 +185,7 @@
     <ClInclude Include="compliance.hpp" />
     <ClInclude Include="portable_anymap_file.hpp" />
     <ClInclude Include="performance.hpp" />
+    <ClInclude Include="portable_arbitrary_map.hpp" />
     <ClInclude Include="util.hpp" />
   </ItemGroup>
   <ItemGroup>
