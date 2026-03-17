@@ -13,6 +13,19 @@ if(NOT GTest_FOUND)
     # For Windows: prevent overriding the parent project's compiler/linker settings.
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
+    # Suppress all warnings on the fetched googletest targets so that project-wide
+    # pedantic warning flags (e.g. -Werror) do not fail third-party sources.
+    # Note: with CMake 3.25+ this can be solved more cleanly by passing SYSTEM to
+    # FetchContent_Declare, which marks the fetched targets as system libraries and
+    # automatically suppresses warnings on their include directories.
+    foreach(target IN ITEMS gtest gtest_main)
+        if(TARGET ${target})
+            target_compile_options(${target} PRIVATE
+                $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-w>
+                $<$<CXX_COMPILER_ID:MSVC>:/w>
+            )
+        endif()
+    endforeach()
 endif()
 
 add_executable(charls_tests
