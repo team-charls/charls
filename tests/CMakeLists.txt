@@ -11,7 +11,12 @@ if(NOT GTest_FOUND)
     )
     # For Windows: prevent overriding the parent project's compiler/linker settings.
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    # Always build googletest as a static library so that the test executable is
+    # self-contained and does not require gtest DLLs to be in PATH at runtime.
+    set(BUILD_SHARED_LIBS_SAVED ${BUILD_SHARED_LIBS})
+    set(BUILD_SHARED_LIBS OFF)
     FetchContent_MakeAvailable(googletest)
+    set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVED})
     # Suppress all warnings on the fetched googletest targets so that project-wide
     # pedantic warning flags (e.g. -Werror) do not fail third-party sources.
     # Note: with CMake 3.25+ this can be solved more cleanly by passing SYSTEM to
