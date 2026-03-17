@@ -7,8 +7,7 @@ if(NOT GTest_FOUND)
     FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG v1.15.2
-        GIT_SHALLOW TRUE
+        GIT_TAG 94be250af7e14c58dcbf476972d2d7141551ff67 # main, Mar 10, 2026
     )
     # For Windows: prevent overriding the parent project's compiler/linker settings.
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -18,7 +17,7 @@ if(NOT GTest_FOUND)
     # Note: with CMake 3.25+ this can be solved more cleanly by passing SYSTEM to
     # FetchContent_Declare, which marks the fetched targets as system libraries and
     # automatically suppresses warnings on their include directories.
-    foreach(target IN ITEMS gtest gtest_main)
+    foreach(target IN ITEMS gtest gtest_main gmock gmock_main)
         if(TARGET ${target})
             target_compile_options(${target} PRIVATE
                 $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-w>
