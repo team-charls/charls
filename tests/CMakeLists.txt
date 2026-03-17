@@ -32,6 +32,8 @@ target_compile_definitions(charls_tests
     PRIVATE CHARLS_LIBRARY_BUILD
 )
 
+target_compile_features(charls_tests PRIVATE cxx_std_17)
+
 if(BUILD_SHARED_LIBS)
     # When charls is built as a DLL, internal symbols are not exported.
     # Compile the charls implementation directly into the test executable to
