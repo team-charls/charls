@@ -77,4 +77,6 @@ else()
 endif()
 
 include(GoogleTest)
-gtest_discover_tests(charls_tests)
+# Use PRE_TEST discovery so the test executable is not invoked at build time.
+# This avoids failures when cross-compiling (e.g. building ARM64 on an x64 host).
+gtest_discover_tests(charls_tests DISCOVERY_MODE PRE_TEST)
