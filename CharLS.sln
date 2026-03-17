@@ -40,6 +40,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibFuzzerDecoder", "fuzzing
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibFuzzerEncoder", "fuzzing\libfuzzer-encoder\LibFuzzerEncoder.vcxproj", "{CD0F242C-EB44-4845-985A-7BACC568EDE6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSTests", "tests\CharLSTests.vcxproj", "{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Checked|ARM64 = Checked|ARM64
@@ -191,6 +193,24 @@ Global
 		{CD0F242C-EB44-4845-985A-7BACC568EDE6}.Release|ARM64.ActiveCfg = Release|x64
 		{CD0F242C-EB44-4845-985A-7BACC568EDE6}.Release|x64.ActiveCfg = Release|x64
 		{CD0F242C-EB44-4845-985A-7BACC568EDE6}.Release|x86.ActiveCfg = Release|Win32
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Checked|ARM64.ActiveCfg = Checked|ARM64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Checked|ARM64.Build.0 = Checked|ARM64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Checked|x64.ActiveCfg = Checked|x64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Checked|x64.Build.0 = Checked|x64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Checked|x86.ActiveCfg = Checked|Win32
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Checked|x86.Build.0 = Checked|Win32
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Debug|ARM64.Build.0 = Debug|ARM64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Debug|x64.ActiveCfg = Debug|x64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Debug|x64.Build.0 = Debug|x64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Debug|x86.ActiveCfg = Debug|Win32
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Debug|x86.Build.0 = Debug|Win32
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Release|ARM64.ActiveCfg = Release|ARM64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Release|ARM64.Build.0 = Release|ARM64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Release|x64.ActiveCfg = Release|x64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Release|x64.Build.0 = Release|x64
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Release|x86.ActiveCfg = Release|Win32
+		{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
