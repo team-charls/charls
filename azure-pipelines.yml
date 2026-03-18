@@ -46,6 +46,9 @@ jobs:
       includeNuGetOrg: true
       restoreSolution: '*.sln'
 
+  - script: C:\vcpkg\vcpkg integrate install
+    displayName: 'vcpkg integrate install'
+
   - task: VSBuild@1
     inputs:
       solution: '$(solution)'
