@@ -305,7 +305,9 @@ private:
             return false;
 
 #ifdef __GNUC__
-        __builtin_assume(end_position_ - position_ >= static_cast<ptrdiff_t>(sizeof(cache_t)));
+        if (end_position_ - position_ < static_cast<ptrdiff_t>(sizeof(cache_t)))
+            __builtin_unreachable();
+        //__builtin_assume(end_position_ - position_ >= static_cast<ptrdiff_t>(sizeof(cache_t)));
 #endif
 
         // Easy & fast: there is no 0xFF byte in sight, read without bit stuffing
