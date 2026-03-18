@@ -185,6 +185,7 @@
     <ClCompile Include="compliance_test.cpp" />
     <ClCompile Include="default_traits_test.cpp" />
     <ClCompile Include="documentation_test.cpp" />
+    <ClCompile Include="encode_test.cpp" />
     <ClCompile Include="golomb_table_test.cpp" />
     <ClCompile Include="jpeg_error_test.cpp" />
     <ClCompile Include="jpeg_stream_reader_test.cpp" />
@@ -275,6 +276,18 @@
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="../unittest/test16_rm_5.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/2bit_parrot_150x200.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/4bit-monochrome.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/16-bit-640-480-many-dots.pgm">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>

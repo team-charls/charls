@@ -37,6 +37,7 @@ add_executable(charls_tests
     compliance_test.cpp
     default_traits_test.cpp
     documentation_test.cpp
+    encode_test.cpp
     golomb_table_test.cpp
     jpeg_error_test.cpp
     jpeg_stream_reader_test.cpp
@@ -98,6 +99,9 @@ set(CHARLS_COMPLIANCE_DATA_FILES
     ${CMAKE_SOURCE_DIR}/test/conformance/test8bs2.pgm
     ${CMAKE_SOURCE_DIR}/test/conformance/test16.pgm
     ${CMAKE_SOURCE_DIR}/test/tulips-gray-8bit-512-512-hp-encoder.jls
+    ${CMAKE_SOURCE_DIR}/unittest/16-bit-640-480-many-dots.pgm
+    ${CMAKE_SOURCE_DIR}/unittest/2bit_parrot_150x200.pgm
+    ${CMAKE_SOURCE_DIR}/unittest/4bit-monochrome.pgm
     ${CMAKE_SOURCE_DIR}/unittest/tulips-gray-8bit-512-512.pgm
     ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_none_rm_7.jls
     ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_line_rm_7.jls

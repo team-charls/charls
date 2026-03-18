@@ -27,3 +27,4 @@ simd
 subspan
 uint
 unmap
+Werror

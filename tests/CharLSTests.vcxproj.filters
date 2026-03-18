@@ -26,6 +26,9 @@
     <ClCompile Include="documentation_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="encode_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="golomb_table_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
