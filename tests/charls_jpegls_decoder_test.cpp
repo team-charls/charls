@@ -15,6 +15,11 @@ using std::byte;
 
 ////MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnonnull"
+#endif
+
 namespace charls::test {
 
 namespace {
@@ -250,3 +255,9 @@ TEST(charls_jpegls_decoder_test, charls_decoder_get_mapping_table_info_nullptr)
 }
 
 } // namespace charls::test
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
+////MSVC_WARNING_UNSUPPRESS()

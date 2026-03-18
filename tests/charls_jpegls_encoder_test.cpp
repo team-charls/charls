@@ -16,6 +16,11 @@ using std::vector;
 
 ////MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnonnull"
+#endif
+
 namespace charls::test {
 
 TEST(charls_jpegls_encoder_test, destroy_nullptr)
@@ -270,5 +275,9 @@ TEST(charls_jpegls_encoder_test, encode_non_3_components_that_is_not_supported_t
 }
 
 } // namespace charls::test
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 ////MSVC_WARNING_UNSUPPRESS()
