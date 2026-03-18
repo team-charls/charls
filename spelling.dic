@@ -1,6 +1,7 @@
-argc'
-argv'
+argc
+argv
 banny
+BINDIR
 bugprone
 charls
 charlstest
@@ -13,6 +14,7 @@ Errval
 Fuzzer
 golomb
 Golomb
+INCLUDEDIR
 intrinsics
 jlsimage
 jpegls
