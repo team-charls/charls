@@ -123,7 +123,7 @@ void test_compliance(const vector<byte>& encoded_source, const vector<byte>& unc
         {
             if (uncompressed_source[i] != destination[i])
             {
-                EXPECT_EQ(uncompressed_source[i], destination[i]);
+                ASSERT_EQ(uncompressed_source[i], destination[i]);
             }
         }
     }
@@ -139,7 +139,7 @@ void test_compliance(const vector<byte>& encoded_source, const vector<byte>& unc
                 if (std::abs(static_cast<int>(uncompressed_source[i]) - static_cast<int>(destination[i])) >
                     near_lossless)
                 {
-                    EXPECT_EQ(uncompressed_source[i], destination[i]);
+                    ASSERT_EQ(uncompressed_source[i], destination[i]);
                 }
             }
         }
@@ -154,7 +154,7 @@ void test_compliance(const vector<byte>& encoded_source, const vector<byte>& unc
             {
                 if (std::abs(static_cast<int>(source16[i]) - static_cast<int>(destination16[i])) > near_lossless)
                 {
-                    EXPECT_EQ(static_cast<int>(source16[i]), static_cast<int>(destination16[i]));
+                    ASSERT_EQ(static_cast<int>(source16[i]), static_cast<int>(destination16[i]));
                 }
             }
         }
