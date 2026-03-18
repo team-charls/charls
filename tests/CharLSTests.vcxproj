@@ -182,6 +182,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="color_transform_test.cpp" />
+    <ClCompile Include="compliance_test.cpp" />
     <ClCompile Include="golomb_table_test.cpp" />
     <ClCompile Include="jpeg_error_test.cpp" />
     <ClCompile Include="jpeg_stream_reader_test.cpp" />
@@ -193,6 +194,88 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="../test/conformance/t8c0e0.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8c1e0.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8c2e0.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8c0e3.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8c1e3.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8c2e3.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8nde0.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8nde3.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t16e0.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t16e3.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/test8.ppm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/test8bs2.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/test16.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/tulips-gray-8bit-512-512-hp-encoder.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/tulips-gray-8bit-512-512.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/test8_ilv_none_rm_7.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/test8_ilv_line_rm_7.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/test8_ilv_sample_rm_7.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/test8_ilv_sample_rm_300.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/test16_rm_5.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\CharLS.vcxproj">

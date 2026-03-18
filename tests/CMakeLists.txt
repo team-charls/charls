@@ -34,6 +34,7 @@ endif()
 
 add_executable(charls_tests
     color_transform_test.cpp
+    compliance_test.cpp
     golomb_table_test.cpp
     jpeg_error_test.cpp
     jpeg_stream_reader_test.cpp
@@ -43,10 +44,6 @@ add_executable(charls_tests
 target_include_directories(charls_tests
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/..
-)
-
-target_compile_definitions(charls_tests
-    PRIVATE CHARLS_LIBRARY_BUILD
 )
 
 target_compile_features(charls_tests PRIVATE cxx_std_17)
@@ -80,3 +77,37 @@ include(GoogleTest)
 # Use PRE_TEST discovery so the test executable is not invoked at build time.
 # This avoids failures when cross-compiling (e.g. building ARM64 on an x64 host).
 gtest_discover_tests(charls_tests DISCOVERY_MODE PRE_TEST)
+
+# Copy compliance test data files to a data sub-directory next to the test
+# executable at build time. The source files come from the repository and are not
+# duplicated; the copies exist only in the build tree.
+set(CHARLS_COMPLIANCE_DATA_FILES
+    ${CMAKE_SOURCE_DIR}/test/conformance/t8c0e0.jls
+    ${CMAKE_SOURCE_DIR}/test/conformance/t8c1e0.jls
+    ${CMAKE_SOURCE_DIR}/test/conformance/t8c2e0.jls
+    ${CMAKE_SOURCE_DIR}/test/conformance/t8c0e3.jls
+    ${CMAKE_SOURCE_DIR}/test/conformance/t8c1e3.jls
+    ${CMAKE_SOURCE_DIR}/test/conformance/t8c2e3.jls
+    ${CMAKE_SOURCE_DIR}/test/conformance/t8nde0.jls
+    ${CMAKE_SOURCE_DIR}/test/conformance/t8nde3.jls
+    ${CMAKE_SOURCE_DIR}/test/conformance/t16e0.jls
+    ${CMAKE_SOURCE_DIR}/test/conformance/t16e3.jls
+    ${CMAKE_SOURCE_DIR}/test/conformance/test8.ppm
+    ${CMAKE_SOURCE_DIR}/test/conformance/test8bs2.pgm
+    ${CMAKE_SOURCE_DIR}/test/conformance/test16.pgm
+    ${CMAKE_SOURCE_DIR}/test/tulips-gray-8bit-512-512-hp-encoder.jls
+    ${CMAKE_SOURCE_DIR}/unittest/tulips-gray-8bit-512-512.pgm
+    ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_none_rm_7.jls
+    ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_line_rm_7.jls
+    ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_sample_rm_7.jls
+    ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_sample_rm_300.jls
+    ${CMAKE_SOURCE_DIR}/unittest/test16_rm_5.jls
+)
+
+add_custom_command(TARGET charls_tests POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:charls_tests>/data"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CHARLS_COMPLIANCE_DATA_FILES}
+        "$<TARGET_FILE_DIR:charls_tests>/data/"
+    COMMENT "Copying compliance test data files to build directory"
+)
