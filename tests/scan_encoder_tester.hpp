@@ -7,7 +7,7 @@
 
 namespace charls::test {
 
-class scan_encoder_tester final : scan_encoder
+class scan_encoder_tester final : public scan_encoder
 {
 public:
     explicit scan_encoder_tester(const charls::frame_info& frame_info, const coding_parameters& parameters) noexcept :

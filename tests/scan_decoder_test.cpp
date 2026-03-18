@@ -75,23 +75,23 @@ TEST(scan_decoder_test, decode_encoded_ff_pattern)
     constexpr frame_info frame_info{1, 1, 8, 1};
     constexpr coding_parameters parameters{};
 
-    scan_encoder_tester scan_decoder(frame_info, parameters);
+    scan_encoder_tester scan_encoder(frame_info, parameters);
 
-    scan_decoder.initialize_forward({enc_buf.data(), enc_buf.size()});
+    scan_encoder.initialize_forward({enc_buf.data(), enc_buf.size()});
 
     for (const auto& [value, bits] : in_data)
     {
-        scan_decoder.append_to_bit_stream_forward(value, bits);
+        scan_encoder.append_to_bit_stream_forward(value, bits);
     }
 
-    scan_decoder.end_scan_forward();
+    scan_encoder.end_scan_forward();
     // Note: Correct encoding is tested in encoder_strategy_test::append_to_bit_stream_ff_pattern.
 
-    const auto length{scan_decoder.get_length_forward()};
-    scan_decoder_tester decoder(frame_info, parameters, enc_buf.data(), length);
+    const auto length{scan_encoder.get_length_forward()};
+    scan_decoder_tester scan_decoder(frame_info, parameters, enc_buf.data(), length);
     for (const auto& [value, bits] : in_data)
     {
-        const auto actual{static_cast<uint32_t>(decoder.read(bits))};
+        const auto actual{static_cast<uint32_t>(scan_decoder.read(bits))};
         EXPECT_EQ(value, actual);
     }
 }

@@ -2031,9 +2031,11 @@ TEST(jpegls_encoder_test, encode_to_buffer_with_uint16_size_works)
     void* data2{source.data()};
     const auto size2{static_cast<uint16_t>(source.size())};
 
-    // Set 1 value to prevent complains about const.
-    auto* p{static_cast<uint8_t*>(data2)};
-    *p = 7;
+    // Set 1 value to prevent complains about const (check for null to prevent warning in GCC13/14)
+    if (auto* p{static_cast<uint8_t*>(data2)}; p)
+    {
+        *p = 7;
+    }
 
     // size2 is not a perfect match and needs a conversion.
     ignore = encoder.encode(data2, size2);

@@ -49,7 +49,7 @@ TEST(scan_encoder_test, append_to_bit_stream_ff_pattern)
     scan_encoder.append_to_bit_stream_forward(0xffff, 16);
     scan_encoder.append_to_bit_stream_forward(0xffff, 16);
 
-    // Buffer is full of FFs and _isFFWritten = true: Flush can only write 30 date bits.
+    // Buffer is full of FFs and _isFFWritten = true: Flush can only write 30 data bits.
     scan_encoder.append_to_bit_stream_forward(0x3, 31);
 
     scan_encoder.flush_forward();

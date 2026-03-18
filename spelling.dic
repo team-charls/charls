@@ -3,6 +3,7 @@ argv
 banny
 BINDIR
 bugprone
+CETCOMPAT
 charls
 charlstest
 cmove
@@ -10,6 +11,7 @@ countl
 cppcoreguidelines
 declspec
 dllexport
+EMSCRIPTEN
 Errval
 Fuzzer
 golomb
@@ -26,8 +28,18 @@ opto
 palletised
 rect
 simd
+STREQUAL
 subspan
+TOLOWER
 uint
 unmap
+vtables
+Walloca
+Wcast
+Wconversion
 Werror
+Weverything
+Wextra
 Wnonnull
+Wtrampolines
+Wuseless
