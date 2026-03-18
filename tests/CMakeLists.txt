@@ -40,6 +40,7 @@ add_executable(charls_tests
     encode_test.cpp
     golomb_table_test.cpp
     jpegls_algorithm_test.cpp
+    jpegls_decoder_test.cpp
     jpeg_error_test.cpp
     jpeg_stream_reader_test.cpp
     jpeg_stream_writer_test.cpp
@@ -109,6 +110,13 @@ set(CHARLS_COMPLIANCE_DATA_FILES
     ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_sample_rm_7.jls
     ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_sample_rm_300.jls
     ${CMAKE_SOURCE_DIR}/unittest/test16_rm_5.jls
+    ${CMAKE_SOURCE_DIR}/unittest/8bit-monochrome-2x2.jls
+    ${CMAKE_SOURCE_DIR}/unittest/ff_in_entropy_data.jls
+    ${CMAKE_SOURCE_DIR}/unittest/fuzzy_input_golomb_16.jls
+    ${CMAKE_SOURCE_DIR}/unittest/fuzzy-input-bad-run-mode-golomb-code.jls
+    ${CMAKE_SOURCE_DIR}/unittest/fuzzy-input-no-valid-bits-at-the-end.jls
+    ${CMAKE_SOURCE_DIR}/unittest/land10-10bit-rgb-hp3-invalid.jls
+    ${CMAKE_SOURCE_DIR}/unittest/no_start_byte_after_encoded_scan.jls
 )
 
 add_custom_command(TARGET charls_tests POST_BUILD

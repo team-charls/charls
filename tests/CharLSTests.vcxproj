@@ -188,6 +188,7 @@
     <ClCompile Include="encode_test.cpp" />
     <ClCompile Include="golomb_table_test.cpp" />
     <ClCompile Include="jpegls_algorithm_test.cpp" />
+    <ClCompile Include="jpegls_decoder_test.cpp" />
     <ClCompile Include="jpeg_error_test.cpp" />
     <ClCompile Include="jpeg_stream_reader_test.cpp" />
     <ClCompile Include="jpeg_stream_writer_test.cpp" />
@@ -289,6 +290,34 @@
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="../unittest/16-bit-640-480-many-dots.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/8bit-monochrome-2x2.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/ff_in_entropy_data.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/fuzzy_input_golomb_16.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/fuzzy-input-bad-run-mode-golomb-code.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/fuzzy-input-no-valid-bits-at-the-end.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/land10-10bit-rgb-hp3-invalid.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/no_start_byte_after_encoded_scan.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>

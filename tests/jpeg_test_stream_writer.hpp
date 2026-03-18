@@ -64,14 +64,14 @@ public:
 
     void write_spiff_end_of_directory_entry()
     {
-        constexpr uint8_t spiff_end_of_directory_entry_type{1};
+        constexpr uint8_t spiff_end_of_directory_entry_type_test{1};
 
         // Note: ISO/IEC 10918-3, Annex F.2.2.3 documents that the EOD entry segment should have a length of 8
         // but only 6 data bytes. This approach allows to wrap existing bit streams\encoders with a SPIFF header.
         // In this implementation the SOI marker is added as data bytes to simplify the design.
         static constexpr std::array spiff_end_of_directory{
             std::byte{0},    std::byte{0},
-            std::byte{0},    std::byte{spiff_end_of_directory_entry_type},
+            std::byte{0},    std::byte{spiff_end_of_directory_entry_type_test},
             std::byte{0xFF}, std::byte{to_underlying_type(jpeg_marker_code::start_of_image)}};
         write_segment(jpeg_marker_code::application_data8, spiff_end_of_directory.data(), spiff_end_of_directory.size());
     }
