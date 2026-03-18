@@ -36,6 +36,7 @@ add_executable(charls_tests
     color_transform_test.cpp
     compliance_test.cpp
     default_traits_test.cpp
+    documentation_test.cpp
     golomb_table_test.cpp
     jpeg_error_test.cpp
     jpeg_stream_reader_test.cpp

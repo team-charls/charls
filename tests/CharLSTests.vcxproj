@@ -184,6 +184,7 @@
     <ClCompile Include="color_transform_test.cpp" />
     <ClCompile Include="compliance_test.cpp" />
     <ClCompile Include="default_traits_test.cpp" />
+    <ClCompile Include="documentation_test.cpp" />
     <ClCompile Include="golomb_table_test.cpp" />
     <ClCompile Include="jpeg_error_test.cpp" />
     <ClCompile Include="jpeg_stream_reader_test.cpp" />
