@@ -6,6 +6,7 @@
 #include "../src/conditional_static_cast.hpp"
 #include "../src/jpegls_algorithm.hpp"
 
+#include <cmath>
 #include <limits>
 
 using std::numeric_limits;
@@ -16,7 +17,7 @@ namespace {
 
 void call_and_compare_log2_ceil(const int32_t value)
 {
-    const int32_t expected{static_cast<int32_t>(ceil(std::log2(value)))};
+    const int32_t expected{static_cast<int32_t>(std::ceil(std::log2(value)))};
     EXPECT_EQ(expected, log2_ceiling(value));
 }
 
