@@ -47,6 +47,9 @@
     <ClCompile Include="jpeg_stream_writer_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="jpegls_encoder_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="jpeg_test_stream_writer.hpp">
@@ -118,6 +121,36 @@
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="../test/tulips-gray-8bit-512-512-hp-encoder.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/2bit_parrot_150x200.pgm">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/4bit-monochrome.pgm">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/8bit-monochrome-2x2.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/16-bit-640-480-many-dots.pgm">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/ff_in_entropy_data.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/fuzzy_input_golomb_16.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/fuzzy-input-no-valid-bits-at-the-end.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/fuzzy-input-bad-run-mode-golomb-code.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/land10-10bit-rgb-hp3-invalid.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/no_start_byte_after_encoded_scan.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
   </ItemGroup>
