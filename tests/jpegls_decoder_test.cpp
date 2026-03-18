@@ -452,9 +452,10 @@ TEST(jpegls_decoder_test, get_destination_size_for_interleave_none_with_bad_stri
     const auto source{read_file("data/t8c0e0.jls")};
     const jpegls_decoder decoder{source, true};
 
-    constexpr uint32_t correct_stride{256};
-    assert_expect_exception(jpegls_errc::invalid_argument_stride,
-                            [&decoder, &correct_stride] { ignore = decoder.get_destination_size(correct_stride - 1); });
+    assert_expect_exception(jpegls_errc::invalid_argument_stride, [&decoder] {
+        constexpr uint32_t correct_stride{256};
+        ignore = decoder.get_destination_size(correct_stride - 1);
+    });
 }
 
 TEST(jpegls_decoder_test, get_destination_size_for_interleave_none_16_bit_with_bad_stride_throws)
@@ -462,9 +463,10 @@ TEST(jpegls_decoder_test, get_destination_size_for_interleave_none_16_bit_with_b
     const auto source{read_file("data/t16e0.jls")};
     const jpegls_decoder decoder{source, true};
 
-    constexpr uint32_t correct_stride{256 * 2};
-    assert_expect_exception(jpegls_errc::invalid_argument_stride,
-                            [&decoder, &correct_stride] { ignore = decoder.get_destination_size(correct_stride - 1); });
+    assert_expect_exception(jpegls_errc::invalid_argument_stride, [&decoder] {
+        constexpr uint32_t correct_stride{256 * 2};
+        ignore = decoder.get_destination_size(correct_stride - 1);
+    });
 }
 
 TEST(jpegls_decoder_test, get_destination_size_for_sample_interleave_with_bad_stride_throws)
@@ -472,9 +474,10 @@ TEST(jpegls_decoder_test, get_destination_size_for_sample_interleave_with_bad_st
     const auto source{read_file("data/t8c2e0.jls")};
     const jpegls_decoder decoder{source, true};
 
-    constexpr uint32_t correct_stride{3 * 256};
-    assert_expect_exception(jpegls_errc::invalid_argument_stride,
-                            [&decoder, &correct_stride] { ignore = decoder.get_destination_size(correct_stride - 1); });
+    assert_expect_exception(jpegls_errc::invalid_argument_stride, [&decoder] {
+        constexpr uint32_t correct_stride{3 * 256};
+        ignore = decoder.get_destination_size(correct_stride - 1);
+    });
 }
 
 TEST(jpegls_decoder_test, get_destination_size_for_small_image_with_custom_stride)
@@ -647,9 +650,10 @@ TEST(jpegls_decoder_test, decode_color_interleave_none_with_too_small_stride_thr
     jpegls_decoder decoder{source, true};
     vector<byte> destination(decoder.get_destination_size());
 
-    constexpr uint32_t correct_stride{256};
-    assert_expect_exception(jpegls_errc::invalid_argument_stride,
-                            [&decoder, &destination, &correct_stride] { decoder.decode(destination, correct_stride - 1); });
+    assert_expect_exception(jpegls_errc::invalid_argument_stride, [&decoder, &destination] {
+        constexpr uint32_t correct_stride{256};
+        decoder.decode(destination, correct_stride - 1);
+    });
 }
 
 TEST(jpegls_decoder_test, decode_color_interleave_sample_with_too_small_stride_throws)
@@ -659,9 +663,10 @@ TEST(jpegls_decoder_test, decode_color_interleave_sample_with_too_small_stride_t
     jpegls_decoder decoder{source, true};
     vector<byte> destination(decoder.get_destination_size());
 
-    constexpr uint32_t correct_stride{256 * 3};
-    assert_expect_exception(jpegls_errc::invalid_argument_stride,
-                            [&decoder, &destination, correct_stride] { decoder.decode(destination, correct_stride - 1); });
+    assert_expect_exception(jpegls_errc::invalid_argument_stride, [&decoder, &destination] {
+        constexpr uint32_t correct_stride{256 * 3};
+        decoder.decode(destination, correct_stride - 1);
+    });
 }
 
 TEST(jpegls_decoder_test, decode_color_interleave_none_with_standard_stride_works)
