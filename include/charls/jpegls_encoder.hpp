@@ -214,7 +214,7 @@ public:
     /// <param name="entry_data">The data of the directory entry.</param>
     /// <param name="entry_data_size_bytes">The size in bytes of the entry data [0-65528].</param>
     template<typename IntDerivedType>
-    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
+    CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
     jpegls_encoder& write_spiff_entry(const IntDerivedType entry_tag,
                                       CHARLS_IN_READS_BYTES(entry_data_size_bytes) const void* entry_data,
                                       const size_t entry_data_size_bytes)

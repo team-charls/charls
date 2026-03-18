@@ -96,10 +96,10 @@ include(GoogleTest)
 # This avoids failures when cross-compiling (e.g. building ARM64 on an x64 host).
 gtest_discover_tests(charls_tests DISCOVERY_MODE PRE_TEST)
 
-# Copy compliance test data files to a data sub-directory next to the test
+# Copy test data files to a data sub-directory next to the test
 # executable at build time. The source files come from the repository and are not
 # duplicated; the copies exist only in the build tree.
-set(CHARLS_COMPLIANCE_DATA_FILES
+set(CHARLS_TEST_DATA_FILES
     ${CMAKE_SOURCE_DIR}/test/conformance/t8c0e0.jls
     ${CMAKE_SOURCE_DIR}/test/conformance/t8c1e0.jls
     ${CMAKE_SOURCE_DIR}/test/conformance/t8c2e0.jls
@@ -135,7 +135,7 @@ set(CHARLS_COMPLIANCE_DATA_FILES
 add_custom_command(TARGET charls_tests POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:charls_tests>/data"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CHARLS_COMPLIANCE_DATA_FILES}
+        ${CHARLS_TEST_DATA_FILES}
         "$<TARGET_FILE_DIR:charls_tests>/data/"
-    COMMENT "Copying compliance test data files to build directory"
+    COMMENT "Copying test data files to build directory"
 )

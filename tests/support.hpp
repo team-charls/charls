@@ -18,6 +18,12 @@ namespace charls::test {
 [[nodiscard]]
 std::vector<std::byte> read_file(const char* filename);
 
+[[nodiscard]]
+inline std::nullptr_t get_nullptr()
+{
+    return nullptr;
+}
+
 template<typename Functor>
 void assert_expect_exception(const jpegls_errc error_value, Functor functor)
 {

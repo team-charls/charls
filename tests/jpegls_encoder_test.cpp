@@ -24,6 +24,11 @@ using namespace std::string_literals;
 
 constexpr size_t serialized_spiff_header_size{34};
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnonnull"
+#endif
+
 namespace charls::test {
 
 namespace {
@@ -2035,3 +2040,7 @@ TEST(jpegls_encoder_test, encode_to_buffer_with_uint16_size_works)
 }
 
 } // namespace charls::test
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

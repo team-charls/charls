@@ -15,9 +15,9 @@ using std::byte;
 
 ////MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnonnull"
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnonnull"
 #endif
 
 namespace charls::test {
@@ -31,7 +31,7 @@ void destroy_decoder(const charls_jpegls_decoder* decoder) noexcept
 
 std::unique_ptr<charls_jpegls_decoder, void (*)(const charls_jpegls_decoder*)> get_initialized_decoder()
 {
-    static const auto source{read_file("DataFiles/t8c0e0.jls")};
+    static const auto source{read_file("data/t8c0e0.jls")};
     auto* const decoder{charls_jpegls_decoder_create()};
     auto error{charls_jpegls_decoder_set_source_buffer(decoder, source.data(), source.size())};
     EXPECT_EQ(jpegls_errc::success, error);
@@ -72,7 +72,7 @@ TEST(charls_jpegls_decoder_test, read_spiff_header_nullptr)
     auto error{charls_jpegls_decoder_read_spiff_header(nullptr, &spiff_header, &header_found)};
     EXPECT_EQ(jpegls_errc::invalid_argument, error);
 
-    const auto source{read_file("DataFiles/t8c0e0.jls")};
+    const auto source{read_file("data/t8c0e0.jls")};
     auto* decoder{charls_jpegls_decoder_create()};
     error = charls_jpegls_decoder_set_source_buffer(decoder, source.data(), source.size());
     EXPECT_EQ(jpegls_errc::success, error);
@@ -256,8 +256,8 @@ TEST(charls_jpegls_decoder_test, charls_decoder_get_mapping_table_info_nullptr)
 
 } // namespace charls::test
 
-#ifdef __clang__
-#pragma clang diagnostic pop
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
 #endif
 
 ////MSVC_WARNING_UNSUPPRESS()

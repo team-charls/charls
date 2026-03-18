@@ -7,6 +7,8 @@
 #include "../src/util.hpp"
 #include "support.hpp"
 
+#include <cmath>
+
 using std::numeric_limits;
 
 namespace charls::test {
@@ -28,7 +30,7 @@ uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept
 void call_and_compare_log2_floor(const uint32_t arg)
 {
     MSVC_WARNING_SUPPRESS_NEXT_LINE(26467) // cast from double to uint32 is safe. values always positive.
-    const uint32_t expected{static_cast<uint32_t>(floor(std::log2(arg)))};
+    const uint32_t expected{static_cast<uint32_t>(std::floor(std::log2(arg)))};
     EXPECT_EQ(expected, log2_floor(arg));
 }
 
