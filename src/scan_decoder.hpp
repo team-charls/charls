@@ -300,8 +300,8 @@ private:
 
     FORCE_INLINE bool fill_read_cache_optimistic() noexcept
     {
-        if (const auto bytes_until_ff{position_ff_ - position_};
-            bytes_until_ff < static_cast<decltype(bytes_until_ff)>(sizeof(cache_t)))
+        if (const ptrdiff_t bytes_until_ff{position_ff_ - position_};
+            bytes_until_ff < static_cast<ptrdiff_t>(sizeof(cache_t)))
             return false;
 
         // Easy & fast: there is no 0xFF byte in sight, read without bit stuffing
