@@ -28,3 +28,4 @@ subspan
 uint
 unmap
 Werror
+Wnonnull

@@ -33,6 +33,8 @@ if(NOT GTest_FOUND)
 endif()
 
 add_executable(charls_tests
+    charls_jpegls_decoder_test.cpp
+    charls_jpegls_encoder_test.cpp
     color_transform_test.cpp
     compliance_test.cpp
     default_traits_test.cpp
@@ -45,6 +47,16 @@ add_executable(charls_tests
     jpegls_algorithm_test.cpp
     jpegls_decoder_test.cpp
     jpegls_encoder_test.cpp
+    jpegls_preset_coding_parameters_test.cpp
+    lossless_traits_test.cpp
+    regular_mode_context_test.cpp
+    run_mode_context_test.cpp
+    scan_decoder_test.cpp
+    scan_encoder_test.cpp
+    support.cpp
+    util_test.cpp
+    validate_spiff_header_test.cpp
+    version_test.cpp
 )
 
 target_include_directories(charls_tests

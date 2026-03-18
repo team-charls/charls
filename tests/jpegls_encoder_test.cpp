@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "jpegls_preset_coding_parameters_test.hpp"
-#include "test_util.hpp"
+#include "support.hpp"
 
 #include "../src/jpeg_marker_code.hpp"
 #include <charls/charls.hpp>

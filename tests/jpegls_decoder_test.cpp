@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include "test_util.hpp"
+#include "support.hpp"
 
 #include <charls/jpegls_decoder.hpp>
 #include <charls/jpegls_encoder.hpp>
@@ -44,23 +44,6 @@ void triplet_to_planar(vector<byte>& triplet_buffer, const uint32_t width, const
         planar_buffer[index + 2 * byte_count] = triplet_buffer[index * 3 + 2];
     }
     swap(triplet_buffer, planar_buffer);
-}
-
-[[nodiscard]]
-vector<byte> read_file(const char* filename)
-{
-    std::ifstream input;
-    input.exceptions(std::ios::eofbit | std::ios::failbit | std::ios::badbit);
-    input.open(filename, std::ios::in | std::ios::binary);
-
-    input.seekg(0, std::ios::end);
-    const auto byte_count_file{static_cast<size_t>(input.tellg())};
-    input.seekg(0, std::ios::beg);
-
-    vector<byte> buffer(byte_count_file);
-    input.read(reinterpret_cast<char*>(buffer.data()), static_cast<std::streamsize>(buffer.size()));
-
-    return buffer;
 }
 
 [[nodiscard]]

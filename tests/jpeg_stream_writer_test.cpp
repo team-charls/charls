@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include "test_util.hpp"
+#include "support.hpp"
 
 #include "../src/jpeg_marker_code.hpp"
 #include "../src/jpeg_stream_writer.hpp"

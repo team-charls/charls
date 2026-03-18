@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "jpeg_test_stream_writer.hpp"
-#include "test_util.hpp"
+#include "support.hpp"
 
 #include "../src/jpeg_stream_reader.hpp"
 #include "../src/jpeg_stream_writer.hpp"

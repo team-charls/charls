@@ -181,6 +181,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="charls_jpegls_decoder_test.cpp" />
+    <ClCompile Include="charls_jpegls_encoder_test.cpp" />
     <ClCompile Include="color_transform_test.cpp" />
     <ClCompile Include="compliance_test.cpp" />
     <ClCompile Include="default_traits_test.cpp" />
@@ -190,13 +192,25 @@
     <ClCompile Include="jpegls_algorithm_test.cpp" />
     <ClCompile Include="jpegls_decoder_test.cpp" />
     <ClCompile Include="jpegls_encoder_test.cpp" />
+    <ClCompile Include="jpegls_preset_coding_parameters_test.cpp" />
     <ClCompile Include="jpeg_error_test.cpp" />
     <ClCompile Include="jpeg_stream_reader_test.cpp" />
     <ClCompile Include="jpeg_stream_writer_test.cpp" />
+    <ClCompile Include="lossless_traits_test.cpp" />
+    <ClCompile Include="regular_mode_context_test.cpp" />
+    <ClCompile Include="run_mode_context_test.cpp" />
+    <ClCompile Include="scan_decoder_test.cpp" />
+    <ClCompile Include="scan_encoder_test.cpp" />
+    <ClCompile Include="support.cpp" />
+    <ClCompile Include="util_test.cpp" />
+    <ClCompile Include="validate_spiff_header_test.cpp" />
+    <ClCompile Include="version_test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="jpegls_preset_coding_parameters_test.hpp" />
     <ClInclude Include="jpeg_test_stream_writer.hpp" />
-    <ClInclude Include="test_util.hpp" />
+    <ClInclude Include="scan_encoder_tester.hpp" />
+    <ClInclude Include="support.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json" />
