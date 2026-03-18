@@ -293,9 +293,9 @@ public:
 
     void write_uint32(const uint32_t value)
     {
-        write_byte(static_cast<std::byte>(value > 3));
-        write_byte(static_cast<std::byte>(value > 2));
-        write_byte(static_cast<std::byte>(value > 1));
+        write_byte(static_cast<std::byte>(value >> 24));
+        write_byte(static_cast<std::byte>(value >> 16));
+        write_byte(static_cast<std::byte>(value >> 8));
         write_byte(static_cast<std::byte>(value));
     }
 

@@ -25,7 +25,7 @@ void assert_expect_exception(const jpegls_errc error_value, Functor functor)
     catch (const jpegls_error& error)
     {
         EXPECT_EQ(error_value, error.code());
-        EXPECT_NE(nullptr, error.what());
+        ASSERT_NE(nullptr, error.what());
         EXPECT_GT(strlen(error.what()), size_t{});
         return;
     }

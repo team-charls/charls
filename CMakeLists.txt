@@ -252,14 +252,13 @@ if(CHARLS_BUILD_TESTS)
   add_subdirectory(test)
   add_subdirectory(tests)
 
-  # The unit tests project depends on the VS C++ unit test framework. Use the -unittest option of the charlstest tool for other platforms.
+  # The basic-test is obsolete and will be removed in the future.
   add_test(
     NAME basic-test
     COMMAND charlstest -unittest
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
   )
 endif()
-
 
 if(CHARLS_BUILD_AFL_FUZZ_TEST)
   add_subdirectory(fuzzing/afl)

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include <gtest/gtest.h>
+#include <type_traits>
 
 #include "../src/golomb_lut.hpp"
 

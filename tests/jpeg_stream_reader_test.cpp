@@ -11,6 +11,7 @@
 
 #include <array>
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 using std::array;
@@ -40,8 +41,7 @@ void read_spiff_header(const uint8_t low_version)
     EXPECT_EQ(600U, spiff_header.width);
     EXPECT_EQ(static_cast<int32_t>(spiff_color_space::rgb), static_cast<int32_t>(spiff_header.color_space));
     EXPECT_EQ(8, spiff_header.bits_per_sample);
-    EXPECT_EQ(static_cast<int32_t>(spiff_compression_type::jpeg_ls),
-              static_cast<int32_t>(spiff_header.compression_type));
+    EXPECT_EQ(static_cast<int32_t>(spiff_compression_type::jpeg_ls), static_cast<int32_t>(spiff_header.compression_type));
     EXPECT_EQ(static_cast<int32_t>(spiff_resolution_units::dots_per_inch),
               static_cast<int32_t>(spiff_header.resolution_units));
     EXPECT_EQ(96U, spiff_header.vertical_resolution);
@@ -124,7 +124,7 @@ void read_header_with_jpeg_ls_preset_parameter_with_extended_id_throws(const byt
 
 } // namespace
 
-TEST(jpeg_stream_reader_test, read_header_from_to_small_input_buffer_throws)
+TEST(jpeg_stream_reader_test, read_header_from_too_small_input_buffer_throws)
 {
     array<byte, 1> buffer{};
     jpeg_stream_reader reader;
@@ -210,8 +210,7 @@ TEST(jpeg_stream_reader_test, read_header_jpegls_preset_parameter_segment)
     reader.source({source.data(), source.size()});
 
     reader.read_header();
-    const auto& [maximum_sample_value, threshold1, threshold2, threshold3,
-                 reset_value]{reader.preset_coding_parameters()};
+    const auto& [maximum_sample_value, threshold1, threshold2, threshold3, reset_value]{reader.preset_coding_parameters()};
 
     EXPECT_EQ(presets.maximum_sample_value, maximum_sample_value);
     EXPECT_EQ(presets.reset_value, reset_value);
@@ -600,7 +599,7 @@ TEST(jpeg_stream_reader_test, read_spiff_header_low_version_newer)
     read_spiff_header(1);
 }
 
-TEST(jpeg_stream_reader_test, read_spiff_header_high_version_to_new)
+TEST(jpeg_stream_reader_test, read_spiff_header_high_version_too_new)
 {
     const auto buffer{create_test_spiff_header(3)};
     jpeg_stream_reader reader;
@@ -1214,8 +1213,7 @@ TEST(jpeg_stream_reader_test, read_mapping_table_continuation_without_mapping_ta
     jpeg_stream_reader reader;
     reader.source({writer.buffer.data(), writer.buffer.size()});
 
-    assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_continuation,
-                            [&reader] { reader.read_header(); });
+    assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_continuation, [&reader] { reader.read_header(); });
 }
 
 TEST(jpeg_stream_reader_test, read_invalid_mapping_table_continuation_throws)
@@ -1231,8 +1229,7 @@ TEST(jpeg_stream_reader_test, read_invalid_mapping_table_continuation_throws)
     jpeg_stream_reader reader;
     reader.source({writer.buffer.data(), writer.buffer.size()});
 
-    assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_continuation,
-                            [&reader] { reader.read_header(); });
+    assert_expect_exception(jpegls_errc::invalid_parameter_mapping_table_continuation, [&reader] { reader.read_header(); });
 }
 
 TEST(jpeg_stream_reader_test, read_define_number_of_lines_16_bit)

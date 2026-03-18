@@ -14,7 +14,7 @@ namespace charls::test {
 TEST(jpegls_error_test, get_error_message_success)
 {
     const auto* const result{charls_get_error_message(jpegls_errc::success)};
-    EXPECT_NE(nullptr, result);
+    ASSERT_NE(nullptr, result);
     EXPECT_GT(strlen(result), size_t{0});
 }
 
@@ -22,14 +22,14 @@ TEST(jpegls_error_test, get_error_message_unknown)
 {
     constexpr jpegls_errc unknown_error_code{static_cast<jpegls_errc>(3000)};
     const auto* const result{charls_get_error_message(unknown_error_code)};
-    EXPECT_NE(nullptr, result);
+    ASSERT_NE(nullptr, result);
     EXPECT_GT(strlen(result), size_t{0});
 }
 
 TEST(jpegls_error_test, get_error_message_not_enough_memory)
 {
     const auto* const result{charls_get_error_message(jpegls_errc::not_enough_memory)};
-    EXPECT_NE(nullptr, result);
+    ASSERT_NE(nullptr, result);
     EXPECT_GT(strlen(result), size_t{0});
 }
 

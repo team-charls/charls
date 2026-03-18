@@ -1,5 +1,9 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
-  "dependencies": [ { "name": "benchmark", "version>=":"1.9.5" } ],
-  "builtin-baseline": "3508985146f1b1d248c67ead13f8f54be5b4f5da"
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "dependencies": [
+    {
+      "name": "benchmark"
+    }
+  ],
+  "builtin-baseline": "4ef2a7144d00c2f446029b9700e701a3094b8bfb"
 }

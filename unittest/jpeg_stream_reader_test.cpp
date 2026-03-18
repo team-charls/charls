@@ -24,7 +24,7 @@ namespace charls::test {
 TEST_CLASS(jpeg_stream_reader_test)
 {
 public:
-    TEST_METHOD(read_header_from_to_small_input_buffer_throws)
+    TEST_METHOD(read_header_from_too_small_input_buffer_throws)
     {
         array<byte, 1> buffer{};
         jpeg_stream_reader reader;
@@ -500,7 +500,7 @@ public:
         read_spiff_header(1);
     }
 
-    TEST_METHOD(read_spiff_header_high_version_to_new)
+    TEST_METHOD(read_spiff_header_high_version_too_new)
     {
         const auto buffer{create_test_spiff_header(3)};
         jpeg_stream_reader reader;
