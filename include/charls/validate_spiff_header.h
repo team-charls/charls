@@ -21,8 +21,7 @@ extern "C" {
 /// <param name="frame_info">Reference to a charls_frame_info instance.</param>
 /// <returns>charls_jpegls_errc::success when the SPIFF header is valid, otherwise charls_jpegls_errc::invalid_spiff_header.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION charls_validate_spiff_header(
-    CHARLS_IN const charls_spiff_header* spiff_header, CHARLS_IN const charls_frame_info* frame_info) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull));
+    CHARLS_IN const charls_spiff_header* spiff_header, CHARLS_IN const charls_frame_info* frame_info) CHARLS_NOEXCEPT;
 
 #ifdef __cplusplus
 } // extern "C"

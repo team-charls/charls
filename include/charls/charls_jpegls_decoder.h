@@ -44,7 +44,7 @@ CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_set_source_buffer(CHARLS_IN charls_jpegls_decoder* decoder,
                                         CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
-                                        size_t source_size_bytes) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+                                        size_t source_size_bytes) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Tries to read the SPIFF header from the source buffer.
@@ -58,7 +58,7 @@ charls_jpegls_decoder_set_source_buffer(CHARLS_IN charls_jpegls_decoder* decoder
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_read_spiff_header(CHARLS_IN charls_jpegls_decoder* decoder,
                                         CHARLS_OUT charls_spiff_header* spiff_header,
-                                        CHARLS_OUT int32_t* header_found) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+                                        CHARLS_OUT int32_t* header_found) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Reads the JPEG-LS header from the JPEG byte stream. After this function is called frame info can be retrieved.
@@ -66,7 +66,7 @@ charls_jpegls_decoder_read_spiff_header(CHARLS_IN charls_jpegls_decoder* decoder
 /// <param name="decoder">Reference to the decoder instance.</param>
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
-charls_jpegls_decoder_read_header(CHARLS_IN charls_jpegls_decoder* decoder) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+charls_jpegls_decoder_read_header(CHARLS_IN charls_jpegls_decoder* decoder) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns information about the frame stored in the JPEG-LS byte stream.
@@ -79,7 +79,7 @@ charls_jpegls_decoder_read_header(CHARLS_IN charls_jpegls_decoder* decoder) CHAR
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_get_frame_info(CHARLS_IN const charls_jpegls_decoder* decoder,
-                                     CHARLS_OUT charls_frame_info* frame_info) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+                                     CHARLS_OUT charls_frame_info* frame_info) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns the NEAR parameter that was used to encode the scan. A value of 0 means lossless.
@@ -93,7 +93,7 @@ charls_jpegls_decoder_get_frame_info(CHARLS_IN const charls_jpegls_decoder* deco
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_get_near_lossless(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t component_index,
-                                        CHARLS_OUT int32_t* near_lossless) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+                                        CHARLS_OUT int32_t* near_lossless) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns the interleave mode that was used to encode the scan.
@@ -107,8 +107,7 @@ charls_jpegls_decoder_get_near_lossless(CHARLS_IN const charls_jpegls_decoder* d
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_get_interleave_mode(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t component_index,
-                                          CHARLS_OUT charls_interleave_mode* interleave_mode) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull));
+                                          CHARLS_OUT charls_interleave_mode* interleave_mode) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns the preset coding parameters used to encode the first scan.
@@ -123,7 +122,7 @@ charls_jpegls_decoder_get_interleave_mode(CHARLS_IN const charls_jpegls_decoder*
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_get_preset_coding_parameters(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t reserved,
                                                    CHARLS_OUT charls_jpegls_pc_parameters* preset_coding_parameters)
-    CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+    CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns the color transformation that was used to encode the scan.
@@ -136,8 +135,7 @@ charls_jpegls_decoder_get_preset_coding_parameters(CHARLS_IN const charls_jpegls
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_get_color_transformation(CHARLS_IN const charls_jpegls_decoder* decoder,
-                                               CHARLS_OUT charls_color_transformation* color_transformation) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull));
+                                               CHARLS_OUT charls_color_transformation* color_transformation) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns the size required for the destination buffer in bytes to hold the decoded pixel data.
@@ -151,8 +149,7 @@ charls_jpegls_decoder_get_color_transformation(CHARLS_IN const charls_jpegls_dec
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_get_destination_size(CHARLS_IN const charls_jpegls_decoder* decoder, uint32_t stride,
-                                           CHARLS_OUT size_t* destination_size_bytes) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull));
+                                           CHARLS_OUT size_t* destination_size_bytes) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Will decode the JPEG-LS byte stream from the source buffer into the destination buffer.
@@ -172,8 +169,7 @@ CHARLS_ATTRIBUTE_ACCESS((access(write_only, 2, 3)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_decode_to_buffer(CHARLS_IN charls_jpegls_decoder* decoder,
                                        CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
-                                       size_t destination_size_bytes, uint32_t stride) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull));
+                                       size_t destination_size_bytes, uint32_t stride) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Will install a function that will be called when a comment (COM) segment is found.
@@ -188,8 +184,7 @@ charls_jpegls_decoder_decode_to_buffer(CHARLS_IN charls_jpegls_decoder* decoder,
 /// <param name="user_context">Free to use context data that will be provided to the callback function.</param>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_at_comment(CHARLS_IN charls_jpegls_decoder* decoder, charls_at_comment_handler handler,
-                                 void* user_context) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull(1)));
-
+                                 void* user_context) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Will install a function that will be called when an application data (APPn) segment is found.
@@ -204,9 +199,7 @@ charls_jpegls_decoder_at_comment(CHARLS_IN charls_jpegls_decoder* decoder, charl
 /// <param name="user_context">Free to use context data that will be provided to the callback function.</param>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_jpegls_decoder_at_application_data(CHARLS_IN charls_jpegls_decoder* decoder,
-                                          charls_at_application_data_handler handler, void* user_context) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull(1)));
-
+                                          charls_at_application_data_handler handler, void* user_context) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns the compressed data format of the JPEG-LS data stream.
@@ -220,8 +213,7 @@ charls_jpegls_decoder_at_application_data(CHARLS_IN charls_jpegls_decoder* decod
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_compressed_data_format(CHARLS_IN const charls_jpegls_decoder* decoder,
-                                          CHARLS_OUT charls_compressed_data_format* compressed_data_format) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull));
+                                          CHARLS_OUT charls_compressed_data_format* compressed_data_format) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns the mapping table ID referenced by the component or 0 when no mapping table is used.
@@ -235,7 +227,7 @@ charls_decoder_get_compressed_data_format(CHARLS_IN const charls_jpegls_decoder*
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_id(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t component_index,
-                                    CHARLS_OUT int32_t* table_id) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+                                    CHARLS_OUT int32_t* table_id) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Converts the mapping table ID to a mapping table index.
@@ -250,7 +242,7 @@ charls_decoder_get_mapping_table_id(CHARLS_IN const charls_jpegls_decoder* decod
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_find_mapping_table_index(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t mapping_table_id,
-                                        CHARLS_OUT int32_t* index) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+                                        CHARLS_OUT int32_t* index) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns the count of mapping tables present in the JPEG-LS stream.
@@ -263,7 +255,7 @@ charls_decoder_find_mapping_table_index(CHARLS_IN const charls_jpegls_decoder* d
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_count(CHARLS_IN const charls_jpegls_decoder* decoder,
-                                       CHARLS_OUT int32_t* count) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+                                       CHARLS_OUT int32_t* count) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns information about a mapping table.
@@ -279,8 +271,7 @@ charls_decoder_get_mapping_table_count(CHARLS_IN const charls_jpegls_decoder* de
 /// <returns>The result of the operation: success or a failure code.</returns>
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_info(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t mapping_table_index,
-                                      CHARLS_OUT charls_mapping_table_info* mapping_table_info) CHARLS_NOEXCEPT
-    CHARLS_ATTRIBUTE((nonnull));
+                                      CHARLS_OUT charls_mapping_table_info* mapping_table_info) CHARLS_NOEXCEPT;
 
 /// <summary>
 /// Returns a mapping table.
@@ -299,7 +290,7 @@ CHARLS_ATTRIBUTE_ACCESS((access(write_only, 3, 4)))
 CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLING_CONVENTION
 charls_decoder_get_mapping_table_data(CHARLS_IN const charls_jpegls_decoder* decoder, int32_t mapping_table_index,
                                       CHARLS_OUT_WRITES_BYTES(mapping_table_size_bytes) void* mapping_table_data,
-                                      size_t mapping_table_size_bytes) CHARLS_NOEXCEPT CHARLS_ATTRIBUTE((nonnull));
+                                      size_t mapping_table_size_bytes) CHARLS_NOEXCEPT;
 
 #ifdef __cplusplus
 

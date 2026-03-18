@@ -10,11 +10,6 @@
 // TODO: enable
 // MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnonnull"
-#endif
-
 namespace charls::test {
 
 namespace {
@@ -223,7 +218,7 @@ TEST(charls_validate_spiff_header_test, spiff_header_nullptr)
 {
     constexpr frame_info frame_info{create_valid_frame_info()};
 
-    const auto result{charls_validate_spiff_header(get_nullptr(), &frame_info)};
+    const auto result{charls_validate_spiff_header(nullptr, &frame_info)};
     EXPECT_EQ(jpegls_errc::invalid_argument, result);
 }
 
@@ -231,7 +226,7 @@ TEST(charls_validate_spiff_header_test, frame_info_nullptr)
 {
     constexpr spiff_header spiff_header{create_valid_spiff_header()};
 
-    const auto result{charls_validate_spiff_header(&spiff_header, get_nullptr())};
+    const auto result{charls_validate_spiff_header(&spiff_header, nullptr)};
     EXPECT_EQ(jpegls_errc::invalid_argument, result);
 }
 

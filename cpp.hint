@@ -26,7 +26,6 @@
 #define CHARLS_OUT_WRITES_BYTES(size)
 #define CHARLS_OUT_WRITES_Z(size_in_bytes)
 #define CHARLS_RETURN_TYPE_SUCCESS(expr)
-#define CHARLS_ATTRIBUTE(a)
 #define CHARLS_ATTRIBUTE_ACCESS(a)
 #define CHARLS_C_VOID
 #define CHARLS_STD ::std::
