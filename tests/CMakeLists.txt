@@ -39,6 +39,7 @@ add_executable(charls_tests
     documentation_test.cpp
     encode_test.cpp
     golomb_table_test.cpp
+    jpegls_algorithm_test.cpp
     jpeg_error_test.cpp
     jpeg_stream_reader_test.cpp
     jpeg_stream_writer_test.cpp

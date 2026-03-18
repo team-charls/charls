@@ -32,6 +32,9 @@
     <ClCompile Include="golomb_table_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="jpegls_algorithm_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="jpeg_error_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

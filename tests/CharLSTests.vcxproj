@@ -187,6 +187,7 @@
     <ClCompile Include="documentation_test.cpp" />
     <ClCompile Include="encode_test.cpp" />
     <ClCompile Include="golomb_table_test.cpp" />
+    <ClCompile Include="jpegls_algorithm_test.cpp" />
     <ClCompile Include="jpeg_error_test.cpp" />
     <ClCompile Include="jpeg_stream_reader_test.cpp" />
     <ClCompile Include="jpeg_stream_writer_test.cpp" />
