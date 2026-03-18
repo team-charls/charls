@@ -304,6 +304,10 @@ private:
             bytes_until_ff < static_cast<ptrdiff_t>(sizeof(cache_t)))
             return false;
 
+#ifdef __GNUC__
+        __builtin_assume(end_position_ - position_ >= static_cast<ptrdiff_t>(sizeof(cache_t)));
+#endif
+
         // Easy & fast: there is no 0xFF byte in sight, read without bit stuffing
         read_cache_ |= read_big_endian_unaligned<cache_t>(position_) >> valid_bits_;
         const int bytes_consumed{(cache_t_bit_count - valid_bits_) / 8};
