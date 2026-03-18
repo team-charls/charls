@@ -5,12 +5,12 @@
 
 #include <charls/jpegls_error.hpp>
 
+#include "assert.hpp"
 #include "copy_from_line_buffer.hpp"
 #include "jpeg_marker_code.hpp"
 #include "scan_codec.hpp"
 #include "span.hpp"
 #include "util.hpp"
-#include "assert.hpp"
 
 namespace charls {
 
@@ -110,7 +110,8 @@ protected:
     /// Step F.1, 9: decode the mapped error value MErrval from the limited golomb code stored in the bitstream.
     /// </summary>
     [[nodiscard]]
-    CHARLS_NO_INLINE int32_t decode_mapped_error_value(const int32_t k, const int32_t limit, const int32_t quantized_bits_per_pixel)
+    CHARLS_NO_INLINE int32_t decode_mapped_error_value(const int32_t k, const int32_t limit,
+                                                       const int32_t quantized_bits_per_pixel)
     {
         if (const int32_t unary_code{read_unary_code()}; unary_code < limit - quantized_bits_per_pixel - 1)
         {
@@ -299,7 +300,8 @@ private:
 
     FORCE_INLINE bool fill_read_cache_optimistic() noexcept
     {
-        if (position_ >= position_ff_ - (sizeof(cache_t) - 1))
+        if (const auto bytes_until_ff{position_ff_ - position_};
+            bytes_until_ff < static_cast<decltype(bytes_until_ff)>(sizeof(cache_t)))
             return false;
 
         // Easy & fast: there is no 0xFF byte in sight, read without bit stuffing
