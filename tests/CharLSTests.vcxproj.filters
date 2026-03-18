@@ -17,6 +17,9 @@
     <ClCompile Include="compliance_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="default_traits_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="golomb_table_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
