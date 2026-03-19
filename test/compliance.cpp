@@ -172,7 +172,7 @@ void test_sample_annex_h3()
 
 void test_sample_annex_h4_5()
 {
-    constexpr array palettised_data{
+    constexpr array palletised_data{
         byte{0xFF}, byte{0xD8}, // Start of image (SOI) marker
         byte{0xFF}, byte{0xF7}, // Start of JPEG-LS frame (SOF 55) marker – marker segment follows
         byte{0x00}, byte{0x0B}, // Length of marker segment = 11 bytes including the length field
@@ -207,7 +207,7 @@ void test_sample_annex_h4_5()
     };
 
     jpegls_decoder decoder;
-    decoder.source(palettised_data);
+    decoder.source(palletised_data);
     decoder.read_header();
     vector<byte> destination(decoder.get_destination_size());
     decoder.decode(destination);

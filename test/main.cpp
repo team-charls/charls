@@ -645,7 +645,7 @@ void encode_pnm(const char* filename_input, const char* filename_output)
 
 void encode_pam(const char* filename_input, const char* filename_output)
 {
-    charls_test::portable_arbitrary_map pam_file(filename_input);
+    const charls_test::portable_arbitrary_map pam_file(filename_input);
 
     const frame_info frame_info{pam_file.width(), pam_file.height(), pam_file.bits_per_sample(), pam_file.component_count()};
 

@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Checked|ARM64">
+      <Configuration>Checked</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Checked|Win32">
+      <Configuration>Checked</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Checked|x64">
+      <Configuration>Checked</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>18.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}</ProjectGuid>
+    <ProjectName>CharLSTests</ProjectName>
+    <ProjectSubType>GoogleTest</ProjectSubType>
+    <ConfigurationType>Application</ConfigurationType>
+    <TargetName>charls-tests</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+    <VcpkgEnabled>true</VcpkgEnabled>
+    <VcpkgManifestInstall>true</VcpkgManifestInstall>
+    <VcpkgPlatformTarget Condition="'$(Platform)'=='ARM64'">arm64</VcpkgPlatformTarget>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup>
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup Condition="'$(Configuration)'=='Checked'">
+    <EnableClangTidyCodeAnalysis>false</EnableClangTidyCodeAnalysis>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup Label="Global">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <PreprocessorDefinitions>CHARLS_LIBRARY_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>pch.obj;make_scan_codec.obj;jpegls_error.obj;jpeg_stream_writer.obj;jpeg_stream_reader.obj;charls_jpegls_decoder.obj;charls_jpegls_encoder.obj;version.obj;validate_spiff_header.obj;golomb_lut.obj;quantization_lut.obj;gtest_main.lib;gtest.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)build\intermediate\CharLS\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Platform)'=='Win32'">$(SolutionDir)build\intermediate\CharLS\x86\$(Configuration)\</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Checked|Win32'">
+    <ClCompile>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <ClCompile>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Checked|x64'">
+    <ClCompile>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Checked|ARM64'">
+    <ClCompile>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <ClCompile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+    </ClCompile>
+    <Link>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="charls_jpegls_decoder_test.cpp" />
+    <ClCompile Include="charls_jpegls_encoder_test.cpp" />
+    <ClCompile Include="color_transform_test.cpp" />
+    <ClCompile Include="compliance_test.cpp" />
+    <ClCompile Include="default_traits_test.cpp" />
+    <ClCompile Include="documentation_test.cpp" />
+    <ClCompile Include="encode_test.cpp" />
+    <ClCompile Include="golomb_table_test.cpp" />
+    <ClCompile Include="jpegls_algorithm_test.cpp" />
+    <ClCompile Include="jpegls_decoder_test.cpp" />
+    <ClCompile Include="jpegls_encoder_test.cpp" />
+    <ClCompile Include="jpegls_preset_coding_parameters_test.cpp" />
+    <ClCompile Include="jpeg_error_test.cpp" />
+    <ClCompile Include="jpeg_stream_reader_test.cpp" />
+    <ClCompile Include="jpeg_stream_writer_test.cpp" />
+    <ClCompile Include="lossless_traits_test.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="regular_mode_context_test.cpp" />
+    <ClCompile Include="run_mode_context_test.cpp" />
+    <ClCompile Include="scan_decoder_test.cpp" />
+    <ClCompile Include="scan_encoder_test.cpp" />
+    <ClCompile Include="support.cpp" />
+    <ClCompile Include="util_test.cpp" />
+    <ClCompile Include="validate_spiff_header_test.cpp" />
+    <ClCompile Include="version_test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="jpegls_preset_coding_parameters_test.hpp" />
+    <ClInclude Include="jpeg_test_stream_writer.hpp" />
+    <ClInclude Include="pch.hpp" />
+    <ClInclude Include="scan_encoder_tester.hpp" />
+    <ClInclude Include="support.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vcpkg.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="../test/conformance/t8c0e0.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8c1e0.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8c2e0.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8c0e3.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8c1e3.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8c2e3.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8nde0.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t8nde3.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t16e0.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/t16e3.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/test8.ppm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/test8bs2.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/conformance/test16.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../test/tulips-gray-8bit-512-512-hp-encoder.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/tulips-gray-8bit-512-512.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/test8_ilv_none_rm_7.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/test8_ilv_line_rm_7.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/test8_ilv_sample_rm_7.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/test8_ilv_sample_rm_300.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/test16_rm_5.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/2bit_parrot_150x200.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/4bit-monochrome.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/16-bit-640-480-many-dots.pgm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/8bit-monochrome-2x2.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/ff_in_entropy_data.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/fuzzy_input_golomb_16.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/fuzzy-input-bad-run-mode-golomb-code.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/fuzzy-input-no-valid-bits-at-the-end.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/land10-10bit-rgb-hp3-invalid.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="../unittest/no_start_byte_after_encoded_scan.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\src\CharLS.vcxproj">
+      <Project>{1e31f9f1-f175-4082-b3e2-b1f0eca3f44c}</Project>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

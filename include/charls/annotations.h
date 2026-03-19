@@ -56,12 +56,6 @@
 #endif
 
 
-#if defined(__GNUC__)
-#define CHARLS_ATTRIBUTE(a) __attribute__(a)
-#else
-#define CHARLS_ATTRIBUTE(a)
-#endif
-
 // The GCC access attribute can be used to annotate memory access for a pointer.
 // Typical usage is: access (access-mode, ref-index, size-index)
 #if !defined(__clang__) && defined(__GNUC__) && __GNUC__ >= 10

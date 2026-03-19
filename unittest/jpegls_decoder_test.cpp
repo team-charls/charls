@@ -800,7 +800,7 @@ public:
         Assert::IsTrue(memcmp("hello", actual_data, actual_size) == 0);
     }
 
-    TEST_METHOD(read_comment_while_already_unregisted)
+    TEST_METHOD(read_comment_while_already_unregistered)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
@@ -864,7 +864,7 @@ public:
         Assert::IsTrue(memcmp("hello", actual_data, actual_size) == 0);
     }
 
-    TEST_METHOD(read_application_data_while_already_unregisted)
+    TEST_METHOD(read_application_data_while_already_unregistered)
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();

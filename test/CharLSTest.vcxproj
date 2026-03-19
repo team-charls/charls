@@ -40,15 +40,14 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7185AD7F-57BA-42C7-A715-239CEA8ADC31}</ProjectGuid>
-    <RootNamespace>test</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>CharLSTest</ProjectName>
     <TargetName>CharLSTest</TargetName>
+    <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup>
     <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
-    <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">

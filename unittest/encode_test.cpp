@@ -165,7 +165,7 @@ public:
         encode("DataFiles/test8.ppm", 91862, interleave_mode::sample, color_transformation::hp3);
     }
 
-    TEST_METHOD(encode_monchrome_16_bit_interleave_none)
+    TEST_METHOD(encode_monochrome_16_bit_interleave_none)
     {
         constexpr array data{byte{}, byte{10}, byte{}, byte{20}, byte{}, byte{30}, byte{}, byte{40}};
         encode({2, 2, 16, 1}, {data.cbegin(), data.cend()}, 36, interleave_mode::none);

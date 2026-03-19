@@ -17,15 +17,15 @@ public:
     TEST_METHOD(transform_hp1_round_trip)
     {
         // For the normal unit test keep the range small for a quick test.
-        // For a complete test which will take a while set the start and end to 0 and 255.
+        // For a complete test which will take a while set the start and end to 0 and 256.
         constexpr int start_value{123};
         constexpr int end_value{124};
 
         for (int red{start_value}; red != end_value; ++red)
         {
-            for (int green{}; green != 255; ++green)
+            for (int green{}; green != 256; ++green)
             {
-                for (int blue{}; blue != 255; ++blue)
+                for (int blue{}; blue != 256; ++blue)
                 {
                     constexpr transform_hp1<uint8_t> transform{};
                     const auto sample{transform(red, green, blue)};
@@ -45,15 +45,15 @@ public:
     TEST_METHOD(transform_hp2_round_trip)
     {
         // For the normal unit test keep the range small for a quick test.
-        // For a complete test which will take a while set the start and end to 0 and 255.
+        // For a complete test which will take a while set the start and end to 0 and 256.
         constexpr int start_value{123};
         constexpr int end_value{124};
 
         for (int red{start_value}; red != end_value; ++red)
         {
-            for (int green{}; green != 255; ++green)
+            for (int green{}; green != 256; ++green)
             {
-                for (int blue{}; blue != 255; ++blue)
+                for (int blue{}; blue != 256; ++blue)
                 {
                     constexpr transform_hp2<uint8_t> transform{};
                     const auto sample{transform(red, green, blue)};
@@ -73,15 +73,15 @@ public:
     TEST_METHOD(transform_hp3_round_trip)
     {
         // For the normal unit test keep the range small for a quick test.
-        // For a complete test which will take a while set the start and end to 0 and 255.
+        // For a complete test which will take a while set the start and end to 0 and 256.
         constexpr uint8_t start_value{123};
         constexpr uint8_t end_value{124};
 
         for (int red{start_value}; red != end_value; ++red)
         {
-            for (int green{}; green != 255; ++green)
+            for (int green{}; green != 256; ++green)
             {
-                for (int blue{}; blue != 255; ++blue)
+                for (int blue{}; blue != 256; ++blue)
                 {
                     constexpr transform_hp3<uint8_t> transformation{};
                     const auto sample{transformation(red, green, blue)};
