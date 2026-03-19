@@ -85,7 +85,7 @@ TEST(scan_decoder_test, decode_encoded_ff_pattern)
     }
 
     scan_encoder.end_scan_forward();
-    // Note: Correct encoding is tested in encoder_strategy_test::append_to_bit_stream_ff_pattern.
+    // Note: Correct encoding is tested in scan_encoder_test::append_to_bit_stream_ff_pattern.
 
     const auto length{scan_encoder.get_length_forward()};
     scan_decoder_tester scan_decoder(frame_info, parameters, enc_buf.data(), length);
