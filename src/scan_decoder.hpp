@@ -307,8 +307,9 @@ private:
         ASSERT(end_position_ - position_ >= static_cast<ptrdiff_t>(sizeof(cache_t)));
 
 #if defined(__GNUC__) && __GNUC__ >= 13 && !defined(__clang__)
-        // GCC will reports out of bounds access without this assume.
-        __attribute__((assume(end_position_ - position_ >= static_cast<ptrdiff_t>(sizeof(cache_t)))));
+        // GCC will reports out of bounds access without this 'assume'.
+        if (end_position_ - position_ < static_cast<ptrdiff_t>(sizeof(cache_t)))
+            __builtin_unreachable();
 #endif
 
         // Easy & fast: there is no 0xFF byte in sight, read without bit stuffing
