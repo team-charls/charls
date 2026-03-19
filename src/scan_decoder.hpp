@@ -298,16 +298,17 @@ private:
         find_jpeg_marker_start_byte();
     }
 
+    [[nodiscard]]
     FORCE_INLINE bool fill_read_cache_optimistic() noexcept
     {
-        if (const ptrdiff_t bytes_until_ff{position_ff_ - position_};
-            bytes_until_ff < static_cast<ptrdiff_t>(sizeof(cache_t)))
+        if (position_ >= position_ff_ - (sizeof(cache_t) - 1))
             return false;
 
-#ifdef __GNUC__
-        if (end_position_ - position_ < static_cast<ptrdiff_t>(sizeof(cache_t)))
-            __builtin_unreachable();
-        //__builtin_assume(end_position_ - position_ >= static_cast<ptrdiff_t>(sizeof(cache_t)));
+        ASSERT(end_position_ - position_ >= static_cast<ptrdiff_t>(sizeof(cache_t)));
+
+#if defined(__GNUC__) && __GNUC__ >= 13 && !defined(__clang__)
+        // GCC will reports out of bounds access without this assume.
+        __attribute__((assume(end_position_ - position_ >= static_cast<ptrdiff_t>(sizeof(cache_t)))));
 #endif
 
         // Easy & fast: there is no 0xFF byte in sight, read without bit stuffing
