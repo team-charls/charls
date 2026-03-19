@@ -27,5 +27,4 @@
 #else
 #define MSVC_WARNING_SUPPRESS(x)
 #define MSVC_WARNING_UNSUPPRESS()
-#define MSVC_WARNING_SUPPRESS_NEXT_LINE(x)
 #endif
