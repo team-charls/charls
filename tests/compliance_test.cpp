@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
+#include "pch.hpp"
+
+#include "support.hpp"
 
 #include <charls/charls.hpp>
 
@@ -11,7 +13,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
-#include <ios>
 #include <vector>
 
 using namespace charls_test;
@@ -23,75 +24,6 @@ namespace charls::test {
 
 namespace {
 
-void triplet_to_planar(vector<byte>& triplet_buffer, const uint32_t width, const uint32_t height)
-{
-    vector<byte> planar_buffer(triplet_buffer.size());
-
-    const size_t byte_count{static_cast<size_t>(width) * height};
-    for (size_t index{}; index != byte_count; index++)
-    {
-        planar_buffer[index] = triplet_buffer[index * 3 + 0];
-        planar_buffer[index + 1 * byte_count] = triplet_buffer[index * 3 + 1];
-        planar_buffer[index + 2 * byte_count] = triplet_buffer[index * 3 + 2];
-    }
-    swap(triplet_buffer, planar_buffer);
-}
-
-[[nodiscard]] vector<byte> read_file(const char* filename)
-{
-    std::ifstream input;
-    input.exceptions(std::ios::eofbit | std::ios::failbit | std::ios::badbit);
-    input.open(filename, std::ios::in | std::ios::binary);
-
-    input.seekg(0, std::ios::end);
-    const auto byte_count_file{static_cast<size_t>(input.tellg())};
-    input.seekg(0, std::ios::beg);
-
-    vector<byte> buffer(byte_count_file);
-    input.read(reinterpret_cast<char*>(buffer.data()), static_cast<std::streamsize>(buffer.size()));
-
-    return buffer;
-}
-
-[[nodiscard]] portable_anymap_file read_anymap_reference_file(const char* filename,
-                                                               const interleave_mode interleave_mode,
-                                                               const frame_info& info)
-{
-    portable_anymap_file reference_file{filename};
-
-    if (interleave_mode == interleave_mode::none && info.component_count == 3)
-    {
-        triplet_to_planar(reference_file.image_data(), info.width, info.height);
-    }
-
-    return reference_file;
-}
-
-[[nodiscard]] bool verify_encoded_bytes(const vector<byte>& uncompressed_source, const vector<byte>& encoded_source)
-{
-    const jpegls_decoder decoder{encoded_source, true};
-
-    jpegls_encoder encoder;
-    encoder.frame_info(decoder.frame_info())
-        .interleave_mode(decoder.get_interleave_mode())
-        .near_lossless(decoder.get_near_lossless())
-        .preset_coding_parameters(decoder.preset_coding_parameters());
-
-    vector<byte> our_encoded_bytes(encoded_source.size() + 16);
-    encoder.destination(our_encoded_bytes);
-
-    if (const size_t bytes_written{encoder.encode(uncompressed_source)}; bytes_written != encoded_source.size())
-        return false;
-
-    for (size_t i{}; i != encoded_source.size(); ++i)
-    {
-        if (encoded_source[i] != our_encoded_bytes[i])
-            return false;
-    }
-
-    return true;
-}
-
 void compare_buffers(const byte* buffer1, const size_t size1, const byte* buffer2, const size_t size2)
 {
     ASSERT_EQ(size1, size2);
@@ -102,61 +34,6 @@ void compare_buffers(const byte* buffer1, const size_t size1, const byte* buffer
         {
             EXPECT_EQ(buffer1[i], buffer2[i]);
             break;
-        }
-    }
-}
-
-void test_compliance(const vector<byte>& encoded_source, const vector<byte>& uncompressed_source,
-                     const bool check_encode)
-{
-    if (check_encode)
-    {
-        ASSERT_TRUE(verify_encoded_bytes(uncompressed_source, encoded_source));
-    }
-
-    jpegls_decoder decoder{encoded_source, true};
-    const auto destination{decoder.decode<vector<byte>>()};
-
-    if (decoder.get_near_lossless() == 0)
-    {
-        for (size_t i{}; i != uncompressed_source.size(); ++i)
-        {
-            if (uncompressed_source[i] != destination[i])
-            {
-                ASSERT_EQ(uncompressed_source[i], destination[i]);
-            }
-        }
-    }
-    else
-    {
-        const frame_info fi{decoder.frame_info()};
-        const auto near_lossless{decoder.get_near_lossless()};
-
-        if (fi.bits_per_sample <= 8)
-        {
-            for (size_t i{}; i != uncompressed_source.size(); ++i)
-            {
-                if (std::abs(static_cast<int>(uncompressed_source[i]) - static_cast<int>(destination[i])) >
-                    near_lossless)
-                {
-                    ASSERT_EQ(uncompressed_source[i], destination[i]);
-                }
-            }
-        }
-        else
-        {
-            const void* data{uncompressed_source.data()};
-            const auto* source16{static_cast<const uint16_t*>(data)};
-            data = destination.data();
-            const auto* destination16{static_cast<const uint16_t*>(data)};
-
-            for (size_t i{}; i != uncompressed_source.size() / 2; ++i)
-            {
-                if (std::abs(static_cast<int>(source16[i]) - static_cast<int>(destination16[i])) > near_lossless)
-                {
-                    ASSERT_EQ(static_cast<int>(source16[i]), static_cast<int>(destination16[i]));
-                }
-            }
         }
     }
 }

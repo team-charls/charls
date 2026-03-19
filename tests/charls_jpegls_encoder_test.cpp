@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
+#include "pch.hpp"
 
 #include "support.hpp"
 
@@ -14,7 +14,7 @@ using std::byte;
 using std::ignore;
 using std::vector;
 
-////MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
+MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -280,4 +280,4 @@ TEST(charls_jpegls_encoder_test, encode_non_3_components_that_is_not_supported_t
 #pragma GCC diagnostic pop
 #endif
 
-////MSVC_WARNING_UNSUPPRESS()
+MSVC_WARNING_UNSUPPRESS()

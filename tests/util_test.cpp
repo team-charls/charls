@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: © 2022 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
+#include "pch.hpp"
 
 #include "../src/assert.hpp"
 #include "../src/util.hpp"
+
 #include "support.hpp"
 
 #include <cmath>

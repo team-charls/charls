@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
+#include "pch.hpp"
 
 #include "support.hpp"
 
@@ -32,60 +32,6 @@ namespace charls::test {
 
 namespace {
 
-void triplet_to_planar(vector<byte>& triplet_buffer, const uint32_t width, const uint32_t height)
-{
-    vector<byte> planar_buffer(triplet_buffer.size());
-
-    const size_t byte_count{static_cast<size_t>(width) * height};
-    for (size_t index{}; index != byte_count; index++)
-    {
-        planar_buffer[index] = triplet_buffer[index * 3 + 0];
-        planar_buffer[index + 1 * byte_count] = triplet_buffer[index * 3 + 1];
-        planar_buffer[index + 2 * byte_count] = triplet_buffer[index * 3 + 2];
-    }
-    swap(triplet_buffer, planar_buffer);
-}
-
-[[nodiscard]]
-portable_anymap_file read_anymap_reference_file(const char* filename, const interleave_mode interleave_mode,
-                                                const frame_info& info)
-{
-    portable_anymap_file reference_file{filename};
-
-    if (interleave_mode == interleave_mode::none && info.component_count == 3)
-    {
-        triplet_to_planar(reference_file.image_data(), info.width, info.height);
-    }
-
-    return reference_file;
-}
-
-[[nodiscard]]
-bool verify_encoded_bytes(const vector<byte>& uncompressed_source, const vector<byte>& encoded_source)
-{
-    const jpegls_decoder decoder{encoded_source, true};
-
-    jpegls_encoder encoder;
-    encoder.frame_info(decoder.frame_info())
-        .interleave_mode(decoder.get_interleave_mode())
-        .near_lossless(decoder.get_near_lossless())
-        .preset_coding_parameters(decoder.preset_coding_parameters());
-
-    vector<byte> our_encoded_bytes(encoded_source.size() + 16);
-    encoder.destination(our_encoded_bytes);
-
-    if (const size_t bytes_written{encoder.encode(uncompressed_source)}; bytes_written != encoded_source.size())
-        return false;
-
-    for (size_t i{}; i != encoded_source.size(); ++i)
-    {
-        if (encoded_source[i] != our_encoded_bytes[i])
-            return false;
-    }
-
-    return true;
-}
-
 void verify_decoded_bytes(const interleave_mode interleave_mode, const frame_info& frame_info,
                           const vector<byte>& uncompressed_data, const size_t destination_stride,
                           const char* reference_filename)
@@ -107,53 +53,13 @@ void verify_decoded_bytes(const interleave_mode interleave_mode, const frame_inf
             {
                 if (sample[i] != reference_samples[reference_sample])
                 {
-                    EXPECT_EQ(sample[i], reference_samples[reference_sample]);
+                    ASSERT_EQ(sample[i], reference_samples[reference_sample]);
                     break;
                 }
                 ++reference_sample;
             }
 
             sample += destination_stride;
-        }
-    }
-}
-
-void test_compliance(const vector<byte>& encoded_source, const vector<byte>& uncompressed_source, const bool check_encode)
-{
-    if (check_encode)
-    {
-        ASSERT_TRUE(verify_encoded_bytes(uncompressed_source, encoded_source));
-    }
-
-    jpegls_decoder decoder{encoded_source, true};
-    const auto destination{decoder.decode<vector<byte>>()};
-
-    if (decoder.get_near_lossless() == 0)
-    {
-        for (size_t i{}; i != uncompressed_source.size(); ++i)
-        {
-            if (uncompressed_source[i] != destination[i])
-            {
-                EXPECT_EQ(uncompressed_source[i], destination[i]);
-                break;
-            }
-        }
-    }
-    else
-    {
-        const frame_info fi{decoder.frame_info()};
-        const auto near_lossless{decoder.get_near_lossless()};
-
-        if (fi.bits_per_sample <= 8)
-        {
-            for (size_t i{}; i != uncompressed_source.size(); ++i)
-            {
-                if (std::abs(static_cast<int>(uncompressed_source[i]) - static_cast<int>(destination[i])) > near_lossless)
-                {
-                    EXPECT_EQ(uncompressed_source[i], destination[i]);
-                    break;
-                }
-            }
         }
     }
 }

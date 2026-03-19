@@ -37,3 +37,4 @@
 #define LIKELY(x) x
 #define UNLIKELY(x) x
 #define BENCHMARK_MAIN()
+#define TEST(a, b)

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2026 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
+#include "pch.hpp"
 
 #include "../src/regular_mode_context.hpp"
 

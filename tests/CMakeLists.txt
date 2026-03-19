@@ -59,6 +59,8 @@ add_executable(charls-tests
     version_test.cpp
 )
 
+target_precompile_headers(charls-tests PRIVATE ${CMAKE_CURRENT_LIST_DIR}/pch.hpp)
+
 target_include_directories(charls-tests
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/..

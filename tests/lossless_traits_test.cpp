@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
+#include "pch.hpp"
 
 #include "../src/default_traits.hpp"
 #include "../src/lossless_traits.hpp"

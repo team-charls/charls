@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-// ReSharper disable CppClangTidyClangDiagnosticNonnull
-#include <gtest/gtest.h>
+#include "pch.hpp"
 
 #include "support.hpp"
 
@@ -13,7 +12,9 @@
 using std::array;
 using std::byte;
 
-////MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
+// ReSharper disable CppClangTidyClangDiagnosticNonnull
+
+MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -260,4 +261,4 @@ TEST(charls_jpegls_decoder_test, charls_decoder_get_mapping_table_info_nullptr)
 #pragma GCC diagnostic pop
 #endif
 
-////MSVC_WARNING_UNSUPPRESS()
+MSVC_WARNING_UNSUPPRESS()

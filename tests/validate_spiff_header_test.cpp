@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: © 2022 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
-
-#include "support.hpp"
+#include "pch.hpp"
 
 #include <charls/validate_spiff_header.h>
 
-// TODO: enable
-// MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
+#include "support.hpp"
+
+MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
 namespace charls::test {
 
@@ -232,4 +231,4 @@ TEST(charls_validate_spiff_header_test, frame_info_nullptr)
 
 } // namespace charls::test
 
-////MSVC_WARNING_UNSUPPRESS()
+MSVC_WARNING_UNSUPPRESS()

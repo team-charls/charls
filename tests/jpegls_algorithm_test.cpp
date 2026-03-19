@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2021 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
+#include "pch.hpp"
 
 #include "../src/conditional_static_cast.hpp"
 #include "../src/jpegls_algorithm.hpp"
@@ -98,6 +98,8 @@ void unmap_error_value_algorithm(const int32_t mapped_error_value)
     EXPECT_EQ(expected2, actual);
 }
 
+MSVC_WARNING_SUPPRESS(26497) // Function could be marked as constexpr (conflicts with EXPECT_EQ)
+
 void map_unmap_error_value_algorithm(const int32_t error_value)
 {
     const int32_t mapped_error_value{map_error_value(error_value)};
@@ -105,6 +107,8 @@ void map_unmap_error_value_algorithm(const int32_t error_value)
 
     EXPECT_EQ(error_value, actual);
 }
+
+MSVC_WARNING_UNSUPPRESS()
 
 } // namespace
 

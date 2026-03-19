@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
+#include "pch.hpp"
+
 #include <type_traits>
 
 #include "../src/golomb_lut.hpp"

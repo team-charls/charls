@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
-
-#include "support.hpp"
+#include "pch.hpp"
 
 #include <charls/version.hpp>
 
+#include "support.hpp"
+
+#include <cstring>
 #include <sstream>
 
 using std::ostringstream;

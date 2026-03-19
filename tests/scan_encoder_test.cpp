@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2015 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
+#include "pch.hpp"
 
 #include "scan_encoder_tester.hpp"
 #include "support.hpp"

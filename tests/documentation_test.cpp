@@ -1,14 +1,15 @@
 // SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
+#include "pch.hpp"
+
+#include "support.hpp"
 
 #include <charls/charls.hpp>
 
 #include "../test/portable_anymap_file.hpp"
 
 #include <fstream>
-#include <ios>
 #include <vector>
 
 using namespace charls_test;
@@ -17,23 +18,6 @@ using std::vector;
 namespace charls::test {
 
 namespace {
-
-[[nodiscard]]
-vector<std::byte> read_file(const char* filename)
-{
-    std::ifstream input;
-    input.exceptions(std::ios::eofbit | std::ios::failbit | std::ios::badbit);
-    input.open(filename, std::ios::in | std::ios::binary);
-
-    input.seekg(0, std::ios::end);
-    const auto byte_count_file{static_cast<size_t>(input.tellg())};
-    input.seekg(0, std::ios::beg);
-
-    vector<std::byte> buffer(byte_count_file);
-    input.read(reinterpret_cast<char*>(buffer.data()), static_cast<std::streamsize>(buffer.size()));
-
-    return buffer;
-}
 
 // The following functions are used as sample code in the documentation
 // Ensure that the code compiles and works by unit testing it.

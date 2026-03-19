@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
-
-#include "jpegls_preset_coding_parameters_test.hpp"
+#include "pch.hpp"
 
 #include "../src/jpegls_preset_coding_parameters.hpp"
+
+#include "jpegls_preset_coding_parameters_test.hpp"
 
 #include <limits>
 

@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <gtest/gtest.h>
+#include "pch.hpp"
 
 #include "jpegls_preset_coding_parameters_test.hpp"
 #include "support.hpp"
 
 #include "../src/jpeg_marker_code.hpp"
+#include "../src/util.hpp"
 #include <charls/charls.hpp>
 
 #include <array>
@@ -2035,10 +2036,10 @@ TEST(jpegls_encoder_test, encode_to_buffer_with_uint16_size_works)
     if (auto* p{static_cast<uint8_t*>(data2)}; p)
     {
         *p = 7;
-    }
 
-    // size2 is not a perfect match and needs a conversion.
-    ignore = encoder.encode(data2, size2);
+        // size2 is not a perfect match and needs a conversion.
+        ignore = encoder.encode(data2, size2);
+    }
 }
 
 } // namespace charls::test
