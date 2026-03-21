@@ -109,8 +109,7 @@ struct charls_jpegls_encoder final
                                         bit_to_byte_count(frame_info_.bits_per_sample))};
 
         // For the worst case: add 6.25% + extra bytes for the headers.
-        size += (size / 16U) + 1024 + spiff_header_size_in_bytes;
-
+        size = add_sat(size, (size / 16U) + 1024 + spiff_header_size_in_bytes);
         return size;
     }
 

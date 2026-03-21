@@ -36,8 +36,8 @@
 #ifdef _MSC_VER
 
 #define MSVC_WARNING_SUPPRESS_NEXT_LINE(x) \
-    __pragma(warning(suppress \
-                     : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses, cppcoreguidelines-macro-usage)
+    __pragma( \
+        warning(suppress : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses, cppcoreguidelines-macro-usage)
 
 // Helper macro for SAL annotations.
 #define USE_DECL_ANNOTATIONS _Use_decl_annotations_
@@ -108,8 +108,7 @@ struct pair final
     T v2{};
 
     [[nodiscard]]
-    friend constexpr bool
-    operator==(const pair& lhs, const pair& rhs) noexcept
+    friend constexpr bool operator==(const pair& lhs, const pair& rhs) noexcept
     {
         return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2;
     }
@@ -124,8 +123,7 @@ struct triplet final
     T v3{};
 
     [[nodiscard]]
-    friend constexpr bool
-    operator==(const triplet& lhs, const triplet& rhs) noexcept
+    friend constexpr bool operator==(const triplet& lhs, const triplet& rhs) noexcept
     {
         return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3;
     }
@@ -141,8 +139,7 @@ struct quad final
     T v4{};
 
     [[nodiscard]]
-    friend constexpr bool
-    operator==(const quad& lhs, const quad& rhs) noexcept
+    friend constexpr bool operator==(const quad& lhs, const quad& rhs) noexcept
     {
         return lhs.v1 == rhs.v1 && lhs.v2 == rhs.v2 && lhs.v3 == rhs.v3 && lhs.v4 == rhs.v4;
     }
@@ -356,13 +353,21 @@ auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, i
 #endif
 
 
-// Replacement for std::ckd_mul (will be introduced in C++26)
+// Replacement for std::ckd_mul (will be introduced in C++26, but has a different API)
 [[nodiscard]]
 inline size_t checked_mul(const size_t a, const size_t b)
 {
     if (UNLIKELY(b != 0 && a > std::numeric_limits<size_t>::max() / b))
         impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
     return a * b;
+}
+
+// Replacement for std::add_sat (will be introduced in C++26)
+[[nodiscard]]
+constexpr size_t add_sat(const size_t x, const size_t y) noexcept
+{
+    const size_t result{x + y};
+    return result < x ? std::numeric_limits<size_t>::max() : result;
 }
 
 // Replacement for std::unreachable (introduced in C++23).
