@@ -116,22 +116,22 @@ set(CHARLS_TEST_DATA_FILES
     ${CMAKE_SOURCE_DIR}/test/conformance/test8bs2.pgm
     ${CMAKE_SOURCE_DIR}/test/conformance/test16.pgm
     ${CMAKE_SOURCE_DIR}/test/tulips-gray-8bit-512-512-hp-encoder.jls
-    ${CMAKE_SOURCE_DIR}/unittest/16-bit-640-480-many-dots.pgm
-    ${CMAKE_SOURCE_DIR}/unittest/2bit_parrot_150x200.pgm
-    ${CMAKE_SOURCE_DIR}/unittest/4bit-monochrome.pgm
-    ${CMAKE_SOURCE_DIR}/unittest/tulips-gray-8bit-512-512.pgm
-    ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_none_rm_7.jls
-    ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_line_rm_7.jls
-    ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_sample_rm_7.jls
-    ${CMAKE_SOURCE_DIR}/unittest/test8_ilv_sample_rm_300.jls
-    ${CMAKE_SOURCE_DIR}/unittest/test16_rm_5.jls
-    ${CMAKE_SOURCE_DIR}/unittest/8bit-monochrome-2x2.jls
-    ${CMAKE_SOURCE_DIR}/unittest/ff_in_entropy_data.jls
-    ${CMAKE_SOURCE_DIR}/unittest/fuzzy_input_golomb_16.jls
-    ${CMAKE_SOURCE_DIR}/unittest/fuzzy-input-bad-run-mode-golomb-code.jls
-    ${CMAKE_SOURCE_DIR}/unittest/fuzzy-input-no-valid-bits-at-the-end.jls
-    ${CMAKE_SOURCE_DIR}/unittest/land10-10bit-rgb-hp3-invalid.jls
-    ${CMAKE_SOURCE_DIR}/unittest/no_start_byte_after_encoded_scan.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/16-bit-640-480-many-dots.pgm
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/2bit_parrot_150x200.pgm
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/4bit-monochrome.pgm
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/tulips-gray-8bit-512-512.pgm
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/test8_ilv_none_rm_7.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/test8_ilv_line_rm_7.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/test8_ilv_sample_rm_7.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/test8_ilv_sample_rm_300.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/test16_rm_5.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/8bit-monochrome-2x2.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/ff_in_entropy_data.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/fuzzy_input_golomb_16.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/fuzzy-input-bad-run-mode-golomb-code.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/fuzzy-input-no-valid-bits-at-the-end.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/land10-10bit-rgb-hp3-invalid.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/no_start_byte_after_encoded_scan.jls
 )
 
 add_custom_command(TARGET charls-tests POST_BUILD

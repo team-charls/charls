@@ -126,7 +126,7 @@ void read_header_with_jpeg_ls_preset_parameter_with_extended_id_throws(const byt
 
 TEST(jpeg_stream_reader_test, read_header_from_too_small_input_buffer_throws)
 {
-    array<byte, 1> buffer{};
+    constexpr array<byte, 1> buffer{};
     jpeg_stream_reader reader;
     reader.source({buffer.data(), 0});
 
