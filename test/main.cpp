@@ -1,15 +1,12 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "../src/default_traits.hpp"
-#include "../src/jpegls_preset_coding_parameters.hpp"
-#include "../src/lossless_traits.hpp"
-
 #include "performance.hpp"
 #include "portable_arbitrary_map.hpp"
 #include "util.hpp"
 
 #include <algorithm>
+#include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -54,10 +51,15 @@ catch (const std::ifstream::failure&)
 }
 
 
-uint32_t log2_floor(const uint32_t n) noexcept
+constexpr uint32_t log2_floor(const uint32_t n) noexcept
 {
     ASSERT(n != 0 && "log2 is not defined for 0");
-    return 31U - countl_zero(n);
+
+    uint32_t result = 0;
+    uint32_t val = n;
+    while (val >>= 1)
+        ++result;
+    return result;
 }
 
 
