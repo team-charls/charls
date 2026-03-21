@@ -49,8 +49,10 @@ add_executable(charls-tests
     jpegls_encoder_test.cpp
     jpegls_preset_coding_parameters_test.cpp
     lossless_traits_test.cpp
+    quantization_lut_test.cpp
     regular_mode_context_test.cpp
     run_mode_context_test.cpp
+    sample_traits_test.cpp
     scan_decoder_test.cpp
     scan_encoder_test.cpp
     support.cpp

@@ -64,7 +64,6 @@
   <PropertyGroup Condition="'$(Configuration)'=='Checked'">
     <EnableClangTidyCodeAnalysis>false</EnableClangTidyCodeAnalysis>
   </PropertyGroup>
-
   <ItemDefinitionGroup Label="Global">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -153,8 +152,10 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="quantization_lut_test.cpp" />
     <ClCompile Include="regular_mode_context_test.cpp" />
     <ClCompile Include="run_mode_context_test.cpp" />
+    <ClCompile Include="sample_traits_test.cpp" />
     <ClCompile Include="scan_decoder_test.cpp" />
     <ClCompile Include="scan_encoder_test.cpp" />
     <ClCompile Include="support.cpp" />

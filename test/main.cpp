@@ -4,15 +4,12 @@
 #include "../src/default_traits.hpp"
 #include "../src/jpegls_preset_coding_parameters.hpp"
 #include "../src/lossless_traits.hpp"
-#include "../src/quantization_lut.hpp"
-#include "../src/sample_traits.hpp"
 
 #include "performance.hpp"
 #include "portable_arbitrary_map.hpp"
 #include "util.hpp"
 
 #include <algorithm>
-#include <array>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -22,13 +19,10 @@
 #include <tuple>
 #include <vector>
 
-using std::array;
 using std::byte;
 using std::cout;
-using std::error_code;
 using std::getline;
 using std::ifstream;
-using std::ignore;
 using std::ios;
 using std::istream;
 using std::iter_swap;
@@ -129,157 +123,6 @@ void convert_planar_to_pixel(const size_t width, const size_t height, const void
         plane1 += width;
         plane2 += width;
         pixels += stride_in_pixels;
-    }
-}
-
-
-#ifdef CHARLS_STATIC
-void test_quantization_luts()
-{
-    // Runtime verification: every LUT entry matches the on-the-fly computation.
-    const auto verify{[](const auto& lut, const int32_t bit_count) {
-        const auto preset{charls::compute_default(charls::calculate_maximum_bit_sample_value(bit_count), 0)};
-        const int32_t range{preset.maximum_sample_value + 1};
-
-        assert::is_true(lut.size() == static_cast<size_t>(range) * 2);
-        for (size_t i{}; i != lut.size(); ++i)
-        {
-            assert::is_true(lut[i] == quantize_gradient_org(static_cast<int32_t>(i) - range, preset.threshold1,
-                                                            preset.threshold2, preset.threshold3));
-        }
-    }};
-
-    verify(quantization_lut_lossless_8(), 8);
-    verify(quantization_lut_lossless_10(), 10);
-    verify(quantization_lut_lossless_12(), 12);
-    verify(quantization_lut_lossless_16(), 16);
-}
-#endif
-
-
-void test_sample_traits()
-{
-    // extract_sample: scalar types are identity.
-    static_assert(std::is_same_v<extract_sample<uint8_t>::type, uint8_t>);
-    static_assert(std::is_same_v<extract_sample<uint16_t>::type, uint16_t>);
-
-    // extract_sample: compound types extract the element type.
-    static_assert(std::is_same_v<extract_sample<pair<uint8_t>>::type, uint8_t>);
-    static_assert(std::is_same_v<extract_sample<triplet<uint8_t>>::type, uint8_t>);
-    static_assert(std::is_same_v<extract_sample<quad<uint8_t>>::type, uint8_t>);
-    static_assert(std::is_same_v<extract_sample<pair<uint16_t>>::type, uint16_t>);
-    static_assert(std::is_same_v<extract_sample<triplet<uint16_t>>::type, uint16_t>);
-    static_assert(std::is_same_v<extract_sample<quad<uint16_t>>::type, uint16_t>);
-
-    // sample_traits_t: scalar lossless_traits are identity.
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<uint8_t, 8>>, lossless_traits<uint8_t, 8>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<uint16_t, 16>>, lossless_traits<uint16_t, 16>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<uint16_t, 12>>, lossless_traits<uint16_t, 12>>);
-
-    // sample_traits_t: compound lossless_traits map to scalar.
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<pair<uint8_t>, 8>>, lossless_traits<uint8_t, 8>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<triplet<uint8_t>, 8>>, lossless_traits<uint8_t, 8>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<quad<uint8_t>, 8>>, lossless_traits<uint8_t, 8>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<pair<uint16_t>, 16>>, lossless_traits<uint16_t, 16>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<triplet<uint16_t>, 16>>, lossless_traits<uint16_t, 16>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<quad<uint16_t>, 16>>, lossless_traits<uint16_t, 16>>);
-
-    // sample_traits_t: default_traits<S, S> is identity.
-    static_assert(std::is_same_v<sample_traits_t<default_traits<uint8_t, uint8_t>>, default_traits<uint8_t, uint8_t>>);
-    static_assert(std::is_same_v<sample_traits_t<default_traits<uint16_t, uint16_t>>, default_traits<uint16_t, uint16_t>>);
-
-    // sample_traits_t: default_traits<S, PixelType> maps to default_traits<S, S>.
-    static_assert(std::is_same_v<sample_traits_t<default_traits<uint8_t, pair<uint8_t>>>, default_traits<uint8_t, uint8_t>>);
-    static_assert(
-        std::is_same_v<sample_traits_t<default_traits<uint8_t, triplet<uint8_t>>>, default_traits<uint8_t, uint8_t>>);
-    static_assert(std::is_same_v<sample_traits_t<default_traits<uint8_t, quad<uint8_t>>>, default_traits<uint8_t, uint8_t>>);
-    static_assert(
-        std::is_same_v<sample_traits_t<default_traits<uint16_t, pair<uint16_t>>>, default_traits<uint16_t, uint16_t>>);
-    static_assert(
-        std::is_same_v<sample_traits_t<default_traits<uint16_t, triplet<uint16_t>>>, default_traits<uint16_t, uint16_t>>);
-    static_assert(
-        std::is_same_v<sample_traits_t<default_traits<uint16_t, quad<uint16_t>>>, default_traits<uint16_t, uint16_t>>);
-
-    // make_sample_traits: scalar lossless_traits returns the same instance (identity).
-    {
-        constexpr lossless_traits<uint8_t, 8> traits;
-        [[maybe_unused]]
-        const auto sample_traits{make_sample_traits(traits)};
-        static_assert(std::is_same_v<decltype(sample_traits), const lossless_traits<uint8_t, 8>>);
-    }
-
-    // make_sample_traits: compound lossless_traits returns default-constructed scalar instance.
-    {
-        constexpr lossless_traits<triplet<uint8_t>, 8> traits;
-        [[maybe_unused]]
-        const auto sample_traits{make_sample_traits(traits)};
-        static_assert(std::is_same_v<decltype(sample_traits), const lossless_traits<uint8_t, 8>>);
-    }
-
-    // make_sample_traits: default_traits with compound pixel type preserves runtime parameters.
-    {
-        const default_traits<uint8_t, triplet<uint8_t>> traits(255, 3);
-        const auto sample_traits{make_sample_traits(traits)};
-        static_assert(std::is_same_v<decltype(sample_traits), const default_traits<uint8_t, uint8_t>>);
-        assert::is_true(sample_traits.maximum_sample_value == 255);
-        assert::is_true(sample_traits.near_lossless == 3);
-    }
-
-    // make_sample_traits: default_traits<S, S> (already scalar) returns a copy.
-    {
-        const default_traits<uint16_t, uint16_t> traits(4095, 0);
-        const auto sample_traits{make_sample_traits(traits)};
-        static_assert(std::is_same_v<decltype(sample_traits), const default_traits<uint16_t, uint16_t>>);
-        assert::is_true(sample_traits.maximum_sample_value == 4095);
-        assert::is_true(sample_traits.near_lossless == 0);
-    }
-}
-
-
-void test_traits16_bit()
-{
-    const auto traits1{default_traits<uint16_t, uint16_t>(4095, 0)};
-    using lossless_traits = lossless_traits<uint16_t, 12>;
-
-    assert::is_true(traits1.limit == lossless_traits::limit);
-    assert::is_true(traits1.maximum_sample_value == lossless_traits::maximum_sample_value);
-    assert::is_true(traits1.bits_per_sample == lossless_traits::bits_per_sample);
-    assert::is_true(traits1.quantized_bits_per_sample == lossless_traits::quantized_bits_per_sample);
-
-    for (int i{-4096}; i != 4096; ++i)
-    {
-        assert::is_true(traits1.modulo_range(i) == lossless_traits::modulo_range(i));
-        assert::is_true(traits1.compute_error_value(i) == lossless_traits::compute_error_value(i));
-    }
-
-    for (int i{-8095}; i != 8095; ++i)
-    {
-        assert::is_true(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
-        assert::is_true(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
-    }
-}
-
-
-void test_traits8_bit()
-{
-    const auto traits1{default_traits<uint8_t, uint8_t>(255, 0)};
-    using lossless_traits = lossless_traits<uint8_t, 8>;
-
-    assert::is_true(traits1.limit == lossless_traits::limit);
-    assert::is_true(traits1.maximum_sample_value == lossless_traits::maximum_sample_value);
-    assert::is_true(traits1.bits_per_sample == lossless_traits::bits_per_sample);
-    assert::is_true(traits1.quantized_bits_per_sample == lossless_traits::quantized_bits_per_sample);
-
-    for (int i{-255}; i != 255; ++i)
-    {
-        assert::is_true(traits1.modulo_range(i) == lossless_traits::modulo_range(i));
-        assert::is_true(traits1.compute_error_value(i) == lossless_traits::compute_error_value(i));
-    }
-
-    for (int i{-255}; i != 512; ++i)
-    {
-        assert::is_true(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
-        assert::is_true(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
     }
 }
 
@@ -625,16 +468,6 @@ bool unit_test()
 {
     try
     {
-#ifdef CHARLS_STATIC
-        cout << "Test Quantization LUTs\n";
-        test_quantization_luts();
-#endif
-
-        cout << "Test Traits\n";
-        test_sample_traits();
-        test_traits16_bit();
-        test_traits8_bit();
-
         test_noise_image();
 
         return true;

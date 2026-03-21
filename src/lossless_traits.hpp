@@ -4,6 +4,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include "jpegls_algorithm.hpp"
 #include "util.hpp"
 
 #include <cstdint>
@@ -44,28 +45,33 @@ struct lossless_traits_impl
 
     static_assert(sizeof(SampleType) * 8 >= BitsPerSample);
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static int32_t compute_error_value(const int32_t d) noexcept
     {
         return modulo_range(d);
     }
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static bool is_near(const int32_t lhs, const int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static int32_t modulo_range(const int32_t error_value) noexcept
     {
         return (static_cast<int32_t>(static_cast<uint32_t>(error_value) << (int32_t_bit_count - bits_per_sample))) >>
                (int32_t_bit_count - bits_per_sample);
     }
 
+    [[nodiscard]]
     FORCE_INLINE static SampleType compute_reconstructed_sample(const int32_t predicted_value,
                                                                 const int32_t error_value) noexcept
     {
         return static_cast<SampleType>(maximum_sample_value & (predicted_value + error_value));
     }
 
+    [[nodiscard]]
     FORCE_INLINE static int32_t correct_prediction(const int32_t predicted) noexcept
     {
         if (LIKELY((predicted & maximum_sample_value) == predicted))
@@ -75,6 +81,7 @@ struct lossless_traits_impl
     }
 
 #ifndef NDEBUG
+    [[nodiscard]]
     static bool is_valid() noexcept
     {
         return true;
@@ -95,16 +102,19 @@ struct lossless_traits<uint8_t, 8> final : lossless_traits_impl<uint8_t, 8>
 {
     using pixel_type = sample_type;
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static int8_t modulo_range(const int32_t error_value) noexcept
     {
         return static_cast<int8_t>(error_value);
     }
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static int32_t compute_error_value(const int32_t d) noexcept
     {
         return static_cast<int8_t>(d);
     }
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static uint8_t compute_reconstructed_sample(const int32_t predicted_value,
                                                                        const int32_t error_value) noexcept
     {
@@ -118,16 +128,19 @@ struct lossless_traits<uint16_t, 16> final : lossless_traits_impl<uint16_t, 16>
 {
     using pixel_type = sample_type;
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static int16_t modulo_range(const int32_t error_value) noexcept
     {
         return static_cast<int16_t>(error_value);
     }
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static int32_t compute_error_value(const int32_t d) noexcept
     {
         return static_cast<int16_t>(d);
     }
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static sample_type compute_reconstructed_sample(const int32_t predicted_value,
                                                                            const int32_t error_value) noexcept
     {
@@ -141,16 +154,19 @@ struct lossless_traits<pair<SampleType>, BitsPerSample> final : lossless_traits_
 {
     using pixel_type = pair<SampleType>;
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static bool is_near(const int32_t lhs, const int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static bool is_near(const pixel_type lhs, const pixel_type rhs) noexcept
     {
         return lhs == rhs;
     }
 
+    [[nodiscard]]
     FORCE_INLINE static SampleType compute_reconstructed_sample(const int32_t predicted_value,
                                                                 const int32_t error_value) noexcept
     {
@@ -164,16 +180,19 @@ struct lossless_traits<triplet<SampleType>, BitsPerSample> final : lossless_trai
 {
     using pixel_type = triplet<SampleType>;
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static bool is_near(const int32_t lhs, const int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static bool is_near(const pixel_type lhs, const pixel_type rhs) noexcept
     {
         return lhs == rhs;
     }
 
+    [[nodiscard]]
     FORCE_INLINE static SampleType compute_reconstructed_sample(const int32_t predicted_value,
                                                                 const int32_t error_value) noexcept
     {
@@ -187,16 +206,19 @@ struct lossless_traits<quad<SampleType>, BitsPerSample> final : lossless_traits_
 {
     using pixel_type = quad<SampleType>;
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static bool is_near(const int32_t lhs, const int32_t rhs) noexcept
     {
         return lhs == rhs;
     }
 
+    [[nodiscard]]
     FORCE_INLINE constexpr static bool is_near(const pixel_type lhs, const pixel_type rhs) noexcept
     {
         return lhs == rhs;
     }
 
+    [[nodiscard]]
     FORCE_INLINE static SampleType compute_reconstructed_sample(const int32_t predicted_value,
                                                                 const int32_t error_value) noexcept
     {
