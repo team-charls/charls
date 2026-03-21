@@ -73,8 +73,13 @@ inline void is_true(const bool condition)
 #define MSVC_WARNING_SUPPRESS_NEXT_LINE(x) \
     __pragma(warning(suppress \
                      : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses, cppcoreguidelines-macro-usage)
+
+// C26493 = Don't use C-style casts
+#define ASSERT(expression) \
+    __pragma(warning(push)) __pragma(warning(disable : 26493)) assert(expression) __pragma(warning(pop))
 #else
 #define MSVC_WARNING_SUPPRESS(x)
 #define MSVC_WARNING_UNSUPPRESS()
 #define MSVC_WARNING_SUPPRESS_NEXT_LINE(x)
+#define ASSERT(expression) assert(expression)
 #endif

@@ -173,113 +173,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="bitstreamdamage.cpp" />
-    <ClCompile Include="compliance.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="performance.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bitstreamdamage.hpp" />
-    <ClInclude Include="compliance.hpp" />
     <ClInclude Include="portable_anymap_file.hpp" />
     <ClInclude Include="performance.hpp" />
     <ClInclude Include="portable_arbitrary_map.hpp" />
     <ClInclude Include="util.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="0015.raw">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\test8.ppm">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="tulips-gray-8bit-512-512-hp-encoder.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="alphatest.raw">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="desktop.ppm">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t16e0.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c2e3.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c0e0.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c1e0.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c0e3.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c2e0.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t16e3.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c1e3.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8nde0.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8nde3.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\test16.pgm">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="MR2_UNC">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\test8bs2.pgm">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\conformance</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="jlsimage\banny_HP1.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\jlsimage</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="jlsimage\banny_HP2.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\jlsimage</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="jlsimage\banny_HP3.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\jlsimage</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="jlsimage\banny_normal.jls">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\jlsimage</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="jlsimage\banny.ppm">
-      <FileType>Document</FileType>
-      <DestinationFolders>$(OutDir)test\jlsimage</DestinationFolders>
-    </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\CharLS.vcxproj">

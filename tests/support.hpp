@@ -35,6 +35,8 @@ bool verify_encoded_bytes(const std::vector<std::byte>& uncompressed_source, con
 void test_compliance(const std::vector<std::byte>& encoded_source, const std::vector<std::byte>& uncompressed_source,
                      bool check_encode);
 
+void decode_encode_file(const char* encoded_filename, const char* raw_filename, bool check_encode = true);
+
 template<typename Functor>
 void assert_expect_exception(const jpegls_errc error_value, Functor functor)
 {

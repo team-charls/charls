@@ -23,6 +23,7 @@ intrinsics
 jlsimage
 jpegls
 json
+libfuzzer
 maxval
 misc
 mrfx
@@ -40,11 +41,19 @@ unmap
 UNSUPPRESS
 vtables
 Walloca
+Wattributes
 Wcast
 Wconversion
+Wdouble
+Wduplicated
 Werror
 Weverything
 Wextra
+Wnoexcept
 Wnonnull
+Wnull
+Woverloaded
+Wshift
 Wtrampolines
 Wuseless
+Wvector

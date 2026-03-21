@@ -182,6 +182,20 @@ TEST(jpeg_stream_reader_test, read_header_with_application_data)
     }
 }
 
+TEST(jpeg_stream_reader_test, read_header_with_jpeg_frame_throws)
+{
+    constexpr array buffer{
+        byte{0xFF}, byte{0xD8}, // Start Of Image (JPEG_SOI)
+        byte{0xFF}, byte{0xC3}, // Start Of Frame (lossless, Huffman) (JPEG_SOF_3)
+        byte{0x00}, byte{0x00}  // Length of data of the marker
+    };
+
+    jpeg_stream_reader reader;
+    reader.source(buffer);
+
+    assert_expect_exception(jpegls_errc::encoding_not_supported, [&reader] { reader.read_header(); });
+}
+
 TEST(jpeg_stream_reader_test, read_header_with_jpegls_extended_frame_throws)
 {
     constexpr array<byte, 6> buffer{

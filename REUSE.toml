@@ -9,7 +9,6 @@ version = 1
 [[annotations]]
 path = [
     "**.jls",
-    "**.bmp",
     "**.png",
     "**.pgm",
     "**.ppm",
@@ -24,7 +23,6 @@ path = [
     "src/charls.version",
     "CharLS.sln",
     "CharLS.sln.DotSettings",
-    "test/MR2_UNC"
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "© 2024 Team CharLS"
@@ -32,10 +30,10 @@ SPDX-License-Identifier = "BSD-3-Clause"
 
 [[annotations]]
 path = [
-    "test/conformance/README.md",
-    "test/conformance/*.jls",
-    "test/conformance/*.pgm",
-    "test/conformance/*.ppm",
+    "tests/data/conformance/README.md",
+    "tests/data/conformance/*.jls",
+    "tests/data/conformance/*.pgm",
+    "tests/data/conformance/*.ppm",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Copyright (c) Hewlett-Packard Company 1995-1999"
@@ -47,6 +45,3 @@ path = [
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Copyright (c) LLVM Project"
-
-
-

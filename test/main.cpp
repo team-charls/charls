@@ -1,47 +1,33 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "../src/default_traits.hpp"
-#include "../src/jpegls_preset_coding_parameters.hpp"
-#include "../src/lossless_traits.hpp"
-#include "../src/quantization_lut.hpp"
-#include "../src/sample_traits.hpp"
-
-#include "bitstreamdamage.hpp"
-#include "compliance.hpp"
 #include "performance.hpp"
 #include "portable_arbitrary_map.hpp"
 #include "util.hpp"
 
 #include <algorithm>
-#include <array>
+#include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <random>
 #include <sstream>
 #include <string>
 #include <tuple>
 #include <vector>
 
-using std::array;
 using std::byte;
 using std::cout;
-using std::error_code;
 using std::getline;
 using std::ifstream;
-using std::ignore;
 using std::ios;
 using std::istream;
 using std::iter_swap;
-using std::mt19937;
 using std::ofstream;
 using std::ostream;
 using std::runtime_error;
 using std::streamoff;
 using std::string;
 using std::stringstream;
-using std::uniform_int_distribution;
 using std::vector;
 using namespace charls;
 
@@ -65,10 +51,15 @@ catch (const std::ifstream::failure&)
 }
 
 
-uint32_t log2_floor(const uint32_t n) noexcept
+constexpr uint32_t log2_floor(const uint32_t n) noexcept
 {
     ASSERT(n != 0 && "log2 is not defined for 0");
-    return 31U - countl_zero(n);
+
+    uint32_t result = 0;
+    uint32_t val = n;
+    while (val >>= 1)
+        ++result;
+    return result;
 }
 
 
@@ -132,376 +123,6 @@ void convert_planar_to_pixel(const size_t width, const size_t height, const void
         plane2 += width;
         pixels += stride_in_pixels;
     }
-}
-
-
-#ifdef CHARLS_STATIC
-void test_quantization_luts()
-{
-    // Runtime verification: every LUT entry matches the on-the-fly computation.
-    const auto verify{[](const auto& lut, const int32_t bit_count) {
-        const auto preset{charls::compute_default(charls::calculate_maximum_bit_sample_value(bit_count), 0)};
-        const int32_t range{preset.maximum_sample_value + 1};
-
-        assert::is_true(lut.size() == static_cast<size_t>(range) * 2);
-        for (size_t i{}; i != lut.size(); ++i)
-        {
-            assert::is_true(lut[i] == quantize_gradient_org(static_cast<int32_t>(i) - range, preset.threshold1,
-                                                            preset.threshold2, preset.threshold3));
-        }
-    }};
-
-    verify(quantization_lut_lossless_8(), 8);
-    verify(quantization_lut_lossless_10(), 10);
-    verify(quantization_lut_lossless_12(), 12);
-    verify(quantization_lut_lossless_16(), 16);
-}
-#endif
-
-
-void test_sample_traits()
-{
-    // extract_sample: scalar types are identity.
-    static_assert(std::is_same_v<extract_sample<uint8_t>::type, uint8_t>);
-    static_assert(std::is_same_v<extract_sample<uint16_t>::type, uint16_t>);
-
-    // extract_sample: compound types extract the element type.
-    static_assert(std::is_same_v<extract_sample<pair<uint8_t>>::type, uint8_t>);
-    static_assert(std::is_same_v<extract_sample<triplet<uint8_t>>::type, uint8_t>);
-    static_assert(std::is_same_v<extract_sample<quad<uint8_t>>::type, uint8_t>);
-    static_assert(std::is_same_v<extract_sample<pair<uint16_t>>::type, uint16_t>);
-    static_assert(std::is_same_v<extract_sample<triplet<uint16_t>>::type, uint16_t>);
-    static_assert(std::is_same_v<extract_sample<quad<uint16_t>>::type, uint16_t>);
-
-    // sample_traits_t: scalar lossless_traits are identity.
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<uint8_t, 8>>, lossless_traits<uint8_t, 8>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<uint16_t, 16>>, lossless_traits<uint16_t, 16>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<uint16_t, 12>>, lossless_traits<uint16_t, 12>>);
-
-    // sample_traits_t: compound lossless_traits map to scalar.
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<pair<uint8_t>, 8>>, lossless_traits<uint8_t, 8>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<triplet<uint8_t>, 8>>, lossless_traits<uint8_t, 8>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<quad<uint8_t>, 8>>, lossless_traits<uint8_t, 8>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<pair<uint16_t>, 16>>, lossless_traits<uint16_t, 16>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<triplet<uint16_t>, 16>>, lossless_traits<uint16_t, 16>>);
-    static_assert(std::is_same_v<sample_traits_t<lossless_traits<quad<uint16_t>, 16>>, lossless_traits<uint16_t, 16>>);
-
-    // sample_traits_t: default_traits<S, S> is identity.
-    static_assert(std::is_same_v<sample_traits_t<default_traits<uint8_t, uint8_t>>, default_traits<uint8_t, uint8_t>>);
-    static_assert(std::is_same_v<sample_traits_t<default_traits<uint16_t, uint16_t>>, default_traits<uint16_t, uint16_t>>);
-
-    // sample_traits_t: default_traits<S, PixelType> maps to default_traits<S, S>.
-    static_assert(std::is_same_v<sample_traits_t<default_traits<uint8_t, pair<uint8_t>>>, default_traits<uint8_t, uint8_t>>);
-    static_assert(
-        std::is_same_v<sample_traits_t<default_traits<uint8_t, triplet<uint8_t>>>, default_traits<uint8_t, uint8_t>>);
-    static_assert(std::is_same_v<sample_traits_t<default_traits<uint8_t, quad<uint8_t>>>, default_traits<uint8_t, uint8_t>>);
-    static_assert(
-        std::is_same_v<sample_traits_t<default_traits<uint16_t, pair<uint16_t>>>, default_traits<uint16_t, uint16_t>>);
-    static_assert(
-        std::is_same_v<sample_traits_t<default_traits<uint16_t, triplet<uint16_t>>>, default_traits<uint16_t, uint16_t>>);
-    static_assert(
-        std::is_same_v<sample_traits_t<default_traits<uint16_t, quad<uint16_t>>>, default_traits<uint16_t, uint16_t>>);
-
-    // make_sample_traits: scalar lossless_traits returns the same instance (identity).
-    {
-        constexpr lossless_traits<uint8_t, 8> traits;
-        [[maybe_unused]]
-        const auto sample_traits{make_sample_traits(traits)};
-        static_assert(std::is_same_v<decltype(sample_traits), const lossless_traits<uint8_t, 8>>);
-    }
-
-    // make_sample_traits: compound lossless_traits returns default-constructed scalar instance.
-    {
-        constexpr lossless_traits<triplet<uint8_t>, 8> traits;
-        [[maybe_unused]]
-        const auto sample_traits{make_sample_traits(traits)};
-        static_assert(std::is_same_v<decltype(sample_traits), const lossless_traits<uint8_t, 8>>);
-    }
-
-    // make_sample_traits: default_traits with compound pixel type preserves runtime parameters.
-    {
-        const default_traits<uint8_t, triplet<uint8_t>> traits(255, 3);
-        const auto sample_traits{make_sample_traits(traits)};
-        static_assert(std::is_same_v<decltype(sample_traits), const default_traits<uint8_t, uint8_t>>);
-        assert::is_true(sample_traits.maximum_sample_value == 255);
-        assert::is_true(sample_traits.near_lossless == 3);
-    }
-
-    // make_sample_traits: default_traits<S, S> (already scalar) returns a copy.
-    {
-        const default_traits<uint16_t, uint16_t> traits(4095, 0);
-        const auto sample_traits{make_sample_traits(traits)};
-        static_assert(std::is_same_v<decltype(sample_traits), const default_traits<uint16_t, uint16_t>>);
-        assert::is_true(sample_traits.maximum_sample_value == 4095);
-        assert::is_true(sample_traits.near_lossless == 0);
-    }
-}
-
-
-void test_traits16_bit()
-{
-    const auto traits1{default_traits<uint16_t, uint16_t>(4095, 0)};
-    using lossless_traits = lossless_traits<uint16_t, 12>;
-
-    assert::is_true(traits1.limit == lossless_traits::limit);
-    assert::is_true(traits1.maximum_sample_value == lossless_traits::maximum_sample_value);
-    assert::is_true(traits1.bits_per_sample == lossless_traits::bits_per_sample);
-    assert::is_true(traits1.quantized_bits_per_sample == lossless_traits::quantized_bits_per_sample);
-
-    for (int i{-4096}; i != 4096; ++i)
-    {
-        assert::is_true(traits1.modulo_range(i) == lossless_traits::modulo_range(i));
-        assert::is_true(traits1.compute_error_value(i) == lossless_traits::compute_error_value(i));
-    }
-
-    for (int i{-8095}; i != 8095; ++i)
-    {
-        assert::is_true(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
-        assert::is_true(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
-    }
-}
-
-
-void test_traits8_bit()
-{
-    const auto traits1{default_traits<uint8_t, uint8_t>(255, 0)};
-    using lossless_traits = lossless_traits<uint8_t, 8>;
-
-    assert::is_true(traits1.limit == lossless_traits::limit);
-    assert::is_true(traits1.maximum_sample_value == lossless_traits::maximum_sample_value);
-    assert::is_true(traits1.bits_per_sample == lossless_traits::bits_per_sample);
-    assert::is_true(traits1.quantized_bits_per_sample == lossless_traits::quantized_bits_per_sample);
-
-    for (int i{-255}; i != 255; ++i)
-    {
-        assert::is_true(traits1.modulo_range(i) == lossless_traits::modulo_range(i));
-        assert::is_true(traits1.compute_error_value(i) == lossless_traits::compute_error_value(i));
-    }
-
-    for (int i{-255}; i != 512; ++i)
-    {
-        assert::is_true(traits1.correct_prediction(i) == lossless_traits::correct_prediction(i));
-        assert::is_true(traits1.is_near(i, 2) == lossless_traits::is_near(i, 2));
-    }
-}
-
-
-vector<byte> make_some_noise(const size_t length, const size_t bit_count, const unsigned int seed)
-{
-    const auto max_value{(1U << bit_count) - 1U};
-    mt19937 generator(seed);
-
-    MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
-    uniform_int_distribution<uint32_t> distribution(0, max_value);
-
-    vector<byte> buffer(length);
-    for (auto& pixel_value : buffer)
-    {
-        pixel_value = static_cast<byte>(distribution(generator));
-    }
-
-    return buffer;
-}
-
-
-vector<byte> make_some_noise16_bit(const size_t length, const int bit_count, const unsigned int seed)
-{
-    const auto max_value{static_cast<uint16_t>((1U << bit_count) - 1U)};
-    mt19937 generator(seed);
-
-    MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
-    uniform_int_distribution<uint16_t> distribution{0, max_value};
-
-    vector<byte> buffer(length * 2);
-    for (size_t i{}; i != length; i = i + 2)
-    {
-        const uint16_t value{distribution(generator)};
-
-        buffer[i] = static_cast<byte>(value);
-        buffer[i] = static_cast<byte>(value >> 8);
-    }
-
-    return buffer;
-}
-
-
-void test_noise_image()
-{
-    const rect_size size2{512, 512};
-
-    for (size_t bit_depth{8}; bit_depth >= 2; --bit_depth)
-    {
-        stringstream label;
-        label << "noise, bit depth: " << bit_depth;
-
-        const auto noise_bytes{make_some_noise(size2.cx * size2.cy, bit_depth, 21344)};
-        test_round_trip(label.str().c_str(), noise_bytes, size2, static_cast<int>(bit_depth), 1);
-    }
-
-    for (int bit_depth{16}; bit_depth > 8; --bit_depth)
-    {
-        stringstream label;
-        label << "noise, bit depth: " << bit_depth;
-
-        const auto noise_bytes{make_some_noise16_bit(size2.cx * size2.cy, bit_depth, 21344)};
-        test_round_trip(label.str().c_str(), noise_bytes, size2, bit_depth, 1);
-    }
-}
-
-
-void test_fail_on_too_small_output_buffer()
-{
-    const auto input_buffer{make_some_noise(static_cast<size_t>(8) * 8, 8, 21344)};
-
-    // Trigger a "destination buffer too small" when writing the header markers.
-    try
-    {
-        vector<byte> output_buffer(1);
-        jpegls_encoder encoder;
-        encoder.destination(output_buffer);
-        encoder.frame_info({8, 8, 8, 1});
-        ignore = encoder.encode(input_buffer);
-        assert::is_true(false);
-    }
-    catch (const jpegls_error& e)
-    {
-        assert::is_true(e.code() == jpegls_errc::destination_too_small);
-    }
-
-    // Trigger a "destination buffer too small" when writing the encoded pixel bytes.
-    try
-    {
-        vector<byte> output_buffer(100);
-        jpegls_encoder encoder;
-        encoder.destination(output_buffer);
-        encoder.frame_info({8, 8, 8, 1});
-        ignore = encoder.encode(input_buffer);
-        assert::is_true(false);
-    }
-    catch (const jpegls_error& e)
-    {
-        assert::is_true(e.code() == jpegls_errc::destination_too_small);
-    }
-}
-
-
-void test_too_small_output_buffer()
-{
-    const auto encoded{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
-    vector<byte> destination(size_t{512} * 511);
-
-    jpegls_decoder decoder;
-    decoder.source(encoded).read_header();
-
-    error_code error;
-    try
-    {
-        decoder.decode(destination);
-    }
-    catch (const jpegls_error& e)
-    {
-        error = e.code();
-    }
-
-    assert::is_true(error == jpegls_errc::invalid_argument_size);
-}
-
-
-void test_decode_bit_stream_with_no_marker_start()
-{
-    constexpr array encoded_data{byte{0x33}, byte{0x33}};
-
-    error_code error;
-    try
-    {
-        jpegls_decoder decoder;
-        decoder.source(encoded_data).read_header();
-
-        array<byte, 1000> output{};
-        decoder.decode(output);
-    }
-    catch (const jpegls_error& e)
-    {
-        error = e.code();
-    }
-
-    assert::is_true(error == jpegls_errc::jpeg_marker_start_byte_not_found);
-}
-
-
-void test_decode_bit_stream_with_unsupported_encoding()
-{
-    constexpr array encoded_data{
-        byte{0xFF}, byte{0xD8}, // Start Of Image (JPEG_SOI)
-        byte{0xFF}, byte{0xC3}, // Start Of Frame (lossless, Huffman) (JPEG_SOF_3)
-        byte{0x00}, byte{0x00}  // Length of data of the marker
-    };
-
-    error_code error;
-    try
-    {
-        jpegls_decoder decoder;
-        decoder.source(encoded_data).read_header();
-
-        array<byte, 1000> output{};
-        decoder.decode(output);
-    }
-    catch (const jpegls_error& e)
-    {
-        error = e.code();
-    }
-
-    assert::is_true(error == jpegls_errc::encoding_not_supported);
-}
-
-
-void test_decode_bit_stream_with_unknown_jpeg_marker()
-{
-    constexpr array encoded_data{
-        byte{0xFF}, byte{0xD8}, // Start Of Image (JPEG_SOI)
-        byte{0xFF}, byte{0x01}, // Undefined marker
-        byte{0x00}, byte{0x00}  // Length of data of the marker
-    };
-
-    error_code error;
-    try
-    {
-        jpegls_decoder decoder;
-        decoder.source(encoded_data).read_header();
-
-        array<byte, 1000> output{};
-        decoder.decode(output);
-    }
-    catch (const jpegls_error& e)
-    {
-        error = e.code();
-    }
-
-    assert::is_true(error == jpegls_errc::unknown_jpeg_marker_found);
-}
-
-
-void test_encode_from_stream(const char* filename, const size_t offset, const uint32_t width, const uint32_t height,
-                             const int32_t bits_per_sample, const int32_t component_count,
-                             const interleave_mode interleave_mode, const size_t expected_length)
-{
-    ifstream source_file{open_input_stream(filename)};
-
-    size_t length{get_stream_length(source_file, offset)};
-    assert::is_true(length >= offset);
-    length -= offset;
-
-    // Note: use a buffer until the new API provides passing a callback function to read.
-    vector<byte> source(length);
-    read(source_file, source);
-
-    jpegls_encoder encoder;
-    encoder.frame_info({width, height, bits_per_sample, component_count}).interleave_mode(interleave_mode);
-
-    vector<byte> encoded_destination(encoder.estimated_destination_size());
-    encoder.destination(encoded_destination);
-
-    assert::is_true(encoder.encode(source) == expected_length);
 }
 
 
@@ -778,68 +399,6 @@ catch (const runtime_error& error)
     return false;
 }
 
-
-void test_encode_from_stream()
-{
-    test_encode_from_stream("test/0015.raw", 0, 1024, 1024, 8, 1, interleave_mode::none, 0x3D3ee);
-    test_encode_from_stream("test/conformance/test8.ppm", 15, 256, 256, 8, 3, interleave_mode::sample, 99734);
-    test_encode_from_stream("test/conformance/test8.ppm", 15, 256, 256, 8, 3, interleave_mode::line, 100615);
-}
-
-
-bool unit_test()
-{
-    try
-    {
-        cout << "Test Conformance\n";
-        test_encode_from_stream();
-        test_conformance();
-
-#ifdef CHARLS_STATIC
-        cout << "Test Quantization LUTs\n";
-        test_quantization_luts();
-#endif
-
-        cout << "Test Traits\n";
-        test_sample_traits();
-        test_traits16_bit();
-        test_traits8_bit();
-
-        cout << "Test Small buffer\n";
-        test_too_small_output_buffer();
-
-        test_fail_on_too_small_output_buffer();
-
-        cout << "Test Color transform equivalence on HP images\n";
-        test_color_transforms_hp_images();
-
-        cout << "Test Annex H3\n";
-        test_sample_annex_h3();
-
-        cout << "Test Annex H.4.5\n";
-        test_sample_annex_h4_5();
-
-        test_noise_image();
-
-        cout << "Test robustness\n";
-        test_decode_bit_stream_with_no_marker_start();
-        test_decode_bit_stream_with_unsupported_encoding();
-        test_decode_bit_stream_with_unknown_jpeg_marker();
-
-        return true;
-    }
-    catch (const unit_test_exception&)
-    {
-        cout << "==> Unit test failed <==\n";
-    }
-    catch (const std::runtime_error& error)
-    {
-        cout << "==> Unit test failed due to external problem: " << error.what() << "\n";
-    }
-
-    return false;
-}
-
 } // namespace
 
 
@@ -847,7 +406,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 {
     if (argc == 1)
     {
-        cout << "CharLS test runner.\nOptions: -unittest, -bitstreamdamage, -performance[:loop-count], "
+        cout << "CharLS test runner.\nOptions: -performance[:loop-count], "
                 "-decodeperformance[:loop-count], -decoderaw -encode -decodetopnm -comparepnm\n";
         return EXIT_FAILURE;
     }
@@ -855,10 +414,6 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
     for (int i{1}; i != argc; ++i)
     {
         const string str{argv[i]};
-        if (str == "-unittest")
-        {
-            return result_to_exit_code(unit_test());
-        }
 
         if (str == "-decoderaw")
         {
@@ -903,12 +458,6 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
             ifstream pnm_file2(argv[3], mode_input);
 
             return result_to_exit_code(compare_pnm(pnm_file1, pnm_file2));
-        }
-
-        if (str == "-bitstreamdamage")
-        {
-            damaged_bit_stream_tests();
-            continue;
         }
 
         if (str.compare(0, 12, "-performance") == 0)

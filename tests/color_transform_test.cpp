@@ -3,6 +3,8 @@
 
 #include "pch.hpp"
 
+#include "support.hpp"
+
 #include "../src/color_transform.hpp"
 
 #include <cstdint>
@@ -87,6 +89,14 @@ TEST(color_transform_test, transform_hp3_round_trip)
             }
         }
     }
+}
+
+TEST(color_transform_test, hp_transformation_sample_images)
+{
+    decode_encode_file("data/banny.jls", "data/banny.ppm", false);
+    decode_encode_file("data/banny-hp1.jls", "data/banny.ppm", false);
+    decode_encode_file("data/banny-hp2.jls", "data/banny.ppm", false);
+    decode_encode_file("data/banny-hp3.jls", "data/banny.ppm", false);
 }
 
 } // namespace charls::test

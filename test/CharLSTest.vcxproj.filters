@@ -9,17 +9,8 @@
       <UniqueIdentifier>{8eedc6ce-e067-4ddb-af1c-7f62a0728c4b}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
     </Filter>
-    <Filter Include="Data Files">
-      <UniqueIdentifier>{f66094c9-5b39-4281-a320-591115eed6a7}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="bitstreamdamage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="compliance.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -34,12 +25,6 @@
     <ClInclude Include="util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bitstreamdamage.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="compliance.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="performance.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -49,77 +34,6 @@
     <ClInclude Include="portable_arbitrary_map.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="0015.raw">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="alphatest.raw">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="jlsimage\banny.ppm">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="jlsimage\banny_HP1.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="jlsimage\banny_HP2.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="jlsimage\banny_HP3.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="jlsimage\banny_normal.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="tulips-gray-8bit-512-512-hp-encoder.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="MR2_UNC">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c0e0.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c0e3.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c1e0.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c1e3.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c2e0.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8c2e3.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8nde0.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t8nde3.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t16e0.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\t16e3.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\test8.ppm">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\test8bs2.pgm">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="conformance\test16.pgm">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="desktop.ppm">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="app.manifest" />

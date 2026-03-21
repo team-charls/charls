@@ -81,6 +81,17 @@ portable_anymap_file read_anymap_reference_file(const char* filename, const inte
     return reference_file;
 }
 
+void decode_encode_file(const char* encoded_filename, const char* raw_filename, const bool check_encode)
+{
+    const auto encoded_source{read_file(encoded_filename)};
+    const jpegls_decoder decoder{encoded_source, true};
+
+    portable_anymap_file reference_file{
+        read_anymap_reference_file(raw_filename, decoder.get_interleave_mode(), decoder.frame_info())};
+
+    test_compliance(encoded_source, reference_file.image_data(), check_encode);
+}
+
 [[nodiscard]]
 std::vector<std::byte> create_test_spiff_header(const uint8_t high_version, const uint8_t low_version,
                                                 const bool end_of_directory, const uint8_t component_count)

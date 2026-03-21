@@ -14,8 +14,6 @@
 # Explicit exclude binary files from the line ending normalization.
 *.png binary
 *.jls binary
-*.bmp binary
-*.raw binary
 *.ppm binary
 *.pgm binary
 
