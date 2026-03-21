@@ -8,11 +8,14 @@
 #include "../test/portable_anymap_file.hpp"
 
 #include <array>
+#include <random>
 #include <vector>
 
 using namespace charls_test;
 using std::array;
 using std::byte;
+using std::mt19937;
+using std::uniform_int_distribution;
 using std::vector;
 
 namespace charls::test {
@@ -125,7 +128,10 @@ void encode(const frame_info& frame_info, const std::vector<byte>& source, const
     encoder.destination(encoded_data);
 
     const size_t bytes_written{encoder.encode(source)};
-    EXPECT_EQ(expected_size, bytes_written);
+    if (expected_size != 0)
+    {
+        EXPECT_EQ(expected_size, bytes_written);
+    }
 
     encoded_data.resize(bytes_written);
     test_by_decoding(encoded_data, frame_info, source, interleave_mode, color_transformation);
@@ -139,6 +145,39 @@ void encode(const char* filename, const size_t expected_size, const interleave_m
     encode({static_cast<uint32_t>(reference_file.width()), static_cast<uint32_t>(reference_file.height()),
             reference_file.bits_per_sample(), reference_file.component_count()},
            reference_file.image_data(), expected_size, interleave_mode, color_transformation);
+}
+
+vector<byte> create_8_bit_buffer_with_noise(const size_t length, const size_t bit_count, const unsigned int seed)
+{
+    const auto max_value{(1U << bit_count) - 1U};
+    mt19937 generator(seed);
+    uniform_int_distribution<uint32_t> distribution(0, max_value);
+
+    vector<byte> buffer(length);
+    for (auto& pixel_value : buffer)
+    {
+        pixel_value = static_cast<byte>(distribution(generator));
+    }
+
+    return buffer;
+}
+
+vector<byte> create_16_bit_buffer_with_noise(const size_t length, const size_t bit_count, const unsigned int seed)
+{
+    const auto max_value{static_cast<uint16_t>((1U << bit_count) - 1U)};
+    mt19937 generator(seed);
+    uniform_int_distribution<uint16_t> distribution{0, max_value};
+
+    vector<byte> buffer(length * 2);
+    for (size_t i{}; i != length; i = i + 2)
+    {
+        const uint16_t value{distribution(generator)};
+
+        buffer[i] = static_cast<byte>(value);
+        buffer[i] = static_cast<byte>(value >> 8);
+    }
+
+    return buffer;
 }
 
 } // namespace
@@ -517,6 +556,32 @@ TEST(encode_test, encode_with_different_interleave_modes_sample_first)
     EXPECT_EQ(interleave_mode::sample, decoder.get_interleave_mode(1));
     EXPECT_EQ(interleave_mode::sample, decoder.get_interleave_mode(2));
     EXPECT_EQ(interleave_mode::none, decoder.get_interleave_mode(3));
+}
+
+TEST(encode_test, encode_8_bit_noise)
+{
+    for (size_t bit_depth{8}; bit_depth >= 2; --bit_depth)
+    {
+        frame_info frame_info{512, 512, static_cast<int32_t>(bit_depth), 1};
+
+        const auto source{
+            create_8_bit_buffer_with_noise(static_cast<size_t>(frame_info.width) * frame_info.height, bit_depth, 21344)};
+
+        encode(frame_info, source, 0, interleave_mode::none);
+    }
+}
+
+TEST(encode_test, encode_16_bit_noise)
+{
+    for (size_t bit_depth{16}; bit_depth > 8; --bit_depth)
+    {
+        frame_info frame_info{512, 512, static_cast<int32_t>(bit_depth), 1};
+
+        const auto source{
+            create_16_bit_buffer_with_noise(static_cast<size_t>(frame_info.width) * frame_info.height, bit_depth, 21344)};
+
+        encode(frame_info, source, 0, interleave_mode::none);
+    }
 }
 
 } // namespace charls::test

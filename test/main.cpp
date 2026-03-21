@@ -13,7 +13,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <random>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -26,14 +25,12 @@ using std::ifstream;
 using std::ios;
 using std::istream;
 using std::iter_swap;
-using std::mt19937;
 using std::ofstream;
 using std::ostream;
 using std::runtime_error;
 using std::streamoff;
 using std::string;
 using std::stringstream;
-using std::uniform_int_distribution;
 using std::vector;
 using namespace charls;
 
@@ -123,69 +120,6 @@ void convert_planar_to_pixel(const size_t width, const size_t height, const void
         plane1 += width;
         plane2 += width;
         pixels += stride_in_pixels;
-    }
-}
-
-
-vector<byte> make_some_noise(const size_t length, const size_t bit_count, const unsigned int seed)
-{
-    const auto max_value{(1U << bit_count) - 1U};
-    mt19937 generator(seed);
-
-    MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
-    uniform_int_distribution<uint32_t> distribution(0, max_value);
-
-    vector<byte> buffer(length);
-    for (auto& pixel_value : buffer)
-    {
-        pixel_value = static_cast<byte>(distribution(generator));
-    }
-
-    return buffer;
-}
-
-
-vector<byte> make_some_noise16_bit(const size_t length, const int bit_count, const unsigned int seed)
-{
-    const auto max_value{static_cast<uint16_t>((1U << bit_count) - 1U)};
-    mt19937 generator(seed);
-
-    MSVC_WARNING_SUPPRESS_NEXT_LINE(26496) // cannot be marked as const as operator() is not always defined const.
-    uniform_int_distribution<uint16_t> distribution{0, max_value};
-
-    vector<byte> buffer(length * 2);
-    for (size_t i{}; i != length; i = i + 2)
-    {
-        const uint16_t value{distribution(generator)};
-
-        buffer[i] = static_cast<byte>(value);
-        buffer[i] = static_cast<byte>(value >> 8);
-    }
-
-    return buffer;
-}
-
-
-void test_noise_image()
-{
-    const rect_size size2{512, 512};
-
-    for (size_t bit_depth{8}; bit_depth >= 2; --bit_depth)
-    {
-        stringstream label;
-        label << "noise, bit depth: " << bit_depth;
-
-        const auto noise_bytes{make_some_noise(size2.cx * size2.cy, bit_depth, 21344)};
-        test_round_trip(label.str().c_str(), noise_bytes, size2, static_cast<int>(bit_depth), 1);
-    }
-
-    for (int bit_depth{16}; bit_depth > 8; --bit_depth)
-    {
-        stringstream label;
-        label << "noise, bit depth: " << bit_depth;
-
-        const auto noise_bytes{make_some_noise16_bit(size2.cx * size2.cy, bit_depth, 21344)};
-        test_round_trip(label.str().c_str(), noise_bytes, size2, bit_depth, 1);
     }
 }
 
@@ -463,27 +397,6 @@ catch (const runtime_error& error)
     return false;
 }
 
-
-bool unit_test()
-{
-    try
-    {
-        test_noise_image();
-
-        return true;
-    }
-    catch (const unit_test_exception&)
-    {
-        cout << "==> Unit test failed <==\n";
-    }
-    catch (const std::runtime_error& error)
-    {
-        cout << "==> Unit test failed due to external problem: " << error.what() << "\n";
-    }
-
-    return false;
-}
-
 } // namespace
 
 
@@ -491,7 +404,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 {
     if (argc == 1)
     {
-        cout << "CharLS test runner.\nOptions: -unittest, -performance[:loop-count], "
+        cout << "CharLS test runner.\nOptions: -performance[:loop-count], "
                 "-decodeperformance[:loop-count], -decoderaw -encode -decodetopnm -comparepnm\n";
         return EXIT_FAILURE;
     }
@@ -499,10 +412,6 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
     for (int i{1}; i != argc; ++i)
     {
         const string str{argv[i]};
-        if (str == "-unittest")
-        {
-            return result_to_exit_code(unit_test());
-        }
 
         if (str == "-decoderaw")
         {

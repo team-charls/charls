@@ -104,10 +104,14 @@ struct charls_jpegls_encoder final
     size_t estimated_destination_size() const
     {
         check_operation(is_frame_info_configured());
-        return checked_mul(checked_mul(checked_mul(frame_info_.width, frame_info_.height),
-                                       static_cast<size_t>(frame_info_.component_count)),
-                           bit_to_byte_count(frame_info_.bits_per_sample)) +
-               1024 + spiff_header_size_in_bytes;
+        size_t size{checked_mul(checked_mul(checked_mul(frame_info_.width, frame_info_.height),
+                                                    static_cast<size_t>(frame_info_.component_count)),
+                                        bit_to_byte_count(frame_info_.bits_per_sample))};
+
+        // For the worst case: add 6.25% + extra bytes for the headers.
+        size += (size / 16U) + 1024 + spiff_header_size_in_bytes;
+
+        return size;
     }
 
     void write_spiff_header(const spiff_header& spiff_header)
