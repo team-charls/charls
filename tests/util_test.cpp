@@ -16,12 +16,14 @@ namespace charls::test {
 
 namespace {
 
+[[nodiscard]]
 uint32_t log2_floor(const uint32_t n) noexcept
 {
     ASSERT(n != 0 && "log2 is not defined for 0");
     return 31U - countl_zero(n);
 }
 
+[[nodiscard]]
 uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept
 {
     ASSERT(max_value > 0);

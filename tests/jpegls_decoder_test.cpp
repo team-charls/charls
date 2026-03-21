@@ -9,15 +9,12 @@
 #include <charls/jpegls_encoder.hpp>
 
 #include <array>
-#include <fstream>
-#include <ios>
 #include <tuple>
 #include <vector>
 
 #include "../src/jpeg_marker_code.hpp"
 #include "../src/jpegls_preset_parameters_type.hpp"
 
-#include "../test/portable_anymap_file.hpp"
 #include "jpeg_test_stream_writer.hpp"
 
 using std::array;

@@ -64,7 +64,7 @@ jobs:
       runInParallel: true
       resultsFolder: '$(build.ArtifactStagingDirectory)/Test/Results'
       codeCoverageEnabled: true
-      runSettingsFile: 'unittest\CodeCoverage.runsettings'
+      runSettingsFile: 'tests\CodeCoverage.runsettings'
 
 - job: 'cppVS2026'
   pool:

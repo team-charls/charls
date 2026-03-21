@@ -144,16 +144,16 @@
     <CopyFileToFolders Include="../test/conformance/test8.ppm">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/test8_ilv_line_rm_7.jls">
+    <CopyFileToFolders Include="data/test8_ilv_line_rm_7.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/test8_ilv_none_rm_7.jls">
+    <CopyFileToFolders Include="data/test8_ilv_none_rm_7.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/test8_ilv_sample_rm_7.jls">
+    <CopyFileToFolders Include="data/test8_ilv_sample_rm_7.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/test8_ilv_sample_rm_300.jls">
+    <CopyFileToFolders Include="data/test8_ilv_sample_rm_300.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="../test/conformance/test8bs2.pgm">
@@ -162,43 +162,43 @@
     <CopyFileToFolders Include="../test/conformance/test16.pgm">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/test16_rm_5.jls">
+    <CopyFileToFolders Include="data/test16_rm_5.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/tulips-gray-8bit-512-512.pgm">
+    <CopyFileToFolders Include="data/tulips-gray-8bit-512-512.pgm">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="../test/tulips-gray-8bit-512-512-hp-encoder.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/2bit_parrot_150x200.pgm">
+    <CopyFileToFolders Include="data/2bit_parrot_150x200.pgm">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/4bit-monochrome.pgm">
+    <CopyFileToFolders Include="data/4bit-monochrome.pgm">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/8bit-monochrome-2x2.jls">
+    <CopyFileToFolders Include="data/8bit-monochrome-2x2.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/16-bit-640-480-many-dots.pgm">
+    <CopyFileToFolders Include="data/16-bit-640-480-many-dots.pgm">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/ff_in_entropy_data.jls">
+    <CopyFileToFolders Include="data/ff_in_entropy_data.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/fuzzy_input_golomb_16.jls">
+    <CopyFileToFolders Include="data/fuzzy_input_golomb_16.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/fuzzy-input-no-valid-bits-at-the-end.jls">
+    <CopyFileToFolders Include="data/fuzzy-input-no-valid-bits-at-the-end.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/fuzzy-input-bad-run-mode-golomb-code.jls">
+    <CopyFileToFolders Include="data/fuzzy-input-bad-run-mode-golomb-code.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/land10-10bit-rgb-hp3-invalid.jls">
+    <CopyFileToFolders Include="data/land10-10bit-rgb-hp3-invalid.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../unittest/no_start_byte_after_encoded_scan.jls">
+    <CopyFileToFolders Include="data/no_start_byte_after_encoded_scan.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
   </ItemGroup>

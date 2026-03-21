@@ -14,7 +14,7 @@
             <!-- Only do code coverage on debug builds. Release builds are optimized and provide poor code coverage results (inlining is a major factor)-->
             <ModulePaths>
               <Include>
-                <ModulePath>.*debug.*CharLSUnitTest\.dll$</ModulePath>
+                <ModulePath>.*debug.*CharLSTests\.dll$</ModulePath>
               </Include>
             </ModulePaths>
 

@@ -64,7 +64,7 @@ void test_by_decoding(const vector<byte>& encoded_source, const frame_info& sour
         {
             if (expected_destination_byte[i] != destination[i]) // AreEqual is very slow, pre-test to speed up 50X
             {
-                EXPECT_EQ(expected_destination_byte[i], destination[i]);
+                ASSERT_EQ(expected_destination_byte[i], destination[i]);
             }
         }
     }
