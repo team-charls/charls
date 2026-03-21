@@ -7,8 +7,6 @@
 #include "../src/quantization_lut.hpp"
 #include "../src/sample_traits.hpp"
 
-#include "bitstreamdamage.hpp"
-#include "compliance.hpp"
 #include "performance.hpp"
 #include "portable_arbitrary_map.hpp"
 #include "util.hpp"
@@ -349,162 +347,6 @@ void test_noise_image()
 }
 
 
-void test_fail_on_too_small_output_buffer()
-{
-    const auto input_buffer{make_some_noise(static_cast<size_t>(8) * 8, 8, 21344)};
-
-    // Trigger a "destination buffer too small" when writing the header markers.
-    try
-    {
-        vector<byte> output_buffer(1);
-        jpegls_encoder encoder;
-        encoder.destination(output_buffer);
-        encoder.frame_info({8, 8, 8, 1});
-        ignore = encoder.encode(input_buffer);
-        assert::is_true(false);
-    }
-    catch (const jpegls_error& e)
-    {
-        assert::is_true(e.code() == jpegls_errc::destination_too_small);
-    }
-
-    // Trigger a "destination buffer too small" when writing the encoded pixel bytes.
-    try
-    {
-        vector<byte> output_buffer(100);
-        jpegls_encoder encoder;
-        encoder.destination(output_buffer);
-        encoder.frame_info({8, 8, 8, 1});
-        ignore = encoder.encode(input_buffer);
-        assert::is_true(false);
-    }
-    catch (const jpegls_error& e)
-    {
-        assert::is_true(e.code() == jpegls_errc::destination_too_small);
-    }
-}
-
-
-void test_too_small_output_buffer()
-{
-    const auto encoded{read_file("test/tulips-gray-8bit-512-512-hp-encoder.jls")};
-    vector<byte> destination(size_t{512} * 511);
-
-    jpegls_decoder decoder;
-    decoder.source(encoded).read_header();
-
-    error_code error;
-    try
-    {
-        decoder.decode(destination);
-    }
-    catch (const jpegls_error& e)
-    {
-        error = e.code();
-    }
-
-    assert::is_true(error == jpegls_errc::invalid_argument_size);
-}
-
-
-void test_decode_bit_stream_with_no_marker_start()
-{
-    constexpr array encoded_data{byte{0x33}, byte{0x33}};
-
-    error_code error;
-    try
-    {
-        jpegls_decoder decoder;
-        decoder.source(encoded_data).read_header();
-
-        array<byte, 1000> output{};
-        decoder.decode(output);
-    }
-    catch (const jpegls_error& e)
-    {
-        error = e.code();
-    }
-
-    assert::is_true(error == jpegls_errc::jpeg_marker_start_byte_not_found);
-}
-
-
-void test_decode_bit_stream_with_unsupported_encoding()
-{
-    constexpr array encoded_data{
-        byte{0xFF}, byte{0xD8}, // Start Of Image (JPEG_SOI)
-        byte{0xFF}, byte{0xC3}, // Start Of Frame (lossless, Huffman) (JPEG_SOF_3)
-        byte{0x00}, byte{0x00}  // Length of data of the marker
-    };
-
-    error_code error;
-    try
-    {
-        jpegls_decoder decoder;
-        decoder.source(encoded_data).read_header();
-
-        array<byte, 1000> output{};
-        decoder.decode(output);
-    }
-    catch (const jpegls_error& e)
-    {
-        error = e.code();
-    }
-
-    assert::is_true(error == jpegls_errc::encoding_not_supported);
-}
-
-
-void test_decode_bit_stream_with_unknown_jpeg_marker()
-{
-    constexpr array encoded_data{
-        byte{0xFF}, byte{0xD8}, // Start Of Image (JPEG_SOI)
-        byte{0xFF}, byte{0x01}, // Undefined marker
-        byte{0x00}, byte{0x00}  // Length of data of the marker
-    };
-
-    error_code error;
-    try
-    {
-        jpegls_decoder decoder;
-        decoder.source(encoded_data).read_header();
-
-        array<byte, 1000> output{};
-        decoder.decode(output);
-    }
-    catch (const jpegls_error& e)
-    {
-        error = e.code();
-    }
-
-    assert::is_true(error == jpegls_errc::unknown_jpeg_marker_found);
-}
-
-
-void test_encode_from_stream(const char* filename, const size_t offset, const uint32_t width, const uint32_t height,
-                             const int32_t bits_per_sample, const int32_t component_count,
-                             const interleave_mode interleave_mode, const size_t expected_length)
-{
-    ifstream source_file{open_input_stream(filename)};
-
-    size_t length{get_stream_length(source_file, offset)};
-    assert::is_true(length >= offset);
-    length -= offset;
-
-    // Note: use a buffer until the new API provides passing a callback function to read.
-    vector<byte> source(length);
-    read(source_file, source);
-
-    jpegls_encoder encoder;
-    encoder.frame_info({width, height, bits_per_sample, component_count}).interleave_mode(interleave_mode);
-
-    vector<byte> encoded_destination(encoder.estimated_destination_size());
-    encoder.destination(encoded_destination);
-
-    assert::is_true(encoder.encode(source) == expected_length);
-}
-
-
 bool decode_to_pnm(const char* filename_input, const char* filename_output)
 try
 {
@@ -779,22 +621,10 @@ catch (const runtime_error& error)
 }
 
 
-void test_encode_from_stream()
-{
-    test_encode_from_stream("test/0015.raw", 0, 1024, 1024, 8, 1, interleave_mode::none, 0x3D3ee);
-    test_encode_from_stream("test/conformance/test8.ppm", 15, 256, 256, 8, 3, interleave_mode::sample, 99734);
-    test_encode_from_stream("test/conformance/test8.ppm", 15, 256, 256, 8, 3, interleave_mode::line, 100615);
-}
-
-
 bool unit_test()
 {
     try
     {
-        cout << "Test Conformance\n";
-        test_encode_from_stream();
-        test_conformance();
-
 #ifdef CHARLS_STATIC
         cout << "Test Quantization LUTs\n";
         test_quantization_luts();
@@ -805,26 +635,7 @@ bool unit_test()
         test_traits16_bit();
         test_traits8_bit();
 
-        cout << "Test Small buffer\n";
-        test_too_small_output_buffer();
-
-        test_fail_on_too_small_output_buffer();
-
-        cout << "Test Color transform equivalence on HP images\n";
-        test_color_transforms_hp_images();
-
-        cout << "Test Annex H3\n";
-        test_sample_annex_h3();
-
-        cout << "Test Annex H.4.5\n";
-        test_sample_annex_h4_5();
-
         test_noise_image();
-
-        cout << "Test robustness\n";
-        test_decode_bit_stream_with_no_marker_start();
-        test_decode_bit_stream_with_unsupported_encoding();
-        test_decode_bit_stream_with_unknown_jpeg_marker();
 
         return true;
     }
@@ -847,7 +658,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 {
     if (argc == 1)
     {
-        cout << "CharLS test runner.\nOptions: -unittest, -bitstreamdamage, -performance[:loop-count], "
+        cout << "CharLS test runner.\nOptions: -unittest, -performance[:loop-count], "
                 "-decodeperformance[:loop-count], -decoderaw -encode -decodetopnm -comparepnm\n";
         return EXIT_FAILURE;
     }
@@ -903,12 +714,6 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
             ifstream pnm_file2(argv[3], mode_input);
 
             return result_to_exit_code(compare_pnm(pnm_file1, pnm_file2));
-        }
-
-        if (str == "-bitstreamdamage")
-        {
-            damaged_bit_stream_tests();
-            continue;
         }
 
         if (str.compare(0, 12, "-performance") == 0)

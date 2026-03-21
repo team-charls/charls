@@ -102,20 +102,20 @@ gtest_discover_tests(charls-tests DISCOVERY_MODE PRE_TEST)
 # executable at build time. The source files come from the repository and are not
 # duplicated; the copies exist only in the build tree.
 set(CHARLS_TEST_DATA_FILES
-    ${CMAKE_SOURCE_DIR}/test/conformance/t8c0e0.jls
-    ${CMAKE_SOURCE_DIR}/test/conformance/t8c1e0.jls
-    ${CMAKE_SOURCE_DIR}/test/conformance/t8c2e0.jls
-    ${CMAKE_SOURCE_DIR}/test/conformance/t8c0e3.jls
-    ${CMAKE_SOURCE_DIR}/test/conformance/t8c1e3.jls
-    ${CMAKE_SOURCE_DIR}/test/conformance/t8c2e3.jls
-    ${CMAKE_SOURCE_DIR}/test/conformance/t8nde0.jls
-    ${CMAKE_SOURCE_DIR}/test/conformance/t8nde3.jls
-    ${CMAKE_SOURCE_DIR}/test/conformance/t16e0.jls
-    ${CMAKE_SOURCE_DIR}/test/conformance/t16e3.jls
-    ${CMAKE_SOURCE_DIR}/test/conformance/test8.ppm
-    ${CMAKE_SOURCE_DIR}/test/conformance/test8bs2.pgm
-    ${CMAKE_SOURCE_DIR}/test/conformance/test16.pgm
-    ${CMAKE_SOURCE_DIR}/test/tulips-gray-8bit-512-512-hp-encoder.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/t8c0e0.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/t8c1e0.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/t8c2e0.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/t8c0e3.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/t8c1e3.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/t8c2e3.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/t8nde0.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/t8nde3.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/t16e0.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/t16e3.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/test8.ppm
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/test8bs2.pgm
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/conformance/test16.pgm
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/tulips-gray-8bit-512-512-hp-encoder.jls
     ${CMAKE_CURRENT_SOURCE_DIR}/data/16-bit-640-480-many-dots.pgm
     ${CMAKE_CURRENT_SOURCE_DIR}/data/2bit_parrot_150x200.pgm
     ${CMAKE_CURRENT_SOURCE_DIR}/data/4bit-monochrome.pgm
@@ -132,6 +132,11 @@ set(CHARLS_TEST_DATA_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/data/fuzzy-input-no-valid-bits-at-the-end.jls
     ${CMAKE_CURRENT_SOURCE_DIR}/data/land10-10bit-rgb-hp3-invalid.jls
     ${CMAKE_CURRENT_SOURCE_DIR}/data/no_start_byte_after_encoded_scan.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/banny.ppm
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/banny.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/banny-hp1.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/banny-hp2.jls
+    ${CMAKE_CURRENT_SOURCE_DIR}/data/banny-hp3.jls
 )
 
 add_custom_command(TARGET charls-tests POST_BUILD

@@ -173,59 +173,59 @@
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="../test/conformance/t8c0e0.jls">
+    <CopyFileToFolders Include="data/conformance/t8c0e0.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8c1e0.jls">
+    <CopyFileToFolders Include="data/conformance/t8c1e0.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8c2e0.jls">
+    <CopyFileToFolders Include="data/conformance/t8c2e0.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8c0e3.jls">
+    <CopyFileToFolders Include="data/conformance/t8c0e3.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8c1e3.jls">
+    <CopyFileToFolders Include="data/conformance/t8c1e3.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8c2e3.jls">
+    <CopyFileToFolders Include="data/conformance/t8c2e3.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8nde0.jls">
+    <CopyFileToFolders Include="data/conformance/t8nde0.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8nde3.jls">
+    <CopyFileToFolders Include="data/conformance/t8nde3.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t16e0.jls">
+    <CopyFileToFolders Include="data/conformance/t16e0.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t16e3.jls">
+    <CopyFileToFolders Include="data/conformance/t16e3.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/test8.ppm">
+    <CopyFileToFolders Include="data/conformance/test8.ppm">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/test8bs2.pgm">
+    <CopyFileToFolders Include="data/conformance/test8bs2.pgm">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/test16.pgm">
+    <CopyFileToFolders Include="data/conformance/test16.pgm">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/tulips-gray-8bit-512-512-hp-encoder.jls">
+    <CopyFileToFolders Include="data/tulips-gray-8bit-512-512-hp-encoder.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
@@ -290,6 +290,26 @@
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="data/no_start_byte_after_encoded_scan.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/banny.ppm">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/banny.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/banny-hp1.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/banny-hp2.jls">
+      <FileType>Document</FileType>
+      <DestinationFolders>$(OutDir)data</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/banny-hp3.jls">
       <FileType>Document</FileType>
       <DestinationFolders>$(OutDir)data</DestinationFolders>
     </CopyFileToFolders>

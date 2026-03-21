@@ -111,39 +111,6 @@
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="../test/conformance/t8c0e0.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8c0e3.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8c1e0.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8c1e3.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8c2e0.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8c2e3.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8nde0.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t8nde3.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t16e0.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/t16e3.jls">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/test8.ppm">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
     <CopyFileToFolders Include="data/test8_ilv_line_rm_7.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
@@ -156,19 +123,10 @@
     <CopyFileToFolders Include="data/test8_ilv_sample_rm_300.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/test8bs2.pgm">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/conformance/test16.pgm">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
     <CopyFileToFolders Include="data/test16_rm_5.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="data/tulips-gray-8bit-512-512.pgm">
-      <Filter>Data Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="../test/tulips-gray-8bit-512-512-hp-encoder.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="data/2bit_parrot_150x200.pgm">
@@ -199,6 +157,63 @@
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="data/no_start_byte_after_encoded_scan.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/banny.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/banny.ppm">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/banny-hp1.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/banny-hp2.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/banny-hp3.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/t8c0e0.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/t8c0e3.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/t8c1e0.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/t8c1e3.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/t8c2e0.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/t8c2e3.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/t8nde0.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/t8nde3.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/t16e0.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/t16e3.jls">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/test8.ppm">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/test8bs2.pgm">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/conformance/test16.pgm">
+      <Filter>Data Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data/tulips-gray-8bit-512-512-hp-encoder.jls">
       <Filter>Data Files</Filter>
     </CopyFileToFolders>
   </ItemGroup>
