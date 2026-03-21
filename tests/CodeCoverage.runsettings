@@ -1,0 +1,42 @@
+<!--
+  SPDX-FileCopyrightText: © 2023 Team CharLS
+  SPDX-License-Identifier: BSD-3-Clause
+-->
+
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0" assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Configuration>
+          <CodeCoverage>
+
+            <!-- The CharLS source code is linked into the unit test DLL using .obj files. The DLL to cover is the unit test DLL -->
+            <!-- Only do code coverage on debug builds. Release builds are optimized and provide poor code coverage results (inlining is a major factor)-->
+            <ModulePaths>
+              <Include>
+                <ModulePath>.*debug.*CharLSUnitTest\.dll$</ModulePath>
+              </Include>
+            </ModulePaths>
+
+            <!-- Include only the actual implementation source code and not the unit test code. -->
+            <Functions>
+              <Include>
+                <Function>^charls::.*</Function>
+              </Include>
+              <Exclude>
+                <Function>^charls::test::.*</Function>
+              </Exclude>
+            </Functions>
+
+            <UseVerifiableInstrumentation>False</UseVerifiableInstrumentation>
+
+            <!-- Recommendation is to use static native instrumentation for the optimal coverage results. -->
+            <EnableStaticNativeInstrumentation>True</EnableStaticNativeInstrumentation>
+            <EnableDynamicNativeInstrumentation>True</EnableDynamicNativeInstrumentation>
+
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
