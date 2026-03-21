@@ -5,6 +5,7 @@ banny
 BINDIR
 bugprone
 CETCOMPAT
+cfamily
 charls
 charlstest
 cmove
@@ -28,6 +29,7 @@ mrfx
 NOEXCEPT
 opto
 palletised
+Qube
 rect
 simd
 STREQUAL
