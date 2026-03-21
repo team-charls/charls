@@ -5,10 +5,6 @@ add_executable(charlstest "")
 
 target_sources(charlstest
   PRIVATE
-    bitstreamdamage.cpp
-    bitstreamdamage.hpp
-    compliance.cpp
-    compliance.hpp
     main.cpp
     performance.cpp
     performance.hpp
