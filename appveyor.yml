@@ -11,5 +11,5 @@ platform:
 - x86
 - x64
 build:
-  project: CharLS.sln
+  project: charls.sln
   verbosity: minimal
