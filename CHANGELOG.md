@@ -31,7 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - BREAKING: The public charls.h header has been split into charls.h (C applications) and charls.hpp (C++ applications).
 - BREAKING: Method charls_jpegls_decoder_get_interleave_mode has an additional extra parameter: component_index.
 - Performance optimizations for the encoder by @cl445
-- BREAKING: The charlstest application has been renamed to charls-cli
+- BREAKING: The charlstest application has been renamed to charls-cli.
 
 ### Removed
 
