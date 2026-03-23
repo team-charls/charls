@@ -19,7 +19,7 @@ variables:
 
 
 jobs:
-- job: 'cppWindows'
+- job: 'Windows'
   pool:
     vmImage: windows-2022
   displayName: 'Solution MSVC 2022'
@@ -64,9 +64,9 @@ jobs:
       runInParallel: true
       resultsFolder: '$(build.ArtifactStagingDirectory)/Test/Results'
       codeCoverageEnabled: true
-      runSettingsFile: 'tests\CodeCoverage.runsettings'
+      runSettingsFile: 'test\CodeCoverage.runsettings'
 
-- job: 'cppVS2026'
+- job: 'VS2026'
   pool:
     vmImage: windows-2025
   displayName: 'CMake - MSVC 2022-2025'
@@ -136,7 +136,7 @@ jobs:
       cmakeArgs: --build $(Build.BinariesDirectory)/build
 
 
-- job: 'cppVS2022'
+- job: 'VS2022'
   pool:
     vmImage: windows-2022
   displayName: 'CMake - MSVC 2022'
@@ -195,7 +195,7 @@ jobs:
     workingDirectory: $(Build.BinariesDirectory)/build
 
 
-- job: 'cppLinux'
+- job: 'Linux'
   pool:
     vmImage: ubuntu-latest
   displayName: 'CMake - '
@@ -271,7 +271,7 @@ jobs:
     workingDirectory: $(Build.BinariesDirectory)/build
 
 
-- job: 'cppmacOS'
+- job: 'macOS'
   pool:
     vmImage: macOS-latest
   displayName: 'CMake - '
