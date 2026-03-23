@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.3.11520.95
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSCli", "cli\CharLSCli.vcxproj", "{7185AD7F-57BA-42C7-A715-239CEA8ADC31}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "charls-cli", "cli\charls-cli.vcxproj", "{7185AD7F-57BA-42C7-A715-239CEA8ADC31}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{BE733144-010D-4F7F-A619-0B73D8461D60}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{BE733144-010D-4F7F-A619-0B73D8461D60}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLS", "src\CharLS.vcxproj", "{1E31F9F1-F175-4082-B3E2-B1F0ECA3F44C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "charls", "src\charls.vcxproj", "{1E31F9F1-F175-4082-B3E2-B1F0ECA3F44C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5F4C6204-36F8-4D63-BF33-ECFCB5D1D114}"
 	ProjectSection(SolutionItems) = preProject
@@ -26,19 +26,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		spelling.dic = spelling.dic
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "convert-c", "samples\convert.c\convert-c.vcxproj", "{F42C0547-FEB3-40F4-9379-0FF87B44FA0F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "convert-c", "samples\convert-c\convert-c.vcxproj", "{F42C0547-FEB3-40F4-9379-0FF87B44FA0F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "convert-cpp", "samples\convert.cpp\convert-cpp.vcxproj", "{E09F024E-A125-48AA-8E9D-7D1302BEAC97}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "convert-cpp", "samples\convert-cpp\convert-cpp.vcxproj", "{E09F024E-A125-48AA-8E9D-7D1302BEAC97}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "benchmark", "benchmark\benchmark.vcxproj", "{F961EC29-4ACE-4D5E-B7ED-55681A678A90}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AflFuzzTest", "fuzzing\afl\AflFuzzTest.vcxproj", "{5637C116-ABF5-4274-A71F-34433713A538}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "afl-fuzz-test", "fuzzing\afl\afl-fuzz-test.vcxproj", "{5637C116-ABF5-4274-A71F-34433713A538}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibFuzzerDecoder", "fuzzing\libfuzzer-decoder\LibFuzzerDecoder.vcxproj", "{0F21D958-FE76-469A-8562-5D05F9EFE8D1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libfuzzer-decoder", "fuzzing\libfuzzer-decoder\libfuzzer-decoder.vcxproj", "{0F21D958-FE76-469A-8562-5D05F9EFE8D1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibFuzzerEncoder", "fuzzing\libfuzzer-encoder\LibFuzzerEncoder.vcxproj", "{CD0F242C-EB44-4845-985A-7BACC568EDE6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libfuzzer-encoder", "fuzzing\libfuzzer-encoder\libfuzzer-encoder.vcxproj", "{CD0F242C-EB44-4845-985A-7BACC568EDE6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CharLSTests", "tests\CharLSTests.vcxproj", "{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "charls-test", "test\charls-test.vcxproj", "{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

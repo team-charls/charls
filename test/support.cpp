@@ -5,8 +5,9 @@
 
 #include "support.hpp"
 
+#include <support/portable_anymap_file.hpp>
+
 #include "../src/jpeg_stream_writer.hpp"
-#include "../cli/portable_anymap_file.hpp"
 #include <charls/jpegls_decoder.hpp>
 #include <charls/jpegls_encoder.hpp>
 
@@ -15,7 +16,7 @@
 using std::byte;
 using std::ifstream;
 using std::vector;
-using namespace charls::cli;
+using namespace charls::support;
 
 namespace charls::test {
 

@@ -6,8 +6,7 @@
 #include <gtest/gtest.h>
 
 #include <charls/jpegls_error.hpp>
-
-#include "../cli/portable_anymap_file.hpp"
+#include <support/portable_anymap_file.hpp>
 
 #include <cstdint>
 #include <cstring>
@@ -19,11 +18,11 @@ namespace charls::test {
 std::vector<std::byte> read_file(const char* filename);
 
 [[nodiscard]]
-cli::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode,
+support::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode,
                                                              const frame_info& frame_info);
 
 [[nodiscard]]
-cli::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode);
+support::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode);
 
 [[nodiscard]]
 std::vector<std::byte> create_test_spiff_header(uint8_t high_version = 2, uint8_t low_version = 0,

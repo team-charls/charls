@@ -42,10 +42,8 @@
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{B3A2F30C-7A2B-4E5D-A9C1-3F8D0E6B2A47}</ProjectGuid>
-    <ProjectName>CharLSTests</ProjectName>
     <ProjectSubType>GoogleTest</ProjectSubType>
     <ConfigurationType>Application</ConfigurationType>
-    <TargetName>charls-tests</TargetName>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
@@ -316,7 +314,7 @@
     </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\CharLS.vcxproj">
+    <ProjectReference Include="..\src\charls.vcxproj">
       <Project>{1e31f9f1-f175-4082-b3e2-b1f0eca3f44c}</Project>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>

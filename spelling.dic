@@ -35,6 +35,7 @@ libstdc
 maxval
 misc
 mrfx
+msbuild
 NOEXCEPT
 opto
 palletised
