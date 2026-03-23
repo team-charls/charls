@@ -130,7 +130,7 @@ void encode_performance_tests(const int loop_count)
 
     try
     {
-        const charls_test::portable_anymap_file anymap_file("encode-test.pnm");
+        const charls::cli::portable_anymap_file anymap_file("encode-test.pnm");
 
         const frame_info info{static_cast<uint32_t>(anymap_file.width()), static_cast<uint32_t>(anymap_file.height()),
                               anymap_file.bits_per_sample(), anymap_file.component_count()};

@@ -24,7 +24,7 @@ using std::vector;
 using std::chrono::duration;
 using std::chrono::steady_clock;
 using namespace charls;
-using namespace charls_test;
+using namespace charls::cli;
 
 
 namespace {

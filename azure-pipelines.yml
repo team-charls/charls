@@ -122,10 +122,7 @@ jobs:
         -G Ninja
         -DCMAKE_C_COMPILER="cl.exe"
         -DCMAKE_CXX_COMPILER="cl.exe"
-        -DCHARLS_BUILD_TESTS=On
-        -DCHARLS_BUILD_AFL_FUZZ_TEST=On
-        -DCHARLS_BUILD_LIB_FUZZER_FUZZ_TEST=On
-        -DCHARLS_BUILD_SAMPLES=On
+        -DCHARLS_BUILD_ALL=On
         -DCMAKE_BUILD_TYPE=$(buildType)
         -DBUILD_SHARED_LIBS=$(Shared)
         -DCHARLS_PEDANTIC_WARNINGS=On
@@ -181,10 +178,7 @@ jobs:
         -G Ninja
         -DCMAKE_C_COMPILER="cl.exe"
         -DCMAKE_CXX_COMPILER="cl.exe"
-        -DCHARLS_BUILD_TESTS=On
-        -DCHARLS_BUILD_AFL_FUZZ_TEST=On
-        -DCHARLS_BUILD_LIB_FUZZER_FUZZ_TEST=On
-        -DCHARLS_BUILD_SAMPLES=On
+        -DCHARLS_BUILD_ALL=On
         -DCMAKE_BUILD_TYPE=$(buildType)
         -DCHARLS_PEDANTIC_WARNINGS=On
         -DCHARLS_TREAT_WARNING_AS_ERROR=On
@@ -260,10 +254,7 @@ jobs:
       workingDirectory: $(Build.BinariesDirectory)/build
       cmakeArgs:
         -DCMAKE_BUILD_TYPE=$(buildType)
-        -DCHARLS_BUILD_TESTS=On
-        -DCHARLS_BUILD_AFL_FUZZ_TEST=On
-        -DCHARLS_BUILD_LIB_FUZZER_FUZZ_TEST=On
-        -DCHARLS_BUILD_SAMPLES=On
+        -DCHARLS_BUILD_ALL=On
         -DBUILD_SHARED_LIBS=$(Shared)
         -DCHARLS_PEDANTIC_WARNINGS=On
         -DCHARLS_TREAT_WARNING_AS_ERROR=On
@@ -305,10 +296,7 @@ jobs:
       workingDirectory: $(Build.BinariesDirectory)/build
       cmakeArgs:
         -DCMAKE_BUILD_TYPE=$(buildType)
-        -DCHARLS_BUILD_TESTS=On
-        -DCHARLS_BUILD_AFL_FUZZ_TEST=On
-        -DCHARLS_BUILD_LIB_FUZZER_FUZZ_TEST=On
-        -DCHARLS_BUILD_SAMPLES=On
+        -DCHARLS_BUILD_ALL=On
         -DBUILD_SHARED_LIBS=$(Shared)
         -DCHARLS_PEDANTIC_WARNINGS=On
         -DCHARLS_TREAT_WARNING_AS_ERROR=On

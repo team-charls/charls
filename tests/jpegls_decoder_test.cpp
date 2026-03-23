@@ -23,7 +23,7 @@ using std::error_code;
 using std::ignore;
 using std::numeric_limits;
 using std::vector;
-using namespace charls_test;
+using namespace charls::cli;
 
 namespace charls::test {
 
