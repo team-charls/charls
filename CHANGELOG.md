@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Support to encode and decode mapping tables.
 - Support to retrieve the height from a DNL marker segment.
 - Support to encode and decode mixed interleaved mode scans.
+- The unit tests are now based on Google test instead of MSTest and can be used on all platforms.
 
 ### Fixed
 
@@ -30,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - BREAKING: The public charls.h header has been split into charls.h (C applications) and charls.hpp (C++ applications).
 - BREAKING: Method charls_jpegls_decoder_get_interleave_mode has an additional extra parameter: component_index.
 - Performance optimizations for the encoder by @cl445
+- BREAKING: The charlstest application has been renamed to charls-cli.
 
 ### Removed
 
@@ -158,7 +160,7 @@ This has been done to make it possible to have different release cycles.
 ### Removed
 
 - The legacy methods JpegLsEncodeStream, JpegLsDecodeStream and JpegLsReadHeaderStream have been removed as exported methods.
-  These methods were not part of the public API and only used by the charlstest application
+  These methods were not part of the public API and only used by the charls-cli application
 
 ### Fixed
 

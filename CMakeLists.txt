@@ -34,8 +34,17 @@ endif()
 option(CHARLS_BUILD_TESTS "Build test application" OFF)
 option(CHARLS_BUILD_AFL_FUZZ_TEST "Build AFL test fuzzer application" OFF)
 option(CHARLS_BUILD_LIB_FUZZER_FUZZ_TEST "Build LibFuzzer test fuzzer application" OFF)
+option(CHARLS_BUILD_CLI "Build command line interface application" OFF)
 option(CHARLS_BUILD_SAMPLES "Build sample applications" OFF)
 option(CHARLS_INSTALL "Generate the install target." ${MAIN_PROJECT})
+option(CHARLS_BUILD_ALL "Build all features" OFF)
+
+if(CHARLS_BUILD_ALL)
+    foreach(_opt CHARLS_BUILD_TESTS CHARLS_BUILD_AFL_FUZZ_TEST
+     CHARLS_BUILD_LIB_FUZZER_FUZZ_TEST CHARLS_BUILD_CLI CHARLS_BUILD_SAMPLES)
+        set(${_opt} ON CACHE BOOL "" FORCE)
+    endforeach()
+endif()
 
 # Provide BUILD_SHARED_LIBS as an option for GUI tools
 option(BUILD_SHARED_LIBS "Will control if charls lib is build as shared lib/DLL or static library")
@@ -249,7 +258,6 @@ include(src/CMakeLists.txt)
 
 if(CHARLS_BUILD_TESTS)
   enable_testing()
-  add_subdirectory(test)
   add_subdirectory(tests)
 endif()
 
@@ -261,6 +269,10 @@ if(CHARLS_BUILD_LIB_FUZZER_FUZZ_TEST AND LIB_FUZZER_SUPPORTED)
   message(STATUS "LibFuzzer test applications are requested and supported and will be built")
   add_subdirectory(fuzzing/libfuzzer-decoder)
   add_subdirectory(fuzzing/libfuzzer-encoder)
+endif()
+
+if(CHARLS_BUILD_CLI)
+  add_subdirectory(cli)
 endif()
 
 if(CHARLS_BUILD_SAMPLES)
