@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2024 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
-# This is a configuration file for the reuse lint tool. It allows specifing license info
+# This is a configuration file for the reuse lint tool. It allows specifying license info
 # for files that cannot be extended with such info.
 
 version = 1
@@ -30,10 +30,10 @@ SPDX-License-Identifier = "BSD-3-Clause"
 
 [[annotations]]
 path = [
-    "tests/data/conformance/README.md",
-    "tests/data/conformance/*.jls",
-    "tests/data/conformance/*.pgm",
-    "tests/data/conformance/*.ppm",
+    "test/data/conformance/README.md",
+    "test/data/conformance/*.jls",
+    "test/data/conformance/*.pgm",
+    "test/data/conformance/*.ppm",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Copyright (c) Hewlett-Packard Company 1995-1999"
