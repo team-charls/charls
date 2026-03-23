@@ -28,10 +28,10 @@
     <ClInclude Include="performance.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="portable_anymap_file.hpp">
+    <ClInclude Include="..\include\support\portable_anymap_file.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="portable_arbitrary_map.hpp">
+    <ClInclude Include="..\include\support\portable_arbitrary_map.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

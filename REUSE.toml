@@ -21,8 +21,8 @@ path = [
     "spelling.dic",
     "default.ruleset",
     "src/charls.version",
-    "CharLS.sln",
-    "CharLS.sln.DotSettings",
+    "charls.sln",
+    "charls.sln.DotSettings",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "© 2024 Team CharLS"

@@ -3,7 +3,7 @@
 
 #include "util.hpp"
 
-#include "portable_anymap_file.hpp"
+#include <support/portable_anymap_file.hpp>
 
 #include <chrono>
 #include <filesystem>
@@ -24,7 +24,7 @@ using std::vector;
 using std::chrono::duration;
 using std::chrono::steady_clock;
 using namespace charls;
-using namespace charls::cli;
+using namespace charls::support;
 
 
 namespace {

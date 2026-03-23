@@ -6,13 +6,12 @@
 #include "support.hpp"
 
 #include <charls/charls.hpp>
-
-#include "../cli/portable_anymap_file.hpp"
+#include <support/portable_anymap_file.hpp>
 
 #include <fstream>
 #include <vector>
 
-using namespace charls::cli;
+using namespace charls::support;
 using std::vector;
 
 namespace charls::test {

@@ -32,7 +32,7 @@ if(NOT GTest_FOUND)
     endforeach()
 endif()
 
-add_executable(charls-tests
+add_executable(charls-test
     charls_jpegls_decoder_test.cpp
     charls_jpegls_encoder_test.cpp
     color_transform_test.cpp
@@ -61,21 +61,21 @@ add_executable(charls-tests
     version_test.cpp
 )
 
-target_precompile_headers(charls-tests PRIVATE ${CMAKE_CURRENT_LIST_DIR}/pch.hpp)
+target_precompile_headers(charls-test PRIVATE ${CMAKE_CURRENT_LIST_DIR}/pch.hpp)
 
-target_include_directories(charls-tests
+target_include_directories(charls-test
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
-target_compile_features(charls-tests PRIVATE cxx_std_17)
+target_compile_features(charls-test PRIVATE cxx_std_17)
 
 if(BUILD_SHARED_LIBS)
     # When charls is built as a DLL, internal symbols are not exported.
     # Compile the charls implementation directly into the test executable to
     # allow white-box access to internal symbols, matching the approach used
     # by the Visual Studio project (linking .obj files directly).
-    target_sources(charls-tests PRIVATE
+    target_sources(charls-test PRIVATE
         ../src/charls_jpegls_decoder.cpp
         ../src/charls_jpegls_encoder.cpp
         ../src/golomb_lut.cpp
@@ -87,18 +87,18 @@ if(BUILD_SHARED_LIBS)
         ../src/validate_spiff_header.cpp
         ../src/version.cpp
     )
-    target_include_directories(charls-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+    target_include_directories(charls-test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
     # Use CHARLS_STATIC to avoid __declspec(dllexport) when compiling into an exe.
-    target_compile_definitions(charls-tests PRIVATE CHARLS_STATIC)
-    target_link_libraries(charls-tests PRIVATE GTest::gtest_main)
+    target_compile_definitions(charls-test PRIVATE CHARLS_STATIC)
+    target_link_libraries(charls-test PRIVATE GTest::gtest_main)
 else()
-    target_link_libraries(charls-tests PRIVATE GTest::gtest_main charls)
+    target_link_libraries(charls-test PRIVATE GTest::gtest_main charls)
 endif()
 
 include(GoogleTest)
 # Use PRE_TEST discovery so the test executable is not invoked at build time.
 # This avoids failures when cross-compiling (e.g. building ARM64 on an x64 host).
-gtest_discover_tests(charls-tests DISCOVERY_MODE PRE_TEST)
+gtest_discover_tests(charls-test DISCOVERY_MODE PRE_TEST)
 
 # Copy test data files to a data sub-directory next to the test
 # executable at build time. The source files come from the repository and are not
@@ -141,10 +141,10 @@ set(CHARLS_TEST_DATA_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/data/banny-hp3.jls
 )
 
-add_custom_command(TARGET charls-tests POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:charls-tests>/data"
+add_custom_command(TARGET charls-test POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:charls-test>/data"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CHARLS_TEST_DATA_FILES}
-        "$<TARGET_FILE_DIR:charls-tests>/data/"
+        "$<TARGET_FILE_DIR:charls-test>/data/"
     COMMENT "Copying test data files to build directory"
 )

@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace charls::cli {
+namespace charls::support {
 
 // Purpose: this class can read an image stored in the Portable Anymap Format (PNM).
 //          The 2 binary formats P5 and P6 are supported:
@@ -135,4 +135,4 @@ private:
     std::vector<std::byte> input_buffer_;
 };
 
-} // namespace charls::cli
+} // namespace charls::support

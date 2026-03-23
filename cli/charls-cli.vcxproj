@@ -41,8 +41,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7185AD7F-57BA-42C7-A715-239CEA8ADC31}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>CharLSCli</ProjectName>
-    <TargetName>charls-cli</TargetName>
+    <ProjectName>charls-cli</ProjectName>
     <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -149,13 +148,13 @@
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="portable_anymap_file.hpp" />
+    <ClInclude Include="..\include\support\portable_anymap_file.hpp" />
+    <ClInclude Include="..\include\support\portable_arbitrary_map.hpp" />
     <ClInclude Include="performance.hpp" />
-    <ClInclude Include="portable_arbitrary_map.hpp" />
     <ClInclude Include="util.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\CharLS.vcxproj">
+    <ProjectReference Include="..\src\charls.vcxproj">
       <Project>{1e31f9f1-f175-4082-b3e2-b1f0eca3f44c}</Project>
     </ProjectReference>
   </ItemGroup>

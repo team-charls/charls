@@ -258,7 +258,7 @@ include(src/CMakeLists.txt)
 
 if(CHARLS_BUILD_TESTS)
   enable_testing()
-  add_subdirectory(tests)
+  add_subdirectory(test)
 endif()
 
 if(CHARLS_BUILD_AFL_FUZZ_TEST)

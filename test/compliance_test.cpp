@@ -6,8 +6,7 @@
 #include "support.hpp"
 
 #include <charls/charls.hpp>
-
-#include "../cli/portable_anymap_file.hpp"
+#include <support/portable_anymap_file.hpp>
 
 #include <array>
 #include <cstdint>
@@ -15,7 +14,7 @@
 #include <fstream>
 #include <vector>
 
-using namespace charls::cli;
+using namespace charls::support;
 using std::array;
 using std::byte;
 using std::vector;

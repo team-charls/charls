@@ -3,7 +3,8 @@
 
 #include "performance.hpp"
 
-#include "portable_anymap_file.hpp"
+#include <support/portable_anymap_file.hpp>
+
 #include "util.hpp"
 
 #include <chrono>
@@ -130,7 +131,7 @@ void encode_performance_tests(const int loop_count)
 
     try
     {
-        const charls::cli::portable_anymap_file anymap_file("encode-test.pnm");
+        const charls::support::portable_anymap_file anymap_file("encode-test.pnm");
 
         const frame_info info{static_cast<uint32_t>(anymap_file.width()), static_cast<uint32_t>(anymap_file.height()),
                               anymap_file.bits_per_sample(), anymap_file.component_count()};
