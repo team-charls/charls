@@ -561,7 +561,7 @@ TEST(encode_test, encode_8_bit_noise)
 {
     for (size_t bit_depth{8}; bit_depth >= 2; --bit_depth)
     {
-        frame_info frame_info{512, 512, static_cast<int32_t>(bit_depth), 1};
+        const frame_info frame_info{512, 512, static_cast<int32_t>(bit_depth), 1};
 
         const auto source{
             create_8_bit_buffer_with_noise(static_cast<size_t>(frame_info.width) * frame_info.height, bit_depth, 21344)};
@@ -574,7 +574,7 @@ TEST(encode_test, encode_16_bit_noise)
 {
     for (size_t bit_depth{16}; bit_depth > 8; --bit_depth)
     {
-        frame_info frame_info{512, 512, static_cast<int32_t>(bit_depth), 1};
+        const frame_info frame_info{512, 512, static_cast<int32_t>(bit_depth), 1};
 
         const auto source{
             create_16_bit_buffer_with_noise(static_cast<size_t>(frame_info.width) * frame_info.height, bit_depth, 21344)};
