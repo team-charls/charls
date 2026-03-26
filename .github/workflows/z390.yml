@@ -1,0 +1,58 @@
+# SPDX-FileCopyrightText: © 2026 Team CharLS
+# SPDX-License-Identifier: BSD-3-Clause
+
+name: z390
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: s390x emulation build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install s390x toolchain and QEMU
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            qemu-user-static \
+            gcc-s390x-linux-gnu \
+            g++-s390x-linux-gnu
+
+      - name: Show toolchain details
+        run: |
+          uname -m
+          s390x-linux-gnu-gcc --version
+          s390x-linux-gnu-g++ --version
+          qemu-s390x-static --version
+
+      - name: Configure CharLS
+        run: >-
+          cmake
+          -S .
+          -B build
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DCHARLS_BUILD_ALL=On
+          -DBUILD_SHARED_LIBS=Off
+          -DCHARLS_PEDANTIC_WARNINGS=On
+          -DCHARLS_TREAT_WARNING_AS_ERROR=On
+          -DCMAKE_SYSTEM_NAME=Linux
+          -DCMAKE_SYSTEM_PROCESSOR=s390x
+          -DCMAKE_C_COMPILER=s390x-linux-gnu-gcc
+          -DCMAKE_CXX_COMPILER=s390x-linux-gnu-g++
+          -DCMAKE_CROSSCOMPILING_EMULATOR=/usr/bin/qemu-s390x-static\;-L\;/usr/s390x-linux-gnu
+
+      - name: Build CharLS
+        run: cmake --build build --parallel
+
+      - name: Test CharLS
+        run: ctest --test-dir build -V
