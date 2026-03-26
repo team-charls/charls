@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2026 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
-name: z390
+name: s390x
 
 on:
   push:
