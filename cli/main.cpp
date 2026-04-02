@@ -1,10 +1,13 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <support/portable_arbitrary_map.hpp>
-
+#include "support/portable_arbitrary_map.hpp"
 #include "performance.hpp"
 #include "util.hpp"
+
+MSVC_WARNING_SUPPRESS(4866) // Vcpkg fails to add argparse as external include directory.
+#include <argparse/argparse.hpp>
+MSVC_WARNING_UNSUPPRESS()
 
 #include <algorithm>
 #include <cassert>
@@ -31,6 +34,7 @@ using std::string;
 using std::stringstream;
 using std::vector;
 using namespace charls;
+namespace fs = std::filesystem;
 
 namespace {
 
@@ -47,7 +51,7 @@ try
 }
 catch (const std::ifstream::failure&)
 {
-    cout << "Failed to open/read file: " << std::filesystem::absolute(filename) << "\n";
+    cout << "Failed to open/read file: " << fs::absolute(filename) << "\n";
     throw;
 }
 
@@ -384,153 +388,111 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
     return true;
 }
 
-
-bool decode_raw(const char* filename_encoded, const char* filename_output)
-try
-{
-    const auto encoded_source{read_file(filename_encoded)};
-    vector<byte> decoded_destination;
-    jpegls_decoder::decode(encoded_source, decoded_destination);
-    write_file(filename_output, decoded_destination.data(), decoded_destination.size());
-    return true;
-}
-catch (const runtime_error& error)
-{
-    cout << "Failed to decode " << filename_encoded << " to " << filename_output << ", reason: " << error.what() << '\n';
-    return false;
-}
-
 } // namespace
 
 
 int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-escape)
 {
-    if (argc == 1)
+    using argparse::ArgumentParser;
+
+    ArgumentParser program("charls-cli");
+    program.add_description("CharLS command line interface");
+
+    ArgumentParser encode_command("encode");
+    encode_command.add_description("Encode a binary Netpbm file to a JPEG-LS file");
+    encode_command.add_argument("input").help("The binary binary file to encode to JPEG-LS (required)");
+    encode_command.add_argument("output").nargs(0, 1).help(
+        "The output JPEG-LS file path. If not specified, the output file is created "
+        "with the same name as the input file and a .jls extension");
+    program.add_subparser(encode_command);
+
+    ArgumentParser decode_command("decode");
+    decode_command.add_description("Decode a JPEG-LS file to a binary Netpbm file");
+    decode_command.add_argument("input").help(
+        "The JPEG-LS file to decode to a binary PGM file (required)");
+    decode_command.add_argument("output").nargs(0, 1).help(
+        "The output Netpbm file path. If not specified, the output filename is based on the input filename");
+    program.add_subparser(decode_command);
+
+    ArgumentParser compare_command("compare");
+    compare_command.add_description("Compare 2 Netpbm files");
+    compare_command.add_argument("source1").help("File source 1 (required)");
+    compare_command.add_argument("source2").help("File source 2 (required)");
+    program.add_subparser(compare_command);
+
+    ArgumentParser benchmark_encode_command("benchmark-encode");
+    benchmark_encode_command.add_description("Benchmark encoding a JPEG-LS image");
+    benchmark_encode_command.add_argument("input").help(
+        "The binary Netpbm file to encode (required)");
+    benchmark_encode_command.add_argument("loop-count").nargs(0, 1).help("Loop count (optional: default = 10");
+    program.add_subparser(benchmark_encode_command);
+
+    ArgumentParser benchmark_decode_command("benchmark-decode");
+    benchmark_decode_command.add_description("Benchmark decoding a JPEG-LS image");
+    benchmark_decode_command.add_argument("input").help("The JPEG-LS file to decode (required)");
+    benchmark_decode_command.add_argument("loop-count").nargs(0, 1).help("Loop count (optional: default = 10");
+    program.add_subparser(benchmark_decode_command);
+
+    try
     {
-        cout << "CharLS test runner.\nOptions: -performance[:loop-count], "
-                "-decodeperformance[:loop-count], -decoderaw -encode -decodetopnm -comparepnm\n";
+        program.parse_args(argc, argv);
+    }
+    catch (const std::runtime_error& error)
+    {
+        cout << error.what() << "\n";
         return EXIT_FAILURE;
     }
 
-    for (int i{1}; i != argc; ++i)
+    if (program.is_subcommand_used(encode_command))
     {
-        const string str{argv[i]};
-
-        if (str == "-decoderaw")
+        auto input_filename = encode_command.get<std::string>("input");
+        auto output_filename = encode_command.present<std::string>("output");
+        if (!output_filename.has_value())
         {
-            if (i != 1 || argc != 4)
-            {
-                cout << "Syntax: -decoderaw input-file output-file\n";
-                return EXIT_FAILURE;
-            }
-            return result_to_exit_code(decode_raw(argv[2], argv[3]));
+            output_filename = fs::path(input_filename).replace_extension(".jls").string();
         }
-
-        if (str == "-decodetopnm")
-        {
-            if (i != 1 || argc != 4)
-            {
-                cout << "Syntax: -decodetopnm input-file output-file\n";
-                return EXIT_FAILURE;
-            }
-
-            return result_to_exit_code(decode_to_pnm(argv[2], argv[3]));
-        }
-
-        if (str == "-encode")
-        {
-            if (i != 1 || argc != 4)
-            {
-                cout << "Syntax: -encode input-file output-file\n";
-                return EXIT_FAILURE;
-            }
-
-            return result_to_exit_code(encode_netpbm(argv[2], argv[3]));
-        }
-
-        if (str == "-comparepnm")
-        {
-            if (i != 1 || argc != 4)
-            {
-                cout << "Syntax: -encodepnm input-file output-file\n";
-                return EXIT_FAILURE;
-            }
-            ifstream pnm_file1(argv[2], mode_input);
-            ifstream pnm_file2(argv[3], mode_input);
-
-            return result_to_exit_code(compare_pnm(pnm_file1, pnm_file2));
-        }
-
-        if (str.compare(0, 12, "-performance") == 0)
-        {
-            int loop_count{1};
-
-            // Extract the optional loop count from the command line. Longer running tests make the measurements more
-            // reliable.
-            if (auto index{str.find(':')}; index != string::npos)
-            {
-                loop_count = stoi(str.substr(++index));
-                if (loop_count < 1)
-                {
-                    cout << "Loop count not understood or invalid: %s" << str << "\n";
-                    break;
-                }
-            }
-
-            performance_tests(loop_count);
-            continue;
-        }
-
-        if (str.compare(0, 17, "-rgb8_performance") == 0)
-        {
-            // See the comments in function, how to prepare this test.
-            test_large_image_performance_rgb8(1);
-            continue;
-        }
-
-        if (str.compare(0, 18, "-decodeperformance") == 0)
-        {
-            int loop_count{1};
-
-            // Extract the optional loop count from the command line. Longer running tests make the measurements more
-            // reliable.
-            if (auto index{str.find(':')}; index != string::npos)
-            {
-                loop_count = stoi(str.substr(++index));
-                if (loop_count < 1)
-                {
-                    cout << "Loop count not understood or invalid: " << str << "\n";
-                    break;
-                }
-            }
-
-            decode_performance_tests(loop_count);
-            continue;
-        }
-
-        if (str.compare(0, 19, "-encode-performance") == 0)
-        {
-            int loop_count{1};
-
-            // Extract the optional loop count from the command line. Longer running tests make the measurements more
-            // reliable.
-            if (auto index{str.find(':')}; index != string::npos)
-            {
-                loop_count = stoi(str.substr(++index));
-                if (loop_count < 1)
-                {
-                    cout << "Loop count not understood or invalid: " << str << "\n";
-                    break;
-                }
-            }
-
-            encode_performance_tests(loop_count);
-            continue;
-        }
-
-        cout << "Option not understood: " << argv[i] << "\n";
-        return EXIT_FAILURE;
+        return result_to_exit_code(encode_netpbm(input_filename.c_str(), output_filename->c_str()));
     }
 
-    return EXIT_SUCCESS;
+    if (program.is_subcommand_used(decode_command))
+    {
+        auto input_filename = decode_command.get<std::string>("input");
+        auto output_filename = decode_command.present<std::string>("output");
+        if (!output_filename.has_value())
+        {
+            output_filename = fs::path(input_filename).replace_extension(".pnm").string();
+        }
+        return result_to_exit_code(decode_to_pnm(input_filename.c_str(), output_filename->c_str()));
+    }
+
+    if (program.is_subcommand_used(compare_command))
+    {
+        auto source1_filename = compare_command.get<std::string>("source1");
+        auto source2_filename = compare_command.get<std::string>("source2");
+
+        ifstream pnm_file1(source1_filename, mode_input);
+        ifstream pnm_file2(source2_filename, mode_input);
+        return result_to_exit_code(compare_pnm(pnm_file1, pnm_file2));
+    }
+
+    if (program.is_subcommand_used(benchmark_encode_command))
+    {
+        auto input_filename = benchmark_encode_command.get<std::string>("input");
+        auto loop_count = benchmark_encode_command.present<int>("loop-count");
+
+        encode_performance_tests(input_filename.c_str(), loop_count.value_or(10));
+        return EXIT_SUCCESS;
+    }
+
+    if (program.is_subcommand_used(benchmark_decode_command))
+    {
+        auto input_filename = benchmark_encode_command.get<std::string>("input");
+        auto loop_count = benchmark_encode_command.present<int>("loop-count");
+
+        decode_performance_tests(input_filename.c_str(), loop_count.value_or(10));
+        return EXIT_SUCCESS;
+    }
+
+    cout << program;
+    return EXIT_FAILURE;
 }
