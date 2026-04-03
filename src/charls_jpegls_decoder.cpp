@@ -3,7 +3,7 @@
 
 #include "pch.hpp"
 
-#include <charls/charls_jpegls_decoder.h>
+#include "charls/charls_jpegls_decoder.h"
 
 #include "constants.hpp"
 #include "jpeg_stream_reader.hpp"

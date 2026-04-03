@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <charls/jpegls_error.hpp>
+#include "charls/jpegls_error.hpp"
 
 #include "assert.hpp"
 #include "copy_from_line_buffer.hpp"

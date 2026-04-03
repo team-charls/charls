@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <charls/public_types.h>
+#include "charls/public_types.h"
 
 #include "jpegls_algorithm.hpp"
 #include "assert.hpp"

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <charls/public_types.h>
+#include "charls/public_types.h"
 
 #include "coding_parameters.hpp"
 #include "span.hpp"
