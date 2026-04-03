@@ -15,7 +15,7 @@
 namespace charls::support {
 
 // Purpose: This class can read an image stored in the Portable Arbitrary Map Format (PAM).
-// Remark: Minimal checking is done on the input file: it is assumed that the file is well formed.
+// Remark: Minimal checking is done on the input file: it is assumed that the file is well-formed.
 class portable_arbitrary_map final
 {
 public:

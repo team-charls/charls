@@ -1,8 +1,8 @@
 // Copyright (c) Team CharLS.
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "support/portable_arbitrary_map.hpp"
 #include "performance.hpp"
+#include "support/portable_arbitrary_map.hpp"
 #include "util.hpp"
 
 MSVC_WARNING_SUPPRESS(4866) // Vcpkg fails to add argparse as external include directory.
@@ -19,6 +19,7 @@ MSVC_WARNING_UNSUPPRESS()
 #include <tuple>
 #include <vector>
 
+using argparse::ArgumentParser;
 using std::byte;
 using std::cout;
 using std::getline;
@@ -39,6 +40,11 @@ namespace fs = std::filesystem;
 namespace {
 
 constexpr ios::openmode mode_input{ios::in | ios::binary};
+const char* const input_argument{"input"};
+const char* const output_argument{"output"};
+const char* const source1_argument{"source1"};
+const char* const source2_argument{"source2"};
+const char* const loop_count_argument{"loop-count"};
 
 ifstream open_input_stream(const char* filename)
 try
@@ -62,7 +68,7 @@ constexpr uint32_t log2_floor(const uint32_t n) noexcept
 
     uint32_t result = 0;
     uint32_t val = n;
-    while (val >>= 1)
+    while ((val >>= 1UL) != 0)
         ++result;
     return result;
 }
@@ -152,7 +158,7 @@ try
     }
 
     // PPM format only supports by-pixel, convert if needed.
-    if (interleave_mode == charls::interleave_mode::none && frame_info.component_count == 3)
+    if (interleave_mode == interleave_mode::none && frame_info.component_count == 3)
     {
         vector<byte> pixels(decoded_destination.size());
         if (frame_info.bits_per_sample > 8)
@@ -239,7 +245,7 @@ void encode_pnm(const char* filename_input, const char* filename_output)
                                 static_cast<int32_t>(max_value_to_bits_per_sample(static_cast<uint32_t>(read_values[3]))),
                                 read_values[0] == 6 ? 3 : 1};
 
-    const auto bytes_per_sample{static_cast<int32_t>(::bit_to_byte_count(frame_info.bits_per_sample))};
+    const auto bytes_per_sample{static_cast<int32_t>(bit_to_byte_count(frame_info.bits_per_sample))};
     vector<uint8_t> input_buffer(static_cast<size_t>(frame_info.width) * frame_info.height * bytes_per_sample *
                                  frame_info.component_count);
     read(pnm_file, input_buffer);
@@ -388,56 +394,64 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
     return true;
 }
 
+[[nodiscard]]
+uint32_t get_loop_count(const ArgumentParser& command)
+{
+    const auto loop_count{command.present<uint32_t>("loop-count")};
+    if (!loop_count.has_value() || *loop_count == 0)
+        return 10;
+
+    return *loop_count;
+}
+
 } // namespace
 
 
 int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-escape)
 {
-    using argparse::ArgumentParser;
-
     ArgumentParser program("charls-cli");
     program.add_description("CharLS command line interface");
 
     ArgumentParser encode_command("encode");
     encode_command.add_description("Encode a binary Netpbm file to a JPEG-LS file");
-    encode_command.add_argument("input").help("The binary binary file to encode to JPEG-LS (required)");
-    encode_command.add_argument("output").nargs(0, 1).help(
-        "The output JPEG-LS file path. If not specified, the output file is created "
-        "with the same name as the input file and a .jls extension");
+    encode_command.add_argument(input_argument).help("The binary Netpbm file to encode to JPEG-LS (required)");
+    encode_command.add_argument(output_argument)
+        .nargs(0, 1)
+        .help("The output JPEG-LS file path. If not specified, the output file is created "
+              "with the same name as the input file and a .jls extension");
     program.add_subparser(encode_command);
 
     ArgumentParser decode_command("decode");
     decode_command.add_description("Decode a JPEG-LS file to a binary Netpbm file");
-    decode_command.add_argument("input").help(
-        "The JPEG-LS file to decode to a binary PGM file (required)");
-    decode_command.add_argument("output").nargs(0, 1).help(
-        "The output Netpbm file path. If not specified, the output filename is based on the input filename");
+    decode_command.add_argument(input_argument).help("The JPEG-LS file to decode to a binary Netpbm file (required)");
+    decode_command.add_argument(output_argument)
+        .nargs(0, 1)
+        .help("The output Netpbm file path. If not specified, the output filename is based on the input filename");
     program.add_subparser(decode_command);
 
     ArgumentParser compare_command("compare");
     compare_command.add_description("Compare 2 Netpbm files");
-    compare_command.add_argument("source1").help("File source 1 (required)");
-    compare_command.add_argument("source2").help("File source 2 (required)");
+    compare_command.add_argument(source1_argument).help("File source 1 (required)");
+    compare_command.add_argument(source2_argument).help("File source 2 (required)");
     program.add_subparser(compare_command);
 
     ArgumentParser benchmark_encode_command("benchmark-encode");
     benchmark_encode_command.add_description("Benchmark encoding a JPEG-LS image");
-    benchmark_encode_command.add_argument("input").help(
-        "The binary Netpbm file to encode (required)");
-    benchmark_encode_command.add_argument("loop-count").nargs(0, 1).help("Loop count (optional: default = 10");
+    benchmark_encode_command.add_argument(input_argument).help("The binary Netpbm file to encode (required)");
+    benchmark_encode_command.add_argument(loop_count_argument).nargs(0, 1).help("Loop count (optional: default = 10)");
     program.add_subparser(benchmark_encode_command);
 
     ArgumentParser benchmark_decode_command("benchmark-decode");
     benchmark_decode_command.add_description("Benchmark decoding a JPEG-LS image");
-    benchmark_decode_command.add_argument("input").help("The JPEG-LS file to decode (required)");
-    benchmark_decode_command.add_argument("loop-count").nargs(0, 1).help("Loop count (optional: default = 10");
+    benchmark_decode_command.add_argument(input_argument).help("The JPEG-LS file to decode (required)");
+    benchmark_decode_command.add_argument(loop_count_argument).nargs(0, 1).help("Loop count (optional: default = 10)");
     program.add_subparser(benchmark_decode_command);
 
     try
     {
         program.parse_args(argc, argv);
     }
-    catch (const std::runtime_error& error)
+    catch (const runtime_error& error)
     {
         cout << error.what() << "\n";
         return EXIT_FAILURE;
@@ -445,51 +459,47 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 
     if (program.is_subcommand_used(encode_command))
     {
-        auto input_filename = encode_command.get<std::string>("input");
-        auto output_filename = encode_command.present<std::string>("output");
+        const auto input_filename{encode_command.get<string>(input_argument)};
+        auto output_filename{encode_command.present<string>(output_argument)};
         if (!output_filename.has_value())
         {
             output_filename = fs::path(input_filename).replace_extension(".jls").string();
         }
+
         return result_to_exit_code(encode_netpbm(input_filename.c_str(), output_filename->c_str()));
     }
 
     if (program.is_subcommand_used(decode_command))
     {
-        auto input_filename = decode_command.get<std::string>("input");
-        auto output_filename = decode_command.present<std::string>("output");
+        const auto input_filename{decode_command.get<string>(input_argument)};
+        auto output_filename{decode_command.present<string>(output_argument)};
         if (!output_filename.has_value())
         {
             output_filename = fs::path(input_filename).replace_extension(".pnm").string();
         }
+
         return result_to_exit_code(decode_to_pnm(input_filename.c_str(), output_filename->c_str()));
     }
 
     if (program.is_subcommand_used(compare_command))
     {
-        auto source1_filename = compare_command.get<std::string>("source1");
-        auto source2_filename = compare_command.get<std::string>("source2");
+        ifstream pnm_file1(compare_command.get<string>(source1_argument), mode_input);
+        ifstream pnm_file2(compare_command.get<string>(source2_argument), mode_input);
 
-        ifstream pnm_file1(source1_filename, mode_input);
-        ifstream pnm_file2(source2_filename, mode_input);
         return result_to_exit_code(compare_pnm(pnm_file1, pnm_file2));
     }
 
     if (program.is_subcommand_used(benchmark_encode_command))
     {
-        auto input_filename = benchmark_encode_command.get<std::string>("input");
-        auto loop_count = benchmark_encode_command.present<int>("loop-count");
-
-        encode_performance_tests(input_filename.c_str(), loop_count.value_or(10));
+        encode_performance_tests(benchmark_encode_command.get<string>(input_argument).c_str(),
+                                 get_loop_count(benchmark_encode_command));
         return EXIT_SUCCESS;
     }
 
     if (program.is_subcommand_used(benchmark_decode_command))
     {
-        auto input_filename = benchmark_encode_command.get<std::string>("input");
-        auto loop_count = benchmark_encode_command.present<int>("loop-count");
-
-        decode_performance_tests(input_filename.c_str(), loop_count.value_or(10));
+        decode_performance_tests(benchmark_decode_command.get<string>(input_argument).c_str(),
+                                 get_loop_count(benchmark_decode_command));
         return EXIT_SUCCESS;
     }
 

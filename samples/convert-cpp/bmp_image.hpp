@@ -15,7 +15,7 @@ public:
         uint16_t magic;     // the magic number used to identify the BMP file:
                             // 0x42 0x4D (Hex code points for B and M).
                             // The following entries are possible:
-                            // BM - Windows 3.1x, 95, NT, ... etc
+                            // BM - Windows 3.1x, 95, NT, ... etc.
                             // BA - OS/2 Bitmap Array
                             // CI - OS/2 Color Icon
                             // CP - OS/2 Color Pointer
@@ -44,7 +44,7 @@ public:
                                           // generally ignored.
     };
 
-    explicit bmp_image(const char* filename)
+    explicit bmp_image(const std::filesystem::path& filename)
     {
         std::ifstream input;
         input.exceptions(std::ios::eofbit | std::ios::failbit | std::ios::badbit);
@@ -70,8 +70,8 @@ public:
 
     bmp_header header;
     bmp_dib_header dib_header;
-    uint32_t stride{};
-    std::vector<uint8_t> pixel_data;
+    std::uint32_t stride{};
+    std::vector<std::byte> pixel_data;
 
 private:
     static bmp_header read_bmp_header(std::istream& input)
@@ -105,12 +105,12 @@ private:
         return result;
     }
 
-    static std::vector<uint8_t> read_pixel_data(std::istream& input, const uint32_t offset, const int32_t height,
+    static std::vector<std::byte> read_pixel_data(std::istream& input, const uint32_t offset, const int32_t height,
                                                 const uint32_t stride)
     {
         input.seekg(offset);
 
-        std::vector<uint8_t> pixel_data(static_cast<size_t>(height) * stride);
+        std::vector<std::byte> pixel_data(static_cast<size_t>(height) * stride);
         input.read(reinterpret_cast<char*>(pixel_data.data()), static_cast<std::streamsize>(pixel_data.size()));
 
         return pixel_data;

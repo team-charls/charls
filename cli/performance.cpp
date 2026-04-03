@@ -3,8 +3,7 @@
 
 #include "performance.hpp"
 
-#include <support/portable_anymap_file.hpp>
-
+#include "support/portable_anymap_file.hpp"
 #include "util.hpp"
 
 #include <chrono>
@@ -12,6 +11,7 @@
 #include <ratio>
 #include <tuple>
 #include <vector>
+#include <cassert>
 
 using charls::frame_info;
 using charls::jpegls_decoder;
@@ -25,9 +25,11 @@ using std::vector;
 using std::chrono::duration;
 using std::chrono::steady_clock;
 
-void decode_performance_tests(const char* filename, const int loop_count)
+void decode_performance_tests(const char* filename, const uint32_t loop_count)
 {
-    cout << "Test decode performance with loop count " << loop_count << "\n";
+    ASSERT(loop_count > 0);
+
+    cout << "Test decode performance with loop count " << loop_count << "and " << filename << "\n";
 
     try
     {
@@ -38,7 +40,7 @@ void decode_performance_tests(const char* filename, const int loop_count)
         vector<byte> destination(jpegls_decoder{encoded_source, true}.get_destination_size());
 
         const auto start{steady_clock::now()};
-        for (int i{}; i != loop_count; ++i)
+        for (uint32_t i{}; i != loop_count; ++i)
         {
             jpegls_decoder decoder{encoded_source, true};
 
@@ -60,9 +62,11 @@ void decode_performance_tests(const char* filename, const int loop_count)
     }
 }
 
-void encode_performance_tests(const char* filename, const int loop_count)
+void encode_performance_tests(const char* filename, const uint32_t loop_count)
 {
-    cout << "Test encode performance with loop count " << loop_count << "and"<< filename << "\n";
+    ASSERT(loop_count > 0);
+
+    cout << "Test encode performance with loop count " << loop_count << "and " << filename << "\n";
 
     try
     {
@@ -78,7 +82,7 @@ void encode_performance_tests(const char* filename, const int loop_count)
         vector<byte> destination(encoder1.estimated_destination_size());
 
         const auto start{steady_clock::now()};
-        for (int i{}; i != loop_count; ++i)
+        for (uint32_t i{}; i != loop_count; ++i)
         {
             jpegls_encoder encoder2;
             encoder2.frame_info(info).interleave_mode(interleave_mode);

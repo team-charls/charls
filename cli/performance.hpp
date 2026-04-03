@@ -3,5 +3,7 @@
 
 #pragma once
 
-void decode_performance_tests(const char* filename, int loop_count);
-void encode_performance_tests(const char* filename, int loop_count);
+#include <cstdint>
+
+void decode_performance_tests(const char* filename, std::uint32_t loop_count);
+void encode_performance_tests(const char* filename, std::uint32_t loop_count);
