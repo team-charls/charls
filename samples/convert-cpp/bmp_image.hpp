@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstddef>
+#include <filesystem>
 #include <fstream>
 #include <vector>
 
@@ -106,7 +107,7 @@ private:
     }
 
     static std::vector<std::byte> read_pixel_data(std::istream& input, const uint32_t offset, const int32_t height,
-                                                const uint32_t stride)
+                                                  const uint32_t stride)
     {
         input.seekg(offset);
 
