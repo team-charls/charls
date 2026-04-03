@@ -1,4 +1,4 @@
-// Copyright (c) Team CharLS.
+// SPDX-FileCopyrightText: © 2026 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "../../include/charls/jpegls_encoder.hpp"
