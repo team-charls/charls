@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <vector>
@@ -75,6 +76,7 @@ public:
     std::vector<std::byte> pixel_data;
 
 private:
+    [[nodiscard]]
     static bmp_header read_bmp_header(std::istream& input)
     {
         bmp_header result{};
@@ -87,6 +89,7 @@ private:
         return result;
     }
 
+    [[nodiscard]]
     static bmp_dib_header read_dib_header(std::istream& input)
     {
         bmp_dib_header result{};
@@ -106,12 +109,13 @@ private:
         return result;
     }
 
+    [[nodiscard]]
     static std::vector<std::byte> read_pixel_data(std::istream& input, const uint32_t offset, const int32_t height,
                                                   const uint32_t stride)
     {
         input.seekg(offset);
 
-        std::vector<std::byte> pixel_data(static_cast<size_t>(height) * stride);
+        std::vector<std::byte> pixel_data(static_cast<size_t>(std::abs(height)) * stride);
         input.read(reinterpret_cast<char*>(pixel_data.data()), static_cast<std::streamsize>(pixel_data.size()));
 
         return pixel_data;
