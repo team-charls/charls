@@ -1,4 +1,4 @@
-# Copyright (c) Team CharLS.
+# SPDX-FileCopyrightText: © 2019 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
 add_executable(convert-cpp "")
