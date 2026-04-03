@@ -4,6 +4,8 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <vector>
 
@@ -15,7 +17,7 @@ public:
         uint16_t magic;     // the magic number used to identify the BMP file:
                             // 0x42 0x4D (Hex code points for B and M).
                             // The following entries are possible:
-                            // BM - Windows 3.1x, 95, NT, ... etc
+                            // BM - Windows 3.1x, 95, NT, ... etc.
                             // BA - OS/2 Bitmap Array
                             // CI - OS/2 Color Icon
                             // CP - OS/2 Color Pointer
@@ -44,7 +46,7 @@ public:
                                           // generally ignored.
     };
 
-    explicit bmp_image(const char* filename)
+    explicit bmp_image(const std::filesystem::path& filename)
     {
         std::ifstream input;
         input.exceptions(std::ios::eofbit | std::ios::failbit | std::ios::badbit);
@@ -65,15 +67,28 @@ public:
         constexpr int bytes_per_pixel{3};
         stride = ((dib_header.width * bytes_per_pixel) + 3) / 4 * 4;
 
+        // Check if image is top_down or bottom_up.
+        if (dib_header.height < 0)
+        {
+            dib_header.height = -dib_header.height;
+            bottom_up = false;
+        }
+        else
+        {
+            bottom_up = true;
+        }
+
         pixel_data = read_pixel_data(input, header.offset, dib_header.height, stride);
     }
 
     bmp_header header;
     bmp_dib_header dib_header;
-    uint32_t stride{};
-    std::vector<uint8_t> pixel_data;
+    std::uint32_t stride{};
+    std::vector<std::byte> pixel_data;
+    bool bottom_up;
 
 private:
+    [[nodiscard]]
     static bmp_header read_bmp_header(std::istream& input)
     {
         bmp_header result{};
@@ -86,6 +101,7 @@ private:
         return result;
     }
 
+    [[nodiscard]]
     static bmp_dib_header read_dib_header(std::istream& input)
     {
         bmp_dib_header result{};
@@ -105,12 +121,13 @@ private:
         return result;
     }
 
-    static std::vector<uint8_t> read_pixel_data(std::istream& input, const uint32_t offset, const int32_t height,
-                                                const uint32_t stride)
+    [[nodiscard]]
+    static std::vector<std::byte> read_pixel_data(std::istream& input, const uint32_t offset, const int32_t height,
+                                                  const uint32_t stride)
     {
         input.seekg(offset);
 
-        std::vector<uint8_t> pixel_data(static_cast<size_t>(height) * stride);
+        std::vector<std::byte> pixel_data(static_cast<size_t>(height) * stride);
         input.read(reinterpret_cast<char*>(pixel_data.data()), static_cast<std::streamsize>(pixel_data.size()));
 
         return pixel_data;

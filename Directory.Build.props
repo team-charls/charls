@@ -33,6 +33,8 @@
 
       <!-- Explicit disable warnings from external files (Supported since Visual Studio 2019 16.10) -->
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <PREfastAdditionalOptions>external-;%(PREfastAdditionalOptions)</PREfastAdditionalOptions>
 
       <!-- For development purposes, All warnings can be used to discover useful compiler warnings.
            This requires also that some warnings need to be disabled from this all warning list. -->
