@@ -45,7 +45,7 @@ const char* const input_argument{"input"};
 const char* const output_argument{"output"};
 const char* const source1_argument{"source1"};
 const char* const source2_argument{"source2"};
-const char* const loop_count_argument{"loop-count"};
+const char* const loop_count_argument{"--loop-count"};
 
 ifstream open_input_stream(const char* filename)
 try
@@ -395,14 +395,13 @@ bool compare_pnm(istream& pnm_file1, istream& pnm_file2)
     return true;
 }
 
+
 [[nodiscard]]
 uint32_t get_loop_count(const ArgumentParser& command)
 {
-    const auto loop_count{command.present<uint32_t>("loop-count")};
-    if (!loop_count.has_value() || *loop_count == 0)
-        return 10;
-
-    return *loop_count;
+    static constexpr uint32_t default_loop_count{10};
+    const auto loop_count{command.present<uint32_t>(loop_count_argument)};
+    return loop_count.has_value() && *loop_count != 0 ? *loop_count : default_loop_count;
 }
 
 } // namespace
@@ -439,13 +438,17 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
     ArgumentParser benchmark_encode_command("benchmark-encode");
     benchmark_encode_command.add_description("Benchmark encoding a JPEG-LS image");
     benchmark_encode_command.add_argument(input_argument).help("The binary Netpbm file to encode (required)");
-    benchmark_encode_command.add_argument(loop_count_argument).nargs(0, 1).help("Loop count (optional: default = 10)");
+    benchmark_encode_command.add_argument(loop_count_argument)
+        .scan<'u', uint32_t>()
+        .help("Loop count (optional: default = 10)");
     program.add_subparser(benchmark_encode_command);
 
     ArgumentParser benchmark_decode_command("benchmark-decode");
     benchmark_decode_command.add_description("Benchmark decoding a JPEG-LS image");
     benchmark_decode_command.add_argument(input_argument).help("The JPEG-LS file to decode (required)");
-    benchmark_decode_command.add_argument(loop_count_argument).nargs(0, 1).help("Loop count (optional: default = 10)");
+    benchmark_decode_command.add_argument(loop_count_argument)
+        .scan<'u', uint32_t>()
+        .help("Loop count (optional: default = 10)");
     program.add_subparser(benchmark_decode_command);
 
     try
