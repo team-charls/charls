@@ -5,9 +5,11 @@
 
 #include <charls/charls.hpp>
 
+#include <fstream>
 #include <istream>
 #include <ostream>
 #include <vector>
+#include <cstddef>
 
 [[nodiscard]]
 std::ofstream open_output_stream(const char* filename);

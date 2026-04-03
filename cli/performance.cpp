@@ -29,7 +29,7 @@ void decode_performance_tests(const char* filename, const uint32_t loop_count)
 {
     ASSERT(loop_count > 0);
 
-    cout << "Test decode performance with loop count " << loop_count << "and " << filename << "\n";
+    cout << "Test decode performance with loop count " << loop_count << " and " << filename << "\n";
 
     try
     {
@@ -66,7 +66,7 @@ void encode_performance_tests(const char* filename, const uint32_t loop_count)
 {
     ASSERT(loop_count > 0);
 
-    cout << "Test encode performance with loop count " << loop_count << "and " << filename << "\n";
+    cout << "Test encode performance with loop count " << loop_count << " and " << filename << "\n";
 
     try
     {

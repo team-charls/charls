@@ -11,6 +11,7 @@ MSVC_WARNING_UNSUPPRESS()
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
