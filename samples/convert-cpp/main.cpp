@@ -207,16 +207,11 @@ int main(const int argc, char** argv)
 
         bmp_image bmp_image{options.input_filename};
 
-        // Pixels in the BMP file format are stored bottom up (when the height parameter is positive), JPEG-LS requires top
-        // down.
-        if (bmp_image.dib_header.height > 0)
+        // Pixels in the BMP file format can be stored bottom up or top down: JPEG-LS requires top down.
+        if (bmp_image.bottom_up)
         {
             convert_bottom_up_to_top_down(bmp_image.pixel_data.data(), bmp_image.dib_header.width,
                                           static_cast<size_t>(bmp_image.dib_header.height), bmp_image.stride);
-        }
-        else
-        {
-            bmp_image.dib_header.height = std::abs(bmp_image.dib_header.height);
         }
 
         // Pixels in the BMP file format are stored as BGR. JPEG-LS (SPIFF header) only supports the RGB color model.

@@ -67,6 +67,17 @@ public:
         constexpr int bytes_per_pixel{3};
         stride = ((dib_header.width * bytes_per_pixel) + 3) / 4 * 4;
 
+        // Check if image is top_down or bottom_up.
+        if (dib_header.height < 0)
+        {
+            dib_header.height = -dib_header.height;
+            bottom_up = false;
+        }
+        else
+        {
+            bottom_up = true;
+        }
+
         pixel_data = read_pixel_data(input, header.offset, dib_header.height, stride);
     }
 
@@ -74,6 +85,7 @@ public:
     bmp_dib_header dib_header;
     std::uint32_t stride{};
     std::vector<std::byte> pixel_data;
+    bool bottom_up;
 
 private:
     [[nodiscard]]
@@ -115,7 +127,7 @@ private:
     {
         input.seekg(offset);
 
-        std::vector<std::byte> pixel_data(static_cast<size_t>(std::abs(height)) * stride);
+        std::vector<std::byte> pixel_data(static_cast<size_t>(height) * stride);
         input.read(reinterpret_cast<char*>(pixel_data.data()), static_cast<std::streamsize>(pixel_data.size()));
 
         return pixel_data;
