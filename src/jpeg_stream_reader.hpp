@@ -257,7 +257,7 @@ private:
         mapping_table_entry(const uint8_t table_id, const uint8_t entry_size, const span<const std::byte> table_data) :
             table_id_{table_id}, entry_size_{entry_size}
         {
-            data_fragments_.push_back(table_data);
+            add_fragment(table_data);
         }
 
         void add_fragment(const span<const std::byte> table_data)
@@ -290,15 +290,15 @@ private:
         {
             for (const auto& data_fragment : data_fragments_)
             {
-                std::copy(data_fragment.begin(), data_fragment.end(), destination);
+                std::copy(data_fragment.cbegin(), data_fragment.cend(), destination);
                 destination += data_fragment.size();
             }
         }
 
     private:
+        std::vector<span<const std::byte>> data_fragments_;
         uint8_t table_id_;
         uint8_t entry_size_;
-        std::vector<span<const std::byte>> data_fragments_;
     };
 
     [[nodiscard]]

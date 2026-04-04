@@ -25,6 +25,7 @@ class span final
 {
 public:
     using iterator = T*;
+    using const_iterator = const T*;
     using pointer = T*;
     using size_type = size_t;
 
@@ -71,6 +72,18 @@ public:
 
     [[nodiscard]]
     constexpr iterator end() const noexcept
+    {
+        return data_ + size_;
+    }
+
+    [[nodiscard]]
+    constexpr const_iterator cbegin() const noexcept
+    {
+        return data_;
+    }
+
+    [[nodiscard]]
+    constexpr const_iterator cend() const noexcept
     {
         return data_ + size_;
     }

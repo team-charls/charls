@@ -21,6 +21,7 @@ using impl::throw_jpegls_error;
 using std::array;
 using std::byte;
 using std::equal;
+using std::as_const;
 
 namespace {
 
@@ -947,7 +948,7 @@ void jpeg_stream_reader::find_and_read_define_number_of_lines_segment()
 void jpeg_stream_reader::add_mapping_table(const uint8_t table_id, const uint8_t entry_size,
                                            const span<const byte> table_data)
 {
-    if (table_id == 0 || find_mapping_table_entry(table_id) != mapping_tables_.cend())
+    if (table_id == 0 || as_const(*this).find_mapping_table_entry(table_id) != mapping_tables_.cend())
         throw_jpegls_error(jpegls_errc::invalid_parameter_mapping_table_id);
 
     mapping_tables_.emplace_back(table_id, entry_size, table_data);
@@ -994,7 +995,7 @@ bool jpeg_stream_reader::has_external_mapping_table_ids() const noexcept
 
 
 std::vector<jpeg_stream_reader::mapping_table_entry>::const_iterator
-jpeg_stream_reader::find_mapping_table_entry(uint8_t table_id) const noexcept
+jpeg_stream_reader::find_mapping_table_entry(const uint8_t table_id) const noexcept
 {
     return find_if(mapping_tables_.cbegin(), mapping_tables_.cend(),
                    [table_id](const mapping_table_entry& entry) noexcept { return entry.table_id() == table_id; });
@@ -1002,10 +1003,10 @@ jpeg_stream_reader::find_mapping_table_entry(uint8_t table_id) const noexcept
 
 
 std::vector<jpeg_stream_reader::mapping_table_entry>::iterator
-jpeg_stream_reader::find_mapping_table_entry(uint8_t table_id) noexcept
+jpeg_stream_reader::find_mapping_table_entry(const uint8_t table_id) noexcept
 {
-    return find_if(mapping_tables_.begin(), mapping_tables_.end(),
-                   [table_id](const mapping_table_entry& entry) noexcept { return entry.table_id() == table_id; });
+    const auto const_it{as_const(*this).find_mapping_table_entry(table_id)};
+    return mapping_tables_.begin() + (const_it - mapping_tables_.cbegin());
 }
 
 
