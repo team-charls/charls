@@ -3,7 +3,7 @@
 
 #pragma code_page(65001)
 
-#include <charls/version.h>
+#include "charls/version.h"
 
 #include <winresrc.h>
 

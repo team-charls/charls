@@ -3,8 +3,8 @@
 
 #include "pch.hpp"
 
-#include <charls/charls_jpegls_encoder.h>
-#include <charls/version.hpp>
+#include "charls/charls_jpegls_encoder.h"
+#include "charls/version.hpp"
 
 #include "color_transform.hpp"
 #include "jpeg_stream_writer.hpp"

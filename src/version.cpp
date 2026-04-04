@@ -3,7 +3,7 @@
 
 #include "pch.hpp"
 
-#include <charls/version.hpp>
+#include "charls/version.hpp"
 
 #include "util.hpp"
 

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <charls/jpegls_error.hpp>
+#include "charls/jpegls_error.hpp"
 
 #include "span.hpp"
 
