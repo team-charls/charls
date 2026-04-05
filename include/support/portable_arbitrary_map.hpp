@@ -5,12 +5,12 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <ios>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <filesystem>
 
 namespace charls::support {
 
@@ -109,4 +109,4 @@ private:
     std::vector<std::byte> image_data_;
 };
 
-} // namespace charls_test
+} // namespace charls::support
