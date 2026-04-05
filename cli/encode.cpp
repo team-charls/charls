@@ -10,6 +10,7 @@
 #include "support/portable_arbitrary_map.hpp"
 
 #include <cassert>
+#include <algorithm>
 
 using std::ifstream;
 using std::ofstream;
@@ -58,7 +59,7 @@ void encode_pnm(const path& filename_input, const path& filename_output)
                                  frame_info.component_count);
     read(pnm_file, input_buffer);
     if (!pnm_file.good())
-        throw std::runtime_error("Failed to read from file" + filename_input.string());
+        throw std::runtime_error("Failed to read from file " + filename_input.string());
 
     // PNM format is stored with most significant byte first (big endian).
     if (bytes_per_sample == 2)

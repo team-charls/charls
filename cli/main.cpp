@@ -8,20 +8,16 @@
 #include "decode.hpp"
 #include "encode.hpp"
 
-#include "support/portable_arbitrary_map.hpp"
-
 MSVC_WARNING_SUPPRESS(4866) // Vcpkg fails to add argparse as external include directory.
 #include <argparse/argparse.hpp>
 MSVC_WARNING_UNSUPPRESS()
 
-#include <cassert>
 #include <filesystem>
 #include <iostream>
 #include <string>
 
 using argparse::ArgumentParser;
 using std::cout;
-using std::runtime_error;
 using std::string;
 using namespace charls::cli;
 namespace fs = std::filesystem;
@@ -138,7 +134,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
 
         return EXIT_SUCCESS;
     }
-    catch (const runtime_error& error)
+    catch (const std::runtime_error& error)
     {
         cout << "command failed: " << error.what() << "\n";
         return EXIT_FAILURE;
