@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2009 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
-cmake_minimum_required(VERSION 3.22...4.2)
+cmake_minimum_required(VERSION 3.22...4.3)
 
 # Extract the version info from version.h
 file(READ "include/charls/version.h" version)

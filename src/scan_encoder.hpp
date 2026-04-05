@@ -52,10 +52,10 @@ protected:
 
     void encode_run_pixels(size_t run_length, const bool end_of_line)
     {
-        while (run_length >= size_t{1} << J[run_index_])
+        while (run_length >= size_t{1} << j[run_index_])
         {
             append_ones_to_bit_stream(1);
-            run_length = run_length - (size_t{1} << J[run_index_]);
+            run_length = run_length - (size_t{1} << j[run_index_]);
             increment_run_index();
         }
 
@@ -68,7 +68,7 @@ protected:
         }
         else
         {
-            append_to_bit_stream(static_cast<uint32_t>(run_length), J[run_index_] + 1); // leading 0 + actual remaining length
+            append_to_bit_stream(static_cast<uint32_t>(run_length), j[run_index_] + 1); // leading 0 + actual remaining length
         }
     }
 

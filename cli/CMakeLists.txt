@@ -6,11 +6,20 @@ add_executable(charls-cli "")
 target_sources(charls-cli
   PRIVATE
     main.cpp
-    performance.cpp
-    performance.hpp
-    util.cpp
-    util.hpp
+    benchmark.cpp
+    benchmark.hpp
+    compare.cpp
+    compare.hpp
+    decode.cpp
+    decode.hpp
+    encode.cpp
+    encode.hpp
+    pch.hpp
+    utility.cpp
+    utility.hpp
 )
+
+target_precompile_headers(charls-cli PRIVATE ${CMAKE_CURRENT_LIST_DIR}/pch.hpp)
 
 # Use argparse provided by vcpkg. Prefer system/vcpkg first
 # and fall back to fetching the project so builds work without vcpkg configured.

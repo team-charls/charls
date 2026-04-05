@@ -7,10 +7,10 @@
 #include <cstdint>
 #include <fstream>
 #include <ios>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 namespace charls::support {
 
@@ -20,7 +20,7 @@ class portable_arbitrary_map final
 {
 public:
     /// <exception cref="ifstream::failure">Thrown when the input file cannot be read.</exception>
-    explicit portable_arbitrary_map(const char* filename)
+    explicit portable_arbitrary_map(const std::filesystem::path& filename)
     {
         std::ifstream file;
         file.exceptions(std::ios::eofbit | std::ios::failbit | std::ios::badbit);

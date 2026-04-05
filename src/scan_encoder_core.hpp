@@ -110,7 +110,7 @@ protected:
                                            static_cast<int32_t>(map)};
 
         ASSERT(error_value == context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k));
-        encode_mapped_value(k, e_mapped_error_value, sample_traits_.limit - J[run_index_] - 1);
+        encode_mapped_value(k, e_mapped_error_value, sample_traits_.limit - j[run_index_] - 1);
         context.update_variables(error_value, e_mapped_error_value, reset_threshold_);
     }
 
