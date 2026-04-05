@@ -306,11 +306,11 @@ private:
         size_t index{};
         while (base::read_bit())
         {
-            const size_t count{std::min(size_t{1} << J[run_index_], pixel_count - index)};
+            const size_t count{std::min(size_t{1} << j[run_index_], pixel_count - index)};
             index += count;
             ASSERT(index <= pixel_count);
 
-            if (count == (size_t{1} << J[run_index_]))
+            if (count == (size_t{1} << j[run_index_]))
             {
                 base::increment_run_index();
             }
@@ -322,7 +322,7 @@ private:
         if (index != pixel_count)
         {
             // Incomplete run.
-            index += (J[run_index_] > 0) ? base::read_value(J[run_index_]) : 0;
+            index += (j[run_index_] > 0) ? base::read_value(j[run_index_]) : 0;
         }
 
         if (UNLIKELY(index > pixel_count))

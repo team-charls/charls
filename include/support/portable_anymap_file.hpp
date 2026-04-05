@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <ios>
 #include <sstream>
@@ -20,7 +21,7 @@ class portable_anymap_file final
 {
 public:
     /// <exception cref="ifstream::failure">Thrown when the input file cannot be read.</exception>
-    explicit portable_anymap_file(const char* filename)
+    explicit portable_anymap_file(const std::filesystem::path& filename)
     {
         std::ifstream pnm_file;
         pnm_file.exceptions(std::ios::eofbit | std::ios::failbit | std::ios::badbit);

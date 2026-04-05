@@ -173,7 +173,7 @@ vector<byte> create_16_bit_buffer_with_noise(const size_t length, const size_t b
         const uint16_t value{distribution(generator)};
 
         buffer[i] = static_cast<byte>(value);
-        buffer[i] = static_cast<byte>(value >> 8);
+        buffer[i + 1] = static_cast<byte>(value >> 8);
     }
 
     return buffer;

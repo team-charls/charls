@@ -73,7 +73,7 @@ protected:
     {
         const int32_t k{context.compute_golomb_coding_parameter_checked()};
         const int32_t e_mapped_error_value{
-            decode_mapped_error_value(k, sample_traits_.limit - J[run_index_] - 1, sample_traits_.quantized_bits_per_sample)};
+            decode_mapped_error_value(k, sample_traits_.limit - j[run_index_] - 1, sample_traits_.quantized_bits_per_sample)};
         const int32_t error_value{context.compute_error_value(e_mapped_error_value + context.run_interruption_type(), k)};
         context.update_variables(error_value, e_mapped_error_value, reset_threshold_);
         return error_value;

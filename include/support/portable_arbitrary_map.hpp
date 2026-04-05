@@ -5,9 +5,9 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <ios>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -20,7 +20,7 @@ class portable_arbitrary_map final
 {
 public:
     /// <exception cref="ifstream::failure">Thrown when the input file cannot be read.</exception>
-    explicit portable_arbitrary_map(const char* filename)
+    explicit portable_arbitrary_map(const std::filesystem::path& filename)
     {
         std::ifstream file;
         file.exceptions(std::ios::eofbit | std::ios::failbit | std::ios::badbit);
@@ -109,4 +109,4 @@ private:
     std::vector<std::byte> image_data_;
 };
 
-} // namespace charls_test
+} // namespace charls::support
