@@ -5,14 +5,12 @@
 
 #include "support.hpp"
 
-#include <charls/charls.hpp>
+#include "charls/charls_jpegls_encoder.h"
 
 #include <array>
 
 using std::array;
 using std::byte;
-using std::ignore;
-using std::vector;
 
 MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 
@@ -248,30 +246,6 @@ TEST(charls_jpegls_encoder_test, create_tables_only_null_ptr)
 {
     const auto error{charls_jpegls_encoder_create_abbreviated_format(nullptr)};
     EXPECT_EQ(jpegls_errc::invalid_argument, error);
-}
-
-TEST(charls_jpegls_encoder_test, encode_non_8_or_16_bit_with_color_transformation_throws)
-{
-    constexpr frame_info frame_info{2, 1, 10, 3};
-    jpegls_encoder encoder;
-
-    vector<byte> destination(40);
-    encoder.destination(destination).frame_info(frame_info).color_transformation(color_transformation::hp3);
-    const vector<byte> source(20);
-    assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
-                            [&encoder, &source] { ignore = encoder.encode(source); });
-}
-
-TEST(charls_jpegls_encoder_test, encode_non_3_components_that_is_not_supported_throws)
-{
-    constexpr frame_info frame_info{2, 1, 8, 4};
-    jpegls_encoder encoder;
-
-    vector<byte> destination(40);
-    encoder.destination(destination).frame_info(frame_info).color_transformation(color_transformation::hp3);
-    const vector<byte> source(20);
-    assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
-                            [&encoder, &source] { ignore = encoder.encode(source); });
 }
 
 } // namespace charls::test

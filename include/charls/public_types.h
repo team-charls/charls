@@ -586,6 +586,7 @@ using encoding_options = encoding_options_private::encoding_options;
 /// These color space transformation decrease the correlation between the 3 color components, resulting in better encoding
 /// ratio. These options are only implemented for backwards compatibility and NOT part of the JPEG-LS standard. The JPEG-LS
 /// ISO/IEC 14495-1:1999 standard provides no capabilities to transport which color space transformation was used.
+/// Color transformations are only supported for 3 component images with 8 or 16 bits per sample in lossless mode and not planar.
 /// </summary>
 enum class color_transformation : std::int32_t
 {

@@ -1373,14 +1373,14 @@ TEST(jpegls_encoder_test, encode_with_color_transformation)
     constexpr frame_info frame_info{2, 1, 8, 3};
 
     jpegls_encoder encoder;
-    encoder.frame_info(frame_info).color_transformation(color_transformation::hp1);
+    encoder.frame_info(frame_info).color_transformation(color_transformation::hp1).interleave_mode(interleave_mode::sample);
     vector<byte> destination(encoder.estimated_destination_size());
     encoder.destination(destination);
 
     const size_t bytes_written{encoder.encode(source)};
     destination.resize(bytes_written);
 
-    test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::none,
+    test_by_decoding(destination, frame_info, source.data(), source.size(), interleave_mode::sample,
                      color_transformation::hp1);
 }
 
@@ -2040,6 +2040,64 @@ TEST(jpegls_encoder_test, encode_to_buffer_with_uint16_size_works)
         // size2 is not a perfect match and needs a conversion.
         ignore = encoder.encode(data2, size2);
     }
+}
+
+TEST(charls_jpegls_encoder_test, encode_non_8_or_16_bit_with_color_transformation_throws)
+{
+    constexpr frame_info frame_info{2, 1, 10, 3};
+    jpegls_encoder encoder;
+
+    vector<byte> destination(40);
+    encoder.destination(destination)
+        .frame_info(frame_info)
+        .color_transformation(color_transformation::hp3)
+        .interleave_mode(interleave_mode::sample);
+    const vector<byte> source(20);
+    assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
+                            [&encoder, &source] { ignore = encoder.encode(source); });
+}
+
+TEST(charls_jpegls_encoder_test, encode_non_3_components_with_color_transformations_throws)
+{
+    constexpr frame_info frame_info{2, 1, 8, 4};
+    jpegls_encoder encoder;
+
+    vector<byte> destination(40);
+    encoder.destination(destination)
+        .frame_info(frame_info)
+        .color_transformation(color_transformation::hp3)
+        .interleave_mode(interleave_mode::sample);
+    const vector<byte> source(20);
+    assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
+                            [&encoder, &source] { ignore = encoder.encode(source); });
+}
+
+TEST(charls_jpegls_encoder_test, encode_lossy_with_color_transformations_throws)
+{
+    constexpr frame_info frame_info{2, 1, 8, 3};
+    jpegls_encoder encoder;
+
+    vector<byte> destination(40);
+    encoder.destination(destination)
+        .frame_info(frame_info)
+        .color_transformation(color_transformation::hp1)
+        .interleave_mode(interleave_mode::sample)
+        .near_lossless(1);
+    const vector<byte> source(20);
+    assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
+                            [&encoder, &source] { ignore = encoder.encode(source); });
+}
+
+TEST(charls_jpegls_encoder_test, encode_planar_with_color_transformations_throws)
+{
+    constexpr frame_info frame_info{2, 1, 8, 3};
+    jpegls_encoder encoder;
+
+    vector<byte> destination(40);
+    encoder.destination(destination).frame_info(frame_info).color_transformation(color_transformation::hp2);
+    const vector<byte> source(20);
+    assert_expect_exception(jpegls_errc::invalid_argument_color_transformation,
+                            [&encoder, &source] { ignore = encoder.encode(source); });
 }
 
 } // namespace charls::test
