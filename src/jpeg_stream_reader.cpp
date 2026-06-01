@@ -878,7 +878,8 @@ void jpeg_stream_reader::check_width() const
 
 void jpeg_stream_reader::check_coding_parameters() const
 {
-    if (parameters_.transformation != color_transformation::none && !color_transformation_possible(frame_info_))
+    if (parameters_.transformation != color_transformation::none &&
+        !color_transformation_possible(frame_info_, get_near_lossless(0), get_interleave_mode(0)))
         throw_jpegls_error(jpegls_errc::invalid_parameter_color_transformation);
 }
 

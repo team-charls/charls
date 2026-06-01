@@ -7,9 +7,11 @@
 
 namespace charls {
 
-inline bool color_transformation_possible(const frame_info& frame) noexcept
+inline bool color_transformation_possible(const frame_info& frame, const int32_t near_lossless,
+                                          const interleave_mode mode) noexcept
 {
-    return frame.component_count == 3 && (frame.bits_per_sample == 8 || frame.bits_per_sample == 16);
+    return frame.component_count == 3 && (frame.bits_per_sample == 8 || frame.bits_per_sample == 16) && near_lossless == 0 &&
+           mode != interleave_mode::none;
 }
 
 // This file defines simple classes that define (lossless) color transforms.
