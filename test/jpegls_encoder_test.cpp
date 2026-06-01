@@ -2042,7 +2042,7 @@ TEST(jpegls_encoder_test, encode_to_buffer_with_uint16_size_works)
     }
 }
 
-TEST(charls_jpegls_encoder_test, encode_non_8_or_16_bit_with_color_transformation_throws)
+TEST(jpegls_encoder_test, encode_non_8_or_16_bit_with_color_transformation_throws)
 {
     constexpr frame_info frame_info{2, 1, 10, 3};
     jpegls_encoder encoder;
@@ -2057,7 +2057,7 @@ TEST(charls_jpegls_encoder_test, encode_non_8_or_16_bit_with_color_transformatio
                             [&encoder, &source] { ignore = encoder.encode(source); });
 }
 
-TEST(charls_jpegls_encoder_test, encode_non_3_components_with_color_transformations_throws)
+TEST(jpegls_encoder_test, encode_non_3_components_with_color_transformations_throws)
 {
     constexpr frame_info frame_info{2, 1, 8, 4};
     jpegls_encoder encoder;
@@ -2072,7 +2072,7 @@ TEST(charls_jpegls_encoder_test, encode_non_3_components_with_color_transformati
                             [&encoder, &source] { ignore = encoder.encode(source); });
 }
 
-TEST(charls_jpegls_encoder_test, encode_lossy_with_color_transformations_throws)
+TEST(jpegls_encoder_test, encode_lossy_with_color_transformations_throws)
 {
     constexpr frame_info frame_info{2, 1, 8, 3};
     jpegls_encoder encoder;
@@ -2088,7 +2088,7 @@ TEST(charls_jpegls_encoder_test, encode_lossy_with_color_transformations_throws)
                             [&encoder, &source] { ignore = encoder.encode(source); });
 }
 
-TEST(charls_jpegls_encoder_test, encode_planar_with_color_transformations_throws)
+TEST(jpegls_encoder_test, encode_planar_with_color_transformations_throws)
 {
     constexpr frame_info frame_info{2, 1, 8, 3};
     jpegls_encoder encoder;

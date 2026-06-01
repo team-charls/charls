@@ -90,7 +90,7 @@ TEST(color_transform_test, transform_hp2_round_trip_near_lossless_8)
 
     sample.v1 -= 8;
 
-    // The color transformation require that the encoding is lossless, otherwise they will fail.
+    // The color transformation requires that the encoding is lossless, otherwise they will fail.
     // Clamping the values, would make some transformations work, but cause other transformations to fail.
     constexpr transform_hp2<uint8_t>::inverse inverse{};
     const auto round_trip{inverse(sample.v1, sample.v2, sample.v3)};

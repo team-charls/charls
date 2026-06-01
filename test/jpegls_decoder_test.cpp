@@ -1500,7 +1500,7 @@ TEST(jpegls_decoder_test, read_header_lossy_with_color_transformation_throws)
     jpeg_test_stream_writer writer;
     writer.write_start_of_image();
     writer.write_hp_color_transform_segment(color_transformation::hp1);
-    writer.write_start_of_frame_segment(1, 1, 8, 4);
+    writer.write_start_of_frame_segment(1, 1, 8, 3);
     writer.write_start_of_scan_segment(0, 3, 1, interleave_mode::sample);
 
     jpegls_decoder decoder{writer.buffer, false};
@@ -1513,8 +1513,8 @@ TEST(jpegls_decoder_test, read_header_interleave_mode_none_with_color_transforma
     jpeg_test_stream_writer writer;
     writer.write_start_of_image();
     writer.write_hp_color_transform_segment(color_transformation::hp1);
-    writer.write_start_of_frame_segment(1, 1, 8, 4);
-    writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::none);
+    writer.write_start_of_frame_segment(1, 1, 8, 3);
+    writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
     jpegls_decoder decoder{writer.buffer, false};
 
