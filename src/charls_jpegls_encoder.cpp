@@ -105,8 +105,8 @@ struct charls_jpegls_encoder final
     {
         check_operation(is_frame_info_configured());
         size_t size{checked_mul(checked_mul(checked_mul(frame_info_.width, frame_info_.height),
-                                                    static_cast<size_t>(frame_info_.component_count)),
-                                        bit_to_byte_count(frame_info_.bits_per_sample))};
+                                            static_cast<size_t>(frame_info_.component_count)),
+                                bit_to_byte_count(frame_info_.bits_per_sample))};
 
         // For the worst case: add 6.25% + extra bytes for the headers.
         size = add_sat(size, (size / 16U) + 1024 + spiff_header_size_in_bytes);
@@ -391,7 +391,7 @@ private:
         if (color_transformation_ == color_transformation::none)
             return;
 
-        if (UNLIKELY(!color_transformation_possible(frame_info_)))
+        if (UNLIKELY(!color_transformation_possible(frame_info_, near_lossless_, interleave_mode_)))
             throw_jpegls_error(jpegls_errc::invalid_argument_color_transformation);
 
         writer_.write_color_transform_segment(color_transformation_);

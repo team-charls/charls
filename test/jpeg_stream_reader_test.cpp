@@ -73,7 +73,7 @@ void read_hp_color_transform(const color_transformation transformation)
     writer.write_start_of_image();
     writer.write_hp_color_transform_segment(transformation);
     writer.write_start_of_frame_segment(512, 512, 8, 3);
-    writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+    writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
 
     jpeg_stream_reader reader;
     reader.source({writer.buffer.data(), writer.buffer.size()});
@@ -948,12 +948,13 @@ TEST(jpeg_stream_reader_test, read_hp_color_transform_two_color_segments_present
     writer.write_hp_color_transform_segment(color_transformation::hp1);
     writer.write_start_of_frame_segment(512, 512, 8, 3);
     writer.write_hp_color_transform_segment(color_transformation::hp2);
-    writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+    writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::line);
 
     jpeg_stream_reader reader;
     reader.source({writer.buffer.data(), writer.buffer.size()});
     reader.read_header();
 
+    // Follow the common pattern that the last marker segment wins.
     EXPECT_EQ(color_transformation::hp2, reader.parameters().transformation);
 }
 
