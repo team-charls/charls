@@ -4,6 +4,13 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.4] - 2026-6-8
+
+### Security
+- Fixed a security vulnerability affecting versions 2.3.0 through 2.4.3.  
+  For full details, please see the security advisory: [GHSA-mqrg-gfc8-73ff](https://github.com/team-charls/charls/security/advisories/GHSA-mqrg-gfc8-73ff)  
+  The maximum supported values for width and height are now defined as 100000 pixels.
+
 ## [2.4.3] - 2026-3-3
 
 ### Fixed

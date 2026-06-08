@@ -53,7 +53,7 @@
 
 #define MSVC_WARNING_SUPPRESS_NEXT_LINE(x) \
     __pragma(warning(suppress \
-                     : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses, cppcoreguidelines-macro-usage)
+    : x)) // NOLINT(misc-macro-parentheses, bugprone-macro-parentheses, cppcoreguidelines-macro-usage)
 
 // Helper macro for SAL annotations.
 #define USE_DECL_ANNOTATIONS _Use_decl_annotations_
@@ -506,19 +506,42 @@ auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, i
 
 
 #if INTPTR_MAX == INT64_MAX
-constexpr size_t checked_mul(const size_t a, const size_t b) noexcept
+inline size_t checked_mul(const size_t a, const size_t b) noexcept
 {
-    return a * b;
+#ifdef _MSC_VER
+    unsigned __int64 high_bits; // NOLINT
+    const size_t result{_umul128(a, b, &high_bits)};
+    if (UNLIKELY(high_bits != 0))
+        impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+    return result;
+#elif __GNUC__
+    size_t result;
+    if (UNLIKELY(__builtin_mul_overflow(a, b, &result)))
+        impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+    return result;
+#else
+#error "Unknown compiler"
+#endif
 }
 #elif INTPTR_MAX == INT32_MAX
 inline size_t checked_mul(const size_t a, const size_t b)
 {
-    const size_t result{a * b};
-    if (UNLIKELY(result < a || result < b)) // check for unsigned integer overflow.
+#ifdef _MSC_VER
+    const unsigned __int64 high_result{static_cast<unsigned __int64>(a) * b}; // NOLINT
+    if (high_result > std::numeric_limits<size_t>::max())
+        impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+    return static_cast<size_t>(high_result);
+#elif __GNUC__
+    size_t result;
+    if (UNLIKELY(__builtin_mul_overflow(a, b, &result)))
         impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
     return result;
-}
+#else
+#error "Unknown compiler"
 #endif
-
+}
+#else
+#error Unknown pointer size or missing size macros!
+#endif
 
 } // namespace charls

@@ -22,6 +22,8 @@ constexpr int maximum_component_count{255};
 constexpr int minimum_bits_per_sample{2};
 constexpr int maximum_bits_per_sample{16};
 constexpr int maximum_near_lossless{255};
+constexpr uint32_t maximum_width{100'000};  // Implementation limitation.
+constexpr uint32_t maximum_height{100'000}; // Implementation limitation.
 constexpr int32_t minimum_application_data_id{0};
 constexpr int32_t maximum_application_data_id{15};
 

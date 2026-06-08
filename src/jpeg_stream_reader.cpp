@@ -112,7 +112,7 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
     const uint32_t width{rect_.Width != 0 ? static_cast<uint32_t>(rect_.Width) : frame_info_.width};
     const size_t components_in_plane_count{
         parameters_.interleave_mode == interleave_mode::none ? 1U : static_cast<size_t>(frame_info_.component_count)};
-    const size_t minimum_stride{components_in_plane_count * width * bit_to_byte_count(frame_info_.bits_per_sample)};
+    const size_t minimum_stride{checked_mul(components_in_plane_count * bit_to_byte_count(frame_info_.bits_per_sample), width)};
 
     if (stride == auto_calculate_stride)
     {
@@ -127,7 +127,7 @@ void jpeg_stream_reader::decode(byte_span destination, size_t stride)
     // Compute the layout of the destination buffer.
     const size_t bytes_per_plane{stride * rect_.Height};
     const size_t plane_count{parameters_.interleave_mode == interleave_mode::none ? frame_info_.component_count : 1U};
-    const size_t minimum_destination_size = bytes_per_plane * plane_count - (stride - minimum_stride);
+    const size_t minimum_destination_size = checked_mul(bytes_per_plane, plane_count) - (stride - minimum_stride);
     if (UNLIKELY(destination.size < minimum_destination_size))
         throw_jpegls_error(jpegls_errc::destination_buffer_too_small);
 
@@ -796,10 +796,10 @@ void jpeg_stream_reader::skip_remaining_segment_data() noexcept
 
 void jpeg_stream_reader::check_frame_info() const
 {
-    if (UNLIKELY(frame_info_.height < 1))
-        throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+    if (UNLIKELY(frame_info_.height < 1 || frame_info_.height > maximum_height))
+        throw_jpegls_error(jpegls_errc::invalid_parameter_height);
 
-    if (UNLIKELY(frame_info_.width < 1))
+    if (UNLIKELY(frame_info_.width < 1 || frame_info_.width > maximum_width))
         throw_jpegls_error(jpegls_errc::invalid_parameter_width);
 }
 

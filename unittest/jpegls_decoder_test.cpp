@@ -941,6 +941,99 @@ public:
         assert_expect_exception(jpegls_errc::invalid_parameter_width, [&decoder] { decoder.read_header(); });
     }
 
+    TEST_METHOD(oversize_image_dimension_large_width) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        constexpr uint32_t height{1};
+        constexpr uint32_t width{maximum_width};
+        writer.write_oversize_image_dimension(4, height, width);
+        writer.write_start_of_frame_segment(0, 0, 8, 3);
+        writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
+
+        constexpr array<uint8_t, 4> entropy_data{0, 0, 0, 0};
+        writer.write_bytes(entropy_data.data(), entropy_data.size());
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer.data(), writer.buffer.size());
+        decoder.read_header();
+
+        const size_t destination_size{decoder.destination_size()};
+        vector<uint8_t> destination(100); //  Allocate some memory, decoder will never write more than 4 bytes.
+        assert_expect_exception(jpegls_errc::invalid_encoded_data,
+                                [&decoder, &destination, destination_size] { decoder.decode(destination.data(), destination_size); });
+    }
+
+    TEST_METHOD(oversize_image_dimension_large_width_and_large_height) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        constexpr uint32_t height{maximum_height};
+        constexpr uint32_t width{maximum_width};
+        writer.write_oversize_image_dimension(4, height, width);
+        writer.write_start_of_frame_segment(0, 0, 8, 3);
+        writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
+
+        constexpr array<uint8_t, 4> entropy_data{};
+        writer.write_bytes(entropy_data.data(), entropy_data.size());
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer.data(), writer.buffer.size());
+        decoder.read_header();
+
+#if INTPTR_MAX == INT64_MAX
+        const size_t destination_size{decoder.destination_size()};
+        std::vector<uint8_t> destination(100); //  Allocate some memory, decoder will never write more than 4 bytes.
+        assert_expect_exception(jpegls_errc::invalid_encoded_data, [&decoder, &destination, destination_size] {
+            decoder.decode(destination.data(), destination_size);
+        });
+#elif INTPTR_MAX == INT32_MAX
+        assert_expect_exception(jpegls_errc::parameter_value_not_supported,
+                                [&decoder] { ignore = decoder.destination_size(); });
+#else
+#error Unknown pointer size or missing size macros!
+#endif
+    }
+
+    TEST_METHOD(oversize_image_dimension_too_large_width_throws) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        constexpr uint32_t height{1};
+        constexpr uint32_t width{maximum_width + 1};
+        writer.write_oversize_image_dimension(4, height, width);
+        writer.write_start_of_frame_segment(0, 0, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        constexpr array<uint8_t, 4> entropy_data{};
+        writer.write_bytes(entropy_data.data(), entropy_data.size());
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer.data(), writer.buffer.size());
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_width,
+                                [&decoder] { decoder.read_header(); });
+    }
+
+    TEST_METHOD(oversize_image_dimension_too_large_height_throws) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        constexpr uint32_t height{maximum_height + 1};
+        constexpr uint32_t width{1};
+        writer.write_oversize_image_dimension(4, height, width);
+        writer.write_start_of_frame_segment(0, 0, 8, 3);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        constexpr array<uint8_t, 4> entropy_data{};
+        writer.write_bytes(entropy_data.data(), entropy_data.size());
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer.data(), writer.buffer.size());
+
+        assert_expect_exception(jpegls_errc::invalid_parameter_height, [&decoder] { decoder.read_header(); });
+    }
+
     TEST_METHOD(start_of_frame_changes_height_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
@@ -964,15 +1057,15 @@ public:
         oversize_image_dimension_bad_segment_size_throws(4);
     }
 
-    TEST_METHOD(oversize_image_dimension_that_causes_overflow_throws) // NOLINT
+    TEST_METHOD(oversize_image_dimension_that_causes_overflow_in_destination_size_throws) // NOLINT
     {
         jpeg_test_stream_writer writer;
         writer.write_start_of_image();
-        constexpr uint32_t height{numeric_limits<uint32_t>::max()};
-        constexpr uint32_t width{numeric_limits<uint32_t>::max()};
+        constexpr uint32_t height{maximum_height};
+        constexpr uint32_t width{maximum_width};
         writer.write_oversize_image_dimension(4, height, width);
-        constexpr size_t component_count{2};
-        writer.write_start_of_frame_segment(0, 0, 8, component_count);
+        constexpr size_t component_count{255};
+        writer.write_start_of_frame_segment(0, 0, 16, component_count);
         writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
 
         jpegls_decoder decoder;
@@ -980,7 +1073,7 @@ public:
         decoder.read_header();
 
 #if INTPTR_MAX == INT64_MAX
-        Assert::AreEqual(component_count * numeric_limits<uint32_t>::max() * numeric_limits<uint32_t>::max(),
+        Assert::AreEqual(component_count * 2 * static_cast<uint64_t>(maximum_width) * static_cast<uint64_t>(maximum_height),
                          decoder.destination_size());
 #elif INTPTR_MAX == INT32_MAX
         assert_expect_exception(jpegls_errc::parameter_value_not_supported,
@@ -989,6 +1082,39 @@ public:
 #error Unknown pointer size or missing size macros!
 #endif
     }
+
+    TEST_METHOD(oversize_image_dimension_that_causes_overflow_in_decode_throws) // NOLINT
+    {
+        jpeg_test_stream_writer writer;
+        writer.write_start_of_image();
+        constexpr uint32_t height{maximum_height};
+        constexpr uint32_t width{maximum_width};
+        writer.write_oversize_image_dimension(4, height, width);
+        constexpr size_t component_count{255};
+        writer.write_start_of_frame_segment(0, 0, 16, component_count);
+        writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+
+        constexpr array<uint8_t, 4> entropy_data{};
+        writer.write_bytes(entropy_data.data(), entropy_data.size());
+
+        jpegls_decoder decoder;
+        decoder.source(writer.buffer.data(), writer.buffer.size());
+        decoder.read_header();
+
+        constexpr size_t destination_size{std::numeric_limits<size_t>::max()};
+        std::vector<uint8_t> destination(100); //  Allocate some memory, decoder will never write more than 4 bytes.
+
+#if INTPTR_MAX == INT64_MAX
+        assert_expect_exception(jpegls_errc::invalid_encoded_data,
+                                [&decoder, &destination, destination_size] { decoder.decode(destination.data(), destination_size); });
+#elif INTPTR_MAX == INT32_MAX
+        assert_expect_exception(jpegls_errc::parameter_value_not_supported,
+                                [&decoder, &destination, destination_size] { decoder.decode(destination.data(), destination_size); });
+#else
+#error Unknown pointer size or missing size macros!
+#endif
+    }
+
 
     TEST_METHOD(decode_to_buffer_with_uint16_size_works) // NOLINT
     {

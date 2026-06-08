@@ -921,12 +921,12 @@ struct charls_spiff_header CHARLS_FINAL
 struct charls_frame_info CHARLS_FINAL
 {
     /// <summary>
-    /// Width of the image, range [1, 65535].
+    /// Width of the image, range [1, 100000].
     /// </summary>
     uint32_t width;
 
     /// <summary>
-    /// Height of the image, range [1, 65535].
+    /// Height of the image, range [1, 100000].
     /// </summary>
     uint32_t height;
 

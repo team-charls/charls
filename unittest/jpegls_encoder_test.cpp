@@ -3,6 +3,7 @@
 
 #include "pch.h"
 
+#include "../src/constants.h"
 #include "jpegls_preset_coding_parameters_test.h"
 #include "util.h"
 
@@ -50,8 +51,8 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({1, 1, 2, 1});                                                                     // minimum.
-        encoder.frame_info({std::numeric_limits<uint32_t>::max(), numeric_limits<uint32_t>::max(), 16, 255}); // maximum.
+        encoder.frame_info({1, 1, 2, 1});                                                                      // minimum.
+        encoder.frame_info({maximum_width, maximum_height, maximum_bits_per_sample, maximum_component_count}); // maximum.
     }
 
     TEST_METHOD(frame_info_bad_width_throws) // NOLINT
@@ -59,6 +60,8 @@ public:
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] { encoder.frame_info({0, 1, 2, 1}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_width,
+                                [&encoder] { encoder.frame_info({maximum_width + 1, 1, 2, 1}); });
     }
 
     TEST_METHOD(frame_info_bad_height_throws) // NOLINT
@@ -66,30 +69,28 @@ public:
         jpegls_encoder encoder;
 
         assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] { encoder.frame_info({1, 0, 2, 1}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_height,
+                                [&encoder] { encoder.frame_info({1, maximum_height + 1, 2, 1}); });
     }
 
     TEST_METHOD(frame_info_bad_bits_per_sample_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample, [&encoder] {
-            encoder.frame_info({1, 1, 1, 1});
-        });
-        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample, [&encoder] {
-            encoder.frame_info({1, 1, 17, 1});
-        });
+        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample,
+                                [&encoder] { encoder.frame_info({1, 1, 1, 1}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_bits_per_sample,
+                                [&encoder] { encoder.frame_info({1, 1, 17, 1}); });
     }
 
     TEST_METHOD(frame_info_bad_component_count_throws) // NOLINT
     {
         jpegls_encoder encoder;
 
-        assert_expect_exception(jpegls_errc::invalid_argument_component_count, [&encoder] {
-            encoder.frame_info({1, 1, 2, 0});
-        });
-        assert_expect_exception(jpegls_errc::invalid_argument_component_count, [&encoder] {
-            encoder.frame_info({1, 1, 2, 256});
-        });
+        assert_expect_exception(jpegls_errc::invalid_argument_component_count,
+                                [&encoder] { encoder.frame_info({1, 1, 2, 0}); });
+        assert_expect_exception(jpegls_errc::invalid_argument_component_count,
+                                [&encoder] { encoder.frame_info({1, 1, 2, 256}); });
     }
 
     TEST_METHOD(interleave_mode) // NOLINT
@@ -208,7 +209,7 @@ public:
     {
         jpegls_encoder encoder;
 
-        encoder.frame_info({numeric_limits<uint32_t>::max(), numeric_limits<uint32_t>::max(), 8, 1});
+        encoder.frame_info({maximum_width, maximum_height, 8, 1});
 
 #if INTPTR_MAX == INT64_MAX
         const auto size{encoder.estimated_destination_size()};
@@ -353,6 +354,11 @@ public:
         assert_expect_exception(jpegls_errc::invalid_argument_height,
                                 [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
         Assert::AreEqual(size_t{}, encoder.bytes_written());
+
+        spiff_header.height = maximum_height + 1;
+        assert_expect_exception(jpegls_errc::invalid_argument_height,
+                                [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
+        Assert::AreEqual(size_t{}, encoder.bytes_written());
     }
 
     TEST_METHOD(write_spiff_header_invalid_width_throws) // NOLINT
@@ -367,6 +373,11 @@ public:
         spiff_header spiff_header{};
         spiff_header.height = 1;
 
+        assert_expect_exception(jpegls_errc::invalid_argument_width,
+                                [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
+        Assert::AreEqual(size_t{}, encoder.bytes_written());
+
+        spiff_header.width = maximum_width + 1;
         assert_expect_exception(jpegls_errc::invalid_argument_width,
                                 [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
         Assert::AreEqual(size_t{}, encoder.bytes_written());
@@ -1089,8 +1100,7 @@ public:
 
     TEST_METHOD(encode_with_bad_stride_interleave_none_throws) // NOLINT
     {
-        const array<uint8_t, 21> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
-                                        150, 0,   0,   0, 0, 0, 0, 0, 200};
+        const array<uint8_t, 21> source{100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 150, 150, 150, 0, 0, 0, 0, 0, 0, 0, 200};
         constexpr frame_info frame_info{2, 2, 8, 3};
 
         jpegls_encoder encoder;
@@ -1118,8 +1128,7 @@ public:
 
     TEST_METHOD(encode_with_too_small_stride_interleave_none_throws) // NOLINT
     {
-        const array<uint8_t, 21> source{100, 100, 100, 0, 0, 0, 0, 0, 0,   0,   150, 150,
-                                        150, 0,   0,   0, 0, 0, 0, 0, 200};
+        const array<uint8_t, 21> source{100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 150, 150, 150, 0, 0, 0, 0, 0, 0, 0, 200};
         constexpr frame_info frame_info{2, 1, 8, 3};
 
         jpegls_encoder encoder;
@@ -1128,7 +1137,7 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_argument_stride,
-            [&encoder, &source] { ignore = encoder.encode(source, 1); });
+                                [&encoder, &source] { ignore = encoder.encode(source, 1); });
     }
 
     TEST_METHOD(encode_with_too_small_stride_interleave_sample_throws) // NOLINT
@@ -1142,7 +1151,7 @@ public:
         encoder.destination(destination);
 
         assert_expect_exception(jpegls_errc::invalid_argument_stride,
-            [&encoder, &source] { ignore = encoder.encode(source, 5); });
+                                [&encoder, &source] { ignore = encoder.encode(source, 5); });
     }
 
     TEST_METHOD(encode_1_component_4_bit_with_high_bits_set) // NOLINT

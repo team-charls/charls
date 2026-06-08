@@ -37,8 +37,8 @@ struct charls_jpegls_encoder final
 
     void frame_info(const charls_frame_info& frame_info)
     {
-        check_argument(frame_info.width > 0, jpegls_errc::invalid_argument_width);
-        check_argument(frame_info.height > 0, jpegls_errc::invalid_argument_height);
+        check_argument(frame_info.width > 0 && frame_info.width <= maximum_width, jpegls_errc::invalid_argument_width);
+        check_argument(frame_info.height > 0 && frame_info.height <= maximum_height, jpegls_errc::invalid_argument_height);
         check_argument(frame_info.bits_per_sample >= minimum_bits_per_sample &&
                            frame_info.bits_per_sample <= maximum_bits_per_sample,
                        jpegls_errc::invalid_argument_bits_per_sample);
@@ -99,8 +99,8 @@ struct charls_jpegls_encoder final
 
     void write_spiff_header(const spiff_header& spiff_header)
     {
-        check_argument(spiff_header.height > 0, jpegls_errc::invalid_argument_height);
-        check_argument(spiff_header.width > 0, jpegls_errc::invalid_argument_width);
+        check_argument(spiff_header.height > 0 && spiff_header.height <= maximum_height, jpegls_errc::invalid_argument_height);
+        check_argument(spiff_header.width > 0 && spiff_header.width <= maximum_width, jpegls_errc::invalid_argument_width);
         check_operation(state_ == state::destination_set);
 
         writer_.write_start_of_image();
@@ -288,7 +288,8 @@ private:
         // Stride parameter defines the number of bytes on a scan line.
         if (interleave_mode_ == charls::interleave_mode::none)
         {
-            const size_t minimum_source_size{stride * frame_info_.component_count * frame_info_.height - (stride - minimum_stride)};
+            const size_t minimum_source_size{stride * frame_info_.component_count * frame_info_.height -
+                                             (stride - minimum_stride)};
             if (UNLIKELY(source_size < minimum_source_size))
                 throw_jpegls_error(jpegls_errc::invalid_argument_stride);
         }
