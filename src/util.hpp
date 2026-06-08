@@ -364,7 +364,7 @@ inline size_t checked_mul(const size_t a, const size_t b)
     if (high_bits != 0)
         impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
     return result;
-#elif _M_ARM64
+#elif defined(_M_ARM64)
     if (__umulh(a, b) > 0)
         impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
     return a * b;
@@ -374,7 +374,7 @@ inline size_t checked_mul(const size_t a, const size_t b)
         impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
     return static_cast<size_t>(high_result);
 #endif
-#elif __GNUC__
+#elif defined(__GNUC__)
     size_t result;
     if (UNLIKELY(__builtin_mul_overflow(a, b, &result)))
         impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
