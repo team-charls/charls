@@ -42,8 +42,8 @@ struct charls_jpegls_encoder final
 
     void frame_info(const charls_frame_info& frame_info)
     {
-        check_argument(frame_info.width > 0, jpegls_errc::invalid_argument_width);
-        check_argument(frame_info.height > 0, jpegls_errc::invalid_argument_height);
+        check_argument_range(minimum_width, maximum_width, frame_info.width, jpegls_errc::invalid_argument_width);
+        check_argument_range(minimum_height, maximum_height, frame_info.height, jpegls_errc::invalid_argument_height);
         check_argument_range(minimum_bits_per_sample, maximum_bits_per_sample, frame_info.bits_per_sample,
                              jpegls_errc::invalid_argument_bits_per_sample);
         check_argument_range(minimum_component_count, maximum_component_count, frame_info.component_count,
@@ -115,8 +115,8 @@ struct charls_jpegls_encoder final
 
     void write_spiff_header(const spiff_header& spiff_header)
     {
-        check_argument(spiff_header.height > 0, jpegls_errc::invalid_argument_height);
-        check_argument(spiff_header.width > 0, jpegls_errc::invalid_argument_width);
+        check_argument_range(minimum_height, maximum_height, spiff_header.height, jpegls_errc::invalid_argument_height);
+        check_argument_range(minimum_width, maximum_width, spiff_header.width, jpegls_errc::invalid_argument_width);
         write_spiff_header_core(spiff_header);
     }
 
@@ -311,8 +311,8 @@ private:
 
         const size_t not_used_bytes_at_end{stride - minimum_stride};
         const size_t minimum_source_size{interleave_mode_ == interleave_mode::none
-                                             ? (stride * source_component_count * frame_info_.height) - not_used_bytes_at_end
-                                             : (stride * frame_info_.height) - not_used_bytes_at_end};
+                                             ? checked_mul(stride * source_component_count, frame_info_.height) - not_used_bytes_at_end
+                                             : checked_mul(stride, frame_info_.height) - not_used_bytes_at_end};
 
         if (UNLIKELY(source_size < minimum_source_size))
             throw_jpegls_error(jpegls_errc::invalid_argument_size);

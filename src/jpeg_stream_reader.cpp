@@ -889,7 +889,7 @@ void jpeg_stream_reader::frame_info_height(const uint32_t height, const bool fin
     if (height == 0 && !final_update)
         return;
 
-    if (UNLIKELY(frame_info_.height != 0 || height == 0))
+    if (UNLIKELY(frame_info_.height != 0 || height < minimum_height || height > maximum_height))
         throw_jpegls_error(jpegls_errc::invalid_parameter_height);
 
     frame_info_.height = height;
@@ -901,7 +901,7 @@ void jpeg_stream_reader::frame_info_width(const uint32_t width)
     if (width == 0)
         return;
 
-    if (UNLIKELY(frame_info_.width != 0))
+    if (UNLIKELY(frame_info_.width != 0 || width < minimum_width || width > maximum_width))
         throw_jpegls_error(jpegls_errc::invalid_parameter_width);
 
     frame_info_.width = width;

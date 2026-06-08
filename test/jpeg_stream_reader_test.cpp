@@ -1289,7 +1289,7 @@ TEST(jpeg_stream_reader_test, read_define_number_of_lines_32_bit)
     writer.write_start_of_image();
     writer.write_start_of_frame_segment(1, 0, 2, 3);
     writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
-    writer.write_define_number_of_lines(numeric_limits<uint32_t>::max(), 4);
+    writer.write_define_number_of_lines(maximum_height, 4);
     writer.write_start_of_scan_segment(1, 1, 0, interleave_mode::none);
 
     jpeg_stream_reader reader;
@@ -1298,7 +1298,7 @@ TEST(jpeg_stream_reader_test, read_define_number_of_lines_32_bit)
     reader.read_header();
     reader.read_next_start_of_scan();
 
-    EXPECT_EQ(numeric_limits<uint32_t>::max(), reader.frame_info().height);
+    EXPECT_EQ(maximum_height, reader.frame_info().height);
 }
 
 TEST(jpeg_stream_reader_test, read_invalid_height_in_define_number_of_lines_throws)

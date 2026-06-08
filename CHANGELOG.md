@@ -38,6 +38,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 - BREAKING: Deprecated legacy 1.x API methods have been removed.
 
+## [2.4.4] - 2026-6-8
+
+### Security
+- Fixed a security vulnerability affecting versions 2.3.0 through 2.4.3.  
+  For full details, please see the security advisory: [GHSA-mqrg-gfc8-73ff](https://github.com/team-charls/charls/security/advisories/GHSA-mqrg-gfc8-73ff)  
+  The maximum supported values for width and height are now defined as 100000 pixels.
+
 ## [2.4.3] - 2026-3-3
 
 ### Fixed

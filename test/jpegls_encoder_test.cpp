@@ -6,6 +6,7 @@
 #include "jpegls_preset_coding_parameters_test.hpp"
 #include "support.hpp"
 
+#include "../src/constants.hpp"
 #include "../src/jpeg_marker_code.hpp"
 #include "../src/util.hpp"
 #include <charls/charls.hpp>
@@ -127,22 +128,28 @@ TEST(jpegls_encoder_test, frame_info_max_and_min)
 {
     jpegls_encoder encoder;
 
-    encoder.frame_info({1, 1, 2, 1});                                                                     // minimum.
-    encoder.frame_info({std::numeric_limits<uint32_t>::max(), numeric_limits<uint32_t>::max(), 16, 255}); // maximum.
+    encoder.frame_info({1, 1, 2, 1});                                                                      // minimum.
+    encoder.frame_info({maximum_width, maximum_height, maximum_bits_per_sample, maximum_component_count}); // maximum.
 }
 
 TEST(jpegls_encoder_test, frame_info_bad_width_throws)
 {
     jpegls_encoder encoder;
 
-    assert_expect_exception(jpegls_errc::invalid_argument_width, [&encoder] { encoder.frame_info({0, 1, 2, 1}); });
+    assert_expect_exception(jpegls_errc::invalid_argument_width,
+                            [&encoder] { encoder.frame_info({minimum_width - 1, 1, 2, 1}); });
+    assert_expect_exception(jpegls_errc::invalid_argument_width,
+                            [&encoder] { encoder.frame_info({maximum_width + 1, 10, 2, 1}); });
 }
 
 TEST(jpegls_encoder_test, frame_info_bad_height_throws)
 {
     jpegls_encoder encoder;
 
-    assert_expect_exception(jpegls_errc::invalid_argument_height, [&encoder] { encoder.frame_info({1, 0, 2, 1}); });
+    assert_expect_exception(jpegls_errc::invalid_argument_height,
+                            [&encoder] { encoder.frame_info({1, minimum_height - 1, 2, 1}); });
+    assert_expect_exception(jpegls_errc::invalid_argument_height,
+                            [&encoder] { encoder.frame_info({1, maximum_height + 1, 2, 1}); });
 }
 
 TEST(jpegls_encoder_test, frame_info_bad_bits_per_sample_throws)
@@ -334,7 +341,7 @@ TEST(jpegls_encoder_test, estimated_destination_size_thath_causes_overflow_throw
 {
     jpegls_encoder encoder;
 
-    encoder.frame_info({numeric_limits<uint32_t>::max(), numeric_limits<uint32_t>::max(), 8, 1});
+    encoder.frame_info({maximum_width, maximum_height, 8, 1});
 
 #if INTPTR_MAX == INT64_MAX
     const auto size{encoder.estimated_destination_size()};
@@ -345,16 +352,6 @@ TEST(jpegls_encoder_test, estimated_destination_size_thath_causes_overflow_throw
 #else
 #error Unknown pointer size or missing size macros!
 #endif
-}
-
-TEST(jpegls_encoder_test, estimated_destination_size_that_causes_overflow_on_64bit_throws)
-{
-    jpegls_encoder encoder;
-
-    encoder.frame_info({numeric_limits<uint32_t>::max(), numeric_limits<uint32_t>::max(), 8, 2});
-
-    assert_expect_exception(jpegls_errc::parameter_value_not_supported,
-                            [&encoder] { ignore = encoder.estimated_destination_size(); });
 }
 
 TEST(jpegls_encoder_test, destination)
@@ -538,6 +535,11 @@ TEST(jpegls_encoder_test, write_spiff_header_invalid_height_throws)
     assert_expect_exception(jpegls_errc::invalid_argument_height,
                             [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
     EXPECT_EQ(size_t{}, encoder.bytes_written());
+
+    spiff_header.height = maximum_height + 1;
+    assert_expect_exception(jpegls_errc::invalid_argument_height,
+                            [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
+    EXPECT_EQ(size_t{}, encoder.bytes_written());
 }
 
 TEST(jpegls_encoder_test, write_spiff_header_invalid_width_throws)
@@ -552,6 +554,11 @@ TEST(jpegls_encoder_test, write_spiff_header_invalid_width_throws)
     spiff_header spiff_header{};
     spiff_header.height = 1;
 
+    assert_expect_exception(jpegls_errc::invalid_argument_width,
+                            [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
+    EXPECT_EQ(size_t{}, encoder.bytes_written());
+
+    spiff_header.width = maximum_height + 1;
     assert_expect_exception(jpegls_errc::invalid_argument_width,
                             [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
     EXPECT_EQ(size_t{}, encoder.bytes_written());
