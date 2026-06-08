@@ -951,7 +951,7 @@ public:
         writer.write_start_of_frame_segment(0, 0, 8, 3);
         writer.write_start_of_scan_segment(0, 3, 0, interleave_mode::sample);
 
-        constexpr array<uint8_t, 4> entropy_data{0, 0, 0, 0};
+        constexpr array<uint8_t, 4> entropy_data{};
         writer.write_bytes(entropy_data.data(), entropy_data.size());
 
         jpegls_decoder decoder;
