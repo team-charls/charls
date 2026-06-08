@@ -19,6 +19,10 @@ inline constexpr int32_t maximum_component_index{maximum_component_count - 1};
 inline constexpr int32_t minimum_bits_per_sample{2};
 inline constexpr int32_t maximum_bits_per_sample{16};
 inline constexpr int32_t maximum_near_lossless{255};
+inline constexpr uint32_t minimum_width{1};
+inline constexpr uint32_t maximum_width{100'000};  // Explicit implementation limit, standard allows up to 2^32 - 1.
+inline constexpr uint32_t minimum_height{1};
+inline constexpr uint32_t maximum_height{100'000}; // Explicit implementation limit, standard allows up to 2^32 - 1.
 inline constexpr int32_t minimum_application_data_id{};
 inline constexpr int32_t maximum_application_data_id{15};
 

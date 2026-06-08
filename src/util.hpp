@@ -357,9 +357,31 @@ auto countl_zero(const T value) noexcept -> std::enable_if_t<is_uint_v<32, T>, i
 [[nodiscard]]
 inline size_t checked_mul(const size_t a, const size_t b)
 {
-    if (UNLIKELY(b != 0 && a > std::numeric_limits<size_t>::max() / b))
+#ifdef _MSC_VER
+#ifdef _M_X64
+    unsigned __int64 high_bits{}; // NOLINT
+    const size_t result{_umul128(a, b, &high_bits)};
+    if (high_bits != 0)
+        impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+    return result;
+#elif defined(_M_ARM64)
+    if (__umulh(a, b) > 0)
         impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
     return a * b;
+#else
+    const unsigned __int64 high_result{static_cast<unsigned __int64>(a) * b}; // NOLINT
+    if (high_result > std::numeric_limits<size_t>::max())
+        impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+    return static_cast<size_t>(high_result);
+#endif
+#elif defined(__GNUC__)
+    size_t result;
+    if (UNLIKELY(__builtin_mul_overflow(a, b, &result)))
+        impl::throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
+    return result;
+#else
+#error "Unknown compiler"
+#endif
 }
 
 // Replacement for std::add_sat (will be introduced in C++26)
