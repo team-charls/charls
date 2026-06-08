@@ -558,7 +558,7 @@ TEST(jpegls_encoder_test, write_spiff_header_invalid_width_throws)
                             [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
     EXPECT_EQ(size_t{}, encoder.bytes_written());
 
-    spiff_header.width = maximum_height + 1;
+    spiff_header.width = maximum_width + 1;
     assert_expect_exception(jpegls_errc::invalid_argument_width,
                             [&encoder, &spiff_header] { encoder.write_spiff_header(spiff_header); });
     EXPECT_EQ(size_t{}, encoder.bytes_written());
