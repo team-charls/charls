@@ -28,6 +28,6 @@
 
 ## Reporting a Vulnerability
 
-Security issues should be reported by creating a [security advisory on GitHub](https://github.com/team-charls/charls/security/advisories/new).
+Security issues should be reported privately by creating a [security advisory on GitHub](https://github.com/team-charls/charls/security/advisories/new).
 
 Please do not open a public issue for anything you think might have a security implication.
