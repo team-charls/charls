@@ -81,7 +81,7 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
               "with the same name as the input file and a .jls extension");
     encode_command.add_argument(interleave_mode_argument)
         .scan<'i', int32_t>()
-        .help("Interleave mode parameter (optional: default = 0 for 1 component, 2 for multiple components)");
+        .help("Interleave mode parameter (optional: default = 0 for 1 component, 1 for multiple components)");
     encode_command.add_argument(near_lossless_argument).scan<'i', int32_t>().help("NEAR parameter (optional: default = 0)");
     encode_command.add_argument(color_transform_argument)
         .scan<'i', int32_t>()

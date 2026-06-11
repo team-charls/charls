@@ -42,7 +42,7 @@ void set_interleave_mode(jpegls_encoder& encoder, int32_t interleave_mode, const
 {
     if (interleave_mode == default_interleave_mode)
     {
-        encoder.interleave_mode(frame_info.component_count == 3 ? interleave_mode::line : interleave_mode::none);
+        encoder.interleave_mode(frame_info.component_count > 1 ? interleave_mode::line : interleave_mode::none);
     }
     else
     {
