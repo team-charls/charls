@@ -9,8 +9,8 @@
 
 #include "support/portable_arbitrary_map.hpp"
 
-#include <cassert>
 #include <algorithm>
+#include <cassert>
 
 using std::ifstream;
 using std::ofstream;
@@ -38,11 +38,25 @@ uint32_t max_value_to_bits_per_sample(const uint32_t max_value) noexcept
     return log2_floor(max_value) + 1;
 }
 
+void set_interleave_mode(jpegls_encoder& encoder, int32_t interleave_mode, const frame_info& frame_info)
+{
+    if (interleave_mode == default_interleave_mode)
+    {
+        encoder.interleave_mode(frame_info.component_count > 1 ? interleave_mode::line : interleave_mode::none);
+    }
+    else
+    {
+        encoder.interleave_mode(static_cast<charls::interleave_mode>(interleave_mode));
+    }
+}
+
+
 // Purpose: this function can encode an image stored in the Portable Anymap Format (PNM)
 //          into the JPEG-LS format. The 2 binary formats P5 and P6 are supported:
 //          Portable GrayMap: P5 = binary, extension = .pgm, 0-2^16 (gray scale)
 //          Portable PixMap: P6 = binary, extension.ppm, range 0-2^16 (RGB)
-void encode_pnm(const path& filename_input, const path& filename_output)
+void encode_pnm(const path& filename_input, const path& filename_output, const int32_t interleave_mode, const int32_t near_lossless,
+                const int32_t color_transformation)
 {
     ifstream pnm_file(open_input_stream(filename_input));
 
@@ -72,7 +86,9 @@ void encode_pnm(const path& filename_input, const path& filename_output)
 
     jpegls_encoder encoder;
     encoder.frame_info(frame_info)
-        .interleave_mode(frame_info.component_count == 3 ? interleave_mode::line : interleave_mode::none);
+        .near_lossless(near_lossless)
+        .color_transformation(static_cast<charls::color_transformation>(color_transformation));
+    set_interleave_mode(encoder, interleave_mode, frame_info);
 
     vector<uint8_t> destination(encoder.estimated_destination_size());
     encoder.destination(destination);
@@ -84,7 +100,8 @@ void encode_pnm(const path& filename_input, const path& filename_output)
 }
 
 
-void encode_pam(const path& filename_input, const path& filename_output)
+void encode_pam(const path& filename_input, const path& filename_output, const int32_t interleave_mode,
+                const int32_t near_lossless, const int32_t color_transformation)
 {
     const support::portable_arbitrary_map pam_file(filename_input);
 
@@ -92,7 +109,9 @@ void encode_pam(const path& filename_input, const path& filename_output)
 
     jpegls_encoder encoder;
     encoder.frame_info(frame_info)
-        .interleave_mode(frame_info.component_count > 1 ? interleave_mode::line : interleave_mode::none);
+        .near_lossless(near_lossless)
+        .color_transformation(static_cast<charls::color_transformation>(color_transformation));
+    set_interleave_mode(encoder, interleave_mode, frame_info);
 
     vector<uint8_t> destination(encoder.estimated_destination_size());
     encoder.destination(destination);
@@ -106,15 +125,16 @@ void encode_pam(const path& filename_input, const path& filename_output)
 } // namespace
 
 
-void encode_netpbm(const path& filename_input, const path& filename_output)
+void encode_netpbm(const path& filename_input, const path& filename_output, const int32_t interleave_mode, const int32_t near_lossless,
+                   const int32_t color_transformation)
 {
     if (filename_input.extension() == ".pam")
     {
-        encode_pam(filename_input, filename_output);
+        encode_pam(filename_input, filename_output, interleave_mode, near_lossless, color_transformation);
     }
     else
     {
-        encode_pnm(filename_input, filename_output);
+        encode_pnm(filename_input, filename_output, interleave_mode, near_lossless, color_transformation);
     }
 }
 
