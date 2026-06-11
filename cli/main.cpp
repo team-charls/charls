@@ -29,6 +29,9 @@ const char* const output_argument{"output"};
 const char* const source1_argument{"source1"};
 const char* const source2_argument{"source2"};
 const char* const loop_count_argument{"--loop-count"};
+const char* const interleave_mode_argument{"--interleave-mode"};
+const char* const near_lossless_argument{"--near-lossless"};
+const char* const color_transform_argument{"--color-transform"};
 
 [[nodiscard]]
 uint32_t get_loop_count(const ArgumentParser& command)
@@ -36,6 +39,29 @@ uint32_t get_loop_count(const ArgumentParser& command)
     static constexpr uint32_t default_loop_count{10};
     const auto loop_count{command.present<uint32_t>(loop_count_argument)};
     return loop_count.has_value() && *loop_count != 0 ? *loop_count : default_loop_count;
+}
+
+[[nodiscard]]
+int32_t get_interleave_mode_argument(const ArgumentParser& command)
+{
+    const auto interleave_mode{command.present<int32_t>(interleave_mode_argument)};
+    return interleave_mode.value_or(default_interleave_mode);
+}
+
+[[nodiscard]]
+int32_t get_near_lossless_argument(const ArgumentParser& command)
+{
+    static constexpr int32_t default_near_lossless{};
+    const auto near{command.present<int32_t>(near_lossless_argument)};
+    return near.value_or(default_near_lossless);
+}
+
+[[nodiscard]]
+int32_t get_color_transform_argument(const ArgumentParser& command)
+{
+    static constexpr int32_t default_color_transform{};
+    const auto color_transform{command.present<int32_t>(color_transform_argument)};
+    return color_transform.value_or(default_color_transform);
 }
 
 } // namespace
@@ -53,6 +79,13 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
         .nargs(0, 1)
         .help("The output JPEG-LS file path. If not specified, the output file is created "
               "with the same name as the input file and a .jls extension");
+    encode_command.add_argument(interleave_mode_argument)
+        .scan<'i', int32_t>()
+        .help("Interleave mode parameter (optional: default = 0 for 1 component, 2 for multiple components)");
+    encode_command.add_argument(near_lossless_argument).scan<'i', int32_t>().help("NEAR parameter (optional: default = 0)");
+    encode_command.add_argument(color_transform_argument)
+        .scan<'i', int32_t>()
+        .help("Color transformation parameter (optional: default = 0)");
     program.add_subparser(encode_command);
 
     ArgumentParser decode_command("decode");
@@ -98,7 +131,8 @@ int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-
                 output_filename = fs::path(input_filename).replace_extension(".jls").string();
             }
 
-            encode_netpbm(input_filename, *output_filename);
+            encode_netpbm(input_filename, *output_filename, get_interleave_mode_argument(encode_command),
+                          get_near_lossless_argument(encode_command), get_color_transform_argument(encode_command));
         }
         else if (program.is_subcommand_used(decode_command))
         {
