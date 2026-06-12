@@ -2,7 +2,9 @@ anymap
 argc
 argparse
 argv
+Autobuild
 banny
+Bbuild
 BINDIR
 bugprone
 CETCOMPAT
@@ -23,6 +25,7 @@ dllexport
 EMSCRIPTEN
 errc
 Errval
+fsfe
 Fuzzer
 golomb
 Golomb
@@ -38,12 +41,15 @@ maxval
 misc
 mrfx
 msbuild
+msystem
 netpbm
 NOEXCEPT
 opto
+ossf
 palletised
 Qube
 rect
+sarif
 simd
 sonarqube
 STREQUAL
