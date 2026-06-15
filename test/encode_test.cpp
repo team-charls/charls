@@ -3,6 +3,8 @@
 
 #include "pch.hpp"
 
+#include "../src/util.hpp"
+
 #include <charls/charls.hpp>
 #include <support/portable_anymap_file.hpp>
 
@@ -239,44 +241,44 @@ TEST(encode_test, encode_2_components_8_bit_interleave_sample)
 
 TEST(encode_test, encode_2_components_15_bit_interleave_none)
 {
-    constexpr array data{byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40}, byte{1},
-                         byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}, byte{1}};
-    encode({2, 2, 15, 2}, {data.cbegin(), data.cend()}, 52, interleave_mode::none);
+    constexpr array<uint16_t, 8> data{(10 | (1 << 8)), (20 | (1 << 8)), (30 | (1 << 8)), (40 | (1 << 8)),
+                                       (50 | (1 << 8)), (60 | (1 << 8)), (70 | (1 << 8)), (80 | (1 << 8))};
+    encode({2, 2, 15, 2}, {reinterpret_cast<const byte*>(data.cbegin()), reinterpret_cast<const byte*>(data.cend())}, 52, interleave_mode::none);
 }
 
 TEST(encode_test, encode_2_components_15_bit_interleave_line)
 {
-    constexpr array data{byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40}, byte{1},
-                         byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}, byte{1}};
-    encode({2, 2, 15, 2}, {data.cbegin(), data.cend()}, 43, interleave_mode::line);
+    constexpr array<uint16_t, 8> data{(10 | (1 << 8)), (20 | (1 << 8)), (30 | (1 << 8)), (40 | (1 << 8)),
+                                       (50 | (1 << 8)), (60 | (1 << 8)), (70 | (1 << 8)), (80 | (1 << 8))};
+    encode({2, 2, 15, 2}, {reinterpret_cast<const byte*>(data.cbegin()), reinterpret_cast<const byte*>(data.cend())}, 43, interleave_mode::line);
 }
 
 TEST(encode_test, encode_2_components_15_bit_interleave_sample)
 {
-    constexpr array data{byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40}, byte{1},
-                         byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}, byte{1}};
-    encode({2, 2, 15, 2}, {data.cbegin(), data.cend()}, 43, interleave_mode::sample);
+    constexpr array<uint16_t, 8> data{(10 | (1 << 8)), (20 | (1 << 8)), (30 | (1 << 8)), (40 | (1 << 8)),
+                                       (50 | (1 << 8)), (60 | (1 << 8)), (70 | (1 << 8)), (80 | (1 << 8))};
+    encode({2, 2, 15, 2}, {reinterpret_cast<const byte*>(data.cbegin()), reinterpret_cast<const byte*>(data.cend())}, 43, interleave_mode::sample);
 }
 
 TEST(encode_test, encode_2_components_16_bit_interleave_none)
 {
-    constexpr array data{byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40}, byte{1},
-                         byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}, byte{1}};
-    encode({2, 2, 16, 2}, {data.cbegin(), data.cend()}, 52, interleave_mode::none);
+    constexpr array<uint16_t, 8> data{(10 | (1 << 8)), (20 | (1 << 8)), (30 | (1 << 8)), (40 | (1 << 8)),
+                                       (50 | (1 << 8)), (60 | (1 << 8)), (70 | (1 << 8)), (80 | (1 << 8))};
+    encode({2, 2, 16, 2}, {reinterpret_cast<const byte*>(data.cbegin()), reinterpret_cast<const byte*>(data.cend())}, 52, interleave_mode::none);
 }
 
 TEST(encode_test, encode_2_components_16_bit_interleave_line)
 {
-    constexpr array data{byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40}, byte{1},
-                         byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}, byte{1}};
-    encode({2, 2, 16, 2}, {data.cbegin(), data.cend()}, 44, interleave_mode::line);
+    constexpr array<uint16_t, 8> data{(10 | (1 << 8)), (20 | (1 << 8)), (30 | (1 << 8)), (40 | (1 << 8)),
+                                       (50 | (1 << 8)), (60 | (1 << 8)), (70 | (1 << 8)), (80 | (1 << 8))};
+    encode({2, 2, 16, 2}, {reinterpret_cast<const byte*>(data.cbegin()), reinterpret_cast<const byte*>(data.cend())}, 44, interleave_mode::line);
 }
 
 TEST(encode_test, encode_2_components_16_bit_interleave_sample)
 {
-    constexpr array data{byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40}, byte{1},
-                         byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}, byte{1}};
-    encode({2, 2, 16, 2}, {data.cbegin(), data.cend()}, 44, interleave_mode::sample);
+    constexpr array<uint16_t, 8> data{(10 | (1 << 8)), (20 | (1 << 8)), (30 | (1 << 8)), (40 | (1 << 8)),
+                                       (50 | (1 << 8)), (60 | (1 << 8)), (70 | (1 << 8)), (80 | (1 << 8))};
+    encode({2, 2, 16, 2}, {reinterpret_cast<const byte*>(data.cbegin()), reinterpret_cast<const byte*>(data.cend())}, 44, interleave_mode::sample);
 }
 
 TEST(encode_test, encode_color_8_bit_interleave_none_lossless)
@@ -326,28 +328,48 @@ TEST(encode_test, encode_color_8_bit_interleave_sample_hp3)
 
 TEST(encode_test, encode_monochrome_16_bit_interleave_none)
 {
+#ifdef LITTLE_ENDIAN_ARCHITECTURE
     constexpr array data{byte{}, byte{10}, byte{}, byte{20}, byte{}, byte{30}, byte{}, byte{40}};
+#else
+    constexpr array data{byte{10}, byte{}, byte{20}, byte{}, byte{30}, byte{}, byte{40}, byte{}};
+#endif
     encode({2, 2, 16, 1}, {data.cbegin(), data.cend()}, 36, interleave_mode::none);
 }
 
 TEST(encode_test, encode_color_16_bit_interleave_none)
 {
+#ifdef LITTLE_ENDIAN_ARCHITECTURE
     constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
+#else
+    constexpr array data{byte{20}, byte{10}, byte{40}, byte{30}, byte{60}, byte{50}};
+#endif
+
     encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 66, interleave_mode::none);
 }
 
 TEST(encode_test, encode_color_16_bit_interleave_line)
 {
+#ifdef LITTLE_ENDIAN_ARCHITECTURE
     constexpr array data{byte{10}, byte{20}, byte{30}, byte{40}, byte{50}, byte{60}};
+#else
+    constexpr array data{byte{20}, byte{10}, byte{40}, byte{30}, byte{60}, byte{50}};
+#endif
     encode({1, 1, 16, 3}, {data.cbegin(), data.cend()}, 45, interleave_mode::line);
 }
 
 TEST(encode_test, encode_color_16_bit_interleave_sample)
 {
+#ifdef LITTLE_ENDIAN_ARCHITECTURE
     constexpr array data{byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 0
                          byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 1
                          byte{1}, byte{10}, byte{1}, byte{20}, byte{1}, byte{30},  // row 1, pixel 0
                          byte{1}, byte{40}, byte{1}, byte{50}, byte{1}, byte{60}}; // row 1, pixel 1
+#else
+    constexpr array data{byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 0
+                         byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 1
+                         byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1},  // row 1, pixel 0
+                         byte{40}, byte{1}, byte{50}, byte{1}, byte{60}, byte{1}}; // row 1, pixel 1
+#endif
     encode({2, 2, 16, 3}, {data.cbegin(), data.cend()}, 51, interleave_mode::sample);
 }
 
@@ -419,10 +441,17 @@ TEST(encode_test, encode_4_components_16_bit_interleave_line)
 
 TEST(encode_test, encode_4_components_16_bit_interleave_sample)
 {
+#ifdef LITTLE_ENDIAN_ARCHITECTURE
     constexpr array data{byte{},  byte{},   byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 0
                          byte{},  byte{},   byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 1
                          byte{1}, byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40},  // row 1, pixel 0
                          byte{1}, byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}}; // row 1, pixel 1
+#else
+    constexpr array data{byte{},  byte{},   byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 0
+                         byte{},  byte{},   byte{},  byte{},   byte{},  byte{},   byte{},  byte{},    // row 0, pixel 1
+                         byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40}, byte{1},  // row 1, pixel 0
+                         byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}, byte{1}}; // row 1, pixel 1
+#endif
 
     encode({2, 2, 16, 4}, {data.cbegin(), data.cend()}, 61, interleave_mode::sample);
 }
