@@ -169,8 +169,9 @@ vector<byte> create_16_bit_buffer_with_noise(const size_t length, const size_t b
     mt19937 generator(seed);
     uniform_int_distribution<uint16_t> distribution{0, max_value};
 
-    vector<byte> buffer(length * 2);
-    for (size_t i{}; i != length; i = i + 2)
+    const size_t byte_length{length * 2};
+    vector<byte> buffer(byte_length);
+    for (size_t i{}; i < byte_length; i = i + 2)
     {
         const uint16_t value{distribution(generator)};
 
