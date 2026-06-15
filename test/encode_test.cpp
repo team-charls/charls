@@ -313,8 +313,7 @@ TEST(encode_test, encode_2_components_16_bit_interleave_sample)
     constexpr array data{byte{1}, byte{10}, byte{1}, byte{20}, byte{1}, byte{30}, byte{1}, byte{40},
                          byte{1}, byte{50}, byte{1}, byte{60}, byte{1}, byte{70}, byte{1}, byte{80}};
 #endif
-    encode({2, 2, 16, 2}, {reinterpret_cast<const byte*>(data.cbegin()), reinterpret_cast<const byte*>(data.cend())}, 44,
-           interleave_mode::sample);
+    encode({2, 2, 16, 2}, {data.cbegin(), data.cend()}, 44, interleave_mode::sample);
 }
 
 TEST(encode_test, encode_color_8_bit_interleave_none_lossless)
