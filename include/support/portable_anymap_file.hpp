@@ -117,8 +117,20 @@ private:
         return x;
     }
 
+// C++20 provides std::endian, use for now compiler macros.
+#ifdef _MSC_VER
+#define ANYMAP_LITTLE_ENDIAN_ARCHITECTURE // MSVC++ compiler support only little endian platforms.
+#elif __GNUC__
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define ANYMAP_LITTLE_ENDIAN_ARCHITECTURE
+#endif
+#else
+#error "Unknown compiler"
+#endif
+
     void convert_to_little_endian_if_needed() noexcept
     {
+#ifdef ANYMAP_LITTLE_ENDIAN_ARCHITECTURE
         // Anymap files with multibyte pixels are stored in big endian format in the file.
         if (bits_per_sample_ > 8)
         {
@@ -127,7 +139,10 @@ private:
                 std::swap(input_buffer_[i], input_buffer_[i + 1]);
             }
         }
+#endif
     }
+
+#undef ANYMAP_LITTLE_ENDIAN_ARCHITECTURE
 
     int component_count_;
     int width_;
