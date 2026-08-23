@@ -136,6 +136,9 @@
       "name": "linux-base",
       "description": "Linux configuration",
       "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
           "hostOS": [ "Linux" ]

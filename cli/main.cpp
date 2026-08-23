@@ -67,7 +67,7 @@ int32_t get_color_transform_argument(const ArgumentParser& command)
 } // namespace
 
 
-int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-escape)
+int main(const int argc, const char* const argv[]) noexcept(false)
 {
     ArgumentParser program("charls-cli");
     program.add_description("CharLS command line interface");
