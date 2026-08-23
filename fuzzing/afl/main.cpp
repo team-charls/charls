@@ -67,7 +67,7 @@ vector<uint8_t> generate_once()
 } // namespace
 
 
-int main(const int argc, const char* const argv[]) // NOLINT(bugprone-exception-escape)
+int main(const int argc, const char* const argv[]) noexcept(false)
 {
     int fd{};
     if (argc == 2)
