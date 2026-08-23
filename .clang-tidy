@@ -32,7 +32,7 @@ Checks:
   - 'cppcoreguidelines-*' # Checks related to C++ Core Guidelines.
   - '-cppcoreguidelines-avoid-magic-numbers' # Rationale: Alias for readability-magic-numbers.
   - '-cppcoreguidelines-pro-bounds-pointer-arithmetic' # Rationale: usage is required in codec implementation.
-  - '-cppcoreguidelines-pro-bounds-avoid-unchecked-container-access' # Rationale: index is pre checked and access verified with runtime analyzers.
+  - '-cppcoreguidelines-pro-bounds-avoid-unchecked-container-access' # Rationale: index is pre-checked and access verified with runtime analyzers.
   - '-cppcoreguidelines-init-variables' # Rationale reports false warnings for out parameters (other checkers are better to detect these problems)
   - '-cppcoreguidelines-pro-bounds-constant-array-index' # Rationale gsl:at is not used by design, memory access verified with other tools.
 
