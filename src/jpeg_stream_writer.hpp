@@ -10,8 +10,13 @@
 #include "jpegls_preset_parameters_type.hpp"
 #include "span.hpp"
 #include "util.hpp"
+#include "assert.hpp"
 
 #include <vector>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <limits>
 
 namespace charls {
 

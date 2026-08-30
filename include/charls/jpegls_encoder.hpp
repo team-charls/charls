@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "charls_jpegls_encoder.h"
-#include "jpegls_error.hpp"
+#include "charls_jpegls_encoder.h" // IWYU pragma: export
+#include "jpegls_error.hpp" // IWYU pragma: export
 
 #ifndef CHARLS_BUILD_AS_CPP_MODULE
 #include <cstring>

@@ -1,19 +1,23 @@
 // SPDX-FileCopyrightText: © 2019 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.hpp"
+#include "pch.hpp" // IWYU pragma: keep
 
 #include "charls/charls_jpegls_encoder.h"
 #include "charls/version.hpp"
+#include "charls/api_abi.h"
+#include "charls/jpegls_error.hpp"
 
+#include "coding_parameters.hpp"
+#include "constants.hpp"
+#include "jpegls_algorithm.hpp"
+#include "span.hpp"
 #include "color_transform.hpp"
 #include "jpeg_stream_writer.hpp"
 #include "jpegls_preset_coding_parameters.hpp"
 #include "make_scan_codec.hpp"
 #include "scan_encoder.hpp"
 #include "util.hpp"
-
-#include <new>
 
 using namespace charls;
 using impl::throw_jpegls_error;

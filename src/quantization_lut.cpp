@@ -39,25 +39,25 @@ vector<int8_t> create_quantize_lut_lossless(const int32_t bit_count)
 
 const vector<int8_t>& quantization_lut_lossless_8()
 {
-    static const vector<int8_t> lut{create_quantize_lut_lossless(8)};
+    static const vector lut{create_quantize_lut_lossless(8)};
     return lut;
 }
 
 const vector<int8_t>& quantization_lut_lossless_10()
 {
-    static const vector<int8_t> lut{create_quantize_lut_lossless(10)};
+    static const vector lut{create_quantize_lut_lossless(10)};
     return lut;
 }
 
 const vector<int8_t>& quantization_lut_lossless_12()
 {
-    static const vector<int8_t> lut{create_quantize_lut_lossless(12)};
+    static const vector lut{create_quantize_lut_lossless(12)};
     return lut;
 }
 
 const vector<int8_t>& quantization_lut_lossless_16()
 {
-    static const vector<int8_t> lut{create_quantize_lut_lossless(16)};
+    static const vector lut{create_quantize_lut_lossless(16)};
     return lut;
 }
 

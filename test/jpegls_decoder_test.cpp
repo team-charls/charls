@@ -3,19 +3,18 @@
 
 #include "pch.hpp"
 
-#include "support.hpp"
-
 #include <charls/jpegls_decoder.hpp>
-#include <charls/jpegls_encoder.hpp>
 
-#include <array>
 #include <tuple>
-#include <vector>
+#include <stdexcept>
+#include <utility>
 
+#include <charls/jpegls_encoder.hpp>
 #include "../src/constants.hpp"
 #include "../src/jpeg_marker_code.hpp"
 #include "../src/jpegls_preset_parameters_type.hpp"
 
+#include "support.hpp"
 #include "jpeg_test_stream_writer.hpp"
 
 using std::array;

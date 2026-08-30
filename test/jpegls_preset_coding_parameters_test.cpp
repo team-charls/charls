@@ -5,9 +5,9 @@
 
 #include "../src/jpegls_preset_coding_parameters.hpp"
 
-#include "jpegls_preset_coding_parameters_test.hpp"
+#include "charls/public_types.h"
 
-#include <limits>
+#include "jpegls_preset_coding_parameters_test.hpp"
 
 
 namespace charls::test {

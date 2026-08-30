@@ -8,9 +8,15 @@
 #include "utility.hpp"
 
 #include "support/portable_arbitrary_map.hpp"
+#include <charls/jpegls_encoder.hpp>
 
 #include <algorithm>
-#include <cassert>
+#include <cassert> // IWYU pragma: keep
+#include <cstddef>
+#include <fstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 using std::ifstream;
 using std::ofstream;

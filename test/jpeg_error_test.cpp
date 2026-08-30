@@ -5,10 +5,6 @@
 
 #include <charls/jpegls_error.hpp>
 
-#include <cstring>
-#include <string>
-#include <type_traits>
-
 namespace charls::test {
 
 TEST(jpegls_error_test, get_error_message_success)

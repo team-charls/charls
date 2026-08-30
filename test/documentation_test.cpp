@@ -3,13 +3,12 @@
 
 #include "pch.hpp"
 
+#include <charls/charls.hpp>
+
 #include "support.hpp"
 
-#include <charls/charls.hpp>
-#include <support/portable_anymap_file.hpp>
-
-#include <fstream>
-#include <vector>
+#include <stdexcept>
+#include <utility>
 
 using namespace charls::support;
 using std::vector;

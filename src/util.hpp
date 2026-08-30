@@ -4,6 +4,7 @@
 #pragma once
 
 #include "charls/jpegls_error.hpp"
+#include "charls/api_abi.h"
 
 #include "span.hpp"
 

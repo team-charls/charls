@@ -7,6 +7,8 @@
 #include "util.hpp"
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 
 namespace charls {
 

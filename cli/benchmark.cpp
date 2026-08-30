@@ -5,15 +5,20 @@
 
 #include "benchmark.hpp"
 
+#include "charls/jpegls_decoder.hpp"
+#include "charls/jpegls_encoder.hpp"
+
 #include "support/portable_anymap_file.hpp"
 #include "utility.hpp"
 
-#include <cassert>
+#include <cassert> // IWYU pragma: keep
 #include <chrono>
 #include <iostream>
 #include <ratio>
 #include <tuple>
 #include <vector>
+#include <cstddef>
+#include <utility>
 
 using charls::frame_info;
 using charls::jpegls_decoder;

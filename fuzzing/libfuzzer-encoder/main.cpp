@@ -4,9 +4,13 @@
 #include "../../include/charls/jpegls_encoder.hpp"
 
 #include <FuzzedDataProvider.h>
+
 #include <filesystem>
 #include <fstream>
 #include <vector>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
 
 using std::byte;
 

@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "../include/charls/jpegls_decoder.hpp"
+#include "../include/charls/jpegls_error.hpp"
 
 #include <filesystem>
 #include <fstream>
 #include <vector>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, const size_t size)
 {

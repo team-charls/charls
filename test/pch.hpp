@@ -3,15 +3,21 @@
 
 #pragma once
 
+// IWYU pragma: begin_exports
 #include <gtest/gtest.h>
 
 #include <array>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
+#include <cstddef>
+#include <string>
 #include <limits>
 #include <memory>
 #include <sstream>
 #include <vector>
+#include <filesystem>
+// IWYU pragma: end_exports
 
 #ifdef _MSC_VER
 #define MSVC_WARNING_SUPPRESS(x) \

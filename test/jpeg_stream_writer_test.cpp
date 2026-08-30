@@ -3,15 +3,13 @@
 
 #include "pch.hpp"
 
-#include "support.hpp"
-
-#include "../src/jpeg_marker_code.hpp"
 #include "../src/jpeg_stream_writer.hpp"
 
-#include <array>
-#include <cstdint>
-#include <limits>
-#include <vector>
+#include "charls/public_types.h"
+#include "../src/jpeg_marker_code.hpp"
+#include "../src/span.hpp"
+
+#include "support.hpp"
 
 using std::array;
 using std::byte;

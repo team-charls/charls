@@ -11,6 +11,7 @@
 #include "jpegls_preset_coding_parameters.hpp"
 #include "jpegls_preset_parameters_type.hpp"
 #include "util.hpp"
+#include "jpegls_algorithm.hpp" 
 
 #include <algorithm>
 #include <array>

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "charls_jpegls_decoder.h"
-#include "validate_spiff_header.h"
+#include "charls_jpegls_decoder.h" // IWYU pragma: export
+#include "validate_spiff_header.h" // IWYU pragma: export
 #include "jpegls_error.hpp"
 
 #ifndef CHARLS_BUILD_AS_CPP_MODULE

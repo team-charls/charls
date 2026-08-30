@@ -3,11 +3,12 @@
 
 #include "pch.hpp"
 
-#include "../src/assert.hpp"
 #include "../src/util.hpp"
 
-#include "support.hpp"
+#include "charls/jpegls_error.hpp"
+#include "../src/assert.hpp"
 
+#include <new>
 #include <cmath>
 
 using std::numeric_limits;

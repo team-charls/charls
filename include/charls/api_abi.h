@@ -44,6 +44,17 @@
 #endif
 
 
+#if defined(_MSC_VER)
+#define CHARLS_NO_INLINE __declspec(noinline)
+#elif defined(__GNUC__)
+// C++ Compilers that support the GCC extensions (GCC, clang, Intel, etc.)
+#define CHARLS_NO_INLINE __attribute__((noinline))
+#else
+// Unknown C++ compiler, fallback to default behavior.
+#define CHARLS_NO_INLINE
+#endif
+
+
 #ifdef __cplusplus
 
 #define CHARLS_FINAL final

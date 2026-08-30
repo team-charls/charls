@@ -3,11 +3,11 @@
 
 #include "pch.hpp"
 
-#include "../src/conditional_static_cast.hpp"
 #include "../src/jpegls_algorithm.hpp"
 
+#include "../src/conditional_static_cast.hpp"
+
 #include <cmath>
-#include <limits>
 
 using std::numeric_limits;
 

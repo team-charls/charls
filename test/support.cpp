@@ -5,9 +5,8 @@
 
 #include "support.hpp"
 
-#include <support/portable_anymap_file.hpp>
-
 #include "../src/jpeg_stream_writer.hpp"
+#include "../src/span.hpp"
 #include <charls/jpegls_decoder.hpp>
 #include <charls/jpegls_encoder.hpp>
 

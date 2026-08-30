@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "version.h"
+#include "version.h" // IWYU pragma: export
 
 namespace charls {
 

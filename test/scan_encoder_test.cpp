@@ -3,10 +3,11 @@
 
 #include "pch.hpp"
 
-#include "scan_encoder_tester.hpp"
-#include "support.hpp"
+#include "charls/public_types.h"
+#include "../src/coding_parameters.hpp"
+#include "../src/span.hpp"
 
-#include <array>
+#include "scan_encoder_tester.hpp"
 
 using std::array;
 using std::byte;

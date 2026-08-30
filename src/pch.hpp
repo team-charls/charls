@@ -3,6 +3,7 @@
 
 #pragma once
 
+// IWYU pragma: begin_exports
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -16,6 +17,8 @@
 #include <new>
 #include <numeric>
 #include <system_error>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
+// IWYU pragma: end_exports

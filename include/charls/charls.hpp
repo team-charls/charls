@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "jpegls_decoder.hpp"
-#include "jpegls_encoder.hpp"
-#include "version.hpp"
+#include "jpegls_decoder.hpp" // IWYU pragma: export
+#include "jpegls_encoder.hpp" // IWYU pragma: export
+#include "version.hpp" // IWYU pragma: export
 
 #include "undef_macros.h"

@@ -8,9 +8,7 @@
 #include <charls/charls.hpp>
 #include <support/portable_anymap_file.hpp>
 
-#include <array>
 #include <random>
-#include <vector>
 
 using namespace charls::support;
 using std::array;

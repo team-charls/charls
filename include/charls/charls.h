@@ -3,9 +3,10 @@
 
 #pragma once
 
-#include "charls_jpegls_decoder.h"
-#include "charls_jpegls_encoder.h"
-#include "validate_spiff_header.h"
-#include "version.h"
+#include "jpegls_error.h" // IWYU pragma: export
+#include "charls_jpegls_decoder.h" // IWYU pragma: export
+#include "charls_jpegls_encoder.h" // IWYU pragma: export
+#include "validate_spiff_header.h" // IWYU pragma: export
+#include "version.h" // IWYU pragma: export
 
 #include "undef_macros.h"

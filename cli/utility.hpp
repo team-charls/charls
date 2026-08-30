@@ -3,11 +3,8 @@
 
 #pragma once
 
-#include <charls/charls.hpp>
-
-#include <fstream>
+#include <cstdint>
 #include <istream>
-#include <ostream>
 #include <vector>
 #include <cstddef>
 #include <filesystem>

@@ -8,6 +8,7 @@
 #ifdef _MSC_VER
 #include <io.h>
 #else
+#include <sys/types.h>
 #include <unistd.h>
 
 #define _read read
@@ -21,6 +22,10 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+#include <cerrno>
+#include <cstdint>
+#include <cstdlib>
+#include <exception>
 
 using namespace charls;
 using std::vector;

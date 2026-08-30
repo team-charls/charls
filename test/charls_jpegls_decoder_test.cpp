@@ -5,9 +5,7 @@
 
 #include "support.hpp"
 
-#include <charls/charls.hpp>
-
-#include <array>
+#include <charls/charls_jpegls_decoder.h>
 
 using std::array;
 using std::byte;

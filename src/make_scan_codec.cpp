@@ -11,6 +11,8 @@
 #include "scan_decoder_impl.hpp"
 #include "scan_encoder_impl.hpp"
 #include "util.hpp"
+#include "jpegls_algorithm.hpp"
+#include "assert.hpp"
 
 namespace charls {
 

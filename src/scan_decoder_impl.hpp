@@ -5,7 +5,7 @@
 
 #include "color_transform.hpp"
 #include "sample_traits.hpp"
-#include "scan_decoder_core.hpp"
+#include "scan_decoder_core.hpp" // IWYU pragma: export
 
 namespace charls {
 

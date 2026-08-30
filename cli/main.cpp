@@ -15,6 +15,10 @@ MSVC_WARNING_UNSUPPRESS()
 #include <filesystem>
 #include <iostream>
 #include <string>
+#include <cstdint>
+#include <cstdlib>
+#include <optional>
+#include <stdexcept>
 
 using argparse::ArgumentParser;
 using std::cout;

@@ -3,11 +3,11 @@
 
 #include "pch.hpp"
 
-#include "support.hpp"
-
 #include "../src/color_transform.hpp"
 
-#include <cstdint>
+#include "support.hpp"
+
+#include "../src/util.hpp"
 
 namespace charls::test {
 

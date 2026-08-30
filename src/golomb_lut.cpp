@@ -7,6 +7,7 @@
 
 #include "conditional_static_cast.hpp"
 #include "jpegls_algorithm.hpp"
+#include "assert.hpp"
 
 namespace charls {
 

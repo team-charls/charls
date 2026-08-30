@@ -7,8 +7,6 @@
 #include "../src/jpegls_algorithm.hpp"
 #include "../src/jpegls_preset_coding_parameters.hpp"
 
-#include <vector>
-
 namespace charls::test {
 
 namespace {

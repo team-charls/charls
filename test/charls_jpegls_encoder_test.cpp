@@ -3,11 +3,11 @@
 
 #include "pch.hpp"
 
-#include "support.hpp"
+#include "support.hpp" // IWYU pragma: keep
 
 #include "charls/charls_jpegls_encoder.h"
 
-#include <array>
+
 
 using std::array;
 using std::byte;

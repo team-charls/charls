@@ -6,8 +6,9 @@
 #include <gtest/gtest.h>
 
 #include <charls/jpegls_error.hpp>
-#include <support/portable_anymap_file.hpp>
+#include "support/portable_anymap_file.hpp" // IWYU pragma: export
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <vector>

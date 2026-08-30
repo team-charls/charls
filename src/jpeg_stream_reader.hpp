@@ -3,12 +3,16 @@
 
 #pragma once
 
-#include "charls/public_types.h"
+#include "charls/annotations.h"
+#include "charls/jpegls_error.hpp"
 
 #include "coding_parameters.hpp"
 #include "span.hpp"
 #include "util.hpp"
+#include "assert.hpp"
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <numeric>
 #include <vector>
