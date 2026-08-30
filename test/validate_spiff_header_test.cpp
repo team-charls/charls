@@ -3,7 +3,7 @@
 
 #include "pch.hpp"
 
-#include <charls/validate_spiff_header.h>
+#include "charls/validate_spiff_header.h"
 
 #include "charls/public_types.h"
 

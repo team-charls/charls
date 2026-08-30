@@ -5,11 +5,11 @@
 
 #include "../src/util.hpp"
 
-#include "charls/jpegls_error.hpp"
 #include "../src/assert.hpp"
+#include "charls/jpegls_error.hpp"
 
-#include <new>
 #include <cmath>
+#include <new>
 
 using std::numeric_limits;
 

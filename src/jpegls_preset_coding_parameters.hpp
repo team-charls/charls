@@ -5,8 +5,8 @@
 
 #include "charls/public_types.h"
 
-#include "jpegls_algorithm.hpp"
 #include "assert.hpp"
+#include "jpegls_algorithm.hpp"
 
 #include <algorithm>
 

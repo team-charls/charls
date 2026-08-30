@@ -3,19 +3,19 @@
 
 #include "pch.hpp" // IWYU pragma: keep
 
-#include "charls/charls_jpegls_decoder.h"
-#include "charls/jpegls_error.hpp"
 #include "charls/annotations.h"
 #include "charls/api_abi.h"
+#include "charls/charls_jpegls_decoder.h"
+#include "charls/jpegls_error.hpp"
 
+#include "coding_parameters.hpp"
 #include "constants.hpp"
 #include "jpeg_stream_reader.hpp"
+#include "jpegls_algorithm.hpp"
 #include "make_scan_codec.hpp"
 #include "scan_decoder.hpp"
-#include "util.hpp"
-#include "coding_parameters.hpp"
-#include "jpegls_algorithm.hpp"
 #include "span.hpp"
+#include "util.hpp"
 
 using namespace charls;
 using impl::throw_jpegls_error;

@@ -8,7 +8,6 @@
 #include "charls/charls_jpegls_encoder.h"
 
 
-
 using std::array;
 using std::byte;
 

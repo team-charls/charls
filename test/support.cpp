@@ -7,8 +7,8 @@
 
 #include "../src/jpeg_stream_writer.hpp"
 #include "../src/span.hpp"
-#include <charls/jpegls_decoder.hpp>
-#include <charls/jpegls_encoder.hpp>
+#include "charls/jpegls_decoder.hpp"
+#include "charls/jpegls_encoder.hpp"
 
 #include <fstream>
 

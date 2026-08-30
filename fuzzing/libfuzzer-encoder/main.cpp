@@ -5,12 +5,12 @@
 
 #include <FuzzedDataProvider.h>
 
-#include <filesystem>
-#include <fstream>
-#include <vector>
 #include <cstddef>
 #include <cstdint>
+#include <filesystem>
+#include <fstream>
 #include <iterator>
+#include <vector>
 
 using std::byte;
 

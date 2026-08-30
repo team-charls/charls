@@ -3,9 +3,9 @@
 
 #include "pch.hpp"
 
-#include "charls/public_types.h"
 #include "../src/coding_parameters.hpp"
 #include "../src/span.hpp"
+#include "charls/public_types.h"
 
 #include "scan_encoder_tester.hpp"
 

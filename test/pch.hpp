@@ -7,16 +7,16 @@
 #include <gtest/gtest.h>
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <cstddef>
-#include <string>
+#include <filesystem>
 #include <limits>
 #include <memory>
 #include <sstream>
+#include <string>
 #include <vector>
-#include <filesystem>
 // IWYU pragma: end_exports
 
 #ifdef _MSC_VER

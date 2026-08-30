@@ -29,7 +29,7 @@ struct version final
 
 /// <summary>
 /// Returns the version of CharLS in its numerical format.
-/// This method retrieves the numbers from the library implementation, 
+/// This method retrieves the numbers from the library implementation,
 /// which may be different from the constexpr values if a shared library or DLL is used.
 /// </summary>
 [[nodiscard]]

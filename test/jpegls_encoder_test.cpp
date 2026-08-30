@@ -5,11 +5,11 @@
 
 #include "charls/jpegls_encoder.hpp"
 
-#include "charls/jpegls_decoder.hpp"
-#include "charls/version.hpp"
 #include "../src/constants.hpp"
 #include "../src/jpeg_marker_code.hpp"
 #include "../src/util.hpp"
+#include "charls/jpegls_decoder.hpp"
+#include "charls/version.hpp"
 
 #include <array>
 #include <tuple>

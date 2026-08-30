@@ -61,8 +61,8 @@ void set_interleave_mode(jpegls_encoder& encoder, int32_t interleave_mode, const
 //          into the JPEG-LS format. The 2 binary formats P5 and P6 are supported:
 //          Portable GrayMap: P5 = binary, extension = .pgm, 0-2^16 (gray scale)
 //          Portable PixMap: P6 = binary, extension.ppm, range 0-2^16 (RGB)
-void encode_pnm(const path& filename_input, const path& filename_output, const int32_t interleave_mode, const int32_t near_lossless,
-                const int32_t color_transformation)
+void encode_pnm(const path& filename_input, const path& filename_output, const int32_t interleave_mode,
+                const int32_t near_lossless, const int32_t color_transformation)
 {
     ifstream pnm_file(open_input_stream(filename_input));
 
@@ -131,8 +131,8 @@ void encode_pam(const path& filename_input, const path& filename_output, const i
 } // namespace
 
 
-void encode_netpbm(const path& filename_input, const path& filename_output, const int32_t interleave_mode, const int32_t near_lossless,
-                   const int32_t color_transformation)
+void encode_netpbm(const path& filename_input, const path& filename_output, const int32_t interleave_mode,
+                   const int32_t near_lossless, const int32_t color_transformation)
 {
     if (filename_input.extension() == ".pam")
     {

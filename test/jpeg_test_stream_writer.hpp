@@ -3,13 +3,13 @@
 
 #pragma once
 
+#include "../src/assert.hpp"
 #include "../src/jpeg_marker_code.hpp"
 #include "../src/jpegls_preset_parameters_type.hpp"
 #include "../src/util.hpp"
-#include "../src/assert.hpp"
 
-#include <vector>
 #include <array>
+#include <vector>
 
 namespace charls::test {
 
@@ -42,7 +42,8 @@ public:
         ASSERT(header.height > 0);
         ASSERT(header.width > 0);
 
-        static constexpr std::array spiff_magic_id{std::byte{'S'}, std::byte{'P'}, std::byte{'I'}, std::byte{'F'}, std::byte{'F'}, std::byte{'\0'}};
+        static constexpr std::array spiff_magic_id{std::byte{'S'}, std::byte{'P'}, std::byte{'I'},
+                                                   std::byte{'F'}, std::byte{'F'}, std::byte{'\0'}};
 
         // Create a JPEG APP8 segment in Still Picture Interchange File Format (SPIFF), v2.0
         write_marker(jpeg_marker_code::application_data8);
@@ -253,7 +254,8 @@ public:
 
     void write_hp_color_transform_segment(const color_transformation transformation)
     {
-        const std::array segment{std::byte{'m'}, std::byte{'r'}, std::byte{'f'}, std::byte{'x'}, static_cast<std::byte>(transformation)};
+        const std::array segment{std::byte{'m'}, std::byte{'r'}, std::byte{'f'}, std::byte{'x'},
+                                 static_cast<std::byte>(transformation)};
         write_segment(jpeg_marker_code::application_data8, segment.data(), segment.size());
     }
 

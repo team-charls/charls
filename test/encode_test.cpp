@@ -5,8 +5,8 @@
 
 #include "../src/util.hpp"
 
-#include <charls/charls.hpp>
-#include <support/portable_anymap_file.hpp>
+#include "charls/charls.hpp"
+#include "support/portable_anymap_file.hpp"
 
 #include <random>
 

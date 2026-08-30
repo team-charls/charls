@@ -3,20 +3,20 @@
 
 #include "pch.hpp" // IWYU pragma: keep
 
-#include "charls/charls_jpegls_encoder.h"
-#include "charls/version.hpp"
 #include "charls/api_abi.h"
+#include "charls/charls_jpegls_encoder.h"
 #include "charls/jpegls_error.hpp"
+#include "charls/version.hpp"
 
 #include "coding_parameters.hpp"
-#include "constants.hpp"
-#include "jpegls_algorithm.hpp"
-#include "span.hpp"
 #include "color_transform.hpp"
+#include "constants.hpp"
 #include "jpeg_stream_writer.hpp"
+#include "jpegls_algorithm.hpp"
 #include "jpegls_preset_coding_parameters.hpp"
 #include "make_scan_codec.hpp"
 #include "scan_encoder.hpp"
+#include "span.hpp"
 #include "util.hpp"
 
 using namespace charls;
@@ -315,7 +315,8 @@ private:
 
         const size_t not_used_bytes_at_end{stride - minimum_stride};
         const size_t minimum_source_size{interleave_mode_ == interleave_mode::none
-                                             ? checked_mul(stride * source_component_count, frame_info_.height) - not_used_bytes_at_end
+                                             ? checked_mul(stride * source_component_count, frame_info_.height) -
+                                                   not_used_bytes_at_end
                                              : checked_mul(stride, frame_info_.height) - not_used_bytes_at_end};
 
         if (UNLIKELY(source_size < minimum_source_size))

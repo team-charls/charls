@@ -3,11 +3,11 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
+#include <filesystem>
 #include <istream>
 #include <vector>
-#include <cstddef>
-#include <filesystem>
 
 namespace charls::cli {
 
@@ -48,4 +48,4 @@ std::ifstream open_input_stream(const std::filesystem::path& filename);
 [[nodiscard]]
 std::vector<int> read_pnm_header(std::istream& pnm_file);
 
-}
+} // namespace charls::cli

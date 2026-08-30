@@ -7,9 +7,9 @@
 
 #include "utility.hpp"
 
-#include <iostream>
 #include <cstddef>
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 using std::byte;

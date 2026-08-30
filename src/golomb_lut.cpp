@@ -5,9 +5,9 @@
 
 #include "golomb_lut.hpp"
 
+#include "assert.hpp"
 #include "conditional_static_cast.hpp"
 #include "jpegls_algorithm.hpp"
-#include "assert.hpp"
 
 namespace charls {
 
@@ -22,7 +22,7 @@ constexpr std::pair<int32_t, int32_t> create_encoded_value(const int32_t k, cons
 
 } // namespace
 
-golomb_code_match_table::golomb_code_match_table(const int32_t k)
+golomb_code_match_table::golomb_code_match_table(const int32_t k) noexcept
 {
     for (int16_t error_value{};; ++error_value)
     {
