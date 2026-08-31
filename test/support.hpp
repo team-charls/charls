@@ -5,9 +5,10 @@
 
 #include <gtest/gtest.h>
 
-#include <charls/jpegls_error.hpp>
-#include <support/portable_anymap_file.hpp>
+#include "support/portable_anymap_file.hpp" // IWYU pragma: export
+#include "charls/jpegls_error.hpp"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <vector>
@@ -19,7 +20,7 @@ std::vector<std::byte> read_file(const char* filename);
 
 [[nodiscard]]
 support::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode,
-                                                             const frame_info& frame_info);
+                                                         const frame_info& frame_info);
 
 [[nodiscard]]
 support::portable_anymap_file read_anymap_reference_file(const char* filename, interleave_mode interleave_mode);

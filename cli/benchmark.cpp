@@ -5,14 +5,19 @@
 
 #include "benchmark.hpp"
 
+#include "charls/jpegls_decoder.hpp"
+#include "charls/jpegls_encoder.hpp"
+
 #include "support/portable_anymap_file.hpp"
 #include "utility.hpp"
 
-#include <cassert>
+#include <cassert> // IWYU pragma: keep
 #include <chrono>
+#include <cstddef>
 #include <iostream>
 #include <ratio>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 using charls::frame_info;
@@ -66,8 +71,7 @@ void benchmark_encode(const path& filename, const uint32_t loop_count)
 
     const frame_info info{static_cast<uint32_t>(anymap_file.width()), static_cast<uint32_t>(anymap_file.height()),
                           anymap_file.bits_per_sample(), anymap_file.component_count()};
-    const auto interleave_mode{anymap_file.component_count() > 1 ? interleave_mode::sample
-                                                                 : interleave_mode::none};
+    const auto interleave_mode{anymap_file.component_count() > 1 ? interleave_mode::sample : interleave_mode::none};
 
     jpegls_encoder encoder1;
     encoder1.frame_info(info).interleave_mode(interleave_mode);

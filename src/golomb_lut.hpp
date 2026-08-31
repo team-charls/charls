@@ -7,6 +7,8 @@
 #include "util.hpp"
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 
 namespace charls {
 
@@ -27,7 +29,7 @@ struct golomb_code_match final
 class golomb_code_match_table final
 {
 public:
-    explicit golomb_code_match_table(int32_t k);
+    explicit golomb_code_match_table(int32_t k) noexcept;
 
     constexpr void add_entry(uint8_t value, golomb_code_match code) noexcept;
 

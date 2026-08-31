@@ -4,6 +4,7 @@
 #pragma once
 
 #include "jpegls_error.h"
+#include "public_types.h" // IWYU pragma: export
 
 #ifdef __cplusplus
 struct charls_jpegls_encoder;

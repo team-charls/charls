@@ -5,7 +5,7 @@
 
 #include "coding_parameters.hpp"
 #include "jpegls_algorithm.hpp"
-#include "scan_encoder.hpp"
+#include "scan_encoder.hpp" // IWYU pragma: export
 
 namespace charls {
 

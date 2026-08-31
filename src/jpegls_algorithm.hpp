@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "constants.hpp"
 #include "assert.hpp"
+#include "constants.hpp"
 
 #include <algorithm>
 

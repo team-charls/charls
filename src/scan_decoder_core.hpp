@@ -4,7 +4,7 @@
 #pragma once
 
 #include "golomb_lut.hpp"
-#include "scan_decoder.hpp"
+#include "scan_decoder.hpp" // IWYU pragma: export
 
 namespace charls {
 

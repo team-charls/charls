@@ -5,7 +5,7 @@
 
 #include "jpeg_marker_code.hpp"
 #include "copy_to_line_buffer.hpp"
-#include "scan_codec.hpp"
+#include "scan_codec.hpp" // IWYU pragma: export
 #include "span.hpp"
 
 namespace charls {

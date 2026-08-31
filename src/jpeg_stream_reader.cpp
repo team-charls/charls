@@ -8,6 +8,7 @@
 #include "color_transform.hpp"
 #include "constants.hpp"
 #include "jpeg_marker_code.hpp"
+#include "jpegls_algorithm.hpp"
 #include "jpegls_preset_coding_parameters.hpp"
 #include "jpegls_preset_parameters_type.hpp"
 #include "util.hpp"
@@ -19,9 +20,9 @@ namespace charls {
 
 using impl::throw_jpegls_error;
 using std::array;
+using std::as_const;
 using std::byte;
 using std::equal;
-using std::as_const;
 
 namespace {
 

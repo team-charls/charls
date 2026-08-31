@@ -5,7 +5,9 @@
 
 #include "make_scan_codec.hpp"
 
+#include "assert.hpp"
 #include "default_traits.hpp"
+#include "jpegls_algorithm.hpp"
 #include "jpegls_preset_coding_parameters.hpp"
 #include "lossless_traits.hpp"
 #include "scan_decoder_impl.hpp"

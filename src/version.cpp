@@ -3,6 +3,7 @@
 
 #include "pch.hpp"
 
+#include "charls/api_abi.h"
 #include "charls/version.hpp"
 
 #include "util.hpp"

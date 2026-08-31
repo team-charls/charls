@@ -1,9 +1,12 @@
 // SPDX-FileCopyrightText: © 2018 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.hpp"
+#include "pch.hpp" // IWYU pragma: keep
 
+#include "charls/api_abi.h"
 #include "charls/jpegls_error.hpp"
+
+#include <string>
 
 namespace charls {
 

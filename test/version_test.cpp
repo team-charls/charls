@@ -3,12 +3,7 @@
 
 #include "pch.hpp"
 
-#include <charls/version.hpp>
-
-#include "support.hpp"
-
-#include <cstring>
-#include <sstream>
+#include "charls/version.hpp"
 
 using std::ostringstream;
 

@@ -3,9 +3,9 @@
 
 #include "pch.hpp"
 
-#include <type_traits>
-
 #include "../src/golomb_lut.hpp"
+
+#include <type_traits>
 
 namespace charls::test {
 

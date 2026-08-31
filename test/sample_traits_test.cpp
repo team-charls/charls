@@ -5,6 +5,10 @@
 
 #include "../src/lossless_traits.hpp"
 #include "../src/sample_traits.hpp"
+#include "../src/default_traits.hpp"
+#include "../src/util.hpp"
+
+#include <type_traits>
 
 namespace charls::test {
 

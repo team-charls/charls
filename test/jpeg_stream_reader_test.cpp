@@ -3,16 +3,18 @@
 
 #include "pch.hpp"
 
+#include "../src/jpeg_stream_reader.hpp"
+
+#include "../src/coding_parameters.hpp"
+#include "../src/constants.hpp"
+#include "../src/jpeg_marker_code.hpp"
+#include "../src/jpeg_stream_writer.hpp"
+#include "../src/span.hpp"
+#include "../src/util.hpp"
+#include "charls/public_types.h"
+
 #include "jpeg_test_stream_writer.hpp"
 #include "support.hpp"
-
-#include "../src/jpeg_stream_reader.hpp"
-#include "../src/jpeg_stream_writer.hpp"
-
-#include <array>
-#include <cstdint>
-#include <limits>
-#include <vector>
 
 using std::array;
 using std::byte;

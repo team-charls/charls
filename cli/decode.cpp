@@ -1,11 +1,20 @@
 // SPDX-FileCopyrightText: © 2026 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.hpp"
+#include "pch.hpp" // IWYU pragma: keep
 
 #include "decode.hpp"
 
 #include "utility.hpp"
+
+#include <charls/jpegls_decoder.hpp>
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <stdexcept>
+#include <utility>
+#include <vector>
 
 using std::byte;
 using std::ifstream;
@@ -72,7 +81,7 @@ void decode_to_pnm(const path& filename_input, const path& filename_output)
 
     if (frame_info.component_count != 1 && frame_info.component_count != 3)
         throw runtime_error("Only JPEG-LS images with component count 1 or 3 are supported to decode to pnm");
-    
+
     // PPM format only supports by-pixel, convert if needed.
     if (interleave_mode == interleave_mode::none && frame_info.component_count == 3)
     {

@@ -7,7 +7,11 @@
 
 #include "support/portable_anymap_file.hpp"
 
-#include <chrono>
+#include <ratio>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
 
 using std::byte;
 using std::ifstream;

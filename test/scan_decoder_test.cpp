@@ -3,13 +3,14 @@
 
 #include "pch.hpp"
 
-#include "support.hpp"
-
 #include "../src/scan_decoder.hpp"
 
-#include "scan_encoder_tester.hpp"
+#include "../src/coding_parameters.hpp"
+#include "../src/span.hpp"
+#include "charls/public_types.h"
 
-#include <array>
+#include "scan_encoder_tester.hpp"
+#include "support.hpp"
 
 using std::array;
 using std::byte;
@@ -166,7 +167,8 @@ TEST(scan_decoder_test, initialize_with_empty_buffer_throws_invalid_data)
     array<byte, 1> buffer{};
 
     assert_expect_exception(jpegls_errc::invalid_data, [&frame_info, &parameters, &buffer] {
-        [[maybe_unused]] const scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), 0);
+        [[maybe_unused]]
+        const scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), 0);
     });
 }
 

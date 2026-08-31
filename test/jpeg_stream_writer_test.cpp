@@ -3,15 +3,13 @@
 
 #include "pch.hpp"
 
-#include "support.hpp"
-
-#include "../src/jpeg_marker_code.hpp"
 #include "../src/jpeg_stream_writer.hpp"
 
-#include <array>
-#include <cstdint>
-#include <limits>
-#include <vector>
+#include "../src/jpeg_marker_code.hpp"
+#include "../src/span.hpp"
+#include "charls/public_types.h"
+
+#include "support.hpp"
 
 using std::array;
 using std::byte;
@@ -328,8 +326,8 @@ TEST(jpeg_stream_writer_test, write_start_of_frame_segment_large_image_width)
     jpeg_stream_writer writer;
     writer.destination({buffer.data(), buffer.size()});
 
-    const bool oversized_image{writer.write_start_of_frame_segment(
-        {numeric_limits<uint16_t>::max() + 1U, 100, bits_per_sample, component_count})};
+    const bool oversized_image{
+        writer.write_start_of_frame_segment({numeric_limits<uint16_t>::max() + 1U, 100, bits_per_sample, component_count})};
 
     EXPECT_TRUE(oversized_image);
     EXPECT_EQ(size_t{19}, writer.bytes_written());
@@ -367,8 +365,8 @@ TEST(jpeg_stream_writer_test, write_start_of_frame_segment_large_image_height)
     jpeg_stream_writer writer;
     writer.destination({buffer.data(), buffer.size()});
 
-    const bool oversized_image{writer.write_start_of_frame_segment(
-        {100, numeric_limits<uint16_t>::max() + 1U, bits_per_sample, component_count})};
+    const bool oversized_image{
+        writer.write_start_of_frame_segment({100, numeric_limits<uint16_t>::max() + 1U, bits_per_sample, component_count})};
 
     EXPECT_TRUE(oversized_image);
     EXPECT_EQ(size_t{19}, writer.bytes_written());

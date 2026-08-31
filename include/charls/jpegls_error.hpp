@@ -3,7 +3,10 @@
 
 #pragma once
 
-#include "jpegls_error.h"
+#include "jpegls_error.h" // IWYU pragma: export
+#include "public_types.h" // IWYU pragma: export
+
+#include <system_error> // IWYU pragma: export
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,16 +43,6 @@ public:
 };
 
 namespace impl {
-
-#if defined(_MSC_VER)
-#define CHARLS_NO_INLINE __declspec(noinline)
-#elif defined(__GNUC__)
-// C++ Compilers that support the GCC extensions (GCC, clang, Intel, etc.)
-#define CHARLS_NO_INLINE __attribute__((noinline))
-#else
-// Unknown C++ compiler, fallback to default behavior.
-#define CHARLS_NO_INLINE
-#endif
 
 // Not inlined by design, as this code path is the exceptional case.
 // It will help to allow the compiler to inline other functions.

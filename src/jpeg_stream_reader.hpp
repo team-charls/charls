@@ -3,12 +3,16 @@
 
 #pragma once
 
-#include "charls/public_types.h"
+#include "charls/annotations.h"
+#include "charls/jpegls_error.hpp"
 
+#include "assert.hpp"
 #include "coding_parameters.hpp"
 #include "span.hpp"
 #include "util.hpp"
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <numeric>
 #include <vector>
@@ -40,7 +44,8 @@ public:
     [[nodiscard]]
     charls::frame_info scan_frame_info() const noexcept
     {
-        return {frame_info_.width, frame_info_.height, frame_info_.bits_per_sample, static_cast<int32_t>(scan_component_count())};
+        return {frame_info_.width, frame_info_.height, frame_info_.bits_per_sample,
+                static_cast<int32_t>(scan_component_count())};
     }
 
     [[nodiscard]]
@@ -211,7 +216,7 @@ private:
     void add_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
     void extend_mapping_table(uint8_t table_id, uint8_t entry_size, span<const std::byte> table_data);
     void store_component_info(uint8_t component_id, uint8_t table_id, uint8_t near_lossless,
-                                interleave_mode interleave_mode);
+                              interleave_mode interleave_mode);
 
     [[nodiscard]]
     bool has_external_mapping_table_ids() const noexcept;

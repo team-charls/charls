@@ -1,12 +1,15 @@
 // SPDX-FileCopyrightText: © 2018 Team CharLS
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include "pch.hpp"
+#include "pch.hpp" // IWYU pragma: keep
 
 #include "bmp_image.hpp"
 
 #include <charls/charls.hpp>
 
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 #include <algorithm>
 #include <cassert>
 #include <filesystem>
@@ -14,6 +17,10 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <exception>
+#include <fstream>
+#include <stdexcept>
+#include <utility>
 
 namespace {
 

@@ -3,16 +3,9 @@
 
 #include "pch.hpp"
 
+#include "charls/charls.hpp"
+
 #include "support.hpp"
-
-#include <charls/charls.hpp>
-#include <support/portable_anymap_file.hpp>
-
-#include <array>
-#include <cstdint>
-#include <cstdlib>
-#include <fstream>
-#include <vector>
 
 using namespace charls::support;
 using std::array;

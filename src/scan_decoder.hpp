@@ -8,7 +8,7 @@
 #include "assert.hpp"
 #include "copy_from_line_buffer.hpp"
 #include "jpeg_marker_code.hpp"
-#include "scan_codec.hpp"
+#include "scan_codec.hpp" // IWYU pragma: export
 #include "span.hpp"
 #include "util.hpp"
 

@@ -3,11 +3,7 @@
 
 #include "pch.hpp"
 
-#include <charls/jpegls_error.hpp>
-
-#include <cstring>
-#include <string>
-#include <type_traits>
+#include "charls/jpegls_error.hpp"
 
 namespace charls::test {
 

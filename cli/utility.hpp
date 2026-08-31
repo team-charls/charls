@@ -3,14 +3,12 @@
 
 #pragma once
 
-#include <charls/charls.hpp>
-
-#include <fstream>
-#include <istream>
-#include <ostream>
-#include <vector>
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
+#include <fstream> // IWYU pragma: export
+#include <istream>
+#include <vector>
 
 namespace charls::cli {
 
@@ -51,4 +49,4 @@ std::ifstream open_input_stream(const std::filesystem::path& filename);
 [[nodiscard]]
 std::vector<int> read_pnm_header(std::istream& pnm_file);
 
-}
+} // namespace charls::cli

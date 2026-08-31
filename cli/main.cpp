@@ -12,8 +12,12 @@ MSVC_WARNING_SUPPRESS(4866) // Vcpkg fails to add argparse as external include d
 #include <argparse/argparse.hpp>
 MSVC_WARNING_UNSUPPRESS()
 
+#include <cstdint>
+#include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <optional>
+#include <stdexcept>
 #include <string>
 
 using argparse::ArgumentParser;

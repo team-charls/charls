@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "api_abi.h"
 #include "public_types.h"
 
 #ifdef __cplusplus

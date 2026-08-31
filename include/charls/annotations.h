@@ -43,14 +43,14 @@
 #define CHARLS_RET_MAY_BE_NULL
 
 #if defined(__cplusplus)
-    #define CHARLS_CHECK_RETURN [[nodiscard]]
+#define CHARLS_CHECK_RETURN [[nodiscard]]
 #else
-    //  Use GCC/clang specific solution for C ([[nodiscard]] required C23)
-    #if defined(__GNUC__)
-        #define CHARLS_CHECK_RETURN __attribute__((warn_unused_result))
-    #else
-        #define CHARLS_CHECK_RETURN
-    #endif
+//  Use GCC/clang specific solution for C ([[nodiscard]] required C23)
+#if defined(__GNUC__)
+#define CHARLS_CHECK_RETURN __attribute__((warn_unused_result))
+#else
+#define CHARLS_CHECK_RETURN
+#endif
 #endif
 
 #endif

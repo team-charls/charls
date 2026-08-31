@@ -3,9 +3,11 @@
 
 #include "pch.hpp"
 
-#include <charls/validate_spiff_header.h>
+#include "charls/validate_spiff_header.h"
 
-#include "support.hpp"
+#include "charls/public_types.h"
+
+#include "support.hpp" // IWYU pragma: keep
 
 MSVC_WARNING_SUPPRESS(6387) // '_Param_(x)' could be '0': this does not adhere to the specification for the function.
 

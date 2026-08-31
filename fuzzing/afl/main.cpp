@@ -8,6 +8,7 @@
 #ifdef _MSC_VER
 #include <io.h>
 #else
+#include <sys/types.h>
 #include <unistd.h>
 
 #define _read read
@@ -21,11 +22,15 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+#include <cerrno>
+#include <cstdint>
+#include <cstdlib>
+#include <exception>
 
 using namespace charls;
 using std::vector;
 
-#if defined(__clang__)
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif
@@ -41,7 +46,7 @@ using std::vector;
 #define AFL_LOOP_FOREVER
 #endif
 
-#if defined(__clang__)
+#ifdef __clang__
 #pragma clang diagnostic pop
 #endif
 
