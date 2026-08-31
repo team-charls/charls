@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <fstream> // IWYU pragma: export
 #include <istream>
 #include <vector>
 

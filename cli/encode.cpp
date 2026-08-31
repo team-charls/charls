@@ -13,7 +13,6 @@
 #include <algorithm>
 #include <cassert> // IWYU pragma: keep
 #include <cstddef>
-#include <fstream>
 #include <stdexcept>
 #include <string>
 #include <vector>

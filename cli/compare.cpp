@@ -8,7 +8,6 @@
 #include "utility.hpp"
 
 #include <cstddef>
-#include <fstream>
 #include <iostream>
 #include <vector>
 

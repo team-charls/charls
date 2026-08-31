@@ -7,7 +7,6 @@
 
 #include "support/portable_anymap_file.hpp"
 
-#include <fstream>
 #include <ratio>
 #include <sstream>
 #include <stdexcept>

@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
-#include <fstream>
 #include <stdexcept>
 #include <utility>
 #include <vector>
