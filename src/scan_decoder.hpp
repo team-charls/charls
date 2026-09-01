@@ -258,7 +258,7 @@ private:
         {
             if (position_ >= end_position_)
             {
-                if (UNLIKELY(valid_bits_ == 0))
+                if (UNLIKELY(valid_bits_ <= 0))
                 {
                     // Decoding process expects at least some bits to be added to the cache.
                     impl::throw_jpegls_error(jpegls_errc::invalid_data);

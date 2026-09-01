@@ -57,6 +57,12 @@ public:
     {
         return peek_0_bits();
     }
+
+    [[nodiscard]]
+    int32_t read_unary_code_forward()
+    {
+        return read_unary_code();
+    }
 };
 
 } // namespace
@@ -157,6 +163,23 @@ TEST(scan_decoder_test, peek_0_bits_empty_buffer)
 
     scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), buffer.size());
     EXPECT_EQ(-1, scan_decoder.peek_0_bits_forward());
+}
+
+TEST(scan_decoder_test, read_unary_code_with_prefix_larger_than_buffer_throws_invalid_data)
+{
+    constexpr frame_info frame_info{1, 1, 8, 1};
+    constexpr coding_parameters parameters{};
+
+    // A unary code prefix of 15 zero bits, but only 8 bits are present in the buffer:
+    // valid_bits_ becomes negative and no bits can be added to the cache anymore.
+    array<byte, 1> buffer{};
+
+    scan_decoder_tester scan_decoder(frame_info, parameters, buffer.data(), buffer.size());
+
+    assert_expect_exception(jpegls_errc::invalid_data, [&scan_decoder] {
+        [[maybe_unused]]
+        const auto result{scan_decoder.read_unary_code_forward()};
+    });
 }
 
 TEST(scan_decoder_test, initialize_with_empty_buffer_throws_invalid_data)
