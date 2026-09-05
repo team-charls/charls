@@ -6,7 +6,9 @@
 #include "jpegls_error.h" // IWYU pragma: export
 #include "public_types.h" // IWYU pragma: export
 
+#ifndef CHARLS_BUILD_AS_CPP_MODULE
 #include <system_error> // IWYU pragma: export
+#endif
 
 #ifdef __cplusplus
 extern "C" {
