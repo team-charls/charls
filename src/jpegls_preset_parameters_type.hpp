@@ -27,7 +27,7 @@ enum class jpegls_preset_parameters_type : uint8_t
     /// <summary>
     /// JPEG-LS Baseline (ISO/IEC 14495-1): X and Y parameters are defined (defined in C.2.4.1.4).
     /// </summary>
-    oversize_image_dimension = 0x4,
+    oversize_image_dimension = 0x4
 };
 
 } // namespace charls

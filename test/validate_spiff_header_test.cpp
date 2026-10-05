@@ -27,7 +27,7 @@ constexpr spiff_header create_valid_spiff_header()
         spiff_compression_type::jpeg_ls,
         spiff_resolution_units::aspect_ratio,
         1,
-        1,
+        1
     };
 }
 

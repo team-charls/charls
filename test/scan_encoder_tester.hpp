@@ -15,7 +15,7 @@ public:
     {
     }
 
-    size_t encode_scan(const std::byte* /*source*/, size_t /*stride*/, span<std::byte>) noexcept(false) override
+    size_t encode_scan(const std::byte* /*source*/, size_t /*stride*/, span<std::byte> /*destination*/) noexcept(false) override
     {
         return 0;
     }
