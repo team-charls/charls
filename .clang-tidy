@@ -55,7 +55,7 @@ Checks:
   - '-clang-diagnostic-exit-time-destructors' # Rationale: CharLS can be used a shared library/DLL: exit time destructors are required.
   - '-clang-diagnostic-sign-conversion' # Rationale: warning is too noisy.
   - '-clang-diagnostic-switch-enum' # Rationale: options are handled by default case.
-  - '-clang-diagnostic-switch-default' # Rationale: Al options are handled.
+  - '-clang-diagnostic-switch-default' # Rationale: All options are handled.
   - '-clang-diagnostic-declaration-after-statement' # Rationale: Minimum C standard is C17.
   - '-clang-diagnostic-global-constructors' # Rationale: Just an informational message.
 
