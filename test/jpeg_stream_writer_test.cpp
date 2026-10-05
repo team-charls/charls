@@ -429,7 +429,7 @@ TEST(jpeg_stream_writer_test, write_start_of_frame_marker_segment_with_high_boun
 
 TEST(jpeg_stream_writer_test, write_color_transform_segment)
 {
-    constexpr color_transformation transformation = color_transformation::hp1;
+    constexpr auto transformation{color_transformation::hp1};
     array<byte, 9> buffer{};
     jpeg_stream_writer writer;
     writer.destination({buffer.data(), buffer.size()});

@@ -28,14 +28,14 @@ namespace fs = std::filesystem;
 
 namespace {
 
-const char* const input_argument{"input"};
-const char* const output_argument{"output"};
-const char* const source1_argument{"source1"};
-const char* const source2_argument{"source2"};
-const char* const loop_count_argument{"--loop-count"};
-const char* const interleave_mode_argument{"--interleave-mode"};
-const char* const near_lossless_argument{"--near-lossless"};
-const char* const color_transform_argument{"--color-transform"};
+constexpr auto* input_argument{"input"};
+constexpr auto* const output_argument{"output"};
+constexpr auto* const source1_argument{"source1"};
+constexpr auto* const source2_argument{"source2"};
+constexpr auto* const loop_count_argument{"--loop-count"};
+constexpr auto* const interleave_mode_argument{"--interleave-mode"};
+constexpr auto* const near_lossless_argument{"--near-lossless"};
+constexpr auto* const color_transform_argument{"--color-transform"};
 
 [[nodiscard]]
 uint32_t get_loop_count(const ArgumentParser& command)
@@ -71,7 +71,7 @@ int32_t get_color_transform_argument(const ArgumentParser& command)
 } // namespace
 
 
-int main(const int argc, const char* const argv[]) noexcept(false)
+int main(const int argc, const char* const argv[])
 {
     ArgumentParser program("charls-cli");
     program.add_description("CharLS command line interface");
