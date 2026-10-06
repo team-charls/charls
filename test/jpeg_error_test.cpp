@@ -16,7 +16,7 @@ TEST(jpegls_error_test, get_error_message_success)
 
 TEST(jpegls_error_test, get_error_message_unknown)
 {
-    constexpr jpegls_errc unknown_error_code{static_cast<jpegls_errc>(3000)};
+    constexpr auto unknown_error_code{static_cast<jpegls_errc>(3000)};
     const auto* const result{charls_get_error_message(unknown_error_code)};
     ASSERT_NE(nullptr, result);
     EXPECT_GT(strlen(result), size_t{0});

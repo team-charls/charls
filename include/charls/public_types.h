@@ -84,7 +84,7 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_COLOR_TRANSFORMATION = 109,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_SIZE = 110,
     CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_STRIDE = 111,
-    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_ENCODING_OPTIONS = 112,
+    CHARLS_JPEGLS_ERRC_INVALID_ARGUMENT_ENCODING_OPTIONS = 112
 };
 
 enum charls_interleave_mode
@@ -618,7 +618,7 @@ enum class color_transformation : std::int32_t
     /// B = B - G
     /// G = G + (R + B) / 4
     /// </summary>
-    hp3 = impl::CHARLS_COLOR_TRANSFORMATION_HP3,
+    hp3 = impl::CHARLS_COLOR_TRANSFORMATION_HP3
 };
 
 

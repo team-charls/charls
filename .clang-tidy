@@ -6,7 +6,8 @@
 
 Checks:
   - 'bugprone-*' # Checks that target bug-prone code constructs.
-  - '-bugprone-easily-swappable-parameters' # Rationale: too many do not fix warnings, more an advice.
+  - '-bugprone-easily-swappable-parameters' # Rationale: too many do not fix warnings, more advice.
+  - '-bugprone-signed-bitwise' # Rationale: too many false positives.
 
   - 'readability-*' # Checks that target readability-related issues that don’t relate to any particular coding style.
   - '-readability-magic-numbers' # Rationale: Too many false positives, most used numbers are logical in context.
@@ -14,6 +15,7 @@ Checks:
   - '-readability-function-cognitive-complexity' # Rationale: manual review is preferred.
 
   - 'portability-*' # Checks that target portability-related issues that don’t relate to any particular coding style.
+  - '-portability-avoid-pragma-once' # Rationale: pragma once is available on all supported compilers.
 
   - 'performance-*' # Checks that target performance-related issues.
   - '-performance-enum-size' # Rationale: no real performance gain, enums are not used in arrays.
@@ -53,13 +55,15 @@ Checks:
   - '-clang-diagnostic-exit-time-destructors' # Rationale: CharLS can be used a shared library/DLL: exit time destructors are required.
   - '-clang-diagnostic-sign-conversion' # Rationale: warning is too noisy.
   - '-clang-diagnostic-switch-enum' # Rationale: options are handled by default case.
-  - '-clang-diagnostic-switch-default' # Rationale: Al options ared handled.
+  - '-clang-diagnostic-switch-default' # Rationale: All options are handled.
   - '-clang-diagnostic-declaration-after-statement' # Rationale: Minimum C standard is C17.
   - '-clang-diagnostic-global-constructors' # Rationale: Just an informational message.
 
-WarningsAsErrors: false
+WarningsAsErrors: 'false'
 HeaderFilterRegex: ''
 FormatStyle:     none
+
+# Use key/value config until clang 16 is the minimal supported version.
 CheckOptions:
   - key:             readability-braces-around-statements.ShortStatementLines
     value:           '2'
@@ -71,5 +75,10 @@ CheckOptions:
     value:           '2'
   - key:             readability-simplify-boolean-expr.IgnoreMacros
     value:           '1'
+  - key:             bugprone-exception-escape.CheckMain
+    value:           'false'
+  - key:             readability-trailing-comma.MultiLineCommaPolicy
+    value:           'Remove'
+
 ExtraArgs:
   - -Wno-unused-command-line-argument # Rationale: Ignore, triggered by Visual Studio when running clang-tidy.
