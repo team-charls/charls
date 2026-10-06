@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Fixed
 
 - Endless loop when decoding invalid JPEG-LS input data.
+- Endless loop when the encoded bit stream ends in the middle of a unary code.
 
 ### Changed
 
