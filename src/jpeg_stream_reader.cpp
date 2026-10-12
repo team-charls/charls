@@ -525,15 +525,17 @@ void jpeg_stream_reader::read_define_restart_interval_segment()
 void jpeg_stream_reader::read_start_of_scan_segment()
 {
     check_minimal_segment_size(1);
-    const size_t component_count_in_scan{read_uint8()};
+    const uint32_t component_count_in_scan{read_uint8()};
 
     // ISO 10918-1, B2.3. defines the limits for the number of image components parameter in a SOS.
     if (UNLIKELY(component_count_in_scan < 1U || component_count_in_scan > 4U ||
-                 component_count_in_scan > static_cast<size_t>(frame_info_.component_count)))
+                 component_count_in_scan > static_cast<uint32_t>(frame_info_.component_count) - read_component_count_))
         throw_jpegls_error(jpegls_errc::invalid_parameter_component_count);
 
+    read_component_count_ += component_count_in_scan;
+
     if (UNLIKELY(component_count_in_scan != 1 &&
-                 component_count_in_scan != static_cast<size_t>(frame_info_.component_count)))
+                 component_count_in_scan != static_cast<uint32_t>(frame_info_.component_count)))
         throw_jpegls_error(jpegls_errc::parameter_value_not_supported);
 
     check_segment_size((component_count_in_scan * 2) + 4);
@@ -551,7 +553,7 @@ void jpeg_stream_reader::read_start_of_scan_segment()
         throw_jpegls_error(jpegls_errc::invalid_parameter_near_lossless);
 
     const auto mode{static_cast<interleave_mode>(read_byte())}; // Read ILV parameter
-    check_interleave_mode(mode);
+    check_interleave_mode(mode, component_count_in_scan);
     parameters_.interleave_mode = mode;
 
     if (UNLIKELY((read_byte() & 0xFU) != 0)) // Read Ah (no meaning) and Al (point transform).
@@ -769,11 +771,11 @@ void jpeg_stream_reader::check_parameter_coherent() const
 }
 
 
-void jpeg_stream_reader::check_interleave_mode(const interleave_mode mode) const
+void jpeg_stream_reader::check_interleave_mode(const interleave_mode mode, const uint32_t scan_component_count)
 {
     constexpr auto errc{jpegls_errc::invalid_parameter_interleave_mode};
     charls::check_interleave_mode(mode, errc);
-    if (UNLIKELY(frame_info_.component_count == 1 && mode != interleave_mode::none))
+    if (UNLIKELY(scan_component_count == 1U && mode != interleave_mode::none))
         throw_jpegls_error(errc);
 }
 

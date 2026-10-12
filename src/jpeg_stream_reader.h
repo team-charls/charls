@@ -69,6 +69,25 @@ public:
     void decode(byte_span destination, size_t stride);
     void read_end_of_image();
 
+    void read_next_start_of_scan();
+
+    enum class state : uint8_t
+    {
+        before_start_of_image,
+        header_section,
+        spiff_header_section,
+        image_section,
+        frame_section,
+        scan_section,
+        bit_stream_section,
+        after_end_of_image
+    };
+
+    void set_state(const state new_state) noexcept
+    {
+        state_ = new_state;
+    }
+
 private:
     void advance_position(const size_t count) noexcept
     {
@@ -94,7 +113,6 @@ private:
     void read_segment_size();
     void check_minimal_segment_size(size_t minimum_size) const;
     void check_segment_size(size_t expected_size) const;
-    void read_next_start_of_scan();
     CHARLS_CHECK_RETURN jpeg_marker_code read_next_marker_code();
     CHARLS_CHECK_RETURN jpeg_marker_code read_marker_code();
     void validate_marker_code(jpeg_marker_code marker_code) const;
@@ -115,25 +133,13 @@ private:
     void try_read_hp_color_transform_segment();
     void add_component(uint8_t component_id);
     void check_parameter_coherent() const;
-    void check_interleave_mode(interleave_mode mode) const;
+    static void check_interleave_mode(interleave_mode mode, uint32_t scan_component_count);
     CHARLS_CHECK_RETURN uint32_t maximum_sample_value() const noexcept;
     void skip_remaining_segment_data() noexcept;
     void check_frame_info() const;
     void frame_info_height(uint32_t height);
     void frame_info_width(uint32_t width);
     void call_application_data_callback(jpeg_marker_code marker_code) const;
-
-    enum class state
-    {
-        before_start_of_image,
-        header_section,
-        spiff_header_section,
-        image_section,
-        frame_section,
-        scan_section,
-        bit_stream_section,
-        after_end_of_image
-    };
 
     const_byte_span::iterator position_{};
     const_byte_span::iterator end_position_{};
@@ -146,6 +152,7 @@ private:
     state state_{};
     callback_function<at_comment_handler> at_comment_callback_{};
     callback_function<at_application_data_handler> at_application_data_callback_{};
+    uint32_t read_component_count_{};
 };
 
 } // namespace charls

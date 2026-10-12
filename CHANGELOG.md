@@ -4,11 +4,17 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.4.5] - 2026-10-11
+## [2.4.5] - 2026-10-12
 
 ### Fixed
 
 - Endless loop when the encoded bit stream ends in the middle of a unary code.
+
+### Security
+
+- Fixed a security vulnerability affecting versions up to 2.4.5.  
+  For full details, please see the security advisory: [GHSA-vx55-856r-qqxw](https://github.com/team-charls/charls/security/advisories/GHSA-vx55-856r-qqxw)
+  Special thanks to Ada Logics \ Anthropic for responsibly disclosing this vulnerability.
 
 ## [2.4.4] - 2026-6-8
 

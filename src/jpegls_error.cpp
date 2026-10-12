@@ -172,7 +172,7 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
         return "Invalid JPEG-LS stream: the height (Number of lines) is already defined";
 
     case jpegls_errc::invalid_parameter_component_count:
-        return "Invalid JPEG-LS stream: component count in the SOF segment is outside the range [1, 255]";
+        return "Invalid JPEG-LS stream: component count in the SOF/SOS segment is outside the valid range";
 
     case jpegls_errc::invalid_parameter_interleave_mode:
         return "Invalid JPEG-LS stream: interleave mode is outside the range [0, 2] or conflicts with component count";
