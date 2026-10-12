@@ -47,7 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Security
 
-- Fixed a security vulnerability affecting versions up to 2.4.5.  
+- Fixed a security vulnerability affecting versions up to 2.4.4.  
   For full details, please see the security advisory: [GHSA-vx55-856r-qqxw](https://github.com/team-charls/charls/security/advisories/GHSA-vx55-856r-qqxw)
   Special thanks to Ada Logics \ Anthropic for responsibly disclosing this vulnerability.
 
