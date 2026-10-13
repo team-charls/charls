@@ -39,6 +39,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 - BREAKING: Deprecated legacy 1.x API methods have been removed.
 
+## [2.4.5] - 2026-10-12
+
+### Fixed
+
+- Resolved an endless loop when the encoded bit stream ends in the middle of a unary code.
+
+### Security
+
+- Fixed a security vulnerability affecting versions up to 2.4.4.  
+  For full details, please see the security advisory: [GHSA-vx55-856r-qqxw](https://github.com/team-charls/charls/security/advisories/GHSA-vx55-856r-qqxw)
+  Special thanks to Ada Logics and Anthropic for responsibly disclosing this vulnerability.
+
 ## [2.4.4] - 2026-6-8
 
 ### Security
