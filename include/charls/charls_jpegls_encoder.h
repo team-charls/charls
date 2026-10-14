@@ -7,8 +7,10 @@
 #include "public_types.h" // IWYU pragma: export
 
 #ifdef __cplusplus
+#ifndef CHARLS_BUILD_AS_CPP_MODULE
 #include <cstddef> // IWYU pragma: keep
 #include <cstdint>
+#endif
 struct charls_jpegls_encoder;
 extern "C" {
 #else
