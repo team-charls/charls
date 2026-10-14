@@ -371,7 +371,7 @@ enum class [[nodiscard]] jpegls_errc : std::int32_t
 
     /// <summary>
     /// This error is returned when the stream contains a component count parameter
-    /// in the SOS outside the range [1,4] or larger the count in the SOF.
+    /// in the SOS outside the range [1,4] or larger than the count in the SOF.
     /// </summary>
     invalid_parameter_component_count_sos = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT_SOS,
 
