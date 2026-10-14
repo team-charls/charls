@@ -521,7 +521,7 @@ TEST(jpeg_stream_reader_test, read_header_with_too_many_components_in_start_of_s
     assert_expect_exception(jpegls_errc::invalid_parameter_component_count_sos, [&reader] { reader.read_header(); });
 }
 
-TEST(jpeg_stream_reader_test, read_sos_with_more_then_max_components_sof_sos_throws)
+TEST(jpeg_stream_reader_test, read_sos_with_more_than_max_components_sof_sos_throws)
 {
     jpeg_test_stream_writer writer;
     writer.write_start_of_image();
