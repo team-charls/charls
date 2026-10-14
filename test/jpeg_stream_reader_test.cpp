@@ -458,18 +458,6 @@ TEST(jpeg_stream_reader_test, read_header_with_duplicate_component_id_in_start_o
     assert_expect_exception(jpegls_errc::duplicate_component_id_in_sof_segment, [&reader] { reader.read_header(); });
 }
 
-TEST(jpeg_stream_reader_test, read_header_with_too_many_components_in_start_of_frame_segment_throws)
-{
-    jpeg_test_stream_writer writer;
-    writer.write_start_of_image();
-    writer.write_start_of_frame_segment(512, 512, 8, 256);
-
-    jpeg_stream_reader reader;
-    reader.source({writer.buffer.data(), writer.buffer.size()});
-
-    assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
-}
-
 TEST(jpeg_stream_reader_test, read_header_with_no_components_in_start_of_frame_segment_throws)
 {
     jpeg_test_stream_writer writer;
@@ -479,20 +467,19 @@ TEST(jpeg_stream_reader_test, read_header_with_no_components_in_start_of_frame_s
     jpeg_stream_reader reader;
     reader.source({writer.buffer.data(), writer.buffer.size()});
 
-    assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
+    assert_expect_exception(jpegls_errc::invalid_parameter_component_count_sof, [&reader] { reader.read_header(); });
 }
 
-TEST(jpeg_stream_reader_test, read_header_with_too_many_components_in_start_of_scan_segment_throws)
+TEST(jpeg_stream_reader_test, read_header_with_too_many_components_in_start_of_frame_segment_throws)
 {
     jpeg_test_stream_writer writer;
     writer.write_start_of_image();
-    writer.write_start_of_frame_segment(512, 512, 8, 1);
-    writer.write_start_of_scan_segment(0, 2, 0, interleave_mode::sample);
+    writer.write_start_of_frame_segment(512, 512, 8, 256);
 
     jpeg_stream_reader reader;
     reader.source({writer.buffer.data(), writer.buffer.size()});
 
-    assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
+    assert_expect_exception(jpegls_errc::invalid_parameter_component_count_sof, [&reader] { reader.read_header(); });
 }
 
 TEST(jpeg_stream_reader_test, read_header_with_no_components_in_start_of_scan_segment_throws)
@@ -505,7 +492,7 @@ TEST(jpeg_stream_reader_test, read_header_with_no_components_in_start_of_scan_se
     jpeg_stream_reader reader;
     reader.source({writer.buffer.data(), writer.buffer.size()});
 
-    assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
+    assert_expect_exception(jpegls_errc::invalid_parameter_component_count_sos, [&reader] { reader.read_header(); });
 }
 
 TEST(jpeg_stream_reader_test, read_header_with_more_than_max_components_in_start_of_scan_segment_throws)
@@ -518,7 +505,39 @@ TEST(jpeg_stream_reader_test, read_header_with_more_than_max_components_in_start
     jpeg_stream_reader reader;
     reader.source({writer.buffer.data(), writer.buffer.size()});
 
-    assert_expect_exception(jpegls_errc::invalid_parameter_component_count, [&reader] { reader.read_header(); });
+    assert_expect_exception(jpegls_errc::invalid_parameter_component_count_sos, [&reader] { reader.read_header(); });
+}
+
+TEST(jpeg_stream_reader_test, read_header_with_too_many_components_in_start_of_scan_segment_throws)
+{
+    jpeg_test_stream_writer writer;
+    writer.write_start_of_image();
+    writer.write_start_of_frame_segment(512, 512, 8, 1);
+    writer.write_start_of_scan_segment(0, 2, 0, interleave_mode::sample);
+
+    jpeg_stream_reader reader;
+    reader.source({writer.buffer.data(), writer.buffer.size()});
+
+    assert_expect_exception(jpegls_errc::invalid_parameter_component_count_sos, [&reader] { reader.read_header(); });
+}
+
+TEST(jpeg_stream_reader_test, read_sos_with_more_then_max_components_sof_sos_throws)
+{
+    jpeg_test_stream_writer writer;
+    writer.write_start_of_image();
+    writer.write_start_of_frame_segment(512, 512, 8, 3);
+    writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+    writer.write_start_of_scan_segment(0, 1, 0, interleave_mode::none);
+    writer.write_start_of_scan_segment(0, 2, 0, interleave_mode::sample);
+
+    jpeg_stream_reader reader;
+    reader.source({writer.buffer.data(), writer.buffer.size()});
+
+    reader.read_header();
+    reader.read_next_start_of_scan();
+
+    assert_expect_exception(jpegls_errc::invalid_parameter_component_count_sos,
+                            [&reader] { reader.read_next_start_of_scan(); });
 }
 
 TEST(jpeg_stream_reader_test, read_header_with_unknown_component_id_throws)

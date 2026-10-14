@@ -53,7 +53,7 @@ CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT charls_jpegls_errc CHARLS_API_CALLI
 charls_jpegls_encoder_set_near_lossless(CHARLS_IN charls_jpegls_encoder* encoder, int32_t near_lossless) CHARLS_NOEXCEPT;
 
 /// <summary>
-/// Configures the encoding options the encoder should use. Default is charls_encoding_options::include_pc_parameters_jai
+/// Configures the encoding options the encoder should use. Default is charls_encoding_options::none.
 /// </summary>
 /// <param name="encoder">Reference to the encoder instance.</param>
 /// <param name="encoding_options">Options to use.</param>

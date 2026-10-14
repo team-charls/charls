@@ -421,7 +421,7 @@ void jpeg_stream_reader::read_start_of_frame_segment()
 
     frame_info_.component_count = read_uint8();
     if (UNLIKELY(frame_info_.component_count == 0))
-        throw_jpegls_error(jpegls_errc::invalid_parameter_component_count);
+        throw_jpegls_error(jpegls_errc::invalid_parameter_component_count_sof);
 
     check_segment_size((static_cast<size_t>(frame_info_.component_count) * 3) + 6);
     for (int32_t i{}; i != frame_info_.component_count; ++i)
@@ -612,11 +612,10 @@ void jpeg_stream_reader::read_start_of_scan_segment()
 {
     check_minimal_segment_size(1);
 
-    // ISO 10918-1, B2.3. defines the limits for the number of image components parameter in an SOS.
     const uint32_t scan_component_count{read_uint8()};
     if (UNLIKELY(scan_component_count < 1 || scan_component_count > maximum_component_count_in_scan ||
                  scan_component_count > frame_info_.component_count - read_component_count_))
-        throw_jpegls_error(jpegls_errc::invalid_parameter_component_count);
+        throw_jpegls_error(jpegls_errc::invalid_parameter_component_count_sos);
 
     scan_component_count_ = scan_component_count;
     read_component_count_ += scan_component_count;

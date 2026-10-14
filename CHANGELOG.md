@@ -17,12 +17,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Support to retrieve the height from a DNL marker segment.
 - Support to encode and decode mixed interleaved mode scans.
 - The unit tests are now based on Google test instead of MSTest and can be used on all platforms.
-- Additional checks when encoding/decoding color transformation. Only 3 components, 8/16 bits per sample, lossless and interleave mode line/sample are supported.
+- Additional checks when encoding/decoding color transformation. 
+  Only 3 components, 8/16 bits per sample, lossless and interleave mode line/sample are supported.
 
 ### Fixed
 
 - Endless loop when decoding invalid JPEG-LS input data.
-- Endless loop when the encoded bit stream ends in the middle of a unary code.
 
 ### Changed
 

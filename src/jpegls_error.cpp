@@ -145,8 +145,12 @@ const char* CHARLS_API_CALLING_CONVENTION charls_get_error_message(const charls_
     case jpegls_errc::invalid_parameter_bits_per_sample:
         return "Invalid JPEG-LS stream: the bit per sample (sample precision) parameter is not in the range [2, 16]";
 
-    case jpegls_errc::invalid_parameter_component_count:
+    case jpegls_errc::invalid_parameter_component_count_sof:
         return "Invalid JPEG-LS stream: component count in the SOF segment is outside the range [1, 255]";
+
+    case jpegls_errc::invalid_parameter_component_count_sos:
+        return "Invalid JPEG-LS stream: component count in the SOS segment is outside the range [1, 4]"
+               " or larger than the count in the SOF";
 
     case jpegls_errc::invalid_parameter_interleave_mode:
         return "Invalid JPEG-LS stream: interleave mode is outside the range [0, 2] or conflicts with component count";
