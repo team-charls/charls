@@ -13,31 +13,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
-- Support to encode and decode mapping tables.
+- Support to encode and decode mapping tables.  
+The method charls_decoder_get_compressed_data_format can be called after decoding to return the
+data format of the image. The "interchange" format is the most common and means that no
+additional info is needed to process the image. For more info see the API documentation.
 - Support to retrieve the height from a DNL marker segment.
 - Support to encode and decode mixed interleaved mode scans.
 - The unit tests are now based on Google test instead of MSTest and can be used on all platforms.
-- Additional checks when encoding/decoding color transformation. Only 3 components, 8/16 bits per sample, lossless and interleave mode line/sample are supported.
+- Additional checks when encoding/decoding color transformation.
+  Only 3 components, 8/16 bits per sample, lossless and interleave mode line/sample are supported.
 
 ### Fixed
 
 - Endless loop when decoding invalid JPEG-LS input data.
-- Endless loop when the encoded bit stream ends in the middle of a unary code.
 
 ### Changed
 
-- BREAKING: Updated the minimal required C++ language version to C++17.
-- BREAKING: encoding_options::include_pc_parameters_jai is not enabled by default anymore.
-- BREAKING: charls::jpegls_decoder and charls::jpegls_encoder follow the same const pattern as the C API.
-- BREAKING: the failure values of the enum charls::jpegls_errc are now divided in 2 groups: runtime errors and logic errors.
-- BREAKING: The public charls.h header has been split into charls.h (C applications) and charls.hpp (C++ applications).
-- BREAKING: Method charls_jpegls_decoder_get_interleave_mode has an additional extra parameter: component_index.
+- **BREAKING**: The minimal required C++ language version has been updated to C++17.
+- **BREAKING**: Encoding option encoding_options::include_pc_parameters_jai is not enabled by default anymore.
+- **BREAKING**: The classes charls::jpegls_decoder and charls::jpegls_encoder follow the same const pattern as the C API.
+- **BREAKING**: The failure values of the enum charls::jpegls_errc and the C failure codes are now divided in 2 groups: runtime errors and logic errors. These values are also renumbered.  
+The success code is still 0.
+- **BREAKING**: The public charls.h header has been split into charls.h (for C applications) and charls.hpp (for C++ applications).
+- **BREAKING**: Method charls_jpegls_decoder_get_interleave_mode has an additional extra parameter: component_index.
+- **BREAKING**: The charlstest application has been renamed to charls-cli.
 - Performance optimizations for the encoder by @cl445
-- BREAKING: The charlstest application has been renamed to charls-cli.
 
 ### Removed
 
-- BREAKING: Deprecated legacy 1.x API methods have been removed.
+- **BREAKING**: Deprecated legacy version 1.x API methods have been removed.
 
 ## [2.4.5] - 2026-10-12
 
@@ -48,12 +52,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Security
 
 - Fixed a security vulnerability affecting versions up to 2.4.4.  
-  For full details, please see the security advisory: [GHSA-vx55-856r-qqxw](https://github.com/team-charls/charls/security/advisories/GHSA-vx55-856r-qqxw)
+  For full details, please see the security advisory: [GHSA-vx55-856r-qqxw](https://github.com/team-charls/charls/security/advisories/GHSA-vx55-856r-qqxw)  
   Special thanks to Ada Logics and Anthropic for responsibly disclosing this vulnerability.
 
 ## [2.4.4] - 2026-6-8
 
 ### Security
+
 - Fixed a security vulnerability affecting versions 2.3.0 through 2.4.3.  
   For full details, please see the security advisory: [GHSA-mqrg-gfc8-73ff](https://github.com/team-charls/charls/security/advisories/GHSA-mqrg-gfc8-73ff)  
   The maximum supported values for width and height are now defined as 100000 pixels.

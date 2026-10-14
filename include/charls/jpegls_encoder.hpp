@@ -83,7 +83,7 @@ public:
     }
 
     /// <summary>
-    /// Configures the encoding options the encoder should use. Default is charls_encoding_options::include_pc_parameters_jai
+    /// Configures the encoding options the encoder should use. Default is charls::encoding_options::none.
     /// </summary>
     /// <param name="encoding_options">Options to use. Options can be combined.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>

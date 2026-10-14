@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <cstddef>
+#include <cstddef> // IWYU pragma: keep
 #include <cstdint>
 #include <limits>
 
@@ -13,14 +13,17 @@ inline constexpr int32_t default_reset_threshold{64}; // Default RESET value as 
 
 inline constexpr int32_t minimum_component_count{1};
 inline constexpr int32_t maximum_component_count{255};
+
+// ISO 10918-1, B2.3. defines the max limit for the image component count parameter in an SOS.
 inline constexpr int32_t maximum_component_count_in_scan{4};
+
 inline constexpr int32_t minimum_component_index{};
 inline constexpr int32_t maximum_component_index{maximum_component_count - 1};
 inline constexpr int32_t minimum_bits_per_sample{2};
 inline constexpr int32_t maximum_bits_per_sample{16};
 inline constexpr int32_t maximum_near_lossless{255};
 inline constexpr uint32_t minimum_width{1};
-inline constexpr uint32_t maximum_width{100'000};  // Explicit implementation limit, standard allows up to 2^32 - 1.
+inline constexpr uint32_t maximum_width{100'000}; // Explicit implementation limit, standard allows up to 2^32 - 1.
 inline constexpr uint32_t minimum_height{1};
 inline constexpr uint32_t maximum_height{100'000}; // Explicit implementation limit, standard allows up to 2^32 - 1.
 inline constexpr int32_t minimum_application_data_id{};

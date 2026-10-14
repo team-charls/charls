@@ -62,13 +62,14 @@ enum charls_jpegls_errc
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_WIDTH = 29,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_HEIGHT = 30,
     CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE = 31,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT = 32,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE = 33,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 34,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS = 35,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION = 36,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID = 37,
-    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_CONTINUATION = 38,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT_SOF = 32,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT_SOS = 33,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_INTERLEAVE_MODE = 34,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_NEAR_LOSSLESS = 35,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_JPEGLS_PRESET_PARAMETERS = 36,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COLOR_TRANSFORMATION = 37,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_ID = 38,
+    CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_MAPPING_TABLE_CONTINUATION = 39,
 
     // Logic errors:
 
@@ -364,10 +365,15 @@ enum class [[nodiscard]] jpegls_errc : std::int32_t
     invalid_parameter_bits_per_sample = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_BITS_PER_SAMPLE,
 
     /// <summary>
-    /// This error is returned when the stream contains a component count parameter outside the range [1,255] for SOF or
-    /// [1,4] for SOS.
+    /// This error is returned when the stream contains a component count parameter in the SOF outside the range [1,255].
     /// </summary>
-    invalid_parameter_component_count = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT,
+    invalid_parameter_component_count_sof = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT_SOF,
+
+    /// <summary>
+    /// This error is returned when the stream contains a component count parameter
+    /// in the SOS outside the range [1,4] or larger than the count in the SOF.
+    /// </summary>
+    invalid_parameter_component_count_sos = impl::CHARLS_JPEGLS_ERRC_INVALID_PARAMETER_COMPONENT_COUNT_SOS,
 
     /// <summary>
     /// This error is returned when the stream contains an interleave mode (ILV) parameter outside the range [0, 2]
