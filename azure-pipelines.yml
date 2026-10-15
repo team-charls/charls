@@ -49,10 +49,8 @@ jobs:
   - script: C:\vcpkg\vcpkg integrate install
     displayName: 'vcpkg integrate install'
 
-  - name: Fetch complete vcpkg history
-    run: |
-      git -C C:\vcpkg fetch --unshallow || git -C C:\vcpkg fetch --all --tags
-    shell: pwsh
+  - script: git -C C:\vcpkg fetch --unshallow || git -C C:\vcpkg fetch origin
+    displayName: 'Fetch complete vcpkg history'
 
   - task: VSBuild@1
     inputs:
