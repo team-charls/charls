@@ -4,12 +4,18 @@
 version: 3.0.0.{build}
 skip_branch_with_pr: true
 os: Visual Studio 2019
+
+init:
+  - cmd: if exist C:\Tools\vcpkg\.git (git -C C:\Tools\vcpkg fetch --unshallow || git -C C:\Tools\vcpkg fetch origin)
+
 configuration:
 - Debug
 - Release
+
 platform:
 - x86
 - x64
+
 build:
   project: charls.sln
   verbosity: minimal
