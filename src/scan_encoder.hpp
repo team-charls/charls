@@ -78,11 +78,7 @@ protected:
         ASSERT((bits | ((1U << bit_count) - 1U)) == ((1U << bit_count) - 1U)); // Not used bits must be set to zero.
 
         free_bit_count_ -= bit_count;
-        if (free_bit_count_ >= 0)
-        {
-            bit_buffer_ |= bits << free_bit_count_;
-        }
-        else
+        if (free_bit_count_ < 0)
         {
             // Add as many bits in the remaining space as possible and flush.
             bit_buffer_ |= bits >> -free_bit_count_;
@@ -98,6 +94,8 @@ protected:
             ASSERT(free_bit_count_ >= 0);
             bit_buffer_ |= bits << free_bit_count_;
         }
+
+        bit_buffer_ |= bits << free_bit_count_;
     }
 
     void end_scan()
