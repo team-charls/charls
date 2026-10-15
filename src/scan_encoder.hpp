@@ -92,7 +92,6 @@ protected:
             }
 
             ASSERT(free_bit_count_ >= 0);
-            bit_buffer_ |= bits << free_bit_count_;
         }
 
         bit_buffer_ |= bits << free_bit_count_;
