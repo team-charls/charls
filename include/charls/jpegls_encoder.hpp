@@ -7,6 +7,8 @@
 #include "jpegls_error.hpp"        // IWYU pragma: export
 
 #ifndef CHARLS_BUILD_AS_CPP_MODULE
+#include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <memory>
 #endif
@@ -64,7 +66,7 @@ public:
     /// </summary>
     /// <param name="near_lossless">Value of the NEAR parameter.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
-    jpegls_encoder& near_lossless(const int32_t near_lossless)
+    jpegls_encoder& near_lossless(const std::int32_t near_lossless)
     {
         check_jpegls_errc(charls_jpegls_encoder_set_near_lossless(encoder(), near_lossless));
         return *this;
@@ -125,7 +127,7 @@ public:
     /// </summary>
     /// <param name="component_index">Index of the component. Component 0 is the start index.</param>
     /// <param name="table_id">Mapping table ID that will be referenced by this component.</param>
-    jpegls_encoder& set_mapping_table_id(const int32_t component_index, const int32_t table_id)
+    jpegls_encoder& set_mapping_table_id(const std::int32_t component_index, const std::int32_t table_id)
     {
         check_jpegls_errc(charls_jpegls_encoder_set_mapping_table_id(encoder(), component_index, table_id));
         return *this;
@@ -139,9 +141,9 @@ public:
     /// </remarks>
     /// <returns>The estimated size in bytes needed to hold the encoded image.</returns>
     [[nodiscard]]
-    size_t estimated_destination_size() const
+    std::size_t estimated_destination_size() const
     {
-        size_t size_in_bytes;
+        std::size_t size_in_bytes;
         check_jpegls_errc(charls_jpegls_encoder_get_estimated_destination_size(encoder(), &size_in_bytes));
         return size_in_bytes;
     }
@@ -189,7 +191,7 @@ public:
     jpegls_encoder&
     write_standard_spiff_header(const spiff_color_space color_space,
                                 const spiff_resolution_units resolution_units = spiff_resolution_units::aspect_ratio,
-                                const uint32_t vertical_resolution = 1, const uint32_t horizontal_resolution = 1)
+                                const std::uint32_t vertical_resolution = 1U, const std::uint32_t horizontal_resolution = 1U)
     {
         check_jpegls_errc(charls_jpegls_encoder_write_standard_spiff_header(encoder(), color_space, resolution_units,
                                                                             vertical_resolution, horizontal_resolution));
@@ -217,10 +219,10 @@ public:
     CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
     jpegls_encoder& write_spiff_entry(const IntDerivedType entry_tag,
                                       CHARLS_IN_READS_BYTES(entry_data_size_bytes) const void* entry_data,
-                                      const size_t entry_data_size_bytes)
+                                      const std::size_t entry_data_size_bytes)
     {
-        check_jpegls_errc(charls_jpegls_encoder_write_spiff_entry(encoder(), static_cast<uint32_t>(entry_tag), entry_data,
-                                                                  entry_data_size_bytes));
+        check_jpegls_errc(charls_jpegls_encoder_write_spiff_entry(encoder(), static_cast<std::uint32_t>(entry_tag),
+                                                                  entry_data, entry_data_size_bytes));
         return *this;
     }
 
@@ -248,7 +250,7 @@ public:
     /// </param>
     jpegls_encoder& write_comment(CHARLS_IN_Z const char* comment)
     {
-        const size_t size{std::strlen(comment)};
+        const std::size_t size{std::strlen(comment)};
         return write_comment(comment, size == 0 ? 0 : size + 1);
     }
 
@@ -258,7 +260,7 @@ public:
     /// <param name="comment">The bytes of the comment: application specific.</param>
     /// <param name="size">The size of the comment in bytes.</param>
     CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
-    jpegls_encoder& write_comment(CHARLS_IN_READS_BYTES(size) const void* comment, const size_t size)
+    jpegls_encoder& write_comment(CHARLS_IN_READS_BYTES(size) const void* comment, const std::size_t size)
     {
         check_jpegls_errc(charls_jpegls_encoder_write_comment(encoder(), comment, size));
         return *this;
@@ -271,8 +273,8 @@ public:
     /// <param name="application_data">The bytes of the application data: application specific.</param>
     /// <param name="size">The size of the comment in bytes.</param>
     CHARLS_ATTRIBUTE_ACCESS((access(read_only, 3, 4)))
-    jpegls_encoder& write_application_data(const int32_t application_data_id,
-                                           CHARLS_IN_READS_BYTES(size) const void* application_data, const size_t size)
+    jpegls_encoder& write_application_data(const std::int32_t application_data_id,
+                                           CHARLS_IN_READS_BYTES(size) const void* application_data, const std::size_t size)
     {
         check_jpegls_errc(
             charls_jpegls_encoder_write_application_data(encoder(), application_data_id, application_data, size));
@@ -290,8 +292,8 @@ public:
     /// <param name="table_data">Byte buffer that holds the mapping table.</param>
     /// <param name="size">The size of the buffer in bytes.</param>
     CHARLS_ATTRIBUTE_ACCESS((access(read_only, 4, 5)))
-    jpegls_encoder& write_mapping_table(const int32_t table_id, const int32_t entry_size, CHARLS_IN const void* table_data,
-                                        const size_t size)
+    jpegls_encoder& write_mapping_table(const std::int32_t table_id, const std::int32_t entry_size,
+                                        CHARLS_IN const void* table_data, const std::size_t size)
     {
         check_jpegls_errc(charls_jpegls_encoder_write_mapping_table(encoder(), table_id, entry_size, table_data, size));
         return *this;
@@ -307,7 +309,8 @@ public:
     /// <param name="entry_size">Size in bytes of a single table entry.</param>
     /// <param name="table_container">Buffer that holds the mapping table.</param>
     template<typename Container, typename ContainerValueType = typename Container::value_type>
-    jpegls_encoder& write_mapping_table(const int32_t table_id, const int32_t entry_size, Container& table_container)
+    jpegls_encoder& write_mapping_table(const std::int32_t table_id, const std::int32_t entry_size,
+                                        Container& table_container)
     {
         return write_mapping_table(table_id, entry_size, table_container.data(),
                                    table_container.size() * sizeof(ContainerValueType));
@@ -324,8 +327,8 @@ public:
     /// </param>
     /// <returns>The number of bytes written to the destination.</returns>
     CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
-    size_t encode(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const size_t source_size_bytes,
-                  const uint32_t stride = 0)
+    std::size_t encode(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
+                       const std::size_t source_size_bytes, const std::uint32_t stride = 0)
     {
         check_jpegls_errc(charls_jpegls_encoder_encode_from_buffer(encoder(), source_buffer, source_size_bytes, stride));
         return bytes_written();
@@ -344,8 +347,9 @@ public:
     /// Stride is sometimes called pitch. If padding bytes are present, the stride is wider than the width of the image.
     /// </param>
     /// <returns>The number of bytes written to the destination.</returns>
-    size_t encode_components(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
-                             const size_t source_size_bytes, const int32_t source_component_count, const uint32_t stride = 0)
+    std::size_t encode_components(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
+                                  const std::size_t source_size_bytes, const std::int32_t source_component_count,
+                                  const std::uint32_t stride = 0)
     {
         check_jpegls_errc(charls_jpegls_encoder_encode_components_from_buffer(encoder(), source_buffer, source_size_bytes,
                                                                               source_component_count, stride));
@@ -362,7 +366,7 @@ public:
     /// </param>
     /// <returns>The number of bytes written to the destination.</returns>
     template<typename Container, typename ContainerValueType = typename Container::value_type>
-    size_t encode(const Container& source_container, const uint32_t stride = 0)
+    std::size_t encode(const Container& source_container, const std::uint32_t stride = 0)
     {
         return encode(source_container.data(), source_container.size() * sizeof(ContainerValueType), stride);
     }
@@ -380,8 +384,8 @@ public:
     /// </param>
     /// <returns>The number of bytes written to the destination.</returns>
     template<typename Container, typename ContainerValueType = typename Container::value_type>
-    size_t encode_components(const Container& source_container, const int32_t source_component_count,
-                             const uint32_t stride = 0)
+    std::size_t encode_components(const Container& source_container, const std::int32_t source_component_count,
+                                  const std::uint32_t stride = 0)
     {
         return encode_components(source_container.data(), source_container.size() * sizeof(ContainerValueType),
                                  source_component_count, stride);
@@ -392,7 +396,7 @@ public:
     /// These tables should have been written to the stream first with the method write_mapping_table.
     /// </summary>
     /// <returns>The number of bytes written to the destination.</returns>
-    size_t create_abbreviated_format()
+    std::size_t create_abbreviated_format()
     {
         check_jpegls_errc(charls_jpegls_encoder_create_abbreviated_format(encoder()));
         return bytes_written();
@@ -403,9 +407,9 @@ public:
     /// </summary>
     /// <returns>The bytes written.</returns>
     [[nodiscard]]
-    size_t bytes_written() const
+    std::size_t bytes_written() const
     {
-        size_t bytes_written;
+        std::size_t bytes_written;
         check_jpegls_errc(charls_jpegls_encoder_get_bytes_written(encoder(), &bytes_written));
         return bytes_written;
     }

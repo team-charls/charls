@@ -38,11 +38,11 @@ public:
     template<typename SourceContainer, typename DestinationContainer,
              typename DestinationContainerValueType = typename DestinationContainer::value_type>
     static std::pair<frame_info, interleave_mode> decode(const SourceContainer& source, DestinationContainer& destination,
-                                                         const size_t maximum_size_in_bytes = size_t{7680} * 4320 * 3)
+                                                         const std::size_t maximum_size_in_bytes = std::size_t{7680} * 4320 * 3)
     {
         jpegls_decoder decoder{source, true};
 
-        const size_t destination_size{decoder.get_destination_size()};
+        const std::size_t destination_size{decoder.get_destination_size()};
         if (destination_size > maximum_size_in_bytes)
             impl::throw_jpegls_error(jpegls_errc::not_enough_memory);
 
@@ -65,7 +65,7 @@ public:
     /// </param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <exception cref="std::bad_alloc">Thrown when memory for the decoder could not be allocated.</exception>
-    jpegls_decoder(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const size_t source_size_bytes,
+    jpegls_decoder(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer, const std::size_t source_size_bytes,
                    const bool parse_header = true)
     {
         source(source_buffer, source_size_bytes);
@@ -103,7 +103,7 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     CHARLS_ATTRIBUTE_ACCESS((access(read_only, 2, 3)))
     jpegls_decoder& source(CHARLS_IN_READS_BYTES(source_size_bytes) const void* source_buffer,
-                           const size_t source_size_bytes)
+                           const std::size_t source_size_bytes)
     {
         check_jpegls_errc(charls_jpegls_decoder_set_source_buffer(decoder(), source_buffer, source_size_bytes));
         return *this;
@@ -149,7 +149,7 @@ public:
     /// <returns>True if a valid SPIFF header could be found.</returns>
     bool read_spiff_header(std::error_code& ec) noexcept
     {
-        int32_t found;
+        std::int32_t found;
         ec = charls_jpegls_decoder_read_spiff_header(decoder(), &spiff_header_, &found);
         spiff_header_has_value_ = found != 0;
         return spiff_header_has_value_;
@@ -249,9 +249,9 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The value of the NEAR parameter.</returns>
     [[nodiscard]]
-    int32_t get_near_lossless(const int32_t component_index = 0) const
+    std::int32_t get_near_lossless(const std::int32_t component_index = 0) const
     {
-        int32_t near_lossless;
+        std::int32_t near_lossless;
         check_jpegls_errc(charls_jpegls_decoder_get_near_lossless(decoder(), component_index, &near_lossless));
         return near_lossless;
     }
@@ -304,9 +304,9 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     /// <returns>The required size in bytes of the destination buffer.</returns>
     [[nodiscard]]
-    size_t get_destination_size(const uint32_t stride = 0) const
+    std::size_t get_destination_size(const std::uint32_t stride = 0) const
     {
-        size_t size_in_bytes;
+        std::size_t size_in_bytes;
         check_jpegls_errc(charls_jpegls_decoder_get_destination_size(decoder(), stride, &size_in_bytes));
         return size_in_bytes;
     }
@@ -320,7 +320,7 @@ public:
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     CHARLS_ATTRIBUTE_ACCESS((access(write_only, 2, 3)))
     void decode(CHARLS_OUT_WRITES_BYTES(destination_size_bytes) void* destination_buffer,
-                const size_t destination_size_bytes, const uint32_t stride = 0)
+                const std::size_t destination_size_bytes, const std::uint32_t stride = 0)
     {
         check_jpegls_errc(
             charls_jpegls_decoder_decode_to_buffer(decoder(), destination_buffer, destination_size_bytes, stride));
@@ -335,7 +335,7 @@ public:
     /// <param name="stride">Number of bytes to the next line in the buffer, when zero, decoder will compute it.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     template<typename Container, typename ContainerValueType = typename Container::value_type>
-    void decode(CHARLS_OUT Container& destination_container, const uint32_t stride = 0)
+    void decode(CHARLS_OUT Container& destination_container, const std::uint32_t stride = 0)
     {
         decode(destination_container.data(), destination_container.size() * sizeof(ContainerValueType), stride);
     }
@@ -348,7 +348,7 @@ public:
     /// <returns>Container with the decoded data.</returns>
     template<typename Container, typename ContainerValueType = typename Container::value_type>
     [[nodiscard]]
-    Container decode(const uint32_t stride = 0)
+    Container decode(const std::uint32_t stride = 0)
     {
         Container destination(get_destination_size() / sizeof(ContainerValueType));
 
@@ -366,7 +366,7 @@ public:
     /// </remarks>
     /// <param name="comment_handler">Function object to the comment handler.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
-    jpegls_decoder& at_comment(std::function<void(const void* data, size_t size)> comment_handler)
+    jpegls_decoder& at_comment(std::function<void(const void* data, std::size_t size)> comment_handler)
     {
         comment_handler_ = std::move(comment_handler);
         check_jpegls_errc(
@@ -385,7 +385,7 @@ public:
     /// <param name="application_data_handler">Function object to the application data handler.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     jpegls_decoder& at_application_data(
-        std::function<void(int32_t application_data_id, const void* data, size_t size)> application_data_handler)
+        std::function<void(std::int32_t application_data_id, const void* data, std::size_t size)> application_data_handler)
     {
         application_data_handler_ = std::move(application_data_handler);
         check_jpegls_errc(charls_jpegls_decoder_at_application_data(
@@ -419,9 +419,9 @@ public:
     /// <returns>The mapping table ID or 0 when no mapping table is referenced by the component.</returns>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     [[nodiscard]]
-    int32_t get_mapping_table_id(const int32_t component_index) const
+    std::int32_t get_mapping_table_id(const std::int32_t component_index) const
     {
-        int32_t table_id;
+        std::int32_t table_id;
         check_jpegls_errc(charls_decoder_get_mapping_table_id(decoder(), component_index, &table_id));
         return table_id;
     }
@@ -438,9 +438,9 @@ public:
     /// </returns>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     [[nodiscard]]
-    int32_t find_mapping_table_index(const int32_t mapping_table_id) const
+    std::int32_t find_mapping_table_index(const std::int32_t mapping_table_id) const
     {
-        int32_t index;
+        std::int32_t index;
         check_jpegls_errc(charls_decoder_find_mapping_table_index(decoder(), mapping_table_id, &index));
         return index;
     }
@@ -454,9 +454,9 @@ public:
     /// <returns>The number of mapping tables present in the JPEG-LS stream.</returns>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     [[nodiscard]]
-    int32_t mapping_table_count() const
+    std::int32_t mapping_table_count() const
     {
-        int32_t count;
+        std::int32_t count;
         check_jpegls_errc(charls_decoder_get_mapping_table_count(decoder(), &count));
         return count;
     }
@@ -489,8 +489,8 @@ public:
     /// <param name="table_size_bytes">Length of the table buffer in bytes.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     CHARLS_ATTRIBUTE_ACCESS((access(write_only, 3, 4)))
-    void get_mapping_table_data(const int32_t index, CHARLS_OUT_WRITES_BYTES(table_size_bytes) void* table_data,
-                                const size_t table_size_bytes) const
+    void get_mapping_table_data(const std::int32_t index, CHARLS_OUT_WRITES_BYTES(table_size_bytes) void* table_data,
+                                const std::size_t table_size_bytes) const
     {
         check_jpegls_errc(charls_decoder_get_mapping_table_data(decoder(), index, table_data, table_size_bytes));
     }
@@ -505,7 +505,7 @@ public:
     /// <param name="table_data">Output argument, will hold data of the mapping table when the function returns.</param>
     /// <exception cref="charls::jpegls_error">An error occurred during the operation.</exception>
     template<typename Container, typename ContainerValueType = typename Container::value_type>
-    void get_mapping_table_data(const int32_t index, Container& table_data) const
+    void get_mapping_table_data(const std::int32_t index, Container& table_data) const
     {
         get_mapping_table_data(index, table_data.data(), table_data.size() * sizeof(ContainerValueType));
     }
@@ -538,7 +538,7 @@ private:
         charls_jpegls_decoder_destroy(decoder);
     }
 
-    static int32_t CHARLS_API_CALLING_CONVENTION at_comment_callback(const void* data, const size_t size,
+    static std::int32_t CHARLS_API_CALLING_CONVENTION at_comment_callback(const void* data, const std::size_t size,
                                                                      void* user_context) noexcept
     {
         try
@@ -552,8 +552,8 @@ private:
         }
     }
 
-    static int32_t CHARLS_API_CALLING_CONVENTION at_application_data_callback(const int32_t application_data_id,
-                                                                              const void* data, const size_t size,
+    static std::int32_t CHARLS_API_CALLING_CONVENTION at_application_data_callback(const std::int32_t application_data_id,
+                                                                              const void* data, const std::size_t size,
                                                                               void* user_context) noexcept
     {
         try
@@ -572,8 +572,8 @@ private:
     bool spiff_header_has_value_{};
     charls::spiff_header spiff_header_{};
     charls::frame_info frame_info_{};
-    std::function<void(const void*, size_t)> comment_handler_;
-    std::function<void(int32_t, const void*, size_t)> application_data_handler_;
+    std::function<void(const void*, std::size_t)> comment_handler_;
+    std::function<void(std::int32_t, const void*, std::size_t)> application_data_handler_;
 };
 
 } // namespace charls
