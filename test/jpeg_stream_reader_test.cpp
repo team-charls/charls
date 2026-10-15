@@ -470,18 +470,6 @@ TEST(jpeg_stream_reader_test, read_header_with_no_components_in_start_of_frame_s
     assert_expect_exception(jpegls_errc::invalid_parameter_component_count_sof, [&reader] { reader.read_header(); });
 }
 
-TEST(jpeg_stream_reader_test, read_header_with_too_many_components_in_start_of_frame_segment_throws)
-{
-    jpeg_test_stream_writer writer;
-    writer.write_start_of_image();
-    writer.write_start_of_frame_segment(512, 512, 8, 256);
-
-    jpeg_stream_reader reader;
-    reader.source({writer.buffer.data(), writer.buffer.size()});
-
-    assert_expect_exception(jpegls_errc::invalid_parameter_component_count_sof, [&reader] { reader.read_header(); });
-}
-
 TEST(jpeg_stream_reader_test, read_header_with_no_components_in_start_of_scan_segment_throws)
 {
     jpeg_test_stream_writer writer;

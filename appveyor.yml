@@ -4,12 +4,21 @@
 version: 3.0.0.{build}
 skip_branch_with_pr: true
 os: Visual Studio 2019
+
+init:
+- cmd: |
+    git -C C:\Tools\vcpkg remote set-head origin --auto
+    git -C C:\Tools\vcpkg checkout master
+    git -C C:\Tools\vcpkg pull origin master
+
 configuration:
 - Debug
 - Release
+
 platform:
 - x86
 - x64
+
 build:
   project: charls.sln
   verbosity: minimal

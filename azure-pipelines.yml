@@ -49,6 +49,9 @@ jobs:
   - script: C:\vcpkg\vcpkg integrate install
     displayName: 'vcpkg integrate install'
 
+  - script: git -C C:\vcpkg fetch --unshallow || git -C C:\vcpkg fetch origin
+    displayName: 'Fetch complete vcpkg history'
+
   - task: VSBuild@1
     inputs:
       solution: '$(solution)'
