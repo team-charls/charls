@@ -71,11 +71,13 @@
         /utf-8 = interpret all source files as UTF-8 (Required as MSVC relies on UTF-8 signature, which is not used)
         /Zc:__cplusplus = Use the correct value for the __cplusplus macro
         /Zc:throwingNew = Communicate with the compiler that only the throwing variant of operator new is used.
-        /Zc:enumTypes = enable conformance for enum type deduction.
-        /Zc:templateScope = Enforce standard C++ template scope rules.
+        /Zc:enumTypes = enable conformance for enum type deduction. (VS 2022 17.4. and later)
+        /Zc:templateScope = Enforce standard C++ template scope rules. (VS 2022 17.5 and later)
         /ZH:SHA_256 = Use an SHA-256 hash for the checksum.in debug info
       -->
-      <AdditionalOptions>/utf-8 /Zc:__cplusplus /Zc:throwingNew /Zc:enumTypes /Zc:templateScope /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /Zc:__cplusplus /Zc:throwingNew /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
+
+      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '' and '$(VisualStudioVersion)' &gt;= '17'">%(AdditionalOptions) /Zc:enumTypes /Zc:templateScope</AdditionalOptions>
 
       <!-- Use all cores to speed up the compilation (MS recommended best practice). -->
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
