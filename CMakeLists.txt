@@ -193,14 +193,26 @@ if(MSVC)
   # All C and C++ source files are encoded in UTF-8 without signature (BOM), MSVC requires the utf-8 switch to read files correctly.
   add_compile_options("/utf-8")
 
-  # Zc:__cplusplus: Will configure the MSVC compiler to define the correct value for the __cplusplus macro
-  add_compile_options("/Zc:__cplusplus")
-
-  # /Zc:throwingNew: Will configure the MSVC compiler that only the standard throwing operator new is used.
-  add_compile_options("/Zc:throwingNew")
-
-  # /permissive-: Will configure the MSVC compiler to accept only standards conformance C++
+  # /permissive-: Will configure the MSVC compiler to accept only standards conformance C++.
   add_compile_options("/permissive-")
+
+  # Enable conformance options that are not enabled by permissive-.
+  # /Zc:__cplusplus: Will configure the MSVC compiler to define the correct value for the __cplusplus macro.
+  # /Zc:throwingNew: Will configure the MSVC compiler that only the standard throwing operator new is used.
+  # /Zc:preprocessor: Will enable the preprocessor conformance mode.
+  add_compile_options("/Zc:__cplusplus")
+  add_compile_options("/Zc:throwingNew")
+  add_compile_options("/Zc:preprocessor")
+
+  # /Zc:enumTypes: enable conformance for enum type deduction. (VS 2022 17.4. and later)
+  if(MSVC_VERSION GREATER_EQUAL 1934)
+    add_compile_options("/Zc:enumTypes")
+  endif()
+
+  # /Zc:templateScope = Check template parameter shadowing. (VS 2022 17.5 and later)
+  if(MSVC_VERSION GREATER_EQUAL 1935)
+    add_compile_options("/Zc:templateScope")
+  endif()
 
   # /ZH:SHA_256: Will use SHA 256 for checksums between source code and debug symbols (more secure)
   # Already default enabled in Visual Studio 2022 17.0 and later
