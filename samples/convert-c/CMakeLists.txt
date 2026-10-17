@@ -22,6 +22,6 @@ if(MSVC)
 
   # Define that compiler provided conformance to the C standard. Introduced with VS 2022 17.2
   if(MSVC_VERSION GREATER_EQUAL 1932)
-    add_compile_options("/Zc:__STDC__")
+    target_compile_options(convert-c PRIVATE "/Zc:__STDC__")
   endif()
 endif()
