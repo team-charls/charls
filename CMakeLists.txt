@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2009 Team CharLS
 # SPDX-License-Identifier: BSD-3-Clause
 
-cmake_minimum_required(VERSION 3.22...4.3)
+cmake_minimum_required(VERSION 3.22...4.4)
 
 # Extract the version info from version.h
 file(READ "include/charls/version.h" version)
@@ -193,23 +193,20 @@ if(MSVC)
   # All C and C++ source files are encoded in UTF-8 without signature (BOM), MSVC requires the utf-8 switch to read files correctly.
   add_compile_options("/utf-8")
 
-  # Zc:__cplusplus: Will configure the MSVC compiler to use the correct value for the __cplusplus macro
-  # This option is introduced with Visual Studio 2017 version 15.7
-  if(MSVC_VERSION GREATER_EQUAL 1914)
-    add_compile_options("/Zc:__cplusplus")
-  endif()
+  # Zc:__cplusplus: Will configure the MSVC compiler to define the correct value for the __cplusplus macro
+  add_compile_options("/Zc:__cplusplus")
 
   # /Zc:throwingNew: Will configure the MSVC compiler that only the standard throwing operator new is used.
   add_compile_options("/Zc:throwingNew")
 
   # /permissive-: Will configure the MSVC compiler to accept only standards conformance C++
-  # This option is introduced with Visual Studio 2017.
-  if(MSVC_VERSION GREATER_EQUAL 1910)
-    add_compile_options("/permissive-")
-  endif()
+  add_compile_options("/permissive-")
 
   # /ZH:SHA_256: Will use SHA 256 for checksums between source code and debug symbols (more secure)
-  add_compile_options("/ZH:SHA_256")
+  # Already default enabled in Visual Studio 2022 17.0 and later
+  if(MSVC_VERSION LESS 1930)
+    add_compile_options("/ZH:SHA_256")
+  endif()
 
   # /guard:cf: Will enable Control Flow Guard, which provides addition compile time and runtime checks.
   add_compile_options("/guard:cf")
@@ -241,11 +238,6 @@ endif()
 
 # When enabled apply the pedantic warnings options and warnings as errors to globally.
 if(CHARLS_PEDANTIC_WARNINGS)
-  if(MSVC)
-    # Remove existing warning level (W3 is added by default by CMake), duplicate level will generate cmd-line warnings.
-    string(REGEX REPLACE " /W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  endif()
-
   add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:${PEDANTIC_CXX_COMPILE_FLAGS}>")
 endif()
 
