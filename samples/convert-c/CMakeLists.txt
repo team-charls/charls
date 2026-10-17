@@ -19,4 +19,9 @@ if(MSVC)
   # Not all compilers come with the secure C standard extension functions, making it difficult to use them.
   # Disable the MSVC warning about not using these functions to keep the sample code simple and easy to understand.
   target_compile_definitions(convert-c PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+  # Define that compiler provided conformance to the C standard. Introduced with VS 2022 17.2
+  if(MSVC_VERSION GREATER_EQUAL 1932)
+    add_compile_options("/Zc:__STDC__")
+  endif()
 endif()
