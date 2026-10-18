@@ -7,7 +7,7 @@ if(NOT GTest_FOUND)
     FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG 94be250af7e14c58dcbf476972d2d7141551ff67 # main, Mar 10, 2026
+        GIT_TAG 063de7e9578f82b369302001269680b4b1553359 # v1.18.0 (later releases have dropped support for VS2019)
     )
     # For Windows: prevent overriding the parent project's compiler/linker settings.
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -26,7 +26,6 @@ if(NOT GTest_FOUND)
         if(TARGET ${target})
             target_compile_options(${target} PRIVATE
                 $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-w>
-                $<$<CXX_COMPILER_ID:MSVC>:/w>
             )
         endif()
     endforeach()
@@ -69,6 +68,10 @@ target_include_directories(charls-test
 )
 
 target_compile_features(charls-test PRIVATE cxx_std_17)
+
+if(CHARLS_PEDANTIC_WARNINGS)
+  target_compile_options(charls-test PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${PEDANTIC_CXX_COMPILE_FLAGS}>")
+endif()
 
 if(BUILD_SHARED_LIBS)
     # When charls is built as a DLL, internal symbols are not exported.

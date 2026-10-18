@@ -248,11 +248,6 @@ if(CHARLS_ENABLE_CLANG_TIDY)
     endif()
 endif()
 
-# When enabled apply the pedantic warnings options and warnings as errors to globally.
-if(CHARLS_PEDANTIC_WARNINGS)
-  add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:${PEDANTIC_CXX_COMPILE_FLAGS}>")
-endif()
-
 if(CHARLS_TREAT_WARNING_AS_ERROR)
   add_compile_options(${WARNINGS_AS_ERRORS_FLAG_COMPILER})
   add_link_options(${WARNINGS_AS_ERRORS_FLAG_LINKER})
@@ -263,6 +258,11 @@ include(src/CMakeLists.txt)
 if(CHARLS_BUILD_TESTS)
   enable_testing()
   add_subdirectory(test)
+endif()
+
+# When enabled apply the pedantic warnings options and warnings as errors to globally.
+if(CHARLS_PEDANTIC_WARNINGS)
+  add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:${PEDANTIC_CXX_COMPILE_FLAGS}>")
 endif()
 
 if(CHARLS_BUILD_AFL_FUZZ_TEST)

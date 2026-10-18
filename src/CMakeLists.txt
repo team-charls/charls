@@ -57,6 +57,10 @@ if(MSVC)
   target_compile_options(charls PRIVATE /GR-)
 endif()
 
+if(CHARLS_PEDANTIC_WARNINGS)
+  target_compile_options(charls PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${PEDANTIC_CXX_COMPILE_FLAGS}>")
+endif()
+
 if(CHARLS_ENABLE_ASAN)
   target_compile_options(charls PRIVATE -fsanitize=address)
   target_link_libraries(charls PRIVATE -fsanitize=address)
