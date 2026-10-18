@@ -68,12 +68,16 @@
       <DisableSpecificWarnings>6393;%(DisableSpecificWarnings)</DisableSpecificWarnings>
 
       <!--
-        __cplusplus = Use the correct value for the __cplusplus macro
-        throwingNew = Communicate with the compiler that only the throwing variant of operator new is used.
-        utf-8 = interpret all source files as UTF-8 (Required as MSVC relies on UTF-8 signature, which is not used)
-        ZH:SHA_256 = Use an SHA-256 hash for the checksum.in debug info
+        /utf-8 = interpret all source files as UTF-8 (Required as MSVC relies on UTF-8 signature, which is not used)
+        /Zc:__cplusplus = Use the correct value for the __cplusplus macro
+        /Zc:throwingNew = Communicate with the compiler that only the throwing variant of operator new is used.
+        /Zc:enumTypes = enable conformance for enum type deduction. (VS 2022 17.4. and later)
+        /Zc:templateScope = Enforce standard C++ template scope rules. (VS 2022 17.5 and later)
+        /ZH:SHA_256 = Use an SHA-256 hash for the checksum.in debug info
       -->
-      <AdditionalOptions>/Zc:__cplusplus /Zc:throwingNew /utf-8 /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /Zc:__cplusplus /Zc:throwingNew /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
+
+      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '' and '$(VisualStudioVersion)' &gt;= '17'">%(AdditionalOptions) /Zc:enumTypes /Zc:templateScope</AdditionalOptions>
 
       <!-- Use all cores to speed up the compilation (MS recommended best practice). -->
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -83,6 +87,9 @@
 
       <!-- Explicit disable non-conforming MSVC compiler options that are not compatible with the C++ standard -->
       <ConformanceMode>true</ConformanceMode>
+
+      <!-- Enable the preprocessor conformance mode-->
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
 
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include</AdditionalIncludeDirectories>
 
