@@ -28,7 +28,7 @@
     <ClCompile>
       <!-- To ensure high quality C++ code use Warning level 4 and treat warnings as errors to ensure warnings are fixed promptly. -->
       <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError Condition="!$(MSBuildProjectFullPath.Contains('CMakeScratch'))">true</TreatWarningAsError>
       <UseFullPaths>true</UseFullPaths>
 
       <!-- Explicit disable warnings from external files (Supported since Visual Studio 2019 16.10) -->
