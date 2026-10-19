@@ -60,6 +60,9 @@ option(CHARLS_ENABLE_CLANG_TIDY "Enable clang-tidy static analysis." OFF)
 option(CHARLS_PEDANTIC_WARNINGS "Enable extra warnings and static analysis." OFF)
 option(CHARLS_TREAT_WARNING_AS_ERROR "Treat a warning as an error." OFF)
 
+# Provide option to build CharLS with native CPU optimizations
+option(CHARLS_ENABLE_NATIVE_OPTIMIZATION "Optimize binaries specifically for the host CPU architecture" OFF)
+
 # CharLS is written in portable c++:
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -251,6 +254,19 @@ endif()
 if(CHARLS_TREAT_WARNING_AS_ERROR)
   add_compile_options(${WARNINGS_AS_ERRORS_FLAG_COMPILER})
   add_link_options(${WARNINGS_AS_ERRORS_FLAG_LINKER})
+endif()
+
+if(CHARLS_ENABLE_NATIVE_OPTIMIZATION)
+    include(CheckCXXCompilerFlag)
+    check_cxx_compiler_flag("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
+    
+    if(COMPILER_SUPPORTS_MARCH_NATIVE)
+        # Apply the optimization options globally or to specific targets
+        add_compile_options(-march=native -mtune=native)
+        message(STATUS "Host-native architecture optimizations enabled.")
+    else()
+        message(WARNING "-march=native is not supported by the current compiler.")
+    endif()
 endif()
 
 include(src/CMakeLists.txt)
