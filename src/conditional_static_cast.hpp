@@ -12,7 +12,7 @@ namespace charls {
 
 template<typename T, typename U>
 [[nodiscard]]
-constexpr T conditional_static_cast(U value) noexcept
+constexpr T conditional_static_cast(const U value) noexcept
 {
     if constexpr (std::is_same_v<T, U>)
     {
