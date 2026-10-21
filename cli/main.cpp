@@ -73,7 +73,7 @@ int32_t get_color_transform_argument(const ArgumentParser& command)
 
 int main(const int argc, const char* const argv[])
 {
-    ArgumentParser program("charls-cli");
+    ArgumentParser program("charls-cli", charls::version_string());
     program.add_description("CharLS command line interface");
 
     ArgumentParser encode_command("encode");
