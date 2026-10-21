@@ -84,7 +84,7 @@ public:
     }
 
     [[nodiscard]]
-    const std::vector<std::byte>& image_data() const noexcept
+    std::vector<std::byte>& image_data() noexcept
     {
         return image_data_;
     }
