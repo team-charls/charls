@@ -1,9 +1,7 @@
 {
   global:
-    JpegLs*;
     charls_*;
     extern "C++" {
-      JpegLs*;
       charls_*;
     };
   local:
