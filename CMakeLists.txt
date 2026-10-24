@@ -22,6 +22,9 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   message(STATUS "Building as main project, CMake version: ${CMAKE_VERSION}")
 endif()
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(Hardening)
+
 if(EMSCRIPTEN)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(STATUS "Building for 64-bit WASM target")
@@ -62,6 +65,9 @@ option(CHARLS_TREAT_WARNING_AS_ERROR "Treat a warning as an error." OFF)
 
 # Provide option to build CharLS with native CPU optimizations
 option(CHARLS_ENABLE_NATIVE_OPTIMIZATION "Optimize binaries specifically for the host CPU architecture" OFF)
+
+# Provide option to build CharLS with C++ Standard Library hardening
+option(CHARLS_CPP_STANDARD_LIBRARY_HARDENING "Enable C++ Standard Library hardening features." OFF)
 
 # CharLS is written in portable c++:
 set(CMAKE_CXX_EXTENSIONS OFF)

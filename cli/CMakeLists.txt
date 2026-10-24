@@ -21,6 +21,10 @@ target_sources(charls-cli
 
 target_precompile_headers(charls-cli PRIVATE ${CMAKE_CURRENT_LIST_DIR}/pch.hpp)
 
+if(CHARLS_CPP_STANDARD_LIBRARY_HARDENING)
+  enable_cpp_standard_library_hardening(charls-cli)
+endif()
+
 # Use argparse provided by vcpkg. Prefer system/vcpkg first
 # and fall back to fetching the project so builds work without vcpkg configured.
 find_package(argparse QUIET)

@@ -7,21 +7,29 @@
 
 All notable changes to this project are documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](http://semver.org/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.0.0] - UNRELEASED
 
 ### Added
 
 - Support to encode and decode mapping tables.  
-The method charls_decoder_get_compressed_data_format can be called after decoding to return the
-data format of the image. The "interchange" format is the most common and means that no
-additional info is needed to process the image. For more info see the API documentation.
+The method charls_decoder_get_compressed_data_format can be called after decoding 
+to return the data format of the image. The "interchange" format is the most common 
+and means that no additional info is needed to process the image. For more 
+info see the API documentation.
 - Support to retrieve the height from a DNL marker segment.
 - Support to encode and decode mixed interleaved mode scans.
-- The unit tests are now based on Google test instead of MSTest and can be used on all platforms.
+- The unit tests are now based on Google test instead of MSTest and can be used 
+  on all platforms.
 - Additional checks when encoding/decoding color transformation.
-  Only 3 components, 8/16 bits per sample, lossless and interleave mode line/sample are supported.
+  Only 3 components, 8/16 bits per sample, lossless and interleave mode
+  line/sample are supported.
+- CMake option to optimize for the native host CPU (GCC\clang):  
+  CHARLS_ENABLE_NATIVE_OPTIMIZATION (default is OFF) 
+- CMake option to enable C++ Standard Library hardening:  
+  CHARLS_CPP_STANDARD_LIBRARY_HARDENING (default is OFF)
 
 ### Fixed
 
@@ -30,11 +38,15 @@ additional info is needed to process the image. For more info see the API docume
 ### Changed
 
 - **BREAKING**: The minimal required C++ language version has been updated to C++17.
-- **BREAKING**: Encoding option encoding_options::include_pc_parameters_jai is not enabled by default anymore.
-- **BREAKING**: The classes charls::jpegls_decoder and charls::jpegls_encoder follow the same const pattern as the C API.
-- **BREAKING**: The failure values of the enum charls::jpegls_errc and the C failure codes are now divided in 2 groups: runtime errors and logic errors. These values are also renumbered.  
-The success code is still 0.
-- **BREAKING**: The public charls.h header has been split into charls.h (for C applications) and charls.hpp (for C++ applications).
+- **BREAKING**: Encoding option encoding_options::include_pc_parameters_jai
+  is not enabled by default anymore.
+- **BREAKING**: The classes charls::jpegls_decoder and charls::jpegls_encoder 
+  follow the same const pattern as the C API.
+- **BREAKING**: The failure values of the enum charls::jpegls_errc and the C failure
+  codes are now divided in 2 groups: runtime errors and logic errors.
+  These values are also renumbered. The success code is still 0.
+- **BREAKING**: The public charls.h header has been split into charls.h 
+  (for C applications) and charls.hpp (for C++ applications).
 - **BREAKING**: Method charls_jpegls_decoder_get_interleave_mode has an additional extra parameter: component_index.
 - **BREAKING**: The charlstest application has been renamed to charls-cli.
 - Performance optimizations for the encoder by @cl445
