@@ -34,6 +34,10 @@ endif()
 
 target_precompile_headers(charls PRIVATE ${CMAKE_CURRENT_LIST_DIR}/pch.hpp)
 
+if(CHARLS_CPP_STANDARD_LIBRARY_HARDENING)
+  enable_cpp_standard_library_hardening(charls)
+endif()
+
 # Use different DLL filenames on Windows. It allows platform neutral adapters to load dynamically the correct version.
 if(WIN32 AND BUILD_SHARED_LIBS)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)

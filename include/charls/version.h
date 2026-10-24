@@ -33,9 +33,9 @@ CHARLS_CHECK_RETURN CHARLS_API_IMPORT_EXPORT const char*
 /// <param name="major">Reference to the major number, may be NULL/nullptr when this info is not needed.</param>
 /// <param name="minor">Reference to the minor number, may be NULL/nullptr when this info is not needed.</param>
 /// <param name="patch">Reference to the patch number, may be NULL/nullptr when this info is not needed.</param>
-CHARLS_API_IMPORT_EXPORT void CHARLS_API_CALLING_CONVENTION charls_get_version_number(CHARLS_OUT_OPT int32_t* major,
-                                                                                      CHARLS_OUT_OPT int32_t* minor,
-                                                                                      CHARLS_OUT_OPT int32_t* patch);
+CHARLS_API_IMPORT_EXPORT void CHARLS_API_CALLING_CONVENTION
+charls_get_version_number(CHARLS_OUT_OPT CHARLS_STD int32_t* major, CHARLS_OUT_OPT CHARLS_STD int32_t* minor,
+                          CHARLS_OUT_OPT CHARLS_STD int32_t* patch);
 
 #ifdef __cplusplus
 }
