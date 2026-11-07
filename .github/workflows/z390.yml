@@ -23,7 +23,7 @@ jobs:
           sudo apt-get install -y \
             cmake \
             ninja-build \
-            qemu-user-static \
+            qemu-user \
             gcc-s390x-linux-gnu \
             g++-s390x-linux-gnu
 
@@ -32,7 +32,7 @@ jobs:
           uname -m
           s390x-linux-gnu-gcc --version
           s390x-linux-gnu-g++ --version
-          qemu-s390x-static --version
+          qemu-s390x --version
 
       - name: Configure CharLS
         run: >-
@@ -49,7 +49,7 @@ jobs:
           -DCMAKE_SYSTEM_PROCESSOR=s390x
           -DCMAKE_C_COMPILER=s390x-linux-gnu-gcc
           -DCMAKE_CXX_COMPILER=s390x-linux-gnu-g++
-          -DCMAKE_CROSSCOMPILING_EMULATOR=/usr/bin/qemu-s390x-static\;-L\;/usr/s390x-linux-gnu
+          -DCMAKE_CROSSCOMPILING_EMULATOR=/usr/bin/qemu-s390x\;-L\;/usr/s390x-linux-gnu
 
       - name: Build CharLS
         run: cmake --build build --parallel
