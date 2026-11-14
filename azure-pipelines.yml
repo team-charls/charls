@@ -200,51 +200,51 @@ jobs:
 
 - job: 'Linux'
   pool:
-    vmImage: ubuntu-latest
-  displayName: 'CMake - '
+    vmImage: ubuntu-26.04
+  displayName: 'CMake - Linux'
 
   strategy:
     matrix:
-      GCC-12 Debug:
+      GCC-13 Debug:
         buildType: Debug
-        CC: gcc-12
-        CXX: g++-12
-        Shared: 'OFF'
-
-      GCC-13 Release:
-        buildType: Release
         CC: gcc-13
         CXX: g++-13
         Shared: 'OFF'
 
-      GCC-14 Debug Shared:
-        buildType: Debug
-        CC: gcc-14
-        CXX: g++-14
-        Shared: 'ON'
-
-      GCC-14 Release Shared:
+      GCC-14 Release:
         buildType: Release
         CC: gcc-14
         CXX: g++-14
+        Shared: 'OFF'
+
+      GCC-15 Debug Shared:
+        buildType: Debug
+        CC: gcc-15
+        CXX: g++-15
         Shared: 'ON'
 
-      Clang-16 Debug:
+      GCC-15 Release Shared:
+        buildType: Release
+        CC: gcc-15
+        CXX: g++-15
+        Shared: 'ON'
+
+      Clang-20 Debug:
         buildType: Debug
-        CC: clang-16
-        CXX: clang++-16
+        CC: clang-20
+        CXX: clang++-20
         Shared: 'OFF'
 
-      Clang-17 Release:
+      Clang-21 Release:
         buildType: Release
-        CC: clang-17
-        CXX: clang++-17
+        CC: clang-21
+        CXX: clang++-21
         Shared: 'OFF'
 
-      Clang-18 Release Shared:
+      Clang-22 Release Shared:
         buildType: Release
-        CC: clang-18
-        CXX: clang++-18
+        CC: clang-22
+        CXX: clang++-22
         Shared: 'ON'
 
   steps:
@@ -277,7 +277,7 @@ jobs:
 - job: 'macOS'
   pool:
     vmImage: macOS-latest
-  displayName: 'CMake - '
+  displayName: 'CMake - macOS'
 
   strategy:
     matrix:
